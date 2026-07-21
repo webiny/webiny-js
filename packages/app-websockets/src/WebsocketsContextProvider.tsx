@@ -139,7 +139,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             const url = wsUrl;
 
             if (!url) {
-                // No WS URL configured (e.g. self-hosted server flavour) — skip WS, run app anyway.
+                // No WS URL configured (e.g. self-hosted server hosting type) — skip WS, run app anyway.
                 console.warn("WebSocket URL not configured; real-time updates are disabled.");
                 return;
             }
@@ -248,7 +248,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     );
 
     // Only block the app on the WS connection when WS is actually configured. Without a URL
-    // (e.g. the self-hosted server flavour), skip WS and render the app anyway.
+    // (e.g. the self-hosted server hosting type), skip WS and render the app anyway.
     if (wsUrl && !socketsRef.current) {
         return props.loader || null;
     }

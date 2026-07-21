@@ -56,7 +56,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     // driver for EVERY SQL dialect (pg, mysql, mariadb, mssql, sqlite, ...) and
                     // picks one at runtime from the configured `client`. Bundling it forces the
                     // bundler to resolve drivers that aren't installed (the mariadb/tedious/pg
-                    // "Module not found" errors). The server flavour runs as a Node process with
+                    // "Module not found" errors). The server hosting type runs as a Node process with
                     // node_modules present, so we externalize knex and let Node load it — knex then
                     // lazily require()s ONLY the configured dialect's driver (e.g. better-sqlite3),
                     // never the others.

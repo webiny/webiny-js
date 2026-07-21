@@ -8,13 +8,13 @@ import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerSe
 import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
 import { registerMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
-type Params = Omit<CmsTestHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "setup">;
 
 export const useHandler = <C extends ApiCoreContext = ApiCoreContext>(params: Params = {}) => {
     const { getContext } = createCmsTestHandler({
         ...params,
-        plugins: [...[params.plugins].flat(Infinity as 1).filter(Boolean)],
-        features: container => {
+        legacyPlugins: [...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)],
+        setup: container => {
             registerMockBackgroundTasks(container);
             WebsiteBuilderFeature.register(container);
             SchedulerFeature.register(container);

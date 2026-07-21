@@ -56,7 +56,7 @@ export const ProjectAws = () => {
             <ApiBeforeDeploy src={p("ProjectAws/EnsureCoreDeployedBeforeApiDeploy.js")} />
             <CoreBeforeDeploy src={p("ProjectAws/ValidateProductionPulumiState.js")} />
 
-            {/* Deploy-time hooks — server flavour has no deploy command, so these are AWS-only */}
+            {/* Deploy-time hooks — server hosting type has no deploy command, so these are AWS-only */}
             <BeforeDeploy src={p("ProjectAws/EnsureTelemetryEnabledForOss.js")} />
             <BeforeDeploy src={p("ProjectAws/ValidateEncryptionBeforeDeploy.js")} />
             <AdminAfterDeploy src={p("ProjectAws/TelemetryNoLongerNewUser.js")} />

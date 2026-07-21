@@ -1,19 +1,19 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { GraphQLEngineFeature } from "~/engine/index.js";
-import type { PluginCollection } from "@webiny/plugins/types";
+import type { Container } from "@webiny/di";
 
 interface Params {
-    plugins?: PluginCollection;
+    setup?: Array<(container: Container) => void>;
 }
 
-export default ({ plugins = [] }: Params = {}) => {
+export default ({ setup = [] }: Params = {}) => {
     const handler = createTestHttpHandler({
         root: () => {},
         request: async container => {
-            // DI-native plugins are plain `container => {}` functions (they register features /
-            // request-context initializers directly). Call them here.
-            for (const plugin of [plugins].flat(Infinity as 1).filter(Boolean)) {
-                (plugin as (container: any) => void)(container);
+            // DI-native setup callbacks are plain `container => {}` functions (they register features /
+            // request-context initializers / schema factories directly).
+            for (const cb of [setup].flat(Infinity as 1).filter(Boolean)) {
+                (cb as (container: Container) => void)(container);
             }
 
             GraphQLEngineFeature.register(container);

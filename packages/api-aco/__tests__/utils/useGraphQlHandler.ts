@@ -50,7 +50,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         identity: resolvedIdentity,
         permissions,
         testProjectLicense: params.testProjectLicense,
-        features: async container => {
+        setup: async container => {
             // ACO storage operations + any test-supplied extensions, then the ACO feature itself.
             // Mirrors the app: registered after HeadlessCmsFeature, before the GraphQL engine.
             processLegacyPlugins(container, apiAcoStorage.plugins);

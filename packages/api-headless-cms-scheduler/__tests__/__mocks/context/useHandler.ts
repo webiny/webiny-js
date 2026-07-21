@@ -6,12 +6,12 @@ import { CmsSchedulerFeature } from "~/CmsSchedulerFeature.js";
 import { SchedulerFeature, SchedulerService } from "@webiny/api-scheduler";
 import { VoidSchedulerService } from "@webiny/api-scheduler/features/SchedulerService/VoidSchedulerService.js";
 
-type Params = Omit<CmsTestHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "setup">;
 
 export const useHandler = <C extends CmsContext = CmsContext>(params: Params = {}) => {
     const { getContext } = createCmsTestHandler({
         ...params,
-        features: container => {
+        setup: container => {
             SchedulerFeature.register(container);
             CmsSchedulerFeature.register(container);
             container.registerInstance(SchedulerService, new VoidSchedulerService());

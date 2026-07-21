@@ -20,7 +20,7 @@ describe("Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: [createMockTargetModelPlugins()]
+            legacyPlugins: [createMockTargetModelPlugins()]
         });
         context = await contextHandler.handler();
     });
