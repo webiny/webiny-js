@@ -18,7 +18,7 @@
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-sync-to-opensearch": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/stdlib": "^0.0.10",
+    "@webiny/stdlib": "^0.0.11",
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
