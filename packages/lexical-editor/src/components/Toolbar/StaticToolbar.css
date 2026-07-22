@@ -184,6 +184,14 @@
   width: 150px;
 }
 
+/* Fixed-width label so the trigger doesn't resize as the selected heading changes. */
+.static-toolbar .block-type-dropdown .dropdown-button-text {
+  width: 92px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .static-toolbar .toolbar-item .text {
   display: flex;
   line-height: 20px;

@@ -83,7 +83,7 @@ export const TypographyDropDown = () => {
         <>
             {!!styles?.length ? (
                 <DropDown
-                    buttonClassName="toolbar-item typography-dropdown"
+                    buttonClassName="toolbar-item typography-dropdown block-type-dropdown"
                     buttonAriaLabel={"Typography formatting options"}
                     buttonLabel={value?.label || "Typography"}
                     stopCloseOnClickSelf={true}
