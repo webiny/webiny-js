@@ -50,17 +50,22 @@ const ScheduledActionBar = observer(() => {
     const actionLabel =
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
 
+    // Match the workflow bar: a full-width white strip (below the header) containing the alert.
     return (
-        <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
-            {goLiveOn ? (
-                <>
-                    This entry is scheduled to {actionLabel} on{" "}
-                    <strong>{formatScheduledDate(goLiveOn)}</strong>.
-                </>
-            ) : (
-                <>This entry is scheduled to {actionLabel}.</>
-            )}
-        </Alert>
+        <div
+            className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}
+        >
+            <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
+                {goLiveOn ? (
+                    <>
+                        This entry is scheduled to {actionLabel} on{" "}
+                        <strong>{formatScheduledDate(goLiveOn)}</strong>.
+                    </>
+                ) : (
+                    <>This entry is scheduled to {actionLabel}.</>
+                )}
+            </Alert>
+        </div>
     );
 });
 
