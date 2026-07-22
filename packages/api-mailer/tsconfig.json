@@ -7,8 +7,7 @@
     { "path": "../plugins" },
     { "path": "../api-core" },
     { "path": "../event-handler-core" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -28,9 +27,7 @@
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }
