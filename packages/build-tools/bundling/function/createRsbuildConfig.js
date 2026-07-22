@@ -1,4 +1,5 @@
 import path from "path";
+import fs from "node:fs";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
@@ -10,6 +11,11 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     const paths = getPaths(cwd);
     const mode = getMode();
     const isDebugEnabled = process.env.DEBUG === "true";
+    // NOTE: dirty for now — sniffing the hosting type off an env var here. Ideally the build config
+    // wouldn't know about hosting types at all: the caller (createBuildFunction, or the flavour's own
+    // build layer) would pass in the externals policy + assetPrefix as options, keeping this file
+    // hosting-agnostic. Good enough while the server hosting type is ALPHA; revisit when it settles.
+    const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
 
     // Configurable via WEBINY_INFRA_API_MAX_BUNDLE_SIZE (bytes).
     // Only enforced during build — watch mode skips size checks.
@@ -19,9 +25,19 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
+        // Server: worker chunks (e.g. background-tasks' workerEntry, spawned via
+        // `new Worker(new URL("...", import.meta.url))`) are referenced as publicPath + chunk name.
+        // rsbuild's default publicPath "/" makes that an ABSOLUTE url ("/xyz.mjs"), which `new Worker()`
+        // resolves to the filesystem root and can't find. "auto" makes it resolve relative to the
+        // running module (handler.mjs), so the emitted chunk loads from build/. publicPath comes from
+        // `output.assetPrefix` in production (`webiny build`) but from `dev.assetPrefix` in development
+        // (`webiny watch`, which runs `rsbuild.build({ watch: true })` under NODE_ENV=development), so
+        // BOTH must be set. Harmless for AWS (its bundle has no worker chunks); scoped to server.
+        ...(isServer ? { dev: { assetPrefix: "auto" } } : {}),
         output: {
             module: true,
             target: "node",
+            ...(isServer ? { assetPrefix: "auto" } : {}),
             minify: true,
             sourceMap: {
                 js: isDebugEnabled || mode === "development" ? "source-map" : false
@@ -48,30 +64,15 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                         maxAssetSize: maxBundleSize
                     }
                 }),
-                externals: [
-                    /^@aws-sdk/,
-                    /^aws-sdk$/,
-                    /^sharp$/,
-                    // knex is a runtime-polymorphic package: its source statically require()s a
-                    // driver for EVERY SQL dialect (pg, mysql, mariadb, mssql, sqlite, ...) and
-                    // picks one at runtime from the configured `client`. Bundling it forces the
-                    // bundler to resolve drivers that aren't installed (the mariadb/tedious/pg
-                    // "Module not found" errors). The server hosting type runs as a Node process with
-                    // node_modules present, so we externalize knex and let Node load it — knex then
-                    // lazily require()s ONLY the configured dialect's driver (e.g. better-sqlite3),
-                    // never the others.
-                    /^knex(\/|$)/,
-                    // These two server-flavour packages load a SIDECAR file at runtime via
-                    // `import.meta.url`: background-tasks-server spawns dist/worker/workerEntry.js
-                    // (worker_threads), and api-scheduler-server hands bree dist/jobs/pollWorker.js.
-                    // Bundling them freezes import.meta.url to a build-machine source path and never
-                    // emits those files into build/, so a shipped bundle can't find them. Like knex,
-                    // the server flavour runs as a Node process with node_modules present — externalize
-                    // them and let Node resolve them (and their sidecar files) from disk. Unused by the
-                    // AWS flavour, so this is a no-op there. See webiny-js#5429.
-                    /^@webiny\/background-tasks-server(\/|$)/,
-                    /^@webiny\/api-scheduler-server(\/|$)/
-                ],
+                // Both hosting types bundle; externalize only what genuinely can't be bundled.
+                // sharp is a native .node binary; knex statically require()s a driver for every SQL
+                // dialect (bundling pulls in uninstalled ones) and lazily loads only the configured
+                // one at runtime (e.g. better-sqlite3). AWS additionally externalizes aws-sdk (the
+                // Lambda runtime provides it). Server ships these in build/node_modules — the build's
+                // packaging step (CI/Linux) copies them, natives included.
+                externals: isServer
+                    ? [/^sharp$/, /^knex(\/|$)/]
+                    : [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/, /^knex(\/|$)/],
                 plugins: [
                     // This is necessary to enable JSDOM usage in Lambda.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
@@ -97,7 +98,27 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     typescript: { configFile: paths.fn.tsConfig },
                     async: mode === "development"
                 }
-            })
+            }),
+            // Server: mark build/ as ESM so emitted raw-.js assets load as modules. handler.mjs and
+            // chunks are already .mjs, but the bree pollWorker is emitted as a plain .js asset (it's a
+            // raw .js source, not compiled) — without "type": "module" Node treats it as CJS and its
+            // `import` throws. Part 2 (deploy packaging) extends this package.json with dependencies +
+            // a start script; here it just needs the module type.
+            ...(isServer
+                ? [
+                      {
+                          name: "webiny-server-package-json",
+                          setup(api) {
+                              api.onAfterBuild(() => {
+                                  fs.writeFileSync(
+                                      path.join(paths.fn.outputFolder, "package.json"),
+                                      JSON.stringify({ type: "module" }, null, 2) + "\n"
+                                  );
+                              });
+                          }
+                      }
+                  ]
+                : [])
         ]
     });
 };
