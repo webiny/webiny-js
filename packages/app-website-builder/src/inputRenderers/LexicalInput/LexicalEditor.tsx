@@ -16,8 +16,12 @@ const contentEditableStyles: React.CSSProperties = {
 };
 
 const styles: React.CSSProperties = {
-    backgroundColor: "#fff",
-    border: "1px solid #e1e1e1",
+    backgroundColor: "var(--color-neutral-base)",
+    border: "1px solid var(--border-color-neutral-muted)",
+    // The static toolbar carries the top border; the body drops it and rounds only the
+    // bottom corners so the two read as one seamless rounded box (matches Figma).
+    borderTop: "none",
+    borderRadius: "0 0 var(--radius-md) var(--radius-md)",
     padding: "10px 14px",
     minHeight: 200,
     maxHeight: 350,
