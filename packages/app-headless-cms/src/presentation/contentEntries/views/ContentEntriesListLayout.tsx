@@ -91,7 +91,13 @@ const DocumentList = observer(() => {
                     }
                 />
             }
-            bulkActions={<ListView.BulkActions itemLabel="entry" actions={browser.bulkActions} />}
+            bulkActions={
+                <ListView.BulkActions
+                    itemLabel="entry"
+                    itemLabelPlural="entries"
+                    actions={browser.bulkActions}
+                />
+            }
             filters={
                 <ListView.Filters filters={browser.filters} filtersToWhere={browser.filtersToWhere}>
                     <CmsAdvancedSearch />
