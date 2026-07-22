@@ -50,7 +50,7 @@ export function useContentEntryEditorConfig() {
             menuItemActions: [
                 ...(actions.filter(action => action.$type === "menu-item-action") || [])
             ],
-            width: config.width || "1020px",
+            width: config.width !== undefined ? config.width : "1020px",
             newEntryWizard: wizards.at(-1)?.element ?? null
         }),
         [config]

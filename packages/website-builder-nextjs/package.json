@@ -8,6 +8,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./middleware": "./middleware.js",
     "./webpack": "./webpack.js"
   },
   "description": "A Next.js integration SDK for Webiny Website Builder.",

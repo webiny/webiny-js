@@ -1,3 +1,4 @@
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { Context } from "~/types.js";
 import type {
     IMockDataManagerInput,
@@ -8,6 +9,7 @@ import { enableIndexing } from "~/utils/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/index.js";
 import { MockDataManager } from "./MockDataManager/MockDataManager.js";
 
 export const MOCK_DATA_MANAGER_TASK_ID = "mockDataManager";
@@ -24,13 +26,15 @@ class MockDataManagerTask implements TaskDefinition.Interface<
 
     constructor(
         private readonly context: CmsContext.Interface,
-        private readonly openSearchClient: OpenSearchClient.Interface
+        private readonly openSearchClient: OpenSearchClient.Interface,
+        private readonly indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {}
 
     async run(params: TaskDefinition.RunParams<IMockDataManagerInput, IMockDataManagerOutput>) {
         const carsMock = new MockDataManager<IMockDataManagerInput, IMockDataManagerOutput>(
             this.context as Context,
-            this.openSearchClient
+            this.openSearchClient,
+            this.indexProvider
         );
 
         try {
@@ -51,7 +55,8 @@ class MockDataManagerTask implements TaskDefinition.Interface<
             model: {
                 modelId: CARS_MODEL_ID,
                 tenant: "root"
-            }
+            } as StorageCmsModel,
+            indexProvider: this.indexProvider
         });
     }
 
@@ -61,12 +66,13 @@ class MockDataManagerTask implements TaskDefinition.Interface<
             model: {
                 modelId: CARS_MODEL_ID,
                 tenant: "root"
-            }
+            } as StorageCmsModel,
+            indexProvider: this.indexProvider
         });
     }
 }
 
 export const MockDataManagerTaskDefinition = TaskDefinition.createImplementation({
     implementation: MockDataManagerTask,
-    dependencies: [CmsContext, OpenSearchClient]
+    dependencies: [CmsContext, OpenSearchClient, CmsModelOpenSearchIndexProvider]
 });

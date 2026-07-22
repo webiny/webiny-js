@@ -35,12 +35,12 @@ export class ApiClient {
         }).then(res => res.json());
     }
 
-    async query({ query, variables }: QueryParams) {
-        const fetchOptions = {
-            next: {
-                revalidate: this.config.preview ? 0 : 60
-            }
-        };
+    async query({ query, variables }: QueryParams, options?: { noStore?: boolean }) {
+        // Runtime reads (e.g. the experiment kill-switch) must bypass the cache so they take
+        // effect immediately; everything else caches and revalidates on an interval.
+        const fetchOptions: Pick<WithPath<RequestInit>, "cache" | "next"> = options?.noStore
+            ? { cache: "no-store" }
+            : { next: { revalidate: this.config.preview ? 0 : 60 } };
 
         const request: WithPath<RequestInit> = {
             ...fetchOptions,

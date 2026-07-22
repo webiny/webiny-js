@@ -13,7 +13,8 @@ import {
     UpdateEntryRevisionResolverImpl,
     DeleteEntryRevisionResolverImpl,
     PublishEntryRevisionResolverImpl,
-    UnpublishEntryRevisionResolverImpl
+    UnpublishEntryRevisionResolverImpl,
+    GetModelResolverImpl
 } from "./resolvers/index.js";
 
 export const createCmsSchema = () => {
@@ -33,6 +34,7 @@ export const createCmsSchema = () => {
         context.container.register(DeleteEntryRevisionResolverImpl);
         context.container.register(PublishEntryRevisionResolverImpl);
         context.container.register(UnpublishEntryRevisionResolverImpl);
+        context.container.register(GetModelResolverImpl);
     });
 
     plugin.name = "headless-cms.graphql.createCmsSchema";
