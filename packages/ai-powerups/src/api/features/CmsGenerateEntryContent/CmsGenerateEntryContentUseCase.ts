@@ -158,7 +158,7 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 imageTagsInPrompt: imageTags
             };
 
-            return Result.ok({ output, telemetry });
+            return Result.ok({ output, values: resolved ?? {}, telemetry });
         } catch (error) {
             return Result.fail(
                 new Error(

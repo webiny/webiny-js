@@ -91,9 +91,9 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface<Generat
             throw result.error;
         }
 
-        // The use case returns AI-generated entry values as JSON; take our target field.
-        const resolved = JSON.parse(result.value.output || "{}") as Record<string, unknown>;
-        const aiSummary = typeof resolved.aiSummary === "string" ? resolved.aiSummary : "";
+        // The use case gives us the generated entry values already parsed; take our field.
+        const generated = result.value.values.aiSummary;
+        const aiSummary = typeof generated === "string" ? generated : "";
 
         if (!aiSummary) {
             this.logger.warn(
