@@ -22,14 +22,17 @@ task, a process background task, and a GraphQL mutation. On the Admin side, add 
 `ContentEntryListConfig.Browser.BulkAction` button that calls `BulkActionFeature`'s
 `useCase.execute({ model, action, where, data })`.
 
-Available from **Webiny 6.5.0** (`webiny/api/cms/bulk-actions`).
+Available from **Webiny 6.5.0** (`webiny/api/cms/entry`).
 
 ## Backend — the bulk action
 
 ```typescript
 // extensions/myBulkAction/api/MyBulkAction.ts
-import { EntriesBulkAction } from "webiny/api/cms/bulk-actions";
-import { ListLatestEntriesUseCase, UpdateEntryUseCase } from "webiny/api/cms/entry";
+import {
+    EntriesBulkAction,
+    ListLatestEntriesUseCase,
+    UpdateEntryUseCase
+} from "webiny/api/cms/entry";
 
 class MyBulkActionImpl implements EntriesBulkAction.Interface {
     // PascalCased into the task ids + GraphQL enum value, so "applyDiscount" →
