@@ -20,12 +20,7 @@ export interface GenerateEntryContentTelemetry {
 }
 
 export interface GenerateEntryContentResult {
-    // The generated entry values, as a JSON string. This is the transport-ready payload
-    // (e.g. compressed and streamed to the Admin over websockets).
     output: string;
-    // The same generated entry values, already parsed — convenient for in-process
-    // consumers (e.g. a bulk action) that would otherwise JSON.parse `output`.
-    values: Record<string, any>;
     telemetry: GenerateEntryContentTelemetry;
 }
 
