@@ -1,19 +1,26 @@
 import React from "react";
-import { UnpublishEntryConfirmDialogExtra } from "@webiny/app-headless-cms/exports/admin/cms.js";
+import { useNamedConfirmationDialog } from "@webiny/app-admin";
+import { UnpublishEntryConfirmDialog } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { ScheduleNoticeAlert } from "./ScheduleNoticeAlert.js";
 
 /**
- * Decorates the "Unpublish entry" dialog to warn that unpublishing now will cancel an existing
- * scheduled action for the entry.
+ * Decorates the "Unpublish entry" dialog to warn (via its `beforeContent` prop) that unpublishing
+ * now will cancel an existing scheduled action for the entry.
  */
-export const UnpublishScheduleNoticeDecorator = UnpublishEntryConfirmDialogExtra.createDecorator(
+export const UnpublishScheduleNoticeDecorator = UnpublishEntryConfirmDialog.createDecorator(
     Original => {
-        return function UnpublishEntryScheduleNotice(props: { entryId: string }) {
+        return function UnpublishEntryConfirmDialogWithNotice(props) {
+            const { params } = useNamedConfirmationDialog<{ entryId: string }>();
             return (
-                <>
-                    <ScheduleNoticeAlert targetId={props.entryId} verb={"Unpublishing"} />
-                    <Original {...props} />
-                </>
+                <Original
+                    {...props}
+                    beforeContent={
+                        <>
+                            {props.beforeContent}
+                            <ScheduleNoticeAlert targetId={params.entryId} verb={"Unpublishing"} />
+                        </>
+                    }
+                />
             );
         };
     }
