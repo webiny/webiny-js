@@ -17,7 +17,7 @@ export interface InvalidateCacheInput {
 }
 
 class InvalidateCloudfrontCacheTask implements TaskDefinition.Interface<InvalidateCacheInput> {
-    id = "cloudfrontInvalidateCache";
+    id = "invalidateAssetCache";
     title = "Invalidate CloudFront Cache";
     description = "A task to invalidate Cloudfront cache by given paths.";
     maxIterations = 100;

@@ -5,7 +5,7 @@ import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { Container } from "@webiny/di";
-import { NoopCloudfrontInvalidateCacheTaskDefinition } from "./noopCloudfrontInvalidateCacheTask.js";
+import { NoopInvalidateAssetCacheTaskDefinition } from "./noopInvalidateAssetCacheTask.js";
 import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -26,7 +26,7 @@ export const useHandler = (params: Params = {}) => {
         //
         legacyPlugins: [
             (container: Container) => {
-                container.register(NoopCloudfrontInvalidateCacheTaskDefinition);
+                container.register(NoopInvalidateAssetCacheTaskDefinition);
             },
             ...[params.legacyPlugins].flat(Infinity as 1).filter(Boolean)
         ],
