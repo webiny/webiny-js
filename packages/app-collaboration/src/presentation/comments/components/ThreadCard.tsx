@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useSecurity } from "@webiny/app-admin";
 import { ReactComponent as ArrowOutwardIcon } from "@webiny/icons/arrow_outward.svg";
@@ -11,6 +11,7 @@ import type { CommentsPresenter } from "../abstractions.js";
 import { avatarColor, formatTimestamp, initials } from "../styles.js";
 import { AutoTextarea } from "./AutoTextarea.js";
 import { MentionTextarea } from "./MentionTextarea.js";
+import { COLLAB_THREAD_PARAM, COLLAB_FIELD_PARAM } from "~/constants.js";
 import type { CollabMessage, CollabThread } from "~/types.js";
 
 interface Props {
@@ -232,9 +233,54 @@ export const ThreadCard = observer((props: Props) => {
     const [replyMentions, setReplyMentions] = useState<string[]>([]);
     const [busy, setBusy] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     const messages = thread.messages.filter(message => !message.deleted);
     const mentionNames = presenter.vm.mentionableUsers.map(user => user.displayName);
+
+    const highlighted = presenter.vm.highlightThreadId === thread.id;
+    const rootRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!highlighted || !rootRef.current) {
+            return;
+        }
+        rootRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+        const timer = window.setTimeout(() => presenter.clearHighlight(), 2600);
+        return () => window.clearTimeout(timer);
+    }, [highlighted, presenter]);
+
+    const rootClassName = [
+        "wby-collab-thread",
+        thread.resolved ? "wby-collab-thread--resolved" : "",
+        highlighted ? "wby-collab-thread--highlight" : ""
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+    // Builds a shareable link to this thread by augmenting the current entry URL with the
+    // deep-link query params. Opening it re-runs the panel-open + highlight + field-scroll flow.
+    const copyThreadLink = () => {
+        const url = new URL(window.location.href);
+        url.searchParams.set(COLLAB_THREAD_PARAM, thread.id);
+        if (thread.locator) {
+            url.searchParams.set(COLLAB_FIELD_PARAM, thread.locator);
+        } else {
+            url.searchParams.delete(COLLAB_FIELD_PARAM);
+        }
+        const done = () => {
+            setCopied(true);
+            window.setTimeout(() => {
+                setCopied(false);
+                setMenuOpen(false);
+            }, 1200);
+        };
+        if (typeof navigator !== "undefined" && navigator.clipboard) {
+            navigator.clipboard.writeText(url.toString()).then(done, done);
+        } else {
+            done();
+        }
+    };
 
     const submitReply = async () => {
         if (!reply.trim() || busy) {
@@ -250,21 +296,8 @@ export const ThreadCard = observer((props: Props) => {
         }
     };
 
-    const copyLink = () => {
-        setMenuOpen(false);
-        if (typeof navigator !== "undefined" && navigator.clipboard) {
-            void navigator.clipboard.writeText(window.location.href);
-        }
-    };
-
     return (
-        <div
-            className={
-                thread.resolved
-                    ? "wby-collab-thread wby-collab-thread--resolved"
-                    : "wby-collab-thread"
-            }
-        >
+        <div className={rootClassName} ref={rootRef}>
             <div className="wby-collab-thread__head">
                 {thread.locator ? (
                     <button
@@ -321,9 +354,9 @@ export const ThreadCard = observer((props: Props) => {
                                     <CheckCircleIcon className="wby-collab-ok" />
                                     {thread.resolved ? "Reopen thread" : "Resolve thread"}
                                 </button>
-                                <button className="wby-collab-menuitem" onClick={copyLink}>
+                                <button className="wby-collab-menuitem" onClick={copyThreadLink}>
                                     <LinkIcon />
-                                    Copy link
+                                    {copied ? "Copied!" : "Copy link to thread"}
                                 </button>
                                 <div className="wby-collab-menu__divider" />
                                 <button

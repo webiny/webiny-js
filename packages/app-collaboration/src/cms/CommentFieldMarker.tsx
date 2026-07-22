@@ -21,14 +21,13 @@ export const CommentFieldMarker = observer(({ field }: { field: IFieldVM }) => {
 
     const locator = field.qualifiedName;
     const count = vm.threads.filter(thread => thread.locator === locator).length;
-    const open = () => presenter.openPanel(locator);
 
     if (count > 0) {
         return (
             <span
                 className="wby-collab-marker wby-collab-marker--count"
-                title={`${count} comment${count === 1 ? "" : "s"}`}
-                onClick={open}
+                title={`Show ${count} comment${count === 1 ? "" : "s"} on this field`}
+                onClick={() => presenter.openForField(locator)}
             >
                 <ChatBubbleIcon />
                 <span className="wby-collab-marker__badge">{count}</span>
@@ -40,7 +39,7 @@ export const CommentFieldMarker = observer(({ field }: { field: IFieldVM }) => {
         <span
             className="wby-collab-marker wby-collab-marker--add"
             title="Add comment"
-            onClick={open}
+            onClick={() => presenter.openPanel(locator)}
         >
             <AddCommentIcon />
             Comment

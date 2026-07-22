@@ -1,5 +1,6 @@
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetLatestRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
+import { getEntryTitle } from "@webiny/api-headless-cms/utils/getEntryTitle.js";
 import { CollabLocatorResolver } from "~/domain/locator/abstractions.js";
 import { CONTENT_TYPE_CMS_ENTRY } from "~/constants.js";
 import { parseCmsContentId } from "~/utils/cmsContentId.js";
@@ -38,10 +39,12 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
             return { exists: false, authorized: true };
         }
 
+        const contentTitle = getEntryTitle(model, entryResult.value);
+
         // Empty locator = an entry-level (unanchored) comment. The entry read above is the
         // access gate; the anchor is the entry itself.
         if (!params.locator || params.locator.trim().length === 0) {
-            return { exists: true, authorized: true, label: "Entry", path: [] };
+            return { exists: true, authorized: true, label: "Entry", path: [], contentTitle };
         }
 
         const walk = walkModelLocator(model, params.locator);
@@ -50,7 +53,8 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
             exists: walk.exists,
             authorized: true,
             label: walk.label,
-            path: walk.path
+            path: walk.path,
+            contentTitle
         };
     }
 }

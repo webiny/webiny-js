@@ -30,6 +30,8 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
     private error: string | null = null;
     private isOpen = false;
     private activeLocator: string | null = null;
+    private filterLocator: string | null = null;
+    private highlightThreadId: string | null = null;
     private users: CollabUser[] = [];
 
     constructor(private api: CollaborationApi.Interface) {
@@ -40,18 +42,41 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         this.isOpen = true;
         // No locator => entry-level (unanchored) comment.
         this.activeLocator = locator ?? null;
+        // A general open (or "add comment" on a field) shows all threads.
+        this.filterLocator = null;
     }
 
     closePanel() {
         this.isOpen = false;
+        this.filterLocator = null;
     }
 
     togglePanel() {
         this.isOpen = !this.isOpen;
+        this.filterLocator = null;
+    }
+
+    openForField(locator: string) {
+        this.isOpen = true;
+        this.filterLocator = locator;
+        this.activeLocator = locator;
+    }
+
+    clearFieldFilter() {
+        this.filterLocator = null;
     }
 
     setActiveLocator(locator: string | null) {
         this.activeLocator = locator;
+    }
+
+    openAndHighlight(threadId: string) {
+        this.openPanel();
+        this.highlightThreadId = threadId;
+    }
+
+    clearHighlight() {
+        this.highlightThreadId = null;
     }
 
     get vm(): PresenterAbstraction.ViewModel {
@@ -69,6 +94,8 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
             contentId: this.contentId,
             isOpen: this.isOpen,
             activeLocator: this.activeLocator,
+            filterLocator: this.filterLocator,
+            highlightThreadId: this.highlightThreadId,
             threads: toJS(open),
             outdatedThreads: toJS(outdated),
             resolvedThreads: toJS(resolved),

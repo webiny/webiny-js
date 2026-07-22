@@ -1,26 +1,61 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
+import { useRoute } from "@webiny/app";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useCommentsPresenter } from "~/presentation/comments/useComments.js";
 import { CommentsPanel } from "~/presentation/comments/components/CommentsPanel.js";
 import { buildLocatorLabel } from "~/cms/fieldLabels.js";
-import { cmsContentId } from "~/constants.js";
+import { cmsContentId, COLLAB_THREAD_PARAM, COLLAB_FIELD_PARAM } from "~/constants.js";
 
 export const CommentsSidePanelDecorator = ContentEntryFormContent.createDecorator(Original => {
     return observer(function CommentsSidePanelDecoratorInner(props) {
         const formPresenter = useContentEntryFormPresenter();
         const presenter = useCommentsPresenter();
+        const { route: currentRoute, replaceRouteParams } = useRoute();
 
         const vm = formPresenter.vm;
         const entryId = vm.entry?.entryId;
         const modelId = vm.model?.modelId;
 
+        // Deep-link params (from a notification click or a copied thread link). `params` merges
+        // path + query, so these arrive as query-string values on the entry URL.
+        const params = currentRoute?.params as Record<string, string> | undefined;
+        const threadParam = params?.[COLLAB_THREAD_PARAM];
+        const fieldParam = params?.[COLLAB_FIELD_PARAM];
+        const consumedRef = useRef<string | null>(null);
+
         useEffect(() => {
-            if (!vm.isNewEntry && entryId && modelId) {
-                presenter.init(cmsContentId(modelId, entryId));
+            if (vm.isNewEntry || !entryId || !modelId) {
+                return;
             }
-        }, [entryId, modelId, vm.isNewEntry, presenter]);
+            presenter.init(cmsContentId(modelId, entryId));
+
+            // Consume a deep-link once: open + highlight the thread, scroll the form to the field,
+            // then strip the params from the URL so a refresh/back doesn't re-trigger it.
+            if (threadParam && consumedRef.current !== threadParam) {
+                consumedRef.current = threadParam;
+                presenter.openAndHighlight(threadParam);
+                if (fieldParam) {
+                    formPresenter.vm.form?.focusField(fieldParam);
+                }
+                replaceRouteParams((current: Record<string, unknown>) => {
+                    const next = { ...current };
+                    delete next[COLLAB_THREAD_PARAM];
+                    delete next[COLLAB_FIELD_PARAM];
+                    return next;
+                });
+            }
+        }, [
+            entryId,
+            modelId,
+            vm.isNewEntry,
+            threadParam,
+            fieldParam,
+            presenter,
+            formPresenter,
+            replaceRouteParams
+        ]);
 
         if (vm.isNewEntry || !entryId || !modelId) {
             return <Original {...props} />;

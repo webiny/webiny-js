@@ -26,6 +26,7 @@
     "@webiny/app-headless-cms-scheduler": "0.0.0",
     "@webiny/app-headless-cms-workflows": "0.0.0",
     "@webiny/app-mailer": "0.0.0",
+    "@webiny/app-notifications": "0.0.0",
     "@webiny/app-record-locking": "0.0.0",
     "@webiny/app-scheduler": "0.0.0",
     "@webiny/app-sdk-playground": "0.0.0",

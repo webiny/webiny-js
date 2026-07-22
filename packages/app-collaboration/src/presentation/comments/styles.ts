@@ -20,6 +20,11 @@ const CSS = `
 .wby-collab-dot { width:8px; height:8px; border-radius:50%; background:var(--color-primary); display:inline-block; }
 .wby-collab-overview__sep { color:var(--color-neutral-400); }
 .wby-collab-overview__fields { color:var(--color-neutral-500); }
+.wby-collab-filter { flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:10px 16px; background:var(--color-primary-100); border-bottom:1px solid var(--color-primary-200); font-size:13px; }
+.wby-collab-filter__label { flex:1; min-width:0; color:var(--color-neutral-800); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wby-collab-filter__label strong { font-weight:600; }
+.wby-collab-filter__clear { flex:0 0 auto; background:none; border:none; padding:0; cursor:pointer; font-family:inherit; font-size:13px; font-weight:600; color:var(--color-primary); }
+.wby-collab-filter__clear:hover { text-decoration:underline; }
 .wby-collab-sort { margin-left:auto; display:flex; align-items:center; gap:4px; font-weight:600; color:var(--color-neutral-600); background:none; border:none; cursor:pointer; font-size:13px; font-family:inherit; padding:0; }
 .wby-collab-sort svg { width:16px; height:16px; fill:currentColor; }
 
@@ -39,6 +44,8 @@ const CSS = `
 .wby-collab-thread { border:1px solid var(--color-neutral-200); border-radius:10px; padding:12px 12px 8px; display:flex; flex-direction:column; gap:12px; transition:box-shadow .12s ease, border-color .12s ease; }
 .wby-collab-thread:hover { box-shadow:var(--shadow-sm); border-color:var(--color-neutral-300); }
 .wby-collab-thread--resolved { opacity:.72; }
+.wby-collab-thread--highlight { border-color:var(--color-primary); box-shadow:0 0 0 3px var(--color-primary-200); animation:wby-collab-pulse 1s ease-in-out 2; }
+@keyframes wby-collab-pulse { 0%,100% { box-shadow:0 0 0 3px var(--color-primary-200); } 50% { box-shadow:0 0 0 6px var(--color-primary-200); } }
 .wby-collab-thread--resolved:hover { opacity:1; }
 .wby-collab-thread__head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .wby-collab-thread__head-actions { display:flex; align-items:center; gap:6px; position:relative; }

@@ -1,9 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { mdbid } from "@webiny/utils";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { CreateThreadRepository, CreateThreadUseCase as UseCase } from "./abstractions.js";
 import { ResolveLocatorUseCase } from "~/features/locator/ResolveLocator/index.js";
 import { type ICollabMessage, type ICollabThreadValues } from "~/domain/thread/abstractions.js";
+import { CollabThreadCreatedEvent } from "~/domain/thread/events.js";
 import {
     CollabAnchorNotFoundError,
     CollabThreadNotAuthorizedError,
@@ -15,7 +17,8 @@ class CreateThreadUseCaseImpl implements UseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private resolveLocator: ResolveLocatorUseCase.Interface,
-        private repository: CreateThreadRepository.Interface
+        private repository: CreateThreadRepository.Interface,
+        private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -85,11 +88,19 @@ class CreateThreadUseCaseImpl implements UseCase.Interface {
             return Result.fail(createResult.error);
         }
 
+        await this.eventPublisher.publish(
+            new CollabThreadCreatedEvent({
+                thread: createResult.value,
+                message,
+                anchor: resolution.value
+            })
+        );
+
         return Result.ok({ thread: createResult.value, anchor: resolution.value });
     }
 }
 
 export const CreateThreadUseCase = UseCase.createImplementation({
     implementation: CreateThreadUseCaseImpl,
-    dependencies: [IdentityContext, ResolveLocatorUseCase, CreateThreadRepository]
+    dependencies: [IdentityContext, ResolveLocatorUseCase, CreateThreadRepository, EventPublisher]
 });

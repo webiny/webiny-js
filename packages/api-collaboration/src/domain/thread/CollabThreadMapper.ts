@@ -16,7 +16,8 @@ class CollabThreadMapperImpl implements MapperAbstraction.Interface {
             id,
             contentType: values.contentType,
             contentId: values.contentId,
-            locator: values.locator,
+            // CMS stores an empty text field as null; entry-level comments use an empty locator.
+            locator: values.locator ?? "",
             type: values.type ?? CollabThreadType.note,
             resolved: values.resolved ?? false,
             resolvedBy: values.resolvedBy ?? null,

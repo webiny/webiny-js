@@ -24,6 +24,11 @@ export interface ICollabLocatorResolution {
      * Ancestor labels for display as a breadcrumb (e.g. ["Tab 1", "Field 1"]).
      */
     path?: string[];
+    /**
+     * Human title of the target content itself (e.g. the CMS entry title). Used by consumers
+     * (like notifications) that want to reference the entry rather than the anchored field.
+     */
+    contentTitle?: string;
 }
 
 /**

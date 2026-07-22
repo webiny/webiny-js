@@ -29,6 +29,8 @@ import { createWorkflows } from "@webiny/api-workflows";
 import { createHeadlessCmsWorkflows } from "@webiny/api-headless-cms-workflows";
 import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workflows";
 import { createCollaboration } from "@webiny/api-collaboration";
+import { createNotifications } from "@webiny/api-notifications";
+import { createNotificationsIntegrations } from "@webiny/api-notifications-integrations";
 import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-scheduler";
 import { createWebhooks } from "@webiny/webhooks/api";
 
@@ -76,6 +78,8 @@ export const handler = createHandler({
         createHeadlessCmsWorkflows(),
         createWebsiteBuilderWorkflows(),
         createCollaboration(),
+        createNotifications(),
+        createNotificationsIntegrations(),
         registerAuditLogsSqlStorageOperations({
             knex
         }),

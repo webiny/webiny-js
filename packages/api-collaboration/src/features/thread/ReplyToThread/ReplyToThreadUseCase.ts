@@ -1,10 +1,12 @@
 import { Result } from "@webiny/feature/api";
 import { mdbid } from "@webiny/utils";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { ReplyToThreadUseCase as UseCase } from "./abstractions.js";
 import { GetThreadUseCase } from "~/features/thread/GetThread/index.js";
 import { UpdateThreadRepository } from "~/features/thread/UpdateThread/index.js";
 import type { ICollabMessage } from "~/domain/thread/abstractions.js";
+import { CollabReplyAddedEvent } from "~/domain/thread/events.js";
 import {
     CollabThreadNotAuthorizedError,
     CollabThreadValidationError
@@ -15,7 +17,8 @@ class ReplyToThreadUseCaseImpl implements UseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private getThread: GetThreadUseCase.Interface,
-        private updateThread: UpdateThreadRepository.Interface
+        private updateThread: UpdateThreadRepository.Interface,
+        private eventPublisher: EventPublisher.Interface
     ) {}
 
     async execute(input: UseCase.Input): UseCase.Return {
@@ -35,7 +38,7 @@ class ReplyToThreadUseCaseImpl implements UseCase.Interface {
             return Result.fail(loaded.error);
         }
 
-        const { thread } = loaded.value;
+        const { thread, anchor } = loaded.value;
 
         const message: ICollabMessage = {
             id: mdbid(),
@@ -52,11 +55,15 @@ class ReplyToThreadUseCaseImpl implements UseCase.Interface {
             return Result.fail(updateResult.error);
         }
 
+        await this.eventPublisher.publish(
+            new CollabReplyAddedEvent({ thread: updateResult.value, message, anchor })
+        );
+
         return Result.ok(message);
     }
 }
 
 export const ReplyToThreadUseCase = UseCase.createImplementation({
     implementation: ReplyToThreadUseCaseImpl,
-    dependencies: [IdentityContext, GetThreadUseCase, UpdateThreadRepository]
+    dependencies: [IdentityContext, GetThreadUseCase, UpdateThreadRepository, EventPublisher]
 });

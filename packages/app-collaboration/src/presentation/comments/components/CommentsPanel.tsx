@@ -61,7 +61,13 @@ const CollapsibleSection = ({
 export const CommentsPanel = observer((props: Props) => {
     const { presenter, onJumpToField, resolveLabel } = props;
     const { vm } = presenter;
-    const total = vm.threads.length + vm.outdatedThreads.length + vm.resolvedThreads.length;
+
+    const filter = vm.filterLocator;
+    const matchesFilter = (thread: CollabThread) => !filter || thread.locator === filter;
+    const openThreads = vm.threads.filter(matchesFilter);
+    const outdatedThreads = vm.outdatedThreads.filter(matchesFilter);
+    const resolvedThreads = vm.resolvedThreads.filter(matchesFilter);
+    const total = openThreads.length + outdatedThreads.length + resolvedThreads.length;
 
     return (
         <aside className="wby-collab-panel">
@@ -81,14 +87,30 @@ export const CommentsPanel = observer((props: Props) => {
                 </div>
             </div>
 
-            <div className="wby-collab-overview">
-                <span className="wby-collab-overview__count">
-                    <span className="wby-collab-dot" />
-                    {vm.unresolvedCount} unresolved
-                </span>
-                <span className="wby-collab-overview__sep">·</span>
-                <span className="wby-collab-overview__fields">across {vm.fieldCount} fields</span>
-            </div>
+            {filter ? (
+                <div className="wby-collab-filter">
+                    <span className="wby-collab-filter__label">
+                        Showing comments on <strong>{resolveLabel(filter)}</strong>
+                    </span>
+                    <button
+                        className="wby-collab-filter__clear"
+                        onClick={() => presenter.clearFieldFilter()}
+                    >
+                        Show all
+                    </button>
+                </div>
+            ) : (
+                <div className="wby-collab-overview">
+                    <span className="wby-collab-overview__count">
+                        <span className="wby-collab-dot" />
+                        {vm.unresolvedCount} unresolved
+                    </span>
+                    <span className="wby-collab-overview__sep">·</span>
+                    <span className="wby-collab-overview__fields">
+                        across {vm.fieldCount} fields
+                    </span>
+                </div>
+            )}
 
             <div className="wby-collab-list">
                 {vm.error ? <div className="wby-collab-error">{vm.error}</div> : null}
@@ -99,7 +121,7 @@ export const CommentsPanel = observer((props: Props) => {
                     resolveLabel={resolveLabel}
                 />
 
-                {vm.threads.map(thread => (
+                {openThreads.map(thread => (
                     <ThreadCard
                         key={thread.id}
                         presenter={presenter}
@@ -110,21 +132,23 @@ export const CommentsPanel = observer((props: Props) => {
 
                 {total === 0 && !vm.loading ? (
                     <div className="wby-collab-empty">
-                        No comments yet. Add the first one above.
+                        {filter
+                            ? "No comments on this field yet. Add the first one above."
+                            : "No comments yet. Add the first one above."}
                     </div>
                 ) : null}
 
                 <CollapsibleSection
                     label="Outdated"
-                    count={vm.outdatedThreads.length}
-                    threads={vm.outdatedThreads}
+                    count={outdatedThreads.length}
+                    threads={outdatedThreads}
                     presenter={presenter}
                     onJumpToField={onJumpToField}
                 />
                 <CollapsibleSection
                     label="Resolved"
-                    count={vm.resolvedThreads.length}
-                    threads={vm.resolvedThreads}
+                    count={resolvedThreads.length}
+                    threads={resolvedThreads}
                     presenter={presenter}
                     onJumpToField={onJumpToField}
                     defaultOpen={false}

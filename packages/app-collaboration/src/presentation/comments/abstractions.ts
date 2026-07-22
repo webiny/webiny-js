@@ -16,6 +16,10 @@ export interface ICommentsViewModel {
     isOpen: boolean;
     /** Locator the composer should default to (set by a field's "add comment" action). */
     activeLocator: string | null;
+    /** When set, the panel shows only threads anchored to this field's locator. */
+    filterLocator: string | null;
+    /** Thread to visually highlight + scroll to (e.g. arriving from a notification deep-link). */
+    highlightThreadId: string | null;
     /** Open (unresolved) threads whose anchor still exists. */
     threads: CollabThread[];
     /** Threads whose anchor no longer exists in the current revision. */
@@ -35,7 +39,13 @@ export interface ICommentsPresenter {
     openPanel(locator?: string): void;
     closePanel(): void;
     togglePanel(): void;
+    /** Open the panel filtered to a single field's threads (from that field's comment marker). */
+    openForField(locator: string): void;
+    /** Remove the field filter and show all threads again. */
+    clearFieldFilter(): void;
     setActiveLocator(locator: string | null): void;
+    openAndHighlight(threadId: string): void;
+    clearHighlight(): void;
     createThread(params: ICreateThreadParams): Promise<void>;
     reply(threadId: string, body: string, mentions?: string[]): Promise<void>;
     resolve(threadId: string): Promise<void>;

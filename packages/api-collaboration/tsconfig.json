@@ -8,6 +8,7 @@
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../utils" },
+    { "path": "../api" },
     { "path": "../plugins" },
     { "path": "../testing" }
   ],
@@ -32,6 +33,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/testing/*": ["../testing/src/*"],
