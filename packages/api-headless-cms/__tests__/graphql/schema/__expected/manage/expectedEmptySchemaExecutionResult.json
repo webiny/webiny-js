@@ -693,6 +693,40 @@
           ]
         },
         {
+          "name": "CmsContentModelRefModel",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "valuesSelection",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "String", "ofType": null }
+            }
+          ]
+        },
+        {
+          "name": "CmsContentModelMetadata",
+          "kind": "OBJECT",
+          "description": null,
+          "fields": [
+            {
+              "name": "valuesSelection",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "String", "ofType": null }
+            },
+            {
+              "name": "componentMap",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
+            },
+            {
+              "name": "refModels",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "JSON", "ofType": null }
+            }
+          ]
+        },
+        {
           "name": "CmsContentModel",
           "kind": "OBJECT",
           "description": null,
@@ -836,6 +870,11 @@
               "name": "valuesSelection",
               "description": null,
               "type": { "kind": "SCALAR", "name": "String", "ofType": null }
+            },
+            {
+              "name": "metadata",
+              "description": null,
+              "type": { "kind": "OBJECT", "name": "CmsContentModelMetadata", "ofType": null }
             }
           ]
         },

@@ -231,6 +231,44 @@ describe("LexicalTheme Config", () => {
         });
     });
 
+    it("should enable allowCustomColors when component is rendered", async () => {
+        const onChange = vi.fn();
+
+        render(
+            <Properties onChange={onChange}>
+                <LexicalTheme.AllowCustomColors />
+            </Properties>
+        );
+        await flush();
+
+        const properties = getLastCall(onChange);
+
+        expect(toObject(properties)).toEqual({
+            lexicalTheme: {
+                allowCustomColors: true
+            }
+        });
+    });
+
+    it("should support explicitly disabling custom colors", async () => {
+        const onChange = vi.fn();
+
+        render(
+            <Properties onChange={onChange}>
+                <LexicalTheme.AllowCustomColors value={false} />
+            </Properties>
+        );
+        await flush();
+
+        const properties = getLastCall(onChange);
+
+        expect(toObject(properties)).toEqual({
+            lexicalTheme: {
+                allowCustomColors: false
+            }
+        });
+    });
+
     it("should support reordering typography items", async () => {
         const onChange = vi.fn();
 

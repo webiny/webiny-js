@@ -14,5 +14,8 @@ export {
     CmsEntryOpenSearchValueSearchRegistry
 } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 export { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
-export { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
+export {
+    CmsModelOpenSearchIndex,
+    CmsModelOpenSearchIndexProvider
+} from "~/features/CmsModelOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";

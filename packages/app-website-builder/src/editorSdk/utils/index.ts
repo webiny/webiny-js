@@ -14,4 +14,5 @@ export * from "./$getFirstElementOfType.js";
 export * from "./$getElementInputValues.js";
 export * from "./$updateElementInputs.js";
 export * from "./$previewElementInputs.js";
+export * from "./$cloneElement.js";
 export * from "./executeOnChange.js";

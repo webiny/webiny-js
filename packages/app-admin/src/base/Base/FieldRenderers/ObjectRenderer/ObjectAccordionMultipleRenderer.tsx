@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { Accordion } from "@webiny/admin-ui";
+import { useContainer } from "@webiny/app";
 import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { ListItemRenderer, AddItemButton } from "./ObjectFieldComponents.js";
+import { SortablePresenter } from "~/presentation/sortable/index.js";
+import type { IObjectFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -61,8 +65,28 @@ export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"object
     }
 );
 
-const ListItems = createObjectFieldRenderer<"objectAccordionMultiple">(({ field }) => {
-    const settings = field.rendererSettings;
+interface ListItemsProps {
+    field: IObjectFieldVM;
+}
+
+const ListItems = observer(({ field }: ListItemsProps) => {
+    const settings = field.rendererSettings as
+        | {
+              itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
+              itemDescription?: string | ((data: Record<string, unknown>, index: number) => string);
+          }
+        | undefined;
+
+    const container = useContainer();
+    const sortable = useMemo(() => {
+        const p = container.resolve(SortablePresenter);
+        p.init({ type: `obj:${field.name}`, onReorder: (from, to) => field.moveItem(from, to) });
+        return p;
+    }, []);
+
+    useEffect(() => {
+        return () => sortable.dispose();
+    }, [sortable]);
 
     return (
         <div className={"flex flex-col gap-md"}>
@@ -76,6 +100,7 @@ const ListItems = createObjectFieldRenderer<"objectAccordionMultiple">(({ field 
                     itemTitle={settings?.itemTitle}
                     itemDescription={settings?.itemDescription}
                     disabled={field.disabled}
+                    sortable={sortable.getItemProps(index)}
                 />
             ))}
         </div>
