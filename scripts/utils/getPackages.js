@@ -1,5 +1,5 @@
 import { loadJsonFileSync } from "load-json-file";
-import getYarnWorkspaces from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 import chalk from "chalk";
 import fs from "fs-extra";
 import path from "node:path";
@@ -21,7 +21,10 @@ export const getPackages = (args = {}) => {
         return packagesCache;
     }
 
-    packagesCache = getYarnWorkspaces()
+    packagesCache = listWorkspaces()
+        .map(pkg => {
+            return pkg.path;
+        })
         .filter(isFolder)
         .filter(hasPackageJson)
         .map(path => {

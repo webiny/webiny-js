@@ -19,7 +19,7 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "@webiny/stdlib": "^0.0.11",
+    "@webiny/stdlib": "^0.0.12",
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
