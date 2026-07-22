@@ -4,18 +4,33 @@ export { DataFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder
 export { LayoutFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "@webiny/api-headless-cms/features/modelBuilder/fields/abstractions.js";
 export type { IFieldRendererRegistry } from "@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.js";
-export type { IFieldBuilderRegistry, IModelSettings } from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
+export type {
+    IFieldBuilderRegistry,
+    IModelSettings
+} from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
 export { LayoutBuilder } from "@webiny/api-headless-cms/features/modelBuilder/LayoutBuilder.js";
 export type { FieldTypeValidator } from "@webiny/api-headless-cms/features/modelBuilder/fields/fieldTypeValidator.js";
 export type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 export type { CmsModelField } from "@webiny/api-headless-cms/types/modelField.js";
 export { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/abstractions.js";
-export { ModelBeforeCreateEventHandler, ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/events.js";
+export {
+    ModelBeforeCreateEventHandler,
+    ModelAfterCreateEventHandler
+} from "@webiny/api-headless-cms/features/contentModel/CreateModel/events.js";
 export { CreateModelFromUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/abstractions.js";
-export { ModelBeforeCreateFromEventHandler, ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
+export {
+    ModelBeforeCreateFromEventHandler,
+    ModelAfterCreateFromEventHandler
+} from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 export { UpdateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/abstractions.js";
-export { ModelBeforeUpdateEventHandler, ModelAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/events.js";
+export {
+    ModelBeforeUpdateEventHandler,
+    ModelAfterUpdateEventHandler
+} from "@webiny/api-headless-cms/features/contentModel/UpdateModel/events.js";
 export { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/abstractions.js";
-export { ModelBeforeDeleteEventHandler, ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
+export {
+    ModelBeforeDeleteEventHandler,
+    ModelAfterDeleteEventHandler
+} from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 export { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 export { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/abstractions.js";

@@ -1,6 +1,9 @@
 export { usePageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/usePageEditorConfig.js";
 export { PageEditorConfig } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.js";
-export { PageSettingsGroup, PageSettingsGroupModifier } from "@webiny/app-website-builder/presentation/pages/PageEditor/PageSettings/index.js";
+export {
+    PageSettingsGroup,
+    PageSettingsGroupModifier
+} from "@webiny/app-website-builder/presentation/pages/PageEditor/PageSettings/index.js";
 export { createCommand } from "@webiny/app-website-builder/editorSdk/createCommand.js";
 export { Commands } from "@webiny/app-website-builder/BaseEditor/index.js";
 export { useSelectFromEditor } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromEditor.js";
