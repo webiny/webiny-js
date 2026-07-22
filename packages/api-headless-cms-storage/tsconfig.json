@@ -6,6 +6,7 @@
     { "path": "../api-headless-cms" },
     { "path": "../db-utils" },
     { "path": "../error" },
+    { "path": "../feature" },
     { "path": "../plugins" }
   ],
   "compilerOptions": {
@@ -23,6 +24,8 @@
       "@webiny/db-utils": ["../db-utils/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     }

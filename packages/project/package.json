@@ -29,7 +29,7 @@
     "debounce": "^3.0.0",
     "deepmerge": "^4.3.1",
     "dotenv": "^17.4.2",
-    "execa": "^9.6.1",
+    "execa": "^10.0.0",
     "exit-hook": "^5.1.0",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",

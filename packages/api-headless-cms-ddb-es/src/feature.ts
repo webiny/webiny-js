@@ -143,7 +143,6 @@ class OpenSearchStorageOperationsFactoryImpl
     public create(context: CmsContext) {
         return createOpenSearchStorageOperations({
             elasticsearch: this.openSearchClient.use(),
-            plugins: context.plugins,
             container: context.container
         });
     }

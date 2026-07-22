@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "types": ["node"],
+    "target": "esnext",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,

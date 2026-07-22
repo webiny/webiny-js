@@ -16,30 +16,17 @@ import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractio
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
-import {
-    createFilterCreatePlugins,
-    createPlainObjectPathPlugin,
-    createLocationFolderIdPathPlugin,
-    createDatetimeTransformValuePlugin
-} from "@webiny/api-headless-cms-storage";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { KnexClient } from "@webiny/api-core-sql";
 
 const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
-    const { container, plugins } = params;
+    const { container } = params;
 
     const knex = container.resolve(KnexClient);
     const tableNameResolver = container.resolve(TableNameResolver);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
     const entryTableManager = container.resolve(EntryTableManager);
-
-    /* Register filter create plugins and field path plugins for in-memory filtering. */
-    plugins.register([
-        createFilterCreatePlugins(),
-        createPlainObjectPathPlugin(),
-        createLocationFolderIdPathPlugin(),
-        createDatetimeTransformValuePlugin()
-    ]);
 
     const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
 
@@ -48,8 +35,7 @@ const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const entries = createEntriesStorageOperations({
         knex,
         entryTableManager,
-        container,
-        plugins
+        container
     });
 
     return {
@@ -72,7 +58,6 @@ interface ISqlStorageOperationsConfig {
 class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
     public create(context: CmsContext) {
         return createSqlStorageOperations({
-            plugins: context.plugins,
             container: context.container
         });
     }
@@ -92,6 +77,7 @@ export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig
 
             TableNameResolverFeature.register(container);
             ValueFilterFeature.register(container);
+            FilterRegistriesFeature.register(container);
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);

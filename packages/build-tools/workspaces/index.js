@@ -1,12 +1,15 @@
 import fs from "fs";
 import path from "path";
-import getYarnWorkspaces from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 export { linkWorkspaces } from "./linkWorkspaces";
 
 const hasPackageJson = p => fs.existsSync(p + "/package.json");
 
 export const allWorkspaces = () => {
-    return getYarnWorkspaces()
+    return listWorkspaces()
+        .map(pkg => {
+            return pkg.path;
+        })
         .filter(hasPackageJson)
         .map(pkg => pkg.replace(/\//g, path.sep));
 };

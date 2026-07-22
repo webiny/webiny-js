@@ -2,6 +2,8 @@ import { setStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import { registerPgOsStorageOperations } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import { registerSQLCore } from "@webiny/api-core-sql";
+import { createApiCoreSql } from "@webiny/api-core-sql/createApiCoreSql.js";
+import { getSqlTablePrefix } from "@webiny/api-core-sql/getSqlTablePrefix.js";
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
@@ -34,6 +36,13 @@ const syncBridge = createSyncBridge(knex, syncTableName, syncHandler);
 global.__testSyncBridge = syncBridge;
 
 const tableNamePrefix = process.env.SQL_TABLE_PREFIX || process.env.WEBINY_SQL_TABLE_PREFIX || "";
+
+setStorageOps("apiCore", () => {
+    return {
+        storageOperations: createApiCoreSql({ knex, tableNamePrefix: getSqlTablePrefix() }),
+        plugins: []
+    };
+});
 
 setStorageOps("cms", () => {
     const createIndexName = model => {

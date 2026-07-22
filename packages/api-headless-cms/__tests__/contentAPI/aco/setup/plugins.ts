@@ -52,7 +52,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
 
-            processLegacyPlugins(container, cmsStorage.plugins);
+            await processLegacyPlugins(container, cmsStorage.plugins);
 
             const allExtraPlugins: any[] = [];
             for (const p of [cmsStorage.plugins].flat(Infinity as 1)) {
