@@ -29,42 +29,42 @@ Available from **Webiny 6.5.0** (`webiny/api/cms/entry`).
 ```typescript
 // extensions/myBulkAction/api/MyBulkAction.ts
 import {
-    EntriesBulkAction,
-    ListLatestEntriesUseCase,
-    UpdateEntryUseCase
+  EntriesBulkAction,
+  ListLatestEntriesUseCase,
+  UpdateEntryUseCase
 } from "webiny/api/cms/entry";
 
 class MyBulkActionImpl implements EntriesBulkAction.Interface {
-    // PascalCased into the task ids + GraphQL enum value, so "applyDiscount" →
-    // tasks hcmsBulk(List|Process)ApplyDiscountEntries and frontend action "ApplyDiscount".
-    readonly name = "applyDiscount";
-    // Optional: restrict which models get the mutation/button.
-    readonly modelIds = ["product"];
-    // Optional: entries processed per batch (defaults to the configured batchSize).
-    // readonly batchSize = 50;
+  // PascalCased into the task ids + GraphQL enum value, so "applyDiscount" →
+  // tasks hcmsBulk(List|Process)ApplyDiscountEntries and frontend action "ApplyDiscount".
+  readonly name = "applyDiscount";
+  // Optional: restrict which models get the mutation/button.
+  readonly modelIds = ["product"];
+  // Optional: entries processed per batch (defaults to the configured batchSize).
+  // readonly batchSize = 50;
 
-    constructor(
-        private listEntries: ListLatestEntriesUseCase.Interface,
-        private updateEntry: UpdateEntryUseCase.Interface
-    ) {}
+  constructor(
+    private listEntries: ListLatestEntriesUseCase.Interface,
+    private updateEntry: UpdateEntryUseCase.Interface
+  ) {}
 
-    // Runs in the "list" task, with pagination (params.where/search/after/limit).
-    async loadData(model, params) {
-        const result = await this.listEntries.execute(model, params);
-        return result.value; // { entries, meta }
-    }
+  // Runs in the "list" task, with pagination (params.where/search/after/limit).
+  async loadData(model, params) {
+    const result = await this.listEntries.execute(model, params);
+    return result.value; // { entries, meta }
+  }
 
-    // Runs in the "process" task, once per entry, in batches.
-    async processData(model, params) {
-        // params.id is a revision id ("<entryId>#0001"); params.data carries whatever the
-        // Admin action sent.
-        // ...update / transform the entry here...
-    }
+  // Runs in the "process" task, once per entry, in batches.
+  async processData(model, params) {
+    // params.id is a revision id ("<entryId>#0001"); params.data carries whatever the
+    // Admin action sent.
+    // ...update / transform the entry here...
+  }
 }
 
 export default EntriesBulkAction.createImplementation({
-    implementation: MyBulkActionImpl,
-    dependencies: [ListLatestEntriesUseCase, UpdateEntryUseCase]
+  implementation: MyBulkActionImpl,
+  dependencies: [ListLatestEntriesUseCase, UpdateEntryUseCase]
 });
 ```
 
@@ -131,7 +131,12 @@ Use `UpdateEntryUseCase`; field values are nested under `values`, and pass
 required/invalid field on the entry doesn't fail the operation:
 
 ```typescript
-await this.updateEntry.execute(model, entry.id, { values: { price: newPrice } }, { skipValidation: true });
+await this.updateEntry.execute(
+  model,
+  entry.id,
+  { values: { price: newPrice } },
+  { skipValidation: true }
+);
 ```
 
 To read the current entry inside `processData`, inject `GetLatestRevisionByEntryIdUseCase`
@@ -144,9 +149,9 @@ and call `execute(model, { id: params.id.split("#")[0] })`.
 import { ContentEntryListConfig } from "webiny/admin/cms/entry/list";
 const { Browser } = ContentEntryListConfig;
 export default () => (
-    <ContentEntryListConfig>
-        <Browser.BulkAction name="applyDiscount" element={<MyActionButton />} modelIds={["product"]} />
-    </ContentEntryListConfig>
+  <ContentEntryListConfig>
+    <Browser.BulkAction name="applyDiscount" element={<MyActionButton />} modelIds={["product"]} />
+  </ContentEntryListConfig>
 );
 ```
 
@@ -158,26 +163,27 @@ import { useModel } from "webiny/admin/cms";
 import { BulkActionFeature, useContentEntriesPresenter } from "webiny/admin/cms/entry/list";
 
 export const MyActionButton = observer(() => {
-    const { model } = useModel();
-    const presenter = useContentEntriesPresenter();
-    const { showConfirmationDialog } = useBulkActionDialog();
-    const { useCase: bulkAction } = useFeature(BulkActionFeature);
+  const { model } = useModel();
+  const presenter = useContentEntriesPresenter();
+  const { showConfirmationDialog } = useBulkActionDialog();
+  const { useCase: bulkAction } = useFeature(BulkActionFeature);
 
-    const selection = presenter.list.vm.selection;
-    const rows = presenter.list.vm.rows.filter(r => selection.selectedIds.has(r.id));
+  const selection = presenter.list.vm.selection;
+  const rows = presenter.list.vm.rows.filter(r => selection.selectedIds.has(r.id));
 
-    const run = () => showConfirmationDialog({
-        title: "Apply discount",
-        message: `Apply to ${selection.label}? Runs as a background task.`,
-        execute: async () => {
-            // System-field scope (id_in) is valid GraphQL; custom-field filters go under `values`.
-            const where = selection.allSelected ? undefined : { id_in: rows.map(r => r.id) };
-            await bulkAction.execute({ model, action: "ApplyDiscount", where, data: { percent: 10 } });
-            presenter.list.actions.selection.deselectAll();
-        }
+  const run = () =>
+    showConfirmationDialog({
+      title: "Apply discount",
+      message: `Apply to ${selection.label}? Runs as a background task.`,
+      execute: async () => {
+        // System-field scope (id_in) is valid GraphQL; custom-field filters go under `values`.
+        const where = selection.allSelected ? undefined : { id_in: rows.map(r => r.id) };
+        await bulkAction.execute({ model, action: "ApplyDiscount", where, data: { percent: 10 } });
+        presenter.list.actions.selection.deselectAll();
+      }
     });
 
-    return <BulkActionButton text="Apply -10%" tooltipContent="Apply discount" onClick={run} />;
+  return <BulkActionButton text="Apply -10%" tooltipContent="Apply discount" onClick={run} />;
 });
 ```
 

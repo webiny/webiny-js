@@ -29,22 +29,22 @@ configured AI setup" — it composes the product with itself and is far less plu
 import { CmsGenerateEntryContentUseCase } from "webiny/api/ai-powerups";
 
 class MyThing {
-    constructor(private generate: CmsGenerateEntryContentUseCase.Interface) {}
+  constructor(private generate: CmsGenerateEntryContentUseCase.Interface) {}
 
-    async run(model, entry, ctx) {
-        const result = await this.generate.execute({
-            modelId: model.modelId,
-            prompt: `Write a one-sentence marketing summary for "${entry.values.name}". Fill only the "aiSummary" field.`,
-            // Any of these are optional; they map to what the user configured in AI Power Ups:
-            projectId: ctx?.projectId,             // a bundled context (instructions + files + default personas)
-            writerPersonaId: ctx?.writerPersonaId, // tone
-            readerPersonaId: ctx?.readerPersonaId  // audience
-        });
-        if (result.isFail()) {
-            throw result.error; // e.g. "No AI provider configured. Add a provider in AI Power Ups settings."
-        }
-        return result.value; // { output, telemetry }
+  async run(model, entry, ctx) {
+    const result = await this.generate.execute({
+      modelId: model.modelId,
+      prompt: `Write a one-sentence marketing summary for "${entry.values.name}". Fill only the "aiSummary" field.`,
+      // Any of these are optional; they map to what the user configured in AI Power Ups:
+      projectId: ctx?.projectId, // a bundled context (instructions + files + default personas)
+      writerPersonaId: ctx?.writerPersonaId, // tone
+      readerPersonaId: ctx?.readerPersonaId // audience
+    });
+    if (result.isFail()) {
+      throw result.error; // e.g. "No AI provider configured. Add a provider in AI Power Ups settings."
     }
+    return result.value; // { output, telemetry }
+  }
 }
 ```
 

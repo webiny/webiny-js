@@ -26,25 +26,28 @@ import { WebsocketsSendToIdentityUseCase } from "webiny/api";
 import { IdentityContext } from "webiny/api/security";
 
 class MyTaskOrHook {
-    constructor(
-        private identityContext: IdentityContext.Interface,
-        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
-    ) {}
+  constructor(
+    private identityContext: IdentityContext.Interface,
+    private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
+  ) {}
 
-    async notify(entry) {
-        // Best-effort: a websocket failure must never fail the real work.
-        try {
-            const identity = this.identityContext.getIdentity();
-            if (identity) {
-                await this.sendToIdentity.execute(
-                    { id: identity.id },
-                    { action: "cms.product.discountApplied", data: { id: entry.entryId, price: entry.values.price } }
-                );
-            }
-        } catch (ex) {
-            // log & swallow
-        }
+  async notify(entry) {
+    // Best-effort: a websocket failure must never fail the real work.
+    try {
+      const identity = this.identityContext.getIdentity();
+      if (identity) {
+        await this.sendToIdentity.execute(
+          { id: identity.id },
+          {
+            action: "cms.product.discountApplied",
+            data: { id: entry.entryId, price: entry.values.price }
+          }
+        );
+      }
+    } catch (ex) {
+      // log & swallow
     }
+  }
 }
 // dependencies: [IdentityContext, WebsocketsSendToIdentityUseCase]
 ```
@@ -63,20 +66,23 @@ import { Notifications } from "webiny/admin";
 const ACTION = "cms.product.discountApplied";
 
 class MyHandlerImpl implements WebsocketEventHandler.Interface {
-    constructor(private notifications: Notifications.Interface) {}
+  constructor(private notifications: Notifications.Interface) {}
 
-    async handle(event: WebsocketEventHandler.Event): Promise<void> {
-        const payload = event.payload as { action?: string; data?: { id: string; price: number } };
-        if (payload.action !== ACTION || !payload.data) {
-            return; // every handler sees every message — filter by action
-        }
-        this.notifications.success({ title: "Discount applied", description: `New price ${payload.data.price}.` });
+  async handle(event: WebsocketEventHandler.Event): Promise<void> {
+    const payload = event.payload as { action?: string; data?: { id: string; price: number } };
+    if (payload.action !== ACTION || !payload.data) {
+      return; // every handler sees every message — filter by action
     }
+    this.notifications.success({
+      title: "Discount applied",
+      description: `New price ${payload.data.price}.`
+    });
+  }
 }
 
 export const MyHandler = WebsocketEventHandler.createImplementation({
-    implementation: MyHandlerImpl,
-    dependencies: [Notifications]
+  implementation: MyHandlerImpl,
+  dependencies: [Notifications]
 });
 ```
 
@@ -92,10 +98,10 @@ import { createFeature, RegisterFeature } from "webiny/admin";
 import { MyHandler } from "./MyHandler.js";
 
 const MyFeature = createFeature({
-    name: "MyExtension/Notifications",
-    register(container) {
-        container.register(MyHandler);
-    }
+  name: "MyExtension/Notifications",
+  register(container) {
+    container.register(MyHandler);
+  }
 });
 
 export default () => <RegisterFeature feature={MyFeature} />;
