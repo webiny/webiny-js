@@ -352,14 +352,13 @@ i.font-color,
 }
 
 .lexical-dropdown {
+  /* Matches admin-ui DropdownMenu: border-defined (no heavy shadow), rounded-md. */
   display: block;
-  box-shadow:
-    0 12px 28px 0 rgba(0, 0, 0, 0.2),
-    0 2px 4px 0 rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-  border-radius: 8px;
+  border: 1px solid var(--border-color-neutral-muted);
+  border-radius: var(--radius-md);
   min-height: 40px;
-  background-color: #fff;
+  background-color: var(--color-neutral-base);
+  color: var(--text-color-neutral-primary);
   max-height: 250px;
   overflow: hidden;
   overflow-y: auto;
@@ -383,8 +382,9 @@ i.font-color,
   flex-direction: row;
   flex-shrink: 0;
   justify-content: space-between;
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: transparent;
+  color: var(--text-color-neutral-primary);
+  border-radius: var(--radius-sm);
   border: 0;
   max-width: 250px;
   min-width: 100px;
@@ -411,7 +411,7 @@ i.font-color,
 }
 
 .lexical-dropdown .item:hover {
-  background-color: var(--color-neutral-light);
+  background-color: var(--color-neutral-dimmed);
 }
 
 .lexical-dropdown .item .text {
