@@ -167,6 +167,20 @@ export interface IFieldRendererRegistry {
             imagesOnly?: boolean;
         };
     };
+    assetField: {
+        fieldType: "object";
+        settings?: {
+            imagesOnly?: boolean;
+            accept?: string[];
+        };
+    };
+    assetFields: {
+        fieldType: "object";
+        settings?: {
+            imagesOnly?: boolean;
+            accept?: string[];
+        };
+    };
     uiSeparator: {
         fieldType: "ui";
         settings: undefined;
@@ -217,6 +231,8 @@ const rendererNameMap: Record<keyof IFieldRendererRegistry, string> = {
     textInputs: "text-inputs",
     file: "file-input",
     files: "file-inputs",
+    assetField: "asset-input",
+    assetFields: "asset-inputs",
     uiSeparator: "uiSeparator",
     uiAlert: "uiAlert",
     uiTabs: "uiTabs"

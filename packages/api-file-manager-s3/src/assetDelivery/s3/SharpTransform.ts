@@ -9,12 +9,12 @@ import {
     type ImageFormat
 } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import {
-    cropImageBuffer,
+    extractFramedRegion,
     transformImageBuffer
 } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/transformImage.js";
 import type {
-    AssetCrop,
     AssetImageEdit,
+    Framing,
     ImageRequestOptions
 } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/imageTypes.js";
 import { normalizeImageOptions } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/normalizeImageOptions.js";
@@ -26,11 +26,7 @@ import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelive
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 
-type TransformOptions = Omit<ImageRequestOptions, "original">;
-
-const isCropApplied = (crop: AssetCrop | undefined): crop is AssetCrop => {
-    return !!crop && !(crop.top === 0 && crop.left === 0 && crop.bottom === 0 && crop.right === 0);
-};
+type TransformOptions = Omit<ImageRequestOptions, "original" | "crop" | "focal" | "aspectRatio">;
 
 const hasTransform = (options: TransformOptions): boolean => {
     return (
@@ -65,19 +61,28 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
         const rawQuery = assetRequest.getOptions() as Record<string, any>;
         const acceptHeader = assetRequest.getContext<{ accept?: string }>().accept;
         // oxlint-disable-next-line typescript/no-unused-vars
-        const { original, ...options } = normalizeImageOptions(rawQuery, acceptHeader);
+        const { original, crop, focal, aspectRatio, ...options } = normalizeImageOptions(
+            rawQuery,
+            acceptHeader
+        );
 
-        const crop = await this.loadCrop(asset.getId());
+        const assetCrop = await this.loadAssetCrop(asset.getId());
+        const framing: Framing = {
+            crop: crop ?? assetCrop,
+            focal,
+            aspectRatio
+        };
+
         const transformedAsset = asset.clone();
 
         if (hasTransform(options)) {
-            return this.transformAsset(transformedAsset, options, crop);
+            return this.transformAsset(transformedAsset, options, framing);
         }
 
-        return this.optimizeAsset(transformedAsset, crop);
+        return this.optimizeAsset(transformedAsset, framing);
     }
 
-    private async loadCrop(fileId: string): Promise<AssetCrop | undefined> {
+    private async loadAssetCrop(fileId: string) {
         const result = await this.identityContext.withoutAuthorization(() =>
             this.getFile.execute(fileId)
         );
@@ -90,12 +95,10 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
         return imageEdit?.crop;
     }
 
-    private async transformAsset(asset: Asset, options: TransformOptions, crop?: AssetCrop) {
-        const assetKey = AssetKeyGenerator.create(asset, crop);
+    private async transformAsset(asset: Asset, options: TransformOptions, framing: Framing) {
+        const assetKey = AssetKeyGenerator.create(asset, framing);
         const transformedAssetKey = assetKey.getTransformedImageKey(options);
 
-        // Content type is the target format's, or the source format's when only a
-        // quality (re-encode) was requested.
         const contentType = options.format
             ? contentTypeForFormat(options.format)
             : asset.getContentType();
@@ -122,7 +125,7 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
 
             return newAsset;
         } catch {
-            const optimizedImage = await this.optimizeAsset(asset, crop);
+            const optimizedImage = await this.optimizeAsset(asset, framing);
 
             console.log(`Transform the asset`, options);
             const baseBuffer = await optimizedImage.getContents();
@@ -159,7 +162,7 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
         }
     }
 
-    private async optimizeAsset(asset: Asset, crop?: AssetCrop) {
+    private async optimizeAsset(asset: Asset, framing: Framing) {
         console.log("Optimize asset", {
             id: asset.getId(),
             key: asset.getKey(),
@@ -167,7 +170,7 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
             type: asset.getContentType()
         });
 
-        const assetKey = AssetKeyGenerator.create(asset, crop);
+        const assetKey = AssetKeyGenerator.create(asset, framing);
         const optimizedAssetKey = assetKey.getOptimizedImageKey();
 
         try {
@@ -192,10 +195,9 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
             console.log("Create an optimized version of the original asset", asset.getKey());
             let buffer = await asset.getContents();
 
-            const cropped = isCropApplied(crop);
-            if (cropped) {
-                buffer = await cropImageBuffer(buffer, crop);
-            }
+            const framed = await extractFramedRegion(buffer, framing);
+            const cropped = framed !== buffer;
+            buffer = framed;
 
             const optimizationMap: Record<string, ((buffer: Buffer) => Sharp) | undefined> = {
                 "image/png": (buffer: Buffer) => this.optimizePng(buffer),

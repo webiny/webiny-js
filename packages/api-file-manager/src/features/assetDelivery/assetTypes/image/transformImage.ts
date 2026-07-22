@@ -122,6 +122,98 @@ export const cropImageBuffer = async (buffer: Buffer, crop: CropInsets): Promise
     return image.extract({ left, top, width, height }).toBuffer();
 };
 
+interface NormalizedRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+const cropToRect = (crop?: CropInsets): NormalizedRect => {
+    const left = clamp01(crop?.left ?? 0);
+    const top = clamp01(crop?.top ?? 0);
+    return {
+        x: left,
+        y: top,
+        width: Math.max(0, 1 - left - clamp01(crop?.right ?? 0)),
+        height: Math.max(0, 1 - top - clamp01(crop?.bottom ?? 0))
+    };
+};
+
+/**
+ * The visible region (normalized 0–1) for the given framing. The largest rectangle
+ * of `aspectRatio` that fits inside the crop, centered on the focal point.
+ */
+export const getVisibleRect = (
+    imageWidth: number,
+    imageHeight: number,
+    crop?: CropInsets,
+    focal?: { x: number; y: number },
+    aspectRatio?: number
+): NormalizedRect => {
+    const cr = cropToRect(crop);
+    if (aspectRatio === undefined || aspectRatio <= 0 || cr.width <= 0 || cr.height <= 0) {
+        return cr;
+    }
+    const iw = imageWidth > 0 ? imageWidth : 1;
+    const ih = imageHeight > 0 ? imageHeight : 1;
+    const cropAR = (cr.width * iw) / (cr.height * ih);
+
+    let w: number;
+    let h: number;
+    if (aspectRatio > cropAR) {
+        w = cr.width;
+        h = (cr.width * iw) / aspectRatio / ih;
+    } else {
+        h = cr.height;
+        w = (cr.height * ih * aspectRatio) / iw;
+    }
+
+    const fx = clamp01(focal?.x ?? 0.5);
+    const fy = clamp01(focal?.y ?? 0.5);
+    const maxX = cr.x + cr.width - w;
+    const maxY = cr.y + cr.height - h;
+    const x = Math.min(Math.max(fx - w / 2, cr.x), Math.max(cr.x, maxX));
+    const y = Math.min(Math.max(fy - h / 2, cr.y), Math.max(cr.y, maxY));
+    return { x, y, width: w, height: h };
+};
+
+export interface Framing {
+    crop?: CropInsets;
+    focal?: { x: number; y: number };
+    aspectRatio?: number;
+}
+
+export const hasFraming = (framing: Framing): boolean => {
+    const c = framing.crop;
+    const cropped = !!c && !(c.top === 0 && c.left === 0 && c.bottom === 0 && c.right === 0);
+    return cropped || framing.aspectRatio !== undefined;
+};
+
+export const extractFramedRegion = async (buffer: Buffer, framing: Framing): Promise<Buffer> => {
+    if (!hasFraming(framing)) {
+        return buffer;
+    }
+    const image = sharp(buffer);
+    const meta = await image.metadata();
+    const w = meta.width ?? 0;
+    const h = meta.height ?? 0;
+    if (!w || !h) {
+        return buffer;
+    }
+
+    const rect = getVisibleRect(w, h, framing.crop, framing.focal, framing.aspectRatio);
+    const left = Math.max(0, Math.min(w - 1, Math.round(rect.x * w)));
+    const top = Math.max(0, Math.min(h - 1, Math.round(rect.y * h)));
+    const width = Math.max(1, Math.min(w - left, Math.round(rect.width * w)));
+    const height = Math.max(1, Math.min(h - top, Math.round(rect.height * h)));
+
+    if (left === 0 && top === 0 && width === w && height === h) {
+        return buffer;
+    }
+    return image.extract({ left, top, width, height }).toBuffer();
+};
+
 export const transformImageBuffer = async (
     params: TransformImageParams
 ): Promise<TransformImageResult> => {

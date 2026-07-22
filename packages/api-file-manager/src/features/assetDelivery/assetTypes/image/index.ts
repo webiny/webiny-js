@@ -5,7 +5,8 @@ export {
     SUPPORTED_TRANSFORMABLE_IMAGES,
     getImageKey,
     getCropSignature,
+    getFramingSignature,
     getOptimizedImageKeyPrefix,
     getOptimizedTransformedImageKeyPrefix
 } from "./utils.js";
-export type { AssetCrop, AssetImageEdit, ImageRequestOptions } from "./imageTypes.js";
+export type { AssetCrop, AssetImageEdit, ImageRequestOptions, Framing } from "./imageTypes.js";

@@ -19,4 +19,17 @@ export interface ImageRequestOptions {
     quality?: number;
     /** Concrete output format (already resolved from any "auto" request). */
     format?: import("./imageFormat.js").ImageFormat;
+    /** Per-request crop (normalized 0–1 edge insets). Supersedes asset-level crop. */
+    crop?: AssetCrop;
+    /** Target aspect ratio (width / height). */
+    aspectRatio?: number;
+    /** Normalized 0–1 focal point kept in frame when aspectRatio forces extra cutting. */
+    focal?: { x: number; y: number };
+}
+
+/** Combined crop + focal + aspect ratio for cache key generation and pixel extraction. */
+export interface Framing {
+    crop?: AssetCrop;
+    focal?: { x: number; y: number };
+    aspectRatio?: number;
 }

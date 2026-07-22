@@ -1,24 +1,27 @@
 import type { Asset } from "../../../../delivery/index.js";
-import type { AssetCrop } from "./imageTypes.js";
+import type { Framing } from "./imageTypes.js";
 import * as newUtils from "./utils.js";
 
 export class AssetKeyGenerator {
     private readonly utils: typeof newUtils;
     private readonly asset: Asset;
-    private readonly crop: AssetCrop | undefined;
+    private readonly framing?: Framing;
 
-    public static create(asset: Asset, crop?: AssetCrop) {
-        return new AssetKeyGenerator(asset, crop);
+    public static create(asset: Asset, framing?: Framing) {
+        return new AssetKeyGenerator(asset, framing);
     }
 
-    private constructor(asset: Asset, crop?: AssetCrop) {
+    private constructor(asset: Asset, framing?: Framing) {
         this.asset = asset;
-        this.crop = crop;
         this.utils = newUtils;
+        this.framing = framing;
     }
 
     private signature() {
-        return this.utils.getCropSignature(this.crop);
+        if (this.framing) {
+            return this.utils.getFramingSignature(this.framing);
+        }
+        return undefined;
     }
 
     public getOptimizedImageKey() {

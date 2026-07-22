@@ -5,6 +5,11 @@ export { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder.js";
 export { DataFieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
 export { LayoutFieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "~/features/modelBuilder/fields/abstractions.js";
+export {
+    ASSET_FIELD_TAG,
+    ASSET_FIELD_RENDERER,
+    type IAssetFieldBuilder
+} from "~/features/modelBuilder/fields/AssetFieldType.js";
 export type { IFieldRendererRegistry } from "~/features/modelBuilder/fields/DataFieldBuilder.js";
 export type {
     IFieldBuilderRegistry,

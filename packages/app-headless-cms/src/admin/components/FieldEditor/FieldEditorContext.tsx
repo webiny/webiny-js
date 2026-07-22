@@ -111,7 +111,7 @@ export interface FieldEditorContext {
     layout: CmsEditorFieldsLayout;
     onChange?: (data: any) => void;
     getFieldsInLayout: GetFieldsInLayoutCallable;
-    getFieldType: (type: string) => ICmsFieldType | undefined;
+    getFieldType: (typeOrField: string | CmsModelField) => ICmsFieldType | undefined;
     getField: GetFieldCallable;
     getFieldRenderer: GetFieldRendererCallable;
     editField: (field: CmsModelField | null) => void;
@@ -668,7 +668,21 @@ export const FieldEditorProvider = ({
         parentEditorContext,
         depth,
         getFieldsInLayout,
-        getFieldType: (type: string) => fieldTypesMap.get(type),
+        getFieldType: (typeOrField: string | CmsModelField) => {
+            if (typeof typeOrField === "string") {
+                return fieldTypesMap.get(typeOrField);
+            }
+            // Prefer an explicit `matches()` (e.g. the Asset field, stored as
+            // `object`, resolves to the Asset descriptor rather than Object) before
+            // falling back to a plain type match.
+            const field = typeOrField;
+            for (const ft of fieldTypesMap.values()) {
+                if (ft.matches?.(field)) {
+                    return ft;
+                }
+            }
+            return fieldTypesMap.get(field.type);
+        },
         getFieldRenderer,
         getField,
         editField,

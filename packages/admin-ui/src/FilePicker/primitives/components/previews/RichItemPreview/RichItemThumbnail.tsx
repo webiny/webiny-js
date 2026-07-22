@@ -20,6 +20,12 @@ type RichItemThumbnailProps = Omit<React.HTMLAttributes<HTMLDivElement>, "childr
     FileItemFormatted & {
         preview?: RichItemPreviewProps["preview"];
         disabled?: boolean;
+        /**
+         * Optional custom image renderer for image thumbnails (e.g. a cropped /
+         * focal-point-aware image). Falls back to the default `<img>` when omitted
+         * or when it returns a falsy value.
+         */
+        renderImage?: (args: { url: string; name: string }) => React.ReactNode;
     };
 
 type ThumbnailProps = Pick<FileItemFormatted, "url" | "name">;
@@ -79,9 +85,11 @@ const RichItemThumbnail = ({
     className,
     mimeType,
     preview,
-    disabled
+    disabled,
+    renderImage
 }: RichItemThumbnailProps) => {
     const isImage = mimeType?.startsWith("image/");
+    const customImage = renderImage?.({ url, name });
 
     return (
         <div
@@ -92,7 +100,7 @@ const RichItemThumbnail = ({
             )}
         >
             {preview === "thumbnail" || isImage ? (
-                <Thumbnail url={url} name={name} />
+                customImage || <Thumbnail url={url} name={name} />
             ) : preview === "placeholder" ? (
                 <Placeholder name={name} />
             ) : (
