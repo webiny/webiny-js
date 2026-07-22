@@ -1,9 +1,10 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
+import { useContainer } from "@webiny/app";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
+import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
 import { formatScheduledDate } from "~/utils/index.js";
-import { scheduledActionsStore } from "../Browser/ScheduledActionsStore.js";
 
 interface ScheduleNoticeAlertProps {
     targetId: string | undefined;
@@ -13,11 +14,17 @@ interface ScheduleNoticeAlertProps {
 
 /**
  * Warns that an about-to-happen publish/unpublish will cancel an existing scheduled action for the
- * entry (the API cancels it). Reads from the store the Live column already populated, so no model
- * context or extra request is needed. Renders nothing when there is no scheduled action.
+ * entry (the API cancels it). Reads from ScheduledActionsPresenter, already populated by the list
+ * (or the entry form). Renders nothing when there is no scheduled action.
  */
 export const ScheduleNoticeAlert = observer(({ targetId, verb }: ScheduleNoticeAlertProps) => {
-    const scheduled = targetId ? scheduledActionsStore.getActionByTargetId(targetId) : undefined;
+    const container = useContainer();
+    const presenter = React.useMemo(
+        () => container.resolve(ScheduledActionsPresenter),
+        [container]
+    );
+
+    const scheduled = targetId ? presenter.getScheduledAction(targetId) : undefined;
 
     if (!scheduled) {
         return null;

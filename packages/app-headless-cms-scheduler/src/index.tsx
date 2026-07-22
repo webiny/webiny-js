@@ -1,4 +1,6 @@
 import React from "react";
+import { RegisterFeature } from "@webiny/app-admin";
+import { ScheduledActionsPresenterFeature } from "./presentation/scheduledActions/feature.js";
 import {
     EditorConfig,
     BrowserConfig,
@@ -10,6 +12,7 @@ import {
 export const CmsScheduler = () => {
     return (
         <>
+            <RegisterFeature feature={ScheduledActionsPresenterFeature} />
             <BrowserConfig />
             <EditorConfig />
             <ScheduledActionAlertDecorator />

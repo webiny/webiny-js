@@ -11851,6 +11851,7 @@ __metadata:
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-scheduler": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
