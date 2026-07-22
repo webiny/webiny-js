@@ -6,7 +6,7 @@ import { EnvVar } from "./EnvVar.js";
 /**
  * Sets a dedicated WebSocket URL for the Admin app, baked into the admin bundle as
  * `WEBINY_ADMIN_WS_API_URL`. This is optional: when omitted, the admin derives the WebSocket URL
- * from the API URL (same origin, http -> ws), which is what the self-hosted server flavour needs by
+ * from the API URL (same origin, http -> ws), which is what the self-hosted server hosting type needs by
  * default. Set it only when WebSockets are served from a different origin than the API. Because the
  * config is evaluated at build time, the value can come from any env var the user chooses, e.g.
  * `<Admin.WebsocketsUrl url={process.env.MY_WS_URL} />`.

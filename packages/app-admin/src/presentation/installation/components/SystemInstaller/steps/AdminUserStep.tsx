@@ -33,8 +33,8 @@ const AdminUserInputs = () => {
     // The install wizard renders BEFORE any auth-provider extension is mounted (it replaces the app
     // tree), so the installer's app name can't come from DI here — it must be a build-time value.
     // The submitted data is keyed under this name, becoming `installationInput: [{ app, data }]`, so
-    // it has to match the API-side AppInstaller's `appName`. Defaults to "Cognito" (AWS flavour);
-    // the self-hosted flavour sets REACT_APP_AUTH_INSTALLER_APP_NAME="SelfHostedAuth".
+    // it has to match the API-side AppInstaller's `appName`. Defaults to "Cognito" (AWS hosting type);
+    // the self-hosted hosting type sets REACT_APP_AUTH_INSTALLER_APP_NAME="SelfHostedAuth".
     const appName = process.env.REACT_APP_AUTH_INSTALLER_APP_NAME || "Cognito";
 
     return (

@@ -1,19 +1,19 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the server flavour package (webiny/extensions currently exposes
-// the AWS namespaces, which don't include server-only extensions like Infra.Sqlite).
+// Server-only namespaces come from the server hosting-type package. `webiny/extensions` exposes the
+// AWS namespaces, which don't include server-only extensions like `Infra.Sqlite`.
 import { Infra } from "@webiny/project-server";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**
- * Server-only (self-hosted) extensions, rendered by webiny.config.tsx when WEBINY_HOSTING_TYPE === "server".
- * No Pulumi / no AWS infra here.
+ * Self-hosted (server) hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
+ * long-running Node HTTP server backed by SQL storage. Run it with `yarn webiny watch`.
  */
-export const ServerExtensions = () => {
+export const Extensions = () => {
     return (
         <>
             {/* SQL database. Relative paths resolve against the project root (not the disposable app
-                workspace), so data persists across builds/watch restarts. */}
+                workspace), so data persists across builds / watch restarts. */}
             <Infra.Sqlite filename={process.env.WEBINY_SQL_FILENAME || "./.webiny/server.sqlite"} />
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves like
@@ -24,18 +24,10 @@ export const ServerExtensions = () => {
             />
 
             {/* The API's public origin. AWS derives this from stack output; the server has none, so it
-                is configured here (build-time env is fine — this is config, not api runtime code) and
-                consumed via BuildParams. Admin.ApiUrl points the admin bundle at it; Infra.ApiUrl tells
+                is configured here. `Admin.ApiUrl` points the admin bundle at it; `Infra.ApiUrl` tells
                 the API its own origin (used for the file-upload URL + file srcPrefix). */}
             <Admin.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
             <Infra.ApiUrl url={process.env.WEBINY_API_URL || "http://localhost:3002"} />
-
-            {/* NOT required — shown here for visibility/demo only. By default the admin derives the
-                WebSocket URL from the API URL (same origin, http -> ws), which is what the server
-                flavour needs. Set this only when WebSockets are served from a different origin. */}
-            <Admin.WebsocketsUrl
-                url={process.env.WEBINY_ADMIN_WS_API_URL || "ws://localhost:3002"}
-            />
 
             {/* Auth: built-in self-hosted IdP (login screen + JWT). Back the secret with any env var. */}
             <SelfHostedAuth

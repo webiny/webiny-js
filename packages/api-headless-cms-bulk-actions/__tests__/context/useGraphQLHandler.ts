@@ -31,8 +31,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { plugins = [] } = params;
 
     const allPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
-    // DI-native plugins are plain `container => {}` functions → the `plugins` param (createCmsTestHandler
-    // calls them after features). Static CMS plugins (e.g. model plugins) → extraCmsPlugins.
+    // DI-native plugins are plain `container => {}` functions → the `legacyPlugins` param
+    // (createCmsTestHandler calls them after `setup`). Static CMS plugins (e.g. model plugins) →
+    // extraCmsPlugins.
     const isFn = (p: any) => typeof p === "function" && !p.prototype;
     const fnPlugins = allPlugins.filter(isFn);
     const extraCmsPlugins = allPlugins.filter(p => !isFn(p));
@@ -42,8 +43,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         permissions: params.permissions ?? (createPermissions() as SecurityPermission[]),
         testProjectLicense: params.testProjectLicense,
         extraCmsPlugins,
-        plugins: fnPlugins,
-        features: container => {
+        legacyPlugins: fnPlugins,
+        setup: container => {
             container.register(HeadlessCmsContextualSchema);
             // Background tasks + bulk actions are DI-native now.
             BackgroundTasksFeature.register(container);

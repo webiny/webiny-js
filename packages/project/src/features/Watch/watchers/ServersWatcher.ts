@@ -3,7 +3,7 @@ import { type ChildProcess } from "node:child_process";
 /**
  * A server process the project layer knows how to spawn (port resolution, runner, env), but does NOT
  * spawn until the caller runs it — the serve-side counterpart to a build watcher process. `spawn` is
- * flavour-provided and lazy so nothing binds a port until `run()` is called.
+ * hosting-provided and lazy so nothing binds a port until `run()` is called.
  */
 export interface IServerProcessSpec {
     name: string;

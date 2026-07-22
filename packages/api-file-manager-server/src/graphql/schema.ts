@@ -20,7 +20,7 @@ import type { FileData } from "@webiny/api-file-manager/features/upload/types.js
 const createNormalizer = () => new FileNormalizer();
 
 /**
- * Upload GraphQL for the self-hosted (server) flavour. Mirrors the SDL that `api-file-manager-s3`'s
+ * Upload GraphQL for the self-hosted (server) hosting type. Mirrors the SDL that `api-file-manager-s3`'s
  * `createS3GraphQLSchema` contributes (same query/mutation names + `PreSignedPostPayloadInput`), so the
  * transport-agnostic SDK (`getPresignedPostPayload` + the generic multipart-form `uploadToS3`, and the
  * multipart methods) works unchanged. The payload shape (`{ url, fields }`) is generic; only the

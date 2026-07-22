@@ -20,7 +20,7 @@ describe("Redirect Action Handlers", () => {
 
     beforeEach(async () => {
         const contextHandler = useHandler({
-            plugins: []
+            legacyPlugins: []
         });
         context = await contextHandler.handler();
     });
