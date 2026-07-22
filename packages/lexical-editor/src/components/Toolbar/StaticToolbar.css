@@ -3,7 +3,10 @@
   position: relative;
   padding: 4px;
   vertical-align: middle;
-  border: 1px solid var(--border-color-neutral-dimmed);
+  border: 1px solid var(--border-color-neutral-muted);
+  /* No divider between toolbar and body (matches Figma): the body carries the
+     bottom border, the toolbar the top — together one seamless rounded box. */
+  border-bottom: none;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   will-change: transform;
   background: var(--color-neutral-base);

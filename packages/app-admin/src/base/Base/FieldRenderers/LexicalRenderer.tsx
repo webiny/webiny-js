@@ -26,10 +26,10 @@ const contentEditableStyles: React.CSSProperties = {
 
 const styles: React.CSSProperties = {
     backgroundColor: "var(--color-neutral-base)",
-    border: "1px solid var(--border-color-neutral-dimmed)",
-    // The static toolbar sits directly above and carries the top border + divider,
-    // so the body drops its top border and rounds only the bottom corners. Together
-    // they read as a single rounded container.
+    border: "1px solid var(--border-color-neutral-muted)",
+    // The static toolbar sits directly above and carries the top border, so the body
+    // drops its top border and rounds only the bottom corners — together one seamless
+    // rounded container, no internal divider (matches Figma).
     borderTop: "none",
     borderRadius: "0 0 var(--radius-md) var(--radius-md)",
     padding: "10px 14px",
