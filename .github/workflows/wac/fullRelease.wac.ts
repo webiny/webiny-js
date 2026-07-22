@@ -37,8 +37,8 @@ export const fullRelease = createWorkflow({
                     run: [
                         "set -e",
                         "ok=1",
-                        'if ! printf "%s" "$VERSION" | grep -Eq "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.]+)?$"; then',
-                        '  echo "::error::Invalid version [$VERSION]. Expected semver, e.g. 6.3.0 or 6.3.0-beta.1."',
+                        'if ! printf "%s" "$VERSION" | grep -Eq "^6\\.[0-9]+\\.[0-9]+$"; then',
+                        '  echo "::error::Invalid version [$VERSION]. Expected 6.x.y, e.g. 6.3.0 (three numbers, no alpha/beta)."',
                         "  ok=0",
                         "fi",
                         'if [ -n "$SOURCE_TAG" ] && ! printf "%s" "$SOURCE_TAG" | grep -Eq "^[A-Za-z0-9._/-]+$"; then',
