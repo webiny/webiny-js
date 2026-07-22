@@ -1,8 +1,10 @@
 import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { createCmsEntryFieldSortingPlugin, registerDynamoDbStorageOperations } from "../../src";
+import { registerDynamoDbStorageOperations } from "../../src";
+import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 setStorageOps("cms", () => {
     const documentClient = getDocumentClient();
@@ -16,25 +18,24 @@ setStorageOps("cms", () => {
          * TODO remove when all apps are created with their own storage operations factory and drivers.
          */
         dbPlugins(),
-        createCmsEntryFieldSortingPlugin({
-            canUse: params => {
-                const { fieldId } = params;
-                return fieldId === "customSorter";
-            },
-            createSort: params => {
-                const { order, fields } = params;
-
-                const field = Object.values(fields).find(f => f.fieldId === "createdBy");
-                if (!field) {
-                    throw new Error("Impossible, but it seems there is no field createdBy.");
+        createRegisterExtensionPlugin(({ container }) => {
+            const sortingRegistry = container.resolve(FieldSortingRegistry);
+            sortingRegistry.register({
+                canUse: params => params.fieldId === "customSorter",
+                createSort: params => {
+                    const { order, fields } = params;
+                    const field = Object.values(fields).find(f => f.fieldId === "createdBy");
+                    if (!field) {
+                        throw new Error("Impossible, but it seems there is no field createdBy.");
+                    }
+                    return {
+                        reverse: order === "DESC",
+                        valuePath: "createdBy.id",
+                        field,
+                        fieldId: field.fieldId
+                    };
                 }
-                return {
-                    reverse: order === "DESC",
-                    valuePath: "createdBy.id",
-                    field,
-                    fieldId: field.fieldId
-                };
-            }
+            });
         })
     ];
 
