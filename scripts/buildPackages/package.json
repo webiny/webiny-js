@@ -7,9 +7,9 @@
   "bin": "./src/index.js",
   "main": "./src/index.js",
   "dependencies": {
-    "@webiny/stdlib": "^0.0.9",
+    "@webiny/stdlib": "^0.0.12",
     "chalk": "^5.6.2",
-    "execa": "^9.6.1",
+    "execa": "^10.0.0",
     "fs-extra": "^11.3.6",
     "js-yaml": "^5.2.1",
     "listr2": "^10.2.2",

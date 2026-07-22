@@ -1,4 +1,3 @@
-import dynamoDbPlugins from "./dynamoDb/index.js";
 import type { CmsContext, StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
 import { createGroupEntity } from "~/definitions/group.js";
@@ -7,17 +6,15 @@ import { createEntryEntity } from "~/definitions/entry.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
-import { createFilterCreatePlugins } from "@webiny/api-headless-cms-storage";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { createTable } from "~/definitions/table.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
 
-export * from "./plugins/index.js";
-
 const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
-    const { table, plugins, container } = params;
+    const { table, container } = params;
 
     const db = container.resolve(DynamoDBClient);
     const documentClient = db.client;
@@ -42,21 +39,9 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
         })
     };
 
-    plugins.register([
-        /**
-         * Field plugins for DynamoDB.
-         */
-        dynamoDbPlugins(),
-        /**
-         * Filter create plugins.
-         */
-        createFilterCreatePlugins()
-    ]);
-
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
-        container,
-        plugins
+        container
     });
 
     return {
@@ -82,7 +67,6 @@ class DynamoDbStorageOperationsFactoryImpl
 {
     public create(context: CmsContext) {
         return createDynamoDbStorageOperations({
-            plugins: context.plugins,
             container: context.container
         });
     }
@@ -105,6 +89,7 @@ const DynamoDbStorageOperationsFactory = StorageOperationsFactoryAbstraction.cre
 export const HeadlessCmsDdbFeature = createFeature({
     name: "cms.storageOperations.ddb",
     register: container => {
+        FilterRegistriesFeature.register(container);
         container.register(DynamoDbStorageOperationsFactory).inSingletonScope();
     }
 });

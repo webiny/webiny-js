@@ -7,7 +7,7 @@ import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
 // Matches findFreePort's search base in runApiServer (and the scheduler's self-callback default), so
-// every self-callback in the server flavour agrees on the same fallback. In practice never used:
+// every self-callback in the server hosting type agrees on the same fallback. In practice never used:
 // runApiServer always injects the resolved port as process.env.PORT.
 const DEFAULT_SERVER_PORT = 3002;
 const DEFAULT_MAX_DURATION_MS = 86_400_000;
@@ -28,7 +28,7 @@ class WorkerServiceImpl implements TaskService.Interface {
         private readonly tenantContext: TenantContext.Interface,
         private readonly internalToken: InternalToken.Interface
     ) {
-        // Single-process server flavour: the worker POSTs the task back to THIS server's
+        // Single-process server hosting type: the worker POSTs the task back to THIS server's
         // `/background-task` route. The port is the one the server actually listens on — injected at
         // runtime as `process.env.PORT` by `runApiServer` (dynamic, chosen via findFreePort), NOT a
         // build-time value. It cannot be a build param: the port isn't known until the process starts.

@@ -2,10 +2,10 @@ import fs from "fs-extra";
 import path from "path";
 
 /**
- * Merges flavour-specific dependencies into the generated project's `package.json`.
+ * Merges hosting-specific dependencies into the generated project's `package.json`.
  *
- * The base template's `package.json` is flavour-neutral (only shared deps like `webiny`, `react` and
- * `@webiny/mcp`); each flavour setup injects its own packages here. Values can be `"latest"` — the
+ * The base template's `package.json` is hosting-neutral (only shared deps like `webiny`, `react` and
+ * `@webiny/mcp`); each hosting-type setup injects its own packages here. Values can be `"latest"` — the
  * later `SetWebinyPackageVersions` step rewrites every `@webiny/*` / `webiny` entry to the actual CWP
  * version, so only the presence of the dependency matters at this point.
  */

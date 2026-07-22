@@ -21,7 +21,7 @@ export class SetupAwsWebinyProject {
 
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
-        // AWS flavour dependencies: the `webiny` CLI (AWS bin) + Cognito (AWS-managed IdP).
+        // AWS hosting-type dependencies: the `webiny` CLI (AWS bin) + Cognito (AWS-managed IdP).
         addProjectDependencies(projectRootFolderPath, {
             "@webiny/cli-aws": "latest",
             "@webiny/cognito": "latest"

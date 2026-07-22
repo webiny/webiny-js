@@ -7,7 +7,7 @@ import { ServerProjectParams } from "./types.js";
 import { GetTemplatesFolderPath } from "../../../../services/GetTemplatesFolderPath.js";
 import { addProjectDependencies } from "../addProjectDependencies.js";
 
-const DOT_ENV = `# Self-hosted (server) flavour environment variables.
+const DOT_ENV = `# Self-hosted (server) hosting-type environment variables.
 # The values below are safe dev defaults. CHANGE the secrets before any real deployment.
 
 # Ports the API and Admin servers listen on during \`webiny watch\` / \`webiny serve\`.
@@ -42,9 +42,9 @@ export class SetupServerWebinyProject {
 
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
-        // Server (self-hosted) flavour dependencies. The `webiny` CLI (server bin) sets
-        // WEBINY_FLAVOUR=server; `@webiny/project-server` provides the server `Infra.*` extensions and
-        // resolves `@webiny/project-server-template` (the workspace base config) at build time;
+        // Server (self-hosted) hosting-type dependencies. The `webiny` CLI (server bin) sets
+        // WEBINY_HOSTING_TYPE=server; `@webiny/project-server` provides the server `Infra.*` extensions
+        // and resolves `@webiny/project-server-template` (the workspace base config) at build time;
         // `@webiny/self-hosted-auth` is the built-in JWT identity provider (replaces Cognito).
         addProjectDependencies(projectRootFolderPath, {
             "@webiny/cli-server": "latest",
@@ -53,7 +53,7 @@ export class SetupServerWebinyProject {
             "@webiny/self-hosted-auth": "latest"
         });
 
-        // Write the `.env` with the server-flavour dev defaults.
+        // Write the `.env` with the server hosting-type dev defaults.
         fs.writeFileSync(path.join(projectRootFolderPath, ".env"), DOT_ENV);
 
         return serverArgs;

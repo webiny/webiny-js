@@ -6,20 +6,20 @@ import { serverServe } from "./serve/ServerServe.js";
 import { serveWithBuildChecks } from "./serve/ServeWithBuildChecks.js";
 
 export const registerServerProjectFeatures = (container: Container): void => {
-    // Replace the default (AWS) workspace builder with the server-flavour one.
+    // Replace the default (AWS) workspace builder with the server hosting-type one.
     // The server workspace has no Pulumi scaffolding — only app source templates.
     container.register(serverBuildAppWorkspaceService).inSingletonScope();
     // Copy the server `webiny.config.base.tsx` (renders <Project />, not <ProjectAws />) into the
-    // workspace, so none of the AWS deploy/Pulumi hooks are composed in the self-hosted flavour.
+    // workspace, so none of the AWS deploy/Pulumi hooks are composed in the self-hosted hosting type.
     container.registerDecorator(BuildServerProjectWorkspace);
     // The admin API URL is configured via `<Admin.ApiUrl>` in webiny.config.tsx (baked into the
     // bundle as WEBINY_ADMIN_API_URL), so no env-mutating watch hook is needed here.
     // Boot the built api handler as a live, reload-on-rebuild HTTP server during `watch api`
-    // (server-flavour counterpart to project-aws's Lambda invocation forwarding).
+    // (server hosting-type counterpart to project-aws's Lambda invocation forwarding).
     container.registerDecorator(serverWatch);
 
     // Serve built apps as long-running servers (`webiny-server serve`). Replace the base
-    // DefaultServe (which refuses) with the real server-flavour implementation, then decorate it so
+    // DefaultServe (which refuses) with the real server hosting-type implementation, then decorate it so
     // the required app builds are asserted before anything is served.
     container.register(serverServe).inSingletonScope();
     container.registerDecorator(serveWithBuildChecks);

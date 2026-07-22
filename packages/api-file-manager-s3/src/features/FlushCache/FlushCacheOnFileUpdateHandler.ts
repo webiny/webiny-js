@@ -21,7 +21,7 @@ class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateEventHandler.
         }
 
         await this.taskService.trigger({
-            definition: "cloudfrontInvalidateCache",
+            definition: "invalidateAssetCache",
             input: {
                 caller: "fm-before-update",
                 paths: this.pathsGenerator.generate(file.id)

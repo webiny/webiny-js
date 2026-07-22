@@ -8,7 +8,7 @@ import { runApiServer } from "./runApiServer.js";
 import { runAdminServer } from "./runAdminServer.js";
 
 /**
- * Server-flavour Serve implementation: describes the server process(es) for the requested app(s) as
+ * Server hosting-type Serve implementation: describes the server process(es) for the requested app(s) as
  * a `ServersWatcher` (lazy — nothing spawns until the caller runs them) and returns it. Replaces the
  * base DefaultServe (which refuses). api = HTTP handler; admin = static SPA; no app = both. Build
  * checks run via a decorator (serveWithBuildChecks); terminal rendering + lifecycle are the caller's

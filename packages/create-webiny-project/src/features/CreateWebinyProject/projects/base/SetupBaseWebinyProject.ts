@@ -34,7 +34,16 @@ export class SetupBaseWebinyProject {
         const getProjectRootPath = new GetProjectRootPath();
         const projectRootFolderPath = getProjectRootPath.execute(cliArgs);
 
-        fs.copySync(baseTemplatePath, projectRootFolderPath);
+        fs.copySync(baseTemplatePath, projectRootFolderPath, {
+            filter: src => {
+                // We want to skip copying yarnrc.yml file as it is not required anymore.
+                // The installation script now creates file with required settings.
+                if (src.includes("example.yarnrc.yml")) {
+                    return false;
+                }
+                return true;
+            }
+        });
 
         for (let i = 0; i < renames.length; i++) {
             fs.moveSync(

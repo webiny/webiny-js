@@ -8,7 +8,7 @@ import {
 export interface IServeParams {
     /**
      * App to serve. Omit to serve all servable apps at once. Which apps are servable (and how) is
-     * flavour-specific — the base flavour supports none.
+     * hosting-specific — the base hosting type supports none.
      */
     app?: GetApp.AppName;
 }

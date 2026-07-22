@@ -64,7 +64,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 const apps = params.app ? [params.app] : [];
 
                 // Collect PackagesWatcher instances (one per app or for package-only mode) plus any
-                // long-running server processes the flavour attaches (e.g. the api HTTP server).
+                // long-running server processes the hosting type attaches (e.g. the api HTTP server).
                 const watchers = [];
                 const serverProcesses: Watch.Process[] = [];
 
@@ -127,7 +127,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     });
                 }
 
-                // Render the flavour's server processes (filtered/prefixed) then run them alongside
+                // Render the hosting type's server processes (filtered/prefixed) then run them alongside
                 // the build watchers.
                 for (const serverProcess of serverProcesses) {
                     const prefix = chalk.hex(colorForString(serverProcess.name))(
