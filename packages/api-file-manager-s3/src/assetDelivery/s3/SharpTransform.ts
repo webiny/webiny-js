@@ -21,7 +21,6 @@ import { normalizeImageOptions } from "@webiny/api-file-manager/features/assetDe
 import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
 import { ImageAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
-import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
 import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
@@ -39,7 +38,7 @@ const hasTransform = (options: TransformOptions): boolean => {
     );
 };
 
-export class SharpTransform implements IAssetTypeHandler {
+export class SharpTransform implements ImageAssetTypeHandler.Interface {
     private readonly s3: S3;
     private readonly bucket: string;
     private readonly imageResizeWidths: number[];
