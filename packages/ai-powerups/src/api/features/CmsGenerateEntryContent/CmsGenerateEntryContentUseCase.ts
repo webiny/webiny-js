@@ -133,8 +133,6 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 await injectDynamicZoneTypenames(resolved, modelAst, model.singularApiName);
             }
 
-            const output = JSON.stringify(resolved);
-
             const filesRead = new Set<string>();
             let toolCallsMade = 0;
             for (const step of aiResult.steps) {
@@ -158,7 +156,7 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 imageTagsInPrompt: imageTags
             };
 
-            return Result.ok({ output, telemetry });
+            return Result.ok({ values: resolved ?? {}, telemetry });
         } catch (error) {
             return Result.fail(
                 new Error(

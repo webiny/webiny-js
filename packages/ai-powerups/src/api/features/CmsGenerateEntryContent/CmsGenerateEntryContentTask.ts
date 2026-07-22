@@ -68,7 +68,9 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
             });
         }
 
-        const compressed = await compress(result.value.output);
+        // Serialize at the transport edge: the use case returns structured values; the
+        // websocket stream carries a gzip+base64 JSON string that the Admin app decodes.
+        const compressed = await compress(JSON.stringify(result.value.values));
         const payload = compressed.toString("base64");
 
         await this.sendContentToUser(identity.id, payload, result.value.telemetry);

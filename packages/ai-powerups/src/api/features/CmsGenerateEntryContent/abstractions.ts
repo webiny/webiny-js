@@ -20,7 +20,12 @@ export interface GenerateEntryContentTelemetry {
 }
 
 export interface GenerateEntryContentResult {
-    output: string;
+    /**
+     * The generated entry values, keyed by fieldId. Callers that consume the result
+     * directly (e.g. a bulk action) can read fields straight off this object; transport
+     * edges (the background task / websocket stream) serialize it themselves.
+     */
+    values: Record<string, any>;
     telemetry: GenerateEntryContentTelemetry;
 }
 
