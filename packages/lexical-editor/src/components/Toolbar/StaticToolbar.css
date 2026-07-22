@@ -17,7 +17,9 @@
 .static-toolbar button.popup-item {
   border: 0;
   display: flex;
-  background: #fff;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
   border-radius: var(--radius-md);
   padding: 8px;
   cursor: pointer;
