@@ -544,6 +544,26 @@ Resources:
               - guardduty:DeleteMalwareProtectionPlan
               - guardduty:UpdateMalwareProtectionPlan
 
+          # GuardDuty Malware Protection creates an AWS-managed EventBridge rule
+          # (named "DO-NOT-DELETE-AmazonGuardDutyMalwareProtection*") to route S3
+          # events to GuardDuty. Without these permissions, creating/deleting a
+          # Malware Protection Plan fails with:
+          # > BadRequestException: The request was rejected because the pass role
+          # > does not have the required EventBridge permissions.
+          # The events:ManagedBy condition scopes this to GuardDuty-managed rules only.
+          - Effect: Allow
+            Resource: "arn:aws:events:*:*:rule/DO-NOT-DELETE-AmazonGuardDutyMalwareProtection*"
+            Action:
+              - events:PutRule
+              - events:DeleteRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:DescribeRule
+              - events:ListTargetsByRule
+            Condition:
+              StringEquals:
+                "events:ManagedBy": "malware-protection-plan.guardduty.amazonaws.com"
+
           # IoT
           - Effect: Allow
             Resource: "arn:aws:iot:*:*:authorizer/*"
