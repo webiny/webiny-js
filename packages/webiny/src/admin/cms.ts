@@ -2,8 +2,8 @@ export { CmsGraphQLClient } from "@webiny/app-headless-cms/features/graphQLClien
 export { useModel } from "@webiny/app-headless-cms/admin/components/ModelProvider/index.js";
 export { usePermission } from "@webiny/app-headless-cms/admin/hooks/usePermission.js";
 export { IsModelPublishable } from "@webiny/app-headless-cms/admin/components/IsModelPublishable.js";
-export { PublishEntryConfirmDialogExtra } from "@webiny/app-headless-cms/admin/components/Dialogs/PublishEntryConfirmDialog.js";
-export { UnpublishEntryConfirmDialogExtra } from "@webiny/app-headless-cms/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
+export { PublishEntryConfirmDialog } from "@webiny/app-headless-cms/admin/components/Dialogs/PublishEntryConfirmDialog.js";
+export { UnpublishEntryConfirmDialog } from "@webiny/app-headless-cms/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
 export { Routes } from "@webiny/app-headless-cms/routes.js";
 export {
     EntryAfterCreateEventHandler,
