@@ -16,13 +16,13 @@ import {
     hasAsset,
     hasImageEdit,
     isImageAsset,
-    type AssetValue
+    type Asset
 } from "./assetValue.js";
 import { CroppedAssetThumb } from "./CroppedAssetThumb.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        cmsMultiAssetPicker: { fieldType: "object"; settings: AssetFieldRendererSettings };
+        cmsMultiAssetPicker: { fieldType: "asset"; settings: AssetFieldRendererSettings };
     }
 }
 
@@ -34,14 +34,14 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
 export const CmsMultiAssetPickerRenderer = createFieldRenderer<"cmsMultiAssetPicker">(
     ({ field }) => {
         const settings = field.rendererSettings as AssetFieldRendererSettings | undefined;
-        const value = field.value as AssetValue[] | null | undefined;
+        const value = field.value as Asset[] | null | undefined;
         const assets = Array.isArray(value) ? value : [];
         const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
         const editingAsset = editingIndex !== null ? assets[editingIndex] : undefined;
         const editable = isImageAsset(editingAsset) && hasAsset(editingAsset);
 
-        const replaceAt = (index: number, next: AssetValue[]) => {
+        const replaceAt = (index: number, next: Asset[]) => {
             field.onChange([...assets.slice(0, index), ...next, ...assets.slice(index + 1)]);
         };
 

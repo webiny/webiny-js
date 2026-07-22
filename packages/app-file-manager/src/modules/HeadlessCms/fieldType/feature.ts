@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
 import { FileFieldType } from "./FileFieldType.js";
 import { AssetFieldType } from "./AssetFieldType.js";
+import { AssetFormFieldType } from "./AssetFormFieldType.js";
 import { FileFieldSettingsModifier } from "./FileFieldSettingsModifier.js";
 import { AssetFieldSettingsModifier } from "./AssetFieldSettingsModifier.js";
 import { FileInputRenderer } from "./FileInputRenderer.js";
@@ -13,6 +14,7 @@ export const FileFieldTypeFeature = createFeature({
     register(container) {
         container.register(FileFieldType);
         container.register(AssetFieldType);
+        container.register(AssetFormFieldType);
         container.register(FileFieldSettingsModifier);
         container.register(AssetFieldSettingsModifier);
         container.register(FileInputRenderer);

@@ -1,111 +1,77 @@
-/**
- * Value helpers for the CMS **Asset** field renderers.
- *
- * The Asset field stores a typed, file-type-discriminated object (identical in
- * shape to `WebinyAsset` in `@webiny/website-builder-sdk`). We intentionally keep
- * a local, dependency-free copy of the shape here — `@webiny/app-file-manager`
- * must not depend on the Website Builder SDK, and the shape is small and stable.
- * Structural compatibility means values still round-trip to the frontend without
- * any mapping.
- */
 import type { ImageEditorValue } from "@webiny/admin-ui";
 import type { FileManagerFileItem } from "@webiny/app-admin/base/ui/FileManager.js";
+import type { Asset, AssetImage } from "@webiny/sdk";
 
-export interface AssetImageValue {
-    width?: number | null;
-    height?: number | null;
-    crop?: { top: number; left: number; bottom: number; right: number } | null;
-    focalPoint?: { x: number; y: number } | null;
-    alt?: string | null;
-    caption?: string | null;
-}
+export type { Asset, AssetImage };
 
-export interface AssetValue {
-    id?: string | null;
-    src?: string | null;
-    name?: string | null;
-    type?: string | null;
-    size?: number | null;
-    image?: AssetImageValue | null;
-    document?: { pages?: number | null } | null;
-    video?: { autoplay?: boolean | null; poster?: string | null } | null;
-}
-
-export const isImageAsset = (asset: AssetValue | null | undefined): boolean => {
+export const isImageAsset = (asset: Asset | null | undefined): boolean => {
     return typeof asset?.type === "string" && asset.type.startsWith("image/");
 };
 
-/** True when a value actually references a file (used to tell "empty" from "set"). */
-export const hasAsset = (asset: AssetValue | null | undefined): boolean => {
+export const hasAsset = (asset: Asset | null | undefined): boolean => {
     return typeof asset?.src === "string" && asset.src.length > 0;
 };
 
-const isFullCrop = (crop: AssetImageValue["crop"]): boolean => {
+const isFullCrop = (crop: AssetImage["crop"]): boolean => {
     return !crop || (crop.top === 0 && crop.left === 0 && crop.bottom === 0 && crop.right === 0);
 };
 
-const isCenteredFocal = (focalPoint: AssetImageValue["focalPoint"]): boolean => {
+const isCenteredFocal = (focalPoint: AssetImage["focalPoint"]): boolean => {
     return !focalPoint || (focalPoint.x === 0.5 && focalPoint.y === 0.5);
 };
 
-/** True when the image carries a non-trivial crop or focal point worth previewing. */
-export const hasImageEdit = (image: AssetImageValue | null | undefined): boolean => {
-    if (!image || !image.width || !image.height) {
+export const hasImageEdit = (image: AssetImage | null | undefined): boolean => {
+    if (!image) {
         return false;
     }
     return !isFullCrop(image.crop) || !isCenteredFocal(image.focalPoint);
 };
 
-/** The asset-level edit stored on a file in File Manager (`metadata.imageEdit`). */
-interface FileImageEdit {
+interface FileImageMetadata {
+    width?: number;
+    height?: number;
     crop?: { top: number; left: number; bottom: number; right: number };
-    hotspot?: { x: number; y: number };
+    focalPoint?: { x: number; y: number };
     alt?: string;
     caption?: string;
 }
 
-/**
- * Build an Asset value from a freshly picked File Manager item. For images, the
- * per-usage `image` edit is seeded from the file's asset-level default (the crop /
- * focal point / alt set in File Manager), matching the Website Builder behavior —
- * so a new placement starts pre-cropped to match the asset. From here the edit
- * lives on the entry value and is editable per placement (it never writes back to
- * the file). Any per-usage edit from a previously selected file is dropped.
- */
-export const fileItemToAsset = (file: FileManagerFileItem): AssetValue => {
-    const asset: AssetValue = {
+export const fileItemToAsset = (file: FileManagerFileItem): Asset => {
+    const src = file.src;
+    const asset: Asset = {
         id: file.id,
-        src: file.src,
+        src,
+        url: src,
         name: file.name,
         type: file.type,
         size: file.size
     };
     if (typeof file.type === "string" && file.type.startsWith("image/")) {
-        const image: AssetImageValue = {
-            width: file.width ?? null,
-            height: file.height ?? null
+        const meta = file.metadata?.image as FileImageMetadata | undefined;
+        const image: AssetImage = {
+            width: meta?.width ?? file.width,
+            height: meta?.height ?? file.height
         };
-        const assetEdit = file.metadata?.imageEdit as FileImageEdit | undefined;
-        if (assetEdit?.crop) {
-            image.crop = assetEdit.crop;
+        if (meta?.crop) {
+            image.crop = meta.crop;
         }
-        if (assetEdit?.hotspot) {
-            image.focalPoint = { x: assetEdit.hotspot.x, y: assetEdit.hotspot.y };
+        if (meta?.focalPoint) {
+            image.focalPoint = { x: meta.focalPoint.x, y: meta.focalPoint.y };
         }
-        if (assetEdit?.alt) {
-            image.alt = assetEdit.alt;
+        if (meta?.alt) {
+            image.alt = meta.alt;
         }
-        if (assetEdit?.caption) {
-            image.caption = assetEdit.caption;
+        if (meta?.caption) {
+            image.caption = meta.caption;
         }
         asset.image = image;
+        asset.url = buildAssetUrl(src, image.crop);
     }
     return asset;
 };
 
-/** Map the stored image edit into the shared `ImageEditor` value (focalPoint → hotspot). */
 export const assetImageToEditorValue = (
-    image: AssetImageValue | null | undefined
+    image: AssetImage | null | undefined
 ): ImageEditorValue | undefined => {
     if (!image) {
         return undefined;
@@ -120,44 +86,36 @@ export const assetImageToEditorValue = (
     };
 };
 
-/**
- * Apply an `ImageEditor` result back onto an Asset value (hotspot → focalPoint),
- * preserving the intrinsic dimensions. Returns a complete `image` object so the
- * object-field VM overwrites every image sub-field on `onChange`.
- */
-export const applyImageEditToAsset = (asset: AssetValue, edit: ImageEditorValue): AssetValue => {
+export const applyImageEditToAsset = (asset: Asset, edit: ImageEditorValue): Asset => {
+    const crop = edit.crop ?? undefined;
     return {
         ...asset,
+        url: buildAssetUrl(asset.src, crop),
         image: {
-            width: asset.image?.width ?? null,
-            height: asset.image?.height ?? null,
-            crop: edit.crop ?? null,
-            focalPoint: edit.hotspot ? { x: edit.hotspot.x, y: edit.hotspot.y } : null,
-            alt: edit.alt ?? null,
-            caption: edit.caption ?? null
+            width: asset.image?.width,
+            height: asset.image?.height,
+            crop,
+            focalPoint: edit.hotspot ? { x: edit.hotspot.x, y: edit.hotspot.y } : undefined,
+            alt: edit.alt ?? undefined,
+            caption: edit.caption ?? undefined
         }
     };
 };
 
-/**
- * A fully-structured, all-null Asset value. Passed to the object-field VM's
- * `onChange` to clear a selection: because every (nested) key is present,
- * `hydrateChildren` overwrites each child field down the tree.
- */
-export const emptyAssetValue = (): AssetValue => ({
-    id: null,
-    src: null,
-    name: null,
-    type: null,
-    size: null,
-    image: {
-        width: null,
-        height: null,
-        crop: null,
-        focalPoint: null,
-        alt: null,
-        caption: null
-    },
-    document: { pages: null },
-    video: { autoplay: null, poster: null }
-});
+const round = (n: number): number => Math.round(n * 10000) / 10000;
+
+function buildAssetUrl(src: string, crop: AssetImage["crop"] | null | undefined): string {
+    if (!crop) {
+        return src;
+    }
+    const top = crop.top ?? 0;
+    const left = crop.left ?? 0;
+    const bottom = crop.bottom ?? 0;
+    const right = crop.right ?? 0;
+    if (top === 0 && left === 0 && bottom === 0 && right === 0) {
+        return src;
+    }
+    const param = [top, left, bottom, right].map(round).join(",");
+    const separator = src.includes("?") ? "&" : "?";
+    return `${src}${separator}crop=${param}`;
+}

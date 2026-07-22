@@ -8,11 +8,6 @@ import type { FileItem } from "~/domain/types.js";
 
 const { FileDetails } = FileManagerViewConfig;
 
-/**
- * "Edit image" action in the File Details drawer. Shown for images only. Opens
- * the reusable crop/hotspot/alt editor and saves to the file's asset-level
- * metadata. The drawer stays mounted while open, so the dialog state is safe here.
- */
 export const EditImage = () => {
     const { file } = useFile();
     const { vm } = useFileManagerPresenter();

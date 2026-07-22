@@ -1,3 +1,4 @@
+import { toJS } from "mobx";
 import type { ComponentRegistry } from "./ComponentRegistry.js";
 import type { CmsModelDefinition } from "../types.js";
 
@@ -41,7 +42,7 @@ export class ComponentResolver {
                 if (key === "_templateId" || key === "__typename") {
                     continue;
                 }
-                props[key] = value;
+                props[key] = toJS(value);
             }
 
             resolved.push({

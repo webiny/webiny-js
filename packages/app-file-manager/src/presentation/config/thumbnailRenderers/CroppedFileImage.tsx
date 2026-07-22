@@ -50,11 +50,11 @@ export const CroppedFileImage = ({
         return () => ro.disconnect();
     }, []);
 
-    const edit = file.metadata?.imageEdit;
-    const imageWidth = file.metadata?.image?.width ?? 0;
-    const imageHeight = file.metadata?.image?.height ?? 0;
+    const img = file.metadata?.image;
+    const imageWidth = img?.width ?? 0;
+    const imageHeight = img?.height ?? 0;
 
-    if (isFullCrop(edit?.crop) || imageWidth <= 0 || imageHeight <= 0) {
+    if (isFullCrop(img?.crop) || imageWidth <= 0 || imageHeight <= 0) {
         return (
             <Image
                 src={file.src}
@@ -65,11 +65,16 @@ export const CroppedFileImage = ({
         );
     }
 
+    const focalPoint = img?.focalPoint;
+    const hotspot = focalPoint
+        ? { x: focalPoint.x, y: focalPoint.y, width: 1, height: 1 }
+        : undefined;
+
     const { wrapper, image } = getCroppedImageRenderStyles(
         imageWidth,
         imageHeight,
-        edit?.crop,
-        edit?.hotspot,
+        img?.crop,
+        hotspot,
         {
             boxWidth: box.w,
             boxHeight: box.h,

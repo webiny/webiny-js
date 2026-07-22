@@ -16,9 +16,9 @@ Mark deprecated code clearly (JSDoc `@deprecated`, comments referencing the repl
 
 ## Examples
 
-- **CSS rendering layer:** `WebinyImage`, `getWebinyImageProps`, and the geometry modules were deleted when Next.js moved to server-side delivery — but React and Vue renderers still used the CSS approach. Had to be restored.
-- **WebinyImageValue -> WebinyAsset:** The old type is retained and `normalizeToAsset()` converts transparently. Existing page data renders without a storage migration.
-- **hotspot -> focalPoint:** The old `WebinyImageHotspot` type is kept; `normalizeToAsset` maps `hotspot.{x,y}` to `focalPoint`. Old values work without re-saving.
+- **CSS rendering layer:** `Image`, `getImageProps`, and the geometry modules were deleted when Next.js moved to server-side delivery — but React and Vue renderers still used the CSS approach. Had to be restored.
+- **ImageValue -> Asset:** The old type is retained and `normalizeToAsset()` converts transparently. Existing page data renders without a storage migration.
+- **hotspot -> focalPoint:** The old `ImageHotspot` type is kept; `normalizeToAsset` maps `hotspot.{x,y}` to `focalPoint`. Old values work without re-saving.
 
 ## Consequences
 

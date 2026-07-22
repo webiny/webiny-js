@@ -1,3 +1,3 @@
-export * from "./getWebinyImageProps.js";
-export * from "./WebinyImage.js";
-export * from "./WebinyBackgroundImage.js";
+export * from "./getImageProps.js";
+export * from "./Image.js";
+export * from "./BackgroundImage.js";

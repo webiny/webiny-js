@@ -1,16 +1,9 @@
 import React from "react";
-import {
-    normalizeToAsset,
-    type WebinyAsset,
-    type WebinyImageValue
-} from "@webiny/website-builder-sdk";
+import { normalizeToAsset, type Asset } from "@webiny/website-builder-sdk";
 
-export interface WebinyBackgroundImageProps extends Omit<
-    React.HTMLAttributes<HTMLDivElement>,
-    "style"
-> {
-    /** The image value (unified `WebinyAsset` or a legacy value — both accepted). */
-    image: WebinyAsset | WebinyImageValue;
+export interface BackgroundImageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "style"> {
+    /** The image value (unified `Asset` or a legacy value — both accepted). */
+    image: Asset;
     /** Content rendered on top of the background (auto-stacked above the image). */
     children?: React.ReactNode;
     /** Class applied to the wrapper element. */
@@ -38,19 +31,7 @@ export interface WebinyBackgroundImageProps extends Omit<
 
 const DEFAULT_WIDTHS = [640, 750, 828, 1080, 1200, 1920, 2048];
 
-/**
- * Renders an image as a **cover background** with content on top, honoring the
- * image's **focal point** (via `object-position`) so the subject stays in frame as
- * the box resizes — the right primitive for heroes, banners, and cards.
- *
- * Pure CSS + SSR-safe (no measuring). Give the wrapper a height (e.g.
- * `style={{ minHeight: "60vh" }}`). The focal point comes from the value; a
- * rectangular *crop* set at the asset level in File Manager is already baked into
- * the delivered image, so it is honored automatically. (An arbitrary per-usage
- * crop rectangle cannot be applied to a cover background without measuring — use
- * `<WebinyImage>` for the aspect-ratio-box case.)
- */
-export function WebinyBackgroundImage({
+export function BackgroundImage({
     image,
     children,
     className,
@@ -63,7 +44,7 @@ export function WebinyBackgroundImage({
     sizes = "100vw",
     loading,
     ...rest
-}: WebinyBackgroundImageProps) {
+}: BackgroundImageProps) {
     const asset = normalizeToAsset(image);
     const src = asset?.src ?? "";
     const focalPoint = asset?.image?.focalPoint ?? { x: 0.5, y: 0.5 };

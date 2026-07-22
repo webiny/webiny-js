@@ -1,10 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-    assetImageFromLegacyEdit,
-    getAssetCategory,
-    normalizeToAsset,
-    resolveAssetImage
-} from "./normalize.js";
+import { assetImageFromLegacyEdit, getAssetCategory, normalizeToAsset } from "./normalize.js";
+import { resolveAssetImage } from "../image/geometry.js";
 
 describe("getAssetCategory", () => {
     it("buckets by MIME prefix", () => {
@@ -77,6 +73,7 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
         expect(asset).toEqual({
             id: "file-1",
             src: "https://cdn/x/cat.jpg",
+            url: "https://cdn/x/cat.jpg",
             name: "cat.jpg",
             type: "image/jpeg",
             size: 1234,
@@ -109,6 +106,7 @@ describe("normalizeToAsset — legacy Website Builder image value", () => {
         expect(asset).toEqual({
             id: "f",
             src: "https://cdn/x.jpg",
+            url: "https://cdn/x.jpg",
             name: "x.jpg",
             type: "image/jpeg",
             size: 10,
@@ -134,6 +132,7 @@ describe("normalizeToAsset — already-unified asset", () => {
         const asset = {
             id: "f2",
             src: "https://cdn/y/pic.png",
+            url: "https://cdn/y/pic.png",
             name: "pic.png",
             type: "image/png",
             size: 9,

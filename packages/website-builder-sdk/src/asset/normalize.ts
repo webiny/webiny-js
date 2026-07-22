@@ -1,24 +1,6 @@
-/**
- * Backwards-compatibility layer for the unified {@link WebinyAsset} shape.
- *
- * Two legacy shapes exist on disk and must keep rendering forever:
- *  1. Website Builder image values — `WebinyImageValue` (flat, `mimeType` +
- *     top-level `width`/`height` + `edit: { crop, hotspot, alt, caption }`).
- *  2. File Manager `metadata.imageEdit` — a bare `WebinyImageEdit`.
- *
- * `normalizeToAsset` accepts either legacy shape (or an already-unified asset)
- * and returns a well-formed `WebinyAsset`. It is intentionally defensive: bad or
- * partial input yields `null` rather than throwing, so a corrupt stored value
- * degrades to "no asset" instead of crashing a render.
- */
-import type { WebinyImageEdit } from "../image/types.js";
-import type { WebinyAsset, WebinyAssetCategory, WebinyAssetImage } from "./types.js";
+import type { Asset, AssetCategory, AssetImage } from "./types.js";
 
-/**
- * Bucket a MIME type into one of the three Asset categories. Anything that is not
- * an image or a video is treated as a document (the downloadable fallback).
- */
-export function getAssetCategory(type?: string | null): WebinyAssetCategory {
+export function getAssetCategory(type?: string | null): AssetCategory {
     if (typeof type === "string") {
         if (type.startsWith("image/")) {
             return "image";
@@ -42,16 +24,18 @@ const asString = (value: unknown): string | undefined => {
     return typeof value === "string" ? value : undefined;
 };
 
-/**
- * Convert a legacy `WebinyImageEdit` (`{ crop, hotspot, alt, caption }`) plus
- * optional intrinsic dimensions into a `WebinyAssetImage`. Returns `undefined`
- * when there is nothing worth storing, so callers can leave `asset.image` unset.
- */
+interface LegacyImageEdit {
+    crop?: { top: number; left: number; bottom: number; right: number };
+    hotspot?: { x: number; y: number; width?: number; height?: number };
+    alt?: string;
+    caption?: string;
+}
+
 export function assetImageFromLegacyEdit(
-    edit?: WebinyImageEdit | null,
+    edit?: LegacyImageEdit | null,
     dimensions?: { width?: number | null; height?: number | null }
-): WebinyAssetImage | undefined {
-    const image: WebinyAssetImage = {};
+): AssetImage | undefined {
+    const image: AssetImage = {};
 
     const width = asNumber(dimensions?.width);
     const height = asNumber(dimensions?.height);
@@ -83,30 +67,11 @@ export function assetImageFromLegacyEdit(
     return Object.keys(image).length > 0 ? image : undefined;
 }
 
-/**
- * Merge a per-usage override over an asset-level default, per property. Used by
- * the Admin editor to seed a starting point; frontends render the already
- * resolved `image` and never need this.
- */
-export function resolveAssetImage(
-    override?: WebinyAssetImage | null,
-    base?: WebinyAssetImage | null
-): WebinyAssetImage {
-    return {
-        width: override?.width ?? base?.width,
-        height: override?.height ?? base?.height,
-        crop: override?.crop ?? base?.crop,
-        focalPoint: override?.focalPoint ?? base?.focalPoint,
-        alt: override?.alt ?? base?.alt,
-        caption: override?.caption ?? base?.caption
-    };
-}
-
-const normalizeAssetImage = (raw: unknown): WebinyAssetImage | undefined => {
+const normalizeAssetImage = (raw: unknown): AssetImage | undefined => {
     if (!isObject(raw)) {
         return undefined;
     }
-    const image: WebinyAssetImage = {};
+    const image: AssetImage = {};
     const width = asNumber(raw.width);
     const height = asNumber(raw.height);
     if (width !== undefined) {
@@ -141,33 +106,23 @@ const normalizeAssetImage = (raw: unknown): WebinyAssetImage | undefined => {
     return Object.keys(image).length > 0 ? image : undefined;
 };
 
-const buildBase = (raw: Record<string, unknown>, type: string): WebinyAsset => ({
-    id: asString(raw.id) ?? "",
-    src: asString(raw.src) ?? "",
-    name: asString(raw.name) ?? "",
-    type,
-    size: asNumber(raw.size) ?? 0
-});
+const buildBase = (raw: Record<string, unknown>, type: string): Asset => {
+    const src = asString(raw.src) ?? "";
+    return {
+        id: asString(raw.id) ?? "",
+        src,
+        url: asString(raw.url) ?? src,
+        name: asString(raw.name) ?? "",
+        type,
+        size: asNumber(raw.size) ?? 0
+    };
+};
 
-/**
- * Upgrade any supported value to the unified {@link WebinyAsset} shape:
- *  - an already-unified asset (idempotent, re-validated defensively),
- *  - a legacy Website Builder `WebinyImageValue`.
- *
- * Returns `null` for missing/invalid input.
- */
-export function normalizeToAsset(input: unknown): WebinyAsset | null {
+export function normalizeToAsset(input: unknown): Asset | null {
     if (!isObject(input)) {
         return null;
     }
 
-    // The unified shape is identified by a typed sub-object (`image`/`document`/
-    // `video`). Everything else is treated as a flat/legacy value — an older
-    // `WebinyImageValue` (with `edit`) OR the original Website Builder file value
-    // (a flat `{ id, src, type|mimeType, width, height }`). Routing all of these
-    // through the legacy path preserves their top-level `width`/`height` and any
-    // `edit`, so existing pages keep rendering after an upgrade. `type` is read
-    // from either `mimeType` (older) or `type`.
     const hasTypedSubObject =
         isObject(input.image) || isObject(input.document) || isObject(input.video);
 
@@ -175,7 +130,7 @@ export function normalizeToAsset(input: unknown): WebinyAsset | null {
         const type = asString(input.mimeType) ?? asString(input.type) ?? "";
         const asset = buildBase(input, type);
         if (getAssetCategory(type) === "image") {
-            const image = assetImageFromLegacyEdit(input.edit as WebinyImageEdit | undefined, {
+            const image = assetImageFromLegacyEdit(input.edit as LegacyImageEdit | undefined, {
                 width: asNumber(input.width),
                 height: asNumber(input.height)
             });
@@ -186,7 +141,6 @@ export function normalizeToAsset(input: unknown): WebinyAsset | null {
         return asset;
     }
 
-    // Already-unified asset shape.
     const type = asString(input.type) ?? asString(input.mimeType) ?? "";
     const asset = buildBase(input, type);
     const category = getAssetCategory(type);

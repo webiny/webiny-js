@@ -95,6 +95,8 @@ const baseTypeDefs = /* GraphQL */ `
     input FmAssetInput {
         id: String!
         src: String!
+        # TODO: figure out how to remove this from here, as this is a derived read-only value.
+        url: String
         name: String!
         type: String!
         size: Number!

@@ -12,13 +12,13 @@ import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 import {
     assetImageFromLegacyEdit,
     normalizeToAsset,
-    type WebinyAsset,
-    type WebinyAssetImage
+    type Asset,
+    type AssetImage
 } from "@webiny/website-builder-sdk";
 import type { FileInput } from "@webiny/website-builder-sdk";
 import { fileManagerItemToValue } from "~/shared/fileManagerItemToValue.js";
 
-const isEditableImage = (asset: WebinyAsset | undefined): asset is WebinyAsset => {
+const isEditableImage = (asset: Asset | undefined): asset is Asset => {
     return (
         !!asset?.src &&
         typeof asset.type === "string" &&
@@ -28,7 +28,7 @@ const isEditableImage = (asset: WebinyAsset | undefined): asset is WebinyAsset =
 };
 
 /** True when the image carries a non-trivial crop or focal point worth previewing. */
-const hasImageEdit = (image: WebinyAssetImage | undefined): boolean => {
+const hasImageEdit = (image: AssetImage | undefined): boolean => {
     if (!image?.width || !image?.height) {
         return false;
     }
@@ -40,7 +40,7 @@ const hasImageEdit = (image: WebinyAssetImage | undefined): boolean => {
 };
 
 /** Map the stored asset image into the shared `ImageEditor` value (focalPoint → hotspot). */
-const toEditorValue = (image: WebinyAssetImage | undefined): ImageEditorValue | undefined => {
+const toEditorValue = (image: AssetImage | undefined): ImageEditorValue | undefined => {
     if (!image) {
         return undefined;
     }
@@ -64,8 +64,6 @@ export const FileInputRenderer = ({
     const { isBaseBreakpoint } = useBreakpoint();
     const [editorOpen, setEditorOpen] = useState(false);
 
-    // Normalize the current value: this transparently upgrades legacy page values
-    // (`WebinyImageValue`) to the unified asset shape for display/editing.
     const asset = normalizeToAsset(value) ?? undefined;
     const editable = isEditableImage(asset);
 

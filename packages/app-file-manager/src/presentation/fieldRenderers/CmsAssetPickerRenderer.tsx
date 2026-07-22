@@ -6,23 +6,22 @@ import { FilePicker, RichItemPreview, ImageEditor, type ImageEditorValue } from 
 import {
     applyImageEditToAsset,
     assetImageToEditorValue,
-    emptyAssetValue,
     fileItemToAsset,
     hasAsset,
     hasImageEdit,
     isImageAsset,
-    type AssetValue
+    type Asset
 } from "./assetValue.js";
 import { CroppedAssetThumb } from "./CroppedAssetThumb.js";
 
-export interface AssetFieldRendererSettings {
+export interface AssetFieldRendererSettings extends Record<string, unknown> {
     imagesOnly?: boolean;
     accept?: string[];
 }
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        cmsAssetPicker: { fieldType: "object"; settings: AssetFieldRendererSettings };
+        cmsAssetPicker: { fieldType: "asset"; settings: AssetFieldRendererSettings };
     }
 }
 
@@ -34,7 +33,7 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
  */
 export const CmsAssetPickerRenderer = createFieldRenderer<"cmsAssetPicker">(({ field }) => {
     const settings = field.rendererSettings as AssetFieldRendererSettings | undefined;
-    const value = (field.value as AssetValue | null) ?? null;
+    const value = (field.value as Asset | null) ?? null;
     const [editing, setEditing] = useState(false);
 
     const src = value?.src ?? undefined;
@@ -77,9 +76,7 @@ export const CmsAssetPickerRenderer = createFieldRenderer<"cmsAssetPicker">(({ f
                                 field.onChange(fileItemToAsset(file));
                             })
                         }
-                        // Clear with a fully-nulled object: the object-field VM
-                        // ignores a bare `null`, so every child must be present.
-                        onRemoveItem={() => field.onChange(emptyAssetValue())}
+                        onRemoveItem={() => field.onChange(null)}
                         onEditItem={editable ? () => setEditing(true) : undefined}
                     />
                     {editable && value ? (

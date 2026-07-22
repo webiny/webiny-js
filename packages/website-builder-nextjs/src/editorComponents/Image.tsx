@@ -1,15 +1,10 @@
 import React from "react";
 import NextImage from "next/image";
-import type {
-    ComponentProps,
-    CssProperties,
-    WebinyAsset,
-    WebinyImageValue
-} from "@webiny/website-builder-react";
+import type { ComponentProps, CssProperties, Asset } from "@webiny/website-builder-react";
 import {
-    getWebinyAssetUrl,
-    getWebinyImageDimensions,
-    getWebinyImageSrcSet,
+    getAssetUrl,
+    getImageDimensions,
+    getImageSrcSet,
     normalizeToAsset
 } from "@webiny/website-builder-react";
 
@@ -18,7 +13,7 @@ type ImageProps = ComponentProps<{
     altText: string;
     highPriority: boolean;
     // Accepts the unified asset shape or a legacy value (existing pages).
-    image: WebinyAsset | WebinyImageValue;
+    image: Asset;
 }>;
 
 export const ImageComponent = (props: ImageProps) => {
@@ -41,20 +36,19 @@ export const ImageComponent = (props: ImageProps) => {
     // The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
     // a modern format negotiated from Accept (`?format=auto`). We hand `next/image` a
     // loader that builds that URL, and it drives the responsive `srcSet`.
-    const loader = ({ width }: { width: number }) =>
-        getWebinyAssetUrl(asset, { width, format: "auto" });
+    const loader = ({ width }: { width: number }) => getAssetUrl(asset, { width, format: "auto" });
 
     // Intrinsic size of the *delivered* (cropped) image, so next/image lays out at
     // the correct aspect ratio. Falls back to a plain <img> when dimensions are
     // unknown (next/image requires width + height unless `fill`).
-    const { width, height } = getWebinyImageDimensions(asset);
+    const { width, height } = getImageDimensions(asset);
 
     const style: CssProperties = { maxWidth: "100%", height: "auto", ...props.styles };
 
     if (!width || !height) {
         // No intrinsic size to lay out with — fall back to a plain <img>, still
         // responsive via the SDK's framework-agnostic srcSet (crop/format baked in).
-        const { src, srcSet } = getWebinyImageSrcSet(asset, {
+        const { src, srcSet } = getImageSrcSet(asset, {
             format: "auto",
             cssWidth: props.styles?.width
         });

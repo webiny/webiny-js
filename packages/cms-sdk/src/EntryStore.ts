@@ -57,7 +57,8 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
 
     applyPatch(patch: JsonPatchOperation[]) {
         runInAction(() => {
-            jsonPatch.applyPatch(this.entry!, patch, false, true);
+            const plain = toJS(this.entry!) as CmsEntry;
+            jsonPatch.applyPatch(plain, patch, false, true);
 
             const touchedKeys = new Set<string>();
             for (const op of patch) {
@@ -68,10 +69,11 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
             }
 
             for (const key of touchedKeys) {
-                const current = (this.entry!.values as Record<string, unknown>)[key];
-                const plain = toJS(current);
+                const plainValue = (plain.values as Record<string, unknown>)[key];
                 const value =
-                    plain !== null && typeof plain === "object" ? observable(plain) : plain;
+                    plainValue !== null && typeof plainValue === "object"
+                        ? observable(plainValue)
+                        : plainValue;
                 mobxSet(this.entry!.values as Record<string, unknown>, key, value);
             }
         });

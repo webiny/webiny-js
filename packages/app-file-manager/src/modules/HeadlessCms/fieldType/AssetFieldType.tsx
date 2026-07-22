@@ -28,7 +28,7 @@ class AssetFieldTypeImpl implements CmsFieldType.Interface {
 
     createField() {
         return {
-            type: "object",
+            type: "asset",
             validation: [],
             renderer: { name: "asset-input" },
             settings: {}

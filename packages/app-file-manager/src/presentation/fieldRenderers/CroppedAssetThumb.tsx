@@ -1,11 +1,11 @@
 import React from "react";
 import { getCroppedImageRenderStyles } from "@webiny/admin-ui";
-import type { AssetImageValue } from "./assetValue.js";
+import type { AssetImage } from "./assetValue.js";
 
 interface CroppedAssetThumbProps {
     src: string;
     name: string;
-    image: AssetImageValue;
+    image: AssetImage;
 }
 
 /**

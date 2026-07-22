@@ -6,10 +6,6 @@ interface CmsImageEditorDialogProps {
     editor: ReturnType<typeof useCmsImageEditor>;
 }
 
-/**
- * Renders the shared image editor for a CMS file field once a file has been
- * resolved (see `useCmsImageEditor`). Edits the File's asset-level crop/hotspot/alt.
- */
 export const CmsImageEditorDialog = ({ editor }: CmsImageEditorDialogProps) => {
     const { open, close, file, save } = editor;
 
@@ -17,16 +13,29 @@ export const CmsImageEditorDialog = ({ editor }: CmsImageEditorDialogProps) => {
         return null;
     }
 
+    const img = file.metadata?.image as Record<string, any> | undefined;
+    const value: ImageEditorValue | undefined =
+        img?.crop || img?.focalPoint
+            ? {
+                  crop: img.crop ?? undefined,
+                  hotspot: img.focalPoint
+                      ? { x: img.focalPoint.x, y: img.focalPoint.y, width: 1, height: 1 }
+                      : undefined,
+                  alt: img.alt ?? undefined,
+                  caption: img.caption ?? undefined
+              }
+            : undefined;
+
     return (
         <ImageEditor
             open={open}
             onClose={close}
             image={{
                 src: file.src,
-                width: file.metadata?.image?.width ?? 0,
-                height: file.metadata?.image?.height ?? 0
+                width: img?.width ?? 0,
+                height: img?.height ?? 0
             }}
-            value={file.metadata?.imageEdit as ImageEditorValue | undefined}
+            value={value}
             onSave={save}
         />
     );

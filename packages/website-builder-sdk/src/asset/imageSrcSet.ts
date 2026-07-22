@@ -1,15 +1,15 @@
 /**
- * Framework-agnostic responsive-image helpers built on {@link getWebinyAssetUrl}.
+ * Framework-agnostic responsive-image helpers built on {@link getAssetUrl}.
  *
  * Every renderer (Next.js, React, Vue, Nuxt — and any future Angular / React Native
- * / vanilla adapter) needs the same three things from a `WebinyAsset`: a width
+ * / vanilla adapter) needs the same three things from a `Asset`: a width
  * ladder, a `srcSet` with the per-usage crop/focal/format baked into each width, and
  * the delivered image's intrinsic (cropped) dimensions for layout-shift-free
  * rendering. Keeping that logic here — instead of re-deriving it per framework —
  * makes each renderer a thin adapter over the one delivery-URL contract.
  */
-import type { WebinyAsset } from "./types.js";
-import { getWebinyAssetUrl, type WebinyAssetUrlOptions } from "./deliveryUrl.js";
+import type { Asset } from "./types.js";
+import { getAssetUrl, type AssetUrlOptions } from "./deliveryUrl.js";
 
 /**
  * Canonical delivery-width ladder. Kept in lockstep with the server's resize ladder
@@ -73,7 +73,7 @@ const resolveWidths = (
     return result.length ? result : [widths[widths.length - 1]];
 };
 
-export interface WebinyImageDimensions {
+export interface ImageDimensions {
     /** Delivered (cropped) width in pixels, or `0` when the intrinsic size is unknown. */
     width: number;
     /** Delivered (cropped) height in pixels, or `0` when the intrinsic size is unknown. */
@@ -87,10 +87,10 @@ export interface WebinyImageDimensions {
  * right space and the page doesn't shift as the image loads. Returns `0`/`0` when the
  * asset's intrinsic size is unknown.
  */
-export const getWebinyImageDimensions = (
-    asset: Pick<WebinyAsset, "image"> | null | undefined,
+export const getImageDimensions = (
+    asset: Pick<Asset, "image"> | null | undefined,
     options: { aspectRatio?: number | string } = {}
-): WebinyImageDimensions => {
+): ImageDimensions => {
     const img = asset?.image;
     const iw = img?.width ?? 0;
     const ih = img?.height ?? 0;
@@ -109,7 +109,7 @@ export const getWebinyImageDimensions = (
     return { width, height };
 };
 
-export interface WebinyImageSrcSetOptions extends Omit<WebinyAssetUrlOptions, "width"> {
+export interface ImageSrcSetOptions extends Omit<AssetUrlOptions, "width"> {
     /** Widths to emit. Defaults to {@link IMAGE_RESIZE_WIDTHS}, trimmed by `cssWidth`. */
     widths?: readonly number[];
     /**
@@ -120,7 +120,7 @@ export interface WebinyImageSrcSetOptions extends Omit<WebinyAssetUrlOptions, "w
     cssWidth?: number | string;
 }
 
-export interface WebinyImageSrcSet {
+export interface ImageSrcSet {
     /** Single-URL fallback for clients that ignore `srcSet` (the largest emitted width). */
     src: string;
     /** `"<url> 128w, <url> 384w, …"` — crop/focal/format baked into every width. */
@@ -137,12 +137,12 @@ export interface WebinyImageSrcSet {
  * `src`/`srcSet` to any `<img>`-like primitive. Returns empty strings for a missing
  * asset.
  */
-export const getWebinyImageSrcSet = (
-    asset: (Pick<WebinyAsset, "src" | "image"> & { src?: string }) | null | undefined,
-    options: WebinyImageSrcSetOptions = {}
-): WebinyImageSrcSet => {
+export const getImageSrcSet = (
+    asset: (Pick<Asset, "src" | "image"> & { src?: string }) | null | undefined,
+    options: ImageSrcSetOptions = {}
+): ImageSrcSet => {
     const { widths = IMAGE_RESIZE_WIDTHS, cssWidth, ...urlOptions } = options;
-    const dims = getWebinyImageDimensions(asset, { aspectRatio: urlOptions.aspectRatio });
+    const dims = getImageDimensions(asset, { aspectRatio: urlOptions.aspectRatio });
 
     if (!asset?.src) {
         return { src: "", srcSet: "", width: dims.width, height: dims.height };
@@ -150,9 +150,9 @@ export const getWebinyImageSrcSet = (
 
     const selected = resolveWidths(widths, cssWidth);
     const srcSet = selected
-        .map(w => `${getWebinyAssetUrl(asset, { ...urlOptions, width: w })} ${w}w`)
+        .map(w => `${getAssetUrl(asset, { ...urlOptions, width: w })} ${w}w`)
         .join(", ");
-    const src = getWebinyAssetUrl(asset, { ...urlOptions, width: selected[selected.length - 1] });
+    const src = getAssetUrl(asset, { ...urlOptions, width: selected[selected.length - 1] });
 
     return { src, srcSet, width: dims.width, height: dims.height };
 };

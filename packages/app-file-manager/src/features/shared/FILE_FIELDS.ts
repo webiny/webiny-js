@@ -24,7 +24,10 @@ export const FILE_FIELDS = [
     "metadata.image.height",
     "metadata.image.format",
     "metadata.image.orientation",
+    "metadata.image.crop",
+    "metadata.image.focalPoint",
+    "metadata.image.alt",
+    "metadata.image.caption",
     "metadata.exif",
-    "metadata.iptc",
-    "metadata.imageEdit"
+    "metadata.iptc"
 ];

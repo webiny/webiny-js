@@ -10,10 +10,6 @@ interface UseEditImageOptions {
     onSaved?: (file: FileItem) => void;
 }
 
-/**
- * Reads/writes the asset-level image edit (crop, hotspot, alt, caption) stored on
- * `file.metadata.imageEdit`, and manages the editor dialog's open state.
- */
 export function useEditImage(file: FileItem, options: UseEditImageOptions = {}) {
     const { showSnackbar } = useSnackbar();
     const container = useContainer();
@@ -22,26 +18,37 @@ export function useEditImage(file: FileItem, options: UseEditImageOptions = {}) 
 
     const [open, setOpen] = useState(false);
 
-    const value = (file.metadata?.imageEdit as ImageEditorValue | undefined) ?? undefined;
+    const img = file.metadata?.image as Record<string, any> | undefined;
+    const value: ImageEditorValue | undefined = img
+        ? {
+              crop: img.crop ?? undefined,
+              hotspot: img.focalPoint
+                  ? { x: img.focalPoint.x, y: img.focalPoint.y, width: 1, height: 1 }
+                  : undefined,
+              alt: img.alt ?? undefined,
+              caption: img.caption ?? undefined
+          }
+        : undefined;
 
     const openEditor = useCallback(() => setOpen(true), []);
     const closeEditor = useCallback(() => setOpen(false), []);
 
     const save = useCallback(
         async (edit: ImageEditorValue) => {
-            // Preserve the rest of the metadata bag (image dimensions, exif, ...).
             const metadata: Record<string, any> = { ...file.metadata };
-            if (Object.keys(edit).length > 0) {
-                metadata.imageEdit = edit;
-            } else {
-                delete metadata.imageEdit;
-            }
+            const image: Record<string, any> = { ...metadata.image };
+
+            image.crop = edit.crop ?? undefined;
+            image.focalPoint = edit.hotspot ? { x: edit.hotspot.x, y: edit.hotspot.y } : undefined;
+            image.alt = edit.alt ?? undefined;
+            image.caption = edit.caption ?? undefined;
+
+            metadata.image = image;
 
             const result = await updateFileUseCase.execute({ id: file.id, data: { metadata } });
 
             if (result.success) {
                 showSnackbar(`Image settings saved.`);
-                // Surface the updated file so the drawer/list previews refresh in place.
                 onSaved?.(result.file);
             } else {
                 showSnackbar(result.error.message);

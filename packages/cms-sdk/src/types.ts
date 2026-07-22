@@ -1,3 +1,12 @@
+export type {
+    Asset,
+    AssetImage,
+    AssetCrop,
+    AssetFocalPoint,
+    AssetDocument,
+    AssetVideo
+} from "@webiny/sdk";
+
 export interface CmsSdkConfig {
     apiHost: string;
     apiKey: string;

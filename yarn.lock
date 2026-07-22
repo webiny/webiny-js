@@ -13508,6 +13508,7 @@ __metadata:
     "@types/deep-equal": "npm:^1.0.4"
     "@types/is-hotkey": "npm:^0.1.10"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
     csstype: "npm:^3.2.3"
     deep-equal: "npm:^2.2.3"
     deepmerge: "npm:^4.3.1"

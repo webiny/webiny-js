@@ -24,11 +24,6 @@ const parseFileId = (url: string): string | undefined => {
     return parts.length >= 2 ? parts[parts.length - 2] : undefined;
 };
 
-/**
- * Drives the image editor for a Headless CMS file field, where the field value is
- * only a URL. Resolves the underlying File (to get its dimensions + current edit),
- * and saves the crop/hotspot/alt to the File's asset-level `metadata.imageEdit`.
- */
 export function useCmsImageEditor() {
     const { showSnackbar } = useSnackbar();
     const container = useContainer();
@@ -64,11 +59,14 @@ export function useCmsImageEditor() {
                 return;
             }
             const metadata: Record<string, any> = { ...file.metadata };
-            if (Object.keys(edit).length > 0) {
-                metadata.imageEdit = edit;
-            } else {
-                delete metadata.imageEdit;
-            }
+            const image: Record<string, any> = { ...metadata.image };
+
+            image.crop = edit.crop ?? undefined;
+            image.focalPoint = edit.hotspot ? { x: edit.hotspot.x, y: edit.hotspot.y } : undefined;
+            image.alt = edit.alt ?? undefined;
+            image.caption = edit.caption ?? undefined;
+
+            metadata.image = image;
 
             const result = await updateFileUseCase.execute({ id: file.id, data: { metadata } });
             if (result.success) {

@@ -6,9 +6,9 @@
  * `next/image`, a plain `<img>`, Angular, React Native, Open Graph tags, email, etc.
  * Each distinct framing yields its own cacheable URL.
  */
-import type { WebinyAsset } from "./types.js";
+import type { Asset } from "./types.js";
 
-export interface WebinyAssetUrlOptions {
+export interface AssetUrlOptions {
     /** Delivery width (snapped to the configured width ladder server-side). */
     width?: number;
     /** Output format, e.g. `"auto"` (negotiated via Accept), `"webp"`, `"avif"`. */
@@ -36,7 +36,7 @@ const round = (n: number): number => Math.round(n * 10000) / 10000;
  * `undefined` when there is no crop (or a full-image, no-op crop).
  */
 export const getAssetCropParam = (
-    asset: Pick<WebinyAsset, "image"> | null | undefined
+    asset: Pick<Asset, "image"> | null | undefined
 ): string | undefined => {
     const c = asset?.image?.crop;
     if (!c || (c.top === 0 && c.left === 0 && c.bottom === 0 && c.right === 0)) {
@@ -49,9 +49,9 @@ export const getAssetCropParam = (
  * Build a delivery URL for an asset, baking the per-usage crop into the delivered
  * image (plus optional width/format/quality). Returns `""` for a missing asset.
  */
-export const getWebinyAssetUrl = (
-    asset: (Pick<WebinyAsset, "src" | "image"> & { src?: string }) | null | undefined,
-    options: WebinyAssetUrlOptions = {}
+export const getAssetUrl = (
+    asset: (Pick<Asset, "src" | "image"> & { src?: string }) | null | undefined,
+    options: AssetUrlOptions = {}
 ): string => {
     const src = asset?.src;
     if (!src) {

@@ -1,17 +1,12 @@
 import React from "react";
-import type { AspectRatioInput, WebinyAsset, WebinyImageValue } from "@webiny/website-builder-sdk";
-import { getWebinyImageProps } from "./getWebinyImageProps.js";
+import type { AspectRatioInput, Asset } from "@webiny/website-builder-sdk";
+import { getImageProps } from "./getImageProps.js";
 
-export interface WebinyImageComponentProps extends Omit<
+export interface ImageComponentProps extends Omit<
     React.ImgHTMLAttributes<HTMLImageElement>,
     "src" | "width" | "height" | "style" | "alt"
 > {
-    /**
-     * The image value from a Webiny file input. Accepts the unified `WebinyAsset`
-     * shape or a legacy `WebinyImageValue` (existing pages) — both carry an
-     * optional crop / focal point / alt.
-     */
-    image: WebinyAsset | WebinyImageValue;
+    image: Asset;
     /** Target aspect ratio (e.g. `16 / 9` or `{ width, height }`). Omit for the crop's own ratio. */
     aspectRatio?: AspectRatioInput;
     /** Explicit alt text; falls back to the image's stored alt. */
@@ -36,16 +31,7 @@ export interface WebinyImageComponentProps extends Omit<
 
 const DEFAULT_WIDTHS = [640, 750, 828, 1080, 1200, 1920, 2048];
 
-/**
- * Renders a Webiny image honoring its non-destructive crop + hotspot, using pure
- * CSS — no image backend required. The wrapper is an aspect-ratio box that clips
- * to the cropped region (so it also prevents layout shift), and the `<img>` is
- * scaled/positioned inside it.
- *
- * Compatible with SSR and static export. Pass a `loader` to emit a responsive
- * `srcSet` (e.g. via the Webiny CDN's width parameter).
- */
-export function WebinyImage({
+export function Image({
     image,
     aspectRatio,
     alt,
@@ -56,14 +42,14 @@ export function WebinyImage({
     widths = DEFAULT_WIDTHS,
     sizes,
     ...imgProps
-}: WebinyImageComponentProps) {
+}: ImageComponentProps) {
     const {
         style: containerStyle,
         imgStyle,
         src,
         alt: resolvedAlt,
         width
-    } = getWebinyImageProps(image, { aspectRatio, alt });
+    } = getImageProps(image, { aspectRatio, alt });
 
     const srcSet = loader
         ? widths

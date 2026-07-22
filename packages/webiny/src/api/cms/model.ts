@@ -3,6 +3,7 @@ export { ModelBuilder } from "@webiny/api-headless-cms/features/modelBuilder/mod
 export { DataFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { LayoutFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "@webiny/api-headless-cms/features/modelBuilder/fields/abstractions.js";
+export { type IAssetFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/AssetFieldType.js";
 export type { IFieldRendererRegistry } from "@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.js";
 export type {
     IFieldBuilderRegistry,
