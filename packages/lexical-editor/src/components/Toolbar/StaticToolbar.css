@@ -55,7 +55,8 @@
 }
 
 .static-toolbar .popup-item:hover:not([disabled]) {
-  background-color: var(--color-neutral-light);
+  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
+  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
 }
 
 .static-toolbar select.popup-item {
@@ -186,7 +187,8 @@
 }
 
 .static-toolbar .toolbar-item:hover:not([disabled]) {
-  background-color: var(--color-neutral-light);
+  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
+  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
 }
 
 .static-toolbar .toolbar-item.font-family .text {
