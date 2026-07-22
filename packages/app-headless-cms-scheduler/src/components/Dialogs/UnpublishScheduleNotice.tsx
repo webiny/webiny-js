@@ -4,8 +4,8 @@ import { UnpublishEntryConfirmDialog } from "@webiny/app-headless-cms/exports/ad
 import { ScheduleNoticeAlert } from "./ScheduleNoticeAlert.js";
 
 /**
- * Decorates the "Unpublish entry" dialog to warn (via its `beforeContent` prop) that unpublishing
- * now will cancel an existing scheduled action for the entry.
+ * Decorates the "Unpublish entry" dialog to warn (via its `intro` prop) that unpublishing now will
+ * cancel an existing scheduled action for the entry.
  */
 export const UnpublishScheduleNoticeDecorator = UnpublishEntryConfirmDialog.createDecorator(
     Original => {
@@ -14,9 +14,9 @@ export const UnpublishScheduleNoticeDecorator = UnpublishEntryConfirmDialog.crea
             return (
                 <Original
                     {...props}
-                    beforeContent={
+                    intro={
                         <>
-                            {props.beforeContent}
+                            {props.intro}
                             <ScheduleNoticeAlert targetId={params.entryId} verb={"Unpublishing"} />
                         </>
                     }

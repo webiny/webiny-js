@@ -8,12 +8,12 @@ export interface UnpublishEntryConfirmDialogProps {
      * Arbitrary content rendered at the top of the dialog body. Features (e.g. the scheduler)
      * decorate this component and pass a notice here.
      */
-    beforeContent?: React.ReactNode;
+    intro?: React.ReactNode;
 }
 
 export const UnpublishEntryConfirmDialog = makeDecoratable(
     "UnpublishEntryConfirmDialog",
-    ({ beforeContent }: UnpublishEntryConfirmDialogProps) => {
+    ({ intro }: UnpublishEntryConfirmDialogProps) => {
         const { onConfirm, onCancel, closeDialog } = useNamedConfirmationDialog<{
             entryId: string;
         }>();
@@ -32,7 +32,7 @@ export const UnpublishEntryConfirmDialog = makeDecoratable(
                     closeDialog();
                 }}
             >
-                {beforeContent}
+                {intro}
                 <p>Are you sure you want to unpublish this entry?</p>
             </ConfirmationDialog>
         );

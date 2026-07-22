@@ -10,12 +10,12 @@ export interface PublishEntryConfirmDialogProps {
      * Arbitrary content rendered at the top of the dialog body. Features (e.g. the scheduler)
      * decorate this component and pass a notice here.
      */
-    beforeContent?: React.ReactNode;
+    intro?: React.ReactNode;
 }
 
 export const PublishEntryConfirmDialog = makeDecoratable(
     "PublishEntryConfirmDialog",
-    ({ beforeContent }: PublishEntryConfirmDialogProps) => {
+    ({ intro }: PublishEntryConfirmDialogProps) => {
         const { onConfirm, onCancel, closeDialog, params } = useNamedConfirmationDialog<
             { entry: CmsContentEntry },
             { revisionDescription: string }
@@ -41,7 +41,7 @@ export const PublishEntryConfirmDialog = makeDecoratable(
                     closeDialog();
                 }}
             >
-                {beforeContent}
+                {intro}
                 <Text as={"div"} size={"md"} className={"mb-md"}>
                     You are about to publish a record titled{" "}
                     <span className={"font-bold"}>{params.entry.meta.title}</span>.<br />

@@ -5,8 +5,8 @@ import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/inde
 import { ScheduleNoticeAlert } from "./ScheduleNoticeAlert.js";
 
 /**
- * Decorates the "Publish entry" dialog to warn (via its `beforeContent` prop) that publishing now
- * will cancel an existing scheduled action for the entry.
+ * Decorates the "Publish entry" dialog to warn (via its `intro` prop) that publishing now will
+ * cancel an existing scheduled action for the entry.
  */
 export const PublishScheduleNoticeDecorator = PublishEntryConfirmDialog.createDecorator(
     Original => {
@@ -15,9 +15,9 @@ export const PublishScheduleNoticeDecorator = PublishEntryConfirmDialog.createDe
             return (
                 <Original
                     {...props}
-                    beforeContent={
+                    intro={
                         <>
-                            {props.beforeContent}
+                            {props.intro}
                             <ScheduleNoticeAlert targetId={params.entry?.id} verb={"Publishing"} />
                         </>
                     }
