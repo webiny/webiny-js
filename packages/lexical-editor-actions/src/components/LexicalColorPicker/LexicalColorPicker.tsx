@@ -106,8 +106,10 @@ const styles = {
 };
 
 const chromePickerStyle = css({
-    width: "270px !important",
-    margin: "15px -15px -15px -15px"
+    boxShadow: "none !important",
+    marginTop: "15px",
+    marginLeft: "-15px",
+    width: "240px !important"
 });
 
 interface LexicalColorPickerProps {
@@ -118,7 +120,7 @@ interface LexicalColorPickerProps {
     allowCustomColor?: boolean;
 }
 
-const showPickerStyle = { display: "block" };
+const showPickerStyle = { display: "block", width: "100%" };
 const hidePickerStyle = { display: "none" };
 
 export const LexicalColorPicker = ({

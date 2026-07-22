@@ -144,9 +144,7 @@ Note: `GraphQLSchemaFactory` implementations typically have `dependencies: []` b
 Full pattern using `Response` / `ErrorResponse` wrappers and UseCase injection:
 
 ```typescript
-import { Response } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { Response, ErrorResponse, GraphQLSchemaFactory } from "webiny/api/graphql";
 import { GetCurrentEntityUseCase } from "../features/getCurrentEntity/abstractions.js";
 
 class GetCurrentEntitySchema implements GraphQLSchemaFactory.Interface {
@@ -262,34 +260,22 @@ builder.addResolver<{ entityId: string }>({
 When GraphQL inputs must reflect CMS model fields (e.g., an extensible "extensions" object):
 
 ```typescript
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { Response, ErrorResponse } from "@webiny/handler-graphql";
-import { PluginsContainer } from "@webiny/api-headless-cms/legacy/abstractions.js";
-import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
-import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
-import { ListModelsUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
+import { GraphQLSchemaFactory, Response, ErrorResponse } from "webiny/api/graphql";
+import { ListModelsUseCase } from "webiny/api/cms/model";
 import { CreateEntityUseCase } from "../features/createEntity/abstractions.js";
-import { ENTITY_MODEL_ID } from "~/shared/constants.js";
 
 class CreateEntitySchema implements GraphQLSchemaFactory.Interface {
-  constructor(
-    private pluginsContainer: PluginsContainer.Interface,
-    private listModelsUseCase: ListModelsUseCase.Interface
-  ) {}
+  constructor(private listModelsUseCase: ListModelsUseCase.Interface) {}
 
   async execute(
     builder: GraphQLSchemaFactory.SchemaBuilder
   ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
-    const inputCreateFields = await this.getExtensionsInput();
-
     builder.addTypeDefs(/* GraphQL */ `
-      ${inputCreateFields.map(f => f.typeDefs).join("\n")}
-
       input CreateEntityInput {
         id: ID
         name: String!
         description: String
-        ${inputCreateFields.map(f => f.fields).join("\n")}
+        extensions: JSON
       }
 
       extend type MyPackageMutation {
@@ -313,66 +299,11 @@ class CreateEntitySchema implements GraphQLSchemaFactory.Interface {
 
     return builder;
   }
-
-  private async getExtensionsInput() {
-    const fieldTypePlugins = createFieldTypePluginRecords(this.pluginsContainer);
-    const modelsResult = await this.listModelsUseCase.execute({
-      includePlugins: true,
-      includePrivate: false
-    });
-
-    if (modelsResult.isFail()) {
-      return [{ typeDefs: "", fields: "extensions: JSON" }];
-    }
-
-    const models = modelsResult.value;
-    const model = models.find(m => m.modelId === ENTITY_MODEL_ID)!;
-
-    return renderInputFields({
-      models,
-      model,
-      fields: model.fields.filter(f => f.fieldId === "extensions"),
-      fieldTypePlugins
-    });
-  }
 }
 
-// Note: constructor DI needed here because of PluginsContainer + ListModelsUseCase
 export default GraphQLSchemaFactory.createImplementation({
   implementation: CreateEntitySchema,
-  dependencies: [PluginsContainer, ListModelsUseCase]
-});
-```
-
----
-
-## Permission Transformer (Adding CMS Permissions)
-
-When your package needs CMS access, implement a `PermissionTransformer` to expand your custom permission into the required CMS permissions:
-
-```typescript
-// features/addCmsPermissions/AddCmsPermissions.ts
-import { PermissionTransformer } from "@webiny/api-core/features/security/authorization/AuthorizationContext/abstractions.js";
-
-class AddCmsPermissions implements PermissionTransformer.Interface {
-  execute(permission: PermissionTransformer.Permission) {
-    if (permission.name !== "mypackage.*") {
-      return permission;
-    }
-
-    return [
-      permission,
-      { name: "cms.endpoint.manage" },
-      { name: "cms.contentModel", own: false, rwd: "r", pw: "", models: ["myEntityModelId"] },
-      { name: "cms.contentModelGroup", own: false, rwd: "r", pw: "", groups: ["hidden"] },
-      { name: "cms.contentEntry", own: false, rwd: "rwd", pw: "" }
-    ];
-  }
-}
-
-export default PermissionTransformer.createImplementation({
-  implementation: AddCmsPermissions,
-  dependencies: []
+  dependencies: [ListModelsUseCase]
 });
 ```
 
@@ -385,7 +316,7 @@ export default PermissionTransformer.createImplementation({
 - Resolver `dependencies` array lists DI abstractions; resolver function receives resolved instances in same order
 - Type the resolver args generic: `builder.addResolver<{ input: UseCaseAbstraction.Input }>`
 - The root Query/Mutation types define a namespace type (e.g., `MyPackageQuery`, `MyPackageMutation`) extended by individual schemas
-- Use `Response` for success, `ErrorResponse` for failure (from `@webiny/handler-graphql`)
+- Use `Response` for success, `ErrorResponse` for failure (from `webiny/api/graphql`)
 - Export as `default`
 
 ## Quick Reference
@@ -398,7 +329,7 @@ Return:       Promise<GraphQLSchemaFactory.SchemaBuilder>
 Export:       GraphQLSchemaFactory.createImplementation({ implementation, dependencies })
 Register:     <Api.Extension src={"@/extensions/mySchema/MyGraphQLSchema.ts"} />
 Deploy:       yarn webiny deploy api --env=dev
-Response:     import { Response, ErrorResponse } from "@webiny/handler-graphql"
+Response:     import { Response, ErrorResponse } from "webiny/api/graphql"
 ```
 
 ## Related Skills

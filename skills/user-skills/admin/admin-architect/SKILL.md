@@ -388,11 +388,11 @@ export const NextjsConfigRepository = RepositoryAbstraction.createImplementation
 
 ## Gateway Implementation (GraphQL)
 
-Gateways handle external I/O. Use `GraphQLClient` for GraphQL calls:
+Gateways handle external I/O. Use `MainGraphQLClient` for GraphQL calls:
 
 ```ts
 import { NextjsConfigGateway as GatewayAbstraction } from "./abstractions.js";
-import { GraphQLClient } from "@webiny/app/features/graphqlClient";
+import { MainGraphQLClient } from "webiny/admin";
 
 const GET_NEXTJS_CONFIG = /* GraphQL */ `
   query GetNextjsConfig {
@@ -418,7 +418,7 @@ type GetNextjsConfigResponse = {
 };
 
 class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
-  constructor(private client: GraphQLClient.Interface) {}
+  constructor(private client: MainGraphQLClient.Interface) {}
 
   async getConfig(): Promise<string> {
     const response = await this.client.execute<GetNextjsConfigResponse>({
@@ -436,7 +436,7 @@ class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
 
 export const NextjsConfigGateway = GatewayAbstraction.createImplementation({
   implementation: NextjsGraphQLGateway,
-  dependencies: [GraphQLClient]
+  dependencies: [MainGraphQLClient]
 });
 ```
 
@@ -445,7 +445,7 @@ export const NextjsConfigGateway = GatewayAbstraction.createImplementation({
 - Define the GraphQL query as a string constant with `/* GraphQL */` comment for syntax highlighting
 - Type the response shape explicitly
 - Handle the `data`/`error` envelope pattern
-- Inject `GraphQLClient` from `@webiny/app/features/graphqlClient`
+- Inject `MainGraphQLClient` from `webiny/admin` — it's preconfigured for the main GQL endpoint
 
 ## Composite Features (Aggregating Child Features)
 

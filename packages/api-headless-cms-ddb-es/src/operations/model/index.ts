@@ -7,7 +7,7 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { configurations } from "~/configurations.js";
+import type { Configurations } from "~/configurations.js";
 import type { Client } from "@webiny/api-opensearch";
 import type { IModelEntity } from "~/definitions/types.js";
 
@@ -52,17 +52,18 @@ const createType = (): string => {
 export interface CreateModelsStorageOperationsParams {
     entity: IModelEntity;
     elasticsearch: Client;
+    configurations: Configurations;
 }
 
 export const createModelsStorageOperations = (
     params: CreateModelsStorageOperationsParams
 ): CmsModelStorageOperations => {
-    const { entity, elasticsearch } = params;
+    const { entity, elasticsearch, configurations } = params;
 
     const create = async (params: CmsModelStorageOperationsCreateParams) => {
         const { model } = params;
 
-        const { index } = configurations.es({
+        const { index } = await configurations.es({
             model
         });
 
@@ -129,10 +130,6 @@ export const createModelsStorageOperations = (
         const { model } = params;
         const keys = createKeys(model);
 
-        const { index } = configurations.es({
-            model
-        });
-
         try {
             await entity.delete(keys);
         } catch (ex) {
@@ -143,25 +140,6 @@ export const createModelsStorageOperations = (
                     error: ex,
                     model,
                     keys
-                }
-            );
-        }
-        /**
-         * Always delete the model index after deleting the model.
-         */
-        try {
-            await elasticsearch.indices.delete({
-                index,
-                ignore_unavailable: true
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                `Could not delete elasticsearch index "${index}" after model record delete.`,
-                "DELETE_MODEL_INDEX_ERROR",
-                {
-                    error: ex,
-                    index,
-                    model
                 }
             );
         }
