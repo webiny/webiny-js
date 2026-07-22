@@ -1,6 +1,19 @@
 import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
+import { makeDecoratable } from "@webiny/react-composition";
 import type { IFieldVM, IObjectFieldVM, FieldRendererSettings } from "./abstractions.js";
+
+/**
+ * Decoratable wrapper rendered around every leaf field's content. Features can decorate it to
+ * inject per-field UI (e.g. a comment marker) keyed on `field.qualifiedName`, without forking
+ * the form. By default it renders the field content unchanged.
+ */
+export const FormFieldWrapper = makeDecoratable(
+    "FormFieldWrapper",
+    ({ children }: { field: IFieldVM; children?: React.ReactNode }) => {
+        return <>{children}</>;
+    }
+);
 
 type RendererField<TName extends string> = IFieldVM & {
     rendererSettings: FieldRendererSettings<TName>;
@@ -27,7 +40,11 @@ const ScrollOnFocus = observer(
             field.clearFocusRequest();
         }, [field.focusRequested]);
 
-        return <div ref={ref}>{children}</div>;
+        return (
+            <div ref={ref} data-field-path={field.qualifiedName}>
+                <FormFieldWrapper field={field}>{children}</FormFieldWrapper>
+            </div>
+        );
     }
 );
 

@@ -39,6 +39,7 @@
     "@webiny/api-websockets-ddb": "latest",
     "@webiny/api-websockets-server": "latest",
     "@webiny/api-websockets-sql": "latest",
+    "@webiny/api-collaboration": "latest",
     "@webiny/api-workflows": "latest",
     "@webiny/aws-sdk": "latest",
     "@webiny/build-tools": "latest",

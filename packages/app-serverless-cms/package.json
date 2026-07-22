@@ -19,6 +19,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-ui": "0.0.0",
     "@webiny/app-audit-logs": "0.0.0",
+    "@webiny/app-collaboration": "0.0.0",
     "@webiny/app-file-manager": "0.0.0",
     "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
