@@ -5,7 +5,7 @@ import { ContentEntryListConfig } from "@webiny/app-headless-cms/admin/config/co
 import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
 import { LiveTag } from "./LiveTag.js";
 import { ScheduledTag } from "./ScheduledTag.js";
-import { isScheduleMoot } from "./isScheduleMoot.js";
+import { isScheduleRedundant } from "./isScheduleRedundant.js";
 
 /**
  * Overrides the CMS "Live" column cell to surface scheduled publish/unpublish actions.
@@ -31,9 +31,9 @@ export const CellLive = observer(() => {
     const liveVersion = entry.live?.version;
 
     const rawScheduled = presenter.getScheduledAction(entry.id);
-    // Ignore a scheduled action the entry's current state has already made moot (see helper).
+    // Ignore a scheduled action the entry's current state has already made redundant (see helper).
     const scheduled =
-        rawScheduled && !isScheduleMoot(rawScheduled, liveVersion, entry.meta?.version)
+        rawScheduled && !isScheduleRedundant(rawScheduled, liveVersion, entry.meta?.version)
             ? rawScheduled
             : undefined;
 
