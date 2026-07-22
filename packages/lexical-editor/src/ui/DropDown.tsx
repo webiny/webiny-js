@@ -17,10 +17,19 @@ export function DropDownItem({
     title?: string;
     selected?: boolean;
 }) {
+    // Selectable items (those passing `selected`) reserve a leading check slot so labels
+    // stay aligned whether or not they're selected — matching admin-ui's DropdownMenu.
+    const hasCheckSlot = selected !== undefined;
     return (
         <button className={className} onClick={onClick} title={title} type="button">
+            {hasCheckSlot ? (
+                selected ? (
+                    <CheckIcon className="item-check" />
+                ) : (
+                    <span className="item-check" aria-hidden="true" />
+                )
+            ) : null}
             {children}
-            {selected ? <CheckIcon className="item-check" /> : null}
         </button>
     );
 }
