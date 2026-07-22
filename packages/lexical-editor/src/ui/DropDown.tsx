@@ -2,21 +2,25 @@ import type { ReactNode } from "react";
 import * as React from "react";
 import { DropdownMenu } from "radix-ui";
 import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
+import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 
 export function DropDownItem({
     children,
     className,
     onClick,
-    title
+    title,
+    selected
 }: {
     children: React.ReactNode;
     className: string;
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
     title?: string;
+    selected?: boolean;
 }) {
     return (
         <button className={className} onClick={onClick} title={title} type="button">
             {children}
+            {selected ? <CheckIcon className="item-check" /> : null}
         </button>
     );
 }

@@ -92,9 +92,8 @@ export const TypographyDropDown = () => {
                 >
                     {styles?.map(option => (
                         <DropDownItem
-                            className={`item typography-item ${
-                                value?.id === option.id ? "active dropdown-item-active" : ""
-                            }`}
+                            className="item typography-item"
+                            selected={value?.id === option.id}
                             onClick={() => applyTypography(option)}
                             key={option.id}
                         >
