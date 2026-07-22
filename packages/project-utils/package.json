@@ -32,10 +32,10 @@
   "peerDependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-aws": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0"
   },
   "license": "MIT",

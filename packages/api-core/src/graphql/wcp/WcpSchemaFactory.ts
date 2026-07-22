@@ -1,6 +1,6 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 class WcpSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {

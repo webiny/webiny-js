@@ -15,11 +15,11 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-core-testing/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-sync-ddb-to-opensearch/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -55,6 +55,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-sync-ddb-to-opensearch/*": ["../api-sync-ddb-to-opensearch/src/*"],
       "@webiny/api-sync-ddb-to-opensearch": ["../api-sync-ddb-to-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
@@ -63,8 +65,6 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

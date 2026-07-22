@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { createPagesSchema } from "~/graphql/pages/pages.gql.js";
 import { createRedirectsSchema } from "./redirects/redirects.gql.js";
 

@@ -1,4 +1,4 @@
-import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/api-graphql";
 import { createZodError } from "@webiny/utils";
 import { listWorkflowStatesValidation } from "./validation/listWorkflowStates.js";
 import { startWorkflowStateValidation } from "./validation/startWorkflowState.js";

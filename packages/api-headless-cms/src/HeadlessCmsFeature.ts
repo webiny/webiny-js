@@ -4,7 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
 import { createCmsRoute } from "./createCmsRoute.js";
-import { createRequestBody, processRequestBody } from "@webiny/handler-graphql";
+import { createRequestBody, processRequestBody } from "@webiny/api-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { Benchmark } from "@webiny/api/Benchmark.js";
 import { PluginsContainer } from "@webiny/plugins";
@@ -60,7 +60,7 @@ import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
 import { createBaseSchemaPlugins } from "~/graphql/schema/baseSchema.js";
 import { exportPlugin } from "~/export/graphql/index.js";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { CmsGraphQLSchemaFactory } from "~/graphql/CmsGraphQLSchemaFactory.js";
 import { CmsExport, CmsImport } from "~/export/abstractions.js";
 import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";

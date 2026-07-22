@@ -19,11 +19,11 @@
     "@graphql-tools/merge": "9.2.0",
     "@graphql-tools/schema": "10.0.36",
     "@webiny/api": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "~/index";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";

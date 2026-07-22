@@ -1,4 +1,4 @@
-import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/api-graphql";
 import { createZodError } from "@webiny/utils";
 import { listWorkflowsValidation } from "./validation/listWorkflows.js";
 import { getWorkflowValidation } from "./validation/getWorkflow.js";

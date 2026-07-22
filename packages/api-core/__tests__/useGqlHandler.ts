@@ -1,5 +1,5 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "~/features/storageOperations/abstractions.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";

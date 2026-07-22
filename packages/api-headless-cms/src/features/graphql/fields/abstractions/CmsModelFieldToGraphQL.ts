@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { GraphQLFieldResolver, Resolvers } from "@webiny/handler-graphql/types.js";
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver, Resolvers } from "@webiny/api-graphql/types.js";
+import type { GraphQLSchemaDefinition } from "@webiny/api-graphql/types.js";
 import type { CmsModelField, CmsModelFieldType } from "~/types/modelField.js";
 import type { CmsModel } from "~/types/model.js";
 import type { CmsModelFieldDefinition } from "~/types/types.js";

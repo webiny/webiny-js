@@ -1,5 +1,5 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { addSecurityBaseSchema } from "./addSecurityBaseSchema.js";
 import { addApiKeySchema } from "./addApiKeySchema.js";
 import { addRoleSchema } from "./addRoleSchema.js";

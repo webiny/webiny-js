@@ -17,8 +17,8 @@
     { "path": "../project" },
     { "path": "../project-aws" },
     { "path": "../utils" },
+    { "path": "../api-graphql" },
     { "path": "../handler-aws" },
-    { "path": "../handler-graphql" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -58,10 +58,10 @@
       "@webiny/project-aws": ["../project-aws/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

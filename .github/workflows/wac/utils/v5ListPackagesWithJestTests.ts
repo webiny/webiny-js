@@ -496,7 +496,7 @@ const V5_PACKAGES_LIST = [
     "handler-aws",
     "handler-client",
     "handler-db",
-    "handler-graphql",
+    "api-graphql",
     "handler-logs",
     "i18n",
     "i18n-react",

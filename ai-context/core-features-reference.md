@@ -194,7 +194,7 @@ This document provides the correct import paths and type definitions for commonl
 ### FmGraphQLSchema (File Manager)
 
 - **Import:** `import { FmGraphQLSchema } from "@webiny/api-file-manager/graphql/FmGraphQLSchema.js"`
-- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/api-graphql/graphql/abstractions.js`
 - **Usage:** Single `GraphQLSchemaFactory` implementation for the entire FM GraphQL API (base types, settings, file CRUD, getFileByUrl). Registered in `FileManagerFeature`. Uses `builder.addTypeDefs()` and `builder.addResolver({ path, dependencies, resolver })` — no `context.container.resolve()` in resolvers.
 
 ### GetUploadPayloadUseCase (File Manager)
@@ -218,7 +218,7 @@ This document provides the correct import paths and type definitions for commonl
 ### FmUploadGraphQLSchema (File Manager)
 
 - **Import:** `import { FmUploadGraphQLSchema } from "@webiny/api-file-manager/graphql/FmUploadGraphQLSchema.js"`
-- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/api-graphql/graphql/abstractions.js`
 - **Usage:** Shared `GraphQLSchemaFactory` for FM upload operations (presigned payloads, multipart upload). Resolves `GetUploadPayloadUseCase`, `CreateMultiPartUploadUseCase`, `CompleteMultiPartUploadUseCase` from DI. Registered automatically by `FileManagerFeature`. Provider packages only need to register their implementations of the three abstractions.
 
 ### ExtractMetadataHandler (File Manager)

@@ -16,11 +16,11 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",

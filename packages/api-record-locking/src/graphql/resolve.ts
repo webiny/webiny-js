@@ -1,4 +1,4 @@
-import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/api-graphql";
 import type { IRecordLockingMeta } from "~/types.js";
 
 export const resolve = async <T>(cb: () => Promise<T>): Promise<Response<T> | ErrorResponse> => {

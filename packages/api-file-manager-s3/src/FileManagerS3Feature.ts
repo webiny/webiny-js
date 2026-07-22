@@ -1,6 +1,6 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { createS3GraphQLSchema } from "./graphql/schema.js";
 import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/feature.js";

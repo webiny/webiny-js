@@ -258,17 +258,17 @@
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json"
+        "/packages/api-graphql/package.json"
       ]
     },
     {
       "name": "@graphql-tools/resolvers-composition",
       "version": "7.0.33",
-      "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
+      "files": ["/packages/api-graphql/package.json", "/packages/api-graphql/package.json"]
     },
     {
       "name": "@graphql-tools/schema",
@@ -278,18 +278,18 @@
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-audit-logs/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json"
+        "/packages/api-graphql/package.json"
       ]
     },
     {
       "name": "@graphql-tools/utils",
       "version": "11.2.0",
-      "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
+      "files": ["/packages/api-graphql/package.json", "/packages/api-graphql/package.json"]
     },
     {
       "name": "@iconify/json",
@@ -1129,7 +1129,7 @@
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/languages/package.json",
         "/packages/self-hosted-auth/package.json",
         "/packages/webhooks/package.json",
@@ -1147,7 +1147,7 @@
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/languages/package.json",
         "/packages/self-hosted-auth/package.json",
         "/packages/webhooks/package.json"
@@ -1161,7 +1161,7 @@
     {
       "name": "graphql-scalars",
       "version": "1.25.0",
-      "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
+      "files": ["/packages/api-graphql/package.json", "/packages/api-graphql/package.json"]
     },
     {
       "name": "graphql-tag",
@@ -2464,7 +2464,7 @@
         "/packages/background-tasks/package.json",
         "/packages/cli-core/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/mcp/package.json",
         "/packages/okta/package.json",
         "/packages/project/package.json",
@@ -2499,7 +2499,7 @@
         "/packages/background-tasks/package.json",
         "/packages/cli-core/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/mcp/package.json",
         "/packages/okta/package.json",
         "/packages/project/package.json",
@@ -3279,7 +3279,7 @@
         "/packages/form/package.json",
         "/packages/handler/package.json",
         "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3371,7 +3371,7 @@
         "/packages/form/package.json",
         "/packages/handler/package.json",
         "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3550,7 +3550,7 @@
         "/packages/form/package.json",
         "/packages/handler/package.json",
         "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3685,7 +3685,7 @@
         "/packages/form/package.json",
         "/packages/handler/package.json",
         "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3802,7 +3802,7 @@
         "/packages/form/package.json",
         "/packages/handler/package.json",
         "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/languages/package.json",
         "/packages/lexical-converter/package.json",
@@ -3887,7 +3887,7 @@
         "/packages/form/package.json",
         "/packages/handler/package.json",
         "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/languages/package.json",
         "/packages/lexical-converter/package.json",
@@ -4476,7 +4476,7 @@
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] },
             { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/cognito/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/languages/package.json", "types": ["dependencies"] },
             { "file": "/packages/self-hosted-auth/package.json", "types": ["dependencies"] },
             { "file": "/packages/webhooks/package.json", "types": ["dependencies"] }
@@ -5093,7 +5093,7 @@
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
@@ -5287,7 +5287,7 @@
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-converter/package.json", "types": ["devDependencies"] },
@@ -5367,7 +5367,7 @@
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
             { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -5383,7 +5383,7 @@
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
             { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -5395,7 +5395,7 @@
           "version": "11.2.0",
           "files": [
             { "file": "/package.json", "types": ["resolutions"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -5936,7 +5936,7 @@
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
@@ -6081,7 +6081,7 @@
             { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/cognito/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/mcp/package.json", "types": ["dependencies"] },
             { "file": "/packages/okta/package.json", "types": ["dependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
@@ -7894,7 +7894,7 @@
       "versions": [
         {
           "version": "7.0.33",
-          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
+          "files": [{ "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }]
         }
       ]
     },
@@ -7903,7 +7903,7 @@
       "versions": [
         {
           "version": "1.25.0",
-          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
+          "files": [{ "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }]
         }
       ]
     },

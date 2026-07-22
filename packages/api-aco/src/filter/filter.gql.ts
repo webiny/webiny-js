@@ -1,5 +1,5 @@
-import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses.js";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import { ErrorResponse, ListResponse } from "@webiny/api-graphql/responses.js";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
 
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";

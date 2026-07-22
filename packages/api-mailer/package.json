@@ -18,8 +18,8 @@
   "description": "The API to send e-mails.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
     "nodemailer": "^9.0.3",
