@@ -122,16 +122,6 @@
   margin: 0 4px;
 }
 
-.static-toolbar .icon.bullet-list,
-.static-toolbar .icon.bullet {
-  background-image: url("../../images/icons/list-ul.svg");
-}
-
-.static-toolbar .icon.numbered-list,
-.static-toolbar .icon.number {
-  background-image: url("../../images/icons/list-ol.svg");
-}
-
 .static-toolbar .link-editor .button.active,
 .static-toolbar .button.active {
   background-color: var(--color-primary-subtle);
@@ -253,93 +243,6 @@
   opacity: 1;
 }
 
-i.bold {
-  background-image: url("../../images/icons/type-bold.svg");
-}
-
-i.italic {
-  background-image: url("../../images/icons/type-italic.svg");
-}
-
-i.code {
-  background-image: url("../../images/icons/code.svg");
-}
-
-i.underline {
-  background-image: url("../../images/icons/type-underline.svg");
-}
-
-i.strikethrough {
-  background-image: url("../../images/icons/type-strikethrough.svg");
-}
-
-i.link {
-  background-image: url("../../images/icons/link.svg");
-}
-
-i.quote {
-  background-image: url("../../images/icons/chat-square-quote.svg");
-}
-
-.icon.left-align,
-i.left-align {
-  background-image: url("../../images/icons/text-left.svg");
-}
-
-i.center-align {
-  background-image: url("../../images/icons/text-center.svg");
-}
-
-i.right-align {
-  background-image: url("../../images/icons/text-right.svg");
-}
-
-i.indent {
-  background-image: url("../../images/icons/indent.svg");
-}
-
-i.outdent {
-  background-image: url("../../images/icons/outdent.svg");
-}
-
-i.justify-align {
-  background-image: url("../../images/icons/justify.svg");
-}
-
-i.chevron-down {
-  background-color: transparent;
-  background-size: contain;
-  display: inline-block;
-  height: 8px;
-  width: 8px;
-  background-image: url("../../images/icons/chevron-down.svg");
-}
-
-i.insert-image,
-.icon.insert-image {
-  background-color: transparent;
-  background-size: contain;
-  display: inline-block;
-  height: 8px;
-  width: 8px;
-  background-image: url("../../images/icons/insert-image.svg");
-}
-
-.icon.bullet-list,
-.icon.bullet {
-  background-image: url("../../images/icons/list-ul.svg");
-}
-
-.icon.numbered-list,
-.icon.number {
-  background-image: url("../../images/icons/list-ol.svg");
-}
-
-i.font-color,
-.icon.font-color {
-  background-image: url("../../images/icons/font-color.svg");
-}
-
 .link-editor .button.active,
 .toolbar .button.active {
   background-color: var(--color-primary-subtle);
@@ -375,8 +278,8 @@ i.font-color,
   padding: 8px;
   color: #050505;
   cursor: pointer;
-  line-height: 16px;
-  font-size: 15px;
+  line-height: 20px;
+  font-size: 14px;
   display: flex;
   align-content: center;
   flex-direction: row;
