@@ -3,17 +3,17 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { Alert } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
-import { ContentEntryForm } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
+import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
 import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
 import { formatScheduledDate } from "~/utils/index.js";
 
 /**
- * Info alert shown above the content entry form when the entry has a scheduled publish/unpublish.
- * Loads the open entry's scheduled action into ScheduledActionsPresenter and reads it back.
+ * Full-width bar shown below the entry-form header (above the form content) when the entry has a
+ * scheduled publish/unpublish. Positioned like the workflow bar for visual consistency.
  */
-const ScheduledActionAlertBar = observer(() => {
+const ScheduledActionBar = observer(() => {
     const formPresenter = useContentEntryFormPresenter();
     const container = useContainer();
     const presenter = React.useMemo(
@@ -34,7 +34,7 @@ const ScheduledActionAlertBar = observer(() => {
     const scheduled = entryId ? presenter.getScheduledAction(entryId) : undefined;
 
     // Reconcile against the entry's current status: a direct publish/unpublish supersedes the
-    // scheduled action (the API cancels it asynchronously), so hide the banner immediately.
+    // scheduled action (the API cancels it asynchronously), so hide the bar immediately.
     const status = vm.entry?.meta?.status;
     const redundant =
         !!scheduled &&
@@ -51,28 +51,33 @@ const ScheduledActionAlertBar = observer(() => {
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
 
     return (
-        <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />} className={"mb-md"}>
-            {goLiveOn ? (
-                <>
-                    This entry is scheduled to {actionLabel} on{" "}
-                    <strong>{formatScheduledDate(goLiveOn)}</strong>.
-                </>
-            ) : (
-                <>This entry is scheduled to {actionLabel}.</>
-            )}
-        </Alert>
+        <div
+            className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}
+        >
+            <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
+                {goLiveOn ? (
+                    <>
+                        This entry is scheduled to {actionLabel} on{" "}
+                        <strong>{formatScheduledDate(goLiveOn)}</strong>.
+                    </>
+                ) : (
+                    <>This entry is scheduled to {actionLabel}.</>
+                )}
+            </Alert>
+        </div>
     );
 });
 
 /**
- * Decorates the content entry form to render the scheduled-action alert above the form body.
+ * Decorates the content entry form layout to render the scheduled-action bar below the header,
+ * above the form content (mirroring how the workflow bar is positioned).
  */
-export const ScheduledActionAlertDecorator = ContentEntryForm.createDecorator(Original => {
-    return function ContentEntryFormWithScheduledAlert() {
+export const ScheduledActionAlertDecorator = ContentEntryFormContent.createDecorator(Original => {
+    return function ContentEntryFormContentWithScheduledBar(props) {
         return (
             <>
-                <ScheduledActionAlertBar />
-                <Original />
+                <ScheduledActionBar />
+                <Original {...props} />
             </>
         );
     };
