@@ -51,20 +51,16 @@ const ScheduledActionBar = observer(() => {
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
 
     return (
-        <div
-            className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}
-        >
-            <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
-                {goLiveOn ? (
-                    <>
-                        This entry is scheduled to {actionLabel} on{" "}
-                        <strong>{formatScheduledDate(goLiveOn)}</strong>.
-                    </>
-                ) : (
-                    <>This entry is scheduled to {actionLabel}.</>
-                )}
-            </Alert>
-        </div>
+        <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
+            {goLiveOn ? (
+                <>
+                    This entry is scheduled to {actionLabel} on{" "}
+                    <strong>{formatScheduledDate(goLiveOn)}</strong>.
+                </>
+            ) : (
+                <>This entry is scheduled to {actionLabel}.</>
+            )}
+        </Alert>
     );
 });
 
