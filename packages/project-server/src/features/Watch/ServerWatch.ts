@@ -3,10 +3,10 @@ import { ServersWatcher } from "@webiny/project/features/Watch/watchers/ServersW
 import { runApiServer } from "../../serve/runApiServer.js";
 
 /**
- * Server-flavour counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
- * local code, the self-hosted flavour boots the built api handler as a live HTTP server that reloads
+ * Server hosting-type counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
+ * local code, the self-hosted hosting type boots the built api handler as a live HTTP server that reloads
  * on rebuild — so `webiny watch api` both compiles AND serves. Kept out of the CLI command (which
- * stays flavour-agnostic, like cli-aws) and composed only when the server flavour is registered.
+ * stays hosting-agnostic, like cli-aws) and composed only when the server hosting type is registered.
  */
 export class ServerWatch implements Watch.Interface {
     constructor(
@@ -23,7 +23,7 @@ export class ServerWatch implements Watch.Interface {
         }
 
         // Only the api app builds an HTTP server handler. Name-matched here, but isolated in this
-        // one flavour-owned place — swap for a capability check on the app model when available.
+        // one hosting-owned place — swap for a capability check on the app model when available.
         if (params.app !== "api") {
             return result;
         }

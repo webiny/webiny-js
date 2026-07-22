@@ -30,9 +30,9 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         // preserve the legacy behavior: null identity → default admin (this harness has no anon path)
         identity: identity ?? undefined,
         // aco storage plugins are processed during setup (before HeadlessCmsFeature)
-        plugins: apiAcoStorage.plugins,
+        legacyPlugins: apiAcoStorage.plugins,
         testProjectLicense,
-        features: container => {
+        setup: container => {
             // CompressionFeature must be registered before the audit logs DDB legacy plugin runs,
             // because that plugin eagerly resolves CompressionHandler from the container.
             CompressionFeature.register(container);

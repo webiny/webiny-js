@@ -23,7 +23,7 @@ import { WebsocketsFeature } from "@webiny/api-websockets";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { SchedulerFeature } from "@webiny/api-scheduler";
 
-/** Installs a flavour-specific transport adapter into the per-request container at its interleave point. */
+/** Installs a hosting-specific transport adapter into the per-request container at its interleave point. */
 export type TransportRegistrar = (container: Container) => void | Promise<void>;
 
 export interface RegisterApiRequestStackConfig {
@@ -38,7 +38,7 @@ export interface RegisterApiRequestStackConfig {
      */
     registerRequestStorage?: (container: Container) => void | Promise<void>;
     /**
-     * Flavour-specific transport adapters, each installed at its exact interleave point in the stack.
+     * Hosting-specific transport adapters, each installed at its exact interleave point in the stack.
      * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
      * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
@@ -88,7 +88,7 @@ export async function registerApiRequestStack(
 
     // Refresh the WCP license once per request (RequestInitializer). Lives here (the shared request
     // stack) rather than api-core, so the domain layer has no transport dependency; runs for all
-    // flavours. Registered after ApiCoreFeature (which provides WcpLicenseProvider).
+    // hosting types. Registered after ApiCoreFeature (which provides WcpLicenseProvider).
     container.register(WcpLicenseInitializer);
 
     // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──

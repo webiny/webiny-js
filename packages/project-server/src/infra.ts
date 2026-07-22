@@ -16,10 +16,10 @@ import { FileStorage } from "./extensions/FileStorage.js";
 import { ApiUrl } from "./extensions/ApiUrl.js";
 
 /**
- * Server-flavour counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
+ * Server hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
  * AWS-only surface (Pulumi, deploy, Lambda, stack outputs, custom domains, Vpc, OpenSearch,
  * blue/green) and the environments surface (`Env.*`, `ProductionEnvironments`) — the self-hosted
- * flavour has no notion of deploy environments. Only build/watch hooks for the api + admin apps,
+ * hosting type has no notion of deploy environments. Only build/watch hooks for the api + admin apps,
  * crypto config, env vars, and CI detection remain.
  */
 export const Infra = {
@@ -31,12 +31,12 @@ export const Infra = {
     // Kept top-level for backward compatibility (prefer Infra.Crypto.Encryption going forward).
     Encryption,
     EnvVar,
-    // Server-flavour SQL storage (engine-named, like Infra.OpenSearch on AWS).
+    // Server hosting-type SQL storage (engine-named, like Infra.OpenSearch on AWS).
     Sqlite,
     Postgres,
-    // Server-flavour local file storage (counterpart to the AWS S3 bucket).
+    // Server hosting-type local file storage (counterpart to the AWS S3 bucket).
     FileStorage,
-    // Server-flavour public API origin (baked as the WEBINY_API_URL build param).
+    // Server hosting-type public API origin (baked as the WEBINY_API_URL build param).
     ApiUrl,
     Ci: {
         Is: CiIs,

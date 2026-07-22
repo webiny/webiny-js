@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import getYarnWorkspaces from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
@@ -69,8 +69,12 @@ const getAllPackages = targetKeywords => {
 
     const storagePriority = storage.split(",");
 
-    const packages = getYarnWorkspaces(process.cwd())
-        .map(pkg => pkg.replace(/\\/g, "/"))
+    const packages = listWorkspaces({
+        cwd: process.cwd()
+    })
+        .map(pkg => {
+            return pkg.path.replace(/\\/g, "/");
+        })
         .filter(pkg => pkg.match(/\/packages\//) !== null);
 
     // Find packages that match the given sets of tags.
