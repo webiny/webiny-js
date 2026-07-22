@@ -1,6 +1,7 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { createFields as baseCreateFields } from "@webiny/api-headless-cms-storage";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { FieldFilterPathRegistry } from "@webiny/api-headless-cms-storage";
+import type { FieldFilterValueTransformRegistry } from "@webiny/api-headless-cms-storage";
 
 export const createModel = (): CmsModel => {
     return {
@@ -59,7 +60,8 @@ export const createModel = (): CmsModel => {
 };
 
 interface Params {
-    plugins: PluginsContainer;
+    pathRegistry: FieldFilterPathRegistry.Interface;
+    transformRegistry: FieldFilterValueTransformRegistry.Interface;
 }
 export const createFields = (params: Params) => {
     return baseCreateFields({

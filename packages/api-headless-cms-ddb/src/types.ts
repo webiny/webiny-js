@@ -1,4 +1,3 @@
-import { PluginsContainer } from "@webiny/plugins/types.js";
 import type {
     CmsContext,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
@@ -19,7 +18,6 @@ export enum ENTITIES {
 
 export interface StorageOperationsFactoryParams {
     table?: string;
-    plugins: PluginsContainer;
     container: CmsContext["container"];
 }
 

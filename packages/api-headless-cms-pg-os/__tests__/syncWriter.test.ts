@@ -147,35 +147,40 @@ describe("SyncWriter", () => {
         expect(rows[0].operation).toBe("MODIFY");
     });
 
-    it("should write a REMOVE record for latest", async () => {
+    it("should delete the row for removeLatest", async () => {
         const { syncTableManager, syncWriter } = setup();
         await syncTableManager.ensureTable();
 
-        await syncWriter.removeLatest({
-            model: { tenant: "root", modelId: "testModel" },
-            entryId: "entry1"
-        });
+        const model = createModel() as any;
+        const entry = createEntry() as any;
 
-        const rows: ISyncRow[] = await knex(syncTableManager.getTableName());
-        expect(rows).toHaveLength(1);
-        expect(rows[0].id).toBe("entry1:L");
-        expect(rows[0].operation).toBe("REMOVE");
-        expect(rows[0].tenant).toBe("root");
+        await syncWriter.writeLatest({ model, entry, storageEntry: entry });
+
+        const rowsBefore: ISyncRow[] = await knex(syncTableManager.getTableName());
+        expect(rowsBefore).toHaveLength(1);
+
+        await syncWriter.removeLatest({ model, entryId: entry.entryId });
+
+        const rowsAfter: ISyncRow[] = await knex(syncTableManager.getTableName());
+        expect(rowsAfter).toHaveLength(0);
     });
 
-    it("should write a REMOVE record for published", async () => {
+    it("should delete the row for removePublished", async () => {
         const { syncTableManager, syncWriter } = setup();
         await syncTableManager.ensureTable();
 
-        await syncWriter.removePublished({
-            model: { tenant: "root", modelId: "testModel" },
-            entryId: "entry1"
-        });
+        const model = createModel() as any;
+        const entry = createEntry({ status: "published" }) as any;
 
-        const rows: ISyncRow[] = await knex(syncTableManager.getTableName());
-        expect(rows).toHaveLength(1);
-        expect(rows[0].id).toBe("entry1:P");
-        expect(rows[0].operation).toBe("REMOVE");
+        await syncWriter.writePublished({ model, entry, storageEntry: entry });
+
+        const rowsBefore: ISyncRow[] = await knex(syncTableManager.getTableName());
+        expect(rowsBefore).toHaveLength(1);
+
+        await syncWriter.removePublished({ model, entryId: entry.entryId });
+
+        const rowsAfter: ISyncRow[] = await knex(syncTableManager.getTableName());
+        expect(rowsAfter).toHaveLength(0);
     });
 
     it("should upsert on conflict (same id) instead of duplicating rows", async () => {
@@ -197,7 +202,7 @@ describe("SyncWriter", () => {
         expect(rows[0].id).toBe("entry1:L");
     });
 
-    it("should overwrite a write with a subsequent remove for the same id", async () => {
+    it("should delete row on remove after write", async () => {
         const { syncTableManager, syncWriter } = setup();
         await syncTableManager.ensureTable();
 
@@ -208,7 +213,6 @@ describe("SyncWriter", () => {
         await syncWriter.removeLatest({ model, entryId: entry.entryId });
 
         const rows: ISyncRow[] = await knex(syncTableManager.getTableName());
-        expect(rows).toHaveLength(1);
-        expect(rows[0].operation).toBe("REMOVE");
+        expect(rows).toHaveLength(0);
     });
 });

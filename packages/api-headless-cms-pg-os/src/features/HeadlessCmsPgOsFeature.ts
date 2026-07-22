@@ -33,23 +33,17 @@ import { SyncTableManager } from "./syncTableManager/abstractions.js";
 import { createEntriesStorageOperations } from "~/operations/entry/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
-import {
-    createFilterCreatePlugins,
-    createPlainObjectPathPlugin,
-    createLocationFolderIdPathPlugin,
-    createDatetimeTransformValuePlugin
-} from "@webiny/api-headless-cms-storage";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 
 interface PgOsStorageOperationsFactoryParams {
     elasticsearch: ReturnType<OpenSearchClient.Interface["use"]>;
-    plugins: any;
     container: CmsContext["container"];
 }
 
 const createPgOsStorageOperations = (
     params: PgOsStorageOperationsFactoryParams
 ): HeadlessCmsStorageOperations => {
-    const { elasticsearch, container, plugins } = params;
+    const { elasticsearch, container } = params;
 
     const knex = container.resolve(KnexClient);
     const tableNameResolver = container.resolve(TableNameResolver);
@@ -61,13 +55,6 @@ const createPgOsStorageOperations = (
     const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
     const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
     const compressionHandler = container.resolve(CompressionHandler);
-
-    plugins.register([
-        createFilterCreatePlugins(),
-        createPlainObjectPathPlugin(),
-        createLocationFolderIdPathPlugin(),
-        createDatetimeTransformValuePlugin()
-    ]);
 
     const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
 
@@ -107,7 +94,6 @@ const createPgOsStorageOperations = (
     const entries = createEntriesStorageOperations({
         knex: knex.client,
         container,
-        plugins,
         elasticsearch,
         entryTableManager,
         syncTableManager,
@@ -131,7 +117,6 @@ class PgOsStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstra
     public create(context: CmsContext) {
         return createPgOsStorageOperations({
             elasticsearch: this.openSearchClient.use(),
-            plugins: context.plugins,
             container: context.container
         });
     }
@@ -170,6 +155,7 @@ export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConf
 
             TableNameResolverFeature.register(container);
             ValueFilterFeature.register(container);
+            FilterRegistriesFeature.register(container);
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);

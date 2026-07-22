@@ -12,7 +12,7 @@ export interface CreateSqliteConnectionOptions {
 
 /**
  * Build a Knex client backed by a local SQLite file (better-sqlite3) for the self-hosted server
- * flavour. This is the default self-hosted storage connection; a real deployment can instead pass its
+ * hosting type. This is the default self-hosted storage connection; a real deployment can instead pass its
  * own Knex client (Postgres/MySQL) straight to `createSqlApiHandler`.
  *
  * The database file is mandatory: it comes from `WEBINY_SQL_FILENAME` (or an explicit `filename`),

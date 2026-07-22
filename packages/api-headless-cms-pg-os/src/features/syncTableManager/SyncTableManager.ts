@@ -10,7 +10,7 @@ class SyncTableManagerImpl implements SyncTableManagerAbstraction.Interface {
 
     constructor(knex: KnexClient.Interface, tableNameResolver: TableNameResolver.Interface) {
         this.knex = knex;
-        this.tableName = tableNameResolver.resolve("cms_os_sync");
+        this.tableName = tableNameResolver.resolve("os_sync");
 
         const g = globalThis as Record<string, unknown>;
         const managers = (g.__sqlTableManagers ??= []) as SyncTableManagerAbstraction.Interface[];

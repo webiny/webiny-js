@@ -5,12 +5,12 @@ import { AwsExtensions } from "./webiny.config.aws.js";
 import { ServerExtensions } from "./webiny.config.server.js";
 
 /**
- * In this monorepo we develop both flavours. The CLI bin sets WEBINY_FLAVOUR ("aws" via `webiny`,
- * "server" via `webiny-server`). Shared extensions live here; the flavour-specific block below pulls
- * in AWS-only (webiny.config.aws.tsx) or server-only (webiny.config.server.tsx) extensions so neither
- * leaks into the other flavour.
+ * In this monorepo we develop both hosting types. The CLI bin sets WEBINY_HOSTING_TYPE ("aws" via
+ * `webiny`, "server" via `webiny-server`). Shared extensions live here; the hosting-specific block
+ * below pulls in AWS-only (webiny.config.aws.tsx) or server-only (webiny.config.server.tsx)
+ * extensions so neither leaks into the other hosting type.
  */
-const isServer = process.env.WEBINY_FLAVOUR === "server";
+const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
 
 export const Extensions = () => {
     return (
@@ -81,7 +81,7 @@ export const Extensions = () => {
                 replyTo={"No-reply <no-reply@webiny.com>"}
             />
 
-            {/* Flavour-specific 👇 (AWS: Pulumi + Cognito; Server: Admin.ApiUrl + SelfHostedAuth) */}
+            {/* Hosting-specific 👇 (AWS: Pulumi + Cognito; Server: Admin.ApiUrl + SelfHostedAuth) */}
             {isServer ? <ServerExtensions /> : <AwsExtensions />}
         </>
     );

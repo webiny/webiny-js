@@ -1,5 +1,5 @@
 import path from "path";
-import getWorkspaces from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 
 export default {
     ignore: {
@@ -29,7 +29,10 @@ export default {
         "nextjs/",
         "packages/admin-ui/storybook-static/"
     ],
-    packages: getWorkspaces()
+    packages: listWorkspaces()
+        .map(pkg => {
+            return pkg.path;
+        })
         .filter(pkg => !pkg.includes("system-requirements"))
         .map(pkg => pkg.replace(/\//g, path.sep).replace(process.cwd() + path.sep, ""))
 };

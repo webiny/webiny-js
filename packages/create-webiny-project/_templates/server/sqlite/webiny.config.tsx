@@ -1,12 +1,12 @@
 import React from "react";
 import { Admin } from "webiny/extensions";
-// Server-only namespaces come from the server flavour package. `webiny/extensions` exposes the AWS
-// namespaces, which don't include server-only extensions like `Infra.Sqlite`.
+// Server-only namespaces come from the server hosting-type package. `webiny/extensions` exposes the
+// AWS namespaces, which don't include server-only extensions like `Infra.Sqlite`.
 import { Infra } from "@webiny/project-server";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**
- * Self-hosted (server) flavour project extensions. No AWS, no Pulumi, no `deploy` — a single
+ * Self-hosted (server) hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
  * long-running Node HTTP server backed by SQL storage. Run it with `yarn webiny watch`.
  */
 export const Extensions = () => {

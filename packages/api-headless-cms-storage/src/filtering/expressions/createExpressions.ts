@@ -1,15 +1,13 @@
 import WebinyError from "@webiny/error";
 import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
-import type { ICmsFieldFilterValueTransformPlugin } from "../../plugins/CmsFieldFilterValueTransformPlugin.js";
-import type { PluginsContainer } from "@webiny/plugins";
 import type { Field } from "../fields/types.js";
-import { getMappedPlugins } from "../mapPlugins.js";
 import { extractWhereParams } from "../where.js";
 import { transformValue } from "../transform.js";
-import { CmsEntryFieldFilterPlugin } from "../../plugins/CmsEntryFieldFilterPlugin.js";
-import { getWhereValues } from "../values.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 import { ValueFilter, ValueFilterRegistry } from "@webiny/db-utils";
+import type { FieldFilterCreateRegistry } from "../../features/fieldFilterCreate/abstractions.js";
+import type { FieldFilterValueTransformRegistry } from "../../features/fieldFilterValueTransform/abstractions.js";
+import { getWhereValues } from "../values.js";
 
 interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;
@@ -17,7 +15,8 @@ interface CreateExpressionParams {
 }
 
 interface ICreateExpressionsParams {
-    plugins: PluginsContainer;
+    filterCreateRegistry: FieldFilterCreateRegistry.Interface;
+    transformRegistry: FieldFilterValueTransformRegistry.Interface;
     valueFilterRegistry: ValueFilterRegistry.Interface;
     where: Partial<CmsEntryListWhere>;
     fields: Record<string, Field>;
@@ -42,35 +41,18 @@ export interface Filter {
 }
 
 export const createExpressions = (params: ICreateExpressionsParams): Expression => {
-    const { where, plugins, fields, valueFilterRegistry } = params;
+    const { where, filterCreateRegistry, transformRegistry, fields, valueFilterRegistry } = params;
 
-    const transformValuePlugins = getMappedPlugins<ICmsFieldFilterValueTransformPlugin>({
-        plugins,
-        type: "cms-field-filter-value-transform",
-        property: "fieldType"
-    });
-    const fieldFilterCreatePlugins = getMappedPlugins<CmsEntryFieldFilterPlugin>({
-        plugins,
-        type: CmsEntryFieldFilterPlugin.type,
-        property: "fieldType"
-    });
-
-    const defaultFilterCreatePlugin = fieldFilterCreatePlugins["*"] as CmsEntryFieldFilterPlugin;
-
-    const getFilterCreatePlugin = (type: string) => {
-        const fieldType = getBaseFieldType({
-            type
-        });
-        const filterCreatePlugin = fieldFilterCreatePlugins[fieldType] || defaultFilterCreatePlugin;
-        if (filterCreatePlugin) {
-            return filterCreatePlugin;
+    const getHandler = (type: string) => {
+        const fieldType = getBaseFieldType({ type });
+        const handler = filterCreateRegistry.get(fieldType) || filterCreateRegistry.getDefault();
+        if (handler) {
+            return handler;
         }
         throw new WebinyError(
-            `There is no filter create plugin for the field type "${fieldType}".`,
-            "MISSING_FILTER_CREATE_PLUGIN",
-            {
-                fieldType
-            }
+            `There is no filter create handler for the field type "${fieldType}".`,
+            "MISSING_FILTER_CREATE_HANDLER",
+            { fieldType }
         );
     };
 
@@ -87,11 +69,6 @@ export const createExpressions = (params: ICreateExpressionsParams): Expression 
                 continue;
             }
 
-            /*
-             * If there are "AND" or "OR" keys, let's sort them out first.
-             *
-             * AND conditional.
-             */
             if (key === "AND") {
                 const childWhereList = getWhereValues(value, key);
                 const childExpression: Expression = {
@@ -109,10 +86,8 @@ export const createExpressions = (params: ICreateExpressionsParams): Expression 
                 expression.expressions.push(childExpression);
                 continue;
             }
-            /* OR conditional. */
             if (key === "OR") {
                 const childWhereList = getWhereValues(value, key);
-
                 const childExpression: Expression = {
                     condition: "OR",
                     filters: [],
@@ -141,36 +116,27 @@ export const createExpressions = (params: ICreateExpressionsParams): Expression 
                 throw new WebinyError(
                     `There is no field with the fieldId "${fieldId}".`,
                     "FIELD_ERROR",
-                    {
-                        fieldId
-                    }
+                    { fieldId }
                 );
             }
 
-            /* We need a filter create plugin for this type. */
-            const filterCreatePlugin = getFilterCreatePlugin(field.type);
-
+            const handler = getHandler(field.type);
             const fieldType = getBaseFieldType(field);
-
-            const transformValuePlugin: ICmsFieldFilterValueTransformPlugin =
-                transformValuePlugins[fieldType];
+            const transformHandler = transformRegistry.get(fieldType);
 
             const transformValueCallable = (value: any) => {
-                if (!transformValuePlugin) {
+                if (!transformHandler) {
                     return value;
                 }
-                return transformValuePlugin.transform({
-                    field,
-                    value
-                });
+                return transformHandler.transform({ field, value });
             };
 
-            const result = filterCreatePlugin.create({
+            const result = handler.create({
                 key,
                 value,
                 valueFilterRegistry,
-                transformValuePlugins,
-                getFilterCreatePlugin,
+                transformRegistry,
+                getHandler,
                 operation,
                 negate,
                 field,
@@ -181,12 +147,7 @@ export const createExpressions = (params: ICreateExpressionsParams): Expression 
                 }),
                 transformValue: transformValueCallable
             });
-            /*
-             * There is a possibility of:
-             * - no result
-             * - result being an array
-             * - result being an object.
-             */
+
             if (!result || (Array.isArray(result) && result.length === 0)) {
                 continue;
             }
@@ -201,10 +162,7 @@ export const createExpressions = (params: ICreateExpressionsParams): Expression 
         where,
         condition: "AND"
     });
-    /*
-     * If the first expression has no filters and has only one expression, put that expression as main one.
-     * This will mostly be used when having an OR condition as the single expression in the root level of the where.
-     */
+
     if (expression.filters.length > 0 || expression.expressions.length !== 1) {
         return expression;
     }

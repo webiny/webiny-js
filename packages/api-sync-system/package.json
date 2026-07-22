@@ -22,7 +22,6 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "bytes": "^3.1.2",

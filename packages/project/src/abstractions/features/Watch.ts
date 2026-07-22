@@ -29,7 +29,7 @@ export type IWatchResult = {
     packagesWatcher: PackagesWatcher;
     webinyConfigWatcher?: WebinyConfigWatcher;
     /**
-     * Long-running server process(es) the flavour attached to this watch session (e.g. the api HTTP
+     * Long-running server process(es) the hosting type attached to this watch session (e.g. the api HTTP
      * server). The serve-side counterpart to `packagesWatcher`; the caller (e.g. the CLI) renders +
      * awaits them alongside the build watchers.
      */

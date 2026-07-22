@@ -26,7 +26,6 @@
     "@webiny/di": "^1.0.2",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "graphql": "^16.14.2",
@@ -34,7 +33,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@graphql-tools/schema": "10.0.36",
+    "@graphql-tools/schema": "10.0.38",
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",

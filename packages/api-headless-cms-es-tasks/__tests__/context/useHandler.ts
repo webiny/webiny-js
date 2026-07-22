@@ -8,14 +8,14 @@ import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Context } from "~/types";
 import { HeadlessCmsEsTasksFeature } from "~/index.js";
 
-type Params = Omit<CmsTestHandlerParams, "features"> & { plugins?: any };
+type Params = Omit<CmsTestHandlerParams, "setup"> & { plugins?: any };
 
 export const useHandler = <C extends Context = Context>(params: Params = {}) => {
     const { plugins, ...rest } = params;
 
     const { getContext } = createCmsTestHandler({
         ...rest,
-        features: container => {
+        setup: container => {
             DynamoDBCoreFeature.register(container, {
                 documentClient: getDocumentClient()
             });

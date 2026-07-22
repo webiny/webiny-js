@@ -1,15 +1,14 @@
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { createSystemFields } from "./systemFields.js";
 import type { Field, FieldParent } from "./types.js";
-import type { PluginsContainer } from "@webiny/plugins";
-import type { ICmsFieldFilterValueTransformPlugin } from "../../plugins/CmsFieldFilterValueTransformPlugin.js";
-import { CmsEntryFieldFilterPathPlugin } from "../../plugins/index.js";
-import { getMappedPlugins } from "../mapPlugins.js";
+import type { FieldFilterPathRegistry } from "../../features/fieldFilterPath/abstractions.js";
+import type { FieldFilterValueTransformRegistry } from "../../features/fieldFilterValueTransform/abstractions.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface Params {
     fields: CmsModelField[];
-    plugins: PluginsContainer;
+    pathRegistry: FieldFilterPathRegistry.Interface;
+    transformRegistry: FieldFilterValueTransformRegistry.Interface;
 }
 
 interface FieldCollection {
@@ -19,19 +18,18 @@ interface FieldCollection {
 interface AddFieldsToCollectionParams {
     fields: CmsModelField[];
     parents: FieldParent[];
-    transformValuePlugins: Record<string, ICmsFieldFilterValueTransformPlugin>;
-    valuePathPlugins: Record<string, CmsEntryFieldFilterPathPlugin>;
+    pathRegistry: FieldFilterPathRegistry.Interface;
+    transformRegistry: FieldFilterValueTransformRegistry.Interface;
     system: boolean;
 }
 
 const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollection => {
-    const { fields, parents, transformValuePlugins, valuePathPlugins, system } = params;
+    const { fields, parents, pathRegistry, transformRegistry, system } = params;
     return fields.reduce<FieldCollection>((collection, field) => {
         const fieldType = getBaseFieldType(field);
-        const transformPlugin = transformValuePlugins[fieldType];
-        const valuePathPlugin = valuePathPlugins[fieldType];
+        const transformHandler = transformRegistry.get(fieldType);
+        const pathHandler = pathRegistry.get(fieldType);
 
-        /* The required fieldId is a product of all of its parents and its own fieldId. */
         const fieldId = [
             ...parents,
             {
@@ -46,27 +44,27 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
             ...field,
             parents,
             system,
-            createPath: params => {
+            createPath: pathParams => {
                 if (
-                    valuePathPlugin &&
-                    valuePathPlugin.canUse(
+                    pathHandler &&
+                    pathHandler.canUse(
                         field,
                         parents.map(p => p.fieldId)
                     )
                 ) {
-                    return valuePathPlugin.createPath(params);
+                    return pathHandler.createPath(pathParams);
                 }
 
                 return parents
                     .map(parent => parent.fieldId)
-                    .concat([params.field.fieldId])
+                    .concat([pathParams.field.fieldId])
                     .join(".");
             },
             transform: value => {
-                if (!transformPlugin) {
+                if (!transformHandler) {
                     return value;
                 }
-                return transformPlugin.transform({
+                return transformHandler.transform({
                     field,
                     value
                 });
@@ -86,45 +84,30 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
                     list: field.list
                 }
             ],
-            transformValuePlugins,
-            valuePathPlugins,
+            pathRegistry,
+            transformRegistry,
             system
         });
         Object.assign(collection, result);
         return collection;
     }, {});
 };
-/*
- * This method will map the fieldId (fieldId -> field) to the actual field.
- *
- * In case of nested fields, fieldId is all the parent fieldIds + current one, joined by the dot (.).
- */
-export const createFields = (params: Params) => {
-    const { fields, plugins } = params;
 
-    const transformValuePlugins = getMappedPlugins<ICmsFieldFilterValueTransformPlugin>({
-        plugins,
-        type: "cms-field-filter-value-transform",
-        property: "fieldType"
-    });
-    const valuePathPlugins = getMappedPlugins<CmsEntryFieldFilterPathPlugin>({
-        plugins,
-        type: CmsEntryFieldFilterPathPlugin.type,
-        property: "fieldType"
-    });
+export const createFields = (params: Params) => {
+    const { fields, pathRegistry, transformRegistry } = params;
 
     const collection = createFieldCollection({
         fields: createSystemFields(),
-        transformValuePlugins,
-        valuePathPlugins,
+        pathRegistry,
+        transformRegistry,
         parents: [],
         system: true
     });
 
     const result = createFieldCollection({
         fields,
-        transformValuePlugins,
-        valuePathPlugins,
+        pathRegistry,
+        transformRegistry,
         parents: [
             {
                 fieldId: "values",

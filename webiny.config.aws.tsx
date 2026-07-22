@@ -3,7 +3,7 @@ import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 /**
- * AWS-only extensions, rendered by webiny.config.tsx when WEBINY_FLAVOUR !== "server".
+ * AWS-only extensions, rendered by webiny.config.tsx when WEBINY_HOSTING_TYPE !== "server".
  * Everything AWS/Pulumi-specific lives here so it never leaks into the server flavour.
  */
 export const AwsExtensions = () => {

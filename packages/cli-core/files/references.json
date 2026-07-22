@@ -2,12 +2,12 @@
   "dependencies": [
     {
       "name": "@ai-sdk/anthropic",
-      "version": "4.0.12",
+      "version": "4.0.16",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
       "name": "@ai-sdk/openai",
-      "version": "4.0.11",
+      "version": "4.0.16",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
@@ -27,112 +27,112 @@
     },
     {
       "name": "@aws-sdk/client-apigatewaymanagementapi",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudfront",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-events",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-logs",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cognito-identity-provider",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb-streams",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-eventbridge",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iam",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iot",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-lambda",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-s3",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-scheduler",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sfn",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sqs",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sts",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/credential-providers",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-dynamodb",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-storage",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-presigned-post",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-request-presigner",
-      "version": "3.1085.0",
+      "version": "3.1090.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/util-dynamodb",
-      "version": "3.996.6",
+      "version": "3.996.7",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
@@ -193,7 +193,7 @@
     },
     {
       "name": "@fortawesome/fontawesome-common-types",
-      "version": "7.3.0",
+      "version": "7.3.1",
       "files": [
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms/package.json"
@@ -201,7 +201,7 @@
     },
     {
       "name": "@fortawesome/fontawesome-svg-core",
-      "version": "7.3.0",
+      "version": "7.3.1",
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/app-admin/package.json",
@@ -215,7 +215,7 @@
     },
     {
       "name": "@fortawesome/free-brands-svg-icons",
-      "version": "7.3.0",
+      "version": "7.3.1",
       "files": [
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms/package.json"
@@ -223,7 +223,7 @@
     },
     {
       "name": "@fortawesome/free-regular-svg-icons",
-      "version": "7.3.0",
+      "version": "7.3.1",
       "files": [
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms/package.json"
@@ -231,7 +231,7 @@
     },
     {
       "name": "@fortawesome/free-solid-svg-icons",
-      "version": "7.3.0",
+      "version": "7.3.1",
       "files": [
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms/package.json"
@@ -253,7 +253,7 @@
     },
     {
       "name": "@graphql-tools/merge",
-      "version": "9.2.0",
+      "version": "9.2.2",
       "files": [
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
@@ -267,12 +267,12 @@
     },
     {
       "name": "@graphql-tools/resolvers-composition",
-      "version": "7.0.33",
+      "version": "7.0.35",
       "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
     },
     {
       "name": "@graphql-tools/schema",
-      "version": "10.0.36",
+      "version": "10.0.38",
       "files": [
         "/packages/api-audit-logs/package.json",
         "/packages/api-headless-cms/package.json",
@@ -288,17 +288,17 @@
     },
     {
       "name": "@graphql-tools/utils",
-      "version": "11.2.0",
+      "version": "11.2.2",
       "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
     },
     {
       "name": "@iconify/json",
-      "version": "2.2.499",
+      "version": "2.2.501",
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
       "name": "@lexical/code",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/lexical-editor/package.json",
         "/packages/lexical-nodes/package.json",
@@ -308,12 +308,12 @@
     },
     {
       "name": "@lexical/hashtag",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": ["/packages/lexical-nodes/package.json", "/packages/lexical-nodes/package.json"]
     },
     {
       "name": "@lexical/headless",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/lexical-converter/package.json",
         "/packages/lexical-converter/package.json"
@@ -321,12 +321,12 @@
     },
     {
       "name": "@lexical/history",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": ["/packages/lexical-editor/package.json", "/packages/lexical-editor/package.json"]
     },
     {
       "name": "@lexical/html",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/lexical-converter/package.json",
         "/packages/lexical-converter/package.json"
@@ -334,22 +334,22 @@
     },
     {
       "name": "@lexical/list",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": ["/packages/lexical-nodes/package.json", "/packages/lexical-nodes/package.json"]
     },
     {
       "name": "@lexical/mark",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": ["/packages/lexical-nodes/package.json", "/packages/lexical-nodes/package.json"]
     },
     {
       "name": "@lexical/overflow",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": ["/packages/lexical-nodes/package.json", "/packages/lexical-nodes/package.json"]
     },
     {
       "name": "@lexical/react",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/lexical-editor/package.json",
         "/packages/lexical-nodes/package.json",
@@ -359,7 +359,7 @@
     },
     {
       "name": "@lexical/rich-text",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/lexical-editor/package.json",
         "/packages/lexical-nodes/package.json",
@@ -369,7 +369,7 @@
     },
     {
       "name": "@lexical/selection",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/lexical-editor/package.json",
         "/packages/lexical-editor-actions/package.json",
@@ -381,12 +381,12 @@
     },
     {
       "name": "@lexical/text",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": ["/packages/lexical-editor/package.json", "/packages/lexical-editor/package.json"]
     },
     {
       "name": "@lexical/utils",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json",
@@ -454,7 +454,7 @@
     },
     {
       "name": "@pulumi/aws",
-      "version": "7.36.0",
+      "version": "7.37.0",
       "files": [
         "/packages/project-aws/package.json",
         "/packages/pulumi-sdk/package.json",
@@ -464,7 +464,7 @@
     },
     {
       "name": "@pulumi/pulumi",
-      "version": "3.251.0",
+      "version": "3.253.0",
       "files": [
         "/packages/project-aws/package.json",
         "/packages/pulumi/package.json",
@@ -486,7 +486,7 @@
     },
     {
       "name": "@rsbuild/core",
-      "version": "2.1.5",
+      "version": "2.1.6",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -511,7 +511,7 @@
     },
     {
       "name": "@rsdoctor/rspack-plugin",
-      "version": "1.5.18",
+      "version": "1.6.0",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -521,7 +521,7 @@
     },
     {
       "name": "@rspack/core",
-      "version": "2.1.3",
+      "version": "2.1.4",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -531,7 +531,7 @@
     },
     {
       "name": "@tailwindcss/postcss",
-      "version": "4.3.2",
+      "version": "4.3.3",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -581,7 +581,7 @@
     },
     {
       "name": "ai",
-      "version": "7.0.22",
+      "version": "7.0.31",
       "files": [
         "/packages/ai-powerups/package.json",
         "/packages/api-core/package.json",
@@ -734,6 +734,10 @@
       "name": "chalk",
       "version": "5.6.2",
       "files": [
+        "/scripts/buildPackages/package.json",
+        "/scripts/prepublishOnly/package.json",
+        "/scripts/cli/package.json",
+        "/scripts/release/package.json",
         "/packages/aws-layers/package.json",
         "/packages/build-tools/package.json",
         "/packages/cli-aws/package.json",
@@ -755,11 +759,7 @@
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
-        "/packages/system-requirements/package.json",
-        "/scripts/buildPackages/package.json",
-        "/scripts/prepublishOnly/package.json",
-        "/scripts/cli/package.json",
-        "/scripts/release/package.json"
+        "/packages/system-requirements/package.json"
       ]
     },
     {
@@ -960,8 +960,10 @@
     },
     {
       "name": "execa",
-      "version": "9.6.1",
+      "version": "10.0.0",
       "files": [
+        "/scripts/buildPackages/package.json",
+        "/scripts/release/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
@@ -973,14 +975,12 @@
         "/packages/create-webiny-project/package.json",
         "/packages/project/package.json",
         "/packages/pulumi-sdk/package.json",
-        "/packages/system-requirements/package.json",
-        "/scripts/buildPackages/package.json",
-        "/scripts/release/package.json"
+        "/packages/system-requirements/package.json"
       ]
     },
     {
       "name": "exifreader",
-      "version": "4.41.0",
+      "version": "4.41.3",
       "files": [
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
@@ -1002,6 +1002,7 @@
       "name": "fast-glob",
       "version": "3.3.3",
       "files": [
+        "/scripts/cjsToEsm/package.json",
         "/packages/build-tools/package.json",
         "/packages/cli-core/package.json",
         "/packages/i18n/package.json",
@@ -1010,8 +1011,7 @@
         "/packages/build-tools/package.json",
         "/packages/cli-core/package.json",
         "/packages/i18n/package.json",
-        "/packages/project/package.json",
-        "/scripts/cjsToEsm/package.json"
+        "/packages/project/package.json"
       ]
     },
     {
@@ -1039,6 +1039,9 @@
       "name": "find-up",
       "version": "8.0.0",
       "files": [
+        "/scripts/prepublishOnly/package.json",
+        "/scripts/cli/package.json",
+        "/scripts/cjsToEsm/package.json",
         "/packages/build-tools/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
@@ -1055,10 +1058,7 @@
         "/packages/project/package.json",
         "/packages/project-aws/package.json",
         "/packages/pulumi/package.json",
-        "/packages/pulumi-sdk/package.json",
-        "/scripts/prepublishOnly/package.json",
-        "/scripts/cli/package.json",
-        "/scripts/cjsToEsm/package.json"
+        "/packages/pulumi-sdk/package.json"
       ]
     },
     {
@@ -1075,6 +1075,8 @@
       "name": "fs-extra",
       "version": "11.3.6",
       "files": [
+        "/scripts/buildPackages/package.json",
+        "/scripts/prepublishOnly/package.json",
         "/packages/build-tools/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/pulumi-sdk/package.json",
@@ -1082,34 +1084,18 @@
         "/scripts/prepublishOnly/package.json",
         "/packages/build-tools/package.json",
         "/packages/create-webiny-project/package.json",
-        "/packages/pulumi-sdk/package.json",
-        "/scripts/buildPackages/package.json",
-        "/scripts/prepublishOnly/package.json"
+        "/packages/pulumi-sdk/package.json"
       ]
     },
     {
       "name": "fuse.js",
-      "version": "7.4.2",
+      "version": "7.5.0",
       "files": ["/packages/db-utils/package.json", "/packages/db-utils/package.json"]
     },
     {
       "name": "get-tsconfig",
       "version": "4.14.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
-    },
-    {
-      "name": "get-yarn-workspaces",
-      "version": "1.0.2",
-      "files": [
-        "/packages/build-tools/package.json",
-        "/packages/cli-core/package.json",
-        "/packages/project-utils/package.json",
-        "/scripts/prepublishOnly/package.json",
-        "/packages/build-tools/package.json",
-        "/packages/cli-core/package.json",
-        "/packages/project-utils/package.json",
-        "/scripts/prepublishOnly/package.json"
-      ]
     },
     {
       "name": "graphql",
@@ -1236,10 +1222,10 @@
       "name": "js-yaml",
       "version": "5.2.1",
       "files": [
-        "/packages/create-webiny-project/package.json",
         "/scripts/buildPackages/package.json",
         "/packages/create-webiny-project/package.json",
-        "/scripts/buildPackages/package.json"
+        "/scripts/buildPackages/package.json",
+        "/packages/create-webiny-project/package.json"
       ]
     },
     {
@@ -1300,7 +1286,7 @@
     },
     {
       "name": "lexical",
-      "version": "0.47.0",
+      "version": "0.48.0",
       "files": [
         "/packages/app-admin/package.json",
         "/packages/lexical-converter/package.json",
@@ -1318,16 +1304,20 @@
       "name": "listr2",
       "version": "10.2.2",
       "files": [
-        "/packages/create-webiny-project/package.json",
         "/scripts/buildPackages/package.json",
         "/packages/create-webiny-project/package.json",
-        "/scripts/buildPackages/package.json"
+        "/scripts/buildPackages/package.json",
+        "/packages/create-webiny-project/package.json"
       ]
     },
     {
       "name": "load-json-file",
       "version": "7.0.1",
       "files": [
+        "/scripts/buildPackages/package.json",
+        "/scripts/prepublishOnly/package.json",
+        "/scripts/cjsToEsm/package.json",
+        "/scripts/release/package.json",
         "/packages/build-tools/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
@@ -1345,11 +1335,7 @@
         "/packages/global-config/package.json",
         "/packages/project/package.json",
         "/packages/pulumi-sdk/package.json",
-        "/packages/telemetry/package.json",
-        "/scripts/buildPackages/package.json",
-        "/scripts/prepublishOnly/package.json",
-        "/scripts/cjsToEsm/package.json",
-        "/scripts/release/package.json"
+        "/packages/telemetry/package.json"
       ]
     },
     {
@@ -1742,6 +1728,7 @@
       "name": "p-retry",
       "version": "8.0.0",
       "files": [
+        "/scripts/release/package.json",
         "/packages/api-sync-to-opensearch/package.json",
         "/packages/project-aws/package.json",
         "/packages/sdk/package.json",
@@ -1750,8 +1737,7 @@
         "/packages/api-sync-to-opensearch/package.json",
         "/packages/project-aws/package.json",
         "/packages/sdk/package.json",
-        "/packages/utils/package.json",
-        "/scripts/release/package.json"
+        "/packages/utils/package.json"
       ]
     },
     {
@@ -1766,6 +1752,7 @@
       "name": "pino",
       "version": "10.3.1",
       "files": [
+        "/scripts/cli/package.json",
         "/packages/api-core/package.json",
         "/packages/cli-core/package.json",
         "/packages/project/package.json",
@@ -1774,8 +1761,7 @@
         "/packages/api-core/package.json",
         "/packages/cli-core/package.json",
         "/packages/project/package.json",
-        "/packages/website-builder-sdk/package.json",
-        "/scripts/cli/package.json"
+        "/packages/website-builder-sdk/package.json"
       ]
     },
     {
@@ -1807,7 +1793,7 @@
     },
     {
       "name": "postcss",
-      "version": "8.5.18",
+      "version": "8.5.20",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nuxt/package.json",
@@ -2153,6 +2139,7 @@
       "name": "semver",
       "version": "7.8.5",
       "files": [
+        "/scripts/release/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/cli-core/package.json",
         "/packages/pulumi-sdk/package.json",
@@ -2161,18 +2148,17 @@
         "/packages/api-sync-system/package.json",
         "/packages/cli-core/package.json",
         "/packages/pulumi-sdk/package.json",
-        "/packages/system-requirements/package.json",
-        "/scripts/release/package.json"
+        "/packages/system-requirements/package.json"
       ]
     },
     {
       "name": "serialize-error",
       "version": "13.0.1",
       "files": [
-        "/packages/project/package.json",
         "/scripts/buildPackages/package.json",
         "/packages/project/package.json",
-        "/scripts/buildPackages/package.json"
+        "/scripts/buildPackages/package.json",
+        "/packages/project/package.json"
       ]
     },
     {
@@ -2240,7 +2226,7 @@
     },
     {
       "name": "tailwindcss",
-      "version": "4.3.2",
+      "version": "4.3.3",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2262,9 +2248,6 @@
       "name": "ts-morph",
       "version": "28.0.0",
       "files": [
-        "/packages/build-tools/package.json",
-        "/packages/project/package.json",
-        "/packages/project-aws/package.json",
         "/scripts/cli/package.json",
         "/scripts/cjsToEsm/package.json",
         "/scripts/generateSkills/package.json",
@@ -2273,13 +2256,18 @@
         "/packages/project-aws/package.json",
         "/scripts/cli/package.json",
         "/scripts/cjsToEsm/package.json",
-        "/scripts/generateSkills/package.json"
+        "/scripts/generateSkills/package.json",
+        "/packages/build-tools/package.json",
+        "/packages/project/package.json",
+        "/packages/project-aws/package.json"
       ]
     },
     {
       "name": "tsx",
       "version": "4.23.1",
       "files": [
+        "/scripts/buildPackages/package.json",
+        "/scripts/cjsToEsm/package.json",
         "/packages/build-tools/package.json",
         "/packages/cli-aws/package.json",
         "/packages/cli-server/package.json",
@@ -2289,9 +2277,7 @@
         "/packages/build-tools/package.json",
         "/packages/cli-aws/package.json",
         "/packages/cli-server/package.json",
-        "/packages/project/package.json",
-        "/scripts/buildPackages/package.json",
-        "/scripts/cjsToEsm/package.json"
+        "/packages/project/package.json"
       ]
     },
     {
@@ -2303,6 +2289,7 @@
       "name": "type-fest",
       "version": "5.8.0",
       "files": [
+        "/scripts/cli/package.json",
         "/packages/admin-ui/package.json",
         "/packages/api-websockets/package.json",
         "/packages/api-websockets-aws/package.json",
@@ -2315,8 +2302,7 @@
         "/packages/api-websockets-aws/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
-        "/packages/db/package.json",
-        "/scripts/cli/package.json"
+        "/packages/db/package.json"
       ]
     },
     {
@@ -2370,7 +2356,7 @@
     },
     {
       "name": "vue",
-      "version": "3.5.39",
+      "version": "3.5.40",
       "files": [
         "/packages/website-builder-vue/package.json",
         "/packages/website-builder-vue/package.json"
@@ -2385,6 +2371,9 @@
       "name": "write-json-file",
       "version": "7.0.0",
       "files": [
+        "/scripts/buildPackages/package.json",
+        "/scripts/prepublishOnly/package.json",
+        "/scripts/release/package.json",
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/global-config/package.json",
@@ -2395,15 +2384,12 @@
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
         "/packages/global-config/package.json",
-        "/packages/project/package.json",
-        "/scripts/buildPackages/package.json",
-        "/scripts/prepublishOnly/package.json",
-        "/scripts/release/package.json"
+        "/packages/project/package.json"
       ]
     },
     {
       "name": "ws",
-      "version": "8.21.0",
+      "version": "8.21.1",
       "files": [
         "/packages/api-websockets-server/package.json",
         "/packages/api-websockets-server/package.json"
@@ -2413,9 +2399,6 @@
       "name": "yargs",
       "version": "18.0.0",
       "files": [
-        "/packages/cli-core/package.json",
-        "/packages/create-webiny-project/package.json",
-        "/packages/i18n/package.json",
         "/scripts/buildPackages/package.json",
         "/scripts/cli/package.json",
         "/scripts/release/package.json",
@@ -2424,7 +2407,10 @@
         "/packages/i18n/package.json",
         "/scripts/buildPackages/package.json",
         "/scripts/cli/package.json",
-        "/scripts/release/package.json"
+        "/scripts/release/package.json",
+        "/packages/cli-core/package.json",
+        "/packages/create-webiny-project/package.json",
+        "/packages/i18n/package.json"
       ]
     },
     {
@@ -2556,23 +2542,23 @@
     },
     {
       "name": "@fortawesome/free-solid-svg-icons",
-      "version": "7.3.0",
+      "version": "7.3.1",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     { "name": "@grpc/grpc-js", "version": "1.14.4", "files": ["/package.json"] },
-    { "name": "@lexical/code", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/hashtag", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/headless", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/history", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/html", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/list", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/mark", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/overflow", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/react", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/rich-text", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/selection", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/text", "version": "0.47.0", "files": ["/package.json"] },
-    { "name": "@lexical/utils", "version": "0.47.0", "files": ["/package.json"] },
+    { "name": "@lexical/code", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/hashtag", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/headless", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/history", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/html", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/list", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/mark", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/overflow", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/react", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/rich-text", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/selection", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/text", "version": "0.48.0", "files": ["/package.json"] },
+    { "name": "@lexical/utils", "version": "0.48.0", "files": ["/package.json"] },
     {
       "name": "@material-design-icons/svg",
       "version": "0.14.15",
@@ -2581,7 +2567,7 @@
     { "name": "@octokit/rest", "version": "22.0.1", "files": ["/package.json"] },
     {
       "name": "@rsbuild/core",
-      "version": "2.1.5",
+      "version": "2.1.6",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2591,22 +2577,22 @@
     },
     {
       "name": "@storybook/addon-a11y",
-      "version": "10.5.0",
+      "version": "10.5.2",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/addon-docs",
-      "version": "10.5.0",
+      "version": "10.5.2",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/react",
-      "version": "10.5.0",
+      "version": "10.5.2",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@tailwindcss/postcss",
-      "version": "4.3.2",
+      "version": "4.3.3",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2702,10 +2688,10 @@
       "name": "@types/js-yaml",
       "version": "4.0.9",
       "files": [
-        "/packages/create-webiny-project/package.json",
         "/scripts/buildPackages/package.json",
         "/packages/create-webiny-project/package.json",
-        "/scripts/buildPackages/package.json"
+        "/scripts/buildPackages/package.json",
+        "/packages/create-webiny-project/package.json"
       ]
     },
     {
@@ -3041,7 +3027,7 @@
     },
     {
       "name": "execa",
-      "version": "9.6.1",
+      "version": "10.0.0",
       "files": [
         "/package.json",
         "/packages/app-audit-logs/package.json",
@@ -3056,7 +3042,6 @@
     },
     { "name": "fast-glob", "version": "3.3.3", "files": ["/package.json"] },
     { "name": "fs-extra", "version": "11.3.6", "files": ["/package.json"] },
-    { "name": "get-yarn-workspaces", "version": "1.0.2", "files": ["/package.json"] },
     { "name": "github-actions-wac", "version": "2.0.0", "files": ["/package.json"] },
     {
       "name": "graphql",
@@ -3123,7 +3108,7 @@
         "/packages/lexical-converter/package.json"
       ]
     },
-    { "name": "lexical", "version": "0.47.0", "files": ["/package.json"] },
+    { "name": "lexical", "version": "0.48.0", "files": ["/package.json"] },
     {
       "name": "listr2",
       "version": "10.2.2",
@@ -3162,7 +3147,7 @@
     { "name": "next", "version": "16.2.10", "files": ["/package.json"] },
     {
       "name": "oxfmt",
-      "version": "0.58.0",
+      "version": "0.59.0",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -3173,7 +3158,7 @@
         "/packages/react-properties/package.json"
       ]
     },
-    { "name": "oxlint", "version": "1.73.0", "files": ["/package.json"] },
+    { "name": "oxlint", "version": "1.74.0", "files": ["/package.json"] },
     {
       "name": "pg",
       "version": "8.22.0",
@@ -3203,6 +3188,7 @@
       "name": "rimraf",
       "version": "6.1.3",
       "files": [
+        "/scripts/cli/package.json",
         "/packages/admin-ui/package.json",
         "/packages/ai-powerups/package.json",
         "/packages/api/package.json",
@@ -3278,7 +3264,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
@@ -3370,7 +3355,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
@@ -3385,8 +3369,7 @@
         "/packages/utils/package.json",
         "/packages/validation/package.json",
         "/packages/wcp/package.json",
-        "/packages/webiny/package.json",
-        "/scripts/cli/package.json"
+        "/packages/webiny/package.json"
       ]
     },
     {
@@ -3397,7 +3380,7 @@
     { "name": "semver", "version": "7.8.5", "files": ["/package.json"] },
     {
       "name": "storybook",
-      "version": "10.5.0",
+      "version": "10.5.2",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -3416,6 +3399,8 @@
       "version": "5.8.0",
       "files": [
         "/package.json",
+        "/scripts/prepublishOnly/package.json",
+        "/scripts/release/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-websockets/package.json",
@@ -3435,9 +3420,7 @@
         "/packages/app/package.json",
         "/packages/background-tasks/package.json",
         "/packages/project/package.json",
-        "/packages/pulumi-sdk/package.json",
-        "/scripts/prepublishOnly/package.json",
-        "/scripts/release/package.json"
+        "/packages/pulumi-sdk/package.json"
       ]
     },
     {
@@ -3445,6 +3428,8 @@
       "version": "7.0.2",
       "files": [
         "/package.json",
+        "/cypress-tests/package.json",
+        "/scripts/cli/package.json",
         "/packages/admin-ui/package.json",
         "/packages/ai-powerups/package.json",
         "/packages/api/package.json",
@@ -3549,7 +3534,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
@@ -3684,7 +3668,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
@@ -3712,9 +3695,7 @@
         "/packages/website-builder-nuxt/package.json",
         "/packages/website-builder-react/package.json",
         "/packages/website-builder-sdk/package.json",
-        "/packages/website-builder-vue/package.json",
-        "/cypress-tests/package.json",
-        "/scripts/cli/package.json"
+        "/packages/website-builder-vue/package.json"
       ]
     },
     {
@@ -3723,10 +3704,10 @@
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     { "name": "validator", "version": "13.15.35", "files": ["/package.json"] },
-    { "name": "verdaccio", "version": "6.7.4", "files": ["/package.json"] },
+    { "name": "verdaccio", "version": "6.8.0", "files": ["/package.json"] },
     {
       "name": "vite",
-      "version": "8.1.4",
+      "version": "8.1.5",
       "files": [
         "/packages/website-builder-nuxt/package.json",
         "/packages/website-builder-nuxt/package.json"
@@ -3737,6 +3718,7 @@
       "version": "4.1.10",
       "files": [
         "/package.json",
+        "/scripts/release/package.json",
         "/packages/admin-ui/package.json",
         "/packages/ai-powerups/package.json",
         "/packages/api/package.json",
@@ -3801,7 +3783,6 @@
         "/packages/event-handler-server/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/languages/package.json",
@@ -3886,7 +3867,6 @@
         "/packages/event-handler-server/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
         "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/languages/package.json",
@@ -3905,13 +3885,12 @@
         "/packages/webhooks/package.json",
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-react/package.json",
-        "/packages/website-builder-sdk/package.json",
-        "/scripts/release/package.json"
+        "/packages/website-builder-sdk/package.json"
       ]
     },
     {
       "name": "vue",
-      "version": "3.5.39",
+      "version": "3.5.40",
       "files": [
         "/packages/website-builder-nuxt/package.json",
         "/packages/website-builder-nuxt/package.json"
@@ -3966,13 +3945,11 @@
     }
   ],
   "resolutions": [
-    { "name": "@graphql-tools/merge", "version": "9.2.0", "files": ["/package.json"] },
-    { "name": "@graphql-tools/schema", "version": "10.0.36", "files": ["/package.json"] },
-    { "name": "@graphql-tools/utils", "version": "11.2.0", "files": ["/package.json"] },
     { "name": "@types/react", "version": "18.3.31", "files": ["/package.json"] },
     { "name": "@types/react-dom", "version": "18.3.7", "files": ["/package.json"] },
     { "name": "react", "version": "18.3.1", "files": ["/package.json"] },
-    { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] }
+    { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] },
+    { "name": "sharp", "version": "0.35.3", "files": ["/package.json"] }
   ],
   "references": [
     {
@@ -4030,7 +4007,7 @@
       "name": "@lexical/code",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-editor/package.json", "types": ["dependencies"] },
@@ -4043,7 +4020,7 @@
       "name": "@lexical/hashtag",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-nodes/package.json", "types": ["dependencies"] }
@@ -4055,7 +4032,7 @@
       "name": "@lexical/headless",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-converter/package.json", "types": ["dependencies"] }
@@ -4067,7 +4044,7 @@
       "name": "@lexical/history",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-editor/package.json", "types": ["dependencies"] }
@@ -4079,7 +4056,7 @@
       "name": "@lexical/html",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-converter/package.json", "types": ["dependencies"] }
@@ -4091,7 +4068,7 @@
       "name": "@lexical/list",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-nodes/package.json", "types": ["dependencies"] }
@@ -4103,7 +4080,7 @@
       "name": "@lexical/mark",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-nodes/package.json", "types": ["dependencies"] }
@@ -4115,7 +4092,7 @@
       "name": "@lexical/overflow",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-nodes/package.json", "types": ["dependencies"] }
@@ -4127,7 +4104,7 @@
       "name": "@lexical/react",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-editor/package.json", "types": ["dependencies"] },
@@ -4140,7 +4117,7 @@
       "name": "@lexical/rich-text",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-editor/package.json", "types": ["dependencies"] },
@@ -4153,7 +4130,7 @@
       "name": "@lexical/selection",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-editor/package.json", "types": ["dependencies"] },
@@ -4167,7 +4144,7 @@
       "name": "@lexical/text",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-editor/package.json", "types": ["dependencies"] }
@@ -4179,7 +4156,7 @@
       "name": "@lexical/utils",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
@@ -4320,6 +4297,10 @@
           "version": "5.6.2",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/aws-layers/package.json", "types": ["dependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
@@ -4329,11 +4310,7 @@
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
-            { "file": "/packages/system-requirements/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+            { "file": "/packages/system-requirements/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4364,9 +4341,11 @@
       "name": "execa",
       "versions": [
         {
-          "version": "9.6.1",
+          "version": "10.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-audit-logs/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
@@ -4375,9 +4354,7 @@
             { "file": "/packages/mcp/package.json", "types": ["devDependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/packages/system-requirements/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+            { "file": "/packages/system-requirements/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4389,11 +4366,11 @@
           "version": "3.3.3",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }
+            { "file": "/packages/project/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4405,26 +4382,11 @@
           "version": "11.3.6",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "get-yarn-workspaces",
-      "versions": [
-        {
-          "version": "1.0.2",
-          "files": [
-            { "file": "/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
-            { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-utils/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] }
+            { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4513,7 +4475,7 @@
       "name": "lexical",
       "versions": [
         {
-          "version": "0.47.0",
+          "version": "0.48.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
@@ -4532,6 +4494,10 @@
           "version": "7.0.1",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
@@ -4539,11 +4505,7 @@
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/packages/telemetry/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+            { "file": "/packages/telemetry/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4555,6 +4517,7 @@
           "version": "4.18.1",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/ai-powerups/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-aco/package.json", "types": ["dependencies"] },
@@ -4593,8 +4556,7 @@
             { "file": "/packages/self-hosted-auth/package.json", "types": ["dependencies"] },
             { "file": "/packages/validation/package.json", "types": ["dependencies"] },
             { "file": "/packages/webhooks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] }
+            { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4622,11 +4584,11 @@
           "version": "6.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app/package.json", "types": ["dependencies"] },
             { "file": "/packages/react-properties/package.json", "types": ["dependencies"] },
             { "file": "/packages/utils/package.json", "types": ["dependencies"] },
-            { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] }
+            { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4644,7 +4606,7 @@
       "name": "oxfmt",
       "versions": [
         {
-          "version": "0.58.0",
+          "version": "0.59.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
@@ -4658,7 +4620,7 @@
       "name": "oxlint",
       "versions": [
         {
-          "version": "1.73.0",
+          "version": "1.74.0",
           "files": [{ "file": "/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -4806,11 +4768,11 @@
           "version": "7.8.5",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-sync-system/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/packages/system-requirements/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+            { "file": "/packages/system-requirements/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4828,13 +4790,13 @@
           "version": "4.23.1",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-server/package.json", "types": ["dependencies"] },
             { "file": "/packages/mcp/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }
+            { "file": "/packages/project/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -4846,6 +4808,9 @@
           "version": "5.8.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/prepublishOnly/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/api-elasticsearch-tasks/package.json",
@@ -4867,10 +4832,7 @@
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
             { "file": "/packages/db/package.json", "types": ["dependencies"] },
             { "file": "/packages/project/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["devDependencies"] }
+            { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
@@ -4882,6 +4844,8 @@
           "version": "7.0.2",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/cli/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/ai-powerups/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api/package.json", "types": ["devDependencies"] },
@@ -5092,7 +5056,6 @@
             { "file": "/packages/feature-flags/package.json", "types": ["devDependencies"] },
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
@@ -5129,9 +5092,7 @@
               "types": ["devDependencies"]
             },
             { "file": "/packages/website-builder-sdk/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/website-builder-vue/package.json", "types": ["devDependencies"] },
-            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["devDependencies"] }
+            { "file": "/packages/website-builder-vue/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
@@ -5148,7 +5109,7 @@
     {
       "name": "verdaccio",
       "versions": [
-        { "version": "6.7.4", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
+        { "version": "6.8.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
       ]
     },
     {
@@ -5158,6 +5119,7 @@
           "version": "4.1.10",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/ai-powerups/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api/package.json", "types": ["devDependencies"] },
@@ -5286,7 +5248,6 @@
             { "file": "/packages/event-handler-server/package.json", "types": ["devDependencies"] },
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
@@ -5314,8 +5275,7 @@
               "file": "/packages/website-builder-react/package.json",
               "types": ["devDependencies"]
             },
-            { "file": "/packages/website-builder-sdk/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["devDependencies"] }
+            { "file": "/packages/website-builder-sdk/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
@@ -5327,14 +5287,14 @@
           "version": "7.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
             { "file": "/packages/global-config/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+            { "file": "/packages/project/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -5346,56 +5306,459 @@
           "version": "18.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "sharp",
+      "versions": [
+        {
+          "version": "0.35.3",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@4tw/cypress-drag-drop",
+      "versions": [
+        {
+          "version": "2.3.1",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "@testing-library/cypress",
+      "versions": [
+        {
+          "version": "10.1.3",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "amazon-cognito-identity-js",
+      "versions": [
+        {
+          "version": "6.3.20",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "cypress",
+      "versions": [
+        {
+          "version": "15.18.1",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "cypress-image-snapshot",
+      "versions": [
+        {
+          "version": "4.0.1",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "cypress-mailosaur",
+      "versions": [
+        {
+          "version": "5.0.0",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "cypress-vite",
+      "versions": [
+        {
+          "version": "1.10.2",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "cypress-wait-until",
+      "versions": [
+        {
+          "version": "3.0.2",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "del",
+      "versions": [
+        {
+          "version": "8.0.1",
+          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "graphql-request",
+      "versions": [
+        {
+          "version": "7.4.0",
+          "files": [
+            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/project/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "uniqid",
+      "versions": [
+        {
+          "version": "5.4.0",
+          "files": [
+            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/plugins/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "js-yaml",
+      "versions": [
+        {
+          "version": "5.2.1",
+          "files": [
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "listr2",
+      "versions": [
+        {
+          "version": "10.2.2",
+          "files": [
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "node-notifier",
+      "versions": [
+        {
+          "version": "10.0.1",
+          "files": [{ "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "serialize-error",
+      "versions": [
+        {
+          "version": "13.0.1",
+          "files": [
+            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@types/js-yaml",
+      "versions": [
+        {
+          "version": "4.0.9",
+          "files": [
+            { "file": "/scripts/buildPackages/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/create-webiny-project/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "@types/yargs",
+      "versions": [
+        {
+          "version": "17.0.35",
+          "files": [
+            { "file": "/scripts/buildPackages/package.json", "types": ["devDependencies"] },
+            { "file": "/scripts/release/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "find-up",
+      "versions": [
+        {
+          "version": "8.0.0",
+          "files": [
+            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
             { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
+            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
+            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
+            { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
+            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
+            { "file": "/packages/pulumi/package.json", "types": ["dependencies"] },
+            { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }
           ]
         }
       ]
     },
     {
-      "name": "@graphql-tools/merge",
+      "name": "pino",
       "versions": [
         {
-          "version": "9.2.0",
+          "version": "10.3.1",
           "files": [
-            { "file": "/package.json", "types": ["resolutions"] },
-            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-core/package.json", "types": ["dependencies"] },
+            { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
+            { "file": "/packages/logger/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/project/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
           ]
         }
       ]
     },
     {
-      "name": "@graphql-tools/schema",
+      "name": "ts-morph",
       "versions": [
         {
-          "version": "10.0.36",
+          "version": "28.0.0",
           "files": [
-            { "file": "/package.json", "types": ["resolutions"] },
-            { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
+            { "file": "/scripts/generateSkills/package.json", "types": ["dependencies"] },
+            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] }
           ]
         }
       ]
     },
     {
-      "name": "@graphql-tools/utils",
+      "name": "rimraf",
       "versions": [
         {
-          "version": "11.2.0",
+          "version": "6.1.3",
           "files": [
-            { "file": "/package.json", "types": ["resolutions"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/scripts/cli/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/ai-powerups/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-aco/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-aco-ddb/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-aco-sql/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-audit-logs-ddb/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-audit-logs-sql/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-background-tasks-ddb/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-background-tasks-os/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-core-ddb/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-core-testing/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-elasticsearch-tasks/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-event-handler-aws/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-event-handler-aws-ddb/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-event-handler-aws-ddb-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-event-handler-core/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-event-handler-server/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-event-handler-server-sql/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/api-file-manager/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-file-manager-s3/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-file-manager-server/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-headless-cms-ddb-es/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-headless-cms-testing/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-opensearch/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-opensearch-aws/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-website-builder/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-websockets/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-websockets-aws/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-websockets-ddb/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-websockets-server/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/api-websockets-sql/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-aco/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-admin/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-admin-ui/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-audit-logs/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-file-manager/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/app-graphql-playground/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/app-headless-cms/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/app-headless-cms-common/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/app-headless-cms-scheduler/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/app-headless-cms-workflows/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/app-mailer/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-record-locking/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-scheduler/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-sdk-playground/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-serverless-cms/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/app-website-builder-scheduler/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/app-website-builder-workflows/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/app-websockets/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/app-workflows/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/auth0/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/aws-sdk/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/background-tasks-aws/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/background-tasks-server/package.json",
+              "types": ["devDependencies"]
+            },
+            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
+            { "file": "/packages/cli-core/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/common-audit-logs/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
+            { "file": "/packages/db/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/db-dynamodb/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/error/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/event-handler-aws/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/event-handler-core/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/event-handler-server/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/feature-flags/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/form/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/logger/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/okta/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/plugins/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/project/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/pulumi/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/tenant-manager/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/utils/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/validation/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/wcp/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/webiny/package.json", "types": ["devDependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cli-progress",
+      "versions": [
+        {
+          "version": "3.12.0",
+          "files": [{ "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "p-limit",
+      "versions": [
+        {
+          "version": "7.3.0",
+          "files": [{ "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "@types/cli-progress",
+      "versions": [
+        {
+          "version": "3.11.6",
+          "files": [{ "file": "/scripts/cjsToEsm/package.json", "types": ["devDependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "p-retry",
+      "versions": [
+        {
+          "version": "8.0.0",
+          "files": [
+            { "file": "/scripts/release/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-sync-to-opensearch/package.json", "types": ["dependencies"] },
+            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
+            { "file": "/packages/sdk/package.json", "types": ["dependencies"] },
+            { "file": "/packages/utils/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -5404,7 +5767,7 @@
       "name": "@fortawesome/fontawesome-svg-core",
       "versions": [
         {
-          "version": "7.3.0",
+          "version": "7.3.1",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
@@ -5670,7 +6033,7 @@
       "name": "tailwindcss",
       "versions": [
         {
-          "version": "4.3.2",
+          "version": "4.3.3",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -5688,7 +6051,7 @@
       "name": "@fortawesome/free-solid-svg-icons",
       "versions": [
         {
-          "version": "7.3.0",
+          "version": "7.3.1",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
@@ -5700,7 +6063,7 @@
       "name": "@rsbuild/core",
       "versions": [
         {
-          "version": "2.1.5",
+          "version": "2.1.6",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] }
@@ -5724,7 +6087,7 @@
       "name": "@storybook/addon-a11y",
       "versions": [
         {
-          "version": "10.5.0",
+          "version": "10.5.2",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -5733,7 +6096,7 @@
       "name": "@storybook/addon-docs",
       "versions": [
         {
-          "version": "10.5.0",
+          "version": "10.5.2",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -5742,7 +6105,7 @@
       "name": "@storybook/react",
       "versions": [
         {
-          "version": "10.5.0",
+          "version": "10.5.2",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -5751,7 +6114,7 @@
       "name": "@tailwindcss/postcss",
       "versions": [
         {
-          "version": "4.3.2",
+          "version": "4.3.3",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] }
@@ -5793,170 +6156,6 @@
       ]
     },
     {
-      "name": "rimraf",
-      "versions": [
-        {
-          "version": "6.1.3",
-          "files": [
-            { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/ai-powerups/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-aco/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-aco-ddb/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-aco-sql/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-audit-logs-ddb/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-audit-logs-sql/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-background-tasks-ddb/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-background-tasks-os/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-core-ddb/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-core-testing/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-elasticsearch-tasks/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-event-handler-aws/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-event-handler-aws-ddb/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-event-handler-aws-ddb-os/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-event-handler-core/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-event-handler-server/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-event-handler-server-sql/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/api-file-manager/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-file-manager-s3/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-file-manager-server/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-headless-cms-ddb-es/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-headless-cms-testing/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/api-mailer/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-opensearch/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-opensearch-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-website-builder/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-websockets/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-websockets-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/api-websockets-ddb/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-websockets-server/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/api-websockets-sql/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-aco/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-admin-ui/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-audit-logs/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-file-manager/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/app-graphql-playground/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/app-headless-cms/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/app-headless-cms-common/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/app-headless-cms-scheduler/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/app-headless-cms-workflows/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/app-mailer/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-record-locking/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-scheduler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-sdk-playground/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/app-website-builder-scheduler/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/app-website-builder-workflows/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/app-websockets/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app-workflows/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/auth0/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/aws-sdk/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/background-tasks-aws/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/background-tasks-server/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
-            { "file": "/packages/cli-core/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/common-audit-logs/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/db/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/db-dynamodb/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/error/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/event-handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/event-handler-core/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/event-handler-server/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/feature-flags/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/form/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/logger/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/okta/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/plugins/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/project/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/pulumi/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/tenant-manager/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/utils/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/validation/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/wcp/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/webiny/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "sass",
       "versions": [
         {
@@ -5972,7 +6171,7 @@
       "name": "storybook",
       "versions": [
         {
-          "version": "10.5.0",
+          "version": "10.5.2",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -5990,7 +6189,7 @@
       "name": "ai",
       "versions": [
         {
-          "version": "7.0.22",
+          "version": "7.0.31",
           "files": [
             { "file": "/packages/ai-powerups/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] }
@@ -6144,10 +6343,25 @@
       ]
     },
     {
+      "name": "@graphql-tools/schema",
+      "versions": [
+        {
+          "version": "10.0.38",
+          "files": [
+            { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
+            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
       "name": "@ai-sdk/anthropic",
       "versions": [
         {
-          "version": "4.0.12",
+          "version": "4.0.16",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -6156,7 +6370,7 @@
       "name": "@ai-sdk/openai",
       "versions": [
         {
-          "version": "4.0.11",
+          "version": "4.0.16",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -6194,23 +6408,6 @@
             { "file": "/packages/cognito/package.json", "types": ["dependencies"] },
             { "file": "/packages/okta/package.json", "types": ["dependencies"] },
             { "file": "/packages/self-hosted-auth/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "pino",
-      "versions": [
-        {
-          "version": "10.3.1",
-          "files": [
-            { "file": "/packages/api-core/package.json", "types": ["dependencies"] },
-            { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
-            { "file": "/packages/logger/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -6350,7 +6547,7 @@
       "name": "exifreader",
       "versions": [
         {
-          "version": "4.41.0",
+          "version": "4.41.3",
           "files": [
             { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
@@ -6373,13 +6570,15 @@
       ]
     },
     {
-      "name": "sharp",
+      "name": "@graphql-tools/merge",
       "versions": [
         {
-          "version": "0.35.3",
+          "version": "9.2.2",
           "files": [
-            { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
+            { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
+            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -6617,25 +6816,10 @@
       ]
     },
     {
-      "name": "p-retry",
-      "versions": [
-        {
-          "version": "8.0.0",
-          "files": [
-            { "file": "/packages/api-sync-to-opensearch/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
-            { "file": "/packages/sdk/package.json", "types": ["dependencies"] },
-            { "file": "/packages/utils/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "ws",
       "versions": [
         {
-          "version": "8.21.0",
+          "version": "8.21.1",
           "files": [
             { "file": "/packages/api-websockets-server/package.json", "types": ["dependencies"] }
           ]
@@ -6871,7 +7055,7 @@
       "name": "@iconify/json",
       "versions": [
         {
-          "version": "2.2.499",
+          "version": "2.2.501",
           "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7110,7 +7294,7 @@
       "name": "@fortawesome/fontawesome-common-types",
       "versions": [
         {
-          "version": "7.3.0",
+          "version": "7.3.1",
           "files": [
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
           ]
@@ -7121,7 +7305,7 @@
       "name": "@fortawesome/free-brands-svg-icons",
       "versions": [
         {
-          "version": "7.3.0",
+          "version": "7.3.1",
           "files": [
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
           ]
@@ -7132,7 +7316,7 @@
       "name": "@fortawesome/free-regular-svg-icons",
       "versions": [
         {
-          "version": "7.3.0",
+          "version": "7.3.1",
           "files": [
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
           ]
@@ -7260,7 +7444,7 @@
       "name": "@aws-sdk/client-apigatewaymanagementapi",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7269,7 +7453,7 @@
       "name": "@aws-sdk/client-cloudfront",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7278,7 +7462,7 @@
       "name": "@aws-sdk/client-cloudwatch-events",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7287,7 +7471,7 @@
       "name": "@aws-sdk/client-cloudwatch-logs",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7296,7 +7480,7 @@
       "name": "@aws-sdk/client-cognito-identity-provider",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7305,7 +7489,7 @@
       "name": "@aws-sdk/client-dynamodb",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7314,7 +7498,7 @@
       "name": "@aws-sdk/client-dynamodb-streams",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7323,7 +7507,7 @@
       "name": "@aws-sdk/client-eventbridge",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7332,7 +7516,7 @@
       "name": "@aws-sdk/client-iam",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7341,7 +7525,7 @@
       "name": "@aws-sdk/client-iot",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7350,7 +7534,7 @@
       "name": "@aws-sdk/client-lambda",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7359,7 +7543,7 @@
       "name": "@aws-sdk/client-s3",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7368,7 +7552,7 @@
       "name": "@aws-sdk/client-scheduler",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7377,7 +7561,7 @@
       "name": "@aws-sdk/client-sfn",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7386,7 +7570,7 @@
       "name": "@aws-sdk/client-sqs",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7395,7 +7579,7 @@
       "name": "@aws-sdk/client-sts",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7404,7 +7588,7 @@
       "name": "@aws-sdk/credential-providers",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7413,7 +7597,7 @@
       "name": "@aws-sdk/lib-dynamodb",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7422,7 +7606,7 @@
       "name": "@aws-sdk/lib-storage",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7431,7 +7615,7 @@
       "name": "@aws-sdk/s3-presigned-post",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7440,7 +7624,7 @@
       "name": "@aws-sdk/s3-request-presigner",
       "versions": [
         {
-          "version": "3.1085.0",
+          "version": "3.1090.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7449,7 +7633,7 @@
       "name": "@aws-sdk/util-dynamodb",
       "versions": [
         {
-          "version": "3.996.6",
+          "version": "3.996.7",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7525,7 +7709,7 @@
       "name": "@rsdoctor/rspack-plugin",
       "versions": [
         {
-          "version": "1.5.18",
+          "version": "1.6.0",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7543,7 +7727,7 @@
       "name": "@rspack/core",
       "versions": [
         {
-          "version": "2.1.3",
+          "version": "2.1.4",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7563,26 +7747,6 @@
         {
           "version": "7.1.4",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "find-up",
-      "versions": [
-        {
-          "version": "8.0.0",
-          "files": [
-            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
-            { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
-            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
-            { "file": "/packages/pulumi/package.json", "types": ["dependencies"] },
-            { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/prepublishOnly/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }
-          ]
         }
       ]
     },
@@ -7637,22 +7801,6 @@
         {
           "version": "4.0.0",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "ts-morph",
-      "versions": [
-        {
-          "version": "28.0.0",
-          "files": [
-            { "file": "/packages/build-tools/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/generateSkills/package.json", "types": ["dependencies"] }
-          ]
         }
       ]
     },
@@ -7749,31 +7897,6 @@
       ]
     },
     {
-      "name": "js-yaml",
-      "versions": [
-        {
-          "version": "5.2.1",
-          "files": [
-            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "listr2",
-      "versions": [
-        {
-          "version": "10.2.2",
-          "files": [
-            { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] },
-            { "file": "/packages/project-utils/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "os",
       "versions": [
         {
@@ -7802,21 +7925,6 @@
           "version": "0.4.0",
           "files": [
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "@types/js-yaml",
-      "versions": [
-        {
-          "version": "4.0.9",
-          "files": [
-            {
-              "file": "/packages/create-webiny-project/package.json",
-              "types": ["devDependencies"]
-            },
-            { "file": "/scripts/buildPackages/package.json", "types": ["devDependencies"] }
           ]
         }
       ]
@@ -7854,7 +7962,7 @@
       "name": "fuse.js",
       "versions": [
         {
-          "version": "7.4.2",
+          "version": "7.5.0",
           "files": [{ "file": "/packages/db-utils/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7893,7 +8001,16 @@
       "name": "@graphql-tools/resolvers-composition",
       "versions": [
         {
-          "version": "7.0.33",
+          "version": "7.0.35",
+          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "@graphql-tools/utils",
+      "versions": [
+        {
+          "version": "11.2.2",
           "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8006,18 +8123,6 @@
       ]
     },
     {
-      "name": "uniqid",
-      "versions": [
-        {
-          "version": "5.4.0",
-          "files": [
-            { "file": "/packages/plugins/package.json", "types": ["dependencies"] },
-            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "chokidar",
       "versions": [
         {
@@ -8066,18 +8171,6 @@
       ]
     },
     {
-      "name": "graphql-request",
-      "versions": [
-        {
-          "version": "7.4.0",
-          "files": [
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/cypress-tests/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "mqtt",
       "versions": [
         {
@@ -8092,18 +8185,6 @@
         {
           "version": "8.2.0",
           "files": [{ "file": "/packages/project/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "serialize-error",
-      "versions": [
-        {
-          "version": "13.0.1",
-          "files": [
-            { "file": "/packages/project/package.json", "types": ["dependencies"] },
-            { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] }
-          ]
         }
       ]
     },
@@ -8138,7 +8219,7 @@
       "name": "@pulumi/aws",
       "versions": [
         {
-          "version": "7.36.0",
+          "version": "7.37.0",
           "files": [
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }
@@ -8150,7 +8231,7 @@
       "name": "@pulumi/pulumi",
       "versions": [
         {
-          "version": "3.251.0",
+          "version": "3.253.0",
           "files": [
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/pulumi/package.json", "types": ["dependencies"] },
@@ -8282,7 +8363,7 @@
       "name": "postcss",
       "versions": [
         {
-          "version": "8.5.18",
+          "version": "8.5.20",
           "files": [
             { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
@@ -8335,7 +8416,7 @@
       "name": "vite",
       "versions": [
         {
-          "version": "8.1.4",
+          "version": "8.1.5",
           "files": [
             { "file": "/packages/website-builder-nuxt/package.json", "types": ["devDependencies"] }
           ]
@@ -8346,7 +8427,7 @@
       "name": "vue",
       "versions": [
         {
-          "version": "3.5.39",
+          "version": "3.5.40",
           "files": [
             { "file": "/packages/website-builder-nuxt/package.json", "types": ["devDependencies"] },
             { "file": "/packages/website-builder-vue/package.json", "types": ["dependencies"] }
@@ -8384,135 +8465,6 @@
           "files": [
             { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
           ]
-        }
-      ]
-    },
-    {
-      "name": "@4tw/cypress-drag-drop",
-      "versions": [
-        {
-          "version": "2.3.1",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@testing-library/cypress",
-      "versions": [
-        {
-          "version": "10.1.3",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "amazon-cognito-identity-js",
-      "versions": [
-        {
-          "version": "6.3.20",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "cypress",
-      "versions": [
-        {
-          "version": "15.18.1",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "cypress-image-snapshot",
-      "versions": [
-        {
-          "version": "4.0.1",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "cypress-mailosaur",
-      "versions": [
-        {
-          "version": "5.0.0",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "cypress-vite",
-      "versions": [
-        {
-          "version": "1.10.2",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "cypress-wait-until",
-      "versions": [
-        {
-          "version": "3.0.2",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "del",
-      "versions": [
-        {
-          "version": "8.0.1",
-          "files": [{ "file": "/cypress-tests/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "node-notifier",
-      "versions": [
-        {
-          "version": "10.0.1",
-          "files": [{ "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@types/yargs",
-      "versions": [
-        {
-          "version": "17.0.35",
-          "files": [
-            { "file": "/scripts/buildPackages/package.json", "types": ["devDependencies"] },
-            { "file": "/scripts/release/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "cli-progress",
-      "versions": [
-        {
-          "version": "3.12.0",
-          "files": [{ "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "p-limit",
-      "versions": [
-        {
-          "version": "7.3.0",
-          "files": [{ "file": "/scripts/cjsToEsm/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@types/cli-progress",
-      "versions": [
-        {
-          "version": "3.11.6",
-          "files": [{ "file": "/scripts/cjsToEsm/package.json", "types": ["devDependencies"] }]
         }
       ]
     }

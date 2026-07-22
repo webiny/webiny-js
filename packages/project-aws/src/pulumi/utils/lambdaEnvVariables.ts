@@ -15,7 +15,7 @@ export let sealEnvVariables: () => void;
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {
         // The api runtime allowlist (WEBINY_/WCP_PROJECT_ENVIRONMENT/OKTA_/AUTH0_ + DEBUG) is shared
-        // with the self-hosted server flavour — see @webiny/project's pickApiRuntimeEnvVariables.
+        // with the self-hosted server hosting type — see @webiny/project's pickApiRuntimeEnvVariables.
         const baseVariables: EnvVariables = {
             ...pickApiRuntimeEnvVariables(),
             // This flag means that Lambda was deployed using the new Pulumi Apps architecture.
