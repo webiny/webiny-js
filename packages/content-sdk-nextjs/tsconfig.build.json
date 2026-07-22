@@ -17,6 +17,7 @@
       "@webiny/cms-nextjs": ["../cms-nextjs/src"],
       "@webiny/content-sdk/*": ["../content-sdk/src/*"],
       "@webiny/content-sdk": ["../content-sdk/src"],
+      "@webiny/website-builder-nextjs/middleware": ["../website-builder-nextjs/src/middleware.js"],
       "@webiny/website-builder-nextjs/webpack": ["../website-builder-nextjs/src/webpack.js"],
       "@webiny/website-builder-nextjs/*": ["../website-builder-nextjs/src/*"],
       "@webiny/website-builder-nextjs": ["../website-builder-nextjs/src"]
