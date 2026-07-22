@@ -1,5 +1,5 @@
 import React from "react";
-import { useFontColorPicker, DropDown } from "@webiny/lexical-editor";
+import { useFontColorPicker, useRichTextEditor, DropDown } from "@webiny/lexical-editor";
 import { LexicalColorPicker } from "~/components/LexicalColorPicker/LexicalColorPicker.js";
 import { css } from "@emotion/css";
 
@@ -8,9 +8,10 @@ export interface LexicalColorPickerDropdownProps {
 }
 
 export const LexicalColorPickerDropdown = ({
-    allowCustomColor = false
+    allowCustomColor
 }: LexicalColorPickerDropdownProps) => {
     const { value, applyColor } = useFontColorPicker();
+    const { theme } = useRichTextEditor();
 
     const buttonColorSelection = css({
         borderBottom: "3px solid " + value
@@ -28,7 +29,7 @@ export const LexicalColorPickerDropdown = ({
             <LexicalColorPicker
                 value={value}
                 onChangeComplete={applyColor}
-                allowCustomColor={allowCustomColor}
+                allowCustomColor={allowCustomColor ?? theme.allowCustomColors}
             />
         </DropDown>
     );
