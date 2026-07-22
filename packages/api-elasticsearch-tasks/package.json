@@ -32,7 +32,6 @@
     "@webiny/api-headless-cms-testing": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/stdlib": "^0.0.9",
     "rimraf": "^6.1.3",
