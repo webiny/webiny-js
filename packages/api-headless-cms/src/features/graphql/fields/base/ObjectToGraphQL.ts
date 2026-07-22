@@ -11,8 +11,6 @@ import type {
 import type { ValidateChildFieldsParams } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types/modelAst.js";
 import { createTypeFromFields } from "~/utils/createTypeFromFields.js";
-import { isAssetField } from "../../../modelBuilder/fields/AssetFieldType.js";
-import { resolveAssetUrl } from "../../../modelBuilder/fields/resolveAssetUrl.js";
 
 interface CreateTypeNameParams {
     model: Pick<CmsModel, "singularApiName">;
@@ -129,16 +127,9 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             endpointType: "read"
         });
 
-        // Asset fields expose a computed, read-only `url`: the stored `src` with the
-        // per-usage crop baked in as a delivery param (see `resolveAssetUrl`). The
-        // resolver is bound in `createResolver` below on this same type.
-        const assetUrlTypeDefs = isAssetField(field)
-            ? `\nextend type ${fieldType} {\n    url: String\n}\n`
-            : "";
-
         return {
             fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
-            typeDefs: `${typeDefs}${childTypeDefs}${assetUrlTypeDefs}`
+            typeDefs: `${typeDefs}${childTypeDefs}`
         };
     }
 
@@ -158,15 +149,6 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                 graphQLType: fieldType,
                 fields: field.settings.fields
             }) || {};
-
-        // Bind the computed `url` field declared for asset types in `createTypeField`.
-        // The parent here is the stored asset value (`{ id, src, name, image, ... }`).
-        if (isAssetField(field)) {
-            typeResolvers[fieldType] = {
-                ...typeResolvers[fieldType],
-                url: (parent: any) => resolveAssetUrl(parent)
-            };
-        }
 
         return {
             resolver: null,

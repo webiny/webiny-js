@@ -1,3 +1,5 @@
+import type { ImageFormat } from "./imageFormat.js";
+
 /** Crop expressed as the fraction (0..1) cut off from each edge of the original. */
 export interface AssetCrop {
     top: number;
@@ -18,7 +20,7 @@ export interface ImageRequestOptions {
     /** Encoder quality (1–100). */
     quality?: number;
     /** Concrete output format (already resolved from any "auto" request). */
-    format?: import("./imageFormat.js").ImageFormat;
+    format?: ImageFormat;
     /** Per-request crop (normalized 0–1 edge insets). Supersedes asset-level crop. */
     crop?: AssetCrop;
     /** Target aspect ratio (width / height). */

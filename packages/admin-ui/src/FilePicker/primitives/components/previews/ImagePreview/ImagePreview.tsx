@@ -25,7 +25,14 @@ const DecoratableImagePreview = ({
     onEditItem,
     renderImage
 }: ImagePreviewProps) => {
-    const custom = renderImage?.({ url: value.url, name: value.name, className: IMAGE_CLASS });
+    let image: React.ReactElement | React.ReactNode = (
+        <img src={value.url} alt={value.name} className={IMAGE_CLASS} />
+    );
+
+    if (typeof renderImage === "function") {
+        image = renderImage({ url: value.url, name: value.name, className: IMAGE_CLASS });
+    }
+
     return (
         <div
             className={cn(
@@ -40,7 +47,7 @@ const DecoratableImagePreview = ({
                 data-role={"select-image"}
                 onClick={onReplaceItem}
             >
-                {custom || <img src={value.url} alt={value.name} className={IMAGE_CLASS} />}
+                {image}
             </div>
             <div className={"absolute top-1 right-1.5"}>
                 <ItemActions

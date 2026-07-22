@@ -89,8 +89,9 @@ export const ImageEditor = ({
             return;
         }
         const probe = document.createElement("img");
-        probe.onload = () =>
-            setNaturalSize({ width: probe.naturalWidth, height: probe.naturalHeight });
+        probe.onload = () => {
+            return setNaturalSize({ width: probe.naturalWidth, height: probe.naturalHeight });
+        };
         probe.src = image.src;
         return () => {
             probe.onload = null;

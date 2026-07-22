@@ -168,14 +168,14 @@ export interface IFieldRendererRegistry {
         };
     };
     assetField: {
-        fieldType: "object";
+        fieldType: "asset";
         settings?: {
             imagesOnly?: boolean;
             accept?: string[];
         };
     };
     assetFields: {
-        fieldType: "object";
+        fieldType: "asset";
         settings?: {
             imagesOnly?: boolean;
             accept?: string[];

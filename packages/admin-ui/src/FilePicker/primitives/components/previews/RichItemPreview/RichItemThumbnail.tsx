@@ -89,7 +89,7 @@ const RichItemThumbnail = ({
     renderImage
 }: RichItemThumbnailProps) => {
     const isImage = mimeType?.startsWith("image/");
-    const customImage = renderImage?.({ url, name });
+    const customImage = typeof renderImage === "function" ? renderImage({ url, name }) : false;
 
     return (
         <div
