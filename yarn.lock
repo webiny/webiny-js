@@ -10004,7 +10004,7 @@ __metadata:
   dependencies:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/yargs": "npm:^17.0.35"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     chalk: "npm:^5.6.2"
     execa: "npm:^10.0.0"
     fs-extra: "npm:^11.3.6"
@@ -10068,10 +10068,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
+    "@webiny/stdlib": "npm:^0.0.12"
     chalk: "npm:^5.6.2"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.3.6"
-    get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
     type-fest: "npm:^5.8.0"
     write-json-file: "npm:^7.0.0"
@@ -10459,7 +10459,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.8.0"
@@ -10590,7 +10590,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     better-sqlite3: "npm:12.11.1"
     knex: "npm:^3.3.0"
     pg: "npm:^8.22.0"
@@ -10821,7 +10821,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
@@ -10902,7 +10902,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     knex: "npm:^3.3.0"
     typescript: "npm:^7.0.2"
@@ -11279,7 +11279,7 @@ __metadata:
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
@@ -11293,7 +11293,7 @@ __metadata:
     "@webiny/api-sync-to-opensearch": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
@@ -11340,7 +11340,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     p-retry: "npm:^8.0.0"
     typescript: "npm:^7.0.2"
@@ -12211,7 +12211,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     apollo-cache: "npm:^1.3.5"
     apollo-cache-inmemory: "npm:^1.6.6"
     apollo-client: "npm:^2.6.10"
@@ -12339,7 +12339,7 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
@@ -12406,12 +12406,12 @@ __metadata:
     "@rspack/core": "npm:^2.1.4"
     "@swc/plugin-emotion": "npm:^14.15.0"
     "@tailwindcss/postcss": "npm:^4.3.3"
+    "@webiny/stdlib": "npm:^0.0.12"
     chalk: "npm:^5.6.2"
     css-loader: "npm:^7.1.4"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.3.6"
-    get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.18.1"
     postcss-loader: "npm:^8.2.1"
@@ -12462,13 +12462,13 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^5.6.2"
     ci-info: "npm:^4.4.0"
     execa: "npm:^10.0.0"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
     humanize-duration: "npm:3.34.0"
     inquirer: "npm:^14.0.2"
     load-json-file: "npm:^7.0.1"
@@ -12718,7 +12718,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     ci-info: "npm:^4.4.0"
     load-json-file: "npm:^7.0.1"
     write-json-file: "npm:^7.0.0"
@@ -13148,7 +13148,7 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
+    "@webiny/stdlib": "npm:^0.0.12"
     jest-dynalite: "npm:^3.6.1"
     listr2: "npm:^10.2.2"
     load-json-file: "npm:^7.0.1"
@@ -13366,9 +13366,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/stdlib@npm:^0.0.10":
-  version: 0.0.10
-  resolution: "@webiny/stdlib@npm:0.0.10"
+"@webiny/stdlib@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@webiny/stdlib@npm:0.0.12"
   dependencies:
     "@webiny/di": "npm:^1.0.2"
     bson-objectid: "npm:^2.0.4"
@@ -13380,7 +13380,7 @@ __metadata:
     pino-pretty: "npm:^13.1.3"
     type-fest: "npm:^5.8.0"
     zod: "npm:^4.4.3"
-  checksum: 10/f720edd4e64a4fade143d560998c7ed5fad0372d13ecefbae4a8cf605477cc51d6d75838b7eec2d3f3d6d39c9291f9deefc4a64812ece2b9474d693aa5dc29a4
+  checksum: 10/e2d02fc1b409ea759ca0cdaff28c0428a57450af2da889da9526fb12652d9b7c56cd150f30f0034302dbe8733c7d7059352ef1f5a92e0f27042412beee4a4b36
   languageName: node
   linkType: hard
 
@@ -15840,7 +15840,7 @@ __metadata:
     "@types/validate-npm-package-name": "npm:^4.0.2"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/mcp": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^5.6.2"
@@ -17945,13 +17945,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatten@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "flatten@npm:1.0.3"
-  checksum: 10/5c57379816f1692aaa79fbc6390e0a0644e5e8442c5783ed57c6d315468eddbc53a659eaa03c9bb1e771b0f4a9bd8dd8a2620286bf21fd6538a7857321fdfb20
-  languageName: node
-  linkType: hard
-
 "for-each@npm:^0.3.5":
   version: 0.3.5
   resolution: "for-each@npm:0.3.5"
@@ -18292,17 +18285,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-yarn-workspaces@npm:1.0.2, get-yarn-workspaces@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "get-yarn-workspaces@npm:1.0.2"
-  dependencies:
-    find-root: "npm:^1.1.0"
-    flatten: "npm:^1.0.2"
-    glob: "npm:^7.1.2"
-  checksum: 10/65ac46efe33d128c88352415b5f5090c9062282c1c29149687a7650b98b71f284cd8c83cda618bb9844917baf6bba136e1f9807bdc3da03f73916ff365c1a7ac
-  languageName: node
-  linkType: hard
-
 "getopts@npm:2.3.0":
   version: 2.3.0
   resolution: "getopts@npm:2.3.0"
@@ -18375,7 +18357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.1.2, glob@npm:^7.1.3":
+"glob@npm:^7.1.3":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -24699,7 +24681,7 @@ __metadata:
     "@types/react-dom": "npm:18.3.7"
     "@vitest/coverage-v8": "npm:^4.1.10"
     "@webiny/di": "npm:^1.0.2"
-    "@webiny/stdlib": "npm:^0.0.10"
+    "@webiny/stdlib": "npm:^0.0.12"
     adio: "npm:^3.0.1"
     chalk: "npm:^5.6.2"
     cross-env: "npm:^10.1.0"
@@ -24708,7 +24690,6 @@ __metadata:
     fast-glob: "npm:^3.3.3"
     fs-extra: "npm:^11.3.6"
     fsevents: "npm:^2.3.3"
-    get-yarn-workspaces: "npm:^1.0.2"
     github-actions-wac: "npm:^2.0.0"
     graphql: "npm:^16.14.2"
     husky: "npm:^9.1.7"
