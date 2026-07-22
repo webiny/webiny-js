@@ -20,7 +20,7 @@ export class ServerBuildAppWorkspaceService implements BuildAppWorkspaceService.
     async execute(appName: GetApp.AppName, options: BuildAppWorkspaceService.Options = {}) {
         if (appName === "core") {
             throw new Error(
-                `The "core" app does not exist in server-flavour Webiny projects. Only "api" and "admin" are available.`
+                `The "core" app does not exist in server hosting-type Webiny projects. Only "api" and "admin" are available.`
             );
         }
 

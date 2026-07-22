@@ -100,7 +100,7 @@ export const createCliContainer = async (
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
 
-    // Allow flavour-specific registrations (e.g. cli-aws, cli-server).
+    // Allow hosting-specific registrations (e.g. cli-aws, cli-server).
     register?.(container);
 
     // Extensions.

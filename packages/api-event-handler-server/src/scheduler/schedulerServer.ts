@@ -78,7 +78,7 @@ export function registerSchedulerServer(rootContainer: Container): void {
 
     // Register the ONE Bree instance under TWO tokens — two views of the same object:
     //
-    //   - SchedulerService: the flavour-agnostic contract (create/update/delete/exists) that AWS
+    //   - SchedulerService: the hosting-agnostic contract (create/update/delete/exists) that AWS
     //     implements too. This is what per-request GraphQL mutations resolve to schedule/reschedule.
     //   - SchedulerSingleton: typed as the CONCRETE BreeSchedulerService, so it also exposes the
     //     methods that aren't on that contract — start() and recover(). Those are Bree-only: AWS's
