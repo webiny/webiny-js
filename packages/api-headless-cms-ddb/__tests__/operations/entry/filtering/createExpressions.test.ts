@@ -1,28 +1,38 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { ValueFilterRegistry } from "@webiny/db-utils";
-import { createExpressions, type Expression, type Field } from "@webiny/api-headless-cms-storage";
-import { PluginsContainer } from "@webiny/plugins";
-import { createPluginsContainer } from "../../helpers/pluginsContainer";
+import {
+    createExpressions,
+    type Expression,
+    type Field,
+    FieldFilterCreateRegistry,
+    FieldFilterValueTransformRegistry
+} from "@webiny/api-headless-cms-storage";
+import { FieldFilterPathRegistry } from "@webiny/api-headless-cms-storage";
 import { createFields } from "./mocks/fields";
 import { createTestContainer } from "../../helpers/createTestContainer";
 
 describe("create expressions from where conditions", () => {
-    let plugins: PluginsContainer;
+    let filterCreateRegistry: FieldFilterCreateRegistry.Interface;
+    let transformRegistry: FieldFilterValueTransformRegistry.Interface;
     let fields: Record<string, Field>;
     let valueFilterRegistry: ValueFilterRegistry.Interface;
 
     beforeEach(() => {
-        plugins = createPluginsContainer();
         const container = createTestContainer();
+        const pathRegistry = container.resolve(FieldFilterPathRegistry);
+        transformRegistry = container.resolve(FieldFilterValueTransformRegistry);
+        filterCreateRegistry = container.resolve(FieldFilterCreateRegistry);
         valueFilterRegistry = container.resolve(ValueFilterRegistry);
         fields = createFields({
-            plugins
+            pathRegistry,
+            transformRegistry
         });
     });
 
     it("should convert simple root level where into expression", () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -51,7 +61,7 @@ describe("create expressions from where conditions", () => {
                     fieldPathId: "values.date",
                     negate: false,
                     path: "values.date",
-                    compareValue: "2023-01-01",
+                    compareValue: expect.any(Number),
                     transformValue: expect.any(Function),
                     filter: expect.any(Object),
                     field: expect.any(Object)
@@ -73,7 +83,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert root level AND where into expression", async () => {
         const andWhereResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -110,7 +121,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -132,7 +143,8 @@ describe("create expressions from where conditions", () => {
         expect(andWhereResult).toEqual(expectedAndWhere);
 
         const rootWithAndWhereResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -196,7 +208,7 @@ describe("create expressions from where conditions", () => {
                                     fieldPathId: "values.date",
                                     negate: false,
                                     path: "values.date",
-                                    compareValue: "2023-01-01",
+                                    compareValue: expect.any(Number),
                                     transformValue: expect.any(Function),
                                     filter: expect.any(Object),
                                     field: expect.any(Object)
@@ -222,7 +234,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert nested AND where to expression", async () => {
         const oneLevelAndWhereResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -306,7 +319,8 @@ describe("create expressions from where conditions", () => {
         expect(oneLevelAndWhereResult).toEqual(expectedOneLevelAndWhereResult);
 
         const twoLevelAndWhereResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -380,7 +394,7 @@ describe("create expressions from where conditions", () => {
                                     fieldPathId: "values.date",
                                     negate: false,
                                     path: "values.date",
-                                    compareValue: "2023-01-01",
+                                    compareValue: expect.any(Number),
                                     transformValue: expect.any(Function),
                                     filter: expect.any(Object),
                                     field: expect.any(Object)
@@ -462,7 +476,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert root level OR into expression", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -499,7 +514,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -523,7 +538,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert one level OR into expressions", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -597,7 +613,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -612,7 +628,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert two levels OR into expressions", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -660,7 +677,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -717,7 +734,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert two levels OR into expressions - sibling OR", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -773,7 +791,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -852,7 +870,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert three levels OR into expressions", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -940,7 +959,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -1033,7 +1052,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert four levels OR into expressions", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -1133,7 +1153,7 @@ describe("create expressions from where conditions", () => {
                             fieldPathId: "values.date",
                             negate: false,
                             path: "values.date",
-                            compareValue: "2023-01-01",
+                            compareValue: expect.any(Number),
                             transformValue: expect.any(Function),
                             filter: expect.any(Object),
                             field: expect.any(Object)
@@ -1281,7 +1301,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert a simple root level AND and OR into expression", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -1361,7 +1382,8 @@ describe("create expressions from where conditions", () => {
 
     it("should convert complex OR / AND where into expression", async () => {
         const rootOrResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -1662,7 +1684,8 @@ describe("create expressions from where conditions", () => {
         expect(rootOrResult).toEqual(rootOrExpected);
 
         const rootAndResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -1963,7 +1986,8 @@ describe("create expressions from where conditions", () => {
         expect(rootAndResult).toEqual(rootAndExpected);
 
         const rootAndOrResult = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -2332,7 +2356,8 @@ describe("create expressions from where conditions", () => {
      */
     it("test for product conditional test", async () => {
         const result = createExpressions({
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             where: {
@@ -2456,7 +2481,7 @@ describe("create expressions from where conditions", () => {
                                             fieldPathId: "values.availableOn",
                                             negate: false,
                                             path: "values.availableOn",
-                                            compareValue: "2024-02-01",
+                                            compareValue: expect.any(Number),
                                             transformValue: expect.any(Function),
                                             filter: expect.any(Object),
                                             field: expect.any(Object)
@@ -2465,7 +2490,7 @@ describe("create expressions from where conditions", () => {
                                             fieldPathId: "values.availableOn",
                                             negate: false,
                                             path: "values.availableOn",
-                                            compareValue: "2024-02-02",
+                                            compareValue: expect.any(Number),
                                             transformValue: expect.any(Function),
                                             filter: expect.any(Object),
                                             field: expect.any(Object)

@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFields, type Field } from "@webiny/api-headless-cms-storage";
-import { PluginsContainer } from "@webiny/plugins";
+import {
+    FieldFilterPathRegistry,
+    FieldFilterValueTransformRegistry
+} from "@webiny/api-headless-cms-storage";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createModel } from "../../helpers/createModel";
-import { createPluginsContainer } from "../../helpers/pluginsContainer";
+import { createTestContainer } from "../../helpers/createTestContainer";
 import { expectedSystemFields } from "./mocks/expectedSystemFields.js";
 
 interface ExpectedFields {
@@ -11,11 +14,14 @@ interface ExpectedFields {
 }
 
 describe("create system and model fields", () => {
-    let plugins: PluginsContainer;
+    let pathRegistry: FieldFilterPathRegistry.Interface;
+    let transformRegistry: FieldFilterValueTransformRegistry.Interface;
     let model: CmsModel;
 
     beforeEach(() => {
-        plugins = createPluginsContainer();
+        const container = createTestContainer();
+        pathRegistry = container.resolve(FieldFilterPathRegistry);
+        transformRegistry = container.resolve(FieldFilterValueTransformRegistry);
         model = createModel();
     });
 
@@ -26,7 +32,8 @@ describe("create system and model fields", () => {
             layout: []
         };
         const result = createFields({
-            plugins,
+            pathRegistry,
+            transformRegistry,
             fields: testModel.fields
         });
 
@@ -49,7 +56,8 @@ describe("create system and model fields", () => {
 
     it("should create system fields and model fields all the nested fields", async () => {
         const result = createFields({
-            plugins,
+            pathRegistry,
+            transformRegistry,
             fields: model.fields
         });
 

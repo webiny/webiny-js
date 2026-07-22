@@ -1,4 +1,3 @@
-import type { PluginsContainer } from "@webiny/plugins/types.js";
 import type {
     CmsContext,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
@@ -7,7 +6,6 @@ import type {
 export type { CmsContext };
 
 export interface SqlStorageOperationsFactoryParams {
-    plugins: PluginsContainer;
     container: CmsContext["container"];
 }
 

@@ -6,31 +6,36 @@ import {
     type Expression,
     createFields,
     filter,
-    type Field
+    type Field,
+    FieldFilterPathRegistry,
+    FieldFilterValueTransformRegistry,
+    FieldFilterCreateRegistry
 } from "@webiny/api-headless-cms-storage";
-import { PluginsContainer } from "@webiny/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
-import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createModel } from "../../helpers/createModel";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
 import { GraphQLFeature } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { createTestContainer } from "../../helpers/createTestContainer";
 
 describe("filtering cms ddb", () => {
-    let plugins: PluginsContainer;
+    let filterCreateRegistry: FieldFilterCreateRegistry.Interface;
+    let transformRegistry: FieldFilterValueTransformRegistry.Interface;
     let model: CmsModel;
     let fields: Record<string, Field>;
     let valueFilterRegistry: ValueFilterRegistry.Interface;
     let container: ReturnType<typeof createTestContainer>;
 
     beforeEach(() => {
-        plugins = createPluginsContainer();
         model = createModel();
         container = createTestContainer();
         GraphQLFeature.register(container);
+        const pathRegistry = container.resolve(FieldFilterPathRegistry);
+        transformRegistry = container.resolve(FieldFilterValueTransformRegistry);
+        filterCreateRegistry = container.resolve(FieldFilterCreateRegistry);
         valueFilterRegistry = container.resolve(ValueFilterRegistry);
         fields = createFields({
-            plugins,
+            pathRegistry,
+            transformRegistry,
             fields: model.fields
         });
     });
@@ -61,7 +66,8 @@ describe("filtering cms ddb", () => {
             createdOn.setTime(createdOn.getTime() + modifier * 1000 * 86400 - 5000);
 
             const createExpressionsParams = {
-                plugins,
+                filterCreateRegistry,
+                transformRegistry,
                 valueFilterRegistry,
                 where: {
                     createdOn_gte: createdOn.toISOString()
@@ -79,7 +85,7 @@ describe("filtering cms ddb", () => {
                 expressions: [],
                 filters: [
                     {
-                        compareValue: createdOn.toISOString(),
+                        compareValue: createdOn.getTime(),
                         field: expect.objectContaining({
                             fieldId: "createdOn"
                         }),
@@ -98,7 +104,8 @@ describe("filtering cms ddb", () => {
             const result = filter({
                 items: records,
                 where: createExpressionsParams.where,
-                plugins,
+                filterCreateRegistry,
+                transformRegistry,
                 valueFilterRegistry,
                 fields
             });
@@ -119,7 +126,8 @@ describe("filtering cms ddb", () => {
                     title_contains: "tttt"
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -149,7 +157,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -182,7 +191,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -221,7 +231,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -243,7 +254,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -282,7 +294,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -321,7 +334,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -360,7 +374,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -378,7 +393,8 @@ describe("filtering cms ddb", () => {
                     }
                 }
             },
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields
         });
@@ -392,7 +408,7 @@ describe("filtering cms ddb", () => {
         const searchableFields = getSearchableFields({
             fields: model.fields,
             input: [],
-            context: { plugins, container }
+            context: { container }
         });
         /**
          * Find yellow color items.
@@ -400,7 +416,8 @@ describe("filtering cms ddb", () => {
         const resultsYellow = filter({
             items: records,
             where: {},
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             fullTextSearch: {
@@ -416,7 +433,8 @@ describe("filtering cms ddb", () => {
         const resultsWhite = filter({
             items: records,
             where: {},
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             fullTextSearch: {
@@ -432,7 +450,8 @@ describe("filtering cms ddb", () => {
         const resultsGrey = filter({
             items: records,
             where: {},
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             fullTextSearch: {
@@ -448,7 +467,8 @@ describe("filtering cms ddb", () => {
         const resultsRed = filter({
             items: records,
             where: {},
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             valueFilterRegistry,
             fields,
             fullTextSearch: {

@@ -23,6 +23,7 @@
   "license": "MIT",
   "author": "Webiny Ltd.",
   "dependencies": {
+    "@webiny/api": "0.0.0",
     "@webiny/api-core-sql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-sql": "0.0.0",
@@ -44,6 +45,7 @@
     "@webiny/api-sync-pg-to-opensearch": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/stdlib": "^0.0.9",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },

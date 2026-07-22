@@ -134,7 +134,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             ApiCoreFeature.register(container, { wcpLicense });
 
             // Process legacy RegisterExtensionPlugins to register StorageOperationsFactory
-            processLegacyPlugins(container, cmsStorage.plugins);
+            await processLegacyPlugins(container, cmsStorage.plugins);
 
             // Separate plugins:
             // - Arrow functions (no prototype) → container setup callbacks, call immediately

@@ -1,4 +1,4 @@
-import { RegisterExtensionPlugin } from "@webiny/handler";
+import { registerExtensions } from "@webiny/handler";
 import type { Container } from "@webiny/di";
 
 /**
@@ -8,11 +8,6 @@ import type { Container } from "@webiny/di";
  * This bridges the old ContextPlugin-based plugin system to the new DI world
  * so that storage operations factories registered via legacy plugins are available.
  */
-export function processLegacyPlugins(container: Container, plugins: any[]): void {
-    const flat = [plugins].flat(Infinity as 1);
-    for (const plugin of flat) {
-        if (plugin instanceof RegisterExtensionPlugin) {
-            plugin.apply({ container } as any);
-        }
-    }
+export async function processLegacyPlugins(container: Container, plugins: any[]): Promise<void> {
+    await registerExtensions(container, plugins);
 }

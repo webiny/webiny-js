@@ -8,7 +8,6 @@ import type {
 import type { Client, IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
 import type { ITable } from "@webiny/db-dynamodb";
-import type { PluginsContainer } from "@webiny/plugins";
 
 export { CmsContext };
 /**
@@ -39,7 +38,6 @@ export interface StorageOperationsFactoryParams {
     elasticsearch: Client;
     table?: string;
     esTable?: string;
-    plugins: PluginsContainer;
     container: CmsContext["container"];
 }
 
