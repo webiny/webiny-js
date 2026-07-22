@@ -20,7 +20,7 @@
     "@pulumi/aws": "^7.37.0",
     "@pulumi/pulumi": "^3.253.0",
     "decompress": "^4.2.1",
-    "execa": "^9.6.1",
+    "execa": "^10.0.0",
     "find-up": "^8.0.0",
     "fs-extra": "^11.3.6",
     "load-json-file": "^7.0.1",

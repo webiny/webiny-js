@@ -960,7 +960,7 @@
     },
     {
       "name": "execa",
-      "version": "9.6.1",
+      "version": "10.0.0",
       "files": [
         "/packages/cli-core/package.json",
         "/packages/create-webiny-project/package.json",
@@ -1807,7 +1807,7 @@
     },
     {
       "name": "postcss",
-      "version": "8.5.19",
+      "version": "8.5.20",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nuxt/package.json",
@@ -3041,7 +3041,7 @@
     },
     {
       "name": "execa",
-      "version": "9.6.1",
+      "version": "10.0.0",
       "files": [
         "/package.json",
         "/packages/app-audit-logs/package.json",
@@ -3969,7 +3969,8 @@
     { "name": "@types/react", "version": "18.3.31", "files": ["/package.json"] },
     { "name": "@types/react-dom", "version": "18.3.7", "files": ["/package.json"] },
     { "name": "react", "version": "18.3.1", "files": ["/package.json"] },
-    { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] }
+    { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] },
+    { "name": "sharp", "version": "0.35.3", "files": ["/package.json"] }
   ],
   "references": [
     {
@@ -4361,7 +4362,7 @@
       "name": "execa",
       "versions": [
         {
-          "version": "9.6.1",
+          "version": "10.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-audit-logs/package.json", "types": ["devDependencies"] },
@@ -5355,6 +5356,19 @@
       ]
     },
     {
+      "name": "sharp",
+      "versions": [
+        {
+          "version": "0.35.3",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
       "name": "@fortawesome/fontawesome-svg-core",
       "versions": [
         {
@@ -6337,18 +6351,6 @@
             { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/sdk/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "sharp",
-      "versions": [
-        {
-          "version": "0.35.3",
-          "files": [
-            { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
-            { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -8274,7 +8276,7 @@
       "name": "postcss",
       "versions": [
         {
-          "version": "8.5.19",
+          "version": "8.5.20",
           "files": [
             { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
