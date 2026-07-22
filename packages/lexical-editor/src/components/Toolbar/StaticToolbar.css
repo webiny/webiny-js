@@ -32,14 +32,11 @@
   margin-right: 2px;
 }
 
-.static-toolbar button.popup-item i.format {
-  background-size: contain;
-  display: inline-block;
+.static-toolbar button.popup-item .format {
+  display: flex;
   height: 16px;
   width: 16px;
-  margin-top: 2px;
-  vertical-align: -0.25em;
-  display: flex;
+  flex-shrink: 0;
 }
 
 .static-toolbar button.popup-item:disabled i.format {
@@ -94,14 +91,14 @@
 
 .static-toolbar .popup-item .icon {
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   user-select: none;
   line-height: 16px;
   background-size: contain;
 }
 
-.static-toolbar i.chevron-down {
+.static-toolbar .chevron-down {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -109,7 +106,7 @@
   user-select: none;
 }
 
-.static-toolbar i.chevron-down.inside {
+.static-toolbar .chevron-down.inside {
   width: 16px;
   height: 16px;
   display: flex;
@@ -161,14 +158,11 @@
   margin-right: 2px;
 }
 
-.static-toolbar button.toolbar-item i.format {
-  background-size: contain;
-  display: inline-block;
+.static-toolbar button.toolbar-item .format {
+  display: flex;
   height: 16px;
   width: 16px;
-  vertical-align: -0.25em;
-  display: flex;
-  opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .static-toolbar button.toolbar-item:disabled .icon,
@@ -215,15 +209,15 @@
 
 .static-toolbar .toolbar-item .icon {
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   user-select: none;
   margin-right: 8px;
   line-height: 16px;
   background-size: contain;
 }
 
-.static-toolbar i.chevron-down {
+.static-toolbar .chevron-down {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -231,7 +225,7 @@
   user-select: none;
 }
 
-.static-toolbar i.chevron-down.inside {
+.static-toolbar .chevron-down.inside {
   width: 16px;
   height: 16px;
   display: flex;
@@ -403,8 +397,8 @@ i.font-color,
 
 .lexical-dropdown .item .active {
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   background-size: contain;
 }
 
@@ -429,8 +423,8 @@ i.font-color,
 
 .lexical-dropdown .item .icon {
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   user-select: none;
   margin-right: 12px;
   line-height: 16px;
@@ -665,4 +659,24 @@ button.item.dropdown-item-active i {
   min-width: 100%;
   color: #000;
   overflow: hidden;
+}
+
+/*
+ * Toolbar icons are inline SVGs from @webiny/icons (Material Symbols), replacing the
+ * legacy background-image glyphs. Sizing is handled per-button above; color via `fill`.
+ */
+.static-toolbar .format,
+.static-toolbar .icon,
+.lexical-dropdown .item .icon {
+  fill: var(--fill-neutral-xstrong);
+}
+
+.static-toolbar .chevron-down {
+  fill: var(--fill-neutral-strong);
+}
+
+.static-toolbar button:disabled .format,
+.static-toolbar button:disabled .icon,
+.static-toolbar button:disabled .chevron-down {
+  fill: var(--fill-neutral-disabled);
 }

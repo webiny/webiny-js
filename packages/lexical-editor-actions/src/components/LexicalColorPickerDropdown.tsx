@@ -1,6 +1,7 @@
 import React from "react";
 import { useFontColorPicker, DropDown } from "@webiny/lexical-editor";
 import { LexicalColorPicker } from "~/components/LexicalColorPicker/LexicalColorPicker.js";
+import { ReactComponent as FontColorIcon } from "@webiny/icons/format_color_text.svg";
 
 export interface LexicalColorPickerDropdownProps {
     allowCustomColor?: boolean;
@@ -20,8 +21,8 @@ export const LexicalColorPickerDropdown = ({
             <DropDown
                 buttonClassName="toolbar-item color-picker"
                 buttonAriaLabel={"Formatting options for text color"}
-                buttonIconClassName={
-                    "icon font-color [border-bottom:3px_solid_var(--wby-font-color)]"
+                buttonIcon={
+                    <FontColorIcon className="icon [border-bottom:3px_solid_var(--wby-font-color)]" />
                 }
                 stopCloseOnClickSelf={true}
                 disabled={false}

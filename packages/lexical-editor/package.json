@@ -19,6 +19,7 @@
     "@lexical/selection": "^0.47.0",
     "@lexical/text": "^0.47.0",
     "@lexical/utils": "^0.47.0",
+    "@webiny/icons": "0.0.0",
     "@webiny/lexical-nodes": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
     "@webiny/react-composition": "0.0.0",

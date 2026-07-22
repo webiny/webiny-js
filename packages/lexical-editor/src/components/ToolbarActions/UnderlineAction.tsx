@@ -1,6 +1,7 @@
 import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection, useRichTextEditor } from "~/hooks/index.js";
+import { ReactComponent as UnderlineIcon } from "@webiny/icons/format_underlined.svg";
 
 export const UnderlineAction = () => {
     const { editor } = useRichTextEditor();
@@ -17,7 +18,7 @@ export const UnderlineAction = () => {
             className={"popup-item spaced " + (isUnderlineSelected ? "active" : "")}
             aria-label="Underline text"
         >
-            <i className="format underline" />
+            <UnderlineIcon className="format" />
         </button>
     );
 };

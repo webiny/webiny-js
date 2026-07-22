@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { DropdownMenu } from "radix-ui";
+import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
 
 export function DropDownItem({
     children,
@@ -25,6 +26,7 @@ interface DropDownProps {
     buttonAriaLabel?: string;
     buttonClassName: string;
     buttonIconClassName?: string;
+    buttonIcon?: ReactNode;
     buttonLabel?: string;
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
@@ -37,6 +39,7 @@ export function DropDown({
     buttonAriaLabel,
     buttonClassName,
     buttonIconClassName,
+    buttonIcon,
     children,
     showScroll = true
 }: DropDownProps): React.JSX.Element {
@@ -49,11 +52,13 @@ export function DropDown({
                     aria-label={buttonAriaLabel || buttonLabel}
                     className={buttonClassName}
                 >
-                    {buttonIconClassName && <span className={buttonIconClassName} />}
+                    {buttonIcon
+                        ? buttonIcon
+                        : buttonIconClassName && <span className={buttonIconClassName} />}
                     {buttonLabel && (
                         <span className="text dropdown-button-text">{buttonLabel}</span>
                     )}
-                    <i className="chevron-down" />
+                    <ChevronDownIcon className="chevron-down" />
                 </button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>
