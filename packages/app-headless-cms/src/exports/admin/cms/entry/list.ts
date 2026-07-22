@@ -8,6 +8,6 @@ export type { IGetEntryGraphQLFieldSelection } from "~/features/contentEntry/get
 
 // Bulk action trigger — resolves the BulkActionUseCase used to run a (built-in or
 // custom) entries bulk action from the Admin UI. Pair with a custom EntriesBulkAction
-// on the API side (webiny/api/cms/bulk-actions).
+// on the API side (webiny/api/cms/entry).
 export { BulkActionFeature } from "~/features/contentEntry/bulkAction/feature.js";
 export { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";

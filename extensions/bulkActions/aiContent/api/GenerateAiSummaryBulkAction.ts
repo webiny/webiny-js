@@ -1,5 +1,5 @@
-import { EntriesBulkAction } from "webiny/api/cms/bulk-actions";
 import {
+    EntriesBulkAction,
     GetLatestRevisionByEntryIdUseCase,
     ListLatestEntriesUseCase,
     UpdateEntryUseCase
@@ -20,7 +20,15 @@ import { IdentityContext } from "webiny/api/security";
  *
  * AI-per-entry is a natural background-task workload: slow, batched, resumable.
  */
-class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
+// The `data` payload the Admin action sends with each trigger.
+interface GenerateAiSummaryData {
+    projectId?: string;
+    writerPersonaId?: string;
+    readerPersonaId?: string;
+    runId?: string;
+}
+
+class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface<GenerateAiSummaryData> {
     name = "generateAiSummary";
     modelIds = ["product"];
 
@@ -57,7 +65,7 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
 
     async processData(
         model: EntriesBulkAction.Model,
-        params: EntriesBulkAction.ProcessParams
+        params: EntriesBulkAction.ProcessParams<GenerateAiSummaryData>
     ): Promise<void> {
         const entryId = params.id.split("#")[0];
         const revision = await this.getRevision.execute(model, { id: entryId });
@@ -68,14 +76,9 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
 
         // Optional AI Power Ups context, forwarded from the Admin action's `data`:
         // a Writer Persona (tone), a Reader Persona (audience), or a Project (a bundled
-        // prompting context with its own instructions + default personas).
-        const writerPersonaId = (params.data?.writerPersonaId as string) || undefined;
-        const readerPersonaId = (params.data?.readerPersonaId as string) || undefined;
-        const projectId = (params.data?.projectId as string) || undefined;
-
-        // The per-run token — we stamp it onto the entry so this run converges. The next
-        // run uses a different token, so the entry becomes eligible again.
-        const runId = (params.data?.runId as string) || "";
+        // prompting context with its own instructions + default personas). The per-run
+        // `runId` token is what lets this run converge (a new run uses a new token).
+        const { projectId, writerPersonaId, readerPersonaId, runId = "" } = params.data ?? {};
 
         const result = await this.generateContent.execute({
             modelId: model.modelId,
@@ -89,13 +92,8 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface {
         }
 
         // The use case returns AI-generated entry values as JSON; take our target field.
-        let aiSummary = "";
-        try {
-            const resolved = JSON.parse(result.value.output || "{}") ?? {};
-            aiSummary = typeof resolved.aiSummary === "string" ? resolved.aiSummary : "";
-        } catch {
-            aiSummary = "";
-        }
+        const resolved = JSON.parse(result.value.output || "{}") as Record<string, unknown>;
+        const aiSummary = typeof resolved.aiSummary === "string" ? resolved.aiSummary : "";
 
         if (!aiSummary) {
             this.logger.warn(

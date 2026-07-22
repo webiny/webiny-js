@@ -1,5 +1,5 @@
-import { EntriesBulkAction } from "webiny/api/cms/bulk-actions";
 import {
+    EntriesBulkAction,
     GetLatestRevisionByEntryIdUseCase,
     ListLatestEntriesUseCase,
     UpdateEntryUseCase
@@ -24,7 +24,12 @@ import { IdentityContext } from "webiny/api/security";
  */
 const DEFAULT_DISCOUNT_PERCENT = 10;
 
-class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
+// The `data` payload the Admin action sends with each trigger.
+interface ApplyDiscountData {
+    percent?: number;
+}
+
+class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface<ApplyDiscountData> {
     // The action name. Webiny PascalCases it into the task id + GraphQL enum value,
     // so "applyDiscount" → tasks `hcmsBulk(List|Process)ApplyDiscountEntries` and the
     // frontend triggers it with `action: "ApplyDiscount"`.
@@ -72,9 +77,9 @@ class ApplyDiscountBulkActionImpl implements EntriesBulkAction.Interface {
      */
     public async processData(
         model: EntriesBulkAction.Model,
-        params: EntriesBulkAction.ProcessParams
+        params: EntriesBulkAction.ProcessParams<ApplyDiscountData>
     ): Promise<void> {
-        const percent = Number(params.data?.percent) || DEFAULT_DISCOUNT_PERCENT;
+        const percent = params.data?.percent ?? DEFAULT_DISCOUNT_PERCENT;
 
         // `params.id` is a revision id (e.g. "<entryId>#0001"); strip the version.
         const entryId = params.id.split("#")[0];

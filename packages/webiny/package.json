@@ -103,7 +103,6 @@
     "./api/cms/model": "./api/cms/model.js",
     "./api/cms/storage": "./api/cms/storage.js",
     "./api/cms/validation": "./api/cms/validation.js",
-    "./api/cms/bulk-actions": "./api/cms/bulk-actions.js",
     "./api/cms/opensearch": "./api/cms/opensearch.js",
     "./api/cms/scheduler": "./api/cms/scheduler.js",
     "./api/mailer": "./api/mailer.js",
@@ -152,7 +151,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "6c866b8674fcf6f27ffd114046e92845f3e5586fc75093ca6301c395043e371e",
+  "exportGenerationHash": "376fd265f3fee325b44e84b6b70f628e4402350b135488f1a9671a5ed2eb759f",
   "webiny": {
     "publishFrom": "dist"
   }
