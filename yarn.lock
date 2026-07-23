@@ -12903,6 +12903,7 @@ __metadata:
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
+    clsx: "npm:^2.1.1"
     lexical: "npm:^0.48.0"
     lodash: "npm:^4.18.1"
     radix-ui: "npm:^1.6.2"

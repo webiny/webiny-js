@@ -31,6 +31,19 @@ When new backend features are discovered, update `ai-context/core-features-refer
   EventType.createImplementation({ implementation: HttpEventType });
   ```
 
+- Compose CSS class names with a helper, never string concatenation (`+`) or template literals. In packages that depend on `@webiny/admin-ui`, use its `cn` helper (`clsx` + `tailwind-merge`). In admin-ui-agnostic packages (e.g. `@webiny/lexical-editor`), import `clsx` directly instead of pulling in `@webiny/admin-ui`.
+
+  ```tsx
+  // Bad
+  className={"popup-item spaced " + (isActive ? "active" : "")}
+
+  // Good (admin-ui package)
+  className={cn("popup-item", "spaced", { active: isActive })}
+
+  // Good (admin-ui-agnostic package)
+  className={clsx("popup-item", "spaced", { active: isActive })}
+  ```
+
 ## Building
 
 - When type checking, use `yarn check -p <package-name>`, e.g., `yarn check -p @webiny/api-core`

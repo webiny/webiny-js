@@ -3,6 +3,7 @@ import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
 import { ReactComponent as CodeIcon } from "@webiny/icons/code.svg";
+import clsx from "clsx";
 
 export const CodeHighlightAction = () => {
     const { editor } = useRichTextEditor();
@@ -16,7 +17,7 @@ export const CodeHighlightAction = () => {
     return (
         <button
             onClick={handleClick}
-            className={"popup-item spaced " + (isCodeSelected ? "active" : "")}
+            className={clsx("popup-item", "spaced", { active: isCodeSelected })}
             aria-label="Text code highlight"
         >
             <CodeIcon className="format" />
