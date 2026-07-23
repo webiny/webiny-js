@@ -4,10 +4,9 @@
   max-width: 400px;
   width: 100%;
   opacity: 0;
-  /* Matches admin-ui floating surfaces: border + soft shadow, rounded-md. */
+  /* Border-defined like admin-ui menus (no shadow), rounded-md. */
   background-color: var(--color-neutral-base);
   border: 1px solid var(--border-color-neutral-muted);
-  box-shadow: var(--shadow-lg);
   border-radius: var(--radius-md);
   pointer-events: all;
 }
