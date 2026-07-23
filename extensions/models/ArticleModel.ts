@@ -116,6 +116,11 @@ class ArticleModelImpl implements ModelFactory.Interface {
                 .descriptionFieldId("description")
                 .singularApiName("Article")
                 .pluralApiName("Articles")
+                .settings({
+                    aiEntryWizard: true,
+                    previewSlug: "{values.slug}",
+                    previewPrefix: "https://learn-webiny-nextjs-app.localhost/articles"
+                })
         ];
     }
 }
