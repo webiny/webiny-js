@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
 import { ScheduledActionsPresenter as Abstraction } from "./abstractions.js";
 import { ScheduledActionsPresenter } from "./ScheduledActionsPresenter.js";
-import { ContentEntriesPresenterSchedulingDecorator } from "./ContentEntriesPresenterDecorator.js";
+import { ContentEntriesPresenterSchedulingDecorator } from "./ContentEntriesPresenterSchedulingDecorator.js";
 
 export const ScheduledActionsPresenterFeature = createFeature({
     name: "Scheduler/ScheduledActionsPresenter",

@@ -13,6 +13,8 @@ When new backend features are discovered, update `ai-context/core-features-refer
 - When generating code, once done, run `git add .` to stage all changes
 - Only import one named import per line
 - when generating code, one file MUST only contain one class
+- A file's name MUST match at least one symbol it exports (keep the filename and the code in sync). e.g. `useScheduledActionsPresenter.ts` exports `useScheduledActionsPresenter`; `ContentEntriesPresenterSchedulingDecorator.ts` exports `ContentEntriesPresenterSchedulingDecorator`
+- A React hook that returns a presenter carries the `Presenter` suffix, matching `useContentEntryFormPresenter` (e.g. `useScheduledActionsPresenter`). Resolve a presenter through such a dedicated hook — do not repeat inline `container.resolve(SomePresenter)` across components
 - When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
 
 ## Building
