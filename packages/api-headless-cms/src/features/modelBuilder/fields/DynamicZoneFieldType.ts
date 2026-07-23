@@ -15,6 +15,7 @@ interface IDynamicZoneTemplate {
     gqlTypeName: string;
     icon: CmsIcon | undefined;
     description: string;
+    componentName?: string;
     fields: any[];
     layout: CmsModelLayoutCell[][];
     validation: CmsModelFieldValidation[];
@@ -30,6 +31,7 @@ export interface IDynamicZoneFieldBuilder extends DataFieldBuilder<"dynamicZone"
             gqlTypeName: string;
             icon?: CmsIcon;
             description?: string;
+            componentName?: string;
             fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
             layout?: string[][];
         }
@@ -41,6 +43,7 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
     gqlTypeName: string;
     icon?: CmsIcon;
     description?: string;
+    componentName?: string;
     fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
     layout?: string[][];
 }
@@ -90,6 +93,7 @@ class DynamicZoneFieldBuilder
             gqlTypeName: config.gqlTypeName,
             icon: config.icon,
             description: config.description || "",
+            componentName: config.componentName,
             fields,
             layout,
             validation: []

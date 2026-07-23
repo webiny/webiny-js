@@ -32,6 +32,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Hero",
                             icon: { type: "icon", name: "fas/grin-alt" },
                             description: "Hero banner",
+                            componentName: "Article/Hero",
                             fields: f => ({
                                 title: f.text().renderer("textInput").label("Title"),
                                 subtitle: f.text().renderer("textInput").label("Subtitle"),
