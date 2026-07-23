@@ -1,13 +1,13 @@
-import type { Knex } from "knex";
-import type { CmsEntryStorageOperations } from "@webiny/api-headless-cms/types/index.js";
-import type { Container } from "@webiny/feature/api";
-import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import type { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
-import { createStorageModelAccessor } from "@webiny/api-headless-cms-storage";
-import type { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
+import { EntryWriteOperations as Abstraction } from "./abstractions/EntryWriteOperations.js";
 import type { IEntryWriteOperations } from "./abstractions/EntryWriteOperations.js";
-import { createSyncWriter } from "./syncWriter.js";
-import { createSyncHelpers } from "./syncHelpers.js";
+import { SqlEntryOperations } from "@webiny/api-headless-cms-sql/operations/entry/abstractions/SqlEntryOperations.js";
+import { SyncHelpers } from "~/features/SyncWriter/abstractions/SyncHelpers.js";
+import { WriteEntry } from "~/features/SyncWriter/abstractions/WriteEntry.js";
+import { WriteLatest } from "~/features/SyncWriter/abstractions/WriteLatest.js";
+import { RemoveEntry } from "~/features/SyncWriter/abstractions/RemoveEntry.js";
+import { RemoveLatest } from "~/features/SyncWriter/abstractions/RemoveLatest.js";
+import { RemovePublished } from "~/features/SyncWriter/abstractions/RemovePublished.js";
+import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { WriteOperationDeps } from "./write/types.js";
 import { createCreateOperation } from "./write/create.js";
 import { createCreateRevisionFromOperation } from "./write/createRevisionFrom.js";
@@ -21,50 +21,64 @@ import { createDeleteEntryOperation } from "./write/deleteEntry.js";
 import { createDeleteRevisionOperation } from "./write/deleteRevision.js";
 import { createDeleteMultipleEntriesOperation } from "./write/deleteMultipleEntries.js";
 
-interface CreateEntryWriteOperationsParams {
-    knex: Knex;
-    container: Container;
-    sqlOps: CmsEntryStorageOperations;
-    syncTableManager: SyncTableManager.Interface;
-    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
-    compressionHandler: CompressionHandler.Interface;
+class EntryWriteOperationsImpl implements IEntryWriteOperations {
+    public readonly create: IEntryWriteOperations["create"];
+    public readonly createRevisionFrom: IEntryWriteOperations["createRevisionFrom"];
+    public readonly update: IEntryWriteOperations["update"];
+    public readonly publish: IEntryWriteOperations["publish"];
+    public readonly unpublish: IEntryWriteOperations["unpublish"];
+    public readonly move: IEntryWriteOperations["move"];
+    public readonly moveToBin: IEntryWriteOperations["moveToBin"];
+    public readonly restoreFromBin: IEntryWriteOperations["restoreFromBin"];
+    public readonly delete: IEntryWriteOperations["delete"];
+    public readonly deleteRevision: IEntryWriteOperations["deleteRevision"];
+    public readonly deleteMultipleEntries: IEntryWriteOperations["deleteMultipleEntries"];
+
+    public constructor(
+        sqlOps: SqlEntryOperations.Interface,
+        syncHelpers: SyncHelpers.Interface,
+        writeEntry: WriteEntry.Interface,
+        writeLatest: WriteLatest.Interface,
+        removeEntry: RemoveEntry.Interface,
+        removeLatest: RemoveLatest.Interface,
+        removePublished: RemovePublished.Interface,
+        storageModelProvider: CmsStorageModelProvider.Interface
+    ) {
+        const deps: WriteOperationDeps = {
+            sqlOps,
+            syncHelpers,
+            writeEntry,
+            writeLatest,
+            removeEntry,
+            removeLatest,
+            removePublished,
+            getStorageOperationsModel: model => storageModelProvider.getModel(model)
+        };
+
+        this.create = createCreateOperation(deps);
+        this.createRevisionFrom = createCreateRevisionFromOperation(deps);
+        this.update = createUpdateOperation(deps);
+        this.publish = createPublishOperation(deps);
+        this.unpublish = createUnpublishOperation(deps);
+        this.move = createMoveOperation(deps);
+        this.moveToBin = createMoveToBinOperation(deps);
+        this.restoreFromBin = createRestoreFromBinOperation(deps);
+        this.delete = createDeleteEntryOperation(deps);
+        this.deleteRevision = createDeleteRevisionOperation(deps);
+        this.deleteMultipleEntries = createDeleteMultipleEntriesOperation(deps);
+    }
 }
 
-export const createEntryWriteOperations = (
-    params: CreateEntryWriteOperationsParams
-): IEntryWriteOperations => {
-    const { knex, container, sqlOps, syncTableManager, fieldIndexRegistry, compressionHandler } =
-        params;
-
-    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(container);
-
-    const syncWriter = createSyncWriter({
-        knex,
-        syncTableManager,
-        fieldIndexRegistry,
-        compressionHandler
-    });
-
-    const syncHelpers = createSyncHelpers({ syncTableManager, syncWriter, sqlOps });
-
-    const deps: WriteOperationDeps = {
-        sqlOps,
-        syncHelpers,
-        syncWriter,
-        getStorageOperationsModel
-    };
-
-    return {
-        create: createCreateOperation(deps),
-        createRevisionFrom: createCreateRevisionFromOperation(deps),
-        update: createUpdateOperation(deps),
-        publish: createPublishOperation(deps),
-        unpublish: createUnpublishOperation(deps),
-        move: createMoveOperation(deps),
-        moveToBin: createMoveToBinOperation(deps),
-        restoreFromBin: createRestoreFromBinOperation(deps),
-        delete: createDeleteEntryOperation(deps),
-        deleteRevision: createDeleteRevisionOperation(deps),
-        deleteMultipleEntries: createDeleteMultipleEntriesOperation(deps)
-    };
-};
+export const EntryWriteOperations = Abstraction.createImplementation({
+    implementation: EntryWriteOperationsImpl,
+    dependencies: [
+        SqlEntryOperations,
+        SyncHelpers,
+        WriteEntry,
+        WriteLatest,
+        RemoveEntry,
+        RemoveLatest,
+        RemovePublished,
+        CmsStorageModelProvider
+    ]
+});

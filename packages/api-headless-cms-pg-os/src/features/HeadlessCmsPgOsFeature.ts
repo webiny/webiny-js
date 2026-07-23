@@ -4,18 +4,15 @@ import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { KnexClient } from "@webiny/api-core-sql";
+import { SqlEntryOperationsFeature } from "@webiny/api-headless-cms-sql/operations/entry/feature.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import {
-    CmsEntryOpenSearchFieldIndexRegistry,
     CmsEntryOpenSearchIndexCreate,
     CmsEntryOpenSearchIndexDelete
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import {
     TableNameResolverConfig,
     TableNameResolver
@@ -27,34 +24,21 @@ import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features
 import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/entryTableManager/feature.js";
 import { GroupSchemaManager } from "@webiny/api-headless-cms-sql/features/groupSchemaManager/abstractions.js";
 import { ModelSchemaManager } from "@webiny/api-headless-cms-sql/features/modelSchemaManager/abstractions.js";
-import { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
-import { SyncTableManager } from "./syncTableManager/abstractions.js";
+import { SyncWriterFeature } from "./SyncWriter/feature.js";
+import { EntryOperationsFeature } from "~/operations/entry/feature.js";
 import { createEntriesStorageOperations } from "~/operations/entry/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 
-interface PgOsStorageOperationsFactoryParams {
-    elasticsearch: ReturnType<OpenSearchClient.Interface["use"]>;
-    container: CmsContext["container"];
-}
-
 const createPgOsStorageOperations = (
-    params: PgOsStorageOperationsFactoryParams
+    container: CmsContext["container"]
 ): HeadlessCmsStorageOperations => {
-    const { elasticsearch, container } = params;
-
     const knex = container.resolve(KnexClient);
     const tableNameResolver = container.resolve(TableNameResolver);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
-    const entryTableManager = container.resolve(EntryTableManager);
-    const syncTableManager = container.resolve(SyncTableManager);
-
-    const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
-    const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
-    const compressionHandler = container.resolve(CompressionHandler);
 
     const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
 
@@ -91,16 +75,7 @@ const createPgOsStorageOperations = (
         tableNameResolver,
         modelSchemaManager
     );
-    const entries = createEntriesStorageOperations({
-        knex: knex.client,
-        container,
-        elasticsearch,
-        entryTableManager,
-        syncTableManager,
-        fieldRegistry,
-        fieldIndexRegistry,
-        compressionHandler
-    });
+    const entries = createEntriesStorageOperations(container);
 
     return {
         name: "postgresql:opensearch",
@@ -112,19 +87,14 @@ const createPgOsStorageOperations = (
 };
 
 class PgOsStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
-    public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
-
     public create(context: CmsContext) {
-        return createPgOsStorageOperations({
-            elasticsearch: this.openSearchClient.use(),
-            container: context.container
-        });
+        return createPgOsStorageOperations(context.container);
     }
 }
 
 const PgOsStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation({
     implementation: PgOsStorageOperationsFactoryImpl,
-    dependencies: [OpenSearchClient]
+    dependencies: []
 });
 
 export interface IPgOsStorageOperationsConfig {
@@ -159,7 +129,10 @@ export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConf
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);
+            SqlEntryOperationsFeature.register(container);
             SyncTableManagerFeature.register(container);
+            SyncWriterFeature.register(container);
+            EntryOperationsFeature.register(container);
 
             HeadlessCmsPgOsFeature.register(container);
         }
