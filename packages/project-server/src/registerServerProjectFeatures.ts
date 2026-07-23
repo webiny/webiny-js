@@ -4,6 +4,8 @@ import { BuildServerProjectWorkspace } from "./features/BuildServerProjectWorksp
 import { serverWatch } from "./features/Watch/ServerWatch.js";
 import { serverServe } from "./serve/ServerServe.js";
 import { serveWithBuildChecks } from "./serve/ServeWithBuildChecks.js";
+import { CopyExternalDependencies } from "./deploy/CopyExternalDependencies.js";
+import { EmitDeployEntry } from "./deploy/EmitDeployEntry.js";
 
 export const registerServerProjectFeatures = (container: Container): void => {
     // Replace the default (AWS) workspace builder with the server hosting-type one.
@@ -23,4 +25,11 @@ export const registerServerProjectFeatures = (container: Container): void => {
     // the required app builds are asserted before anything is served.
     container.register(serverServe).inSingletonScope();
     container.registerDecorator(serveWithBuildChecks);
+
+    // After the api build, assemble build/ into a self-contained, copy-deployable folder. Two
+    // ApiAfterBuild hooks (build-time only — they don't run in watch), split so the tree shows the
+    // concerns: copy the external deps into build/node_modules, and emit the deploy entry (start.mjs +
+    // package.json). Deploy-artifact packaging belongs with the server hosting type, not the bundler.
+    container.register(CopyExternalDependencies);
+    container.register(EmitDeployEntry);
 };
