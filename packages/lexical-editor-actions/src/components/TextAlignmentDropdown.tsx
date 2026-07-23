@@ -10,11 +10,14 @@ import { ReactComponent as IndentIcon } from "@webiny/icons/format_indent_increa
 import { ReactComponent as OutdentIcon } from "@webiny/icons/format_indent_decrease.svg";
 
 export const TextAlignmentDropdown = () => {
-    const { applyTextAlignment, outdentText, indentText } = useTextAlignmentAction();
+    const { applyTextAlignment, outdentText, indentText, value } = useTextAlignmentAction();
 
     const isRTL = useDeriveValueFromSelection(({ rangeSelection }) => {
         return rangeSelection ? $isParentElementRTL(rangeSelection) : false;
     });
+
+    // Empty format defaults to left alignment.
+    const alignment = value || "left";
 
     return (
         <DropDown
@@ -28,6 +31,7 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("left");
                 }}
                 className="item"
+                selected={alignment === "left"}
             >
                 <AlignLeftIcon className="icon" />
                 <span className="text">Left Align</span>
@@ -37,6 +41,7 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("center");
                 }}
                 className="item"
+                selected={alignment === "center"}
             >
                 <AlignCenterIcon className="icon" />
                 <span className="text">Center Align</span>
@@ -46,6 +51,7 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("right");
                 }}
                 className="item"
+                selected={alignment === "right"}
             >
                 <AlignRightIcon className="icon" />
                 <span className="text">Right Align</span>
@@ -55,6 +61,7 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("justify");
                 }}
                 className="item"
+                selected={alignment === "justify"}
             >
                 <AlignJustifyIcon className="icon" />
                 <span className="text">Justify Align</span>
@@ -65,6 +72,7 @@ export const TextAlignmentDropdown = () => {
                     outdentText();
                 }}
                 className="item"
+                selected={false}
             >
                 {isRTL ? <IndentIcon className="icon" /> : <OutdentIcon className="icon" />}
                 <span className="text">Outdent</span>
@@ -74,6 +82,7 @@ export const TextAlignmentDropdown = () => {
                     indentText();
                 }}
                 className="item"
+                selected={false}
             >
                 {isRTL ? <OutdentIcon className="icon" /> : <IndentIcon className="icon" />}
                 <span className="text">Indent</span>
