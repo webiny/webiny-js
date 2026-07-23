@@ -43,7 +43,7 @@ class MyThing {
     if (result.isFail()) {
       throw result.error; // e.g. "No AI provider configured. Add a provider in AI Power Ups settings."
     }
-    return result.value; // { output, telemetry }
+    return result.value; // { values, telemetry }
   }
 }
 ```
@@ -52,13 +52,13 @@ Register the dependency: `dependencies: [CmsGenerateEntryContentUseCase]`.
 
 ## Output shape — important
 
-`result.value.output` is `JSON.stringify(resolved)`, where `resolved` is an **entry-shaped
-object keyed by the model's field ids** (the use case is built to fill an entry from its
-schema). The AI decides which fields it fills, so:
+`result.value.values` is an **entry-shaped object keyed by the model's field ids** (the use
+case is built to fill an entry from its schema). The AI decides which fields it fills, so:
 
-- Parse it: `const resolved = JSON.parse(result.value.output || "{}")`.
-- Take **only** the field(s) you want (e.g. `resolved.aiSummary`) — do NOT blindly write
-  the whole object back, or the AI could overwrite `name`, `price`, etc.
+- Read **only** the field(s) you want (e.g. `result.value.values.aiSummary`) — do NOT blindly
+  write the whole object back, or the AI could overwrite `name`, `price`, etc.
+- Type the values at the call site if you like: `execute<{ aiSummary?: string }>(...)`, which
+  makes `result.value.values.aiSummary` typed (defaults to `Record<string, any>`).
 - Guard for the field being absent (the model may not have filled it): fall back to `""`
   and, if you're inside a converging background task, still mark the entry done so it
   doesn't loop.
