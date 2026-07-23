@@ -1,5 +1,5 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.public.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.public.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 
 export const PARALLEL_QUERY = /* GraphQL */ `

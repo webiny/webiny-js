@@ -399,6 +399,7 @@ export class Field implements IField {
             description: this.config.description,
             note: this.config.note,
             placeholder: this.config.placeholder,
+            autoFocus: this.config.autoFocus,
             value: this.getValue(),
             validation: this.visible ? this._validation : { isValid: null },
             validating: this._validating,

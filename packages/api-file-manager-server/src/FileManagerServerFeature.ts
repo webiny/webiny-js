@@ -1,5 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { ReadFileMetadataFeature } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/feature.js";
 import { WriteFileMetadataFeature } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/feature.js";
 import { createLocalAssetDeliveryFeature } from "~/assetDelivery/feature.js";

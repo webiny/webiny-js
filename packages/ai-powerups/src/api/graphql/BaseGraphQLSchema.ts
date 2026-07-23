@@ -1,5 +1,5 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
-import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { Response, ErrorResponse } from "@webiny/api-graphql/responses.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";

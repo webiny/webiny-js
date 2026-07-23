@@ -1,5 +1,5 @@
 import { HeadlessCms } from "~/features/shared/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { createCmsGraphQLSchemaPlugin } from "~/index";
 import { ACO_TEST_MODEL_ID } from "./model";
 import type { CmsContext } from "~/types";

@@ -15,7 +15,7 @@ import { TasksCrud } from "~/api/TasksCrud.js";
 import { WEBINY_TASK_MODEL_ID } from "./TaskPrivateModel.js";
 import { WEBINY_TASK_LOG_MODEL_ID } from "./TaskLogPrivateModel.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/api-graphql";
 import { createZodError, parseIdentifier } from "@webiny/utils";
 import zod from "zod";
 import type { GenericRecord } from "@webiny/api/types.js";

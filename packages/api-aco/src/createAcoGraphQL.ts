@@ -1,4 +1,4 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql";
 import { filterSchema } from "~/filter/filter.gql.js";
 
 const emptyResolver = () => ({});

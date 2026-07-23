@@ -13,6 +13,7 @@
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-headless-cms-utils-os": "0.0.0",
@@ -35,7 +36,6 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/project": "0.0.0",
@@ -142,7 +142,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "3efdd0212de85fc0d59f1eae0397e1ad055f5f3280fc020ba21afb75ad0d49b7",
+  "exportGenerationHash": "5a1e3226c3f682344a518d683d8ed6eab59b5e3abd29927d3d4dae21f7e6c395",
   "webiny": {
     "publishFrom": "dist"
   }

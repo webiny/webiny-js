@@ -10,7 +10,7 @@ import type {
 } from "~/types/index.js";
 import type { ValidateChildFieldsParams } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types/modelAst.js";
-import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver } from "@webiny/api-graphql/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";

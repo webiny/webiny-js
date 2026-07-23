@@ -21,12 +21,12 @@
   "dependencies": {
     "@webiny/admin-ui": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/sdk": "0.0.0",
     "@webiny/utils": "0.0.0",

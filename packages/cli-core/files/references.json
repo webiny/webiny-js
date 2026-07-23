@@ -255,41 +255,41 @@
       "name": "@graphql-tools/merge",
       "version": "9.2.2",
       "files": [
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
-        "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json"
+        "/packages/background-tasks/package.json"
       ]
     },
     {
       "name": "@graphql-tools/resolvers-composition",
       "version": "7.0.35",
-      "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
+      "files": ["/packages/api-graphql/package.json", "/packages/api-graphql/package.json"]
     },
     {
       "name": "@graphql-tools/schema",
       "version": "10.0.38",
       "files": [
         "/packages/api-audit-logs/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/api-audit-logs/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-record-locking/package.json",
-        "/packages/background-tasks/package.json",
-        "/packages/handler-graphql/package.json"
+        "/packages/background-tasks/package.json"
       ]
     },
     {
       "name": "@graphql-tools/utils",
       "version": "11.2.2",
-      "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
+      "files": ["/packages/api-graphql/package.json", "/packages/api-graphql/package.json"]
     },
     {
       "name": "@iconify/json",
@@ -1108,6 +1108,7 @@
       "files": [
         "/packages/api-core/package.json",
         "/packages/api-file-manager/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-headless-cms-testing/package.json",
@@ -1120,12 +1121,12 @@
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/languages/package.json",
         "/packages/self-hosted-auth/package.json",
         "/packages/webhooks/package.json",
         "/packages/api-core/package.json",
         "/packages/api-file-manager/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-headless-cms-testing/package.json",
@@ -1138,7 +1139,6 @@
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/languages/package.json",
         "/packages/self-hosted-auth/package.json",
         "/packages/webhooks/package.json"
@@ -1152,7 +1152,7 @@
     {
       "name": "graphql-scalars",
       "version": "1.25.0",
-      "files": ["/packages/handler-graphql/package.json", "/packages/handler-graphql/package.json"]
+      "files": ["/packages/api-graphql/package.json", "/packages/api-graphql/package.json"]
     },
     {
       "name": "graphql-tag",
@@ -2435,6 +2435,7 @@
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-core/package.json",
         "/packages/api-file-manager/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-mailer/package.json",
@@ -2455,7 +2456,6 @@
         "/packages/background-tasks/package.json",
         "/packages/cli-core/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/mcp/package.json",
         "/packages/okta/package.json",
         "/packages/project/package.json",
@@ -2470,6 +2470,7 @@
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-core/package.json",
         "/packages/api-file-manager/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-tasks/package.json",
         "/packages/api-mailer/package.json",
@@ -2490,7 +2491,6 @@
         "/packages/background-tasks/package.json",
         "/packages/cli-core/package.json",
         "/packages/cognito/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/mcp/package.json",
         "/packages/okta/package.json",
         "/packages/project/package.json",
@@ -3217,6 +3217,7 @@
         "/packages/api-file-manager/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
@@ -3269,8 +3270,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3309,6 +3308,7 @@
         "/packages/api-file-manager/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
@@ -3361,8 +3361,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3463,6 +3461,7 @@
         "/packages/api-file-manager-aco/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-aco/package.json",
         "/packages/api-headless-cms-bulk-actions/package.json",
@@ -3541,8 +3540,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3598,6 +3595,7 @@
         "/packages/api-file-manager-aco/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-aco/package.json",
         "/packages/api-headless-cms-bulk-actions/package.json",
@@ -3676,8 +3674,6 @@
         "/packages/feature-flags/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/i18n-react/package.json",
         "/packages/languages/package.json",
@@ -3746,6 +3742,7 @@
         "/packages/api-file-manager-aco/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-bulk-actions/package.json",
         "/packages/api-headless-cms-ddb/package.json",
@@ -3792,8 +3789,6 @@
         "/packages/event-handler-server/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/languages/package.json",
         "/packages/lexical-converter/package.json",
@@ -3831,6 +3826,7 @@
         "/packages/api-file-manager-aco/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-file-manager-server/package.json",
+        "/packages/api-graphql/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-bulk-actions/package.json",
         "/packages/api-headless-cms-ddb/package.json",
@@ -3877,8 +3873,6 @@
         "/packages/event-handler-server/package.json",
         "/packages/form/package.json",
         "/packages/handler/package.json",
-        "/packages/handler-aws/package.json",
-        "/packages/handler-graphql/package.json",
         "/packages/i18n/package.json",
         "/packages/languages/package.json",
         "/packages/lexical-converter/package.json",
@@ -4420,6 +4414,7 @@
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager-aco/package.json", "types": ["devDependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/api-headless-cms/package.json",
               "types": ["dependencies", "devDependencies"]
@@ -4449,7 +4444,6 @@
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] },
             { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/cognito/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/languages/package.json", "types": ["dependencies"] },
             { "file": "/packages/self-hosted-auth/package.json", "types": ["dependencies"] },
             { "file": "/packages/webhooks/package.json", "types": ["dependencies"] }
@@ -4913,6 +4907,7 @@
               "file": "/packages/api-file-manager-server/package.json",
               "types": ["devDependencies"]
             },
+            { "file": "/packages/api-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-headless-cms-aco/package.json", "types": ["devDependencies"] },
             {
@@ -5067,8 +5062,6 @@
             { "file": "/packages/feature-flags/package.json", "types": ["devDependencies"] },
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
@@ -5174,6 +5167,7 @@
               "file": "/packages/api-file-manager-server/package.json",
               "types": ["devDependencies"]
             },
+            { "file": "/packages/api-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-headless-cms-aco/package.json", "types": ["dependencies"] },
             {
@@ -5260,8 +5254,6 @@
             { "file": "/packages/event-handler-server/package.json", "types": ["devDependencies"] },
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
             { "file": "/packages/lexical-converter/package.json", "types": ["devDependencies"] },
@@ -5631,6 +5623,7 @@
               "file": "/packages/api-file-manager-server/package.json",
               "types": ["devDependencies"]
             },
+            { "file": "/packages/api-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] },
             {
               "file": "/packages/api-headless-cms-ddb-es/package.json",
@@ -5715,8 +5708,6 @@
             { "file": "/packages/feature-flags/package.json", "types": ["devDependencies"] },
             { "file": "/packages/form/package.json", "types": ["devDependencies"] },
             { "file": "/packages/handler/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-aws/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n/package.json", "types": ["devDependencies"] },
             { "file": "/packages/i18n-react/package.json", "types": ["devDependencies"] },
             { "file": "/packages/languages/package.json", "types": ["devDependencies"] },
@@ -6274,6 +6265,7 @@
             { "file": "/packages/api-audit-logs-ddb/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-mailer/package.json", "types": ["dependencies"] },
@@ -6294,7 +6286,6 @@
             { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
             { "file": "/packages/cli-core/package.json", "types": ["dependencies"] },
             { "file": "/packages/cognito/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/mcp/package.json", "types": ["dependencies"] },
             { "file": "/packages/okta/package.json", "types": ["dependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] },
@@ -6363,10 +6354,10 @@
           "version": "10.0.38",
           "files": [
             { "file": "/packages/api-audit-logs/package.json", "types": ["dependencies"] },
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -6589,11 +6580,38 @@
         {
           "version": "9.2.2",
           "files": [
+            { "file": "/packages/api-graphql/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-record-locking/package.json", "types": ["dependencies"] },
-            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] },
-            { "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }
+            { "file": "/packages/background-tasks/package.json", "types": ["dependencies"] }
           ]
+        }
+      ]
+    },
+    {
+      "name": "@graphql-tools/resolvers-composition",
+      "versions": [
+        {
+          "version": "7.0.35",
+          "files": [{ "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "@graphql-tools/utils",
+      "versions": [
+        {
+          "version": "11.2.2",
+          "files": [{ "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "graphql-scalars",
+      "versions": [
+        {
+          "version": "1.25.0",
+          "files": [{ "file": "/packages/api-graphql/package.json", "types": ["dependencies"] }]
         }
       ]
     },
@@ -8008,33 +8026,6 @@
         {
           "version": "2.2.37",
           "files": [{ "file": "/packages/form/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@graphql-tools/resolvers-composition",
-      "versions": [
-        {
-          "version": "7.0.35",
-          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@graphql-tools/utils",
-      "versions": [
-        {
-          "version": "11.2.2",
-          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "graphql-scalars",
-      "versions": [
-        {
-          "version": "1.25.0",
-          "files": [{ "file": "/packages/handler-graphql/package.json", "types": ["dependencies"] }]
         }
       ]
     },

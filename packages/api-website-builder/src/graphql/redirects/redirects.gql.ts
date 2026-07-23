@@ -1,5 +1,5 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { ErrorResponse, GraphQLSchemaPlugin, ListResponse } from "@webiny/handler-graphql";
+import { ErrorResponse, GraphQLSchemaPlugin, ListResponse } from "@webiny/api-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { redirectsTypeDefs } from "~/graphql/redirects/redirects.typeDefs.js";

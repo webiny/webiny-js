@@ -1,6 +1,6 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { Response } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { Response } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { CreateTenantUseCase } from "../features/CreateTenant/abstractions.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";

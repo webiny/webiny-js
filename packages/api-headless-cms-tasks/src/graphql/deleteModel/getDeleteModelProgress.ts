@@ -1,6 +1,6 @@
 import type { HcmsTasksContext } from "~/types.js";
 import { WebinyError } from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/api-graphql";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
     IDeleteCmsModelTask,

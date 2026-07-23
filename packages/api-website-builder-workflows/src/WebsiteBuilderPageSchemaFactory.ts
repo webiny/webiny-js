@@ -1,8 +1,8 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type {
     IGraphQLSchemaFactory,
     GraphQLSchemaFactory as GQLSchemaFactory
-} from "@webiny/handler-graphql/graphql/abstractions.js";
+} from "@webiny/api-graphql/graphql/abstractions.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
 

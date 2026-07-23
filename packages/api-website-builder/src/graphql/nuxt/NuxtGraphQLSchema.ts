@@ -1,9 +1,9 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { NuxtConfig } from "~/features/nuxt/index.js";
-import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 
 class Schema implements CoreGraphQLSchemaFactory.Interface {
     public async execute(builder: GraphQLSchemaBuilder.Interface): CoreGraphQLSchemaFactory.Return {
