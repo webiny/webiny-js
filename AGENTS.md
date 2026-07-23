@@ -15,6 +15,7 @@ When new backend features are discovered, update `ai-context/core-features-refer
 - when generating code, one file MUST only contain one class
 - A file's name MUST match at least one symbol it exports (keep the filename and the code in sync). e.g. `useScheduledActionsPresenter.ts` exports `useScheduledActionsPresenter`; `ContentEntriesPresenterSchedulingDecorator.ts` exports `ContentEntriesPresenterSchedulingDecorator`
 - A React hook that returns a presenter carries the `Presenter` suffix, matching `useContentEntryFormPresenter` (e.g. `useScheduledActionsPresenter`). Resolve a presenter through such a dedicated hook — do not repeat inline `container.resolve(SomePresenter)` across components
+- Do NOT define additional React components inline in a hook file (or any file whose primary export is not that component). Extract each component to its own file, named after it (e.g. a schedule dialog hook keeps `ReschedulingAlert`, `FormComponent`, etc. in separate files)
 - When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
 
 ## Building

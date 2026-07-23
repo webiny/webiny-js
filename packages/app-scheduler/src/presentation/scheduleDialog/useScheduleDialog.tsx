@@ -1,19 +1,11 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { observer } from "mobx-react-lite";
 import { useContainer } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
-import { Alert, Button, Grid, DatePicker } from "@webiny/admin-ui";
-import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
-import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { useDialogs } from "@webiny/app-admin";
-import { Bind, type BindComponentRenderProp } from "@webiny/form";
-import { validation } from "@webiny/validation";
-import type { Validator } from "@webiny/validation/types.js";
-import ValidationError from "@webiny/validation/validationError.js";
-import { makeDecoratable } from "@webiny/react-composition";
 import { ScheduleActionType } from "~/types.js";
 import { ScheduleDialogPresenter } from "./abstractions.js";
-import type { IScheduleDialogPresenter } from "./abstractions.js";
+import { FormComponent } from "./components/FormComponent.js";
+import { CancelButtonComponent } from "./components/CancelButtonComponent.js";
 
 export type ShowDialogParamsEntryStatus = "published" | "unpublished" | "draft" | string;
 
@@ -27,117 +19,6 @@ interface UseShowScheduleDialogResponse {
     showDialog: () => void;
 }
 
-interface FormComponentProps {
-    presenter: IScheduleDialogPresenter;
-}
-
-const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: undefined,
-    hour12: false
-});
-
-interface IReschedulingAlertProps {
-    scheduleOn: Date | undefined;
-    actionType: ScheduleActionType | undefined;
-}
-
-const ReschedulingAlert = ({ scheduleOn, actionType }: IReschedulingAlertProps) => {
-    if (!scheduleOn || !actionType) {
-        return null;
-    }
-    const actionName = actionType === ScheduleActionType.publish ? "publish" : "unpublish";
-    return (
-        <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
-            <>
-                A {actionName} is already scheduled at
-                <br />
-                <strong>{dateToLocaleStringFormatter.format(scheduleOn)}</strong>.
-            </>
-        </Alert>
-    );
-};
-
-const minDateValidator: Validator = (input: string) => {
-    const value = new Date(input);
-    const minDate = new Date(new Date().getTime() + 120 * 1000);
-    if (minDate < value) {
-        return;
-    }
-    throw new ValidationError(
-        `The date must be at least 2 minutes in the future. Current minimum date is ${dateToLocaleStringFormatter.format(
-            minDate
-        )}.`
-    );
-};
-
-minDateValidator.validatorName = "minDateValidator";
-
-export interface ISchedulerDialogFormComponentDateTimeInputProps {
-    bind: BindComponentRenderProp<Date>;
-}
-
-interface ICancelButtonComponentProps {
-    presenter: IScheduleDialogPresenter;
-    onCancel: OnCancelCallable;
-}
-const CancelButtonComponent = observer(({ presenter, onCancel }: ICancelButtonComponentProps) => {
-    const { entry } = presenter.vm;
-    const scheduleOn = entry?.publishOn || entry?.unpublishOn;
-    const enabled = !!scheduleOn;
-
-    if (!enabled) {
-        return null;
-    }
-    return (
-        <Button
-            variant="ghost"
-            onClick={onCancel}
-            text={"Cancel Schedule"}
-            size="md"
-            icon={<DeleteIcon />}
-            iconPosition="start"
-        />
-    );
-});
-
-export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
-    "SchedulerDialogFormComponentDateTimeInput",
-    (props: ISchedulerDialogFormComponentDateTimeInputProps) => {
-        const { bind } = props;
-
-        return <DatePicker {...bind} type={"dateTimeLocal"} label={"Schedule On"} size={"lg"} />;
-    }
-);
-
-const FormComponent = observer(({ presenter }: FormComponentProps) => {
-    const { entry } = presenter.vm;
-    const scheduleOn = entry?.publishOn || entry?.unpublishOn;
-    const actionType = entry?.actionType;
-
-    return (
-        <>
-            {<ReschedulingAlert actionType={actionType} scheduleOn={scheduleOn} />}
-            <Grid>
-                <Grid.Column span={12}>
-                    <Bind
-                        name={"scheduleOn"}
-                        validators={[validation.create("required"), minDateValidator]}
-                    >
-                        {bind => {
-                            return <SchedulerDialogFormComponentDateTimeInput bind={bind} />;
-                        }}
-                    </Bind>
-                </Grid.Column>
-            </Grid>
-        </>
-    );
-});
-
 interface ScheduleFormData {
     scheduleOn?: string;
 }
@@ -145,10 +26,6 @@ interface ScheduleFormData {
 interface IOnAcceptParams {
     scheduleOn: Date;
     actionType: ScheduleActionType;
-}
-
-interface OnCancelCallable {
-    (): Promise<void>;
 }
 
 export interface IUseScheduleDialogProps {
