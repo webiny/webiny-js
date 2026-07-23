@@ -80,7 +80,7 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface<Generat
         // `runId` token is what lets this run converge (a new run uses a new token).
         const { projectId, writerPersonaId, readerPersonaId, runId = "" } = params.data ?? {};
 
-        const result = await this.generateContent.execute({
+        const result = await this.generateContent.execute<{ aiSummary?: string }>({
             modelId: model.modelId,
             prompt: `Write a concise, single-sentence marketing summary for the product "${entry.values.name}". Fill only the "aiSummary" field.`,
             writerPersonaId,
@@ -92,8 +92,7 @@ class GenerateAiSummaryBulkAction implements EntriesBulkAction.Interface<Generat
         }
 
         // The use case returns the generated entry as structured `values`; take our field.
-        const generated = result.value.values.aiSummary;
-        const aiSummary = typeof generated === "string" ? generated : "";
+        const aiSummary = result.value.values.aiSummary ?? "";
 
         if (!aiSummary) {
             this.logger.warn(

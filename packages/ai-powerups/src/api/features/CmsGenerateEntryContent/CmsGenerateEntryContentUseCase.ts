@@ -37,9 +37,9 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         private toolPipelineRunner: AiToolPipelineRunner.Interface
     ) {}
 
-    async execute(
+    async execute<TValues = Record<string, any>>(
         params: CmsGenerateEntryContentParams
-    ): Promise<Result<GenerateEntryContentResult, Error>> {
+    ): Promise<Result<GenerateEntryContentResult<TValues>, Error>> {
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
             return Result.fail(new Error("Failed to load AI PowerUps settings."));
@@ -156,7 +156,9 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 imageTagsInPrompt: imageTags
             };
 
-            return Result.ok({ values: resolved ?? {}, telemetry });
+            // Boundary cast: the AI output is dynamic JSON, so this is the one honest point
+            // where we hand the resolved values to the caller's chosen `TValues` shape.
+            return Result.ok({ values: (resolved ?? {}) as TValues, telemetry });
         } catch (error) {
             return Result.fail(
                 new Error(
