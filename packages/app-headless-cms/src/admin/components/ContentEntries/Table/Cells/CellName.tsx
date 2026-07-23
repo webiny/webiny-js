@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import type { FolderDto } from "@webiny/app-aco";
-import { SimpleLink } from "@webiny/app";
+import { SimpleLink, useRoute, useRouter } from "@webiny/app";
+import { Routes } from "~/routes.js";
 
 import { Icon, Text } from "@webiny/admin-ui";
 import { ReactComponent as Folder } from "@webiny/icons/folder.svg";
@@ -67,18 +68,19 @@ interface EntryCellNameProps {
 
 export const EntryCellName = ({ entry }: EntryCellNameProps) => {
     const { canEdit } = usePermission();
+    const { getLink } = useRouter();
+    const { route } = useRoute(Routes.ContentEntries.List);
 
-    // The open entry is represented in the URL via the `id` query param, so we can
-    // point a real link at it. SimpleLink handles SPA navigation on plain clicks and
-    // lets Cmd/Ctrl/Shift/middle-click fall through to the browser (open in new tab).
+    // The open entry is represented in the URL via the `id` query param. Build the link
+    // through the router, preserving the current route params (modelId, folderId,
+    // search). SimpleLink then does SPA navigation on plain clicks and lets
+    // Cmd/Ctrl/Shift/middle-click fall through to the browser (open in new tab).
     const to = useMemo(() => {
-        if (typeof window === "undefined") {
+        if (!route?.params) {
             return "";
         }
-        const params = new URLSearchParams(window.location.search);
-        params.set("id", entry.id);
-        return `${window.location.pathname}?${params.toString()}`;
-    }, [entry.id]);
+        return getLink(Routes.ContentEntries.List, { ...route.params, id: entry.id });
+    }, [getLink, route?.params, entry.id]);
 
     if (!canEdit(entry, "cms.contentEntry")) {
         return <EntryCellRowTitle entry={entry} />;
