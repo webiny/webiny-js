@@ -24,19 +24,20 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
-        // Server: worker chunks (e.g. background-tasks' workerEntry, spawned via
-        // `new Worker(new URL("...", import.meta.url))`) are referenced as publicPath + chunk name.
-        // rsbuild's default publicPath "/" makes that an ABSOLUTE url ("/xyz.mjs"), which `new Worker()`
-        // resolves to the filesystem root and can't find. "auto" makes it resolve relative to the
-        // running module (handler.mjs), so the emitted chunk loads from build/. publicPath comes from
-        // `output.assetPrefix` in production (`webiny build`) but from `dev.assetPrefix` in development
-        // (`webiny watch`, which runs `rsbuild.build({ watch: true })` under NODE_ENV=development), so
-        // BOTH must be set. Harmless for AWS (its bundle has no worker chunks); scoped to server.
-        ...(isServer ? { dev: { assetPrefix: "auto" } } : {}),
+        // Resolve chunk/asset URLs relative to the running module, not from an absolute root. The
+        // server's bg-tasks worker chunk is spawned via `new Worker(new URL("...", import.meta.url))`
+        // and rsbuild's default publicPath "/" turns that into an ABSOLUTE url ("/xyz.mjs"), which
+        // resolves to the filesystem root and can't be found. "auto" resolves it relative to the module
+        // (handler.mjs) instead, so the chunk loads from build/. publicPath comes from
+        // `output.assetPrefix` in production and `dev.assetPrefix` in development (watch runs
+        // `rsbuild.build({ watch: true })` under NODE_ENV=development), so set BOTH. Not gated to the
+        // server hosting type: AWS has no worker chunks so it's a no-op there, and for any other
+        // (async import) chunks "auto" is at least as correct as "/" (Lambda runs from its own dir too).
+        dev: { assetPrefix: "auto" },
         output: {
             module: true,
             target: "node",
-            ...(isServer ? { assetPrefix: "auto" } : {}),
+            assetPrefix: "auto",
             minify: true,
             sourceMap: {
                 js: isDebugEnabled || mode === "development" ? "source-map" : false
