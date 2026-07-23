@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import getPackages from "get-yarn-workspaces";
+import { listWorkspaces } from "@webiny/stdlib/node";
 import yargs from "yargs";
 
 const isMissingPackageJson = p => !fs.existsSync(p + "/package.json");
@@ -10,7 +10,13 @@ const isMissingPackageJson = p => !fs.existsSync(p + "/package.json");
  */
 
 const { argv } = yargs(process.argv);
-const packagesWithoutPackageJson = getPackages().filter(isMissingPackageJson);
+const packagesWithoutPackageJson = listWorkspaces()
+    .filter(pkg => {
+        return isMissingPackageJson(pkg.path);
+    })
+    .map(pkg => {
+        return pkg.path;
+    });
 
 if (packagesWithoutPackageJson.length) {
     console.log(`Found ${packagesWithoutPackageJson.length} empty package folder(s).`);

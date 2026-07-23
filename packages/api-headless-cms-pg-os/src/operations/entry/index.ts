@@ -2,7 +2,6 @@
 import type { Knex } from "knex";
 import type { CmsEntryStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import type { Container } from "@webiny/feature/api";
-import type { PluginsContainer } from "@webiny/plugins";
 import type { Client as OpenSearchClient } from "@webiny/api-opensearch";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
@@ -16,7 +15,6 @@ import { createEntrySearchOperations } from "./EntrySearchOperations.js";
 interface CreateEntriesStorageOperationsParams {
     knex: Knex;
     container: Container;
-    plugins: PluginsContainer;
     elasticsearch: OpenSearchClient;
     entryTableManager: EntryTableManager.Interface;
     syncTableManager: SyncTableManager.Interface;
@@ -31,7 +29,6 @@ export const createEntriesStorageOperations = (
     const {
         knex,
         container,
-        plugins,
         elasticsearch,
         entryTableManager,
         syncTableManager,
@@ -43,8 +40,7 @@ export const createEntriesStorageOperations = (
     const sqlOps = createSqlEntriesStorageOperations({
         knex: { client: knex },
         entryTableManager,
-        container,
-        plugins
+        container
     });
 
     const writeOps = createEntryWriteOperations({

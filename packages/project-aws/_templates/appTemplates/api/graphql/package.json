@@ -28,7 +28,6 @@
     "@webiny/aws-sdk": "latest",
     "@webiny/build-tools": "latest",
     "@webiny/db-dynamodb": "latest",
-    "@webiny/handler-aws": "latest",
     "@webiny/api-graphql": "latest"
   }
 }

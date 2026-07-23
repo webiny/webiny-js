@@ -3,15 +3,15 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import type { PartialDeep } from "type-fest";
 
 export enum WebsocketsEventRoute {
-    "connect" = "$connect",
-    "disconnect" = "$disconnect",
-    "default" = "$default"
+    connect = "$connect",
+    disconnect = "$disconnect",
+    default = "$default"
 }
 
 export enum WebsocketsEventRequestContextEventType {
-    "message" = "MESSAGE",
-    "connect" = "CONNECT",
-    "disconnect" = "DISCONNECT"
+    message = "MESSAGE",
+    connect = "CONNECT",
+    disconnect = "DISCONNECT"
 }
 
 export interface IAwsWebsocketsEventRequestContext {

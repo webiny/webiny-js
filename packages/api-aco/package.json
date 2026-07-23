@@ -40,7 +40,6 @@
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms-testing": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",

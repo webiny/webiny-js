@@ -11,7 +11,6 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../plugins" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -39,8 +38,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

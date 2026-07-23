@@ -18,7 +18,6 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-core-testing/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -60,8 +59,6 @@
       "@webiny/api-core-testing": ["../api-core-testing/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

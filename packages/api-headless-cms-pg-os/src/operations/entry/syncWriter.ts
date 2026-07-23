@@ -109,21 +109,6 @@ export const createSyncWriter = (params: SyncWriterParams): SyncWriter => {
         };
     };
 
-    const buildRemoveRecord = (removeParams: RemoveEntryParams, kind: RecordKind): ISyncRow => {
-        const { model, entryId } = removeParams;
-        const { index } = configurations.es({ model });
-        const isLatest = kind === "latest";
-
-        return {
-            id: `${entryId}:${isLatest ? "L" : "P"}`,
-            entryId,
-            index,
-            operation: OperationType.REMOVE,
-            data: JSON.stringify({}),
-            tenant: model.tenant
-        };
-    };
-
     return {
         async writeEntry(writeParams) {
             const rows: ISyncRow[] = [await buildRecord(writeParams, "latest")];
@@ -139,16 +124,16 @@ export const createSyncWriter = (params: SyncWriterParams): SyncWriter => {
             await upsert(await buildRecord(writeParams, "published"));
         },
         async removeEntry(removeParams) {
-            await upsertBatch([
-                buildRemoveRecord(removeParams, "latest"),
-                buildRemoveRecord(removeParams, "published")
-            ]);
+            const { entryId } = removeParams;
+            await query()
+                .whereIn("id", [`${entryId}:L`, `${entryId}:P`])
+                .delete();
         },
-        removeLatest(removeParams) {
-            return upsert(buildRemoveRecord(removeParams, "latest"));
+        async removeLatest(removeParams) {
+            await query().where("id", `${removeParams.entryId}:L`).delete();
         },
-        removePublished(removeParams) {
-            return upsert(buildRemoveRecord(removeParams, "published"));
+        async removePublished(removeParams) {
+            await query().where("id", `${removeParams.entryId}:P`).delete();
         }
     };
 };

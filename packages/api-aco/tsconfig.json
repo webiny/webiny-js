@@ -16,7 +16,6 @@
     { "path": "../api-core-testing" },
     { "path": "../api-file-manager" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../handler-aws" },
     { "path": "../plugins" },
     { "path": "../wcp" }
   ],
@@ -55,8 +54,6 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

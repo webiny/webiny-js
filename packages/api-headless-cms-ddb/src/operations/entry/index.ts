@@ -32,7 +32,6 @@ import {
     createPublishedSortKey,
     createRevisionSortKey
 } from "~/operations/entry/keys.js";
-import type { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
 import { ValueFilterRegistry } from "@webiny/db-utils";
 import {
@@ -41,7 +40,11 @@ import {
     sort,
     createStorageModelAccessor,
     createStorageTransformCallable,
-    aggregateUniqueFieldValues
+    aggregateUniqueFieldValues,
+    FieldFilterPathRegistry,
+    FieldFilterValueTransformRegistry,
+    FieldFilterCreateRegistry,
+    FieldSortingRegistry
 } from "@webiny/api-headless-cms-storage";
 import type { CmsEntryStorageOperations, IEntryEntity } from "~/types.js";
 import {
@@ -90,13 +93,12 @@ const MAX_LIST_LIMIT = 1000000;
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
     container: CmsContext["container"];
-    plugins: PluginsContainer;
 }
 
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, container, plugins } = params;
+    const { entity, container } = params;
 
     const storageTransformRegistry = container.resolve(StorageTransformRegistry);
 
@@ -1009,8 +1011,14 @@ export const createEntriesStorageOperations = (
          * We need an object containing field, transformers and paths.
          * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
          */
+        const pathRegistry = container.resolve(FieldFilterPathRegistry);
+        const transformRegistry = container.resolve(FieldFilterValueTransformRegistry);
+        const filterCreateRegistry = container.resolve(FieldFilterCreateRegistry);
+        const sortingRegistry = container.resolve(FieldSortingRegistry);
+
         const modelFields = createFields({
-            plugins,
+            pathRegistry,
+            transformRegistry,
             fields: model.fields
         });
 
@@ -1047,7 +1055,8 @@ export const createEntriesStorageOperations = (
         const filteredItems = filter<T>({
             items: records,
             where,
-            plugins,
+            filterCreateRegistry,
+            transformRegistry,
             fields: modelFields,
             fullTextSearch: {
                 term: search,
@@ -1064,10 +1073,10 @@ export const createEntriesStorageOperations = (
          */
         const sortedItems = sort<T>({
             model,
-            plugins,
             items: filteredItems,
             sort: sortBy,
-            fields: modelFields
+            fields: modelFields,
+            sortingRegistry
         });
 
         const start = parseInt((decodeCursor(after) as string) || "0") || 0;
