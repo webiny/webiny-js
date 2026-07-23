@@ -14,8 +14,7 @@
     { "path": "../feature" },
     { "path": "../utils" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -49,9 +48,7 @@
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }
