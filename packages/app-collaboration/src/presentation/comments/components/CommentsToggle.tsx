@@ -2,11 +2,20 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as CommentIcon } from "@webiny/icons/comment.svg";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useCommentsPresenter } from "../useComments.js";
 
 export const CommentsToggle = observer(() => {
     const presenter = useCommentsPresenter();
+    const { vm: formVm } = useContentEntryFormPresenter();
     const { vm } = presenter;
+
+    // Comments anchor to a persisted entry, so there's nothing to open until the entry is saved
+    // (a new/unsaved entry has no id). Hide the toggle until then.
+    if (formVm.isNewEntry || !formVm.entry) {
+        return null;
+    }
+
     const count = vm.unresolvedCount;
 
     return (

@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
-import { useRoute } from "@webiny/app";
+import { useContainer, useRoute } from "@webiny/app";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { useCommentsPresenter } from "~/presentation/comments/useComments.js";
 import { CommentsPanel } from "~/presentation/comments/components/CommentsPanel.js";
+import { CommentMarkersProvider } from "~/cms/CommentMarkersContext.js";
 import { buildLocatorLabel } from "~/cms/fieldLabels.js";
 import { cmsContentId, COLLAB_THREAD_PARAM, COLLAB_FIELD_PARAM } from "~/constants.js";
 
@@ -13,10 +14,17 @@ export const CommentsSidePanelDecorator = ContentEntryFormContent.createDecorato
         const formPresenter = useContentEntryFormPresenter();
         const presenter = useCommentsPresenter();
         const { route: currentRoute, replaceRouteParams } = useRoute();
+        const container = useContainer();
 
         const vm = formPresenter.vm;
         const entryId = vm.entry?.entryId;
         const modelId = vm.model?.modelId;
+        const contentId =
+            !vm.isNewEntry && entryId && modelId ? cmsContentId(modelId, entryId) : null;
+
+        // Scope the per-field markers to this form's container so they don't leak into a nested
+        // referenced-entry drawer (which renders in a child container). See CommentMarkersContext.
+        const markersContext = useMemo(() => ({ contentId, container }), [contentId, container]);
 
         // Deep-link params (from a notification click or a copied thread link). `params` merges
         // path + query, so these arrive as query-string values on the entry URL.
@@ -74,37 +82,39 @@ export const CommentsSidePanelDecorator = ContentEntryFormContent.createDecorato
         // transitions 0 <-> 384px (content column reflows smoothly) while the panel itself
         // slides + fades in.
         return (
-            <div style={{ display: "flex", height: "100%", minHeight: 0 }}>
-                <div style={{ flex: "1 1 0", minWidth: 0, overflowY: "auto" }}>
-                    <Original {...props} />
-                </div>
-                <div
-                    style={{
-                        flex: "0 0 auto",
-                        width: open ? 384 : 0,
-                        height: "100%",
-                        overflow: "hidden",
-                        transition: "width .22s ease",
-                        willChange: "width"
-                    }}
-                >
+            <CommentMarkersProvider value={markersContext}>
+                <div style={{ display: "flex", height: "100%", minHeight: 0 }}>
+                    <div style={{ flex: "1 1 0", minWidth: 0, overflowY: "auto" }}>
+                        <Original {...props} />
+                    </div>
                     <div
                         style={{
-                            width: 384,
+                            flex: "0 0 auto",
+                            width: open ? 384 : 0,
                             height: "100%",
-                            opacity: open ? 1 : 0,
-                            transform: open ? "translateX(0)" : "translateX(24px)",
-                            transition: "opacity .22s ease, transform .22s ease"
+                            overflow: "hidden",
+                            transition: "width .22s ease",
+                            willChange: "width"
                         }}
                     >
-                        <CommentsPanel
-                            presenter={presenter}
-                            onJumpToField={jumpToField}
-                            resolveLabel={resolveLabel}
-                        />
+                        <div
+                            style={{
+                                width: 384,
+                                height: "100%",
+                                opacity: open ? 1 : 0,
+                                transform: open ? "translateX(0)" : "translateX(24px)",
+                                transition: "opacity .22s ease, transform .22s ease"
+                            }}
+                        >
+                            <CommentsPanel
+                                presenter={presenter}
+                                onJumpToField={jumpToField}
+                                resolveLabel={resolveLabel}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
+            </CommentMarkersProvider>
         );
     });
 });
