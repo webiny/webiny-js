@@ -1,9 +1,8 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { ReadFileMetadataFeature } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/feature.js";
 import { WriteFileMetadataFeature } from "@webiny/api-file-manager/features/upload/WriteFileMetadata/feature.js";
 import { createLocalAssetDeliveryFeature } from "~/assetDelivery/feature.js";
-import { createServerFileManagerGraphQLSchema } from "~/graphql/schema.js";
+import { ServerGraphQLSchema } from "~/graphql/ServerGraphQLSchema.js";
 import { FileManagerServerConfigFeature } from "~/features/FileManagerServerConfig/feature.js";
 import { UploadSingleFileRouteFeature } from "~/routes/UploadSingleFileRoute/feature.js";
 import { UploadPartRouteFeature } from "~/routes/UploadPartRoute/feature.js";
@@ -59,18 +58,6 @@ export const FileManagerServerFeature = createFeature({
         // Upload GraphQL (getPreSignedPostPayload/getPreSignedPostPayloads + create/completeMultiPartUpload).
         // Mirrors how FileManagerS3Feature contributes its schema — same query/mutation names so the SDK
         // works unchanged; resolvers delegate to the server upload use cases registered above.
-        const serverSchema = createServerFileManagerGraphQLSchema();
-        container.registerInstance(CoreGraphQLSchemaFactory, {
-            async execute(builder) {
-                const { schema } = serverSchema;
-                if (schema.typeDefs) {
-                    builder.addTypeDefs(schema.typeDefs);
-                }
-                if (schema.resolvers) {
-                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
-                }
-                return builder;
-            }
-        });
+        container.register(ServerGraphQLSchema);
     }
 });
