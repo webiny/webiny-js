@@ -7,12 +7,14 @@ import { useWebsiteBuilderTheme } from "~/BaseEditor/components/index.js";
 import "./wbStaticToolbar.css";
 import { CompositionScope } from "@webiny/app-admin";
 
-// marginTop overrides the Placeholder component's default -20px so the placeholder aligns
-// with the contentEditable's text start (its 8px/12px padding).
+// Overlay the contentEditable: same origin + same padding as `contentEditableStyles`, and
+// neutralize the Placeholder component's default -20px margin. This makes the placeholder's
+// first line land exactly on the editor's text start.
 const placeholderStyles: React.CSSProperties = {
     position: "absolute",
-    top: 8,
-    left: 8,
+    top: 0,
+    left: 0,
+    padding: "8px 12px",
     marginTop: 0
 };
 
