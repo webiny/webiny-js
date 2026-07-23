@@ -10,7 +10,11 @@ class EnvironmentImpl implements IEnvironment {
     }
 
     isEditing(): boolean {
-        return this.isClient() && window.parent !== window;
+        if (!this.isClient() || window.parent === window) {
+            return false;
+        }
+        const params = new URLSearchParams(window.location.search);
+        return params.get("wb.type") === "entry";
     }
 }
 

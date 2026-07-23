@@ -10,8 +10,8 @@ import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import { FileManager, type FileManagerFileItem } from "@webiny/app-admin";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 import {
-    assetImageFromLegacyEdit,
     normalizeToAsset,
+    getAssetCropParam,
     type Asset,
     type AssetImage
 } from "@webiny/website-builder-sdk";
@@ -90,11 +90,23 @@ export const FileInputRenderer = ({
             if (!asset) {
                 return;
             }
-            const image = assetImageFromLegacyEdit(edit, {
+            const image: AssetImage = {
                 width: asset.image?.width,
-                height: asset.image?.height
-            });
-            value.set({ ...asset, image });
+                height: asset.image?.height,
+                crop: edit.crop,
+                focalPoint: edit.hotspot ? { x: edit.hotspot.x, y: edit.hotspot.y } : undefined,
+                alt: edit.alt,
+                caption: edit.caption
+            };
+            const updated = { ...asset, image };
+            const cropParam = getAssetCropParam(updated);
+            if (cropParam) {
+                const sep = asset.src.includes("?") ? "&" : "?";
+                updated.url = `${asset.src}${sep}crop=${cropParam}`;
+            } else {
+                updated.url = asset.src;
+            }
+            value.set(updated);
         });
     };
 
