@@ -9,7 +9,7 @@ description: >
   pick the correct Admin UI renderer for a field type (textInput/textInputs,
   lexicalEditor/lexicalEditors, file/files, objectAccordionSingle/objectAccordionMultiple, etc.),
   or work with the ModelFactory builder API. Also covers field types
-  (text, longText, number, boolean, datetime, file, ref, object, richText, dynamicZone),
+  (text, longText, number, boolean, datetime, asset, file, ref, object, richText, dynamicZone),
   list (array) fields via .list() and the singular-vs-plural renderer rule,
   validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
   single-entry (singleton) models via .singleEntry(), model/field tags via .tags(),
@@ -81,6 +81,7 @@ Register in `webiny.config.tsx`:
 | `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                |
 | `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                   |
 | `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                        |
+| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPrefix` (string — base URL for live preview, e.g. `"https://example.com/articles"`), `previewSlug` (string — slug template, e.g. `"{values.slug}"`). |
 
 ## Layout
 
@@ -133,6 +134,10 @@ whole; its internal arrangement is owned by the object itself.
 Every template declares its own fields **and** its own layout, scoped to that template.
 The outer model layout simply references the dynamicZone field by its ID.
 
+Each template config accepts an optional `componentName` property that maps the template
+to a frontend UI component (e.g. `"Custom/Hero"`). This is used by the CMS live preview
+and Website Builder to resolve which React component renders the template's data.
+
 ```typescript
 .fields((fields) => ({
   blocks: fields
@@ -141,9 +146,10 @@ The outer model layout simply references the dynamicZone field by its ID.
     .template("hero", {
       name: "Hero",
       gqlTypeName: "HeroBlock",
+      componentName: "Custom/Hero",
       fields: (t) => ({
         heading: t.text().renderer("textInput").label("Heading"),
-        image:   t.file().renderer("file").label("Image")
+        image:   t.asset().label("Image")
       }),
       layout: [
         ["heading"],          // layout inside the "hero" template only
@@ -153,6 +159,7 @@ The outer model layout simply references the dynamicZone field by its ID.
     .template("quote", {
       name: "Quote",
       gqlTypeName: "QuoteBlock",
+      componentName: "Custom/Quote",
       fields: (t) => ({
         text:   t.longText().renderer("textarea").label("Quote text"),
         author: t.text().renderer("textInput").label("Author")
@@ -195,7 +202,8 @@ The authoritative source for these field types is the `webiny/api/cms/model` bar
 | `fields.number()`      | Numeric value                            | `"numberInput"`                                                     | `"numberInputs"`                                                      |
 | `fields.boolean()`     | True/false toggle                        | `"switch"`                                                          | — (not supported)                                                     |
 | `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
-| `fields.file()`        | File/image attachment                    | `"file"`                                                            | `"files"`                                                             |
+| `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
+| `fields.file()`        | File/image attachment (deprecated, use `asset`) | `"file"`                                                            | `"files"`                                                             |
 | `fields.ref()`         | Reference to another model               | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
 | `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
 | `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
