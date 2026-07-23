@@ -78,13 +78,10 @@ const UrlInput = () => {
                 inputRef.current = ref;
             }}
             variant={"secondary"}
-            size={"sm"}
             placeholder={"Enter link"}
             autoFocus={true}
             startIcon={<Icon label="globe" icon={<GlobeIcon />} />}
-            endIcon={
-                <IconButton variant="ghost" icon={<OpenInNew />} onClick={openInNewTab} />
-            }
+            endIcon={<IconButton variant="ghost" icon={<OpenInNew />} onClick={openInNewTab} />}
         />
     );
 };
