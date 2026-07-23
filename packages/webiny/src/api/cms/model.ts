@@ -35,3 +35,5 @@ export {
 } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 export { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 export { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/abstractions.js";
+export { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
+export { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/index.js";

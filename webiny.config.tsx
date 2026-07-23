@@ -4,6 +4,7 @@ import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
+import { CmsRevisionCompareExtension } from "@/extensions/cmsRevisionCompare/CmsRevisionCompareExtension.js";
 // import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -25,6 +26,8 @@ export const Extensions = () => {
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             <AiContentExtension />
+            {/* CMS Revision Comparison with AI */}
+            <CmsRevisionCompareExtension />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}

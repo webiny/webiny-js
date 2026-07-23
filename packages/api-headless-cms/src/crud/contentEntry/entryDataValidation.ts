@@ -132,6 +132,8 @@ const getFieldValidation = (
     if (!listValidation?.length) {
         return [];
     }
+    // Filter out the legacy "dynamicZone" validator that was never implemented.
+    // Existing models may still have it in their persisted listValidation data.
     return listValidation.filter(item => item.name !== "dynamicZone");
 };
 /**

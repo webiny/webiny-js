@@ -24,11 +24,6 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
     }
 
     configure(config: EntryStoreConfig) {
-        console.log("[EntryStore] configure", {
-            hasRefModels: !!config.refModels,
-            refModelIds: config.refModels ? Object.keys(config.refModels) : [],
-            hasRefResolver: !!config.refResolver
-        });
         this.config = config;
     }
 
@@ -95,22 +90,13 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
 
     private async resolveRefsLazy(useToJS = false) {
         const { refModels, refResolver } = this.config;
-        console.log("[EntryStore] resolveRefsLazy", {
-            hasRefModels: !!refModels,
-            hasRefResolver: !!refResolver,
-            hasEntry: !!this.entry
-        });
         if (!refModels || !refResolver || !this.entry) {
             return;
         }
 
         const valuesToScan = useToJS ? toJS(this.entry.values) : this.entry.values;
         const refs = collectRefs(valuesToScan, refModels);
-        console.log(
-            "[EntryStore] found refs:",
-            refs.length,
-            refs.map(r => ({ id: r.id, modelId: r.modelId }))
-        );
+
         if (refs.length === 0) {
             return;
         }
@@ -134,11 +120,6 @@ export class EntryStore<T extends CmsEntryValues = CmsEntryValues> {
             resolvedMap.set(id, resolved);
             refCache.set(id, resolved);
         }
-
-        console.log(
-            "[EntryStore] resolved refs:",
-            Array.from(resolvedMap.entries()).map(([id, e]) => ({ id, found: !!e }))
-        );
 
         runInAction(() => {
             if (!this.entry) {

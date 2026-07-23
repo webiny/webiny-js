@@ -1,5 +1,4 @@
 // ModelBuilder
-
 export { ModelFactory } from "~/features/modelBuilder/abstractions.js";
 export { ModelBuilder } from "~/features/modelBuilder/models/ModelBuilder.js";
 export { DataFieldBuilder } from "~/features/modelBuilder/fields/FieldBuilder.js";
@@ -51,3 +50,7 @@ export { GetModelUseCase } from "~/features/contentModel/GetModel/abstractions.j
 
 // ListModels
 export { ListModelsUseCase } from "~/features/contentModel/ListModels/abstractions.js";
+
+export { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/index.js";
+
+export { CmsModelToJsonSchemaConverter } from "~/utils/index.js";

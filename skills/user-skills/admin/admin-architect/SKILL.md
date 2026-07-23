@@ -600,6 +600,22 @@ export const ResponseStatus = ({ presenter }: Props) => {
 
 4. **Pass presenter to child components** — child components receive the full `presenter`, not split `vm` + `actions` props. The child reads what it needs from `presenter.vm`.
 
+5. **Use `createReactiveComponent` for MobX-observed components** — never import `observer` from `mobx-react-lite` directly. Instead, use `createReactiveComponent` from `webiny/admin`. It is the same function re-exported under a Webiny-idiomatic name.
+
+**Bad:**
+
+```tsx
+import { observer } from "mobx-react-lite";
+export const MyComponent = observer(({ presenter }: Props) => { ... });
+```
+
+**Good:**
+
+```tsx
+import { createReactiveComponent } from "webiny/admin";
+export const MyComponent = createReactiveComponent(({ presenter }: Props) => { ... });
+```
+
 ## Key Rules
 
 1. **Abstractions first** — any new business logic MUST be encapsulated in `createAbstraction` + `createFeature`.
