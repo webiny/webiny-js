@@ -36,7 +36,12 @@ export const LexicalLinkForm = ({ linkData, onSave, removeLink }: LinkFormProps)
                             onClick={removeLink}
                             icon={<Icon label={"Remove link"} icon={<RemoveLink />} />}
                         />
-                        <Button variant={"primary"} size={"sm"} text={`Save`} onClick={form.submit} />
+                        <Button
+                            variant={"primary"}
+                            size={"sm"}
+                            text={`Save`}
+                            onClick={form.submit}
+                        />
                     </div>
                 </div>
             )}
@@ -78,12 +83,7 @@ const UrlInput = () => {
             autoFocus={true}
             startIcon={<Icon label="globe" icon={<GlobeIcon />} />}
             endIcon={
-                <IconButton
-                    variant="ghost"
-                    size="sm"
-                    icon={<OpenInNew />}
-                    onClick={openInNewTab}
-                />
+                <IconButton variant="ghost" icon={<OpenInNew />} onClick={openInNewTab} />
             }
         />
     );
