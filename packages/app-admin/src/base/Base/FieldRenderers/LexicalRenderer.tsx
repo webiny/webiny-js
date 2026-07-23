@@ -16,12 +16,12 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-const placeholderStyles: React.CSSProperties = { position: "absolute", top: 40, left: 25 };
+const placeholderStyles: React.CSSProperties = { position: "absolute", top: 8, left: 12 };
 
 const contentEditableStyles: React.CSSProperties = {
     minHeight: 200,
     display: "block",
-    padding: 10
+    padding: "8px 12px"
 };
 
 const styles: React.CSSProperties = {
@@ -32,7 +32,7 @@ const styles: React.CSSProperties = {
     // rounded container, no internal divider (matches Figma).
     borderTop: "none",
     borderRadius: "0 0 var(--radius-md) var(--radius-md)",
-    padding: "10px 14px",
+    // Padding lives on the contentEditable only (avoids doubled inset).
     minHeight: 200,
     maxHeight: 350
 };
