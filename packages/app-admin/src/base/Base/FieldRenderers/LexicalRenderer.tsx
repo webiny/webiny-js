@@ -16,7 +16,14 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-const placeholderStyles: React.CSSProperties = { position: "absolute", top: 28, left: 13 };
+// marginTop overrides the Placeholder component's default -20px so the placeholder aligns
+// with the contentEditable's text start (its 8px/12px padding).
+const placeholderStyles: React.CSSProperties = {
+    position: "absolute",
+    top: 8,
+    left: 12,
+    marginTop: 0
+};
 
 const contentEditableStyles: React.CSSProperties = {
     minHeight: 200,
