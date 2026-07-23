@@ -328,10 +328,9 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
         {
             title: "List Webiny Skills",
             description:
-                "Returns a catalog of all available Webiny skills with names and descriptions. " +
-                "Prefer calling get_started() first to get routed to the right specialist " +
-                "agent. Use this tool for direct skill lookups or when the task doesn't " +
-                "fit any specialist agent.",
+                "IMPORTANT: Call get_started() FIRST — it routes you to the right agent and skills. " +
+                "Only use this tool for browsing the full skill catalog after get_started() has been called. " +
+                "Returns a catalog of all available Webiny skills with names and descriptions.",
             inputSchema: {},
             annotations: { readOnlyHint: true }
         },
@@ -345,8 +344,9 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
         {
             title: "Get Webiny Skill",
             description:
+                "IMPORTANT: Call get_started() FIRST — it routes you to the right skills. " +
                 "Loads the full Webiny documentation for a specific skill. " +
-                "Call list_webiny_skills first to see available skill names.",
+                "Call list_webiny_skills to see available skill names.",
             inputSchema: {
                 topic: z.string().describe("Skill name — use exact names from list_webiny_skills")
             },
@@ -380,10 +380,10 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
         {
             title: "List Webiny Agents",
             description:
+                "IMPORTANT: Call get_started() FIRST — it routes you to the right agent. " +
+                "Only use this tool for browsing the full agent catalog after get_started() has been called. " +
                 "Returns a catalog of all available Webiny agents. " +
-                "Agents are task-oriented blueprints that bundle related skills " +
-                "into workflows. Use get_webiny_agent to load the full blueprint, " +
-                "then get_webiny_skill to load each skill it references.",
+                "Agents are task-oriented blueprints that bundle related skills into workflows.",
             inputSchema: {},
             annotations: { readOnlyHint: true }
         },
@@ -397,10 +397,10 @@ export async function startMcpServer(params: IMcpServerParams = {}): Promise<voi
         {
             title: "Get Webiny Agent",
             description:
+                "IMPORTANT: Call get_started() FIRST — it routes you to the right agent. " +
                 "Loads the full blueprint for a Webiny agent. " +
                 "The blueprint includes the agent's system prompt and a list of " +
-                "skills to load with get_webiny_skill. " +
-                "Call list_webiny_agents first to see available agent names.",
+                "skills to load with get_webiny_skill.",
             inputSchema: {
                 name: z.string().describe("Agent name — use exact names from list_webiny_agents")
             },
