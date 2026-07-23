@@ -42,7 +42,12 @@ export interface IFieldRendererRegistry {
     dynamicZone: {
         fieldType: "dynamicZone";
         settings?: {
+            /** Whether the accordion is expanded by default. */
             open?: boolean;
+            /** Wrap the zone in a container panel. Set to `false` for a flat inline layout. */
+            container?: boolean;
+            /** Label for the "add item" button (defaults to "Add Item"). */
+            addItemLabel?: string;
         };
     };
     hidden: {
@@ -82,19 +87,28 @@ export interface IFieldRendererRegistry {
     objectAccordionSingle: {
         fieldType: "object";
         settings?: {
+            /** Whether the accordion is expanded by default. */
             open?: boolean;
+            /** Wrap the object in a container panel. Set to `false` for a flat inline layout. */
             container?: boolean;
+            /** Field ID whose value is used as the accordion title, or a function receiving the object data. */
             itemTitle?: string;
+            /** Field ID whose value is used as the accordion description, or a function receiving the object data. */
             itemDescription?: string;
         };
     };
     objectAccordionMultiple: {
         fieldType: "object";
         settings?: {
+            /** Whether each accordion item is expanded by default. */
             open?: boolean;
+            /** Wrap the list in a container panel. Set to `false` for a flat inline layout. */
             container?: boolean;
+            /** Field ID whose value is used as each item's accordion title. */
             itemTitle?: string;
+            /** Field ID whose value is used as each item's accordion description. */
             itemDescription?: string;
+            /** Label for the "add item" button (defaults to "Add {fieldLabel}"). */
             addItemLabel?: string;
         };
     };
@@ -113,6 +127,7 @@ export interface IFieldRendererRegistry {
     refDialogMultiple: {
         fieldType: "ref";
         settings?: {
+            /** Where newly picked references are inserted: `"first"` (top) or `"last"` (bottom, default). */
             newItemPosition?: "first" | "last";
         };
     };
@@ -155,29 +170,37 @@ export interface IFieldRendererRegistry {
             addItemLabel?: string;
         };
     };
+    /** @deprecated Use `assetField` instead. */
     file: {
         fieldType: "file";
         settings?: {
+            /** Only allow image files to be selected. */
             imagesOnly?: boolean;
         };
     };
+    /** @deprecated Use `assetFields` instead. */
     files: {
         fieldType: "file";
         settings?: {
+            /** Only allow image files to be selected. */
             imagesOnly?: boolean;
         };
     };
     assetField: {
         fieldType: "asset";
         settings?: {
+            /** Only allow image files to be selected. */
             imagesOnly?: boolean;
+            /** MIME types or extensions to allow (e.g. `["image/png", "application/pdf"]`). Leave empty to allow all. */
             accept?: string[];
         };
     };
     assetFields: {
         fieldType: "asset";
         settings?: {
+            /** Only allow image files to be selected. */
             imagesOnly?: boolean;
+            /** MIME types or extensions to allow (e.g. `["image/png", "application/pdf"]`). Leave empty to allow all. */
             accept?: string[];
         };
     };
