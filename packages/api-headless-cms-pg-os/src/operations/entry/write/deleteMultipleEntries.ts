@@ -3,7 +3,7 @@ import type {
     CmsEntryStorageOperationsDeleteEntriesParams
 } from "@webiny/api-headless-cms/types/index.js";
 import type { WriteOperationDeps } from "./types.js";
-import { extractEntryId } from "../syncHelpers.js";
+import {parseIdentifier} from "@webiny/utils";
 
 export const createDeleteMultipleEntriesOperation = (
     deps: WriteOperationDeps
@@ -17,8 +17,11 @@ export const createDeleteMultipleEntriesOperation = (
         await deps.sqlOps.deleteMultipleEntries(initialModel, deleteMultipleParams);
 
         for (const id of deleteMultipleParams.entries) {
-            const entryId = extractEntryId(id);
-            await deps.syncWriter.removeEntry({ model, entryId });
+            const {id: entryId} = parseIdentifier(id);
+            await deps.syncWriter.removeEntry({
+                model,
+                entryId
+            });
         }
     };
 };
