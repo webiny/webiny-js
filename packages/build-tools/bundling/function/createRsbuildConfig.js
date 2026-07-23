@@ -1,5 +1,4 @@
 import path from "path";
-import fs from "node:fs";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
@@ -98,27 +97,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     typescript: { configFile: paths.fn.tsConfig },
                     async: mode === "development"
                 }
-            }),
-            // Server: mark build/ as ESM so emitted raw-.js assets load as modules. handler.mjs and
-            // chunks are already .mjs, but the bree pollWorker is emitted as a plain .js asset (it's a
-            // raw .js source, not compiled) — without "type": "module" Node treats it as CJS and its
-            // `import` throws. Part 2 (deploy packaging) extends this package.json with dependencies +
-            // a start script; here it just needs the module type.
-            ...(isServer
-                ? [
-                      {
-                          name: "webiny-server-package-json",
-                          setup(api) {
-                              api.onAfterBuild(() => {
-                                  fs.writeFileSync(
-                                      path.join(paths.fn.outputFolder, "package.json"),
-                                      JSON.stringify({ type: "module" }, null, 2) + "\n"
-                                  );
-                              });
-                          }
-                      }
-                  ]
-                : [])
+            })
         ]
     });
 };

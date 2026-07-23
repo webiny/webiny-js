@@ -74,5 +74,14 @@ export const packageServerNodeModules = async ({ cwd }) => {
         ``
     ].join("\n");
     fs.writeFileSync(path.join(buildDir, "start.mjs"), startFile);
-    console.log("Emitted build/start.mjs (run with: node start.mjs).");
+
+    // Mark the standalone build/ as ESM (so the raw-.js pollWorker asset loads as a module) and give
+    // it a start script. In dev this isn't needed — build/ sits under the app, whose package.json is
+    // already "type": "module", so Node resolves the .js asset as ESM by walking up. But a copied-out
+    // build/ has no parent to inherit from, so the deploy artifact must declare it itself.
+    fs.writeFileSync(
+        path.join(buildDir, "package.json"),
+        JSON.stringify({ type: "module", scripts: { start: "node start.mjs" } }, null, 2) + "\n"
+    );
+    console.log("Emitted build/start.mjs + package.json (run with: node start.mjs).");
 };
