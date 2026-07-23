@@ -1,6 +1,5 @@
 ---
 name: webiny-api-catalog
-context: webiny-api
 description: >
   api — 34 abstractions.
 ---

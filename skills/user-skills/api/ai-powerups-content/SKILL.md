@@ -1,6 +1,5 @@
 ---
 name: webiny-ai-powerups-content
-context: webiny-extensions
 description: >
   Generating Headless CMS entry content with AI from your own code, by delegating to the
   AI Power Ups extension instead of calling an LLM directly. Use this skill when the

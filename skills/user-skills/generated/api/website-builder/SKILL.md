@@ -1,6 +1,5 @@
 ---
 name: webiny-api-website-builder-catalog
-context: webiny-api
 description: >
   API — Website Builder — 58 abstractions.
   Page and redirect event handlers and use cases.

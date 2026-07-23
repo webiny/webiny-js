@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-ai-powerups-catalog
-context: webiny-api
 description: >
   admin/ai-powerups — 1 abstractions.
 ---

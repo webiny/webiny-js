@@ -1,6 +1,5 @@
 ---
 name: webiny-api-opensearch-catalog
-context: webiny-api
 description: >
   api/opensearch — 10 abstractions.
 ---

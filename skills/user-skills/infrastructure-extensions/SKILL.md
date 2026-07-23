@@ -1,6 +1,5 @@
 ---
 name: webiny-infrastructure-extensions
-context: webiny-extensions
 description: >
   Modifying AWS infrastructure using Pulumi handlers and declarative Infra components.
   Use this skill when the developer wants to customize AWS infrastructure, add Pulumi handlers,

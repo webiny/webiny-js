@@ -1,6 +1,5 @@
 ---
 name: webiny-form-model
-context: webiny-admin
 description: >
   Building forms with the FormModel system — field types, renderers, layout, validation,
   conditional rules, computed fields, and dynamic zones. Use this skill when the developer

@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-websockets-catalog
-context: webiny-api
 description: >
   admin/websockets — 1 abstractions.
 ---

@@ -1,6 +1,5 @@
 ---
 name: webiny-custom-graphql-api
-context: webiny-extensions
 description: >
   Adding custom GraphQL queries and mutations using GraphQLSchemaFactory.
   Use this skill when the developer wants to add custom GraphQL endpoints, create custom

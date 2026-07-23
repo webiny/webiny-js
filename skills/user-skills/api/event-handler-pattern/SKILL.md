@@ -1,6 +1,5 @@
 ---
 name: webiny-event-handler-pattern
-context: webiny-api
 description: >
   EventHandler implementation pattern — handle method, event payloads, filtering, DI,
   domain event definition, publishing events from UseCases, and reacting to external events.

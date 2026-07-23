@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-form-catalog
-context: webiny-api
 description: >
   admin/form — 26 abstractions.
 ---

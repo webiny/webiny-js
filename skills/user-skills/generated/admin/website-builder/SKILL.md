@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-website-builder-catalog
-context: webiny-api
 description: >
   admin/website-builder — 65 abstractions.
 ---

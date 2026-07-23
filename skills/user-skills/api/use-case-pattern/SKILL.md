@@ -1,6 +1,5 @@
 ---
 name: webiny-use-case-pattern
-context: webiny-api
 description: >
   UseCase implementation pattern — DI, Result handling, error types, decorators, CMS repositories,
   entry mappers, and schema-based permissions. Use this skill to implement, inject, override, or
