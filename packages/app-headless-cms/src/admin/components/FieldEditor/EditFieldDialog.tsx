@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { FormView, FormErrors } from "@webiny/app-admin";
@@ -26,9 +26,22 @@ const EditFieldDialog = observer((props: EditFieldDialogProps) => {
         return container.resolveAll(CmsFieldType).find(ft => ft.type === field.type);
     }, [container, field.type]);
 
+    const bodyRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         presenter.init(field, contentModel);
     }, []);
+
+    // Focus the first enabled input (Label) as soon as the form renders.
+    useEffect(() => {
+        if (!presenter.vm.form) {
+            return;
+        }
+        const input = bodyRef.current?.querySelector<HTMLInputElement>(
+            "input:not([disabled]), textarea:not([disabled])"
+        );
+        input?.focus();
+    }, [presenter.vm.form]);
 
     const headerTitle = t`Field Settings - {fieldTypeLabel}`({
         fieldTypeLabel: fieldType ? fieldType.label : field.type
@@ -76,12 +89,14 @@ const EditFieldDialog = observer((props: EditFieldDialogProps) => {
             }
             data-testid={"cms-editor-edit-fields-dialog"}
         >
-            {presenter.vm.form ? (
-                <>
-                    <FormErrors form={presenter.vm.form} />
-                    <FormView name="CmsFieldEditor" form={presenter.vm.form} />
-                </>
-            ) : null}
+            <div ref={bodyRef}>
+                {presenter.vm.form ? (
+                    <>
+                        <FormErrors form={presenter.vm.form} />
+                        <FormView name="CmsFieldEditor" form={presenter.vm.form} />
+                    </>
+                ) : null}
+            </div>
         </Drawer>
     );
 });

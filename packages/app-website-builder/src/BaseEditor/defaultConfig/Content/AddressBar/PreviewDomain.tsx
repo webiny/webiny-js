@@ -1,6 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ReactComponent as GlobeIcon } from "@webiny/icons/language.svg";
-import { Button, DropdownMenu, IconButton, Separator, Input, cn } from "@webiny/admin-ui";
+import {
+    Button,
+    DropdownMenu,
+    IconButton,
+    Separator,
+    Input,
+    Text,
+    Tooltip,
+    cn
+} from "@webiny/admin-ui";
 import { usePreviewDomain } from "../usePreviewDomain.js";
 import type { GenericFormData } from "@webiny/form";
 import { Bind, Form } from "@webiny/form";
@@ -48,12 +57,18 @@ export const PreviewDomain = () => {
             className={"shadow-lg"}
             onOpenChange={setIsOpen}
             trigger={
-                <IconButton
-                    icon={<GlobeIcon />}
-                    size="md"
-                    onClick={() => {}}
-                    variant={"ghost"}
-                    className={classNames}
+                <Tooltip
+                    content={<Text size="md">Change preview domain</Text>}
+                    side="bottom"
+                    trigger={
+                        <IconButton
+                            icon={<GlobeIcon />}
+                            size="md"
+                            onClick={() => {}}
+                            variant={"ghost"}
+                            className={classNames}
+                        />
+                    }
                 />
             }
         >
