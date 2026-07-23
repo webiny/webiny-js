@@ -10,7 +10,10 @@ const placeholderStyles: React.CSSProperties = {
     top: 0,
     left: 0,
     padding: "8px 12px",
-    marginTop: 0
+    marginTop: 0,
+    // Font size/family come from the paragraph typography class (applied by RichTextEditor);
+    // keep the placeholder muted.
+    color: "var(--text-color-neutral-muted)"
 };
 
 const contentEditableStyles: React.CSSProperties = {

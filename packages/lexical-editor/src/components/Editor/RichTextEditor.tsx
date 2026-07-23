@@ -68,8 +68,13 @@ const BaseRichTextEditor = ({
     const editorTheme = useRef(props.theme);
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
+    // Apply the default paragraph's typography class so the placeholder matches the real
+    // text's size/line-height/font (the muted color is kept via placeholderStyles).
+    const defaultParagraphClassName = props.theme?.typography?.paragraphs?.[0]?.className;
     const placeholderElem = (
-        <Placeholder styles={placeholderStyles}>{placeholder || "Enter text..."}</Placeholder>
+        <Placeholder styles={placeholderStyles} className={defaultParagraphClassName}>
+            {placeholder || "Enter text..."}
+        </Placeholder>
     );
     const scrollRef = useRef(null);
 
