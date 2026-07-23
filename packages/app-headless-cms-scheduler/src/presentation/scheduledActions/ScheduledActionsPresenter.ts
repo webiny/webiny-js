@@ -17,7 +17,7 @@ const PAGE_SIZE = 100;
  * no invalidation logic of its own beyond `reload()`.
  */
 class ScheduledActionsPresenterImpl implements IScheduledActionsPresenter {
-    private _actions = observable.map<string, SchedulerEntry>();
+    private _scheduledActions = observable.map<string, SchedulerEntry>();
     private _lastLoad: (() => Promise<void>) | null = null;
 
     constructor(
@@ -35,7 +35,7 @@ class ScheduledActionsPresenterImpl implements IScheduledActionsPresenter {
     }
 
     getScheduledAction(targetId: string): SchedulerEntry | undefined {
-        return this._actions.get(targetId);
+        return this._scheduledActions.get(targetId);
     }
 
     loadForModel(modelId: string): Promise<void> {
@@ -55,7 +55,7 @@ class ScheduledActionsPresenterImpl implements IScheduledActionsPresenter {
     }
 
     dispose(): void {
-        runInAction(() => this._actions.clear());
+        runInAction(() => this._scheduledActions.clear());
         this._lastLoad = null;
     }
 
@@ -80,7 +80,7 @@ class ScheduledActionsPresenterImpl implements IScheduledActionsPresenter {
             } while (after);
 
             runInAction(() => {
-                this._actions.replace(actions);
+                this._scheduledActions.replace(actions);
             });
         } catch (error) {
             console.error(error);
@@ -92,9 +92,9 @@ class ScheduledActionsPresenterImpl implements IScheduledActionsPresenter {
             const action = await this.getGateway.execute({ namespace, id: entryId });
             runInAction(() => {
                 if (action) {
-                    this._actions.set(entryId, action);
+                    this._scheduledActions.set(entryId, action);
                 } else {
-                    this._actions.delete(entryId);
+                    this._scheduledActions.delete(entryId);
                 }
             });
         } catch (error) {
