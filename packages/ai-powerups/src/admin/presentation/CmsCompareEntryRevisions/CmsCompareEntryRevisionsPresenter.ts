@@ -1,10 +1,10 @@
 import { computed, makeAutoObservable, runInAction } from "mobx";
-import { RevisionsListPresenter } from "webiny/admin/cms/entry/editor";
-import { CompareRevisionsGateway } from "../../features/compareRevisions/abstractions.js";
-import { CompareRevisionsPresenter } from "./abstractions.js";
-import type { ICompareRevisionsViewModel } from "./abstractions.js";
+import { RevisionsListPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
+import { CompareEntryRevisionsUseCase } from "~/admin/features/compareEntryRevisions/abstractions.js";
+import { CmsCompareEntryRevisionsPresenter } from "./abstractions.js";
+import type { ICmsCompareEntryRevisionsViewModel } from "./abstractions.js";
 
-class CompareRevisionsPresenterImpl implements CompareRevisionsPresenter.Interface {
+class CmsCompareEntryRevisionsPresenterImpl implements CmsCompareEntryRevisionsPresenter.Interface {
     private drawerVisible = false;
     private selectedIds: string[] = [];
     private dialogVisible = false;
@@ -14,16 +14,19 @@ class CompareRevisionsPresenterImpl implements CompareRevisionsPresenter.Interfa
 
     constructor(
         private revisionsPresenter: RevisionsListPresenter.Interface,
-        private gateway: CompareRevisionsGateway.Interface
+        private useCase: CompareEntryRevisionsUseCase.Interface
     ) {
-        makeAutoObservable<CompareRevisionsPresenterImpl, "revisionsPresenter" | "gateway">(this, {
-            revisionsPresenter: false,
-            gateway: false,
-            vm: computed
-        });
+        makeAutoObservable<CmsCompareEntryRevisionsPresenterImpl, "revisionsPresenter" | "useCase">(
+            this,
+            {
+                revisionsPresenter: false,
+                useCase: false,
+                vm: computed
+            }
+        );
     }
 
-    get vm(): ICompareRevisionsViewModel {
+    get vm(): ICmsCompareEntryRevisionsViewModel {
         return {
             drawerVisible: this.drawerVisible,
             revisions: this.revisionsPresenter.vm.revisions,
@@ -66,7 +69,7 @@ class CompareRevisionsPresenterImpl implements CompareRevisionsPresenter.Interfa
         this.result = null;
 
         try {
-            const result = await this.gateway.execute({
+            const result = await this.useCase.execute({
                 modelId,
                 revisionId1: this.selectedIds[0],
                 revisionId2: this.selectedIds[1]
@@ -94,8 +97,8 @@ class CompareRevisionsPresenterImpl implements CompareRevisionsPresenter.Interfa
     }
 }
 
-export const CompareRevisionsPresenterImplementation =
-    CompareRevisionsPresenter.createImplementation({
-        implementation: CompareRevisionsPresenterImpl,
-        dependencies: [RevisionsListPresenter, CompareRevisionsGateway]
+export const CmsCompareEntryRevisionsPresenterImplementation =
+    CmsCompareEntryRevisionsPresenter.createImplementation({
+        implementation: CmsCompareEntryRevisionsPresenterImpl,
+        dependencies: [RevisionsListPresenter, CompareEntryRevisionsUseCase]
     });

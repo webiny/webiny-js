@@ -5,6 +5,7 @@ import { AiPowerUpsSettingsPage } from "./presentation/AiPowerUpsSettings/AiPowe
 import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
 import { CmsContentGeneration } from "~/admin/presentation/CmsContentGeneration/Extension.js";
 import { CmsEntryWizardExtension } from "~/admin/presentation/CmsEntryWizard/Extension.js";
+import { CmsCompareEntryRevisions } from "~/admin/presentation/CmsCompareEntryRevisions/Extension.js";
 import { AiPowerUpsHeadlessFeatures } from "~/admin/features/feature.js";
 import { AiPromptFormFeature } from "~/admin/presentation/AiPromptFormFactory/feature.js";
 import { Routes } from "./routes.js";
@@ -51,6 +52,8 @@ export const Extension = () => {
             <WbContentGeneration />
             {/* Headless CMS Extension */}
             <CmsContentGeneration />
+            {/* CMS Revision Comparison */}
+            <CmsCompareEntryRevisions />
             {/* AI Entry Wizard (registered first so custom wizards can override) */}
             <CmsEntryWizardExtension />
         </>

@@ -1,10 +1,10 @@
 import React from "react";
-import { createReactiveComponent } from "webiny/admin";
-import { Dialog, Button, Alert } from "webiny/admin/ui";
-import type { CompareRevisionsPresenter } from "../abstractions.js";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { Dialog, Button, Alert } from "@webiny/admin-ui";
+import type { CmsCompareEntryRevisionsPresenter } from "./abstractions.js";
 
-interface CompareRevisionsDialogProps {
-    presenter: CompareRevisionsPresenter.Interface;
+interface CmsCompareEntryRevisionsDialogProps {
+    presenter: CmsCompareEntryRevisionsPresenter.Interface;
 }
 
 const COMPARISON_STYLES = `
@@ -84,8 +84,8 @@ const COMPARISON_STYLES = `
     }
 `;
 
-export const CompareRevisionsDialog = createReactiveComponent(
-    ({ presenter }: CompareRevisionsDialogProps) => {
+export const CmsCompareEntryRevisionsDialog = createReactiveComponent(
+    ({ presenter }: CmsCompareEntryRevisionsDialogProps) => {
         const { dialogVisible, comparing, error, result } = presenter.vm;
 
         const renderContent = () => {
@@ -103,7 +103,9 @@ export const CompareRevisionsDialog = createReactiveComponent(
                         <style>{COMPARISON_STYLES}</style>
                         <div
                             className={"wby-prose wby-max-w-none"}
-                            dangerouslySetInnerHTML={{ __html: result.html }}
+                            dangerouslySetInnerHTML={{
+                                __html: result.html
+                            }}
                         />
                     </>
                 );
@@ -111,7 +113,11 @@ export const CompareRevisionsDialog = createReactiveComponent(
 
             if (!comparing) {
                 return (
-                    <div className={"wby-text-center wby-py-lg wby-text-neutral-subtle"}>
+                    <div
+                        className={
+                            "wby-text-center wby-py-lg wby-text-neutral-subtle"
+                        }
+                    >
                         No comparison data available.
                     </div>
                 );
@@ -130,7 +136,11 @@ export const CompareRevisionsDialog = createReactiveComponent(
                 }}
                 title={"Compare Revisions"}
                 size={"full"}
-                loading={comparing ? { text: "Comparing revisions with AI..." } : false}
+                loading={
+                    comparing
+                        ? { text: "Comparing revisions with AI..." }
+                        : false
+                }
                 actions={
                     <Button
                         variant={"secondary"}
