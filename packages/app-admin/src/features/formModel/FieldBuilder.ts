@@ -72,6 +72,11 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    autoFocus(value = true): this {
+        this._config.autoFocus = value;
+        return this;
+    }
+
     schema(zodSchema: z.ZodTypeAny): this {
         this._config.schema = zodSchema;
         return this;
