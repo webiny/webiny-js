@@ -6,15 +6,16 @@ import { KnexClient } from "@webiny/api-core-sql";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
-import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { SyncTableManagerFeature } from "../../src/features/syncTableManager/feature.js";
 import { SyncTableManager } from "../../src/features/syncTableManager/abstractions.js";
 import { SyncEventHandlerFeature } from "../../src/features/syncEventHandler/feature.js";
 import { SyncEventHandler } from "../../src/features/syncEventHandler/abstractions.js";
-import { createSyncWriter } from "../../src/operations/entry/syncWriter.js";
+import { SyncWriterFeature } from "../../src/features/SyncWriter/feature.js";
+import { WriteEntry } from "../../src/features/SyncWriter/abstractions/WriteEntry.js";
+import { WriteLatest } from "../../src/features/SyncWriter/abstractions/WriteLatest.js";
+import { RemoveLatest } from "../../src/features/SyncWriter/abstractions/RemoveLatest.js";
 import { SynchronizationBuilderFeature } from "@webiny/api-sync-to-opensearch";
 import { ExecuteSyncFeature } from "@webiny/api-sync-to-opensearch";
 import { ExecuteSyncWithRetryFeature } from "@webiny/api-sync-to-opensearch";
@@ -88,6 +89,7 @@ export const createSyncTestSetup = async () => {
     CompressionFeature.register(container);
     CmsEntryOpenSearchFieldIndexFeature.register(container);
     SyncTableManagerFeature.register(container);
+    SyncWriterFeature.register(container);
     OperationsFactoryFeature.register(container);
     ExecuteSyncFeature.register(container);
     ExecuteSyncWithRetryFeature.register(container);
@@ -95,15 +97,9 @@ export const createSyncTestSetup = async () => {
     SyncEventHandlerFeature.register(container);
 
     const syncTableManager = container.resolve(SyncTableManager);
-    const compressionHandler = container.resolve(CompressionHandler);
-    const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
-
-    const syncWriter = createSyncWriter({
-        knex,
-        syncTableManager,
-        fieldIndexRegistry,
-        compressionHandler
-    });
+    const writeEntry = container.resolve(WriteEntry);
+    const writeLatest = container.resolve(WriteLatest);
+    const removeLatest = container.resolve(RemoveLatest);
 
     await syncTableManager.ensureTable();
 
@@ -117,21 +113,10 @@ export const createSyncTestSetup = async () => {
         }
     });
 
-    /**
-     * Resolve a fresh SyncEventHandler to get a clean SynchronizationBuilder
-     * with empty operations. Call this between tests so stale operations from
-     * a failed test do not leak into the next one.
-     */
     const resolveSyncEventHandler = (): SyncEventHandler.Interface => {
         return container.resolve(SyncEventHandler);
     };
 
-    /**
-     * Reset mutable state between tests. Truncates the sync table (which does
-     * not trigger the simulatePgStream interceptor because TRUNCATE is neither
-     * an INSERT nor a DELETE), clears captured events, and deletes all OS
-     * indexes created during the previous test.
-     */
     const resetState = async (): Promise<void> => {
         capturedEvents.length = 0;
         await knex(syncTableManager.getTableName()).truncate();
@@ -150,7 +135,9 @@ export const createSyncTestSetup = async () => {
         osClient,
         container,
         syncTableManager,
-        syncWriter,
+        writeEntry,
+        writeLatest,
+        removeLatest,
         capturedEvents,
         resolveSyncEventHandler,
         resetState,

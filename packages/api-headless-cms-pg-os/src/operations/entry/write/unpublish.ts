@@ -8,12 +8,12 @@ export const createUnpublishOperation = (
         await deps.syncHelpers.ensureSyncTable();
         const result = await deps.sqlOps.unpublish(initialModel, unpublishParams);
         const model = deps.getStorageOperationsModel(initialModel);
-        await deps.syncWriter.writeLatest({
+        await deps.writeLatest.execute({
             model,
             entry: unpublishParams.entry,
             storageEntry: unpublishParams.storageEntry
         });
-        await deps.syncWriter.removePublished({ model, entryId: unpublishParams.entry.entryId });
+        await deps.removePublished.execute({ model, entryId: unpublishParams.entry.entryId });
         return result;
     };
 };

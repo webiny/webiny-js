@@ -239,7 +239,7 @@
     },
     {
       "name": "@fortawesome/react-fontawesome",
-      "version": "3.4.0",
+      "version": "3.5.0",
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/app-admin/package.json",
@@ -293,7 +293,7 @@
     },
     {
       "name": "@iconify/json",
-      "version": "2.2.501",
+      "version": "2.2.503",
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
@@ -481,7 +481,7 @@
     },
     {
       "name": "@radix-ui/react-scroll-area",
-      "version": "1.2.14",
+      "version": "1.2.15",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -1431,7 +1431,7 @@
     },
     {
       "name": "markdown-to-jsx",
-      "version": "9.8.2",
+      "version": "9.9.0",
       "files": [
         "/packages/app-admin/package.json",
         "/packages/app-website-builder/package.json",
@@ -1823,7 +1823,7 @@
     },
     {
       "name": "radix-ui",
-      "version": "1.6.2",
+      "version": "1.6.4",
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/app-website-builder/package.json",
@@ -5786,7 +5786,7 @@
       "name": "@fortawesome/react-fontawesome",
       "versions": [
         {
-          "version": "3.4.0",
+          "version": "3.5.0",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
@@ -5825,7 +5825,7 @@
       "name": "@radix-ui/react-scroll-area",
       "versions": [
         {
-          "version": "1.2.14",
+          "version": "1.2.15",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -5952,7 +5952,7 @@
       "name": "radix-ui",
       "versions": [
         {
-          "version": "1.6.2",
+          "version": "1.6.4",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] },
@@ -7087,7 +7087,7 @@
       "name": "@iconify/json",
       "versions": [
         {
-          "version": "2.2.501",
+          "version": "2.2.503",
           "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7121,7 +7121,7 @@
       "name": "markdown-to-jsx",
       "versions": [
         {
-          "version": "9.8.2",
+          "version": "9.9.0",
           "files": [
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] }
