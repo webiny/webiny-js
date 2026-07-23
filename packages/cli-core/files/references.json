@@ -575,6 +575,11 @@
       ]
     },
     {
+      "name": "@vercel/nft",
+      "version": "1.10.2",
+      "files": ["/packages/project-server/package.json", "/packages/project-server/package.json"]
+    },
+    {
       "name": "accounting",
       "version": "0.4.1",
       "files": ["/packages/i18n/package.json", "/packages/i18n/package.json"]
@@ -8267,6 +8272,15 @@
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/project-server/package.json", "types": ["dependencies"] }
           ]
+        }
+      ]
+    },
+    {
+      "name": "@vercel/nft",
+      "versions": [
+        {
+          "version": "1.10.2",
+          "files": [{ "file": "/packages/project-server/package.json", "types": ["dependencies"] }]
         }
       ]
     },

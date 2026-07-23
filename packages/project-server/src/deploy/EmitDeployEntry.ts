@@ -1,10 +1,6 @@
 import path from "path";
 import fs from "fs";
-import {
-    ApiAfterBuild,
-    GetProjectService,
-    UiService
-} from "@webiny/project/abstractions/index.js";
+import { ApiAfterBuild, GetProjectService, UiService } from "@webiny/project/abstractions/index.js";
 import { getServerBuildPaths } from "./getServerBuildPaths.js";
 
 /**

@@ -4,8 +4,8 @@ import { BuildServerProjectWorkspace } from "./features/BuildServerProjectWorksp
 import { serverWatch } from "./features/Watch/ServerWatch.js";
 import { serverServe } from "./serve/ServerServe.js";
 import { serveWithBuildChecks } from "./serve/ServeWithBuildChecks.js";
-import { CopyExternalDependencies } from "./build/CopyExternalDependencies.js";
-import { EmitDeployEntry } from "./build/EmitDeployEntry.js";
+import { CopyExternalDependencies } from "./deploy/CopyExternalDependencies.js";
+import { EmitDeployEntry } from "./deploy/EmitDeployEntry.js";
 
 export const registerServerProjectFeatures = (container: Container): void => {
     // Replace the default (AWS) workspace builder with the server hosting-type one.
