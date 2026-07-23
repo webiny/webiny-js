@@ -10,9 +10,7 @@ const { Actions } = InternalContentEntryEditorConfig;
 export const CmsCompareEntryRevisions = () => {
     return (
         <>
-            <RegisterFeature
-                feature={CmsCompareEntryRevisionsPresentationFeature}
-            />
+            <RegisterFeature feature={CmsCompareEntryRevisionsPresentationFeature} />
             <InternalContentEntryEditorConfig>
                 <Actions.MenuItemAction
                     name={"compareEntryRevisions"}

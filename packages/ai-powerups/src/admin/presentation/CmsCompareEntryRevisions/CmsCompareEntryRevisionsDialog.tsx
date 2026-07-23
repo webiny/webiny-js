@@ -113,11 +113,7 @@ export const CmsCompareEntryRevisionsDialog = createReactiveComponent(
 
             if (!comparing) {
                 return (
-                    <div
-                        className={
-                            "wby-text-center wby-py-lg wby-text-neutral-subtle"
-                        }
-                    >
+                    <div className={"wby-text-center wby-py-lg wby-text-neutral-subtle"}>
                         No comparison data available.
                     </div>
                 );
@@ -136,11 +132,7 @@ export const CmsCompareEntryRevisionsDialog = createReactiveComponent(
                 }}
                 title={"Compare Revisions"}
                 size={"full"}
-                loading={
-                    comparing
-                        ? { text: "Comparing revisions with AI..." }
-                        : false
-                }
+                loading={comparing ? { text: "Comparing revisions with AI..." } : false}
                 actions={
                     <Button
                         variant={"secondary"}

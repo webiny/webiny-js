@@ -19,12 +19,12 @@ Every Webiny extension type uses the same DI pattern: define a class implementin
 
 This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The DI pattern is universal — only the import paths differ.
 
-| | Extensions (`extensions/`) | Core (`packages/`) |
-|---|---|---|
-| **`createAbstraction`** | `from "webiny/api"` or `from "webiny/admin"` | `from "@webiny/feature/api"` or `from "@webiny/feature/admin"` |
-| **`createFeature`** | `from "webiny/api"` or `from "webiny/admin"` | `from "@webiny/feature/api"` or `from "@webiny/feature/admin"` |
-| **Factory imports** | `from "webiny/api/graphql"`, `from "webiny/api/cms/model"`, etc. | Direct package paths: `from "@webiny/handler-graphql/..."`, `from "@webiny/api-headless-cms/..."` |
-| **Catalog paths** | Use the `Import:` path | Use the `Source:` path |
+|                         | Extensions (`extensions/`)                                       | Core (`packages/`)                                                                                |
+| ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **`createAbstraction`** | `from "webiny/api"` or `from "webiny/admin"`                     | `from "@webiny/feature/api"` or `from "@webiny/feature/admin"`                                    |
+| **`createFeature`**     | `from "webiny/api"` or `from "webiny/admin"`                     | `from "@webiny/feature/api"` or `from "@webiny/feature/admin"`                                    |
+| **Factory imports**     | `from "webiny/api/graphql"`, `from "webiny/api/cms/model"`, etc. | Direct package paths: `from "@webiny/handler-graphql/..."`, `from "@webiny/api-headless-cms/..."` |
+| **Catalog paths**       | Use the `Import:` path                                           | Use the `Source:` path                                                                            |
 
 Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode. The `dependencies` array, constructor injection, scoping rules, and all other patterns are identical in both contexts.
 

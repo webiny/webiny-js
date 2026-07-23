@@ -17,13 +17,13 @@ A full-stack extension bundles **API** and **Admin** into a single package with 
 
 This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are the same — only the import convention and registration mechanism differ.
 
-| | Extensions (`extensions/`) | Core (`packages/`) |
-|---|---|---|
-| **Imports** | `webiny/api`, `webiny/admin`, `webiny/admin/ui` | `@webiny/feature/api`, `@webiny/app-admin`, `@webiny/admin-ui` |
-| **Catalog paths** | Use the `Import:` path | Use the `Source:` path |
-| **Registration** | `<Api.Extension src={...}>` / `<Admin.Extension src={...}>` in `webiny.config.tsx` | `createFeature` registered directly by the package's module initializer |
-| **Entry point export** | Files targeted by Extension `src` MUST use `export default` | No restriction — features are registered programmatically |
-| **Top-level component** | Required — composes `<Api.Extension>` + `<Admin.Extension>` | Not applicable — each package registers its own features |
+|                         | Extensions (`extensions/`)                                                         | Core (`packages/`)                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Imports**             | `webiny/api`, `webiny/admin`, `webiny/admin/ui`                                    | `@webiny/feature/api`, `@webiny/app-admin`, `@webiny/admin-ui`          |
+| **Catalog paths**       | Use the `Import:` path                                                             | Use the `Source:` path                                                  |
+| **Registration**        | `<Api.Extension src={...}>` / `<Admin.Extension src={...}>` in `webiny.config.tsx` | `createFeature` registered directly by the package's module initializer |
+| **Entry point export**  | Files targeted by Extension `src` MUST use `export default`                        | No restriction — features are registered programmatically               |
+| **Top-level component** | Required — composes `<Api.Extension>` + `<Admin.Extension>`                        | Not applicable — each package registers its own features                |
 
 Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 

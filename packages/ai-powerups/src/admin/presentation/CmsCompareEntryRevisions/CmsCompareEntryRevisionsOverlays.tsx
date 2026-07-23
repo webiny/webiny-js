@@ -5,12 +5,10 @@ import { CmsCompareEntryRevisionsPresentationFeature } from "./feature.js";
 import { CmsCompareEntryRevisionsDrawer } from "./CmsCompareEntryRevisionsDrawer.js";
 import { CmsCompareEntryRevisionsDialog } from "./CmsCompareEntryRevisionsDialog.js";
 
-export const CmsCompareEntryRevisionsOverlays =
-    ContentEntryFormContent.createDecorator(Original => {
+export const CmsCompareEntryRevisionsOverlays = ContentEntryFormContent.createDecorator(
+    Original => {
         return function ContentEntryFormContentWithCompareRevisions(props) {
-            const { presenter } = useFeature(
-                CmsCompareEntryRevisionsPresentationFeature
-            );
+            const { presenter } = useFeature(CmsCompareEntryRevisionsPresentationFeature);
 
             return (
                 <>
@@ -20,4 +18,5 @@ export const CmsCompareEntryRevisionsOverlays =
                 </>
             );
         };
-    });
+    }
+);

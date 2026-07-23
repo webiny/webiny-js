@@ -20,12 +20,12 @@ Admin extensions are React components that register headless features (business 
 
 This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are identical — only imports differ.
 
-|                   | Extensions (`extensions/`)                                                              | Core (`packages/`)                                                                        |
-| ----------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Imports**       | `webiny/admin`, `webiny/admin/ui`, `webiny/admin/cms/entry/editor`                      | `@webiny/app`, `@webiny/admin-ui`, `@webiny/app-headless-cms/...`                         |
-| **Catalog paths** | Use the `Import:` path                                                                  | Use the `Source:` path                                                                    |
-| **MobX wrapper** | `createReactiveComponent` from `webiny/admin` | `createReactiveComponent` from `@webiny/app-admin` (never import `observer` from `mobx-react-lite` directly — the only exception is `@webiny/app-admin` itself, which is the source of the re-export) |
-| **Entry point**   | React component as `export default` in a file targeted by `<Admin.Extension src={...}>` | React component registered by the package initializer                                     |
+|                   | Extensions (`extensions/`)                                                              | Core (`packages/`)                                                                                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Imports**       | `webiny/admin`, `webiny/admin/ui`, `webiny/admin/cms/entry/editor`                      | `@webiny/app`, `@webiny/admin-ui`, `@webiny/app-headless-cms/...`                                                                                                                                     |
+| **Catalog paths** | Use the `Import:` path                                                                  | Use the `Source:` path                                                                                                                                                                                |
+| **MobX wrapper**  | `createReactiveComponent` from `webiny/admin`                                           | `createReactiveComponent` from `@webiny/app-admin` (never import `observer` from `mobx-react-lite` directly — the only exception is `@webiny/app-admin` itself, which is the source of the re-export) |
+| **Entry point**   | React component as `export default` in a file targeted by `<Admin.Extension src={...}>` | React component registered by the package initializer                                                                                                                                                 |
 
 Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 
