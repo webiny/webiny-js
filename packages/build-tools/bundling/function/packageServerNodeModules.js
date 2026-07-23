@@ -57,4 +57,22 @@ export const packageServerNodeModules = async ({ cwd }) => {
     }
 
     console.log(`Packaged ${copied} node_modules file(s) into build/node_modules.`);
+
+    // Emit a launcher so the copied build/ folder is runnable on its own: `node start.mjs`. handler.mjs
+    // only EXPORTS the (async) handler — it doesn't listen — so a deploy needs an entry that imports it
+    // and calls .listen(PORT). Mirrors the dev apiServerRunner (prefer the telemetry-wrapped _handler.mjs
+    // when present, else the plain handler.mjs), but build/-relative and without the wait-for-build loop.
+    const startFile = [
+        `import fs from "node:fs";`,
+        `const wrapped = new URL("./_handler.mjs", import.meta.url);`,
+        `const plain = new URL("./handler.mjs", import.meta.url);`,
+        `const target = fs.existsSync(wrapped) ? wrapped : plain;`,
+        `const { handler } = await import(target.href);`,
+        `const server = await handler;`,
+        `const port = Number(process.env.PORT || 3002);`,
+        `server.listen(port, () => console.log("listening on http://localhost:" + port));`,
+        ``
+    ].join("\n");
+    fs.writeFileSync(path.join(buildDir, "start.mjs"), startFile);
+    console.log("Emitted build/start.mjs (run with: node start.mjs).");
 };
