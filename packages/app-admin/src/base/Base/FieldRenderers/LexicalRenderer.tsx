@@ -21,7 +21,7 @@ declare module "../../../features/formModel/abstractions.js" {
 const placeholderStyles: React.CSSProperties = {
     position: "absolute",
     top: 8,
-    left: 12,
+    left: 8,
     marginTop: 0
 };
 
