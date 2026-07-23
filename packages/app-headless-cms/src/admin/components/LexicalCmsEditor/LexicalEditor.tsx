@@ -2,7 +2,7 @@ import React from "react";
 import { StaticToolbar } from "@webiny/lexical-editor";
 import { LexicalEditor as BaseLexicalEditor } from "@webiny/app-admin";
 
-const placeholderStyles: React.CSSProperties = { position: "absolute", top: 8, left: 12 };
+const placeholderStyles: React.CSSProperties = { position: "absolute", top: 28, left: 13 };
 
 const contentEditableStyles: React.CSSProperties = {
     minHeight: 200,

@@ -16,7 +16,7 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-const placeholderStyles: React.CSSProperties = { position: "absolute", top: 8, left: 12 };
+const placeholderStyles: React.CSSProperties = { position: "absolute", top: 28, left: 13 };
 
 const contentEditableStyles: React.CSSProperties = {
     minHeight: 200,
