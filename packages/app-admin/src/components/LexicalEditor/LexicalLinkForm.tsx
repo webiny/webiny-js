@@ -30,12 +30,13 @@ export const LexicalLinkForm = ({ linkData, onSave, removeLink }: LinkFormProps)
                         <TargetSwitch />
                         <Button
                             variant={"ghost"}
+                            size={"sm"}
                             text={`Remove link`}
                             className={"text-destructive-primary! [&_svg]:fill-destructive"}
                             onClick={removeLink}
                             icon={<Icon label={"Remove link"} icon={<RemoveLink />} />}
                         />
-                        <Button variant={"primary"} text={`Save`} onClick={form.submit} />
+                        <Button variant={"primary"} size={"sm"} text={`Save`} onClick={form.submit} />
                     </div>
                 </div>
             )}
@@ -72,10 +73,18 @@ const UrlInput = () => {
                 inputRef.current = ref;
             }}
             variant={"secondary"}
+            size={"sm"}
             placeholder={"Enter link"}
             autoFocus={true}
             startIcon={<Icon label="globe" icon={<GlobeIcon />} />}
-            endIcon={<IconButton variant="ghost" icon={<OpenInNew />} onClick={openInNewTab} />}
+            endIcon={
+                <IconButton
+                    variant="ghost"
+                    size="sm"
+                    icon={<OpenInNew />}
+                    onClick={openInNewTab}
+                />
+            }
         />
     );
 };
