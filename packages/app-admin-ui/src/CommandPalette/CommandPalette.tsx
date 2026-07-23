@@ -53,7 +53,19 @@ const CommandPaletteBase = () => {
                 setQuery("");
             },
             backspace: (e: KeyboardEvent) => {
-                if (e.target instanceof HTMLInputElement) {
+                // This is a global (document-level) handler, so only act while the palette
+                // is actually open — otherwise it would swallow Backspace everywhere.
+                if (!presenter.vm.isOpen) {
+                    return;
+                }
+                // Never intercept Backspace while the user is editing text: <input>,
+                // <textarea>, or any contentEditable (e.g. rich-text/lexical) element.
+                const target = e.target;
+                if (
+                    target instanceof HTMLInputElement ||
+                    target instanceof HTMLTextAreaElement ||
+                    (target instanceof HTMLElement && target.isContentEditable)
+                ) {
                     return;
                 }
                 e.preventDefault();
