@@ -12,7 +12,7 @@ import { WriteLatest } from "./abstractions/WriteLatest.js";
 import { WritePublished } from "./abstractions/WritePublished.js";
 import { RemovePublished } from "./abstractions/RemovePublished.js";
 import { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
-import { SqlEntryOperations } from "~/operations/entry/abstractions/SqlEntryOperations.js";
+import { SqlEntryOperations } from "@webiny/api-headless-cms-sql/operations/entry/abstractions/SqlEntryOperations.js";
 
 class SyncHelpersImpl implements Abstraction.Interface {
     public constructor(

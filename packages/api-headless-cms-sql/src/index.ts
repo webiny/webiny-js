@@ -1,7 +1,8 @@
 import type { CmsContext, SqlStorageOperationsFactory } from "~/types.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
-import { createEntriesStorageOperations } from "~/operations/entry/index.js";
+import { SqlEntryOperations } from "~/operations/entry/abstractions/SqlEntryOperations.js";
+import { SqlEntryOperationsFeature } from "~/operations/entry/feature.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
@@ -10,7 +11,6 @@ import { ModelSchemaManagerFeature } from "~/features/modelSchemaManager/feature
 import { EntryTableManagerFeature } from "~/features/entryTableManager/feature.js";
 import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
 import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
-import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
 import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractions.js";
 import type { Knex } from "knex";
@@ -26,17 +26,12 @@ const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
     const tableNameResolver = container.resolve(TableNameResolver);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
-    const entryTableManager = container.resolve(EntryTableManager);
 
     const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
 
     const models = createModelsStorageOperations(knex, tableNameResolver, modelSchemaManager);
 
-    const entries = createEntriesStorageOperations({
-        knex,
-        entryTableManager,
-        container
-    });
+    const entries = container.resolve(SqlEntryOperations);
 
     return {
         name: "sql",
@@ -81,6 +76,7 @@ export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);
+            SqlEntryOperationsFeature.register(container);
 
             container.registerFactory(StorageOperationsFactoryAbstraction, () => {
                 return new SqlStorageOperationsFactoryImpl();

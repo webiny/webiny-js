@@ -4,6 +4,7 @@ import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { KnexClient } from "@webiny/api-core-sql";
+import { SqlEntryOperationsFeature } from "@webiny/api-headless-cms-sql/operations/entry/feature.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import {
     CmsEntryOpenSearchIndexCreate,
@@ -23,7 +24,6 @@ import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features
 import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/entryTableManager/feature.js";
 import { GroupSchemaManager } from "@webiny/api-headless-cms-sql/features/groupSchemaManager/abstractions.js";
 import { ModelSchemaManager } from "@webiny/api-headless-cms-sql/features/modelSchemaManager/abstractions.js";
-import { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
 import { SyncWriterFeature } from "./SyncWriter/feature.js";
 import { EntryOperationsFeature } from "~/operations/entry/feature.js";
@@ -39,7 +39,6 @@ const createPgOsStorageOperations = (
     const tableNameResolver = container.resolve(TableNameResolver);
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
-    const entryTableManager = container.resolve(EntryTableManager);
 
     const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
 
@@ -76,11 +75,7 @@ const createPgOsStorageOperations = (
         tableNameResolver,
         modelSchemaManager
     );
-    const entries = createEntriesStorageOperations({
-        knex: knex.client,
-        container,
-        entryTableManager
-    });
+    const entries = createEntriesStorageOperations(container);
 
     return {
         name: "postgresql:opensearch",
@@ -134,6 +129,7 @@ export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConf
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);
+            SqlEntryOperationsFeature.register(container);
             SyncTableManagerFeature.register(container);
             SyncWriterFeature.register(container);
             EntryOperationsFeature.register(container);

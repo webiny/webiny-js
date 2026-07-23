@@ -1,6 +1,6 @@
 import { EntryWriteOperations as Abstraction } from "./abstractions/EntryWriteOperations.js";
 import type { IEntryWriteOperations } from "./abstractions/EntryWriteOperations.js";
-import { SqlEntryOperations } from "./abstractions/SqlEntryOperations.js";
+import { SqlEntryOperations } from "@webiny/api-headless-cms-sql/operations/entry/abstractions/SqlEntryOperations.js";
 import { SyncHelpers } from "~/features/SyncWriter/abstractions/SyncHelpers.js";
 import { WriteEntry } from "~/features/SyncWriter/abstractions/WriteEntry.js";
 import { WriteLatest } from "~/features/SyncWriter/abstractions/WriteLatest.js";
