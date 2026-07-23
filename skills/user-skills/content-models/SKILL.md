@@ -208,6 +208,34 @@ The authoritative source for these field types is the `webiny/api/cms/model` bar
 | `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
 | `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
 
+### Renderer Settings
+
+Some renderers accept a `settings` object as the second argument to `.renderer()`:
+
+```typescript
+.renderer("dynamicZone", { container: false, addItemLabel: "Add block" })
+.renderer("objectAccordionSingle", { open: false, container: true, itemTitle: "name" })
+.renderer("objectAccordionMultiple", { itemTitle: "title", addItemLabel: "Add section" })
+```
+
+| Renderer                   | Setting           | Type                | Default              | Description                                                   |
+| -------------------------- | ----------------- | ------------------- | -------------------- | ------------------------------------------------------------- |
+| `dynamicZone`              | `open`            | `boolean`           | `true`               | Whether the accordion is expanded by default                  |
+| `dynamicZone`              | `container`       | `boolean`           | `true`               | Wrap in a container panel; `false` for flat inline layout      |
+| `dynamicZone`              | `addItemLabel`    | `string`            | `"Add Item"`         | Label for the add-item button                                 |
+| `objectAccordionSingle`    | `open`            | `boolean`           | `true`               | Whether the accordion is expanded by default                  |
+| `objectAccordionSingle`    | `container`       | `boolean`           | `true`               | Wrap in a container panel; `false` for flat inline layout      |
+| `objectAccordionSingle`    | `itemTitle`       | `string`            | field label          | Field ID whose value is used as the accordion title           |
+| `objectAccordionSingle`    | `itemDescription` | `string`            | —                    | Field ID whose value is used as the accordion description     |
+| `objectAccordionMultiple`  | `open`            | `boolean`           | `true`               | Whether each accordion item is expanded by default            |
+| `objectAccordionMultiple`  | `container`       | `boolean`           | `true`               | Wrap in a container panel; `false` for flat inline layout      |
+| `objectAccordionMultiple`  | `itemTitle`       | `string`            | field label          | Field ID whose value is used as each item's title             |
+| `objectAccordionMultiple`  | `itemDescription` | `string`            | —                    | Field ID whose value is used as each item's description       |
+| `objectAccordionMultiple`  | `addItemLabel`    | `string`            | `"Add {label}"`      | Label for the add-item button                                 |
+| `assetField` / `assetFields` | `imagesOnly`   | `boolean`           | `false`              | Only allow image files                                        |
+| `assetField` / `assetFields` | `accept`       | `string[]`          | all types            | MIME types to allow (e.g. `["image/png", "application/pdf"]`) |
+| `refDialogMultiple`        | `newItemPosition` | `"first" \| "last"` | `"last"`             | Where newly picked references are inserted                    |
+
 ### Ref renderer families
 
 The three `ref` renderer families look and behave very differently in the Admin UI —

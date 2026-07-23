@@ -23,7 +23,9 @@ class ArticleModelImpl implements ModelFactory.Interface {
                     slug: fields.text().renderer("textInput").label("Slug").help("Page slug."),
                     content: fields
                         .dynamicZone()
-                        .renderer("dynamicZone")
+                        .renderer("dynamicZone", {
+
+                        })
                         .label("Content")
                         .list()
                         .listMinLength(1, "You must create at least 1 entries.")
