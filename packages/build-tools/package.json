@@ -27,7 +27,6 @@
     "@rspack/core": "^2.1.4",
     "@swc/plugin-emotion": "^14.15.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@vercel/nft": "^1.10.2",
     "@webiny/stdlib": "^0.0.12",
     "chalk": "^5.6.2",
     "css-loader": "^7.1.4",

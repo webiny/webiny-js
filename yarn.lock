@@ -12445,7 +12445,6 @@ __metadata:
     "@rspack/core": "npm:^2.1.4"
     "@swc/plugin-emotion": "npm:^14.15.0"
     "@tailwindcss/postcss": "npm:^4.3.3"
-    "@vercel/nft": "npm:^1.10.2"
     "@webiny/stdlib": "npm:^0.0.12"
     chalk: "npm:^5.6.2"
     css-loader: "npm:^7.1.4"
@@ -13159,6 +13158,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-server@workspace:packages/project-server"
   dependencies:
+    "@vercel/nft": "npm:^1.10.2"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
