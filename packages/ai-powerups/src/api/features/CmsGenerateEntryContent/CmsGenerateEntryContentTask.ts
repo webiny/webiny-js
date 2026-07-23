@@ -1,6 +1,6 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
-import { compress } from "@webiny/utils/features/compression/legacy/gzip.js";
+import { compressJson } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { CmsGenerateEntryContentUseCase } from "~/api/features/CmsGenerateEntryContent/index.js";
 import type { GenerateEntryContentTelemetry } from "~/api/features/CmsGenerateEntryContent/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
@@ -68,7 +68,9 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
             });
         }
 
-        const compressed = await compress(result.value.output);
+        // Serialize at the transport edge: the use case returns structured values; the
+        // websocket stream carries a gzip+base64 JSON string that the Admin app decodes.
+        const compressed = await compressJson(result.value.values);
         const payload = compressed.toString("base64");
 
         await this.sendContentToUser(identity.id, payload, result.value.telemetry);
