@@ -1,3 +1,4 @@
+import type { CmsEntryValues } from "@webiny/api-headless-cms/types/index.js";
 import { WritePublished as Abstraction } from "./abstractions/WritePublished.js";
 import { BuildSyncRecord } from "./abstractions/BuildSyncRecord.js";
 import { KnexClient } from "@webiny/api-core-sql";
@@ -11,7 +12,7 @@ class WritePublishedImpl implements Abstraction.Interface {
         private readonly syncTableManager: SyncTableManager.Interface
     ) {}
 
-    public async execute(params: Abstraction.Params) {
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(params: Abstraction.Params<T>) {
         const row = await this.buildSyncRecord.execute({ ...params, kind: "published" });
         await this.query().insert(row).onConflict("id").merge();
     }

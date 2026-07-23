@@ -17,7 +17,9 @@ export interface IBuildSyncRecordParams<T extends CmsEntryValues = CmsEntryValue
 }
 
 export interface IBuildSyncRecord {
-    execute(params: IBuildSyncRecordParams): Promise<ISyncRow>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        params: IBuildSyncRecordParams<T>
+    ): Promise<ISyncRow>;
 }
 
 export const BuildSyncRecord = createAbstraction<IBuildSyncRecord>(
@@ -26,6 +28,6 @@ export const BuildSyncRecord = createAbstraction<IBuildSyncRecord>(
 
 export namespace BuildSyncRecord {
     export type Interface = IBuildSyncRecord;
-    export type Params = IBuildSyncRecordParams;
+    export type Params<T extends CmsEntryValues = CmsEntryValues> = IBuildSyncRecordParams<T>;
     export type Kind = RecordKind;
 }

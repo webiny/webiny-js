@@ -13,12 +13,12 @@ export interface IWriteEntryParams<T extends CmsEntryValues = CmsEntryValues> {
 }
 
 export interface IWriteEntry {
-    execute(params: IWriteEntryParams): Promise<void>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(params: IWriteEntryParams<T>): Promise<void>;
 }
 
 export const WriteEntry = createAbstraction<IWriteEntry>("Cms/Pg/Os/SyncWriter/WriteEntry");
 
 export namespace WriteEntry {
     export type Interface = IWriteEntry;
-    export type Params = IWriteEntryParams;
+    export type Params<T extends CmsEntryValues = CmsEntryValues> = IWriteEntryParams<T>;
 }

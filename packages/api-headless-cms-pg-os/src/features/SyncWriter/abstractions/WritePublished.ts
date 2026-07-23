@@ -13,7 +13,9 @@ export interface IWritePublishedParams<T extends CmsEntryValues = CmsEntryValues
 }
 
 export interface IWritePublished {
-    execute(params: IWritePublishedParams): Promise<void>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        params: IWritePublishedParams<T>
+    ): Promise<void>;
 }
 
 export const WritePublished = createAbstraction<IWritePublished>(
@@ -22,5 +24,5 @@ export const WritePublished = createAbstraction<IWritePublished>(
 
 export namespace WritePublished {
     export type Interface = IWritePublished;
-    export type Params = IWritePublishedParams;
+    export type Params<T extends CmsEntryValues = CmsEntryValues> = IWritePublishedParams<T>;
 }

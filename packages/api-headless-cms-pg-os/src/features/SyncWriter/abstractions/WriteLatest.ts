@@ -13,12 +13,14 @@ export interface IWriteLatestParams<T extends CmsEntryValues = CmsEntryValues> {
 }
 
 export interface IWriteLatest {
-    execute(params: IWriteLatestParams): Promise<void>;
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        params: IWriteLatestParams<T>
+    ): Promise<void>;
 }
 
 export const WriteLatest = createAbstraction<IWriteLatest>("Cms/Pg/Os/SyncWriter/WriteLatest");
 
 export namespace WriteLatest {
     export type Interface = IWriteLatest;
-    export type Params = IWriteLatestParams;
+    export type Params<T extends CmsEntryValues = CmsEntryValues> = IWriteLatestParams<T>;
 }

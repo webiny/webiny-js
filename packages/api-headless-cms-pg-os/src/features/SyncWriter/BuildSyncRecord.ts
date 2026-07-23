@@ -1,3 +1,4 @@
+import type { CmsEntryValues } from "@webiny/api-headless-cms/types/index.js";
 import { BuildSyncRecord as Abstraction } from "./abstractions/BuildSyncRecord.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
@@ -15,7 +16,7 @@ class BuildSyncRecordImpl implements Abstraction.Interface {
         private readonly compressionHandler: CompressionHandler.Interface
     ) {}
 
-    public async execute(params: Abstraction.Params) {
+    public async execute<T extends CmsEntryValues = CmsEntryValues>(params: Abstraction.Params<T>) {
         const { model, entry, storageEntry, kind } = params;
 
         const indexEntry = transformEntryToIndex({
