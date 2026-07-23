@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import type { FolderDto } from "@webiny/app-aco";
 
 import { Icon, Text } from "@webiny/admin-ui";
@@ -68,17 +68,41 @@ export const EntryCellName = ({ entry }: EntryCellNameProps) => {
     const presenter = useContentEntriesPresenter();
     const { canEdit } = usePermission();
 
+    // The open entry is represented in the URL via the `id` query param, so we can
+    // render a real anchor. This lets Cmd/Ctrl/middle-click open the entry in a new tab.
+    const href = useMemo(() => {
+        if (typeof window === "undefined") {
+            return undefined;
+        }
+        const params = new URLSearchParams(window.location.search);
+        params.set("id", entry.id);
+        return `${window.location.pathname}?${params.toString()}`;
+    }, [entry.id]);
+
+    const onClick = useCallback(
+        (e: React.MouseEvent) => {
+            // Let the browser handle new-tab / new-window intents natively.
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                return;
+            }
+            e.preventDefault();
+            presenter.selectEntry(entry.id);
+        },
+        [presenter, entry.id]
+    );
+
     if (!canEdit(entry, "cms.contentEntry")) {
         return <EntryCellRowTitle entry={entry} />;
     }
 
     return (
-        <div
-            className={"truncate cursor-pointer hover:underline"}
-            onClick={() => presenter.selectEntry(entry.id)}
+        <a
+            href={href}
+            className={"block truncate cursor-pointer hover:underline text-inherit no-underline"}
+            onClick={onClick}
         >
             <EntryCellRowTitle entry={entry} />
-        </div>
+        </a>
     );
 };
 
