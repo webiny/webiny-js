@@ -2,18 +2,17 @@ import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useScheduleDialog } from "@webiny/app-scheduler";
-import { useContainer } from "@webiny/app";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/exports/admin/cms/entry/list.js";
 import { useEntry } from "@webiny/app-headless-cms";
 import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
-import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
+import { useScheduledActions } from "~/hooks/useScheduledActions.js";
 
 export const MenuItem = observer(() => {
     const { model } = useModel();
     const { entry } = useEntry();
-    const container = useContainer();
+    const scheduledActions = useScheduledActions();
 
     const { canPublish, canUnpublish } = usePermissions();
 
@@ -24,7 +23,7 @@ export const MenuItem = observer(() => {
             title: entry.meta.title,
             status: entry.meta.status
         },
-        onCompleted: () => container.resolve(ScheduledActionsPresenter).reload()
+        onCompleted: () => scheduledActions.reload()
     });
 
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;

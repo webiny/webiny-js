@@ -1,9 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
-import { useContainer } from "@webiny/app";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
-import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
+import { useScheduledActions } from "~/hooks/useScheduledActions.js";
 import { formatScheduledDate } from "~/utils/index.js";
 
 interface ScheduleNoticeAlertProps {
@@ -18,11 +17,7 @@ interface ScheduleNoticeAlertProps {
  * (or the entry form). Renders nothing when there is no scheduled action.
  */
 export const ScheduleNoticeAlert = observer(({ targetId, verb }: ScheduleNoticeAlertProps) => {
-    const container = useContainer();
-    const presenter = React.useMemo(
-        () => container.resolve(ScheduledActionsPresenter),
-        [container]
-    );
+    const presenter = useScheduledActions();
 
     const scheduled = targetId ? presenter.getScheduledAction(targetId) : undefined;
 

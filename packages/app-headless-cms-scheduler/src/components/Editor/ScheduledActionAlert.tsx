@@ -2,11 +2,10 @@ import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
 import { Alert } from "@webiny/admin-ui";
-import { useContainer } from "@webiny/app";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
-import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
+import { useScheduledActions } from "~/hooks/useScheduledActions.js";
 import { formatScheduledDate } from "~/utils/index.js";
 
 /**
@@ -15,11 +14,7 @@ import { formatScheduledDate } from "~/utils/index.js";
  */
 const ScheduledActionBar = observer(() => {
     const formPresenter = useContentEntryFormPresenter();
-    const container = useContainer();
-    const presenter = React.useMemo(
-        () => container.resolve(ScheduledActionsPresenter),
-        [container]
-    );
+    const presenter = useScheduledActions();
 
     const vm = formPresenter.vm;
     const entryId = vm.entry?.id;

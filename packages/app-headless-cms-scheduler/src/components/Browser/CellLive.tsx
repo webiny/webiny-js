@@ -1,8 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { useContainer } from "@webiny/app";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
-import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
+import { useScheduledActions } from "~/hooks/useScheduledActions.js";
 import { LiveTag } from "./LiveTag.js";
 import { ScheduledTag } from "./ScheduledTag.js";
 import { isScheduleRedundant } from "./isScheduleRedundant.js";
@@ -17,11 +16,7 @@ import { isScheduleRedundant } from "./isScheduleRedundant.js";
 export const CellLive = observer(() => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const container = useContainer();
-    const presenter = React.useMemo(
-        () => container.resolve(ScheduledActionsPresenter),
-        [container]
-    );
+    const presenter = useScheduledActions();
 
     if (isFolderRow(row)) {
         return <>{"-"}</>;

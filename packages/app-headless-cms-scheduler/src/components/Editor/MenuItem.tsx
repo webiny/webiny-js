@@ -4,10 +4,9 @@ import { OptionsMenuItem } from "@webiny/app-admin";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useScheduleDialog } from "@webiny/app-scheduler";
-import { useContainer } from "@webiny/app";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
-import { ScheduledActionsPresenter } from "~/presentation/scheduledActions/abstractions.js";
+import { useScheduledActions } from "~/hooks/useScheduledActions.js";
 
 interface MenuItemWithIdProps {
     entryId: string;
@@ -24,7 +23,7 @@ const MenuItemWithId = ({
     modelId,
     loading
 }: MenuItemWithIdProps) => {
-    const container = useContainer();
+    const scheduledActions = useScheduledActions();
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
         namespace: createNamespace({ modelId }),
         target: {
@@ -32,7 +31,7 @@ const MenuItemWithId = ({
             title: entryTitle,
             status: entryStatus
         },
-        onCompleted: () => container.resolve(ScheduledActionsPresenter).reload()
+        onCompleted: () => scheduledActions.reload()
     });
 
     const showDialog = useCallback(() => {
