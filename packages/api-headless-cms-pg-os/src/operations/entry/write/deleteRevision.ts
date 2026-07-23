@@ -17,17 +17,17 @@ export const createDeleteRevisionOperation = (
 
         const { latestStorageEntry, storageEntry } = deleteRevisionParams;
         if (latestStorageEntry) {
-            await deps.syncWriter.writeLatest({
+            await deps.writeLatest.execute({
                 model,
                 entry: latestStorageEntry,
                 storageEntry: latestStorageEntry
             });
         } else {
-            await deps.syncWriter.removeLatest({ model, entryId: storageEntry.entryId });
+            await deps.removeLatest.execute({ model, entryId: storageEntry.entryId });
         }
 
         if (storageEntry.status === "published") {
-            await deps.syncWriter.removePublished({ model, entryId: storageEntry.entryId });
+            await deps.removePublished.execute({ model, entryId: storageEntry.entryId });
         }
     };
 };

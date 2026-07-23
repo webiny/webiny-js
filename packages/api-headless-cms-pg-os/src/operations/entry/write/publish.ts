@@ -8,7 +8,7 @@ export const createPublishOperation = (
         await deps.syncHelpers.ensureSyncTable();
         const result = await deps.sqlOps.publish(initialModel, publishParams);
         const model = deps.getStorageOperationsModel(initialModel);
-        await deps.syncWriter.writeEntry({
+        await deps.writeEntry.execute({
             model,
             entry: publishParams.entry,
             storageEntry: publishParams.storageEntry

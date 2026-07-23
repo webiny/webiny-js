@@ -11,7 +11,7 @@ import {
     CmsEntryOpenSearchIndexDelete
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
+
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
@@ -30,6 +30,7 @@ import { ModelSchemaManager } from "@webiny/api-headless-cms-sql/features/modelS
 import { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
 import { SyncTableManager } from "./syncTableManager/abstractions.js";
+import { SyncWriterFeature } from "./SyncWriter/feature.js";
 import { createEntriesStorageOperations } from "~/operations/entry/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
@@ -54,7 +55,6 @@ const createPgOsStorageOperations = (
 
     const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
     const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
-    const compressionHandler = container.resolve(CompressionHandler);
 
     const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
 
@@ -98,8 +98,7 @@ const createPgOsStorageOperations = (
         entryTableManager,
         syncTableManager,
         fieldRegistry,
-        fieldIndexRegistry,
-        compressionHandler
+        fieldIndexRegistry
     });
 
     return {
@@ -160,6 +159,7 @@ export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConf
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);
             SyncTableManagerFeature.register(container);
+            SyncWriterFeature.register(container);
 
             HeadlessCmsPgOsFeature.register(container);
         }

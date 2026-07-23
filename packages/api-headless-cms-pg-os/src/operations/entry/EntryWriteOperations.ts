@@ -1,12 +1,14 @@
-import type { Knex } from "knex";
 import type { CmsEntryStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import type { Container } from "@webiny/feature/api";
-import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import type { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import { createStorageModelAccessor } from "@webiny/api-headless-cms-storage";
 import type { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
+import { WriteEntry } from "~/features/SyncWriter/abstractions/WriteEntry.js";
+import { WriteLatest } from "~/features/SyncWriter/abstractions/WriteLatest.js";
+import { WritePublished } from "~/features/SyncWriter/abstractions/WritePublished.js";
+import { RemoveEntry } from "~/features/SyncWriter/abstractions/RemoveEntry.js";
+import { RemoveLatest } from "~/features/SyncWriter/abstractions/RemoveLatest.js";
+import { RemovePublished } from "~/features/SyncWriter/abstractions/RemovePublished.js";
 import type { IEntryWriteOperations } from "./abstractions/EntryWriteOperations.js";
-import { createSyncWriter } from "./syncWriter.js";
 import { createSyncHelpers } from "./syncHelpers.js";
 import type { WriteOperationDeps } from "./write/types.js";
 import { createCreateOperation } from "./write/create.js";
@@ -22,35 +24,43 @@ import { createDeleteRevisionOperation } from "./write/deleteRevision.js";
 import { createDeleteMultipleEntriesOperation } from "./write/deleteMultipleEntries.js";
 
 interface CreateEntryWriteOperationsParams {
-    knex: Knex;
     container: Container;
     sqlOps: CmsEntryStorageOperations;
     syncTableManager: SyncTableManager.Interface;
-    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
-    compressionHandler: CompressionHandler.Interface;
 }
 
 export const createEntryWriteOperations = (
     params: CreateEntryWriteOperationsParams
 ): IEntryWriteOperations => {
-    const { knex, container, sqlOps, syncTableManager, fieldIndexRegistry, compressionHandler } =
-        params;
+    const { container, sqlOps, syncTableManager } = params;
 
     const { getModel: getStorageOperationsModel } = createStorageModelAccessor(container);
 
-    const syncWriter = createSyncWriter({
-        knex,
-        syncTableManager,
-        fieldIndexRegistry,
-        compressionHandler
-    });
+    const writeEntry = container.resolve(WriteEntry);
+    const writeLatest = container.resolve(WriteLatest);
+    const writePublished = container.resolve(WritePublished);
+    const removeEntry = container.resolve(RemoveEntry);
+    const removeLatest = container.resolve(RemoveLatest);
+    const removePublished = container.resolve(RemovePublished);
 
-    const syncHelpers = createSyncHelpers({ syncTableManager, syncWriter, sqlOps });
+    const syncHelpers = createSyncHelpers({
+        syncTableManager,
+        writeEntry,
+        writeLatest,
+        writePublished,
+        removePublished,
+        sqlOps
+    });
 
     const deps: WriteOperationDeps = {
         sqlOps,
         syncHelpers,
-        syncWriter,
+        writeEntry,
+        writeLatest,
+        writePublished,
+        removeEntry,
+        removeLatest,
+        removePublished,
         getStorageOperationsModel
     };
 
