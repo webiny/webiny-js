@@ -5,7 +5,7 @@ import { Alert } from "@webiny/admin-ui";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
-import { useScheduledActions } from "~/hooks/useScheduledActions.js";
+import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
 import { formatScheduledDate } from "~/utils/index.js";
 
 /**
@@ -14,7 +14,7 @@ import { formatScheduledDate } from "~/utils/index.js";
  */
 const ScheduledActionBar = observer(() => {
     const formPresenter = useContentEntryFormPresenter();
-    const presenter = useScheduledActions();
+    const presenter = useScheduledActionsPresenter();
 
     const vm = formPresenter.vm;
     const entryId = vm.entry?.id;

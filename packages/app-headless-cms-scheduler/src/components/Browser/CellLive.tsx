@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
-import { useScheduledActions } from "~/hooks/useScheduledActions.js";
+import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
 import { LiveTag } from "./LiveTag.js";
 import { ScheduledTag } from "./ScheduledTag.js";
 import { isScheduleRedundant } from "./isScheduleRedundant.js";
@@ -16,7 +16,7 @@ import { isScheduleRedundant } from "./isScheduleRedundant.js";
 export const CellLive = observer(() => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const presenter = useScheduledActions();
+    const presenter = useScheduledActionsPresenter();
 
     if (isFolderRow(row)) {
         return <>{"-"}</>;

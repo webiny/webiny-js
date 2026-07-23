@@ -6,7 +6,7 @@ import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useScheduleDialog } from "@webiny/app-scheduler";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
-import { useScheduledActions } from "~/hooks/useScheduledActions.js";
+import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
 
 interface MenuItemWithIdProps {
     entryId: string;
@@ -23,7 +23,7 @@ const MenuItemWithId = ({
     modelId,
     loading
 }: MenuItemWithIdProps) => {
-    const scheduledActions = useScheduledActions();
+    const scheduledActions = useScheduledActionsPresenter();
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
         namespace: createNamespace({ modelId }),
         target: {
