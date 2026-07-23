@@ -5,7 +5,9 @@ import { AssetRequestResolver } from "~/features/assetDelivery/abstractions/Asse
 import { AssetResolver } from "~/features/assetDelivery/abstractions/AssetResolver.js";
 import { AssetProcessor } from "~/features/assetDelivery/abstractions/AssetProcessor.js";
 import { AssetOutputStrategy } from "~/features/assetDelivery/abstractions/AssetOutputStrategy.js";
-import { AssetTransformationStrategy } from "~/features/assetDelivery/abstractions/AssetTransformationStrategy.js";
+import { AssetType } from "~/features/assetDelivery/abstractions/AssetType.js";
+import type { IAssetTypeHandler } from "~/features/assetDelivery/abstractions/AssetType.js";
+import { ImageAssetTypeHandler } from "~/features/assetDelivery/assetTypes/image/ImageAssetTypeHandler.js";
 import { AssetFactory } from "~/features/assetDelivery/Asset/abstractions.js";
 import { AssetRequestFactory } from "~/features/assetDelivery/AssetRequest/abstractions.js";
 import { ObjectKey } from "~/features/assetDelivery/ObjectKey/abstractions.js";
@@ -14,7 +16,10 @@ import { AssetAuthorizer } from "~/features/assetDelivery/abstractions/AssetAuth
 import { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import {
+    AuthenticatedIdentity,
+    IdentityContext
+} from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "~/features/file/GetFile/index.js";
 
 const createMockWcpContext = (privateFiles = false): WcpContext.Interface => ({
@@ -84,9 +89,9 @@ describe("AssetDelivery DI integration", () => {
             expect(strategy).toBeDefined();
         });
 
-        it("should resolve AssetTransformationStrategy", () => {
-            const strategy = container.resolve(AssetTransformationStrategy);
-            expect(strategy).toBeDefined();
+        it("should resolve AssetType", () => {
+            const assetTypes = container.resolveAll(AssetType);
+            expect(assetTypes.length).toBeGreaterThan(0);
         });
 
         it("should resolve ObjectKey", () => {
@@ -189,7 +194,7 @@ describe("AssetDelivery DI integration", () => {
 
             expect(result).toBeDefined();
             expect(result!.getKey()).toBe("abc123/image.jpg");
-            expect(result!.getOptions().width).toBe(400);
+            expect(result!.getOptions().width).toBe("400");
         });
 
         it("should return undefined for non-/files/ URLs", async () => {
@@ -251,48 +256,174 @@ describe("AssetDelivery DI integration", () => {
         });
     });
 
-    describe("AssetProcessor + PassthroughAssetTransformationStrategy", () => {
+    describe("AssetProcessor", () => {
         it("should return the asset unchanged when original=true", async () => {
             const processor = container.resolve(AssetProcessor);
             const requestFactory = container.resolve(AssetRequestFactory);
 
             const request = requestFactory.create({
-                key: "abc123/image.jpg",
-                context: { url: "/files/abc123/image.jpg" },
+                key: "abc123/document.pdf",
+                context: { url: "/files/abc123/document.pdf" },
                 options: { original: true }
             });
 
             const asset = Asset.create({
                 id: "file-1",
                 tenant: "root",
-                key: "tenants/root/files/file-1/image.jpg",
+                key: "tenants/root/files/file-1/document.pdf",
                 size: 4096,
-                contentType: "image/png"
+                contentType: "application/pdf"
             });
 
             const result = await processor.process(request, asset);
             expect(result).toBe(asset);
         });
 
-        it("should pass through the asset unchanged when original=false (passthrough strategy)", async () => {
+        it("should pass through image assets unchanged when no handler is registered", async () => {
             const processor = container.resolve(AssetProcessor);
             const requestFactory = container.resolve(AssetRequestFactory);
 
             const request = requestFactory.create({
-                key: "abc123/image.jpg",
-                context: { url: "/files/abc123/image.jpg" },
+                key: "abc123/photo.jpg",
+                context: { url: "/files/abc123/photo.jpg" },
                 options: { original: false }
             });
 
             const asset = Asset.create({
                 id: "file-1",
                 tenant: "root",
-                key: "tenants/root/files/file-1/image.jpg",
+                key: "tenants/root/files/file-1/photo.jpg",
+                size: 4096,
+                contentType: "image/jpeg"
+            });
+
+            const result = await processor.process(request, asset);
+            expect(result).toBe(asset);
+        });
+
+        it("should pass through non-image assets unchanged when no handler matches", async () => {
+            const processor = container.resolve(AssetProcessor);
+            const requestFactory = container.resolve(AssetRequestFactory);
+
+            const request = requestFactory.create({
+                key: "abc123/document.pdf",
+                context: { url: "/files/abc123/document.pdf" },
+                options: { original: false }
+            });
+
+            const asset = Asset.create({
+                id: "file-1",
+                tenant: "root",
+                key: "tenants/root/files/file-1/document.pdf",
+                size: 4096,
+                contentType: "application/pdf"
+            });
+
+            const result = await processor.process(request, asset);
+            expect(result).toBe(asset);
+        });
+    });
+
+    describe("ImageAssetTypeHandler", () => {
+        it("should dispatch image assets to a registered ImageAssetTypeHandler", async () => {
+            const handled: string[] = [];
+
+            const mockHandler: IAssetTypeHandler = {
+                async handle(_assetRequest, asset) {
+                    handled.push(asset.getId());
+                    return asset.withProps({ size: 42 });
+                }
+            };
+
+            container.registerInstance(ImageAssetTypeHandler, mockHandler);
+
+            const processor = container.resolve(AssetProcessor);
+            const requestFactory = container.resolve(AssetRequestFactory);
+
+            const request = requestFactory.create({
+                key: "abc123/photo.jpg",
+                context: { url: "/files/abc123/photo.jpg" },
+                options: { original: false }
+            });
+
+            const asset = Asset.create({
+                id: "img-1",
+                tenant: "root",
+                key: "tenants/root/files/img-1/photo.jpg",
+                size: 4096,
+                contentType: "image/jpeg"
+            });
+
+            const result = await processor.process(request, asset);
+            expect(handled).toEqual(["img-1"]);
+            expect(result.getSize()).toBe(42);
+        });
+
+        it("should not dispatch non-image assets to ImageAssetTypeHandler", async () => {
+            const handled: string[] = [];
+
+            const mockHandler: IAssetTypeHandler = {
+                async handle(_assetRequest, asset) {
+                    handled.push(asset.getId());
+                    return asset;
+                }
+            };
+
+            container.registerInstance(ImageAssetTypeHandler, mockHandler);
+
+            const processor = container.resolve(AssetProcessor);
+            const requestFactory = container.resolve(AssetRequestFactory);
+
+            const request = requestFactory.create({
+                key: "abc123/document.pdf",
+                context: { url: "/files/abc123/document.pdf" },
+                options: { original: false }
+            });
+
+            const asset = Asset.create({
+                id: "doc-1",
+                tenant: "root",
+                key: "tenants/root/files/doc-1/document.pdf",
+                size: 8192,
+                contentType: "application/pdf"
+            });
+
+            const result = await processor.process(request, asset);
+            expect(handled).toEqual([]);
+            expect(result).toBe(asset);
+        });
+
+        it("should skip handler when original=true even for images", async () => {
+            const handled: string[] = [];
+
+            const mockHandler: IAssetTypeHandler = {
+                async handle(_assetRequest, asset) {
+                    handled.push(asset.getId());
+                    return asset;
+                }
+            };
+
+            container.registerInstance(ImageAssetTypeHandler, mockHandler);
+
+            const processor = container.resolve(AssetProcessor);
+            const requestFactory = container.resolve(AssetRequestFactory);
+
+            const request = requestFactory.create({
+                key: "abc123/photo.png",
+                context: { url: "/files/abc123/photo.png" },
+                options: { original: true }
+            });
+
+            const asset = Asset.create({
+                id: "img-2",
+                tenant: "root",
+                key: "tenants/root/files/img-2/photo.png",
                 size: 4096,
                 contentType: "image/png"
             });
 
             const result = await processor.process(request, asset);
+            expect(handled).toEqual([]);
             expect(result).toBe(asset);
         });
     });
@@ -347,7 +478,7 @@ describe("AssetDelivery DI integration", () => {
             const fallbackAsset = Asset.create({
                 id: "missing",
                 tenant: "root",
-                key: "missing.jpg",
+                key: "missing.bin",
                 size: 0,
                 contentType: "application/octet-stream"
             });
@@ -390,7 +521,12 @@ describe("AssetDelivery DI integration (private files enabled)", () => {
         container.registerInstance(WcpContext, createMockWcpContext(true));
 
         container.registerInstance(IdentityContext, {
-            getIdentity: () => ({ id: "user-1", displayName: "Test User", type: "admin" }),
+            getIdentity: () =>
+                ({
+                    id: "user-1",
+                    displayName: "Test User",
+                    type: "admin"
+                }) as AuthenticatedIdentity,
             setIdentity: () => undefined,
             withIdentity: async (_identity: any, cb: any) => cb(),
             getPermission: async () => null,

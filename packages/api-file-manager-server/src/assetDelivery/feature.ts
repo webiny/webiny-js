@@ -18,12 +18,13 @@ export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}
                 imageResizeWidths: params.imageResizeWidths ?? [
                     128, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840
                 ],
+                imageQuality: params.imageQuality ?? {},
                 assetStreamingMaxSize: params.assetStreamingMaxSize ?? 4718592
             });
 
             container.register(LocalAssetResolverImpl);
             container.register(LocalOutputStrategyImpl);
-            container.register(LocalSharpTransformImpl);
+            container.register(LocalSharpTransformImpl).inSingletonScope();
         }
     });
 };
