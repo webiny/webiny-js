@@ -9,9 +9,10 @@ import {
     CmsEntryOpenSearchValueSearchRegistry
 } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import {
-    CmsEntryOpenSearchIndex,
-    CmsEntryOpenSearchIndexFeature
-} from "~/features/CmsEntryOpenSearchIndex/index.js";
+    CmsModelOpenSearchIndexFeature,
+    CmsModelOpenSearchIndexProvider
+} from "~/features/CmsModelOpenSearchIndex/index.js";
+import { createConfigurations } from "~/configurations.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import { createGroupEntity } from "~/definitions/group.js";
@@ -94,13 +95,16 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const operatorRegistry = container.resolve(OpenSearchQueryBuilderOperatorRegistry);
     const fieldFactory = container.resolve(OpenSearchFieldFactory);
 
+    const indexProvider = container.resolve(CmsModelOpenSearchIndexProvider);
+    const configurations = createConfigurations(indexProvider);
+
     container.registerFactory(ModelAfterCreateEventHandler, () => ({
         async handle(event) {
             const { model } = event.payload;
             await createElasticsearchIndex({
                 client: elasticsearch,
-                model,
-                indexConfigs: container.resolveAll(CmsEntryOpenSearchIndex)
+                configurations,
+                model
             });
         }
     }));
@@ -110,8 +114,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
             const { model } = event.payload;
             await createElasticsearchIndex({
                 client: elasticsearch,
-                model,
-                indexConfigs: container.resolveAll(CmsEntryOpenSearchIndex)
+                configurations,
+                model
             });
         }
     }));
@@ -121,6 +125,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
             const { model } = event.payload;
             await deleteElasticsearchIndex({
                 client: elasticsearch,
+                configurations,
                 model
             });
         }
@@ -130,6 +135,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         entity: entities.entries,
         esEntity: entities.entriesEs,
         plugins,
+        configurations,
         operatorRegistry,
         elasticsearch,
         fieldRegistry,
@@ -172,7 +178,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         }),
         models: createModelsStorageOperations({
             entity: entities.models,
-            elasticsearch
+            elasticsearch,
+            configurations
         }),
         entries
     };
@@ -204,7 +211,7 @@ const storageOperationsFeature = createFeature({
     register: container => {
         CmsEntryOpenSearchFieldIndexFeature.register(container);
         CmsEntryOpenSearchFilterFeature.register(container);
-        CmsEntryOpenSearchIndexFeature.register(container);
+        CmsModelOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(CreateElasticsearchIndexTask);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();

@@ -68,7 +68,8 @@ export const useAdminConfig = () => {
         colors: baseConfig.lexicalTheme?.colors,
         typography: baseConfig.lexicalTheme?.typography || {},
         fontSizes: [],
-        tokens: lexicalTokens
+        tokens: lexicalTokens,
+        allowCustomColors: baseConfig.lexicalTheme?.allowCustomColors ?? false
     };
 
     return {

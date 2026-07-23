@@ -2,6 +2,8 @@ import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
+import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
+import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
 // import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
@@ -18,6 +20,11 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             <Admin.Extension src={"@/extensions/commandPalette/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
+
+            {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
+            <ApplyDiscountExtension />
+            {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
+            <AiContentExtension />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -45,8 +52,10 @@ export const Extensions = () => {
             {/*/>*/}
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
+            {/* Bulk actions demo: Products model (the bulk actions themselves are registered
+                by the <ApplyDiscountExtension /> / <AiContentExtension /> components above) */}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
             {/*<Admin.Extension*/}
