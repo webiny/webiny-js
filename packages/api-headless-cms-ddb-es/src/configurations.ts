@@ -1,34 +1,48 @@
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import {
+    getBaseConfiguration,
     getOpenSearchIndexPrefix,
-    isSharedOpenSearchIndex as isSharedElasticsearchIndex
+    isSharedOpenSearchIndex
 } from "@webiny/api-opensearch";
-import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
-import type { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
-
-interface ConfigurationsElasticsearch {
-    index: string;
-}
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsModelOpenSearchIndexProvider,
+    ICmsModelOpenSearchIndexProviderResult
+} from "~/features/CmsModelOpenSearchIndex/index.js";
 
 export interface CmsElasticsearchParams {
-    model: Pick<CmsModel, "tenant" | "modelId">;
-}
-
-export interface ConfigurationsIndexSettingsParams {
-    indexConfigs: CmsEntryOpenSearchIndex.Interface[];
-    model: Pick<CmsModel, "tenant" | "modelId" | "group">;
+    model: StorageCmsModel;
 }
 
 export interface Configurations {
-    es: (params: CmsElasticsearchParams) => ConfigurationsElasticsearch;
-    indexSettings: (
-        params: ConfigurationsIndexSettingsParams
-    ) => Partial<OpenSearchIndexRequestBody>;
+    es: (params: CmsElasticsearchParams) => Promise<ICmsModelOpenSearchIndexProviderResult>;
 }
 
-export const configurations: Configurations = {
-    es({ model }) {
+export const createConfigurations = (
+    provider: CmsModelOpenSearchIndexProvider.Interface
+): Configurations => ({
+    async es({ model }) {
+        const result = await provider.execute({ model });
+
+        const prefix = getOpenSearchIndexPrefix();
+
+        if (!prefix) {
+            return result;
+        }
+        return {
+            ...result,
+            index: prefix + result.index
+        };
+    }
+});
+
+/**
+ * Static configurations using the default index name formula.
+ * Used by tests and code that does not need DI-based customization.
+ */
+export const configurations = {
+    es(params: { model: StorageCmsModel }) {
+        const { model } = params;
         const { tenant } = model;
 
         if (!tenant) {
@@ -38,27 +52,17 @@ export const configurations: Configurations = {
             );
         }
 
-        const sharedIndex = isSharedElasticsearchIndex();
-        const index = [sharedIndex ? "root" : tenant, "headless-cms", model.modelId]
+        const shared = isSharedOpenSearchIndex();
+        const index = [shared ? "root" : tenant, "headless-cms", model.modelId]
             .join("-")
             .toLowerCase();
 
         const prefix = getOpenSearchIndexPrefix();
 
-        if (!prefix) {
-            return {
-                index
-            };
-        }
         return {
-            index: prefix + index
+            index: prefix ? prefix + index : index,
+            settings: getBaseConfiguration(),
+            shared
         };
-    },
-    indexSettings: ({ indexConfigs, model }) => {
-        const usable = indexConfigs.filter(c => c.canUse({ model }));
-        if (usable.length === 0) {
-            return {};
-        }
-        return usable[usable.length - 1].body;
     }
 };

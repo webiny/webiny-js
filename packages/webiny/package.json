@@ -10,10 +10,12 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/admin-ui": "0.0.0",
+    "@webiny/ai-powerups": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-bulk-actions": "0.0.0",
     "@webiny/api-headless-cms-ddb-es": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
@@ -30,6 +32,7 @@
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
+    "@webiny/app-websockets": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/db": "0.0.0",
@@ -71,6 +74,8 @@
     "./global.d.ts": "./global.d.ts",
     "./admin/icons/*": "./admin/icons/*",
     "./admin/ui": "./admin/ui.js",
+    "./admin/ai-powerups": "./admin/ai-powerups.js",
+    "./api/ai-powerups": "./api/ai-powerups.js",
     "./api/aco/flp": "./api/aco/flp.js",
     "./api/aco/folder": "./api/aco/folder.js",
     "./api/build-params": "./api/build-params.js",
@@ -133,6 +138,7 @@
     "./admin/website-builder/page/list": "./admin/website-builder/page/list.js",
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
+    "./admin/websockets": "./admin/websockets.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
     "./api/db": "./api/db.js",
@@ -145,7 +151,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "84e0be1f6ae5cb0023eced527e1e4d0c9249a28c2befb14ed0e17497a5612c78",
+  "exportGenerationHash": "fb60fa6f75960af2f4ad8c0c97518ace6294740c655fe02101a79c27384bb156",
   "webiny": {
     "publishFrom": "dist"
   }

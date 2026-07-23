@@ -761,7 +761,7 @@ form.vm.setData(); // replace all form data
 ### FormErrors Component
 
 ```typescript
-import { FormErrors } from "@webiny/app-admin";
+import { FormErrors } from "webiny/admin/form";
 
 <FormErrors form={presenter.vm.form} className="my-4" />
 ```
