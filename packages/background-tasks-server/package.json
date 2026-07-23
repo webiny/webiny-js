@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/stdlib": "^0.0.12",
     "@webiny/utils": "0.0.0"
   },

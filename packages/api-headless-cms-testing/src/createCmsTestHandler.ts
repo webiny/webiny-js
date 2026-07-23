@@ -1,7 +1,7 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/handler-graphql",
+  "name": "@webiny/api-graphql",
   "version": "0.0.0",
   "type": "module",
   "exports": {

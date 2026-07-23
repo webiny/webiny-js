@@ -1,7 +1,7 @@
 import pMap from "p-map";
-import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { createGraphQLSchemaPlugin } from "@webiny/api-graphql";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { GetUploadPayloadUseCase } from "@webiny/api-file-manager/features/upload/GetUploadPayload/index.js";
 import { CreateMultiPartUploadUseCase } from "@webiny/api-file-manager/features/upload/CreateMultiPartUpload/index.js";

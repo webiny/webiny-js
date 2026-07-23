@@ -44,8 +44,8 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "rimraf": "^6.1.3",

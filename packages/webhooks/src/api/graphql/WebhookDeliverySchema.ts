@@ -1,8 +1,8 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { Response } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
-import { ListResponse } from "@webiny/handler-graphql";
-import { ListErrorResponse } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { Response } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
+import { ListResponse } from "@webiny/api-graphql";
+import { ListErrorResponse } from "@webiny/api-graphql";
 import { ListWebhookDeliveriesUseCase } from "~/api/features/ListWebhookDeliveries/abstractions.js";
 import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
 import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";

@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 
 export const resolve = async (fn: () => Promise<any>) => {
     try {

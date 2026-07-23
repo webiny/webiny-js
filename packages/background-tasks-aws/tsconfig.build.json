@@ -3,12 +3,12 @@
   "include": ["src"],
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-aws/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -20,6 +20,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
@@ -30,8 +32,6 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

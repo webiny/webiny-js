@@ -1,6 +1,6 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { type AppInstallationData } from "~/features/tenancy/InstallTenant/index.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
 import { InstallSystemUseCase } from "~/features/system/InstallSystem/index.js";

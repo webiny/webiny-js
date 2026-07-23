@@ -1,4 +1,4 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 
 class MutationCmsResolver implements CoreGraphQLSchemaFactory.Interface {
     async execute(

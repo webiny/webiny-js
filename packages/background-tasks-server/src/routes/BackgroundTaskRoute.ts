@@ -4,7 +4,7 @@ import {
     RequestContainer,
     runRequestContextInitializers
 } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
     RequestTenantLoader

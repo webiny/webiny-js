@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
@@ -9,7 +10,6 @@
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
@@ -24,6 +24,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
@@ -38,8 +40,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api/*": ["../api/src/*"],

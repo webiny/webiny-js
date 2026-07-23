@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ApiEndpoint } from "~/types/index.js";
-import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
+import type { GraphQLRequestBody } from "@webiny/api-graphql/types.js";
 import type { ExecutionResult } from "graphql";
 
 export interface ICmsSchemaExecutor {

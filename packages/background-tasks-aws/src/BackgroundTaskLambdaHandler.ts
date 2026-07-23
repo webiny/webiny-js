@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/feature/api";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { RequestContainer, runRequestContextInitializers } from "@webiny/event-handler-core";
 import {
     RawTenantId,

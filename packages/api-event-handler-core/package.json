@@ -23,6 +23,7 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-file-manager-aco": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-aco": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
@@ -39,7 +40,6 @@
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/webhooks": "0.0.0"
   },
   "peerDependencies": {

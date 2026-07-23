@@ -1,13 +1,13 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type {
     IGraphQLSchemaFactory,
     GraphQLSchemaFactory as GQLSchemaFactory
-} from "@webiny/handler-graphql/graphql/abstractions.js";
+} from "@webiny/api-graphql/graphql/abstractions.js";
 import { createNotificationsGraphQL } from "~/graphql/notifications.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
 import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
 
 function addPluginsToBuilder(
     plugins: IGraphQLSchemaPlugin[],

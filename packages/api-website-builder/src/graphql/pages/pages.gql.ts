@@ -4,7 +4,7 @@ import {
     ListResponse,
     NotFoundError,
     Response
-} from "@webiny/handler-graphql";
+} from "@webiny/api-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";

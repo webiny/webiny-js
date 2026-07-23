@@ -10,9 +10,9 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../utils" },
+    { "path": "../api-graphql" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../db-dynamodb" },
-    { "path": "../handler-graphql" }
+    { "path": "../db-dynamodb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -37,12 +37,12 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
     }
   }
 }

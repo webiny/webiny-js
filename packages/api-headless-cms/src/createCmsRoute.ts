@@ -1,8 +1,8 @@
 import type { Container } from "@webiny/di";
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/api-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";

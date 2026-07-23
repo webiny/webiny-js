@@ -8,7 +8,7 @@ import type {
     CmsModelFieldType,
     CmsModelFieldDefinition
 } from "~/types/index.js";
-import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
+import type { GraphQLSchemaDefinition } from "@webiny/api-graphql/types.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";

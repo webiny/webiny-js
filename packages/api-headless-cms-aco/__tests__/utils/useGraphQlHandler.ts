@@ -1,7 +1,7 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { AcoFeature } from "@webiny/api-aco";

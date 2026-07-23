@@ -1,10 +1,10 @@
 import type { Container } from "@webiny/di";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { IRequestContextInitializer } from "@webiny/event-handler-core";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
