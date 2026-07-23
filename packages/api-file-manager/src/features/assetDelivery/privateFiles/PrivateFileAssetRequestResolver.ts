@@ -29,12 +29,10 @@ class PrivateFileAssetRequestResolverImpl implements AssetRequestResolver.Interf
             key: decodeURI(path).replace("/private/", ""),
             context: {
                 url: request.url,
-                private: true
+                private: true,
+                accept: request.headers?.accept as string | undefined
             },
-            options: {
-                ...query,
-                width: query.width ? parseInt(query.width) : undefined
-            }
+            options: { ...query }
         });
     }
 }

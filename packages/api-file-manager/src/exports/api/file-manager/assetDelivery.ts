@@ -8,7 +8,11 @@ export { AssetRequestResolver } from "~/features/assetDelivery/abstractions/Asse
 export { AssetResolver } from "~/features/assetDelivery/abstractions/AssetResolver.js";
 export { AssetProcessor } from "~/features/assetDelivery/abstractions/AssetProcessor.js";
 export { AssetOutputStrategy } from "~/features/assetDelivery/abstractions/AssetOutputStrategy.js";
-export { AssetTransformationStrategy } from "~/features/assetDelivery/abstractions/AssetTransformationStrategy.js";
+export { AssetType } from "~/features/assetDelivery/abstractions/AssetType.js";
+export type {
+    IAssetType,
+    IAssetTypeHandler
+} from "~/features/assetDelivery/abstractions/AssetType.js";
 export { AssetContentsReader } from "~/features/assetDelivery/abstractions/AssetContentsReader.js";
 export { AssetAuthorizer } from "~/features/assetDelivery/abstractions/AssetAuthorizer.js";
 export { AssetFactory } from "~/features/assetDelivery/Asset/abstractions.js";

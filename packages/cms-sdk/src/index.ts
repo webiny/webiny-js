@@ -25,6 +25,12 @@ export type {
     CmsModelMetadata,
     CmsRefModelMetadata,
     IContentSdk,
-    IEnvironment
+    IEnvironment,
+    Asset,
+    AssetImage,
+    AssetCrop,
+    AssetFocalPoint,
+    AssetDocument,
+    AssetVideo
 } from "./types.js";
 export type { Component, ComponentManifest } from "./component/types.js";

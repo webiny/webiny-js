@@ -50,6 +50,16 @@ export type { DisableTenantParams } from "./methods/tenantManager/disableTenant.
 
 export type { EnableTenantParams } from "./methods/tenantManager/enableTenant.js";
 
+// Export Asset types (shared by CMS asset field and WB file input).
+export type {
+    Asset,
+    AssetImage,
+    AssetCrop,
+    AssetFocalPoint,
+    AssetDocument,
+    AssetVideo
+} from "./asset.js";
+
 // Export FileManager types.
 export type {
     FmIdentity,

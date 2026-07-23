@@ -3,8 +3,8 @@ import { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
 import { NullAssetReply } from "~/features/assetDelivery/NullAssetReply.js";
-import { WidthCollection } from "~/features/assetDelivery/transformation/WidthCollection.js";
-import { AssetKeyGenerator } from "~/features/assetDelivery/transformation/AssetKeyGenerator.js";
+import { WidthCollection } from "~/features/assetDelivery/assetTypes/image/WidthCollection.js";
+import { AssetKeyGenerator } from "~/features/assetDelivery/assetTypes/image/AssetKeyGenerator.js";
 import { CallableContentsReader } from "~/features/assetDelivery/transformation/CallableContentsReader.js";
 
 describe("Asset", () => {

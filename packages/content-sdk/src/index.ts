@@ -13,7 +13,13 @@ export type {
     ListEntriesParams,
     CmsModelDefinition,
     CmsModelMetadata,
-    CmsRefModelMetadata
+    CmsRefModelMetadata,
+    Asset,
+    AssetImage,
+    AssetCrop,
+    AssetFocalPoint,
+    AssetDocument,
+    AssetVideo
 } from "@webiny/cms-sdk";
 
 export type {

@@ -31,6 +31,7 @@ export * from "./Heading/index.js";
 export * from "./Icon/index.js";
 export * from "./IconPicker/index.js";
 export * from "./Image/index.js";
+export * from "./ImageEditor/index.js";
 export * from "./Input/index.js";
 export * from "./Label/index.js";
 export * from "./Link/index.js";
