@@ -1,6 +1,10 @@
 import path from "path";
 import fs from "fs";
-import { ApiAfterBuild, GetProjectService } from "@webiny/project/abstractions/index.js";
+import {
+    ApiAfterBuild,
+    GetProjectService,
+    UiService
+} from "@webiny/project/abstractions/index.js";
 import { getServerBuildPaths } from "./getServerBuildPaths.js";
 
 /**
@@ -13,7 +17,10 @@ import { getServerBuildPaths } from "./getServerBuildPaths.js";
  *    already type:module, so dev/watch resolves it by walking up — this is only for standalone build/.)
  */
 class EmitDeployEntryImpl implements ApiAfterBuild.Interface {
-    constructor(private getProjectService: GetProjectService.Interface) {}
+    constructor(
+        private getProjectService: GetProjectService.Interface,
+        private ui: UiService.Interface
+    ) {}
 
     async execute() {
         const { buildDir } = getServerBuildPaths(this.getProjectService);
@@ -30,11 +37,11 @@ class EmitDeployEntryImpl implements ApiAfterBuild.Interface {
             JSON.stringify({ type: "module", scripts: { start: "node start.mjs" } }, null, 2) + "\n"
         );
 
-        console.log("Emitted build/start.mjs + package.json (run with: node start.mjs).");
+        this.ui.info("Emitted build/start.mjs + package.json (run with: node start.mjs).");
     }
 }
 
 export const EmitDeployEntry = ApiAfterBuild.createImplementation({
     implementation: EmitDeployEntryImpl,
-    dependencies: [GetProjectService]
+    dependencies: [GetProjectService, UiService]
 });

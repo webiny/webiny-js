@@ -1,7 +1,11 @@
 import path from "path";
 import fs from "fs";
 import { nodeFileTrace } from "@vercel/nft";
-import { ApiAfterBuild, GetProjectService } from "@webiny/project/abstractions/index.js";
+import {
+    ApiAfterBuild,
+    GetProjectService,
+    UiService
+} from "@webiny/project/abstractions/index.js";
 import { getServerBuildPaths } from "./getServerBuildPaths.js";
 
 /**
@@ -30,7 +34,10 @@ const collectEmittedEntries = (dir: string): string[] => {
 };
 
 class CopyExternalDependenciesImpl implements ApiAfterBuild.Interface {
-    constructor(private getProjectService: GetProjectService.Interface) {}
+    constructor(
+        private getProjectService: GetProjectService.Interface,
+        private ui: UiService.Interface
+    ) {}
 
     async execute() {
         const { projectRoot, buildDir } = getServerBuildPaths(this.getProjectService);
@@ -63,11 +70,11 @@ class CopyExternalDependenciesImpl implements ApiAfterBuild.Interface {
             copied++;
         }
 
-        console.log(`Copied ${copied} external dependency file(s) into build/node_modules.`);
+        this.ui.info("Copied %s external dependency file(s) into build/node_modules.", copied);
     }
 }
 
 export const CopyExternalDependencies = ApiAfterBuild.createImplementation({
     implementation: CopyExternalDependenciesImpl,
-    dependencies: [GetProjectService]
+    dependencies: [GetProjectService, UiService]
 });
