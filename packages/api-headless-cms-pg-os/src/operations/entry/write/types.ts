@@ -4,10 +4,9 @@ import type {
     CmsModel,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import type { SyncHelpers } from "../syncHelpers.js";
+import type { SyncHelpers } from "~/features/SyncWriter/abstractions/SyncHelpers.js";
 import type { WriteEntry } from "~/features/SyncWriter/abstractions/WriteEntry.js";
 import type { WriteLatest } from "~/features/SyncWriter/abstractions/WriteLatest.js";
-import type { WritePublished } from "~/features/SyncWriter/abstractions/WritePublished.js";
 import type { RemoveEntry } from "~/features/SyncWriter/abstractions/RemoveEntry.js";
 import type { RemoveLatest } from "~/features/SyncWriter/abstractions/RemoveLatest.js";
 import type { RemovePublished } from "~/features/SyncWriter/abstractions/RemovePublished.js";
@@ -18,10 +17,9 @@ export type GetStorageOperationsModel = <T extends CmsEntryValues = CmsEntryValu
 
 export interface WriteOperationDeps {
     sqlOps: CmsEntryStorageOperations;
-    syncHelpers: SyncHelpers;
+    syncHelpers: SyncHelpers.Interface;
     writeEntry: WriteEntry.Interface;
     writeLatest: WriteLatest.Interface;
-    writePublished: WritePublished.Interface;
     removeEntry: RemoveEntry.Interface;
     removeLatest: RemoveLatest.Interface;
     removePublished: RemovePublished.Interface;

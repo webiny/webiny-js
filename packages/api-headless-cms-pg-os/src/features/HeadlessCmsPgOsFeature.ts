@@ -29,8 +29,8 @@ import { GroupSchemaManager } from "@webiny/api-headless-cms-sql/features/groupS
 import { ModelSchemaManager } from "@webiny/api-headless-cms-sql/features/modelSchemaManager/abstractions.js";
 import { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
-import { SyncTableManager } from "./syncTableManager/abstractions.js";
 import { SyncWriterFeature } from "./SyncWriter/feature.js";
+import { EntryWriteOperationsFeature } from "~/operations/entry/feature.js";
 import { createEntriesStorageOperations } from "~/operations/entry/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
@@ -51,8 +51,6 @@ const createPgOsStorageOperations = (
     const groupSchemaManager = container.resolve(GroupSchemaManager);
     const modelSchemaManager = container.resolve(ModelSchemaManager);
     const entryTableManager = container.resolve(EntryTableManager);
-    const syncTableManager = container.resolve(SyncTableManager);
-
     const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
     const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
 
@@ -96,7 +94,6 @@ const createPgOsStorageOperations = (
         container,
         elasticsearch,
         entryTableManager,
-        syncTableManager,
         fieldRegistry,
         fieldIndexRegistry
     });
@@ -160,6 +157,7 @@ export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConf
             EntryTableManagerFeature.register(container);
             SyncTableManagerFeature.register(container);
             SyncWriterFeature.register(container);
+            EntryWriteOperationsFeature.register(container);
 
             HeadlessCmsPgOsFeature.register(container);
         }

@@ -6,8 +6,8 @@ import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/ex
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import type { EntryTableManager } from "@webiny/api-headless-cms-sql/features/entryTableManager/abstractions.js";
 import { createEntriesStorageOperations as createSqlEntriesStorageOperations } from "@webiny/api-headless-cms-sql/operations/entry/index.js";
-import type { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
-import { createEntryWriteOperations } from "./EntryWriteOperations.js";
+import { EntryWriteOperations } from "./abstractions/EntryWriteOperations.js";
+import { SqlEntryOperations } from "./abstractions/SqlEntryOperations.js";
 import { createEntrySearchOperations } from "./EntrySearchOperations.js";
 
 interface CreateEntriesStorageOperationsParams {
@@ -15,7 +15,6 @@ interface CreateEntriesStorageOperationsParams {
     container: Container;
     elasticsearch: OpenSearchClient;
     entryTableManager: EntryTableManager.Interface;
-    syncTableManager: SyncTableManager.Interface;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
@@ -23,15 +22,8 @@ interface CreateEntriesStorageOperationsParams {
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const {
-        knex,
-        container,
-        elasticsearch,
-        entryTableManager,
-        syncTableManager,
-        fieldRegistry,
-        fieldIndexRegistry
-    } = params;
+    const { knex, container, elasticsearch, entryTableManager, fieldRegistry, fieldIndexRegistry } =
+        params;
 
     const sqlOps = createSqlEntriesStorageOperations({
         knex: { client: knex },
@@ -39,11 +31,9 @@ export const createEntriesStorageOperations = (
         container
     });
 
-    const writeOps = createEntryWriteOperations({
-        container,
-        sqlOps,
-        syncTableManager
-    });
+    container.registerInstance(SqlEntryOperations, sqlOps);
+
+    const writeOps = container.resolve(EntryWriteOperations);
 
     const searchOps = createEntrySearchOperations({
         container,

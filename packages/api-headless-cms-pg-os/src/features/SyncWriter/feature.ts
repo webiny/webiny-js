@@ -6,6 +6,7 @@ import { WritePublished } from "./WritePublished.js";
 import { RemoveEntry } from "./RemoveEntry.js";
 import { RemoveLatest } from "./RemoveLatest.js";
 import { RemovePublished } from "./RemovePublished.js";
+import { SyncHelpers } from "./SyncHelpers.js";
 
 export const SyncWriterFeature = createFeature({
     name: "Cms/Pg/Os/SyncWriter",
@@ -17,5 +18,6 @@ export const SyncWriterFeature = createFeature({
         container.register(RemoveEntry);
         container.register(RemoveLatest);
         container.register(RemovePublished);
+        container.register(SyncHelpers);
     }
 });
