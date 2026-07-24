@@ -46,7 +46,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager();
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(0);
@@ -68,7 +68,7 @@ describe("ReindexRunner", () => {
         });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(4);
@@ -101,7 +101,7 @@ describe("ReindexRunner", () => {
         };
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, indexConfigs);
+        const result = await runner.execute(undefined, 100, manager, indexConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(created).toHaveLength(1);
@@ -121,7 +121,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: [] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(0);
@@ -143,7 +143,7 @@ describe("ReindexRunner", () => {
         });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(1);
@@ -162,7 +162,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: ["products-root"] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(2);
@@ -187,7 +187,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: ["products-root"] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.CONTINUE);
         expect((result as any).input.cursor).toBe("next-page-cursor");
@@ -208,7 +208,7 @@ describe("ReindexRunner", () => {
         });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(created).toHaveLength(0);
@@ -229,7 +229,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: ["products-root"] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.exec(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(0);

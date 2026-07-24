@@ -12,7 +12,7 @@ class ReindexRunnerImpl implements Abstraction.Interface {
         private readonly writer: StorageWriter.Interface
     ) {}
 
-    public async exec(
+    public async execute(
         cursor: string | undefined,
         limit: number,
         indexManager: IIndexManager,

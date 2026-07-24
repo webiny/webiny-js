@@ -5,7 +5,7 @@ import { DisableIndexing as Abstraction } from "./abstractions/DisableIndexing.j
 class DisableIndexingImpl implements Abstraction.Interface {
     constructor(private readonly settings: IndexSettingsManager.Interface) {}
 
-    public async exec(index: string): Promise<Abstraction.Settings> {
+    public async execute(index: string): Promise<Abstraction.Settings> {
         const settings = await this.settings.getSettings(index);
 
         try {

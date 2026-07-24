@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { IIndexSettings } from "~/abstractions/IndexManager.js";
 
 export interface IEnableIndexing {
-    exec(index: string, settings: IIndexSettings): Promise<void>;
+    execute(index: string, settings: IIndexSettings): Promise<void>;
 }
 
 export const EnableIndexing = createAbstraction<IEnableIndexing>("SearchIndexTasks/EnableIndexing");

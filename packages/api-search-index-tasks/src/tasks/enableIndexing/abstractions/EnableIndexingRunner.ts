@@ -9,7 +9,7 @@ export interface IEnableIndexingInput {
 }
 
 export interface IEnableIndexingRunner {
-    exec(
+    execute(
         matching: string | undefined,
         indexManager: IIndexManager
     ): Promise<TaskDefinition.Result<IEnableIndexingInput>>;

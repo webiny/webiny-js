@@ -6,7 +6,7 @@ import type { EnableIndexing } from "@webiny/api-search-index-tasks/settings/abs
 import type { ExtendedClient } from "~tests/mocks/opensearch";
 
 const createMockDisableIndexing = (client: ExtendedClient): DisableIndexing.Interface => ({
-    exec: async (index: string) => {
+    execute: async (index: string) => {
         const response = await client.indices.getSettings({ index });
         const body = response.body as Record<string, any>;
         const settings = body[index].settings.index;
@@ -20,7 +20,7 @@ const createMockDisableIndexing = (client: ExtendedClient): DisableIndexing.Inte
 });
 
 const createMockEnableIndexing = (client: ExtendedClient): EnableIndexing.Interface => ({
-    exec: async (index: string) => {
+    execute: async (index: string) => {
         client.disabled.delete(index);
         client.enabled.add(index);
     }

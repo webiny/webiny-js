@@ -84,7 +84,7 @@ export class OsIndexManager implements IIndexManager {
         if (this._settings[index]) {
             return this._settings[index];
         }
-        const settings = await this.disable.exec(index);
+        const settings = await this.disable.execute(index);
         this._settings[index] = settings;
         return settings;
     }
@@ -98,7 +98,7 @@ export class OsIndexManager implements IIndexManager {
             return;
         }
         const settings = this._settings[index] || this.defaults;
-        await this.enable.exec(index, settings);
+        await this.enable.execute(index, settings);
     }
 
     public async createIndex(index: string, settings?: GenericRecord): Promise<void> {

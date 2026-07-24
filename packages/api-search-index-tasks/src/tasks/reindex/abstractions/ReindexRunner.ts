@@ -15,7 +15,7 @@ export interface IIndexConfigsMap {
 }
 
 export interface IReindexRunner {
-    exec(
+    execute(
         cursor: string | undefined,
         limit: number,
         indexManager: IIndexManager,

@@ -29,7 +29,7 @@ class ReindexTaskImpl implements TaskDefinition.Interface<ReindexRunner.Input> {
 
         const indexConfigs = await this.buildIndexConfigs();
         const cursor = input.cursor || undefined;
-        return await this.runner.exec(cursor, input.limit || 100, indexManager, indexConfigs);
+        return await this.runner.execute(cursor, input.limit || 100, indexManager, indexConfigs);
     }
 
     private async buildIndexConfigs(): Promise<ReindexRunner.IndexConfigsMap> {

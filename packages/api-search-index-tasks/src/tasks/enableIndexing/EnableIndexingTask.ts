@@ -25,7 +25,7 @@ class EnableIndexingTaskImpl implements TaskDefinition.Interface<EnableIndexingR
             }
         });
 
-        return this.runner.exec(input.matching, indexManager);
+        return this.runner.execute(input.matching, indexManager);
     }
 }
 

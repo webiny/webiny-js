@@ -6,7 +6,7 @@ import { EnableIndexingRunner as Abstraction } from "./abstractions/EnableIndexi
 class EnableIndexingRunnerImpl implements Abstraction.Interface {
     constructor(private readonly controller: TaskController.Interface) {}
 
-    public async exec(
+    public async execute(
         matching: string | undefined,
         indexManager: IIndexManager
     ): Promise<TaskDefinition.Result<Abstraction.Input>> {
