@@ -18,8 +18,7 @@ export interface IReindexRunner {
     execute(
         cursor: string | undefined,
         limit: number,
-        indexManager: IIndexManager,
-        indexConfigs: IIndexConfigsMap
+        indexManager: IIndexManager
     ): Promise<TaskDefinition.Result<IReindexInput>>;
 }
 

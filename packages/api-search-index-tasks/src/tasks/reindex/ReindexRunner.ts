@@ -1,22 +1,27 @@
 import type { IIndexManager } from "~/abstractions/IndexManager.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { StorageScanner } from "~/abstractions/StorageScanner.js";
 import { StorageWriter } from "~/abstractions/StorageWriter.js";
+import { TenantIndexFactory } from "~/abstractions/TenantIndexFactory.js";
 import { ReindexRunner as Abstraction } from "./abstractions/ReindexRunner.js";
 
 class ReindexRunnerImpl implements Abstraction.Interface {
     constructor(
         private readonly controller: TaskController.Interface,
         private readonly scanner: StorageScanner.Interface,
-        private readonly writer: StorageWriter.Interface
+        private readonly writer: StorageWriter.Interface,
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly listTenantsUseCase: ListTenantsUseCase.Interface,
+        private readonly indexFactories: TenantIndexFactory.Interface[]
     ) {}
 
     public async execute(
         cursor: string | undefined,
         limit: number,
-        indexManager: IIndexManager,
-        indexConfigs: Abstraction.IndexConfigsMap
+        indexManager: IIndexManager
     ): Promise<TaskDefinition.Result<Abstraction.Input>> {
         const isIndexAllowed = (index: string): boolean => {
             const input = this.controller.state.getInput();
@@ -25,6 +30,8 @@ class ReindexRunnerImpl implements Abstraction.Interface {
             }
             return index.includes(input.matching);
         };
+
+        const indexConfigs = await this.buildIndexConfigs();
 
         try {
             while (this.controller.runtime.isCloseToTimeout() === false) {
@@ -99,9 +106,35 @@ class ReindexRunnerImpl implements Abstraction.Interface {
             return this.controller.response.error(ex);
         }
     }
+
+    private async buildIndexConfigs(): Promise<Abstraction.IndexConfigsMap> {
+        const configs: Abstraction.IndexConfigsMap = {};
+        const tenantsResult = await this.listTenantsUseCase.execute();
+        const tenants = tenantsResult.value;
+
+        await this.tenantContext.withEachTenant(tenants, async tenant => {
+            for (const factory of this.indexFactories) {
+                const results = await factory.getIndexList(tenant);
+                for (const result of results) {
+                    if (!configs[result.index]) {
+                        configs[result.index] = result;
+                    }
+                }
+            }
+        });
+
+        return configs;
+    }
 }
 
 export const ReindexRunner = Abstraction.createImplementation({
     implementation: ReindexRunnerImpl,
-    dependencies: [TaskController, StorageScanner, StorageWriter]
+    dependencies: [
+        TaskController,
+        StorageScanner,
+        StorageWriter,
+        TenantContext,
+        ListTenantsUseCase,
+        [TenantIndexFactory, { multiple: true }]
+    ]
 });

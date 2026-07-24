@@ -2,19 +2,20 @@ import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/abstractions.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { StorageScanner } from "~/abstractions/StorageScanner.js";
 import { StorageWriter } from "~/abstractions/StorageWriter.js";
+import { TenantIndexFactory } from "~/abstractions/TenantIndexFactory.js";
 import { ReindexRunner } from "~/tasks/reindex/abstractions/ReindexRunner.js";
 import { ReindexRunner as ReindexRunnerImpl } from "~/tasks/reindex/ReindexRunner.js";
 import { createMockController } from "~tests/mocks/createMockController";
 import { createMockIndexManager } from "~tests/mocks/createMockIndexManager";
 import { createMockStorageScanner } from "~tests/mocks/createMockStorageScanner";
 import { createMockStorageWriter } from "~tests/mocks/createMockStorageWriter";
-import type {
-    IReindexRunner,
-    IIndexConfigsMap
-} from "~/tasks/reindex/abstractions/ReindexRunner.js";
+import type { IReindexRunner } from "~/tasks/reindex/abstractions/ReindexRunner.js";
 import type { IStorageScannerRecord } from "~/abstractions/StorageScanner.js";
+import type { ITenantIndexConfig } from "~/abstractions/TenantIndexFactory.js";
 
 const createRecord = (index: string, entity: string, id: string): IStorageScannerRecord => ({
     index,
@@ -23,20 +24,44 @@ const createRecord = (index: string, entity: string, id: string): IStorageScanne
     modified: "2026-01-01T00:00:00.000Z"
 });
 
+const createMockTenantContext = (): TenantContext.Interface =>
+    ({
+        getTenant: () => ({ id: "root" }),
+        setTenant: () => {},
+        withEachTenant: async (tenants, callback) => {
+            for (const tenant of tenants) {
+                await callback(tenant);
+            }
+        }
+    }) as any;
+
+const createMockListTenants = (): ListTenantsUseCase.Interface =>
+    ({
+        execute: async () => ({ value: [{ id: "root" }] })
+    }) as any;
+
 const buildRunner = (params: {
     scanner: ReturnType<typeof createMockStorageScanner>;
     writer: ReturnType<typeof createMockStorageWriter>;
     controller: ReturnType<typeof createMockController>;
+    indexConfigs?: ITenantIndexConfig[];
 }): IReindexRunner => {
     const container = new Container();
     container.registerInstance(TaskController, params.controller.controller);
     container.registerInstance(StorageScanner, params.scanner.scanner);
     container.registerInstance(StorageWriter, params.writer.writer);
+    container.registerInstance(TenantContext, createMockTenantContext());
+    container.registerInstance(ListTenantsUseCase, createMockListTenants());
+
+    const configs = params.indexConfigs || [];
+    const factory: TenantIndexFactory.Interface = {
+        getIndexList: async () => configs
+    };
+    container.registerInstance(TenantIndexFactory, factory);
+
     container.register(ReindexRunnerImpl);
     return container.resolve(ReindexRunner);
 };
-
-const emptyConfigs: IIndexConfigsMap = {};
 
 describe("ReindexRunner", () => {
     it("should complete immediately when no items to scan", async () => {
@@ -46,7 +71,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager();
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(0);
@@ -63,12 +88,12 @@ describe("ReindexRunner", () => {
         const scanner = createMockStorageScanner([{ items: records }]);
         const writer = createMockStorageWriter();
         const controller = createMockController();
-        const { manager, disabled } = createMockIndexManager({
+        const { manager } = createMockIndexManager({
             existingIndexes: ["products-root", "orders-root", "categories-root"]
         });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(4);
@@ -93,15 +118,15 @@ describe("ReindexRunner", () => {
         const controller = createMockController();
         const { manager, created } = createMockIndexManager({ existingIndexes: [] });
 
-        const indexConfigs: IIndexConfigsMap = {
-            "products-root": {
+        const indexConfigs: ITenantIndexConfig[] = [
+            {
                 index: "products-root",
                 settings: { mappings: { properties: { id: { type: "keyword" } } } }
             }
-        };
+        ];
 
-        const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, indexConfigs);
+        const runner = buildRunner({ scanner, writer, controller, indexConfigs });
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(created).toHaveLength(1);
@@ -121,7 +146,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: [] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(0);
@@ -143,7 +168,7 @@ describe("ReindexRunner", () => {
         });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(1);
@@ -162,7 +187,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: ["products-root"] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(2);
@@ -187,7 +212,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: ["products-root"] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.CONTINUE);
         expect((result as any).input.cursor).toBe("next-page-cursor");
@@ -208,7 +233,7 @@ describe("ReindexRunner", () => {
         });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(created).toHaveLength(0);
@@ -229,7 +254,7 @@ describe("ReindexRunner", () => {
         const { manager } = createMockIndexManager({ existingIndexes: ["products-root"] });
 
         const runner = buildRunner({ scanner, writer, controller });
-        const result = await runner.execute(undefined, 100, manager, emptyConfigs);
+        const result = await runner.execute(undefined, 100, manager);
 
         expect(result.status).toBe(TaskResultStatus.DONE);
         expect(writer.written).toHaveLength(0);
