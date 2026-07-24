@@ -1,5 +1,5 @@
 import { IndexingEnableError } from "~/errors/IndexingEnableError.js";
-import { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+import { IndexSettingsManager } from "~/abstractions/IndexSettingsManager.js";
 import { EnableIndexing as Abstraction } from "./abstractions/EnableIndexing.js";
 
 class EnableIndexingImpl implements Abstraction.Interface {

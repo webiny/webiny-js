@@ -1,7 +1,7 @@
 import { OsIndexManager } from "~/IndexManager.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
-import { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
+import { DisableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/DisableIndexing.js";
+import { EnableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/EnableIndexing.js";
 import { IndexManagerFactory as Abstraction } from "@webiny/api-search-index-tasks/abstractions/IndexManagerFactory.js";
 
 class IndexManagerFactoryImpl implements Abstraction.Interface {

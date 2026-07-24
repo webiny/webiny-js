@@ -1,5 +1,5 @@
 import { IndexingDisableError } from "~/errors/IndexingDisableError.js";
-import { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+import { IndexSettingsManager } from "~/abstractions/IndexSettingsManager.js";
 import { DisableIndexing as Abstraction } from "./abstractions/DisableIndexing.js";
 
 class DisableIndexingImpl implements Abstraction.Interface {

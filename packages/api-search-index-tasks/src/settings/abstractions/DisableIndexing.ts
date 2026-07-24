@@ -1,12 +1,12 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IIndexSettings } from "@webiny/api-search-index-tasks/abstractions/IndexManager.js";
+import type { IIndexSettings } from "~/abstractions/IndexManager.js";
 
 export interface IDisableIndexing {
     exec(index: string): Promise<IIndexSettings>;
 }
 
 export const DisableIndexing = createAbstraction<IDisableIndexing>(
-    "SearchIndexTasksDdbOs/DisableIndexing"
+    "SearchIndexTasks/DisableIndexing"
 );
 
 export namespace DisableIndexing {

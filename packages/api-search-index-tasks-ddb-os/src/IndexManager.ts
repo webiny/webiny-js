@@ -3,8 +3,8 @@ import type {
     IIndexSettingsMap,
     IIndexManager
 } from "@webiny/api-search-index-tasks/abstractions/IndexManager.js";
-import type { DisableIndexing } from "~/settings/abstractions/DisableIndexing.js";
-import type { EnableIndexing } from "~/settings/abstractions/EnableIndexing.js";
+import type { DisableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/DisableIndexing.js";
+import type { EnableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/EnableIndexing.js";
 import type { Client } from "@webiny/api-opensearch";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { getObjectProperties } from "@webiny/utils";

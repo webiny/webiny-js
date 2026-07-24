@@ -5,6 +5,12 @@ export { StorageScanner } from "./abstractions/StorageScanner.js";
 export { IndexManager } from "./abstractions/IndexManager.js";
 export { StorageWriter } from "./abstractions/StorageWriter.js";
 export { IndexManagerFactory } from "./abstractions/IndexManagerFactory.js";
+export { IndexSettingsManager } from "./abstractions/IndexSettingsManager.js";
+
+export { DisableIndexing } from "./settings/abstractions/DisableIndexing.js";
+export { EnableIndexing } from "./settings/abstractions/EnableIndexing.js";
+export { DisableIndexing as DisableIndexingImpl } from "./settings/DisableIndexing.js";
+export { EnableIndexing as EnableIndexingImpl } from "./settings/EnableIndexing.js";
 
 export { EnableIndexingRunner } from "./tasks/enableIndexing/abstractions/EnableIndexingRunner.js";
 export { EnableIndexingRunner as EnableIndexingRunnerImpl } from "./tasks/enableIndexing/EnableIndexingRunner.js";

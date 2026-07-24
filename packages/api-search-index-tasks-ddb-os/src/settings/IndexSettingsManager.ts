@@ -1,7 +1,7 @@
 import { IndexSettingsGetError } from "~/errors/IndexSettingsGetError.js";
 import { IndexSettingsSetError } from "~/errors/IndexSettingsSetError.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { IndexSettingsManager as Abstraction } from "./abstractions/IndexSettingsManager.js";
+import { IndexSettingsManager as Abstraction } from "@webiny/api-search-index-tasks/abstractions/IndexSettingsManager.js";
 
 class IndexSettingsManagerImpl implements Abstraction.Interface {
     constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
