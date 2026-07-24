@@ -430,6 +430,8 @@ class SqlEntryOperationsImpl implements Abstraction.Interface {
         const row = entryToRow(storageEntry);
         await this.query().insert(row);
 
+        delete storageEntry.isLatest;
+        delete storageEntry.isPublished;
         return storageEntry;
     }
 
