@@ -1,3 +1,6 @@
+// Side-effect: pulls TaskController augmentation (response, state, logger, runtime, task)
+import "@webiny/background-tasks/api/features/TaskController/index.js";
+
 export { StorageScanner } from "./abstractions/StorageScanner.js";
 export { IndexManager } from "./abstractions/IndexManager.js";
 export { StorageWriter } from "./abstractions/StorageWriter.js";
