@@ -1,7 +1,3 @@
-import type {
-    IStorageWriter,
-    IStorageWriterRecord
-} from "@webiny/api-search-index-tasks/abstractions/StorageWriter.js";
 import { StorageWriter as Abstraction } from "@webiny/api-search-index-tasks/abstractions/StorageWriter.js";
 import { createTableWriteBatch, type IEntity, type IPutBatchItem } from "@webiny/db-dynamodb";
 import { createOpenSearchTable, createOpenSearchEntity } from "@webiny/api-opensearch";
@@ -12,7 +8,7 @@ interface IBufferedRecord {
     data: Record<string, any>;
 }
 
-class DdbStorageWriterImpl implements IStorageWriter {
+class DdbStorageWriterImpl implements Abstraction.Interface {
     private readonly table;
     private readonly entities: Record<string, IEntity> = {};
     private buffer: IBufferedRecord[] = [];
@@ -23,7 +19,7 @@ class DdbStorageWriterImpl implements IStorageWriter {
         });
     }
 
-    put(record: IStorageWriterRecord): void {
+    put(record: Abstraction.Record): void {
         const entity = this.getEntity(record.entity);
         this.buffer.push({
             entity,

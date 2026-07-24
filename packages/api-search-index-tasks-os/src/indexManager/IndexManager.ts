@@ -1,19 +1,11 @@
-import type {
-    IIndexSettings,
-    IIndexSettingsMap,
-    IIndexManager
-} from "@webiny/api-search-index-tasks/abstractions/IndexManager.js";
+import type { IndexManager as IndexManagerAbstraction } from "@webiny/api-search-index-tasks/abstractions/IndexManager.js";
 import type { DisableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/DisableIndexing.js";
 import type { EnableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/EnableIndexing.js";
 import type { Client } from "@webiny/api-opensearch";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { getObjectProperties } from "@webiny/utils";
 
-export interface IListIndicesResponse {
-    index: string;
-}
-
-const defaultIndexSettings: IIndexSettings = {
+const defaultIndexSettings: IndexManagerAbstraction.Settings = {
     numberOfReplicas: 1,
     refreshInterval: "1s"
 };
@@ -30,14 +22,14 @@ const filterIndex = (item?: string) => {
     return true;
 };
 
-export class OsIndexManager implements IIndexManager {
+export class OsIndexManager implements IndexManagerAbstraction.Interface {
     private readonly client: Client;
     private readonly disable: DisableIndexing.Interface;
     private readonly enable: EnableIndexing.Interface;
-    private readonly _settings: IIndexSettingsMap;
-    private readonly defaults: IIndexSettings;
+    private readonly _settings: IndexManagerAbstraction.SettingsMap;
+    private readonly defaults: IndexManagerAbstraction.Settings;
 
-    public get settings(): IIndexSettingsMap {
+    public get settings(): IndexManagerAbstraction.SettingsMap {
         return this._settings;
     }
 
@@ -45,8 +37,8 @@ export class OsIndexManager implements IIndexManager {
         client: Client,
         disableIndexing: DisableIndexing.Interface,
         enableIndexing: EnableIndexing.Interface,
-        settings: IIndexSettingsMap,
-        defaults?: Partial<IIndexSettings>
+        settings: IndexManagerAbstraction.SettingsMap,
+        defaults?: Partial<IndexManagerAbstraction.Settings>
     ) {
         this.client = client;
         this.disable = disableIndexing;
@@ -80,7 +72,7 @@ export class OsIndexManager implements IIndexManager {
         }
     }
 
-    public async disableIndexing(index: string): Promise<IIndexSettings> {
+    public async disableIndexing(index: string): Promise<IndexManagerAbstraction.Settings> {
         if (this._settings[index]) {
             return this._settings[index];
         }

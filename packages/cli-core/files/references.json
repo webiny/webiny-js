@@ -3762,6 +3762,7 @@
         "/packages/api-scheduler-server/package.json",
         "/packages/api-search-index-tasks/package.json",
         "/packages/api-search-index-tasks-ddb-os/package.json",
+        "/packages/api-search-index-tasks-os/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-website-builder-scheduler/package.json",
@@ -3847,6 +3848,7 @@
         "/packages/api-scheduler-server/package.json",
         "/packages/api-search-index-tasks/package.json",
         "/packages/api-search-index-tasks-ddb-os/package.json",
+        "/packages/api-search-index-tasks-os/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-website-builder-scheduler/package.json",
@@ -5219,6 +5221,10 @@
             },
             {
               "file": "/packages/api-search-index-tasks-ddb-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-search-index-tasks-os/package.json",
               "types": ["devDependencies"]
             },
             { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },

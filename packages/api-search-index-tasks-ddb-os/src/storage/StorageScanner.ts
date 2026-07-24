@@ -1,7 +1,3 @@
-import type {
-    IStorageScanner,
-    IStorageScannerResult
-} from "@webiny/api-search-index-tasks/abstractions/StorageScanner.js";
 import { StorageScanner as Abstraction } from "@webiny/api-search-index-tasks/abstractions/StorageScanner.js";
 import { scan } from "@webiny/db-dynamodb";
 import { createOpenSearchTable } from "@webiny/api-opensearch";
@@ -23,7 +19,7 @@ interface IDdbCursor {
     SK: string;
 }
 
-class DdbStorageScannerImpl implements IStorageScanner {
+class DdbStorageScannerImpl implements Abstraction.Interface {
     private readonly table;
 
     constructor(dynamoDBClient: DynamoDBClient.Interface) {
@@ -32,7 +28,7 @@ class DdbStorageScannerImpl implements IStorageScanner {
         });
     }
 
-    async scan(cursor: string | undefined, limit: number): Promise<IStorageScannerResult> {
+    async scan(cursor: string | undefined, limit: number): Promise<Abstraction.Result> {
         const startKey = cursor ? (JSON.parse(cursor) as IDdbCursor) : undefined;
 
         const results = await scan<IDynamoDbElasticsearchRecord>({
