@@ -11315,6 +11315,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-search-index-tasks@workspace:packages/api-search-index-tasks":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-search-index-tasks@workspace:packages/api-search-index-tasks"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-sync-ddb-to-opensearch@npm:0.0.0, @webiny/api-sync-ddb-to-opensearch@workspace:packages/api-sync-ddb-to-opensearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-sync-ddb-to-opensearch@workspace:packages/api-sync-ddb-to-opensearch"
