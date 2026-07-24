@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
-    "@rsbuild/core": "^2.1.6",
+    "@rsbuild/core": "^2.1.7",
     "@rsbuild/plugin-svgr": "^2.0.5",
     "@storybook/addon-a11y": "^10.5.3",
     "@storybook/addon-docs": "^10.5.3",

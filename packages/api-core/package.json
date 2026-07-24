@@ -14,7 +14,7 @@
     "./*": "./*"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.17",
+    "@ai-sdk/anthropic": "^4.0.18",
     "@ai-sdk/openai": "^4.0.17",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.2",
@@ -27,7 +27,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "ai": "^7.0.33",
+    "ai": "^7.0.34",
     "dataloader": "^2.2.3",
     "jose": "^6.2.3",
     "jsonwebtoken": "^9.0.3",
