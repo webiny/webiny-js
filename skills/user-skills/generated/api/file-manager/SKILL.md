@@ -1,6 +1,5 @@
 ---
 name: webiny-api-file-manager-catalog
-context: webiny-api
 description: >
   API — File Manager — 48 abstractions.
   File event handlers and use cases.

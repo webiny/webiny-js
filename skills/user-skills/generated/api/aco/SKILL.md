@@ -1,6 +1,5 @@
 ---
 name: webiny-api-aco-catalog
-context: webiny-api
 description: >
   API — ACO — 32 abstractions.
   Folder event handlers and use cases.

@@ -1,10 +1,10 @@
 import React from "react";
-import { createReactiveComponent } from "webiny/admin";
-import { Dialog, Button, Alert } from "webiny/admin/ui";
-import type { CompareRevisionsPresenter } from "../abstractions.js";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { Dialog, Button, Alert } from "@webiny/admin-ui";
+import type { CmsCompareEntryRevisionsPresenter } from "./abstractions.js";
 
-interface CompareRevisionsDialogProps {
-    presenter: CompareRevisionsPresenter.Interface;
+interface CmsCompareEntryRevisionsDialogProps {
+    presenter: CmsCompareEntryRevisionsPresenter.Interface;
 }
 
 const COMPARISON_STYLES = `
@@ -84,8 +84,8 @@ const COMPARISON_STYLES = `
     }
 `;
 
-export const CompareRevisionsDialog = createReactiveComponent(
-    ({ presenter }: CompareRevisionsDialogProps) => {
+export const CmsCompareEntryRevisionsDialog = createReactiveComponent(
+    ({ presenter }: CmsCompareEntryRevisionsDialogProps) => {
         const { dialogVisible, comparing, error, result } = presenter.vm;
 
         const renderContent = () => {
@@ -103,7 +103,9 @@ export const CompareRevisionsDialog = createReactiveComponent(
                         <style>{COMPARISON_STYLES}</style>
                         <div
                             className={"wby-prose wby-max-w-none"}
-                            dangerouslySetInnerHTML={{ __html: result.html }}
+                            dangerouslySetInnerHTML={{
+                                __html: result.html
+                            }}
                         />
                     </>
                 );

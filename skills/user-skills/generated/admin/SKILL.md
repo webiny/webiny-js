@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-catalog
-context: webiny-api
 description: >
   admin — 28 abstractions.
 ---

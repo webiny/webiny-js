@@ -72,7 +72,9 @@ Available factories:
 
 This project uses the Webiny framework.
 A `webiny` MCP server is available.
-When helping with Webiny-related tasks, call `get_started()` first.
+**MANDATORY: Before calling ANY `mcp__webiny__*` tool, you MUST call `get_started()` first.**
+Do NOT call `list_webiny_agents`, `list_webiny_skills`, `get_webiny_agent`, or `get_webiny_skill` without having called `get_started()` in the current conversation.
+`get_started()` returns a routing guide that determines which agent and skills to use — skipping it leads to wrong tool selection.
 
 ## CI/CD - GitHub Actions
 

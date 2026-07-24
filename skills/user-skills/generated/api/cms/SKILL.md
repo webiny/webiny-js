@@ -1,6 +1,5 @@
 ---
 name: webiny-api-cms-catalog
-context: webiny-api
 description: >
   API — Headless CMS — 137 abstractions.
   Entry, model, and group event handlers and use cases.

@@ -1,6 +1,5 @@
 ---
 name: webiny-v5-to-v6-migration
-context: webiny-api
 description: >
   Migration patterns for converting v5 Webiny code to v6 architecture. Use this skill when
   migrating existing v5 plugins to v6 features, converting context plugins to DI services,

@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-architect
-context: webiny-extensions
 description: >
   Admin-side architecture patterns for Webiny extensions. Use this skill when building
   frontend features with headless features (UseCase/Repository/Gateway), presentation
@@ -16,6 +15,19 @@ description: >
 Admin extensions are React components that register headless features (business logic with no UI) and presentation features (MobX presenters, React hooks, components). Headless features live in `admin/features/` and follow **UseCase → Repository → Gateway** layering. Presentation features live in `admin/presentation/` and add a **Presenter** (MobX view model) layer on top. Both use `createFeature` and `createAbstraction` from `webiny/admin`.
 
 **All features — both headless and presentation — MUST provide a `resolve` function** in `createFeature`. This is how the `useFeature` hook accesses resolved instances from the DI container. Without `resolve`, the feature cannot be consumed from React.
+
+## Working Context
+
+This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are identical — only imports differ.
+
+|                   | Extensions (`extensions/`)                                                              | Core (`packages/`)                                                                                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Imports**       | `webiny/admin`, `webiny/admin/ui`, `webiny/admin/cms/entry/editor`                      | `@webiny/app`, `@webiny/admin-ui`, `@webiny/app-headless-cms/...`                                                                                                                                     |
+| **Catalog paths** | Use the `Import:` path                                                                  | Use the `Source:` path                                                                                                                                                                                |
+| **MobX wrapper**  | `createReactiveComponent` from `webiny/admin`                                           | `createReactiveComponent` from `@webiny/app-admin` (never import `observer` from `mobx-react-lite` directly — the only exception is `@webiny/app-admin` itself, which is the source of the re-export) |
+| **Entry point**   | React component as `export default` in a file targeted by `<Admin.Extension src={...}>` | React component registered by the package initializer                                                                                                                                                 |
+
+Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 
 ## Admin Directory Structure
 
@@ -600,7 +612,7 @@ export const ResponseStatus = ({ presenter }: Props) => {
 
 4. **Pass presenter to child components** — child components receive the full `presenter`, not split `vm` + `actions` props. The child reads what it needs from `presenter.vm`.
 
-5. **Use `createReactiveComponent` for MobX-observed components** — never import `observer` from `mobx-react-lite` directly. Instead, use `createReactiveComponent` from `webiny/admin`. It is the same function re-exported under a Webiny-idiomatic name.
+5. **Use `createReactiveComponent` for MobX-observed components** — never import `observer` from `mobx-react-lite` directly. Use `createReactiveComponent` from `webiny/admin` (extensions) or from `@webiny/app-admin` (core packages). The **only** exception is `@webiny/app-admin` itself, which is the source of the re-export.
 
 **Bad:**
 

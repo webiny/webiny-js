@@ -1,6 +1,5 @@
 ---
 name: webiny-api-build-params-catalog
-context: webiny-api
 description: >
   api/build-params — 2 abstractions.
 ---

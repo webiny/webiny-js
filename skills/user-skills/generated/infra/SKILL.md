@@ -1,6 +1,5 @@
 ---
 name: webiny-infra-catalog
-context: webiny-api
 description: >
   Infrastructure — 35 abstractions.
   Infrastructure extensions.

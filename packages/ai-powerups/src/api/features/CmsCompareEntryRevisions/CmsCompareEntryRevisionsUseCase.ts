@@ -1,13 +1,15 @@
-import { Ai, Encryption } from "webiny/api";
-import {
-    GetModelUseCase,
-    ModelToAstConverter,
-    CmsModelToJsonSchemaConverter
-} from "webiny/api/cms/model";
-import { GetRevisionByIdUseCase } from "webiny/api/cms/entry";
-import { GetSettingsUseCase } from "webiny/api/ai-powerups";
-import { CompareRevisionsUseCase } from "./abstractions.js";
-import type { ICompareRevisionsParams, ICompareRevisionsResult } from "./abstractions.js";
+import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
+import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
+import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/index.js";
+import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { CmsCompareEntryRevisionsUseCase } from "./abstractions.js";
+import type {
+    ICmsCompareEntryRevisionsParams,
+    ICmsCompareEntryRevisionsResult
+} from "./abstractions.js";
 
 const SYSTEM_PROMPT = `You are a content intelligence assistant specialized in version comparison for headless CMS platforms.
 
@@ -56,7 +58,7 @@ If no differences are found, return: <div class="no-changes"><h3>No differences 
 Use semantic HTML with appropriate CSS classes for styling. Do not include <style> tags or CSS — only return the HTML structure.
 For rich text or complex nested values, show a concise summary rather than raw JSON.`;
 
-class CompareRevisionsUseCaseImpl implements CompareRevisionsUseCase.Interface {
+class CmsCompareEntryRevisionsUseCaseImpl implements CmsCompareEntryRevisionsUseCase.Interface {
     constructor(
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
@@ -66,7 +68,9 @@ class CompareRevisionsUseCaseImpl implements CompareRevisionsUseCase.Interface {
         private modelToAst: ModelToAstConverter.Interface
     ) {}
 
-    async execute(params: ICompareRevisionsParams): Promise<ICompareRevisionsResult> {
+    async execute(
+        params: ICmsCompareEntryRevisionsParams
+    ): Promise<ICmsCompareEntryRevisionsResult> {
         const { modelId, revisionId1, revisionId2 } = params;
 
         const settingsResult = await this.getSettings.execute();
@@ -151,14 +155,15 @@ ${JSON.stringify(revision2.values, null, 2)}`;
     }
 }
 
-export const CompareRevisionsUseCaseImplementation = CompareRevisionsUseCase.createImplementation({
-    implementation: CompareRevisionsUseCaseImpl,
-    dependencies: [
-        GetSettingsUseCase,
-        Ai,
-        Encryption,
-        GetModelUseCase,
-        GetRevisionByIdUseCase,
-        ModelToAstConverter
-    ]
-});
+export const CmsCompareEntryRevisionsUseCaseImplementation =
+    CmsCompareEntryRevisionsUseCase.createImplementation({
+        implementation: CmsCompareEntryRevisionsUseCaseImpl,
+        dependencies: [
+            GetSettingsUseCase,
+            Ai,
+            Encryption,
+            GetModelUseCase,
+            GetRevisionByIdUseCase,
+            ModelToAstConverter
+        ]
+    });

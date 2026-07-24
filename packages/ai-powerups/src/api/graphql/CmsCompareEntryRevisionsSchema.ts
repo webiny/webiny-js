@@ -1,10 +1,10 @@
-import { GraphQLSchemaFactory } from "webiny/api/graphql";
-import { CompareRevisionsUseCase } from "../features/compareRevisions/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { CmsCompareEntryRevisionsUseCase } from "~/api/features/CmsCompareEntryRevisions/abstractions.js";
 
-class CompareRevisionsSchema implements GraphQLSchemaFactory.Interface {
+class CmsCompareEntryRevisionsSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(
-        builder: GraphQLSchemaFactory.SchemaBuilder
-    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        builder: CoreGraphQLSchemaFactory.SchemaBuilder
+    ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type CompareRevisionsResult {
                 html: String
@@ -22,7 +22,7 @@ class CompareRevisionsSchema implements GraphQLSchemaFactory.Interface {
                 error: CompareRevisionsError
             }
 
-            extend type Query {
+            extend type CmsQuery {
                 compareEntryRevisions(
                     modelId: String!
                     revisionId1: String!
@@ -32,13 +32,17 @@ class CompareRevisionsSchema implements GraphQLSchemaFactory.Interface {
         `);
 
         builder.addResolver({
-            path: "Query.compareEntryRevisions",
-            dependencies: [CompareRevisionsUseCase],
-            resolver: (useCase: CompareRevisionsUseCase.Interface) => {
+            path: "CmsQuery.compareEntryRevisions",
+            dependencies: [CmsCompareEntryRevisionsUseCase],
+            resolver: (useCase: CmsCompareEntryRevisionsUseCase.Interface) => {
                 return async ({
                     args
                 }: {
-                    args: { modelId: string; revisionId1: string; revisionId2: string };
+                    args: {
+                        modelId: string;
+                        revisionId1: string;
+                        revisionId2: string;
+                    };
                 }) => {
                     try {
                         const result = await useCase.execute({
@@ -66,7 +70,7 @@ class CompareRevisionsSchema implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export default GraphQLSchemaFactory.createImplementation({
-    implementation: CompareRevisionsSchema,
+export const CmsCompareEntryRevisionsSchema = CoreGraphQLSchemaFactory.createImplementation({
+    implementation: CmsCompareEntryRevisionsSchemaImpl,
     dependencies: []
 });

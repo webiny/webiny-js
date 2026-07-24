@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-graphql-playground-catalog
-context: webiny-api
 description: >
   admin/graphql-playground — 4 abstractions.
 ---

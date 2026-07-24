@@ -1,11 +1,11 @@
 import React from "react";
-import { createReactiveComponent } from "webiny/admin";
-import { Drawer, Button, Checkbox, List, Text } from "webiny/admin/ui";
-import { useContentEntryFormPresenter } from "webiny/admin/cms/entry/editor";
-import type { CompareRevisionsPresenter } from "../abstractions.js";
+import { createReactiveComponent } from "@webiny/app-admin";
+import { Drawer, Button, Checkbox, List, Text } from "@webiny/admin-ui";
+import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
+import type { CmsCompareEntryRevisionsPresenter } from "./abstractions.js";
 
-interface CompareRevisionsDrawerProps {
-    presenter: CompareRevisionsPresenter.Interface;
+interface CmsCompareEntryRevisionsDrawerProps {
+    presenter: CmsCompareEntryRevisionsPresenter.Interface;
 }
 
 const DateDisplay = ({ date }: { date: string }) => {
@@ -23,8 +23,8 @@ const DateDisplay = ({ date }: { date: string }) => {
     return <>{formatted}</>;
 };
 
-export const CompareRevisionsDrawer = createReactiveComponent(
-    ({ presenter }: CompareRevisionsDrawerProps) => {
+export const CmsCompareEntryRevisionsDrawer = createReactiveComponent(
+    ({ presenter }: CmsCompareEntryRevisionsDrawerProps) => {
         const formPresenter = useContentEntryFormPresenter();
         const { revisions, selectedIds, canCompare, drawerVisible } = presenter.vm;
         const modelId = formPresenter.vm.model.modelId;
