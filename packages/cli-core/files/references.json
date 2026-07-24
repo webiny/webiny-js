@@ -3462,7 +3462,6 @@
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
-        "/packages/api-headless-cms-tasks-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
         "/packages/api-headless-cms-utils-os/package.json",
         "/packages/api-headless-cms-workflows/package.json",
@@ -3596,7 +3595,6 @@
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
-        "/packages/api-headless-cms-tasks-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
         "/packages/api-headless-cms-utils-os/package.json",
         "/packages/api-headless-cms-workflows/package.json",
@@ -4918,10 +4916,6 @@
             },
             {
               "file": "/packages/api-headless-cms-tasks/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-headless-cms-tasks-ddb-es/package.json",
               "types": ["devDependencies"]
             },
             {

@@ -10972,17 +10972,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-tasks-ddb-es@npm:0.0.0, @webiny/api-headless-cms-tasks-ddb-es@workspace:packages/api-headless-cms-tasks-ddb-es":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-headless-cms-tasks-ddb-es@workspace:packages/api-headless-cms-tasks-ddb-es"
-  dependencies:
-    "@webiny/api-headless-cms-bulk-actions": "npm:0.0.0"
-    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    typescript: "npm:^7.0.2"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-headless-cms-tasks@npm:0.0.0, @webiny/api-headless-cms-tasks@workspace:packages/api-headless-cms-tasks":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-tasks@workspace:packages/api-headless-cms-tasks"
@@ -13034,7 +13023,6 @@ __metadata:
     "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/api-headless-cms-sql": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
-    "@webiny/api-headless-cms-tasks-ddb-es": "npm:0.0.0"
     "@webiny/api-headless-cms-workflows": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
