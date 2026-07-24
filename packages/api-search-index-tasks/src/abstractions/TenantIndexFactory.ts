@@ -12,7 +12,7 @@ export interface ITenantIndexFactory {
 }
 
 export const TenantIndexFactory = createAbstraction<ITenantIndexFactory>(
-    "OpenSearchTenantIndexFactory"
+    "SearchIndexTenantIndexFactory"
 );
 
 export namespace TenantIndexFactory {
