@@ -1,8 +1,8 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
-import { IndexManagerFactory } from "~/IndexManagerFactory.js";
-import { DdbStorageScanner } from "~/StorageScanner.js";
-import { DdbStorageWriter } from "~/StorageWriter.js";
+import { IndexManagerFactory } from "~/indexManager/IndexManagerFactory.js";
+import { DdbStorageScanner } from "~/storage/StorageScanner.js";
+import { DdbStorageWriter } from "~/storage/StorageWriter.js";
 
 export const SearchIndexTasksDdbOsFeature = createFeature({
     name: "SearchIndexTasksDdbOs",

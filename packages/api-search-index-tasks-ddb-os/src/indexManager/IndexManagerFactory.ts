@@ -1,4 +1,4 @@
-import { OsIndexManager } from "~/IndexManager.js";
+import { OsIndexManager } from "./IndexManager.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { DisableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/DisableIndexing.js";
 import { EnableIndexing } from "@webiny/api-search-index-tasks/settings/abstractions/EnableIndexing.js";
