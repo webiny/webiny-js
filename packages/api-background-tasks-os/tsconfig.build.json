@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../api-elasticsearch-tasks/tsconfig.build.json" }],
+  "references": [
+    { "path": "../api-search-index-tasks/tsconfig.build.json" },
+    { "path": "../api-search-index-tasks-ddb-os/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,8 +12,10 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
-      "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"]
+      "@webiny/api-search-index-tasks/*": ["../api-search-index-tasks/src/*"],
+      "@webiny/api-search-index-tasks": ["../api-search-index-tasks/src"],
+      "@webiny/api-search-index-tasks-ddb-os/*": ["../api-search-index-tasks-ddb-os/src/*"],
+      "@webiny/api-search-index-tasks-ddb-os": ["../api-search-index-tasks-ddb-os/src"]
     }
   }
 }

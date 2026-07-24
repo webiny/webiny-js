@@ -4,10 +4,10 @@ import { createMockModels } from "./mocks/models";
 import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
-import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
+import type { CreateIndexesRunner } from "@webiny/api-search-index-tasks";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
+import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
@@ -33,7 +33,7 @@ describe("Create index task", () => {
             }
         });
 
-        const indexFactories = context.container.resolveAll(OpenSearchTenantIndexFactory);
+        const indexFactories = context.container.resolveAll(TenantIndexFactory);
 
         expect(indexFactories).toHaveLength(1);
 
@@ -122,7 +122,7 @@ describe("Create index task", () => {
             }
         });
 
-        const task = await context.tasks.createTask<IElasticsearchCreateIndexesTaskInput>({
+        const task = await context.tasks.createTask<CreateIndexesRunner.Input>({
             name: "Create indexes",
             definitionId: "elasticsearchCreateIndexes",
             input: {
