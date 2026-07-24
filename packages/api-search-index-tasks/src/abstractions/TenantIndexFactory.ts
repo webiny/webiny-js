@@ -1,14 +1,16 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { Tenant as BaseTenant } from "@webiny/api-core/types/tenancy.js";
 
 export interface ITenantIndexConfig {
     index: string;
     settings?: GenericRecord;
 }
 
+export type ITenant = Pick<BaseTenant, "id">;
+
 export interface ITenantIndexFactory {
-    getIndexList(tenant: Pick<Tenant, "id">): Promise<ITenantIndexConfig[]>;
+    getIndexList(tenant: ITenant): Promise<ITenantIndexConfig[]>;
 }
 
 export const TenantIndexFactory = createAbstraction<ITenantIndexFactory>(
@@ -18,4 +20,5 @@ export const TenantIndexFactory = createAbstraction<ITenantIndexFactory>(
 export namespace TenantIndexFactory {
     export type Interface = ITenantIndexFactory;
     export type IndexConfig = ITenantIndexConfig;
+    export type Tenant = ITenant;
 }

@@ -1,5 +1,4 @@
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
@@ -10,7 +9,9 @@ class CreateElasticsearchIndexTaskImpl implements TenantIndexFactory.Interface {
         private listModels: ListModelsUseCase.Interface
     ) {}
 
-    async getIndexList(tenant: Tenant): Promise<TenantIndexFactory.IndexConfig[]> {
+    async getIndexList(
+        tenant: TenantIndexFactory.Tenant
+    ): Promise<TenantIndexFactory.IndexConfig[]> {
         const result = await this.listModels.execute();
         const models = result.value;
 
