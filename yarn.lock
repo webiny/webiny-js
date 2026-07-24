@@ -10474,6 +10474,8 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms-testing": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-search-index-tasks": "npm:0.0.0"
+    "@webiny/api-search-index-tasks-ddb-os": "npm:0.0.0"
     "@webiny/api-sync-to-opensearch": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
@@ -11315,7 +11317,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-search-index-tasks@workspace:packages/api-search-index-tasks":
+"@webiny/api-search-index-tasks-ddb-os@npm:0.0.0, @webiny/api-search-index-tasks-ddb-os@workspace:packages/api-search-index-tasks-ddb-os":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-search-index-tasks-ddb-os@workspace:packages/api-search-index-tasks-ddb-os"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-search-index-tasks": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-search-index-tasks@npm:0.0.0, @webiny/api-search-index-tasks@workspace:packages/api-search-index-tasks":
   version: 0.0.0-use.local
   resolution: "@webiny/api-search-index-tasks@workspace:packages/api-search-index-tasks"
   dependencies:
@@ -11323,9 +11341,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
   languageName: unknown

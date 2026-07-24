@@ -17,9 +17,7 @@ export interface IReindexRunner {
     ): Promise<TaskDefinition.Result<IReindexInput>>;
 }
 
-export const ReindexRunner = createAbstraction<IReindexRunner>(
-    "SearchIndexTasks/ReindexRunner"
-);
+export const ReindexRunner = createAbstraction<IReindexRunner>("SearchIndexTasks/ReindexRunner");
 
 export namespace ReindexRunner {
     export type Interface = IReindexRunner;

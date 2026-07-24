@@ -19,9 +19,7 @@ export interface IIndexManager {
     settings: IIndexSettingsMap;
 }
 
-export const IndexManager = createAbstraction<IIndexManager>(
-    "SearchIndexTasks/IndexManager"
-);
+export const IndexManager = createAbstraction<IIndexManager>("SearchIndexTasks/IndexManager");
 
 export namespace IndexManager {
     export type Interface = IIndexManager;

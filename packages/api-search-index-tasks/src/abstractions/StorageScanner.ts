@@ -17,9 +17,7 @@ export interface IStorageScanner {
     scan(cursor: string | undefined, limit: number): Promise<IStorageScannerResult>;
 }
 
-export const StorageScanner = createAbstraction<IStorageScanner>(
-    "SearchIndexTasks/StorageScanner"
-);
+export const StorageScanner = createAbstraction<IStorageScanner>("SearchIndexTasks/StorageScanner");
 
 export namespace StorageScanner {
     export type Interface = IStorageScanner;

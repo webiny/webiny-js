@@ -8,6 +8,10 @@ import {
     ElasticsearchToDynamoDbSynchronization,
     Manager
 } from "~/tasks/index.js";
+import { IndexSettingsManager } from "~/settings/IndexSettingsManager.js";
+import { DisableIndexing } from "~/settings/DisableIndexing.js";
+import { EnableIndexing } from "~/settings/EnableIndexing.js";
+import { IndexManagerFactory } from "~/settings/IndexManagerFactory.js";
 import { OperationsFactoryFeature } from "@webiny/api-sync-to-opensearch/features/Operations/feature.js";
 import { ExecuteSyncFeature } from "@webiny/api-sync-to-opensearch/features/ExecuteSync/feature.js";
 import { ExecuteSyncWithRetryFeature } from "@webiny/api-sync-to-opensearch/features/ExecuteSyncWithRetry/feature.js";
@@ -25,6 +29,10 @@ export const ElasticsearchTasksFeature = createFeature({
         SynchronizationBuilderFeature.register(container);
 
         container.register(Manager);
+        container.register(IndexSettingsManager);
+        container.register(DisableIndexing);
+        container.register(EnableIndexing);
+        container.register(IndexManagerFactory);
         container.register(ElasticsearchSynchronize);
         container.register(ElasticsearchFetcher);
         container.register(ElasticsearchToDynamoDbSynchronization);

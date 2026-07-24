@@ -8,14 +8,14 @@ import { OnBeforeTrigger } from "~/tasks/createIndexes/OnBeforeTrigger.js";
 import { CreateIndexesTask } from "~/tasks/createIndexes/CreateIndexesTask.js";
 
 export const SearchIndexTasksFeature = createFeature({
-	name: "SearchIndexTasks",
-	register(container: Container) {
-		container.register(ReindexRunner);
-		container.register(ReindexTask);
-		container.register(EnableIndexingRunner);
-		container.register(EnableIndexingTask);
-		container.register(CreateIndexesRunner);
-		container.register(OnBeforeTrigger);
-		container.register(CreateIndexesTask);
-	}
+    name: "SearchIndexTasks",
+    register(container: Container) {
+        container.register(ReindexRunner);
+        container.register(ReindexTask);
+        container.register(EnableIndexingRunner);
+        container.register(EnableIndexingTask);
+        container.register(CreateIndexesRunner);
+        container.register(OnBeforeTrigger);
+        container.register(CreateIndexesTask);
+    }
 });

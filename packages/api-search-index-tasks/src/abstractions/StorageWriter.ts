@@ -11,9 +11,7 @@ export interface IStorageWriter {
     execute(): Promise<void>;
 }
 
-export const StorageWriter = createAbstraction<IStorageWriter>(
-    "SearchIndexTasks/StorageWriter"
-);
+export const StorageWriter = createAbstraction<IStorageWriter>("SearchIndexTasks/StorageWriter");
 
 export namespace StorageWriter {
     export type Interface = IStorageWriter;
