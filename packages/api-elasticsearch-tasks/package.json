@@ -19,6 +19,8 @@
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
+    "@webiny/api-search-index-tasks": "0.0.0",
+    "@webiny/api-search-index-tasks-ddb-os": "0.0.0",
     "@webiny/api-sync-to-opensearch": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
