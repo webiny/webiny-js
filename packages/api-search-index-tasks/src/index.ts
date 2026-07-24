@@ -16,3 +16,7 @@ export { OnBeforeTrigger } from "./tasks/createIndexes/abstractions/OnBeforeTrig
 export { CreateIndexesRunner as CreateIndexesRunnerImpl } from "./tasks/createIndexes/CreateIndexesRunner.js";
 export { OnBeforeTrigger as OnBeforeTriggerImpl } from "./tasks/createIndexes/OnBeforeTrigger.js";
 export { CreateIndexesTask } from "./tasks/createIndexes/CreateIndexesTask.js";
+
+export { ReindexRunner } from "./tasks/reindex/abstractions/ReindexRunner.js";
+export { ReindexRunner as ReindexRunnerImpl } from "./tasks/reindex/ReindexRunner.js";
+export { ReindexTask } from "./tasks/reindex/ReindexTask.js";
