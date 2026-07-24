@@ -15,7 +15,8 @@ class ReindexRunnerImpl implements Abstraction.Interface {
     public async exec(
         cursor: string | undefined,
         limit: number,
-        indexManager: IIndexManager
+        indexManager: IIndexManager,
+        indexConfigs: Abstraction.IndexConfigsMap
     ): Promise<TaskDefinition.Result<Abstraction.Input>> {
         const isIndexAllowed = (index: string): boolean => {
             const input = this.controller.state.getInput();
@@ -44,16 +45,25 @@ class ReindexRunnerImpl implements Abstraction.Interface {
                     if (isIndexAllowed(item.index) === false) {
                         continue;
                     }
-                    const exists = await indexManager.indexExists(item.index);
-                    if (!exists) {
-                        await this.controller.logger.info({
-                            message: `Index "${item.index}" does not exist. Skipping the item.`
-                        });
-                        continue;
-                    }
                     if (!item.entity) {
                         continue;
                     }
+
+                    const exists = await indexManager.indexExists(item.index);
+                    if (!exists) {
+                        const config = indexConfigs[item.index];
+                        if (!config) {
+                            await this.controller.logger.info({
+                                message: `Index "${item.index}" does not exist and no configuration found. Skipping.`
+                            });
+                            continue;
+                        }
+                        await indexManager.createIndex(item.index, config.settings);
+                        await this.controller.logger.info({
+                            message: `Index "${item.index}" created.`
+                        });
+                    }
+
                     await indexManager.disableIndexing(item.index);
                     this.writer.put({
                         entity: item.entity,
