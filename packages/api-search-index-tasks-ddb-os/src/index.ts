@@ -4,3 +4,5 @@ export { DisableIndexing } from "./settings/abstractions/DisableIndexing.js";
 export { EnableIndexing } from "./settings/abstractions/EnableIndexing.js";
 export { DisableIndexing as DisableIndexingImpl } from "./settings/DisableIndexing.js";
 export { EnableIndexing as EnableIndexingImpl } from "./settings/EnableIndexing.js";
+export { OsIndexManager } from "./IndexManager.js";
+export { IndexManagerFactory } from "./IndexManagerFactory.js";
