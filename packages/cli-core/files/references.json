@@ -3203,7 +3203,6 @@
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-testing/package.json",
@@ -3293,7 +3292,6 @@
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-testing/package.json",
@@ -3441,7 +3439,6 @@
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
@@ -3577,7 +3574,6 @@
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
         "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
@@ -4864,10 +4860,6 @@
               "file": "/packages/api-background-tasks-ddb/package.json",
               "types": ["devDependencies"]
             },
-            {
-              "file": "/packages/api-background-tasks-os/package.json",
-              "types": ["devDependencies"]
-            },
             { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-ddb/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-sql/package.json", "types": ["devDependencies"] },
@@ -5596,10 +5588,6 @@
             { "file": "/packages/api-audit-logs-sql/package.json", "types": ["devDependencies"] },
             {
               "file": "/packages/api-background-tasks-ddb/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-background-tasks-os/package.json",
               "types": ["devDependencies"]
             },
             { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
