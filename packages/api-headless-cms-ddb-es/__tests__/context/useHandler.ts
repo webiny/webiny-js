@@ -11,7 +11,8 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
-import { ElasticsearchTasksFeature } from "@webiny/api-elasticsearch-tasks";
+import { SearchIndexTasksFeature } from "@webiny/api-search-index-tasks";
+import { SearchIndexTasksDdbOsFeature } from "@webiny/api-search-index-tasks-ddb-os";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
@@ -96,13 +97,11 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             }
         }
 
-        // Background tasks are DI-native — the feature registers models, TasksCrud, and the GraphQL
-        // contextual schema (built below alongside the other contextual schemas). The OpenSearch
-        // Elasticsearch task definitions come from ElasticsearchTasksFeature.
         ProcessEnvFeature.register(container);
         BackgroundTasksFeature.register(container);
         TimerFeature.register(container, timerFactory());
-        ElasticsearchTasksFeature.register(container);
+        SearchIndexTasksFeature.register(container);
+        SearchIndexTasksDdbOsFeature.register(container);
 
         const tenantCtx = container.resolve(TenantContext);
         tenantCtx.setTenant({

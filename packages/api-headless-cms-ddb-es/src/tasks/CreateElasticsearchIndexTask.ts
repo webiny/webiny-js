@@ -1,16 +1,17 @@
-import { OpenSearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
-class CreateElasticsearchIndexTaskImpl implements OpenSearchTenantIndexFactory.Interface {
+class CreateElasticsearchIndexTaskImpl implements TenantIndexFactory.Interface {
     constructor(
         private readonly indexConfigs: CmsEntryOpenSearchIndex.Interface[],
         private listModels: ListModelsUseCase.Interface
     ) {}
 
-    async getIndexList(tenant: Tenant): Promise<OpenSearchTenantIndexFactory.IndexConfig[]> {
+    async getIndexList(
+        tenant: TenantIndexFactory.Tenant
+    ): Promise<TenantIndexFactory.IndexConfig[]> {
         const result = await this.listModels.execute();
         const models = result.value;
 
@@ -18,7 +19,7 @@ class CreateElasticsearchIndexTaskImpl implements OpenSearchTenantIndexFactory.I
             return [];
         }
 
-        return models.map<OpenSearchTenantIndexFactory.IndexConfig>(model => {
+        return models.map<TenantIndexFactory.IndexConfig>(model => {
             const { index } = configurations.es({
                 model: {
                     modelId: model.modelId,
@@ -40,7 +41,7 @@ class CreateElasticsearchIndexTaskImpl implements OpenSearchTenantIndexFactory.I
     }
 }
 
-export const CreateElasticsearchIndexTask = OpenSearchTenantIndexFactory.createImplementation({
+export const CreateElasticsearchIndexTask = TenantIndexFactory.createImplementation({
     implementation: CreateElasticsearchIndexTaskImpl,
     dependencies: [[CmsEntryOpenSearchIndex, { multiple: true }], ListModelsUseCase]
 });

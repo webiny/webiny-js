@@ -3202,12 +3202,9 @@
         "/packages/api-aco-sql/package.json",
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
-        "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
         "/packages/api-event-handler-aws-ddb-os/package.json",
@@ -3293,12 +3290,9 @@
         "/packages/api-aco-sql/package.json",
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
-        "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
         "/packages/api-event-handler-aws-ddb-os/package.json",
@@ -3406,7 +3400,6 @@
         "/package.json",
         "/scripts/prepublishOnly/package.json",
         "/scripts/release/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-websockets/package.json",
         "/packages/api-websockets-aws/package.json",
@@ -3417,7 +3410,6 @@
         "/packages/pulumi-sdk/package.json",
         "/scripts/prepublishOnly/package.json",
         "/scripts/release/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-record-locking/package.json",
         "/packages/api-websockets/package.json",
         "/packages/api-websockets-aws/package.json",
@@ -3444,13 +3436,10 @@
         "/packages/api-audit-logs/package.json",
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
-        "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
         "/packages/api-event-handler-aws-ddb-os/package.json",
@@ -3473,7 +3462,6 @@
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
-        "/packages/api-headless-cms-tasks-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
         "/packages/api-headless-cms-utils-os/package.json",
         "/packages/api-headless-cms-workflows/package.json",
@@ -3484,6 +3472,9 @@
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
+        "/packages/api-search-index-tasks/package.json",
+        "/packages/api-search-index-tasks-ddb-os/package.json",
+        "/packages/api-search-index-tasks-os/package.json",
         "/packages/api-sync-ddb-to-opensearch/package.json",
         "/packages/api-sync-pg-to-opensearch/package.json",
         "/packages/api-sync-system/package.json",
@@ -3578,13 +3569,10 @@
         "/packages/api-audit-logs/package.json",
         "/packages/api-audit-logs-ddb/package.json",
         "/packages/api-audit-logs-sql/package.json",
-        "/packages/api-background-tasks-ddb/package.json",
-        "/packages/api-background-tasks-os/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-ddb/package.json",
         "/packages/api-core-sql/package.json",
         "/packages/api-core-testing/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
         "/packages/api-event-handler-aws-ddb-os/package.json",
@@ -3607,7 +3595,6 @@
         "/packages/api-headless-cms-sql/package.json",
         "/packages/api-headless-cms-storage/package.json",
         "/packages/api-headless-cms-tasks/package.json",
-        "/packages/api-headless-cms-tasks-ddb-es/package.json",
         "/packages/api-headless-cms-testing/package.json",
         "/packages/api-headless-cms-utils-os/package.json",
         "/packages/api-headless-cms-workflows/package.json",
@@ -3618,6 +3605,9 @@
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
+        "/packages/api-search-index-tasks/package.json",
+        "/packages/api-search-index-tasks-ddb-os/package.json",
+        "/packages/api-search-index-tasks-os/package.json",
         "/packages/api-sync-ddb-to-opensearch/package.json",
         "/packages/api-sync-pg-to-opensearch/package.json",
         "/packages/api-sync-system/package.json",
@@ -3732,7 +3722,6 @@
         "/packages/api-audit-logs/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-sql/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
         "/packages/api-event-handler-aws-ddb-os/package.json",
@@ -3761,6 +3750,9 @@
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
+        "/packages/api-search-index-tasks/package.json",
+        "/packages/api-search-index-tasks-ddb-os/package.json",
+        "/packages/api-search-index-tasks-os/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-website-builder-scheduler/package.json",
@@ -3816,7 +3808,6 @@
         "/packages/api-audit-logs/package.json",
         "/packages/api-core/package.json",
         "/packages/api-core-sql/package.json",
-        "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-event-handler-aws/package.json",
         "/packages/api-event-handler-aws-ddb/package.json",
         "/packages/api-event-handler-aws-ddb-os/package.json",
@@ -3845,6 +3836,9 @@
         "/packages/api-scheduler/package.json",
         "/packages/api-scheduler-aws/package.json",
         "/packages/api-scheduler-server/package.json",
+        "/packages/api-search-index-tasks/package.json",
+        "/packages/api-search-index-tasks-ddb-os/package.json",
+        "/packages/api-search-index-tasks-os/package.json",
         "/packages/api-sync-system/package.json",
         "/packages/api-website-builder/package.json",
         "/packages/api-website-builder-scheduler/package.json",
@@ -4817,10 +4811,6 @@
             { "file": "/scripts/cli/package.json", "types": ["dependencies"] },
             { "file": "/scripts/release/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
-            {
-              "file": "/packages/api-elasticsearch-tasks/package.json",
-              "types": ["devDependencies"]
-            },
             { "file": "/packages/api-record-locking/package.json", "types": ["devDependencies"] },
             {
               "file": "/packages/api-websockets/package.json",
@@ -4860,22 +4850,10 @@
             { "file": "/packages/api-audit-logs/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-audit-logs-ddb/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-audit-logs-sql/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-background-tasks-ddb/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-background-tasks-os/package.json",
-              "types": ["devDependencies"]
-            },
             { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-ddb/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-testing/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-elasticsearch-tasks/package.json",
-              "types": ["devDependencies"]
-            },
             {
               "file": "/packages/api-event-handler-aws/package.json",
               "types": ["devDependencies"]
@@ -4941,10 +4919,6 @@
               "types": ["devDependencies"]
             },
             {
-              "file": "/packages/api-headless-cms-tasks-ddb-es/package.json",
-              "types": ["devDependencies"]
-            },
-            {
               "file": "/packages/api-headless-cms-testing/package.json",
               "types": ["devDependencies"]
             },
@@ -4963,6 +4937,18 @@
             { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-server/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-search-index-tasks/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-search-index-tasks-ddb-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-search-index-tasks-os/package.json",
+              "types": ["devDependencies"]
+            },
             {
               "file": "/packages/api-sync-ddb-to-opensearch/package.json",
               "types": ["devDependencies"]
@@ -5134,10 +5120,6 @@
             { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-sql/package.json", "types": ["devDependencies"] },
             {
-              "file": "/packages/api-elasticsearch-tasks/package.json",
-              "types": ["devDependencies"]
-            },
-            {
               "file": "/packages/api-event-handler-aws/package.json",
               "types": ["devDependencies"]
             },
@@ -5211,6 +5193,18 @@
             { "file": "/packages/api-scheduler/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-aws/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-scheduler-server/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/api-search-index-tasks/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-search-index-tasks-ddb-os/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-search-index-tasks-os/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/api-sync-system/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-website-builder/package.json", "types": ["devDependencies"] },
             {
@@ -5578,21 +5572,9 @@
             { "file": "/packages/api-aco-sql/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-audit-logs-ddb/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-audit-logs-sql/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-background-tasks-ddb/package.json",
-              "types": ["devDependencies"]
-            },
-            {
-              "file": "/packages/api-background-tasks-os/package.json",
-              "types": ["devDependencies"]
-            },
             { "file": "/packages/api-core/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-ddb/package.json", "types": ["devDependencies"] },
             { "file": "/packages/api-core-testing/package.json", "types": ["devDependencies"] },
-            {
-              "file": "/packages/api-elasticsearch-tasks/package.json",
-              "types": ["devDependencies"]
-            },
             {
               "file": "/packages/api-event-handler-aws/package.json",
               "types": ["devDependencies"]
