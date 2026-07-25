@@ -41,6 +41,7 @@ extraction to a separate `-ddb` package.
 ### 3. ~~`api-elasticsearch-tasks`~~ — **RESOLVED**
 
 Package deleted. Replaced by three platform-agnostic packages:
+
 - `api-search-index-tasks` — task definitions + abstractions (StorageScanner, IndexManager, StorageWriter)
 - `api-search-index-tasks-os` — OpenSearch implementations
 - `api-search-index-tasks-ddb-os` — DynamoDB implementations
