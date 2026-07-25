@@ -38,20 +38,12 @@ All three cleaned up:
 **Scope:** Entire `src/db/` directory is DDB-specific. Needs abstraction or
 extraction to a separate `-ddb` package.
 
-### 3. `api-elasticsearch-tasks` — DocumentClient throughout
+### 3. ~~`api-elasticsearch-tasks`~~ — **RESOLVED**
 
-**Files:**
-
-- `src/types.ts` — `DynamoDBDocument` in config interfaces (`IElasticsearchTaskConfig`)
-- `src/tasks/Manager.ts` — stores `documentClient` as a public property
-- `src/helpers/getClients.ts` — calls `getDocumentClient()` directly
-- `src/tasks/enableIndexing/index.ts` — constructor receives `documentClient`
-- `src/tasks/reindexing/reindexingTaskDefinition.ts` — constructor receives `documentClient`
-- `src/tasks/dataSynchronization/DataSynchronizationTask.ts` — constructor receives `documentClient`
-- `src/tasks/createIndexes/CreateIndexesTask.ts` — constructor receives `documentClient`
-
-**Scope:** DDB is woven into core interfaces and every task class. The task
-manager, all task constructors, and the client helper need abstraction.
+Package deleted. Replaced by three platform-agnostic packages:
+- `api-search-index-tasks` — task definitions + abstractions (StorageScanner, IndexManager, StorageWriter)
+- `api-search-index-tasks-os` — OpenSearch implementations
+- `api-search-index-tasks-ddb-os` — DynamoDB implementations
 
 ### 4. `api-scheduler` — DDB in context and manifest
 
@@ -98,5 +90,5 @@ largest refactoring effort.
 | `api-opensearch`          | Source usage (3 files) | Small — extract `src/db/` to `-ddb` package                                  | Skipped (AWS-only, OK for now) |
 | `api-scheduler`           | Source usage (2 files) | Small — abstract client access                                               | TODO                           |
 | `api-websockets`          | Source usage (2 files) | Medium — abstract connection registry                                        | **DONE**                       |
-| `api-elasticsearch-tasks` | Source usage (7 files) | Medium — abstract task config interfaces                                     | Deferred                       |
+| `api-elasticsearch-tasks` | Source usage (7 files) | Medium — abstract task config interfaces                                     | **DONE** (package deleted)     |
 | `api-sync-system`         | Source usage (8 files) | Large — DDB is architectural; sync interceptor decorates DDB client directly | Deferred                       |
