@@ -82,6 +82,7 @@ import {
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import type { IHeadlessCmsStorageOperationsFactory } from "~/features/shared/abstractions.js";
+import { registerCmsStorageOperations } from "~/features/shared/storageOperations/registerCmsStorageOperations.js";
 
 export interface HeadlessCmsConfig {
     /**
@@ -219,6 +220,46 @@ export const HeadlessCmsFeature = createFeature({
         const storageOperations = container.resolve(StorageOperationsFactory).create(cmsContext);
         storageOperations.beforeInit(cmsContext);
         container.registerInstance(StorageOperations, storageOperations);
+
+        // Bridge the legacy storage operations object into the new per-method DI abstractions.
+        // Both registrations are kept side by side during the migration; once all consumers
+        // resolve the per-method abstractions directly, StorageOperations can be removed.
+        registerCmsStorageOperations(container, {
+            groups: storageOperations.groups,
+            models: storageOperations.models,
+            entries: {
+                create: { execute: storageOperations.entries.create },
+                createRevisionFrom: { execute: storageOperations.entries.createRevisionFrom },
+                update: { execute: storageOperations.entries.update },
+                delete: { execute: storageOperations.entries.delete },
+                deleteRevision: { execute: storageOperations.entries.deleteRevision },
+                deleteMultipleEntries: {
+                    execute: storageOperations.entries.deleteMultipleEntries
+                },
+                moveToBin: { execute: storageOperations.entries.moveToBin },
+                restoreFromBin: { execute: storageOperations.entries.restoreFromBin },
+                publish: { execute: storageOperations.entries.publish },
+                unpublish: { execute: storageOperations.entries.unpublish },
+                move: { execute: storageOperations.entries.move },
+                get: { execute: storageOperations.entries.get },
+                list: { execute: storageOperations.entries.list },
+                getByIds: { execute: storageOperations.entries.getByIds },
+                getLatestByIds: { execute: storageOperations.entries.getLatestByIds },
+                getPublishedByIds: { execute: storageOperations.entries.getPublishedByIds },
+                getRevisions: { execute: storageOperations.entries.getRevisions },
+                getRevisionById: { execute: storageOperations.entries.getRevisionById },
+                getPublishedRevisionByEntryId: {
+                    execute: storageOperations.entries.getPublishedRevisionByEntryId
+                },
+                getLatestRevisionByEntryId: {
+                    execute: storageOperations.entries.getLatestRevisionByEntryId
+                },
+                getPreviousRevision: { execute: storageOperations.entries.getPreviousRevision },
+                getUniqueFieldValues: {
+                    execute: storageOperations.entries.getUniqueFieldValues
+                }
+            }
+        });
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);
