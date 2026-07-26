@@ -1,0 +1,27 @@
+export { GroupStorageOperations } from "./GroupStorageOperations.js";
+export { ModelStorageOperations } from "./ModelStorageOperations.js";
+export { registerCmsStorageOperations } from "./registerCmsStorageOperations.js";
+export type { ICmsStorageOperationsRegistry } from "./registerCmsStorageOperations.js";
+
+export { CreateEntryStorageOperation } from "./entry/CreateEntryStorageOperation.js";
+export { CreateEntryRevisionFromStorageOperation } from "./entry/CreateEntryRevisionFromStorageOperation.js";
+export { UpdateEntryStorageOperation } from "./entry/UpdateEntryStorageOperation.js";
+export { DeleteEntryStorageOperation } from "./entry/DeleteEntryStorageOperation.js";
+export { DeleteEntryRevisionStorageOperation } from "./entry/DeleteEntryRevisionStorageOperation.js";
+export { DeleteMultipleEntriesStorageOperation } from "./entry/DeleteMultipleEntriesStorageOperation.js";
+export { MoveToBinStorageOperation } from "./entry/MoveToBinStorageOperation.js";
+export { RestoreFromBinStorageOperation } from "./entry/RestoreFromBinStorageOperation.js";
+export { PublishEntryStorageOperation } from "./entry/PublishEntryStorageOperation.js";
+export { UnpublishEntryStorageOperation } from "./entry/UnpublishEntryStorageOperation.js";
+export { MoveEntryStorageOperation } from "./entry/MoveEntryStorageOperation.js";
+export { GetEntryStorageOperation } from "./entry/GetEntryStorageOperation.js";
+export { ListEntriesStorageOperation } from "./entry/ListEntriesStorageOperation.js";
+export { GetEntriesByIdsStorageOperation } from "./entry/GetEntriesByIdsStorageOperation.js";
+export { GetLatestEntriesByIdsStorageOperation } from "./entry/GetLatestEntriesByIdsStorageOperation.js";
+export { GetPublishedEntriesByIdsStorageOperation } from "./entry/GetPublishedEntriesByIdsStorageOperation.js";
+export { GetRevisionsStorageOperation } from "./entry/GetRevisionsStorageOperation.js";
+export { GetRevisionByIdStorageOperation } from "./entry/GetRevisionByIdStorageOperation.js";
+export { GetPublishedRevisionByEntryIdStorageOperation } from "./entry/GetPublishedRevisionByEntryIdStorageOperation.js";
+export { GetLatestRevisionByEntryIdStorageOperation } from "./entry/GetLatestRevisionByEntryIdStorageOperation.js";
+export { GetPreviousRevisionStorageOperation } from "./entry/GetPreviousRevisionStorageOperation.js";
+export { GetUniqueFieldValuesStorageOperation } from "./entry/GetUniqueFieldValuesStorageOperation.js";
