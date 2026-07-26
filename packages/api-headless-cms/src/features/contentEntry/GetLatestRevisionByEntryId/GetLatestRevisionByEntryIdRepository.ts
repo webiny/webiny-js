@@ -8,7 +8,7 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetLatestRevisionParams
 } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetLatestRevisionByEntryIdStorageOperation } from "~/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -18,7 +18,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getLatestRevisionByEntryIdStorage: GetLatestRevisionByEntryIdStorageOperation.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
@@ -26,10 +26,7 @@ class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
-            const entry = await this.storageOperations.entries.getLatestRevisionByEntryId<T>(
-                model,
-                params
-            );
+            const entry = await this.getLatestRevisionByEntryIdStorage.execute<T>(model, params);
 
             if (!entry) {
                 return Result.fail(new EntryNotFoundError(params.id));
@@ -48,5 +45,5 @@ class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.
 export const GetLatestRevisionByEntryIdRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetLatestRevisionByEntryIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, GetLatestRevisionByEntryIdStorageOperation]
 });

@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { GetEntriesByIdsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetEntriesByIdsStorageOperation } from "~/features/shared/storageOperations/entry/GetEntriesByIdsStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 
@@ -15,7 +15,7 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private tenantContext: TenantContext.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getEntriesByIdsStorage: GetEntriesByIdsStorageOperation.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
@@ -24,7 +24,7 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
             const modelWithTenant = { ...model, tenant: this.tenantContext.getTenant().id };
-            const result = await this.storageOperations.entries.getByIds<T>(modelWithTenant, {
+            const result = await this.getEntriesByIdsStorage.execute<T>(modelWithTenant, {
                 ids
             });
 
@@ -45,5 +45,5 @@ class GetEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
 export const GetEntriesByIdsRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetEntriesByIdsRepositoryImpl,
-    dependencies: [TenantContext, EntryFromStorageTransform, StorageOperations]
+    dependencies: [TenantContext, EntryFromStorageTransform, GetEntriesByIdsStorageOperation]
 });

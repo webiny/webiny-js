@@ -2,7 +2,7 @@ import { createImplementation, Result } from "@webiny/feature/api";
 import { GetPublishedEntriesByIdsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetPublishedEntriesByIdsStorageOperation } from "~/features/shared/storageOperations/entry/GetPublishedEntriesByIdsStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -12,7 +12,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getPublishedEntriesByIdsStorage: GetPublishedEntriesByIdsStorageOperation.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues>(
@@ -20,7 +20,7 @@ class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.In
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
-            const result = await this.storageOperations.entries.getPublishedByIds<T>(model, {
+            const result = await this.getPublishedEntriesByIdsStorage.execute<T>(model, {
                 ids
             });
 
@@ -41,5 +41,5 @@ class GetPublishedEntriesByIdsRepositoryImpl implements RepositoryAbstraction.In
 export const GetPublishedEntriesByIdsRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetPublishedEntriesByIdsRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, GetPublishedEntriesByIdsStorageOperation]
 });

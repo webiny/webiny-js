@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { GetLatestEntriesByIdsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetLatestEntriesByIdsStorageOperation } from "~/features/shared/storageOperations/entry/GetLatestEntriesByIdsStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -13,7 +13,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetLatestEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getLatestEntriesByIdsStorage: GetLatestEntriesByIdsStorageOperation.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
@@ -21,7 +21,7 @@ class GetLatestEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Inter
         ids: string[]
     ): Promise<Result<CmsEntry<T>[], RepositoryAbstraction.Error>> {
         try {
-            const result = await this.storageOperations.entries.getLatestByIds<T>(model, { ids });
+            const result = await this.getLatestEntriesByIdsStorage.execute<T>(model, { ids });
 
             // Transform storage entries to domain entries
             const items = await Promise.all(
@@ -40,5 +40,5 @@ class GetLatestEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Inter
 export const GetLatestEntriesByIdsRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetLatestEntriesByIdsRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, GetLatestEntriesByIdsStorageOperation]
 });
