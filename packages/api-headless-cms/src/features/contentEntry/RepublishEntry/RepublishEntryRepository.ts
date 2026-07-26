@@ -1,7 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { RepublishEntryRepository as RepositoryAbstraction } from "./abstractions.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { PublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
+import { UpdateEntryStorageOperation } from "~/features/shared/storageOperations/entry/UpdateEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -21,7 +22,8 @@ class RepublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private publishEntryStorage: PublishEntryStorageOperation.Interface,
+        private updateEntryStorage: UpdateEntryStorageOperation.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -33,13 +35,13 @@ class RepublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
             const storageEntry = await this.entryToStorageTransform<T>(model, entry);
 
             // First update the entry
-            await this.storageOperations.entries.update(model, {
+            await this.updateEntryStorage.execute(model, {
                 entry,
                 storageEntry
             });
 
             // Then publish it
-            const result = await this.storageOperations.entries.publish<T>(model, {
+            const result = await this.publishEntryStorage.execute<T>(model, {
                 entry,
                 storageEntry
             });
@@ -57,5 +59,10 @@ class RepublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 export const RepublishEntryRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: RepublishEntryRepositoryImpl,
-    dependencies: [EntryToStorageTransform, EntryFromStorageTransform, StorageOperations]
+    dependencies: [
+        EntryToStorageTransform,
+        EntryFromStorageTransform,
+        PublishEntryStorageOperation,
+        UpdateEntryStorageOperation
+    ]
 });
