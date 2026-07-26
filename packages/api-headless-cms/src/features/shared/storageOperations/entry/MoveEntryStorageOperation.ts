@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsModel } from "~/types/types.js";
+import type { CmsModel } from "~/types/index.js";
 
 export interface IMoveEntryStorageOperation {
     execute(model: CmsModel, id: string, folderId: string): Promise<void>;

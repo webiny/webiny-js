@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import type { CmsGroupStorageOperations, CmsModelStorageOperations } from "~/types/types.js";
+import type { CmsGroupStorageOperations, CmsModelStorageOperations } from "~/types/index.js";
 import { GroupStorageOperations } from "./GroupStorageOperations.js";
 import { ModelStorageOperations } from "./ModelStorageOperations.js";
 import type { ICreateEntryStorageOperation } from "./entry/CreateEntryStorageOperation.js";

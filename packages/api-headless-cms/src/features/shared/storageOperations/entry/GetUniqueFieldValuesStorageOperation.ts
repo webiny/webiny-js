@@ -3,7 +3,7 @@ import type {
     CmsModel,
     CmsEntryUniqueValue,
     CmsEntryStorageOperationsGetUniqueFieldValuesParams
-} from "~/types/types.js";
+} from "~/types/index.js";
 
 export interface IGetUniqueFieldValuesStorageOperation {
     execute(

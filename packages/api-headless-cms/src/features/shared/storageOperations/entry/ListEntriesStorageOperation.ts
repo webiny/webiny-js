@@ -5,7 +5,7 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsListParams,
     CmsEntryStorageOperationsListResponse
-} from "~/types/types.js";
+} from "~/types/index.js";
 
 export interface IListEntriesStorageOperation {
     execute<T extends CmsEntryValues = CmsEntryValues>(

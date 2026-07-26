@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsModel, CmsEntryStorageOperationsDeleteEntriesParams } from "~/types/types.js";
+import type { CmsModel, CmsEntryStorageOperationsDeleteEntriesParams } from "~/types/index.js";
 
 export interface IDeleteMultipleEntriesStorageOperation {
     execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams): Promise<void>;

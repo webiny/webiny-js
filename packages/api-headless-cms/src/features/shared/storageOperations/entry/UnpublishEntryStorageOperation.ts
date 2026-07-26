@@ -4,7 +4,7 @@ import type {
     CmsEntry,
     CmsEntryValues,
     CmsEntryStorageOperationsUnpublishParams
-} from "~/types/types.js";
+} from "~/types/index.js";
 
 export interface IUnpublishEntryStorageOperation {
     execute<T extends CmsEntryValues = CmsEntryValues>(

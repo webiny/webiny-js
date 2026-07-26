@@ -4,7 +4,7 @@ import type {
     CmsEntry,
     CmsEntryValues,
     CmsEntryStorageOperationsGetPreviousRevisionParams
-} from "~/types/types.js";
+} from "~/types/index.js";
 
 export interface IGetPreviousRevisionStorageOperation {
     execute<T extends CmsEntryValues = CmsEntryValues>(

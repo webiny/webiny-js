@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsModelStorageOperations } from "~/types/types.js";
+import type { CmsModelStorageOperations } from "~/types/index.js";
 
 export const ModelStorageOperations =
     createAbstraction<CmsModelStorageOperations>("Cms/ModelStorageOperations");

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsModel, CmsEntryStorageOperationsMoveToBinParams } from "~/types/types.js";
+import type { CmsModel, CmsEntryStorageOperationsMoveToBinParams } from "~/types/index.js";
 
 export interface IMoveToBinStorageOperation {
     execute(model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams): Promise<void>;
