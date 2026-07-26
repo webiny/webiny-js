@@ -3,7 +3,9 @@ import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import {
+    CreateEntryStorageOperation
+} from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -13,7 +15,7 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private createEntryStorage: CreateEntryStorageOperation.Interface
     ) {}
 
     public async execute(
@@ -25,7 +27,7 @@ class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
             const storageEntry = await this.entryToStorageTransform(model, entry);
 
             // Persist to storage
-            await this.storageOperations.entries.create(model, {
+            await this.createEntryStorage.execute(model, {
                 entry,
                 storageEntry
             });
@@ -40,5 +42,5 @@ class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 export const CreateEntryRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: CreateEntryRepositoryImpl,
-    dependencies: [EntryToStorageTransform, StorageOperations]
+    dependencies: [EntryToStorageTransform, CreateEntryStorageOperation]
 });

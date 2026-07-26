@@ -1,6 +1,8 @@
 import { createImplementation, Result } from "@webiny/feature/api";
 import { RestoreEntryFromBinRepository as RepositoryAbstraction } from "./abstractions.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import {
+    RestoreFromBinStorageOperation
+} from "~/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
@@ -18,7 +20,7 @@ class RestoreEntryFromBinRepositoryImpl implements RepositoryAbstraction.Interfa
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private restoreFromBinStorage: RestoreFromBinStorageOperation.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -30,7 +32,7 @@ class RestoreEntryFromBinRepositoryImpl implements RepositoryAbstraction.Interfa
             const storageEntry = await this.entryToStorageTransform<T>(model, entry);
 
             // Call storage operation
-            const result = await this.storageOperations.entries.restoreFromBin<T>(model, {
+            const result = await this.restoreFromBinStorage.execute<T>(model, {
                 entry,
                 storageEntry
             });
@@ -48,5 +50,9 @@ class RestoreEntryFromBinRepositoryImpl implements RepositoryAbstraction.Interfa
 export const RestoreEntryFromBinRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: RestoreEntryFromBinRepositoryImpl,
-    dependencies: [EntryToStorageTransform, EntryFromStorageTransform, StorageOperations]
+    dependencies: [
+        EntryToStorageTransform,
+        EntryFromStorageTransform,
+        RestoreFromBinStorageOperation
+    ]
 });

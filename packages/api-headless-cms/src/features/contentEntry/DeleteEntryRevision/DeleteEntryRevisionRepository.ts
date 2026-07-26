@@ -3,7 +3,9 @@ import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRevisionRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import {
+    DeleteEntryRevisionStorageOperation
+} from "~/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
 
@@ -13,7 +15,7 @@ import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js"
 class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private deleteEntryRevisionStorage: DeleteEntryRevisionStorageOperation.Interface
     ) {}
 
     async execute(params: {
@@ -42,7 +44,7 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
                 storageLatestEntry = await this.entryToStorageTransform(model, updatedLatestEntry);
             }
 
-            await this.storageOperations.entries.deleteRevision(model, {
+            await this.deleteEntryRevisionStorage.execute(model, {
                 entry,
                 storageEntry,
                 latestEntry: latestEntry,
@@ -59,5 +61,5 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
 export const DeleteEntryRevisionRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: DeleteEntryRevisionRepositoryImpl,
-    dependencies: [EntryToStorageTransform, StorageOperations]
+    dependencies: [EntryToStorageTransform, DeleteEntryRevisionStorageOperation]
 });
