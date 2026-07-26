@@ -38,16 +38,6 @@ export namespace CmsStorageModelProvider {
     export type Interface = ICmsStorageModelProvider;
 }
 
-/**
- * StorageOperations abstraction for legacy storage operations.
- * The legacy implementation will be registered using container.registerInstance.
- */
-export const StorageOperations = createAbstraction<StorageOps>("StorageOperations");
-
-export namespace StorageOperations {
-    export type Interface = StorageOps;
-}
-
 export interface IHeadlessCmsStorageOperationsFactory<T> {
     create(context: T): StorageOps;
 }

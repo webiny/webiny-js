@@ -70,7 +70,6 @@ import {
     CmsContext as CmsContextAbstraction,
     CmsStorageModelProvider,
     HeadlessCms,
-    StorageOperations,
     StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
 import {
@@ -219,11 +218,9 @@ export const HeadlessCmsFeature = createFeature({
         // running it for every event closes the previous GraphQL-only gap.
         const storageOperations = container.resolve(StorageOperationsFactory).create(cmsContext);
         storageOperations.beforeInit(cmsContext);
-        container.registerInstance(StorageOperations, storageOperations);
 
-        // Bridge the legacy storage operations object into the new per-method DI abstractions.
-        // Both registrations are kept side by side during the migration; once all consumers
-        // resolve the per-method abstractions directly, StorageOperations can be removed.
+        // Bridge the legacy storage operations object into the new per-method DI abstractions,
+        // which is how all consumers now access storage operations.
         registerCmsStorageOperations(container, {
             groups: storageOperations.groups,
             models: storageOperations.models,
@@ -291,8 +288,7 @@ export const HeadlessCmsFeature = createFeature({
         container.registerFactory(AccessControlAbstraction, () => getAccessControl());
 
         // The HeadlessCms facade — a LAZY factory built on first resolve (post-auth), memoised per
-        // request container. StorageOperations is resolved here; it is built eagerly (async) by the
-        // initializer below before resolvers run.
+        // request container.
         let cmsFacade: HeadlessCms.Interface | undefined;
         container.registerFactory(HeadlessCms, () => {
             if (!cmsFacade) {
@@ -301,7 +297,7 @@ export const HeadlessCmsFeature = createFeature({
                     READ: type === "read",
                     PREVIEW: type === "preview",
                     MANAGE: type === "manage",
-                    storageOperations: container.resolve(StorageOperations),
+                    storageOperations,
                     accessControl: getAccessControl(),
                     ...createModelGroupsCrud({ context: cmsContext }),
                     ...createModelsCrud({ context: cmsContext }),
