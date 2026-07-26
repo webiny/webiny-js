@@ -5,7 +5,7 @@ import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js"
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GroupStorageOperations } from "~/features/shared/storageOperations/GroupStorageOperations.js";
 import type { CmsGroup } from "~/types/index.js";
 
 /**
@@ -20,7 +20,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private storageOperations: StorageOperations.Interface
+        private groupStorageOperations: GroupStorageOperations.Interface
     ) {}
 
     async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -34,7 +34,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Persist updates
-            await this.storageOperations.groups.update({ group });
+            await this.groupStorageOperations.update({ group });
 
             // Clear cache
             this.groupCache.clear();
@@ -49,5 +49,5 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 export const UpdateGroupRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: UpdateGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations]
+    dependencies: [GroupCache, PluginGroupsProvider, GroupStorageOperations]
 });
