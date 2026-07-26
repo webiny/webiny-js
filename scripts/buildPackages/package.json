@@ -12,7 +12,7 @@
     "execa": "^10.0.0",
     "fs-extra": "^11.3.6",
     "js-yaml": "^5.2.1",
-    "listr2": "^10.2.2",
+    "listr2": "^11.0.0",
     "load-json-file": "^7.0.1",
     "node-notifier": "^10.0.1",
     "serialize-error": "^13.0.1",

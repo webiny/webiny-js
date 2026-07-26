@@ -17,7 +17,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.37.0",
+    "@pulumi/aws": "^7.38.0",
     "@pulumi/pulumi": "^3.253.0",
     "decompress": "^4.2.1",
     "execa": "^10.0.0",
@@ -26,7 +26,7 @@
     "load-json-file": "^7.0.1",
     "lodash": "^4.18.1",
     "semver": "^7.8.5",
-    "tar": "^7.5.20"
+    "tar": "^7.5.21"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
