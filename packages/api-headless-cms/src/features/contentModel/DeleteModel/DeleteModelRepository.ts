@@ -5,7 +5,7 @@ import {
     ModelCannotDeleteCodeModelError,
     ModelPersistenceError
 } from "~/domain/contentModel/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
 import type { CmsModel } from "~/types/index.js";
 
 /**
@@ -22,7 +22,7 @@ class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private modelCache: ModelCache.Interface,
         private modelsFetcher: ModelsFetcher.Interface,
-        private storageOperations: StorageOperations.Interface
+        private modelStorageOperations: ModelStorageOperations.Interface
     ) {}
 
     async execute(model: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -38,7 +38,7 @@ class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Delete from storage
-            await this.storageOperations.models.delete({ model });
+            await this.modelStorageOperations.delete({ model });
 
             // Clear cache
             this.modelCache.clear();
@@ -52,5 +52,5 @@ class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const DeleteModelRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteModelRepositoryImpl,
-    dependencies: [ModelCache, ModelsFetcher, StorageOperations]
+    dependencies: [ModelCache, ModelsFetcher, ModelStorageOperations]
 });
