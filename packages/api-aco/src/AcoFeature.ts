@@ -1,12 +1,12 @@
 import { createFeature } from "@webiny/feature/api";
 import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
-import { createAcoGraphQL } from "./createAcoGraphQL.js";
+import { addAcoBaseSchema } from "./createAcoGraphQL.js";
+import { addFilterSchema } from "~/filter/filter.gql.js";
 import { AcoInitializer } from "./AcoInitializer.js";
 import { CreateFlpTask } from "~/flp/tasks/createFlp.task.js";
 import { UpdateFlpTask } from "~/flp/tasks/updateFlp.task.js";
@@ -52,22 +52,10 @@ import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpt
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
-        // createAcoGraphQL() returns the static [baseSchema, filterSchema] GraphQLSchemaPlugins.
-        // The dynamic folder schema (needs the per-tenant folder model) is built by AcoInitializer.
-        const [baseSchema, filterSchema] = createAcoGraphQL() as unknown as IGraphQLSchemaPlugin[];
-
-        for (const plugin of [baseSchema, filterSchema]) {
-            const schema = (plugin as IGraphQLSchemaPlugin).schema;
-
-            if (schema.typeDefs) {
-                builder.addTypeDefs(schema.typeDefs);
-            }
-
-            if (schema.resolvers) {
-                builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
-            }
-        }
-
+        // Static ACO base + filter schema (DI-native contributors declaring their deps). The dynamic
+        // folder schema (needs the per-tenant folder model) is still built by AcoInitializer.
+        addAcoBaseSchema(builder);
+        addFilterSchema(builder);
         return builder;
     }
 }
