@@ -120,11 +120,7 @@ export const addWorkflowsSchema = (builder: IGraphQLSchemaBuilder): void => {
         }
 
         type WorkflowsMutation {
-            storeWorkflow(
-                app: String!
-                id: ID!
-                data: StoreWorkflowInput!
-            ): StoreWorkflowResponse!
+            storeWorkflow(app: String!, id: ID!, data: StoreWorkflowInput!): StoreWorkflowResponse!
             deleteWorkflow(app: String!, id: ID!): DeleteWorkflowResponse!
         }
 

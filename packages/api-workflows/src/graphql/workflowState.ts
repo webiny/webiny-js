@@ -229,7 +229,10 @@ export const addWorkflowStateSchema = (builder: IGraphQLSchemaBuilder): void => 
     builder.addResolver<unknown, Partial<WorkflowState>>({
         path: "WorkflowState.isActive",
         dependencies: [],
-        resolver: () => ({ parent }) => parent.isActive || false
+        resolver:
+            () =>
+            ({ parent }) =>
+                parent.isActive || false
     });
 
     builder.addResolver({
