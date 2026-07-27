@@ -206,9 +206,9 @@ export const HeadlessCmsFeature = createFeature({
         );
 
         // Storage operations registration.
-        // New-style adapters (DDB, DDB+ES) register GroupStorageOperations and ModelStorageOperations
+        // New-style adapters (DDB, DDB+ES, SQL) register GroupStorageOperations and ModelStorageOperations
         // as app-scoped singletons at boot time, and provide a CmsEntryStorageOpsRegistrar for entries.
-        // Legacy adapters (sql, pg-os) still register a StorageOperationsFactory.
+        // Legacy adapters (pg-os) still register a StorageOperationsFactory.
         let entryRegistrar: CmsEntryStorageOpsRegistrar.Interface | undefined;
         try {
             entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
@@ -219,7 +219,7 @@ export const HeadlessCmsFeature = createFeature({
         if (entryRegistrar) {
             entryRegistrar.register(container);
         } else {
-            // Legacy path: DDB and DDB+ES adapters have migrated to direct DI; sql/pg-os still use factory.
+            // Legacy path: DDB, DDB+ES, SQL adapters have migrated to direct DI; pg-os still uses factory.
             const storageOperations = container
                 .resolve(StorageOperationsFactory)
                 .create(cmsContext);
