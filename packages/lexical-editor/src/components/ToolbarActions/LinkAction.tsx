@@ -4,7 +4,7 @@ import { getNodeFromSelection } from "~/hooks/useCurrentElement.js";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
 import { ReactComponent as LinkIcon } from "@webiny/icons/link.svg";
-import clsx from "clsx";
+import cn from "clsx";
 
 export const LinkAction = () => {
     const { editor } = useRichTextEditor();
@@ -27,7 +27,7 @@ export const LinkAction = () => {
     return (
         <button
             onClick={insertLink}
-            className={clsx("popup-item", "spaced", { active: isLink })}
+            className={cn("popup-item", "spaced", { active: isLink })}
             aria-label="Insert link"
         >
             <LinkIcon className="format" />
