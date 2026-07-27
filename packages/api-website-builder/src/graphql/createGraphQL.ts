@@ -96,7 +96,11 @@ const BASE_TYPE_DEFS = /* GraphQL */ `
 
 const addBaseSchema = (builder: GraphQLSchemaBuilder.Interface): void => {
     builder.addTypeDefs(BASE_TYPE_DEFS);
-    builder.addResolver({ path: "Query.websiteBuilder", dependencies: [], resolver: () => () => ({}) });
+    builder.addResolver({
+        path: "Query.websiteBuilder",
+        dependencies: [],
+        resolver: () => () => ({})
+    });
     builder.addResolver({
         path: "Mutation.websiteBuilder",
         dependencies: [],
