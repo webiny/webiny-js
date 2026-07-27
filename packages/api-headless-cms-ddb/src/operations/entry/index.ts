@@ -46,7 +46,8 @@ import {
     FieldFilterCreateRegistry,
     FieldSortingRegistry
 } from "@webiny/api-headless-cms-storage";
-import type { CmsEntryStorageOperations, IEntryEntity } from "~/types.js";
+import type { CmsEntryStorageOperations } from "~/types.js";
+import type { IEntryEntity } from "~/definitions/types.js";
 import {
     isDeletedEntryMetaField,
     isEntryLevelEntryMetaField,

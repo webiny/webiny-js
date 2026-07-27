@@ -10,11 +10,8 @@ import { DataLoaderCache } from "~/operations/entry/dataLoader/DataLoaderCache.j
 import type { DataLoaders } from "~/operations/entry/dataLoader/index.js";
 import { getDataLoaderFactory } from "~/operations/entry/dataLoader/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import type {
-    DataLoadersHandlerInterfaceClearAllParams,
-    IDataLoadersHandler,
-    IEntryEntity
-} from "~/types.js";
+import type { DataLoadersHandlerInterfaceClearAllParams, IDataLoadersHandler } from "~/types.js";
+import type { IEntryEntity } from "~/definitions/types.js";
 
 interface DataLoaderParams {
     model: Pick<CmsModel, "tenant" | "modelId">;

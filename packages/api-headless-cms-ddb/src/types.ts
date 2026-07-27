@@ -1,12 +1,4 @@
-import type {
-    CmsContext,
-    CmsEntryStorageOperations as BaseCmsEntryStorageOperations
-} from "@webiny/api-headless-cms/types/index.js";
-import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-
-export type { CmsContext };
-
-export type { IGroupEntity, IModelEntity, IEntryEntity };
+import type { CmsEntryStorageOperations as BaseCmsEntryStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 
 export enum ENTITIES {
     GROUPS = "CmsGroups",
