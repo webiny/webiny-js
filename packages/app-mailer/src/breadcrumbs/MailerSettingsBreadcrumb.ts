@@ -1,12 +1,13 @@
 import { createImplementation } from "@webiny/di";
-import { Breadcrumb, type BreadcrumbTrailItem } from "@webiny/app-admin";
+import { Breadcrumb } from "@webiny/app-admin";
+import type { BreadcrumbTrailItem } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 /**
  * Breadcrumb trail for the Mailer settings page: `Settings › Mailer`. Purely declarative —
  * no React in the view. The home entry is prepended by the header.
  */
-class MailerSettingsBreadcrumb implements Breadcrumb.Interface {
+class MailerSettingsBreadcrumbImpl implements Breadcrumb.Interface {
     name = "mailer.settings";
     route = Routes.Settings;
 
@@ -15,8 +16,8 @@ class MailerSettingsBreadcrumb implements Breadcrumb.Interface {
     }
 }
 
-export const mailerSettingsBreadcrumb = createImplementation({
+export const MailerSettingsBreadcrumb = createImplementation({
     abstraction: Breadcrumb,
-    implementation: MailerSettingsBreadcrumb,
+    implementation: MailerSettingsBreadcrumbImpl,
     dependencies: []
 });
