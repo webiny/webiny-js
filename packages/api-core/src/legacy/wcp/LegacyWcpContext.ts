@@ -84,8 +84,28 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().canUseAiPageGeneration();
     }
 
+    canUseAiPageTranslation(): boolean {
+        return this.getWcpContext().canUseAiPageTranslation();
+    }
+
     canUseAiLexicalGeneration(): boolean {
         return this.getWcpContext().canUseAiLexicalGeneration();
+    }
+
+    canUseAiEntryGeneration(): boolean {
+        return this.getWcpContext().canUseAiEntryGeneration();
+    }
+
+    canUseAiEntryComparison(): boolean {
+        return this.getWcpContext().canUseAiEntryComparison();
+    }
+
+    canUseAiEntryTranslation(): boolean {
+        return this.getWcpContext().canUseAiEntryTranslation();
+    }
+
+    canUseAbTesting(): boolean {
+        return this.getWcpContext().canUseAbTesting();
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void {
