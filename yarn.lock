@@ -10843,6 +10843,7 @@ __metadata:
     "@webiny/api-core-testing": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-storage": "npm:0.0.0"
     "@webiny/api-headless-cms-utils-os": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-search-index-tasks": "npm:0.0.0"

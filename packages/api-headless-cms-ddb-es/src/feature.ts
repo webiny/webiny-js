@@ -1,174 +1,130 @@
 import { createTable, DynamoDBClient } from "@webiny/db-dynamodb";
-import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
-import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
-import { createModelsStorageOperations } from "./operations/model/index.js";
-import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
 import {
     CmsEntryOpenSearchIndexCreate,
-    CmsEntryOpenSearchIndexDelete,
-    CmsEntryOpenSearchValuesModifier,
-    CmsEntryOpenSearchFieldIndexRegistry
+    CmsEntryOpenSearchIndexDelete
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
-import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { DbRegistry } from "@webiny/db/exports/api/db.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
+import { FilterUtilFeature } from "@webiny/db-dynamodb/feature/FilterUtil/feature.js";
+import { DbRegistry } from "@webiny/db/exports/api/db.js";
+import { CmsDdbEsTable } from "~/abstractions/CmsDdbEsTable.js";
+import { CmsDdbEsOsTable } from "~/abstractions/CmsDdbEsOsTable.js";
+import { CmsDdbEsGroupEntity } from "~/abstractions/CmsDdbEsGroupEntity.js";
+import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
+import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
+import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
+import { DdbEsGroupStorageOperations } from "~/operations/group/DdbEsGroupStorageOperations.js";
+import { DdbEsModelStorageOperations } from "~/operations/model/DdbEsModelStorageOperations.js";
+import { DdbEsCmsEntryStorageOpsRegistrar } from "~/DdbEsCmsEntryStorageOpsRegistrar.js";
 
-const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
-    const { table, esTable, elasticsearch, container } = params;
-
-    const db = container.resolve(DynamoDBClient);
-    const documentClient = db.client;
-
-    const tableInstance = createTable({
-        name: table || (process.env.DB_TABLE as string),
-        documentClient
-    });
-    const tableElasticsearchInstance = createOpenSearchTable({
-        name: esTable || (process.env.DB_TABLE_OPENSEARCH as string),
-        documentClient
-    });
-
-    const entities = {
-        groups: createGroupEntity({
-            entityName: ENTITIES.GROUPS,
-            table: tableInstance
-        }),
-        models: createModelEntity({
-            entityName: ENTITIES.MODELS,
-            table: tableInstance
-        }),
-        entries: createEntryEntity({
-            entityName: ENTITIES.ENTRIES,
-            table: tableInstance
-        }),
-        entriesEs: createOpenSearchEntity({
-            entityName: ENTITIES.ENTRIES_ES,
-            table: tableElasticsearchInstance
-        })
-    };
-
-    const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
-    const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
-    const compressionHandler = container.resolve(CompressionHandler);
-    const valuesModifiers = container.resolveAll(CmsEntryOpenSearchValuesModifier);
-
-    const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
-
-    container.registerFactory(ModelAfterCreateEventHandler, () => ({
-        async handle(event) {
-            const { model } = event.payload;
-            await indexCreate.execute({ model });
-        }
-    }));
-
-    container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
-        async handle(event) {
-            const { model } = event.payload;
-            await indexCreate.execute({ model });
-        }
-    }));
-
-    const indexDelete = container.resolve(CmsEntryOpenSearchIndexDelete);
-
-    container.registerFactory(ModelAfterDeleteEventHandler, () => ({
-        async handle(event) {
-            const { model } = event.payload;
-            await indexDelete.execute({ model });
-        }
-    }));
-
-    const entries = createEntriesStorageOperations({
-        entity: entities.entries,
-        esEntity: entities.entriesEs,
-        container,
-        elasticsearch,
-        fieldRegistry,
-        fieldIndexRegistry,
-        compressionHandler,
-        valuesModifiers
-    });
-
-    return {
-        name: "dynamodb:opensearch",
-        beforeInit: context => {
-            const dbRegistry = context.container.resolve(DbRegistry);
-
-            dbRegistry.register({
-                item: entities.entries,
-                app: "cms",
-                tags: ["regular", entities.entries.name]
-            });
-            dbRegistry.register({
-                item: entities.entriesEs,
-                app: "cms",
-                tags: ["es", entities.entriesEs.name]
-            });
-
-            entries.dataLoaders.clearAll();
-        },
-        getEntities: () => entities,
-        getTable: () => tableInstance,
-        getEsTable: () => tableElasticsearchInstance,
-        groups: createGroupsStorageOperations({
-            entity: entities.groups,
-            container
-        }),
-        models: createModelsStorageOperations({
-            entity: entities.models,
-            elasticsearch
-        }),
-        entries
-    };
-};
-
-class OpenSearchStorageOperationsFactoryImpl
-    implements StorageOperationsFactoryAbstraction.Interface
-{
-    public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
-
-    public create(context: CmsContext) {
-        return createOpenSearchStorageOperations({
-            elasticsearch: this.openSearchClient.use(),
-            container: context.container
-        });
-    }
-}
-
-const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation(
-    {
-        implementation: OpenSearchStorageOperationsFactoryImpl,
-        dependencies: [OpenSearchClient]
-    }
-);
-
-/**
- * DI-native feature — registers the DynamoDB+OpenSearch CMS storage operations factory (parallel to
- * HeadlessCmsDdbFeature). Requires DynamoDBClient (DbFeature) and OpenSearchClient
- * (OpenSearchClientFeature) to be registered in the container first.
- */
 export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         CmsEntryOpenSearchUtilsFeature.register(container);
+        FilterRegistriesFeature.register(container);
+        FilterUtilFeature.register(container);
+
         container.register(CreateElasticsearchIndexTask);
-        container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
+
+        const db = container.resolve(DynamoDBClient);
+        const documentClient = db.client;
+
+        const tableInstance = createTable({
+            name: process.env.DB_TABLE as string,
+            documentClient
+        });
+        const tableElasticsearchInstance = createOpenSearchTable({
+            name: process.env.DB_TABLE_OPENSEARCH as string,
+            documentClient
+        });
+
+        const groupEntity = createGroupEntity({
+            entityName: ENTITIES.GROUPS,
+            table: tableInstance
+        });
+        const modelEntity = createModelEntity({
+            entityName: ENTITIES.MODELS,
+            table: tableInstance
+        });
+        const entryEntity = createEntryEntity({
+            entityName: ENTITIES.ENTRIES,
+            table: tableInstance
+        });
+        const entriesEsEntity = createOpenSearchEntity({
+            entityName: ENTITIES.ENTRIES_ES,
+            table: tableElasticsearchInstance
+        });
+
+        // Register infrastructure instances (app-scoped)
+        container.registerInstance(CmsDdbEsTable, tableInstance);
+        container.registerInstance(CmsDdbEsOsTable, tableElasticsearchInstance);
+        container.registerInstance(CmsDdbEsGroupEntity, groupEntity);
+        container.registerInstance(CmsDdbEsModelEntity, modelEntity);
+        container.registerInstance(CmsDdbEsEntryEntity, entryEntity);
+        container.registerInstance(CmsDdbEsEntriesEsEntity, entriesEsEntity);
+
+        // Register entities in DbRegistry (optional — may not be available in all contexts)
+        try {
+            const dbRegistry = container.resolve(DbRegistry);
+            dbRegistry.register({
+                item: entryEntity,
+                app: "cms",
+                tags: ["regular", entryEntity.name]
+            });
+            dbRegistry.register({
+                item: entriesEsEntity,
+                app: "cms",
+                tags: ["es", entriesEsEntity.name]
+            });
+        } catch {
+            // DbRegistry not registered — skip entity registration
+        }
+
+        // Event handlers for OpenSearch index lifecycle
+        const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
+        container.registerFactory(ModelAfterCreateEventHandler, () => ({
+            async handle(event) {
+                const { model } = event.payload;
+                await indexCreate.execute({ model });
+            }
+        }));
+
+        container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
+            async handle(event) {
+                const { model } = event.payload;
+                await indexCreate.execute({ model });
+            }
+        }));
+
+        const indexDelete = container.resolve(CmsEntryOpenSearchIndexDelete);
+        container.registerFactory(ModelAfterDeleteEventHandler, () => ({
+            async handle(event) {
+                const { model } = event.payload;
+                await indexDelete.execute({ model });
+            }
+        }));
+
+        // Group + model: DI classes, app-scoped singletons
+        container.register(DdbEsGroupStorageOperations).inSingletonScope();
+        container.register(DdbEsModelStorageOperations).inSingletonScope();
+
+        // Entry registrar: app-scoped, called per-request by HeadlessCmsFeature
+        container.register(DdbEsCmsEntryStorageOpsRegistrar).inSingletonScope();
     }
 });
 
+/** @deprecated use HeadlessCmsDdbEsFeature instead */
 export const registerCmsOpenSearchStorageOperations = () => {
     const plugin = createRegisterExtensionPlugin(context => {
         return HeadlessCmsDdbEsFeature.register(context.container);
