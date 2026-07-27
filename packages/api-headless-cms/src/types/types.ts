@@ -57,6 +57,11 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
+    /**
+     * @deprecated Resolve per-method storage abstractions from the container instead.
+     * Kept for backward compatibility with existing tests. Will be removed once tests are migrated.
+     */
+    storageOperations?: HeadlessCmsStorageOperations;
 
     /**
      * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.
