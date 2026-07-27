@@ -2,6 +2,8 @@ export { GroupStorageOperations } from "./GroupStorageOperations.js";
 export { ModelStorageOperations } from "./ModelStorageOperations.js";
 export { registerCmsStorageOperations } from "./registerCmsStorageOperations.js";
 export type { ICmsStorageOperationsRegistry } from "./registerCmsStorageOperations.js";
+export { CmsEntryStorageOpsRegistrar } from "./CmsEntryStorageOpsRegistrar.js";
+export { registerCmsEntryStorageOperations } from "./registerCmsEntryStorageOperations.js";
 
 export { CreateEntryStorageOperation } from "./entry/CreateEntryStorageOperation.js";
 export { CreateEntryRevisionFromStorageOperation } from "./entry/CreateEntryRevisionFromStorageOperation.js";
