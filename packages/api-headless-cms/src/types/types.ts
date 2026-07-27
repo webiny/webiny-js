@@ -57,10 +57,6 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
-    /**
-     * The storage operations loaded for current context.
-     */
-    storageOperations: HeadlessCmsStorageOperations;
 
     /**
      * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.

@@ -69,8 +69,7 @@ import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
     CmsStorageModelProvider,
-    HeadlessCms,
-    StorageOperationsFactory
+    HeadlessCms
 } from "~/features/shared/abstractions.js";
 import {
     EntryFromStorageTransform,
@@ -80,15 +79,9 @@ import {
 } from "~/legacy/abstractions.js";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
-import type { IHeadlessCmsStorageOperationsFactory } from "~/features/shared/abstractions.js";
-import { registerCmsStorageOperations } from "~/features/shared/storageOperations/registerCmsStorageOperations.js";
+import { CmsEntryStorageOpsRegistrar } from "~/features/shared/storageOperations/CmsEntryStorageOpsRegistrar.js";
 
 export interface HeadlessCmsConfig {
-    /**
-     * Optional: if provided, registers the factory directly.
-     * If omitted, expects StorageOperationsFactory to be registered externally.
-     */
-    storageOperations?: IHeadlessCmsStorageOperationsFactory<any>;
     type: ApiEndpoint;
     /** Extra plugins (e.g. CmsGraphQLSchemaPlugin) to register in ctx.plugins at runtime. */
     extraPlugins?: any[];
@@ -98,10 +91,6 @@ export const HeadlessCmsFeature = createFeature({
     name: "HeadlessCms",
     register(container: Container, config: HeadlessCmsConfig) {
         const { type } = config;
-
-        if (config.storageOperations) {
-            container.registerInstance(StorageOperationsFactory, config.storageOperations);
-        }
 
         // Pre-register the CMS SDK namespace schema (Query.cms / Mutation.cms) so it is
         // available when GraphQLSchemaComposer is constructed (before context enhancement).
@@ -211,52 +200,11 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
-        // Build the CMS storage stack synchronously, here in register(), so it is available for
-        // EVERY event (GraphQL, background tasks, etc.) — not only inside GraphQL routes via the
-        // request initializer. create()/beforeInit() are sync across all adapters; beforeInit also
-        // registers entities into the global DbRegistry (consumed by search-index-tasks), so
-        // running it for every event closes the previous GraphQL-only gap.
-        const storageOperations = container.resolve(StorageOperationsFactory).create(cmsContext);
-        storageOperations.beforeInit(cmsContext);
-
-        // Bridge the legacy storage operations object into the new per-method DI abstractions,
-        // which is how all consumers now access storage operations.
-        registerCmsStorageOperations(container, {
-            groups: storageOperations.groups,
-            models: storageOperations.models,
-            entries: {
-                create: { execute: storageOperations.entries.create },
-                createRevisionFrom: { execute: storageOperations.entries.createRevisionFrom },
-                update: { execute: storageOperations.entries.update },
-                delete: { execute: storageOperations.entries.delete },
-                deleteRevision: { execute: storageOperations.entries.deleteRevision },
-                deleteMultipleEntries: {
-                    execute: storageOperations.entries.deleteMultipleEntries
-                },
-                moveToBin: { execute: storageOperations.entries.moveToBin },
-                restoreFromBin: { execute: storageOperations.entries.restoreFromBin },
-                publish: { execute: storageOperations.entries.publish },
-                unpublish: { execute: storageOperations.entries.unpublish },
-                move: { execute: storageOperations.entries.move },
-                get: { execute: storageOperations.entries.get },
-                list: { execute: storageOperations.entries.list },
-                getByIds: { execute: storageOperations.entries.getByIds },
-                getLatestByIds: { execute: storageOperations.entries.getLatestByIds },
-                getPublishedByIds: { execute: storageOperations.entries.getPublishedByIds },
-                getRevisions: { execute: storageOperations.entries.getRevisions },
-                getRevisionById: { execute: storageOperations.entries.getRevisionById },
-                getPublishedRevisionByEntryId: {
-                    execute: storageOperations.entries.getPublishedRevisionByEntryId
-                },
-                getLatestRevisionByEntryId: {
-                    execute: storageOperations.entries.getLatestRevisionByEntryId
-                },
-                getPreviousRevision: { execute: storageOperations.entries.getPreviousRevision },
-                getUniqueFieldValues: {
-                    execute: storageOperations.entries.getUniqueFieldValues
-                }
-            }
-        });
+        // Register the per-request entry storage operations via the entry registrar. Group/model
+        // storage operations are registered as app-scoped DI singletons by the storage adapter
+        // feature (e.g. HeadlessCmsDdbFeature) at boot time, before any request runs.
+        const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
+        entryRegistrar.register(container);
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);
@@ -297,7 +245,6 @@ export const HeadlessCmsFeature = createFeature({
                     READ: type === "read",
                     PREVIEW: type === "preview",
                     MANAGE: type === "manage",
-                    storageOperations,
                     accessControl: getAccessControl(),
                     ...createModelGroupsCrud({ context: cmsContext }),
                     ...createModelsCrud({ context: cmsContext }),
