@@ -3,72 +3,17 @@ import type {
     IGraphQLSchemaFactory,
     GraphQLSchemaFactory as GQLSchemaFactory
 } from "@webiny/api-graphql/graphql/abstractions.js";
-import { createNotificationsGraphQL } from "~/graphql/notifications.js";
-import { createWorkflowsSchema } from "~/graphql/workflows.js";
-import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
-
-function addPluginsToBuilder(
-    plugins: IGraphQLSchemaPlugin[],
-    builder: IGraphQLSchemaBuilder
-): void {
-    for (const plugin of plugins) {
-        const schema = plugin.schema;
-
-        if (schema.typeDefs) {
-            builder.addTypeDefs(schema.typeDefs);
-        }
-
-        if (schema.resolvers) {
-            addResolvers(builder, schema.resolvers as Record<string, any>, "");
-        }
-
-        if (schema.resolverDecorators) {
-            for (const [path, decorators] of Object.entries(schema.resolverDecorators)) {
-                for (const decorator of decorators as any[]) {
-                    builder.addResolverDecorator(path, decorator);
-                }
-            }
-        }
-    }
-}
-
-function addResolvers(
-    builder: IGraphQLSchemaBuilder,
-    resolvers: Record<string, any>,
-    prefix: string
-): void {
-    for (const [key, value] of Object.entries(resolvers)) {
-        const path = prefix ? `${prefix}.${key}` : key;
-
-        if (typeof value === "function") {
-            const oldResolver = value;
-            builder.addResolver({
-                path,
-                dependencies: [],
-                resolver:
-                    () =>
-                    ({ parent, args, context, info }: any) =>
-                        oldResolver(parent, args, context, info)
-            });
-        } else if (typeof value === "object" && value !== null) {
-            addResolvers(builder, value, path);
-        }
-    }
-}
+import { addNotificationsSchema } from "~/graphql/notifications.js";
+import { addWorkflowsSchema } from "~/graphql/workflows.js";
+import { addWorkflowStateSchema } from "~/graphql/workflowState.js";
 
 class WorkflowsSchemaFactoryImpl implements IGraphQLSchemaFactory {
     async execute(
         builder: GQLSchemaFactory.SchemaBuilder
     ): Promise<GQLSchemaFactory.SchemaBuilder> {
-        const plugins = [
-            createNotificationsGraphQL(),
-            createWorkflowsSchema(),
-            createWorkflowStateSchema()
-        ] as unknown as IGraphQLSchemaPlugin[];
-
-        addPluginsToBuilder(plugins, builder);
+        addWorkflowsSchema(builder);
+        addWorkflowStateSchema(builder);
+        addNotificationsSchema(builder);
 
         return builder;
     }
