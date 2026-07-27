@@ -1,7 +1,9 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
+import { useMemo } from "react";
 import { useFeature } from "@webiny/app";
 import { BreadcrumbsFeature } from "./feature.js";
-import type { BreadcrumbLink, BreadcrumbTrailItem } from "./abstractions.js";
+import type { BreadcrumbLink } from "./abstractions.js";
+import type { BreadcrumbTrailItem } from "./abstractions.js";
 
 // Stable string form of a link, for change detection. A `Route` is a class instance and
 // won't JSON-serialize usefully, so key it by its name plus params.

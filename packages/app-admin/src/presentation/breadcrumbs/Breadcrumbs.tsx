@@ -1,6 +1,7 @@
 import React from "react";
 import { useBreadcrumbs } from "./useBreadcrumbs.js";
-import type { BreadcrumbLink, BreadcrumbTrailItem } from "./abstractions.js";
+import type { BreadcrumbLink } from "./abstractions.js";
+import type { BreadcrumbTrailItem } from "./abstractions.js";
 
 export interface BreadcrumbItemProps {
     /** Stable identifier (defaults to `label`). */

@@ -1,7 +1,8 @@
 import React from "react";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as SeparatorIcon } from "@webiny/icons/keyboard_arrow_right.svg";
-import { cn, makeDecoratable } from "~/utils.js";
+import { cn } from "~/utils.js";
+import { makeDecoratable } from "~/utils.js";
 
 export interface BreadcrumbsItem {
     /**

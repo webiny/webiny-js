@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { useBreadcrumbs, type BreadcrumbTrailItem } from "@webiny/app-admin";
+import { useBreadcrumbs } from "@webiny/app-admin";
+import type { BreadcrumbTrailItem } from "@webiny/app-admin";
 import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { Routes } from "~/routes.js";
 

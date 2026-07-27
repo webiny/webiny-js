@@ -1,7 +1,8 @@
 import { createFeature } from "@webiny/feature/admin";
 import { Container } from "@webiny/di";
 import { RouterPresenter } from "@webiny/app/features/router/abstractions.js";
-import { BreadcrumbsPresenter as Abstraction, Breadcrumb } from "./abstractions.js";
+import { BreadcrumbsPresenter as Abstraction } from "./abstractions.js";
+import { Breadcrumb } from "./abstractions.js";
 import { BreadcrumbsPresenter } from "./BreadcrumbsPresenter.js";
 
 export const BreadcrumbsFeature = createFeature({

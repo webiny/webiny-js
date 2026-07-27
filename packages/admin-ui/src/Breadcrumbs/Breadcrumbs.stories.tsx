@@ -1,4 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta } from "@storybook/react";
+import type { StoryObj } from "@storybook/react";
 import React from "react";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { Breadcrumbs } from "./Breadcrumbs.js";

@@ -1,11 +1,9 @@
 import { makeAutoObservable } from "mobx";
 import type { MatchedRoute } from "@webiny/app/features/router/abstractions.js";
-import {
-    BreadcrumbsPresenter as Abstraction,
-    type IBreadcrumb,
-    type BreadcrumbTrailItem,
-    type BreadcrumbsViewModel
-} from "./abstractions.js";
+import { BreadcrumbsPresenter as Abstraction } from "./abstractions.js";
+import type { IBreadcrumb } from "./abstractions.js";
+import type { BreadcrumbTrailItem } from "./abstractions.js";
+import type { BreadcrumbsViewModel } from "./abstractions.js";
 
 export class BreadcrumbsPresenter implements Abstraction.Interface {
     // Trail set imperatively by a view via `useBreadcrumbs` (dynamic trails).
