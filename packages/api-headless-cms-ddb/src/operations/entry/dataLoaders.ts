@@ -11,7 +11,9 @@ import type { DataLoaders } from "~/operations/entry/dataLoader/index.js";
 import { getDataLoaderFactory } from "~/operations/entry/dataLoader/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { DataLoadersHandlerInterfaceClearAllParams, IDataLoadersHandler } from "~/types.js";
-import type { IEntryEntity } from "~/definitions/types.js";
+import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
+import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
+import { createImplementation } from "@webiny/feature/api";
 
 interface DataLoaderParams {
     model: Pick<CmsModel, "tenant" | "modelId">;
@@ -22,17 +24,10 @@ interface GetLoaderParams {
     model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
-interface IDataLoadersHandlerParams {
-    entity: IEntryEntity;
-}
-
-export class DataLoadersHandler implements IDataLoadersHandler {
-    private readonly entity;
+class DataLoadersHandlerImpl implements IDataLoadersHandler {
     private readonly cache = new DataLoaderCache();
 
-    public constructor(params: IDataLoadersHandlerParams) {
-        this.entity = params.entity;
-    }
+    public constructor(private readonly entity: CmsDdbEntryEntity.Interface) {}
 
     public async getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
         params: DataLoaderParams
@@ -152,3 +147,9 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         this.cache.clearAll(params);
     }
 }
+
+export const DataLoadersHandler = createImplementation({
+    abstraction: CmsDdbDataLoaders,
+    implementation: DataLoadersHandlerImpl,
+    dependencies: [CmsDdbEntryEntity]
+});
