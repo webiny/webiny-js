@@ -1,14 +1,11 @@
-import type {
-    CmsEntry,
-    CmsIdentity,
-    CmsModel,
-    CmsModelField,
-    HeadlessCmsStorageOperations
-} from "~/types";
+import type { CmsEntry, CmsIdentity, CmsModel, CmsModelField } from "~/types";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { createIdentifier, generateAlphaNumericLowerCaseId, mdbid } from "@webiny/utils";
 import crypto from "crypto";
 import type { PluginsContainer } from "@webiny/plugins";
+import type { Container } from "@webiny/di";
+import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
+import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
 
 const baseGroup = new CmsGroupPlugin({
     name: "Base group",
@@ -105,7 +102,7 @@ const createdBy: CmsIdentity = {
 
 interface CreatePersonEntriesParams {
     amount: number;
-    storageOperations: HeadlessCmsStorageOperations;
+    container: Container;
     maxRevisions?: number;
     plugins?: PluginsContainer;
 }
@@ -120,8 +117,9 @@ export interface PersonEntriesResult {
 export const createPersonEntries = async (
     params: CreatePersonEntriesParams
 ): Promise<PersonEntriesResult> => {
-    const { amount, storageOperations, maxRevisions = 1 } = params;
+    const { amount, container, maxRevisions = 1 } = params;
     const personModel = createPersonModel();
+    const createEntry = container.resolve(CreateEntryStorageOperation);
 
     const entries: CmsEntry[] = [];
 
@@ -151,7 +149,7 @@ export const createPersonEntries = async (
 
         const revisionAmount = (i % maxRevisions) + 1;
 
-        const entryResult = await storageOperations.entries.create(personModel, {
+        const entryResult = await createEntry.execute(personModel, {
             entry,
             storageEntry: entry
         });
@@ -183,7 +181,7 @@ export const createPersonEntries = async (
                 }
             };
 
-            const entryRevisionResult = await storageOperations.entries.create(personModel, {
+            const entryRevisionResult = await createEntry.execute(personModel, {
                 entry: revision,
                 storageEntry: revision
             });
@@ -217,12 +215,13 @@ export const createPersonEntries = async (
 };
 
 interface DeletePersonModelParams {
-    storageOperations: HeadlessCmsStorageOperations;
+    container: Container;
 }
 export const deletePersonModel = async (params: DeletePersonModelParams) => {
-    const { storageOperations } = params;
+    const { container } = params;
     try {
-        await storageOperations.models.delete({
+        const modelStorageOperations = container.resolve(ModelStorageOperations);
+        await modelStorageOperations.delete({
             model: createPersonModel()
         });
     } catch (ex) {

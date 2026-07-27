@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
-import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { createModelField } from "~/utils/createModelField.js";
 import { createIcon } from "~tests/__helpers/icon.js";
+import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
@@ -146,24 +146,24 @@ describe("content model plugins", () => {
         path: "manage"
     });
 
-    const getStorageOperations = async () => {
+    const getModelStorageOperations = async () => {
         if (!handler.getContext()) {
             await handler.isInstalledQuery();
         }
-        return handler.getContext().container.resolve(HeadlessCms).storageOperations;
+        return handler.getContext().container.resolve(ModelStorageOperations);
     };
 
     beforeEach(async () => {
-        const storageOperations = await getStorageOperations();
-        await storageOperations.models.delete({
+        const modelStorageOperations = await getModelStorageOperations();
+        await modelStorageOperations.delete({
             model: {
                 ...(contentModelPlugin.contentModel as CmsModel)
             }
         });
     });
     afterEach(async () => {
-        const storageOperations = await getStorageOperations();
-        await storageOperations.models.delete({
+        const modelStorageOperations = await getModelStorageOperations();
+        await modelStorageOperations.delete({
             model: {
                 ...(contentModelPlugin.contentModel as CmsModel)
             }
