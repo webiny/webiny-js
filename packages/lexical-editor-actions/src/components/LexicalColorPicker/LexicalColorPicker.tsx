@@ -9,7 +9,8 @@ import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
 
 // Popover content: design-system tokens, compact swatches, ring-based selected state.
-const colorPickerClass = "flex flex-wrap gap-sm p-sm-extra w-[240px] bg-neutral-base";
+// max-w (not fixed w) so the popover hugs its content for a few colors and wraps for many.
+const colorPickerClass = "flex flex-wrap gap-sm p-sm-extra max-w-[240px] bg-neutral-base";
 
 const swatchClass =
     "flex items-center justify-center size-6 rounded-full cursor-pointer border border-neutral-dimmed transition-transform hover:scale-110";
