@@ -1,14 +1,11 @@
 import { ErrorResponse, ListResponse } from "@webiny/api-graphql/responses.js";
-import { GraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
-
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
-
-import type { AcoContext } from "~/types.js";
 import { AcoFilterCrud } from "~/features/folder/shared/abstractions.js";
 
-export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
-    typeDefs: /* GraphQL */ `
+export const addFilterSchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(/* GraphQL */ `
         enum OperationEnum {
             AND
             OR
@@ -97,46 +94,69 @@ export const filterSchema = new GraphQLSchemaPlugin<AcoContext>({
             updateFilter(id: ID!, data: FilterUpdateInput!): FilterResponse
             deleteFilter(id: ID!): AcoBooleanResponse
         }
-    `,
-    resolvers: {
-        AcoQuery: {
-            getFilter: async (_, { id }, context) => {
-                return resolve(() => {
+    `);
+
+    builder.addResolver({
+        path: "AcoQuery.getFilter",
+        dependencies: [AcoFilterCrud],
+        resolver(filterCrud) {
+            return ({ args, context }) =>
+                resolve(() => {
                     ensureAuthentication(context);
-                    return context.container.resolve(AcoFilterCrud).get(id);
+                    return filterCrud.get(args.id);
                 });
-            },
-            listFilters: async (_, args: any, context) => {
+        }
+    });
+
+    builder.addResolver({
+        path: "AcoQuery.listFilters",
+        dependencies: [AcoFilterCrud],
+        resolver(filterCrud) {
+            return async ({ args, context }) => {
                 try {
                     ensureAuthentication(context);
-                    const [entries, meta] = await context.container
-                        .resolve(AcoFilterCrud)
-                        .list(args);
+                    const [entries, meta] = await filterCrud.list(args);
                     return new ListResponse(entries, meta);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
-            }
-        },
-        AcoMutation: {
-            createFilter: async (_, { data }, context) => {
-                return resolve(() => {
-                    ensureAuthentication(context);
-                    return context.container.resolve(AcoFilterCrud).create(data);
-                });
-            },
-            updateFilter: async (_, { id, data }, context) => {
-                return resolve(() => {
-                    ensureAuthentication(context);
-                    return context.container.resolve(AcoFilterCrud).update(id, data);
-                });
-            },
-            deleteFilter: async (_, { id }, context) => {
-                return resolve(() => {
-                    ensureAuthentication(context);
-                    return context.container.resolve(AcoFilterCrud).delete(id);
-                });
-            }
+            };
         }
-    }
-});
+    });
+
+    builder.addResolver({
+        path: "AcoMutation.createFilter",
+        dependencies: [AcoFilterCrud],
+        resolver(filterCrud) {
+            return ({ args, context }) =>
+                resolve(() => {
+                    ensureAuthentication(context);
+                    return filterCrud.create(args.data);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "AcoMutation.updateFilter",
+        dependencies: [AcoFilterCrud],
+        resolver(filterCrud) {
+            return ({ args, context }) =>
+                resolve(() => {
+                    ensureAuthentication(context);
+                    return filterCrud.update(args.id, args.data);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "AcoMutation.deleteFilter",
+        dependencies: [AcoFilterCrud],
+        resolver(filterCrud) {
+            return ({ args, context }) =>
+                resolve(() => {
+                    ensureAuthentication(context);
+                    return filterCrud.delete(args.id);
+                });
+        }
+    });
+};
