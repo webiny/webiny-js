@@ -63,11 +63,11 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     /^knex(\/|$)/
                 ],
                 plugins: [
-                    // Ignore optional `canvas` native module required by jsdom and linkedom.
+                    // Ignore optional `canvas` native module required by jsdom.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
                     new rspack.IgnorePlugin({
                         resourceRegExp: /^canvas$/,
-                        contextRegExp: /(jsdom|linkedom)/
+                        contextRegExp: /jsdom/
                     })
                 ],
                 resolve: {
