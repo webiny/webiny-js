@@ -1,8 +1,6 @@
 import { createImplementation, Result } from "@webiny/feature/api";
 import { PublishEntryRepository as RepositoryAbstraction } from "./abstractions.js";
-import {
-    PublishEntryStorageOperation
-} from "~/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
+import { PublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
@@ -50,9 +48,5 @@ class PublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 export const PublishEntryRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: PublishEntryRepositoryImpl,
-    dependencies: [
-        EntryToStorageTransform,
-        EntryFromStorageTransform,
-        PublishEntryStorageOperation
-    ]
+    dependencies: [EntryToStorageTransform, EntryFromStorageTransform, PublishEntryStorageOperation]
 });

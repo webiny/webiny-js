@@ -4,9 +4,7 @@ import { UnpublishEntryRepository as RepositoryAbstraction } from "./abstraction
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
-import {
-    UnpublishEntryStorageOperation
-} from "~/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
+import { UnpublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 
 /**

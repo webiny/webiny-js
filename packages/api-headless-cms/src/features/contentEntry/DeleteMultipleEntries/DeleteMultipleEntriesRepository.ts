@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { DeleteMultipleEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
-import {
-    DeleteMultipleEntriesStorageOperation
-} from "~/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
+import { DeleteMultipleEntriesStorageOperation } from "~/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 

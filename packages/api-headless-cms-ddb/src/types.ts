@@ -1,10 +1,8 @@
 import type {
     CmsContext,
-    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
-    HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
+    CmsEntryStorageOperations as BaseCmsEntryStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { ITable } from "@webiny/db-dynamodb";
 
 export type { CmsContext };
 
@@ -14,26 +12,6 @@ export enum ENTITIES {
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries"
-}
-
-export interface StorageOperationsFactoryParams {
-    table?: string;
-    container: CmsContext["container"];
-}
-
-export interface IHeadlessCmsStorageOperationsGetEntitiesResult {
-    groups: IGroupEntity;
-    models: IModelEntity;
-    entries: IEntryEntity;
-}
-
-export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
-    getTable: () => ITable;
-    getEntities: () => IHeadlessCmsStorageOperationsGetEntitiesResult;
-}
-
-export interface StorageOperationsFactory {
-    (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
 }
 
 export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {

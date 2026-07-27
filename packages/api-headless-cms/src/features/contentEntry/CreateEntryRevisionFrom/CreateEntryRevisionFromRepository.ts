@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRevisionFromRepository as RepositoryAbstraction } from "./abstractions.js";
-import {
-    CreateEntryRevisionFromStorageOperation
-} from "~/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
+import { CreateEntryRevisionFromStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";

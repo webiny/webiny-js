@@ -1,9 +1,7 @@
 import { createDecorator } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "../abstractions.js";
-import {
-    DeleteEntryStorageOperation
-} from "~/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
+import { DeleteEntryStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
 import type { CmsModel, CmsDeleteEntryOptions } from "~/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";

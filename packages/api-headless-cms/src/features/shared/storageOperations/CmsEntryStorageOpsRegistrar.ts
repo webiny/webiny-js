@@ -5,8 +5,9 @@ export interface ICmsEntryStorageOpsRegistrar {
     register(container: Container): void;
 }
 
-export const CmsEntryStorageOpsRegistrar =
-    createAbstraction<ICmsEntryStorageOpsRegistrar>("Cms/EntryStorageOpsRegistrar");
+export const CmsEntryStorageOpsRegistrar = createAbstraction<ICmsEntryStorageOpsRegistrar>(
+    "Cms/EntryStorageOpsRegistrar"
+);
 
 export namespace CmsEntryStorageOpsRegistrar {
     export type Interface = ICmsEntryStorageOpsRegistrar;

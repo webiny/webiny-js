@@ -3,9 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import {
-    DeleteEntryStorageOperation
-} from "~/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
+import { DeleteEntryStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
 
 /**
  * DeleteEntryRepository - Handles storage operations for permanently deleting entries.

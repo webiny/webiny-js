@@ -21,10 +21,9 @@ class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstracti
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Get published revision from storage
-            const storageEntry =
-                await this.getPublishedRevisionByEntryIdStorage.execute<T>(model, {
-                    id: entryId
-                });
+            const storageEntry = await this.getPublishedRevisionByEntryIdStorage.execute<T>(model, {
+                id: entryId
+            });
 
             if (!storageEntry || storageEntry.wbyDeleted) {
                 return Result.fail(new EntryNotFoundError(entryId));

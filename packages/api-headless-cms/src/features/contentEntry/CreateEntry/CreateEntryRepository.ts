@@ -3,9 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import {
-    CreateEntryStorageOperation
-} from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
+import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 
 /**

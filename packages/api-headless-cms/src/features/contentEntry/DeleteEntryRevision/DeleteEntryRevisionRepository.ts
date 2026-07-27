@@ -3,9 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRevisionRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import {
-    DeleteEntryRevisionStorageOperation
-} from "~/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
+import { DeleteEntryRevisionStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
 

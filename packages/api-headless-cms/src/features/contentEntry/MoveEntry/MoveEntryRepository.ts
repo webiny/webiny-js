@@ -1,9 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { MoveEntryRepository as RepositoryAbstraction } from "./abstractions.js";
-import {
-    MoveEntryStorageOperation
-} from "~/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
+import { MoveEntryStorageOperation } from "~/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 

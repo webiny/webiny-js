@@ -1,8 +1,6 @@
 import { createImplementation, Result } from "@webiny/feature/api";
 import { RestoreEntryFromBinRepository as RepositoryAbstraction } from "./abstractions.js";
-import {
-    RestoreFromBinStorageOperation
-} from "~/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
+import { RestoreFromBinStorageOperation } from "~/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
