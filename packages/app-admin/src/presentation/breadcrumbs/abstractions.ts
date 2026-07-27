@@ -1,6 +1,8 @@
 import type React from "react";
 import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/feature/admin";
 import type { Route } from "@webiny/app/features/router/Route.js";
+import type { MatchedRoute } from "@webiny/app/features/router/abstractions.js";
 
 /**
  * Where a breadcrumb navigates: either a raw path string, or a `Route` (optionally with
@@ -33,6 +35,30 @@ export interface BreadcrumbTrailItem {
 export interface BreadcrumbsViewModel {
     /** Location items, from the top-most ancestor to the current page (last item). */
     items: BreadcrumbTrailItem[];
+}
+
+/**
+ * A breadcrumb trail declared for a route via dependency injection — no React involved.
+ * Register one with `Breadcrumb.createImplementation(...)`; the presenter resolves all of
+ * them and renders the trail whose `route` matches the current location.
+ *
+ * This is the preferred way to declare a **static** trail (just links and text). For trails
+ * that depend on live view state (a folder path, an entry's title), use the `useBreadcrumbs`
+ * hook instead.
+ */
+export interface IBreadcrumb {
+    /** Unique id. */
+    name: string;
+    /** The route this breadcrumb trail belongs to; matched against the current route. */
+    route: Route<any>;
+    /** Builds the trail. Receives the matched route so params are available if needed. */
+    getTrail(route: MatchedRoute): BreadcrumbTrailItem[];
+}
+
+export const Breadcrumb = createAbstraction<IBreadcrumb>("Breadcrumb");
+
+export namespace Breadcrumb {
+    export type Interface = IBreadcrumb;
 }
 
 export interface IBreadcrumbsPresenter {

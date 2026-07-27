@@ -86,14 +86,17 @@ export type {
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
 
-// Breadcrumbs (DI-backed trail, with a declarative React config on top)
+// Breadcrumbs (DI-backed trail; register per-route via `Breadcrumb`, or drive dynamic
+// trails with the `useBreadcrumbs` hook / declarative `<Breadcrumbs>` config)
 export {
+    Breadcrumb,
     Breadcrumbs,
     BreadcrumbsFeature,
     BreadcrumbsPresenter,
     useBreadcrumbs
 } from "./presentation/breadcrumbs/index.js";
 export type {
+    IBreadcrumb,
     IBreadcrumbsPresenter,
     BreadcrumbTrailItem,
     BreadcrumbLink,

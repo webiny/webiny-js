@@ -1,6 +1,7 @@
-export { BreadcrumbsPresenter } from "./abstractions.js";
+export { BreadcrumbsPresenter, Breadcrumb } from "./abstractions.js";
 export type {
     IBreadcrumbsPresenter,
+    IBreadcrumb,
     BreadcrumbTrailItem,
     BreadcrumbLink,
     BreadcrumbsViewModel

@@ -57,22 +57,49 @@ interface BreadcrumbsItem {
 
 ### DI core — `@webiny/app-admin/src/presentation/breadcrumbs/`
 
-- `abstractions.ts`: `BreadcrumbTrailItem` (`{ id?, label, icon?, to?, title? }`),
-  `BreadcrumbsPresenter` abstraction (`vm`, `setTrail`, `clear`).
-- `BreadcrumbsPresenter.ts`: MobX `makeAutoObservable`, holds `items`.
-- `feature.ts`: `createFeature` → **memoizes a single presenter in the factory closure**.
-  Rationale: breadcrumbs have two consumers — the view that writes the trail and the header
-  that reads it. `registerFactory` isn't memoized by the container, so without the closure
-  singleton the reader and writer would get different instances and writes would never show.
+- `abstractions.ts`: `BreadcrumbTrailItem` (`{ id?, label, icon?, to?, title? }`);
+  `BreadcrumbLink = string | { route, params? }`; `BreadcrumbsPresenter` abstraction
+  (`vm`, `setTrail`, `clear`); **`Breadcrumb` abstraction** (`createAbstraction`) for DI
+  registration — `{ name, route, getTrail(matchedRoute) }`.
+- `BreadcrumbsPresenter.ts`: MobX `makeAutoObservable`. `vm` first looks for a DI
+  `Breadcrumb` whose `route.name` matches the current route (`RouterPresenter.vm.currentRoute`)
+  and renders its trail; otherwise falls back to the hook-set `dynamicTrail`.
+- `feature.ts`: `createFeature` → **memoizes a single presenter in the factory closure**
+  (breadcrumbs have two consumers — the view that writes the trail and the header that reads
+  it; `registerFactory` isn't memoized by the container, so without the closure singleton
+  the reader and writer would get different instances). Presenter is constructed with
+  `() => container.resolveAll(Breadcrumb)` and `() => RouterPresenter.vm.currentRoute`.
 - Registered in `Admin.tsx` next to `CommandPaletteFeature`; exported from the barrel.
 
-### React config layer (on top of the DI presenter)
+### Declaring a trail — two paths
 
-- `useBreadcrumbs(items)`: resolves the feature, sets the trail on mount / when items
-  change (serialized signature dep so inline arrays are safe; icons excluded), clears on
-  unmount.
-- `<Breadcrumbs>` + `<Breadcrumbs.Item label to icon title>`: declarative sugar that reads
-  its children's props and calls `useBreadcrumbs`. Renders nothing.
+**Preferred: DI `Breadcrumb` (React-free, static trails)** — mirrors the command palette's
+`Command`. A module registers an implementation; the view stays untouched:
+
+```ts
+class MailerSettingsBreadcrumb implements Breadcrumb.Interface {
+  name = "mailer.settings";
+  route = Routes.Settings;
+  getTrail() {
+    return [{ label: "Settings" }, { label: "Mailer" }];
+  }
+}
+export const mailerSettingsBreadcrumb = createImplementation({
+  abstraction: Breadcrumb,
+  implementation: MailerSettingsBreadcrumb,
+  dependencies: []
+});
+// registered via a feature + <RegisterFeature> (or container.register)
+```
+
+**Hook / declarative config (dynamic trails only)** — when the trail depends on live view
+state a bootstrap-time DI impl can't reach (folder path, entry title):
+
+- `useBreadcrumbs(items)`: sets the trail on mount / when items change (serialized signature
+  dep so inline arrays are safe; icons excluded), clears on unmount.
+- `<Breadcrumbs>` + `<Breadcrumbs.Item label to icon title>`: declarative sugar over the hook.
+
+A DI `Breadcrumb` matching the current route **wins** over the hook.
 
 ### Header UI — `@webiny/app-admin-ui/src/Breadcrumbs/Breadcrumbs.tsx`
 
@@ -83,45 +110,50 @@ interface BreadcrumbsItem {
 
 ## Usage (for module authors)
 
+Static trail → register a DI `Breadcrumb` (see above), no React in the view.
+
+Dynamic trail → the hook, from inside a view:
+
 ```tsx
-import { Breadcrumbs } from "@webiny/app-admin";
-
-// inside a view:
-<Breadcrumbs>
-  <Breadcrumbs.Item label="Page Builder" to={pbListRoute} />
-  <Breadcrumbs.Item label="Articles" />
-</Breadcrumbs>;
-
-// or imperatively:
-useBreadcrumbs([{ label: "Page Builder", to: pbListRoute }, { label: "Articles" }]);
+useBreadcrumbs([
+  { label: "File Manager", to: { route: Routes.List } },
+  { label: currentFolder.title } // live state → current item
+]);
 ```
 
 ## Status (implemented)
 
-- DS primitive (+ Storybook story), DI presenter + feature, React config (hook +
-  components), header wiring.
-- `@webiny/admin-ui`, `@webiny/app-admin`, `@webiny/app-admin-ui` all build (TS clean);
-  lint + format clean.
-- No module trails populated yet (per scope). Nothing committed or pushed.
+- DS primitive (+ Storybook story), DI presenter + feature, DI `Breadcrumb` registration,
+  hook + declarative config, header wiring (`to` = string | Route).
+- `@webiny/admin-ui`, `@webiny/app-admin`, `@webiny/app-admin-ui`, `@webiny/app-file-manager`,
+  `@webiny/app-mailer` all build (TS clean); lint + format clean.
 
-## Reference adoption — File Manager
+## Reference adoptions
 
-`packages/app-file-manager/src/presentation/FileManager/FileManagerBreadcrumbs.tsx`
-publishes the folder path (`Home › File Manager › Marketing › Demo`). Mounted in
-`FileManagerView` **page mode only** (`!overlayConfig`, beside `RouteParamsSync`) — the
-overlay file picker has no admin header. Trail built from the folder-tree VM
-(`getAncestorIds`, reversed to root→current) with `to = getLink(Routes.List, { folderId })`;
-`RouteParamsSync` mirrors the `folderId` param back into the tree selection. The DI presenter
-is registered on the root container, and the FM child container resolves it via parent
-delegation.
+**Mailer (static, DI — preferred)**:
+`packages/app-mailer/src/breadcrumbs/MailerSettingsBreadcrumb.ts` registers a `Breadcrumb`
+for `Routes.Settings` returning `[{ label: "Settings" }, { label: "Mailer" }]`. Registered
+via `MailerBreadcrumbsFeature` + `<RegisterFeature>` in `Extension.tsx`. **No React in the
+view** — `SettingsView` is untouched. Renders `Home › Settings › Mailer`.
+
+**File Manager (dynamic, hook)**:
+`packages/app-file-manager/src/presentation/FileManager/FileManagerBreadcrumbs.tsx` publishes
+the folder path (`Home › File Manager › Marketing › Demo`). Mounted in `FileManagerView`
+**page mode only** (`!overlayConfig`, beside `RouteParamsSync`) — the overlay file picker
+has no admin header. Trail built from the folder-tree VM (`getAncestorIds`, reversed to
+root→current) with `to = { route: Routes.List, params: { folderId } }`; `RouteParamsSync`
+mirrors the `folderId` param back into the tree selection. The DI presenter is registered on
+the root container; the FM child container resolves it via parent delegation. A DI
+`Breadcrumb` can't be used here because the folder data lives in a per-mount scoped
+container, not the route.
 
 Caveat: deep-linking straight to a nested `folderId` can render a partial trail until the
 ancestor folders are in the cache (`getAncestorIds` stops at the first missing ancestor).
 
 ## Still open
 
-- **Per-module adoption** — remaining modules (CMS / Page Builder / Settings). File Manager
-  done (above) as the reference.
+- **Per-module adoption** — remaining modules (CMS / Page Builder / other Settings). Mailer
+  (DI) and File Manager (hook) done as references for each path.
 - **Overflow (`…`) shortcut** for deep hierarchies.
 - **Unmount ordering caveat:** `useBreadcrumbs` clears on unmount. On a route swap the
   outgoing view's cleanup and the incoming view's `setTrail` both run in the same commit
