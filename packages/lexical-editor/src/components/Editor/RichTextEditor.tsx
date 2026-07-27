@@ -1,4 +1,4 @@
-import React, { Fragment, useId, useRef, useState } from "react";
+import React, { Fragment, useEffect, useId, useRef, useState } from "react";
 import type { Klass, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
@@ -13,6 +13,8 @@ import { allNodes } from "@webiny/lexical-nodes";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext.js";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin.js";
 import type { LexicalValue, ToolbarActionPlugin } from "~/types.js";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $isRootTextContentEmpty } from "@lexical/text";
 import { Placeholder } from "~/ui/Placeholder.js";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext.js";
 import {
@@ -48,6 +50,42 @@ export interface RichTextEditorProps {
     width?: number | string;
 }
 
+interface EditorPlaceholderProps {
+    text: React.ReactNode;
+    styles?: React.CSSProperties;
+    className?: string;
+}
+
+/**
+ * Renders our own placeholder, shown whenever the editor's text content is empty —
+ * regardless of the current block type. Lexical's built-in placeholder only shows for an
+ * empty paragraph, so it disappears when the block is a heading, quote, etc.
+ */
+const EditorPlaceholder = ({ text, styles, className }: EditorPlaceholderProps) => {
+    const [editor] = useLexicalComposerContext();
+    const [isEmpty, setIsEmpty] = useState(true);
+
+    useEffect(() => {
+        const update = () => {
+            editor.getEditorState().read(() => {
+                setIsEmpty($isRootTextContentEmpty(editor.isComposing()));
+            });
+        };
+        update();
+        return editor.registerUpdateListener(update);
+    }, [editor]);
+
+    if (!isEmpty) {
+        return null;
+    }
+
+    return (
+        <Placeholder styles={styles} className={className}>
+            {text}
+        </Placeholder>
+    );
+};
+
 const BaseRichTextEditor = ({
     onChange,
     toolbar,
@@ -71,11 +109,6 @@ const BaseRichTextEditor = ({
     // Apply the default paragraph's typography class so the placeholder matches the real
     // text's size/line-height/font (the muted color is kept via placeholderStyles).
     const defaultParagraphClassName = props.theme?.typography?.paragraphs?.[0]?.className;
-    const placeholderElem = (
-        <Placeholder styles={placeholderStyles} className={defaultParagraphClassName}>
-            {placeholder || "Enter text..."}
-        </Placeholder>
-    );
     const scrollRef = useRef(null);
 
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
@@ -171,8 +204,13 @@ const BaseRichTextEditor = ({
                                     </div>
                                 </div>
                             }
-                            placeholder={placeholderElem}
+                            placeholder={null}
                             ErrorBoundary={LexicalErrorBoundary}
+                        />
+                        <EditorPlaceholder
+                            text={placeholder || "Enter text..."}
+                            styles={placeholderStyles}
+                            className={defaultParagraphClassName}
                         />
                         {/* Toolbar. */}
                         {disabled ? null : floatingAnchorElem && toolbar}
