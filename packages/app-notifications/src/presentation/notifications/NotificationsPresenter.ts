@@ -86,6 +86,10 @@ class NotificationsPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    async refresh() {
+        await Promise.all([this.reload(), this.refreshCounts()]);
+    }
+
     async markRead(id: string) {
         await this.api.markRead(id);
         await Promise.all([this.reload(), this.refreshCounts()]);

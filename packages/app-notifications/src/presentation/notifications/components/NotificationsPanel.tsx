@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as DoneAllIcon } from "@webiny/icons/done_all.svg";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as InboxIcon } from "@webiny/icons/inbox.svg";
 import type { NotificationsPresenter } from "../abstractions.js";
@@ -37,6 +38,14 @@ export const NotificationsPanel = observer(({ presenter }: Props) => {
                             onClick={() => presenter.markAllRead()}
                         >
                             <DoneAllIcon />
+                        </button>
+                        <button
+                            className="wby-notif-iconbtn"
+                            title="Refresh"
+                            disabled={vm.loading}
+                            onClick={() => void presenter.refresh()}
+                        >
+                            <RefreshIcon className={vm.loading ? "wby-notif-spin" : undefined} />
                         </button>
                         <button
                             className="wby-notif-iconbtn"

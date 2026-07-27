@@ -22,6 +22,8 @@ export interface INotificationsPresenter {
     setTab(tab: NotificationsTab): void;
     setUnreadOnly(value: boolean): void;
     reload(): Promise<void>;
+    /** Reload the current list and refresh the inbox/archive/unread counts. */
+    refresh(): Promise<void>;
     markRead(id: string): Promise<void>;
     markAllRead(): Promise<void>;
     archive(id: string): Promise<void>;

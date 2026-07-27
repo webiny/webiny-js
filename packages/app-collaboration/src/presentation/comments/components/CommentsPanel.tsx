@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
+import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
 import { ReactComponent as ExpandLessIcon } from "@webiny/icons/expand_less.svg";
 import type { CommentsPresenter } from "../abstractions.js";
@@ -96,6 +97,14 @@ export const CommentsPanel = observer((props: Props) => {
                     <span className="wby-collab-count">{total}</span>
                 </div>
                 <div className="wby-collab-actions">
+                    <button
+                        className="wby-collab-iconbtn"
+                        title="Refresh comments"
+                        disabled={vm.loading}
+                        onClick={() => void presenter.reload()}
+                    >
+                        <RefreshIcon className={vm.loading ? "wby-collab-spin" : undefined} />
+                    </button>
                     <button
                         className="wby-collab-iconbtn"
                         title="Close"

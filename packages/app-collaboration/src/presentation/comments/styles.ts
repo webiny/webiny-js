@@ -20,6 +20,9 @@ const CSS = `
 .wby-collab-dot { width:8px; height:8px; border-radius:50%; background:var(--color-primary); display:inline-block; }
 .wby-collab-overview__sep { color:var(--color-neutral-400); }
 .wby-collab-overview__fields { color:var(--color-neutral-500); }
+.wby-collab-iconbtn:disabled { cursor:default; opacity:.6; }
+.wby-collab-spin { animation:wby-collab-spin .8s linear infinite; }
+@keyframes wby-collab-spin { to { transform:rotate(360deg); } }
 .wby-collab-filter { flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:10px 16px; background:var(--color-primary-100); border-bottom:1px solid var(--color-primary-200); font-size:13px; }
 .wby-collab-filter__label { flex:1; min-width:0; color:var(--color-neutral-800); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .wby-collab-filter__label strong { font-weight:600; }

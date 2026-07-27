@@ -18,6 +18,8 @@ const CSS = `
 .wby-notif-iconbtn:disabled { opacity:.4; cursor:default; }
 .wby-notif-iconbtn svg { width:18px; height:18px; fill:currentColor; pointer-events:none; }
 .wby-notif-iconbtn--primary { color:var(--color-primary); }
+.wby-notif-spin { animation:wby-notif-spin .8s linear infinite; }
+@keyframes wby-notif-spin { to { transform:rotate(360deg); } }
 
 .wby-notif-tabs { flex:0 0 auto; display:flex; align-items:center; gap:8px; padding:0 16px 12px; border-bottom:1px solid var(--color-neutral-200); }
 .wby-notif-tab { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px; border:none; background:transparent; cursor:pointer; font-size:14px; font-weight:600; color:var(--color-neutral-600); font-family:inherit; }
