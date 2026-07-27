@@ -201,10 +201,15 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
-        // Entry storage operations are registered per-request via the registrar.
-        // Group and model ops are already registered as app-scoped singletons by the adapter feature.
-        const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
-        entryRegistrar.register(container);
+        // Entry storage operations: DDB registers all 22 per-method DI classes at
+        // app-scope via DdbEntryStorageOpsFeature. Other adapters (DDB-ES, SQL, PG-OS)
+        // still use the registrar for per-request entry op registration.
+        try {
+            const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
+            entryRegistrar.register(container);
+        } catch {
+            // No registrar — adapter registers entry ops directly via feature (DDB path)
+        }
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);

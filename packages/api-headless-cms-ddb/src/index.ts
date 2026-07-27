@@ -14,7 +14,7 @@ import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { DdbGroupStorageOperations } from "~/operations/group/DdbGroupStorageOperations.js";
 import { DdbModelStorageOperations } from "~/operations/model/DdbModelStorageOperations.js";
-import { DdbCmsEntryStorageOpsRegistrar } from "~/DdbCmsEntryStorageOpsRegistrar.js";
+import { DdbEntryStorageOpsFeature } from "~/DdbEntryStorageOpsFeature.js";
 
 /**
  * DI-native feature — registers the DynamoDB CMS storage operations directly via the DI container.
@@ -64,8 +64,8 @@ export const HeadlessCmsDdbFeature = createFeature({
         container.register(DdbGroupStorageOperations).inSingletonScope();
         container.register(DdbModelStorageOperations).inSingletonScope();
 
-        // Entry registrar: app-scoped, called per-request by HeadlessCmsFeature
-        container.register(DdbCmsEntryStorageOpsRegistrar).inSingletonScope();
+        // Entry ops: 22 per-method DI classes + DataLoaders
+        DdbEntryStorageOpsFeature.register(container);
     }
 });
 

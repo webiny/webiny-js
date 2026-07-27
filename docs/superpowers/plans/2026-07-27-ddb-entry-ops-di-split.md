@@ -115,14 +115,7 @@ git commit -m "feat(api-headless-cms-ddb): add CmsDdbDataLoaders DI abstraction"
 
 Start with the simplest method to establish the pattern.
 
-**Interim strategy for incremental extraction:** During Tasks 2–8, each extracted method's DI class is registered in `HeadlessCmsFeature` AFTER the registrar call. The registrar still bridges the monolith's remaining methods to per-method abstractions via `registerInstance`. The DI class `container.register()` call after the registrar overrides the registrar's `registerInstance` for that specific abstraction (last registration wins). This ordering is critical — registering before the registrar would be overridden by it.
-
-In `HeadlessCmsFeature.ts`, after `entryRegistrar.register(container)`, add:
-```typescript
-// Extracted DI classes override registrar for migrated methods
-container.register(DdbGetUniqueFieldValues);
-// ... add more as methods are extracted
-```
+**Big-bang swap strategy:** During Tasks 2–8, DI classes are created alongside the monolith — the monolith stays intact and functional via the registrar. No intermediate wiring changes. At Task 9, the feature is created. At Task 10, the swap happens: feature replaces registrar, monolith is deleted. Testing during Tasks 2–8 uses the existing registrar path (monolith). Testing at Task 10 validates the new DI path.
 
 - [ ] **Step 1: Create DI class**
 
@@ -173,35 +166,13 @@ export const DdbGetUniqueFieldValues = createImplementation({
 });
 ```
 
-- [ ] **Step 2: Remove getUniqueFieldValues from monolith return object**
-
-In `packages/api-headless-cms-ddb/src/operations/entry/index.ts`, remove `getUniqueFieldValues` from the `return { ... }` object and delete the `getUniqueFieldValues` function body. Keep `MAX_LIST_LIMIT` (used by `list`).
-
-- [ ] **Step 3: Register DI class after registrar in HeadlessCmsFeature**
-
-The registrar still calls `registerCmsEntryStorageOperations(container, entries)` which registers all 22 methods. The monolith's `getUniqueFieldValues` can remain as a no-op stub in the return object (or be left — the registrar's `registerInstance` will be overridden).
-
-In `packages/api-headless-cms/src/HeadlessCmsFeature.ts`, AFTER `entryRegistrar.register(container)`, add:
-
-```typescript
-container.register(DdbGetUniqueFieldValues);
-```
-
-This overrides the registrar's registration for `GetUniqueFieldValuesStorageOperation`.
-
-- [ ] **Step 4: Build**
+- [ ] **Step 2: Build**
 
 ```bash
 yarn build -p @webiny/api-headless-cms-ddb 2>&1 | tail -10
 ```
 
-- [ ] **Step 5: Test**
-
-```bash
-yarn test packages/api-headless-cms --shard=1/64 2>&1 | tail -15
-```
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add .
@@ -257,9 +228,7 @@ export const DdbGetEntry = createImplementation({
 });
 ```
 
-- [ ] **Step 2: Remove `get` from monolith, build, test, commit**
-
-Same pattern as Task 2 steps 2–6.
+- [ ] **Step 2: Build and commit**
 
 ---
 
@@ -378,8 +347,7 @@ The other 6 follow the identical pattern with their respective:
 | DdbGetLatestRevisionByEntryId | `getLatestRevisionByEntryId` | single or null |
 | DdbGetPublishedRevisionByEntryId | `getPublishedRevisionByEntryId` | single or null |
 
-- [ ] **Step 2: Remove all 7 methods from monolith**
-- [ ] **Step 3: Build, test (shard 1/64), commit**
+- [ ] **Step 3: Build and commit**
 
 ---
 
@@ -398,7 +366,7 @@ Unique method — queries entity directly (no dataLoaders), filters by version.
 
 Extract `getPreviousRevision` from monolith (lines 1273–1336 in current index.ts). Uses `entity.queryAll`, `createPartitionKey`, `convertFromStorageEntry`. Dependencies: `CmsDdbEntryEntity`, `CmsStorageModelProvider`.
 
-- [ ] **Step 2: Remove from monolith, build, test, commit**
+- [ ] **Step 2: Build and commit**
 
 ---
 
@@ -424,7 +392,7 @@ Dependencies: `[CmsDdbEntryEntity, CmsStorageModelProvider, StorageTransformRegi
 
 Extract lines 960–1098 from monolith. Keep `MAX_LIST_LIMIT` as module-level constant.
 
-- [ ] **Step 2: Remove from monolith, build, test, commit**
+- [ ] **Step 2: Build and commit**
 
 ---
 
@@ -443,7 +411,7 @@ Write operations all follow similar pattern: get storage model, convert keys, ba
 
 Extract `create` method (lines 112–182). Uses `entity.createEntityWriter`, `createEntryRevisionKeys`, `createEntryLatestKeys`, `createEntryPublishedKeys`, `convertToStorageEntry`, `dataLoaders.clearAll`.
 
-- [ ] **Step 2: Remove from monolith, build, test, commit**
+- [ ] **Step 2: Build and commit**
 
 ---
 
@@ -467,28 +435,19 @@ All follow the write pattern established in Task 7. Each method:
 3. Builds entity batch via `entity.createEntityWriter()`
 4. Executes batch and clears dataLoaders
 
-Implement one at a time. After each: remove from monolith, build, test shard 1/64.
+Implement all 10. Monolith stays intact. Build after all are created.
 
 - [ ] **Step 1: Extract DdbCreateEntryRevisionFrom**
-- [ ] **Step 2: Remove from monolith, build, test, commit**
-- [ ] **Step 3: Extract DdbUpdateEntry**
-- [ ] **Step 4: Remove from monolith, build, test, commit**
-- [ ] **Step 5: Extract DdbMoveEntry**
-- [ ] **Step 6: Remove from monolith, build, test, commit**
-- [ ] **Step 7: Extract DdbMoveToBin**
-- [ ] **Step 8: Remove from monolith, build, test, commit**
-- [ ] **Step 9: Extract DdbDeleteEntry**
-- [ ] **Step 10: Remove from monolith, build, test, commit**
-- [ ] **Step 11: Extract DdbRestoreFromBin**
-- [ ] **Step 12: Remove from monolith, build, test, commit**
-- [ ] **Step 13: Extract DdbDeleteEntryRevision**
-- [ ] **Step 14: Remove from monolith, build, test, commit**
-- [ ] **Step 15: Extract DdbDeleteMultipleEntries**
-- [ ] **Step 16: Remove from monolith, build, test, commit**
-- [ ] **Step 17: Extract DdbPublishEntry**
-- [ ] **Step 18: Remove from monolith, build, test, commit**
-- [ ] **Step 19: Extract DdbUnpublishEntry**
-- [ ] **Step 20: Remove from monolith, build, test, commit**
+- [ ] **Step 2: Extract DdbUpdateEntry**
+- [ ] **Step 3: Extract DdbMoveEntry**
+- [ ] **Step 4: Extract DdbMoveToBin**
+- [ ] **Step 5: Extract DdbDeleteEntry**
+- [ ] **Step 6: Extract DdbRestoreFromBin**
+- [ ] **Step 7: Extract DdbDeleteEntryRevision**
+- [ ] **Step 8: Extract DdbDeleteMultipleEntries**
+- [ ] **Step 9: Extract DdbPublishEntry**
+- [ ] **Step 10: Extract DdbUnpublishEntry**
+- [ ] **Step 11: Build and commit all 10**
 
 ---
 
