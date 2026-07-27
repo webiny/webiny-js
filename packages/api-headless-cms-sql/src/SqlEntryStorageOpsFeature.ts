@@ -1,15 +1,5 @@
 import { createFeature } from "@webiny/feature/api/index.js";
-import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
-import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
-import {
-    CmsEntryOpenSearchFieldIndexRegistry,
-    CmsEntryOpenSearchValuesModifier
-} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { createEntriesStorageOperations } from "~/operations/entry/index.js";
-import type { CmsEntryStorageOperations } from "~/types.js";
+import { SqlEntryOperations } from "~/operations/entry/abstractions/SqlEntryOperations.js";
 import { CreateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { UpdateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UpdateEntryStorageOperation.js";
@@ -33,116 +23,99 @@ import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless
 import { GetPreviousRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPreviousRevisionStorageOperation.js";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 
-export const DdbEsEntryStorageOpsFeature = createFeature({
-    name: "cms.ddbEs.entryStorageOps",
+export const SqlEntryStorageOpsFeature = createFeature({
+    name: "cms.sql.entryStorageOps",
     register: container => {
-        let entries: CmsEntryStorageOperations | undefined;
-
-        const ops = (): CmsEntryStorageOperations => {
-            if (!entries) {
-                const entryEntity = container.resolve(CmsDdbEsEntryEntity);
-                const entriesEsEntity = container.resolve(CmsDdbEsEntriesEsEntity);
-                const openSearchClient = container.resolve(OpenSearchClient);
-
-                entries = createEntriesStorageOperations({
-                    entity: entryEntity,
-                    esEntity: entriesEsEntity,
-                    elasticsearch: openSearchClient.use(),
-                    container,
-                    fieldRegistry: container.resolve(CmsModelFieldToGraphQLRegistry),
-                    fieldIndexRegistry: container.resolve(CmsEntryOpenSearchFieldIndexRegistry),
-                    compressionHandler: container.resolve(CompressionHandler),
-                    valuesModifiers: container.resolveAll(CmsEntryOpenSearchValuesModifier)
-                });
-            }
-            return entries;
-        };
+        const ops = () => container.resolve(SqlEntryOperations);
 
         container.registerFactory(CreateEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["create"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["create"]>) =>
                 ops().create(...args)
         }));
         container.registerFactory(CreateEntryRevisionFromStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["createRevisionFrom"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["createRevisionFrom"]>) =>
                 ops().createRevisionFrom(...args)
         }));
         container.registerFactory(UpdateEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["update"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["update"]>) =>
                 ops().update(...args)
         }));
         container.registerFactory(DeleteEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["delete"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["delete"]>) =>
                 ops().delete(...args)
         }));
         container.registerFactory(DeleteEntryRevisionStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["deleteRevision"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["deleteRevision"]>) =>
                 ops().deleteRevision(...args)
         }));
         container.registerFactory(DeleteMultipleEntriesStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["deleteMultipleEntries"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["deleteMultipleEntries"]>) =>
                 ops().deleteMultipleEntries(...args)
         }));
         container.registerFactory(MoveToBinStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["moveToBin"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["moveToBin"]>) =>
                 ops().moveToBin(...args)
         }));
         container.registerFactory(RestoreFromBinStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["restoreFromBin"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["restoreFromBin"]>) =>
                 ops().restoreFromBin(...args)
         }));
         container.registerFactory(PublishEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["publish"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["publish"]>) =>
                 ops().publish(...args)
         }));
         container.registerFactory(UnpublishEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["unpublish"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["unpublish"]>) =>
                 ops().unpublish(...args)
         }));
         container.registerFactory(MoveEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["move"]>) => ops().move(...args)
+            execute: (...args: Parameters<SqlEntryOperations.Interface["move"]>) =>
+                ops().move(...args)
         }));
         container.registerFactory(GetEntryStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["get"]>) => ops().get(...args)
+            execute: (...args: Parameters<SqlEntryOperations.Interface["get"]>) =>
+                ops().get(...args)
         }));
         container.registerFactory(ListEntriesStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["list"]>) => ops().list(...args)
+            execute: (...args: Parameters<SqlEntryOperations.Interface["list"]>) =>
+                ops().list(...args)
         }));
         container.registerFactory(GetEntriesByIdsStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getByIds"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getByIds"]>) =>
                 ops().getByIds(...args)
         }));
         container.registerFactory(GetLatestEntriesByIdsStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getLatestByIds"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getLatestByIds"]>) =>
                 ops().getLatestByIds(...args)
         }));
         container.registerFactory(GetPublishedEntriesByIdsStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getPublishedByIds"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getPublishedByIds"]>) =>
                 ops().getPublishedByIds(...args)
         }));
         container.registerFactory(GetRevisionsStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getRevisions"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getRevisions"]>) =>
                 ops().getRevisions(...args)
         }));
         container.registerFactory(GetRevisionByIdStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getRevisionById"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getRevisionById"]>) =>
                 ops().getRevisionById(...args)
         }));
         container.registerFactory(GetPublishedRevisionByEntryIdStorageOperation, () => ({
             execute: (
-                ...args: Parameters<CmsEntryStorageOperations["getPublishedRevisionByEntryId"]>
+                ...args: Parameters<SqlEntryOperations.Interface["getPublishedRevisionByEntryId"]>
             ) => ops().getPublishedRevisionByEntryId(...args)
         }));
         container.registerFactory(GetLatestRevisionByEntryIdStorageOperation, () => ({
             execute: (
-                ...args: Parameters<CmsEntryStorageOperations["getLatestRevisionByEntryId"]>
+                ...args: Parameters<SqlEntryOperations.Interface["getLatestRevisionByEntryId"]>
             ) => ops().getLatestRevisionByEntryId(...args)
         }));
         container.registerFactory(GetPreviousRevisionStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getPreviousRevision"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getPreviousRevision"]>) =>
                 ops().getPreviousRevision(...args)
         }));
         container.registerFactory(GetUniqueFieldValuesStorageOperation, () => ({
-            execute: (...args: Parameters<CmsEntryStorageOperations["getUniqueFieldValues"]>) =>
+            execute: (...args: Parameters<SqlEntryOperations.Interface["getUniqueFieldValues"]>) =>
                 ops().getUniqueFieldValues(...args)
         }));
     }

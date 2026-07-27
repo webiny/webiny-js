@@ -22,7 +22,7 @@ import { EntryOperationsFeature } from "~/operations/entry/feature.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { SqlGroupStorageOperations } from "@webiny/api-headless-cms-sql/operations/group/SqlGroupStorageOperations.js";
 import { SqlModelStorageOperations } from "@webiny/api-headless-cms-sql/operations/model/SqlModelStorageOperations.js";
-import { PgOsCmsEntryStorageOpsRegistrar } from "~/PgOsCmsEntryStorageOpsRegistrar.js";
+import { PgOsEntryStorageOpsFeature } from "~/PgOsEntryStorageOpsFeature.js";
 
 export interface IPgOsStorageOperationsConfig {
     knex: any;
@@ -63,8 +63,8 @@ export const HeadlessCmsPgOsFeature = createFeature({
         container.register(SqlGroupStorageOperations).inSingletonScope();
         container.register(SqlModelStorageOperations).inSingletonScope();
 
-        // Entry registrar: app-scoped, called per-request by HeadlessCmsFeature
-        container.register(PgOsCmsEntryStorageOpsRegistrar).inSingletonScope();
+        // Entry ops: 22 per-method factories composing WriteOps + SearchOps + SqlOps
+        PgOsEntryStorageOpsFeature.register(container);
     }
 });
 

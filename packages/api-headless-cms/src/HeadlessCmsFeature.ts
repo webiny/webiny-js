@@ -80,8 +80,6 @@ import {
 } from "~/legacy/abstractions.js";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
-import { CmsEntryStorageOpsRegistrar } from "~/features/shared/storageOperations/CmsEntryStorageOpsRegistrar.js";
-
 export interface HeadlessCmsConfig {
     type: ApiEndpoint;
     /** Extra plugins (e.g. CmsGraphQLSchemaPlugin) to register in ctx.plugins at runtime. */
@@ -201,15 +199,8 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
-        // Entry storage operations: DDB registers all 22 per-method DI classes at
-        // app-scope via DdbEntryStorageOpsFeature. Other adapters (DDB-ES, SQL, PG-OS)
-        // still use the registrar for per-request entry op registration.
-        try {
-            const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
-            entryRegistrar.register(container);
-        } catch {
-            // No registrar — adapter registers entry ops directly via feature (DDB path)
-        }
+        // Entry storage operations are registered by each adapter's feature at app-scope.
+        // HeadlessCmsFeature no longer manages entry storage registration.
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);

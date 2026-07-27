@@ -12,7 +12,7 @@ import { ValueFilterFeature } from "@webiny/db-utils";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { SqlGroupStorageOperations } from "~/operations/group/SqlGroupStorageOperations.js";
 import { SqlModelStorageOperations } from "~/operations/model/SqlModelStorageOperations.js";
-import { SqlCmsEntryStorageOpsRegistrar } from "~/SqlCmsEntryStorageOpsRegistrar.js";
+import { SqlEntryStorageOpsFeature } from "~/SqlEntryStorageOpsFeature.js";
 
 interface ISqlStorageOperationsConfig {
     knex: Knex;
@@ -43,8 +43,8 @@ export const HeadlessCmsSqlFeature = createFeature({
         container.register(SqlGroupStorageOperations).inSingletonScope();
         container.register(SqlModelStorageOperations).inSingletonScope();
 
-        // Entry registrar: app-scoped, called per-request by HeadlessCmsFeature
-        container.register(SqlCmsEntryStorageOpsRegistrar).inSingletonScope();
+        // Entry ops: 22 per-method factories delegating to SqlEntryOperations
+        SqlEntryStorageOpsFeature.register(container);
     }
 });
 
