@@ -1,4 +1,9 @@
-import type { CmsEntryStorageOperations as BaseCmsEntryStorageOperations } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
+    CmsEntryValues,
+    CmsModel,
+    CmsStorageEntry
+} from "@webiny/api-headless-cms/types/index.js";
 
 export enum ENTITIES {
     GROUPS = "CmsGroups",
@@ -13,6 +18,24 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 export interface DataLoadersHandlerInterfaceClearAllParams {
     tenant: string;
 }
+
+export interface DataLoadersHandlerDataLoaderParams {
+    model: Pick<CmsModel, "tenant" | "modelId">;
+    ids: readonly string[];
+}
+
 export interface IDataLoadersHandler {
+    getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }
