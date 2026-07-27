@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { Alert, Button, OverlayLoader, useToast } from "@webiny/admin-ui";
 import {
+    Breadcrumbs,
     CenteredView,
     SimpleForm,
     SimpleFormContent,
@@ -33,23 +34,29 @@ export const SettingsView = observer(function SettingsView() {
     };
 
     return (
-        <CenteredView>
-            <SimpleForm>
-                {(vm.loading || vm.saving) && <OverlayLoader />}
-                <SimpleFormHeader title="Mailer Settings" />
-                <SimpleFormContent>
-                    {vm.source === "code" ? (
-                        <Alert title="Managed by code" type="info">
-                            Mailer settings are managed by code. Edit <code>webiny.config.tsx</code>{" "}
-                            to change them.
-                        </Alert>
-                    ) : null}
-                    <FormView name={"Mailer Settings"} form={vm.form} />
-                </SimpleFormContent>
-                <SimpleFormFooter>
-                    {vm.editable ? <Button text={"Save"} onClick={handleSave} /> : null}
-                </SimpleFormFooter>
-            </SimpleForm>
-        </CenteredView>
+        <>
+            <Breadcrumbs>
+                <Breadcrumbs.Item label="Settings" />
+                <Breadcrumbs.Item label="Mailer" />
+            </Breadcrumbs>
+            <CenteredView>
+                <SimpleForm>
+                    {(vm.loading || vm.saving) && <OverlayLoader />}
+                    <SimpleFormHeader title="Mailer Settings" />
+                    <SimpleFormContent>
+                        {vm.source === "code" ? (
+                            <Alert title="Managed by code" type="info">
+                                Mailer settings are managed by code. Edit{" "}
+                                <code>webiny.config.tsx</code> to change them.
+                            </Alert>
+                        ) : null}
+                        <FormView name={"Mailer Settings"} form={vm.form} />
+                    </SimpleFormContent>
+                    <SimpleFormFooter>
+                        {vm.editable ? <Button text={"Save"} onClick={handleSave} /> : null}
+                    </SimpleFormFooter>
+                </SimpleForm>
+            </CenteredView>
+        </>
     );
 });

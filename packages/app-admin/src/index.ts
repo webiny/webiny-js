@@ -86,6 +86,22 @@ export type {
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
 
+// Breadcrumbs (DI-backed trail, with a declarative React config on top)
+export {
+    Breadcrumbs,
+    BreadcrumbsFeature,
+    BreadcrumbsPresenter,
+    useBreadcrumbs
+} from "./presentation/breadcrumbs/index.js";
+export type {
+    IBreadcrumbsPresenter,
+    BreadcrumbTrailItem,
+    BreadcrumbLink,
+    BreadcrumbsViewModel,
+    BreadcrumbsProps,
+    BreadcrumbItemProps
+} from "./presentation/breadcrumbs/index.js";
+
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 
