@@ -26,7 +26,7 @@ import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
 import { DdbEsGroupStorageOperations } from "~/operations/group/DdbEsGroupStorageOperations.js";
 import { DdbEsModelStorageOperations } from "~/operations/model/DdbEsModelStorageOperations.js";
-import { DdbEsCmsEntryStorageOpsRegistrar } from "~/DdbEsCmsEntryStorageOpsRegistrar.js";
+import { DdbEsEntryStorageOpsFeature } from "~/DdbEsEntryStorageOpsFeature.js";
 
 export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
@@ -119,8 +119,8 @@ export const HeadlessCmsDdbEsFeature = createFeature({
         container.register(DdbEsGroupStorageOperations).inSingletonScope();
         container.register(DdbEsModelStorageOperations).inSingletonScope();
 
-        // Entry registrar: app-scoped, called per-request by HeadlessCmsFeature
-        container.register(DdbEsCmsEntryStorageOpsRegistrar).inSingletonScope();
+        // Entry storage operations: registers all per-method entry abstractions.
+        DdbEsEntryStorageOpsFeature.register(container);
     }
 });
 
