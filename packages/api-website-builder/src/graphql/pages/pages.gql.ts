@@ -25,6 +25,7 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
@@ -229,6 +230,17 @@ export const createPagesSchema = () => {
                 translatePage: async (_, { pageId, languageCode, folderId }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
+
+                        // Gated at resolver-time, NOT at registration time: the WCP license is
+                        // loaded per request, so a register-time check reads the placeholder
+                        // NullLicense (canUse* → false).
+                        const wcp = context.container.resolve(WcpContext);
+                        if (!wcp.canUseAiPageTranslation()) {
+                            throw new Error(
+                                "Page translation cannot be used because your project license does not permit it."
+                            );
+                        }
+
                         const translatePage = context.container.resolve(TranslatePageUseCase);
                         const result = await translatePage.execute({
                             pageId,
