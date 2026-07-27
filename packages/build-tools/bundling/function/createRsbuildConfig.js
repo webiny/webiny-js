@@ -63,11 +63,11 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     /^knex(\/|$)/
                 ],
                 plugins: [
-                    // This is necessary to enable JSDOM usage in Lambda.
+                    // Ignore optional `canvas` native module required by jsdom.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
                     new rspack.IgnorePlugin({
-                        resourceRegExp: /canvas/,
-                        contextRegExp: /jsdom$/
+                        resourceRegExp: /^canvas$/,
+                        contextRegExp: /jsdom/
                     })
                 ],
                 resolve: {
