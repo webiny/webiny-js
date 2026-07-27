@@ -35,11 +35,17 @@ function CanUseHcmsFieldPermissions({ children }: ChildrenProps) {
     return wcp.canUseHcmsFieldPermissions() ? <>{children}</> : null;
 }
 
+function CanUseAbTesting({ children }: ChildrenProps) {
+    const wcp = useWcp();
+    return wcp.canUseAbTesting() ? <>{children}</> : null;
+}
+
 export const Wcp = {
     CanUseMultiTenancy,
     CanUseTeams,
     CanUsePrivateFiles,
     CanUseFileManagerThreatDetection,
     CanUseWorkflows,
-    CanUseHcmsFieldPermissions
+    CanUseHcmsFieldPermissions,
+    CanUseAbTesting
 };
