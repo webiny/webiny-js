@@ -10474,6 +10474,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -10486,6 +10487,7 @@ __metadata:
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/lexical-converter": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -10493,6 +10495,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^7.0.34"
     front-matter: "npm:^4.0.2"
+    happy-dom: "npm:^20.11.1"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
     mobx-react-lite: "npm:^4.1.1"
@@ -18516,6 +18519,21 @@ __metadata:
   bin:
     handlebars: bin/handlebars
   checksum: 10/e755433d652e8a15fc02f83d7478e652359e7a4d354c4328818853ed4f8a39d4a09e1d22dad3c7213c5240864a65b3c840970b8b181745575dd957dd258f2b8d
+  languageName: node
+  linkType: hard
+
+"happy-dom@npm:^20.11.1":
+  version: 20.11.1
+  resolution: "happy-dom@npm:20.11.1"
+  dependencies:
+    "@types/node": "npm:>=20.0.0"
+    "@types/whatwg-mimetype": "npm:^3.0.2"
+    "@types/ws": "npm:^8.18.1"
+    buffer-image-size: "npm:^0.6.4"
+    entities: "npm:^7.0.1"
+    whatwg-mimetype: "npm:^3.0.0"
+    ws: "npm:^8.21.0"
+  checksum: 10/a07d892f1fefe843cf3fcb0ed4ecb782fd1014c1ac27048f27f874f5d6b91ec0c25a777532145d0c041f524fd851d8ce5bf9779fc6f1ba0fed8b67d7ab96095f
   languageName: node
   linkType: hard
 
