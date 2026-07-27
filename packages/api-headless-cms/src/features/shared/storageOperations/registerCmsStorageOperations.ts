@@ -83,8 +83,7 @@ export interface ICmsStorageOperationsRegistry {
 
 /**
  * Registers all 24 per-method CMS storage operations abstractions (group, model, and 22 entry
- * abstractions) from a single registry object. Storage adapters (or bridges from the legacy
- * `HeadlessCmsStorageOperations` object) call this once during registration.
+ * abstractions) from a single registry object.
  */
 export function registerCmsStorageOperations(
     container: Container,

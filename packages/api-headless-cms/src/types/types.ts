@@ -58,12 +58,6 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
      */
     PREVIEW: boolean;
     /**
-     * @deprecated Resolve per-method storage abstractions from the container instead.
-     * Kept for backward compatibility with existing tests. Will be removed once tests are migrated.
-     */
-    storageOperations?: HeadlessCmsStorageOperations;
-
-    /**
      * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.
      */
     accessControl: AccessControl;
@@ -1412,17 +1406,4 @@ export enum CONTENT_ENTRY_STATUS {
     DRAFT = "draft",
     PUBLISHED = "published",
     UNPUBLISHED = "unpublished"
-}
-
-export interface HeadlessCmsStorageOperations<C extends CmsContext = CmsContext> {
-    name: string;
-    groups: CmsGroupStorageOperations;
-    models: CmsModelStorageOperations;
-    entries: CmsEntryStorageOperations;
-    /**
-     * Either attach something from the storage operations or run something in it. Synchronous so
-     * the storage stack can be built inside HeadlessCmsFeature.register() (for every event), not in
-     * a per-request async initializer. All adapters (ddb/ddb-es/sql) have sync bodies.
-     */
-    beforeInit: (context: C) => void;
 }

@@ -69,8 +69,7 @@ import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
     CmsStorageModelProvider,
-    HeadlessCms,
-    StorageOperationsFactory
+    HeadlessCms
 } from "~/features/shared/abstractions.js";
 
 import {
@@ -82,9 +81,6 @@ import {
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import { CmsEntryStorageOpsRegistrar } from "~/features/shared/storageOperations/CmsEntryStorageOpsRegistrar.js";
-import { GroupStorageOperations } from "~/features/shared/storageOperations/GroupStorageOperations.js";
-import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
-import { registerCmsEntryStorageOperations } from "~/features/shared/storageOperations/registerCmsEntryStorageOperations.js";
 
 export interface HeadlessCmsConfig {
     type: ApiEndpoint;
@@ -205,30 +201,10 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
-        // Storage operations registration.
-        // All adapters (DDB, DDB+ES, SQL, PG+OS) register GroupStorageOperations and
-        // ModelStorageOperations as app-scoped singletons at boot time, and provide a
-        // CmsEntryStorageOpsRegistrar for entries. The legacy StorageOperationsFactory path
-        // is kept as a fallback but no built-in adapter uses it.
-        let entryRegistrar: CmsEntryStorageOpsRegistrar.Interface | undefined;
-        try {
-            entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
-        } catch {
-            // Not registered — adapter uses legacy factory path.
-        }
-
-        if (entryRegistrar) {
-            entryRegistrar.register(container);
-        } else {
-            // Legacy factory path — no built-in adapter uses this, kept for external adapters.
-            const storageOperations = container
-                .resolve(StorageOperationsFactory)
-                .create(cmsContext);
-            storageOperations.beforeInit(cmsContext);
-            container.registerInstance(GroupStorageOperations, storageOperations.groups);
-            container.registerInstance(ModelStorageOperations, storageOperations.models);
-            registerCmsEntryStorageOperations(container, storageOperations.entries);
-        }
+        // Entry storage operations are registered per-request via the registrar.
+        // Group and model ops are already registered as app-scoped singletons by the adapter feature.
+        const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
+        entryRegistrar.register(container);
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);
