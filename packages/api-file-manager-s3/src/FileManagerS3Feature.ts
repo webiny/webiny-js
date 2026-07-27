@@ -1,8 +1,7 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
-import { createS3GraphQLSchema } from "./graphql/schema.js";
+import { S3GraphQLSchema } from "./graphql/S3GraphQLSchema.js";
 import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/feature.js";
 import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.js";
 import { ApplyThreatScanningFeature } from "~/enterprise/ApplyThreatScanning/feature.js";
@@ -32,20 +31,9 @@ export const FileManagerS3Feature = createFeature({
         GetFileContentsByIdFeature.register(container);
         GetFileContentsByKeyFeature.register(container);
 
-        // Static S3 GraphQL schema (extends FmQuery/FmMutation) — contribute to the core schema.
-        const s3Schema = createS3GraphQLSchema();
-        container.registerInstance(CoreGraphQLSchemaFactory, {
-            async execute(builder) {
-                const { schema } = s3Schema;
-                if (schema.typeDefs) {
-                    builder.addTypeDefs(schema.typeDefs);
-                }
-                if (schema.resolvers) {
-                    builder.addLegacyResolvers(schema.resolvers as Record<string, any>);
-                }
-                return builder;
-            }
-        });
+        // Static S3 GraphQL schema (extends FmQuery/FmMutation) — a DI-native
+        // CoreGraphQLSchemaFactory contributor (declares its resolver dependencies).
+        container.register(S3GraphQLSchema);
 
         // Threat scanning is WCP-gated. The gate MUST run after the per-request WCP license refresh
         // (a RequestInitializer, pre-auth) — at register() time WcpContext still sees the NullLicense
