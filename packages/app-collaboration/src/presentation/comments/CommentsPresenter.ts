@@ -33,6 +33,10 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
     private filterLocator: string | null = null;
     private highlightThreadId: string | null = null;
     private users: CollabUser[] = [];
+    // Composer draft state lives on the presenter so the React composer stays a thin view.
+    private composerBody = "";
+    private composerMentions: string[] = [];
+    private composerSubmitting = false;
 
     constructor(private api: CollaborationApi.Interface) {
         makeAutoObservable<CommentsPresenterImpl, "api">(this, { api: false });
@@ -101,8 +105,50 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
             resolvedThreads: toJS(resolved),
             unresolvedCount: open.length + outdated.length,
             fieldCount: fields.size,
-            mentionableUsers: toJS(this.users)
+            mentionableUsers: toJS(this.users),
+            composer: {
+                body: this.composerBody,
+                mentions: toJS(this.composerMentions),
+                submitting: this.composerSubmitting
+            }
         };
+    }
+
+    setComposerBody(body: string) {
+        this.composerBody = body;
+    }
+
+    addComposerMention(userId: string) {
+        if (!this.composerMentions.includes(userId)) {
+            this.composerMentions.push(userId);
+        }
+    }
+
+    resetComposer() {
+        this.composerBody = "";
+        this.composerMentions = [];
+    }
+
+    async submitComposer() {
+        if (!this.composerBody.trim() || this.composerSubmitting) {
+            return;
+        }
+        runInAction(() => {
+            this.composerSubmitting = true;
+        });
+        try {
+            // Empty locator => entry-level (unanchored) comment.
+            await this.createThread({
+                locator: this.activeLocator ?? "",
+                body: this.composerBody,
+                mentions: toJS(this.composerMentions)
+            });
+            this.resetComposer();
+        } finally {
+            runInAction(() => {
+                this.composerSubmitting = false;
+            });
+        }
     }
 
     async init(contentId: string) {
@@ -178,6 +224,17 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
         await this.reload();
     }
 
+    /**
+     * Owns reply validation + the reply use-case call. The reply input state stays local to the
+     * thread card (a view concern), but the submit orchestration lives here.
+     */
+    async submitReply(threadId: string, body: string, mentions?: string[]) {
+        if (!body.trim()) {
+            return;
+        }
+        await this.reply(threadId, body, mentions);
+    }
+
     async resolve(threadId: string) {
         const updated = await this.api.resolveThread(threadId);
         this.replaceThread(updated);
@@ -198,6 +255,17 @@ class CommentsPresenterImpl implements PresenterAbstraction.Interface {
     async editMessage(threadId: string, messageId: string, body: string) {
         await this.api.updateMessage(threadId, messageId, body);
         await this.reload();
+    }
+
+    /**
+     * Owns message-edit validation + the edit use-case call. The edit draft state stays local to
+     * the message component (a view concern), but the submit orchestration lives here.
+     */
+    async submitMessageEdit(threadId: string, messageId: string, body: string) {
+        if (!body.trim()) {
+            return;
+        }
+        await this.editMessage(threadId, messageId, body);
     }
 
     async deleteMessage(threadId: string, messageId: string) {

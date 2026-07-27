@@ -14,14 +14,7 @@ export interface ParsedCmsContentId {
 }
 
 export const parseCmsContentId = (contentId: string): ParsedCmsContentId => {
-    const separatorIndex = contentId.indexOf(":");
-    if (separatorIndex === -1) {
-        return { modelId: null, entryId: null };
-    }
-
-    const modelId = contentId.slice(0, separatorIndex);
-    const entryId = contentId.slice(separatorIndex + 1);
-
+    const [modelId, entryId] = contentId.split(":");
     if (!modelId || !entryId) {
         return { modelId: null, entryId: null };
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { useSecurity } from "@webiny/app-admin";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
@@ -16,28 +16,7 @@ export const Composer = observer((props: Props) => {
     const { presenter, activeLocator, resolveLabel } = props;
     const { identity } = useSecurity();
     const authorName = identity?.displayName || "You";
-    const [body, setBody] = useState("");
-    const [mentions, setMentions] = useState<string[]>([]);
-    const [busy, setBusy] = useState(false);
-
-    const addMention = (userId: string) => {
-        setMentions(current => (current.includes(userId) ? current : [...current, userId]));
-    };
-
-    const submit = async () => {
-        if (!body.trim() || busy) {
-            return;
-        }
-        setBusy(true);
-        try {
-            // Empty locator => entry-level (unanchored) comment.
-            await presenter.createThread({ locator: activeLocator ?? "", body, mentions });
-            setBody("");
-            setMentions([]);
-        } finally {
-            setBusy(false);
-        }
-    };
+    const { body, submitting } = presenter.vm.composer;
 
     return (
         <div className="wby-collab-composer">
@@ -81,12 +60,12 @@ export const Composer = observer((props: Props) => {
                         maxHeight={240}
                         users={presenter.vm.mentionableUsers}
                         excludeUserId={identity?.id}
-                        onChange={setBody}
-                        onMention={addMention}
+                        onChange={value => presenter.setComposerBody(value)}
+                        onMention={userId => presenter.addComposerMention(userId)}
                         onKeyDown={event => {
                             event.stopPropagation();
                             if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-                                void submit();
+                                void presenter.submitComposer();
                             }
                         }}
                     />
@@ -94,18 +73,15 @@ export const Composer = observer((props: Props) => {
                 <div className="wby-collab-composer__actions">
                     <button
                         className="wby-collab-btn wby-collab-btn--ghost"
-                        onClick={() => {
-                            setBody("");
-                            setMentions([]);
-                        }}
-                        disabled={busy || !body}
+                        onClick={() => presenter.resetComposer()}
+                        disabled={submitting || !body}
                     >
                         Cancel
                     </button>
                     <button
                         className="wby-collab-btn wby-collab-btn--primary"
-                        onClick={submit}
-                        disabled={busy || !body.trim()}
+                        onClick={() => void presenter.submitComposer()}
+                        disabled={submitting || !body.trim()}
                     >
                         Comment
                     </button>

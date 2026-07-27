@@ -19,11 +19,6 @@ class ListThreadsUseCaseImpl implements UseCase.Interface {
         const views: ICollabThreadView[] = [];
 
         for (const thread of items) {
-            // Soft-deleted threads never surface in the list.
-            if (thread.deleted) {
-                continue;
-            }
-
             const resolution = await this.resolveLocator.execute({
                 contentType: thread.contentType,
                 contentId: thread.contentId,

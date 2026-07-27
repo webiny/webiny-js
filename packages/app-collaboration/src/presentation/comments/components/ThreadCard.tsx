@@ -108,7 +108,7 @@ const Message = ({
         }
         setBusy(true);
         try {
-            await presenter.editMessage(threadId, message.id, draft);
+            await presenter.submitMessageEdit(threadId, message.id, draft);
             setEditing(false);
         } finally {
             setBusy(false);
@@ -288,7 +288,7 @@ export const ThreadCard = observer((props: Props) => {
         }
         setBusy(true);
         try {
-            await presenter.reply(thread.id, reply, replyMentions);
+            await presenter.submitReply(thread.id, reply, replyMentions);
             setReply("");
             setReplyMentions([]);
         } finally {

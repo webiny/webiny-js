@@ -1,4 +1,5 @@
-import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
 import { createZodError } from "@webiny/utils";
 import { CollabThreadType } from "~/domain/thread/abstractions.js";
 import type { ICollabThreadView } from "~/features/thread/shared/abstractions.js";
@@ -29,9 +30,56 @@ const toGqlThread = (view: ICollabThreadView) => {
     return { ...view.thread, anchor: view.anchor };
 };
 
-export const createCollaborationSchema = () => {
-    return new GraphQLSchemaPlugin({
-        typeDefs: /* GraphQL */ `
+interface IIdArgs {
+    id: string;
+}
+
+interface IListCollabThreadsArgs {
+    where: {
+        contentType: string;
+        contentId: string;
+        type?: string;
+        resolved?: boolean;
+    };
+    limit?: number;
+    after?: string;
+}
+
+interface ICreateCollabThreadArgs {
+    input: {
+        contentType: string;
+        contentId: string;
+        locator: string;
+        type: string;
+        body: string;
+        mentions?: string[];
+        assigneeId?: string;
+        dueDate?: string;
+    };
+}
+
+interface IReplyToCollabThreadArgs {
+    threadId: string;
+    body: string;
+    mentions?: string[];
+}
+
+interface IUpdateCollabMessageArgs {
+    threadId: string;
+    messageId: string;
+    body: string;
+}
+
+interface IDeleteCollabMessageArgs {
+    threadId: string;
+    messageId: string;
+}
+
+class CollaborationSchema_ implements GraphQLSchemaFactory.Interface {
+    async execute(
+        builder: GraphQLSchemaFactory.SchemaBuilder
+    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        builder.addTypeDefs(/* GraphQL */ `
             type CollabError {
                 code: String
                 message: String
@@ -169,23 +217,31 @@ export const createCollaborationSchema = () => {
             extend type Mutation {
                 collaboration: CollaborationMutation
             }
-        `,
-        resolvers: {
-            Query: {
-                collaboration: () => ({})
-            },
-            Mutation: {
-                collaboration: () => ({})
-            },
-            CollaborationQuery: {
-                getCollabThread: async (_, args, context) => {
+        `);
+
+        builder.addResolver({
+            path: "Query.collaboration",
+            dependencies: [],
+            resolver: () => () => ({})
+        });
+
+        builder.addResolver({
+            path: "Mutation.collaboration",
+            dependencies: [],
+            resolver: () => () => ({})
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "CollaborationQuery.getCollabThread",
+            dependencies: [GetThreadUseCase],
+            resolver: (getThread: GetThreadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await getCollabThreadValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const getThread = context.container.resolve(GetThreadUseCase);
                         const threadResult = await getThread.execute(result.data.id);
 
                         if (threadResult.isFail()) {
@@ -194,15 +250,21 @@ export const createCollaborationSchema = () => {
 
                         return toGqlThread(threadResult.value);
                     });
-                },
-                listCollabThreads: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IListCollabThreadsArgs>({
+            path: "CollaborationQuery.listCollabThreads",
+            dependencies: [ListThreadsUseCase],
+            resolver: (listThreads: ListThreadsUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolveList(async () => {
                         const result = await listCollabThreadsValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const listThreads = context.container.resolve(ListThreadsUseCase);
                         const listResult = await listThreads.execute({
                             where: {
                                 contentType: result.data.where.contentType,
@@ -223,17 +285,21 @@ export const createCollaborationSchema = () => {
                             meta: listResult.value.meta
                         };
                     });
-                }
-            },
-            CollaborationMutation: {
-                createCollabThread: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<ICreateCollabThreadArgs>({
+            path: "CollaborationMutation.createCollabThread",
+            dependencies: [CreateThreadUseCase],
+            resolver: (createThread: CreateThreadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await createCollabThreadValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const createThread = context.container.resolve(CreateThreadUseCase);
                         const createResult = await createThread.execute({
                             contentType: result.data.input.contentType,
                             contentId: result.data.input.contentId,
@@ -251,15 +317,21 @@ export const createCollaborationSchema = () => {
 
                         return toGqlThread(createResult.value);
                     });
-                },
-                replyToCollabThread: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IReplyToCollabThreadArgs>({
+            path: "CollaborationMutation.replyToCollabThread",
+            dependencies: [ReplyToThreadUseCase],
+            resolver: (reply: ReplyToThreadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await replyToCollabThreadValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const reply = context.container.resolve(ReplyToThreadUseCase);
                         const replyResult = await reply.execute({
                             threadId: result.data.threadId,
                             body: result.data.body,
@@ -272,15 +344,21 @@ export const createCollaborationSchema = () => {
 
                         return replyResult.value;
                     });
-                },
-                resolveCollabThread: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "CollaborationMutation.resolveCollabThread",
+            dependencies: [ResolveThreadUseCase],
+            resolver: (resolveThread: ResolveThreadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await idOnlyValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const resolveThread = context.container.resolve(ResolveThreadUseCase);
                         const threadResult = await resolveThread.execute(result.data.id);
 
                         if (threadResult.isFail()) {
@@ -289,15 +367,21 @@ export const createCollaborationSchema = () => {
 
                         return toGqlThread(threadResult.value);
                     });
-                },
-                reopenCollabThread: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "CollaborationMutation.reopenCollabThread",
+            dependencies: [ReopenThreadUseCase],
+            resolver: (reopenThread: ReopenThreadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await idOnlyValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const reopenThread = context.container.resolve(ReopenThreadUseCase);
                         const threadResult = await reopenThread.execute(result.data.id);
 
                         if (threadResult.isFail()) {
@@ -306,15 +390,21 @@ export const createCollaborationSchema = () => {
 
                         return toGqlThread(threadResult.value);
                     });
-                },
-                updateCollabMessage: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IUpdateCollabMessageArgs>({
+            path: "CollaborationMutation.updateCollabMessage",
+            dependencies: [UpdateMessageUseCase],
+            resolver: (updateMessage: UpdateMessageUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await updateCollabMessageValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const updateMessage = context.container.resolve(UpdateMessageUseCase);
                         const messageResult = await updateMessage.execute({
                             threadId: result.data.threadId,
                             messageId: result.data.messageId,
@@ -327,15 +417,21 @@ export const createCollaborationSchema = () => {
 
                         return messageResult.value;
                     });
-                },
-                deleteCollabMessage: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IDeleteCollabMessageArgs>({
+            path: "CollaborationMutation.deleteCollabMessage",
+            dependencies: [DeleteMessageUseCase],
+            resolver: (deleteMessage: DeleteMessageUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await deleteCollabMessageValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const deleteMessage = context.container.resolve(DeleteMessageUseCase);
                         const deleteResult = await deleteMessage.execute({
                             threadId: result.data.threadId,
                             messageId: result.data.messageId
@@ -347,15 +443,21 @@ export const createCollaborationSchema = () => {
 
                         return true;
                     });
-                },
-                deleteCollabThread: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "CollaborationMutation.deleteCollabThread",
+            dependencies: [DeleteThreadUseCase],
+            resolver: (deleteThread: DeleteThreadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await idOnlyValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const deleteThread = context.container.resolve(DeleteThreadUseCase);
                         const deleteResult = await deleteThread.execute(result.data.id);
 
                         if (deleteResult.isFail()) {
@@ -364,8 +466,15 @@ export const createCollaborationSchema = () => {
 
                         return true;
                     });
-                }
+                };
             }
-        }
-    });
-};
+        });
+
+        return builder;
+    }
+}
+
+export const CollaborationSchema = GraphQLSchemaFactory.createImplementation({
+    implementation: CollaborationSchema_,
+    dependencies: []
+});

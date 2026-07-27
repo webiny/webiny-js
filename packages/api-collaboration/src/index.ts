@@ -16,7 +16,7 @@ import { ReplyToThreadFeature } from "./features/thread/ReplyToThread/feature.js
 import { ThreadResolutionFeature } from "./features/thread/ThreadResolution/feature.js";
 import { MessageOperationsFeature } from "./features/thread/MessageOperations/feature.js";
 import { DeleteThreadFeature } from "./features/thread/DeleteThread/feature.js";
-import { createCollaborationSchema } from "./graphql/collaboration.js";
+import { CollaborationSchema } from "./graphql/collaboration.js";
 
 export const createCollaboration = () => {
     const modelsPlugin = createRegisterExtensionPlugin(context => {
@@ -61,7 +61,7 @@ export const createCollaboration = () => {
         DeleteThreadFeature.register(context.container);
 
         // Register the GraphQL schema.
-        context.plugins.register(createCollaborationSchema());
+        context.container.register(CollaborationSchema);
     });
 
     collaborationContextPlugin.name = "collaboration.context";

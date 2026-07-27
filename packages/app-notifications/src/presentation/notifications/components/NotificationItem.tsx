@@ -40,12 +40,7 @@ const cmsEntryTarget = (link?: NotificationLink | null) => {
     if (!link || link.app !== "cms" || !link.contentId) {
         return null;
     }
-    const separatorIndex = link.contentId.indexOf(":");
-    if (separatorIndex === -1) {
-        return null;
-    }
-    const modelId = link.contentId.slice(0, separatorIndex);
-    const entryId = link.contentId.slice(separatorIndex + 1);
+    const [modelId, entryId] = link.contentId.split(":");
     if (!modelId || !entryId) {
         return null;
     }

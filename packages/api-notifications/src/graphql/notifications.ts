@@ -1,4 +1,5 @@
-import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
 import { createZodError } from "@webiny/utils";
 import { ListNotificationsUseCase } from "~/features/ListNotifications/index.js";
 import { NotificationCountsUseCase } from "~/features/NotificationCounts/index.js";
@@ -12,9 +13,24 @@ import {
 } from "~/features/ArchiveNotifications/index.js";
 import { listNotificationsValidation, idValidation } from "./validation.js";
 
-export const createNotificationsSchema = () => {
-    return new GraphQLSchemaPlugin({
-        typeDefs: /* GraphQL */ `
+interface IIdArgs {
+    id: string;
+}
+
+interface IListNotificationsArgs {
+    where?: {
+        archived?: boolean;
+        read?: boolean;
+    };
+    limit?: number;
+    after?: string;
+}
+
+class NotificationsSchema_ implements GraphQLSchemaFactory.Interface {
+    async execute(
+        builder: GraphQLSchemaFactory.SchemaBuilder
+    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        builder.addTypeDefs(/* GraphQL */ `
             type NotificationError {
                 code: String
                 message: String
@@ -119,24 +135,31 @@ export const createNotificationsSchema = () => {
             extend type Mutation {
                 notifications: NotificationsMutation
             }
-        `,
-        resolvers: {
-            Query: {
-                notifications: () => ({})
-            },
-            Mutation: {
-                notifications: () => ({})
-            },
-            NotificationsQuery: {
-                listNotifications: async (_, args, context) => {
+        `);
+
+        builder.addResolver({
+            path: "Query.notifications",
+            dependencies: [],
+            resolver: () => () => ({})
+        });
+
+        builder.addResolver({
+            path: "Mutation.notifications",
+            dependencies: [],
+            resolver: () => () => ({})
+        });
+
+        builder.addResolver<IListNotificationsArgs>({
+            path: "NotificationsQuery.listNotifications",
+            dependencies: [ListNotificationsUseCase],
+            resolver: (listNotifications: ListNotificationsUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolveList(async () => {
                         const result = await listNotificationsValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
 
-                        const listNotifications =
-                            context.container.resolve(ListNotificationsUseCase);
                         const listResult = await listNotifications.execute({
                             archived: result.data.where?.archived,
                             read: result.data.where?.read,
@@ -150,26 +173,36 @@ export const createNotificationsSchema = () => {
 
                         return listResult.value;
                     });
-                },
-                notificationCounts: async (_, __, context) => {
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "NotificationsQuery.notificationCounts",
+            dependencies: [NotificationCountsUseCase],
+            resolver: (counts: NotificationCountsUseCase.Interface) => {
+                return async () => {
                     return resolve(async () => {
-                        const counts = context.container.resolve(NotificationCountsUseCase);
                         const result = await counts.execute();
                         if (result.isFail()) {
                             throw result.error;
                         }
                         return result.value;
                     });
-                }
-            },
-            NotificationsMutation: {
-                markNotificationRead: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "NotificationsMutation.markNotificationRead",
+            dependencies: [MarkNotificationReadUseCase],
+            resolver: (markRead: MarkNotificationReadUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await idValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        const markRead = context.container.resolve(MarkNotificationReadUseCase);
                         const markResult = await markRead.execute(result.data.id);
                         if (markResult.isFail()) {
                             if (markResult.error.code === "Notifications/NotFound") {
@@ -179,46 +212,71 @@ export const createNotificationsSchema = () => {
                         }
                         return markResult.value;
                     });
-                },
-                markAllNotificationsRead: async (_, __, context) => {
+                };
+            }
+        });
+
+        builder.addResolver({
+            path: "NotificationsMutation.markAllNotificationsRead",
+            dependencies: [MarkAllNotificationsReadUseCase],
+            resolver: (markAll: MarkAllNotificationsReadUseCase.Interface) => {
+                return async () => {
                     return resolve(async () => {
-                        const markAll = context.container.resolve(MarkAllNotificationsReadUseCase);
                         const result = await markAll.execute();
                         if (result.isFail()) {
                             throw result.error;
                         }
                         return result.value;
                     });
-                },
-                archiveNotification: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "NotificationsMutation.archiveNotification",
+            dependencies: [ArchiveNotificationUseCase],
+            resolver: (archive: ArchiveNotificationUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await idValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        const archive = context.container.resolve(ArchiveNotificationUseCase);
                         const archiveResult = await archive.execute(result.data.id);
                         if (archiveResult.isFail()) {
                             throw archiveResult.error;
                         }
                         return archiveResult.value;
                     });
-                },
-                unarchiveNotification: async (_, args, context) => {
+                };
+            }
+        });
+
+        builder.addResolver<IIdArgs>({
+            path: "NotificationsMutation.unarchiveNotification",
+            dependencies: [UnarchiveNotificationUseCase],
+            resolver: (unarchive: UnarchiveNotificationUseCase.Interface) => {
+                return async ({ args }) => {
                     return resolve(async () => {
                         const result = await idValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        const unarchive = context.container.resolve(UnarchiveNotificationUseCase);
                         const unarchiveResult = await unarchive.execute(result.data.id);
                         if (unarchiveResult.isFail()) {
                             throw unarchiveResult.error;
                         }
                         return unarchiveResult.value;
                     });
-                }
+                };
             }
-        }
-    });
-};
+        });
+
+        return builder;
+    }
+}
+
+export const NotificationsSchema = GraphQLSchemaFactory.createImplementation({
+    implementation: NotificationsSchema_,
+    dependencies: []
+});

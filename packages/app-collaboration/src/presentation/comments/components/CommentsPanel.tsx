@@ -15,9 +15,36 @@ interface Props {
     resolveLabel: (locator: string) => string;
 }
 
+interface ThreadListProps {
+    threads: CollabThread[];
+    presenter: CommentsPresenter.Interface;
+    onJumpToField: (locator: string) => void;
+}
+
+/**
+ * Renders a list of thread cards, or nothing when there are none. Keeps the "is there anything to
+ * show?" decision inside the list component rather than in every caller.
+ */
+const ThreadList = ({ threads, presenter, onJumpToField }: ThreadListProps) => {
+    if (threads.length === 0) {
+        return null;
+    }
+    return (
+        <>
+            {threads.map(thread => (
+                <ThreadCard
+                    key={thread.id}
+                    presenter={presenter}
+                    thread={thread}
+                    onJumpToField={onJumpToField}
+                />
+            ))}
+        </>
+    );
+};
+
 interface SectionProps {
     label: string;
-    count: number;
     threads: CollabThread[];
     presenter: CommentsPresenter.Interface;
     onJumpToField: (locator: string) => void;
@@ -26,14 +53,13 @@ interface SectionProps {
 
 const CollapsibleSection = ({
     label,
-    count,
     threads,
     presenter,
     onJumpToField,
     defaultOpen = true
 }: SectionProps) => {
     const [open, setOpen] = useState(defaultOpen);
-    if (count === 0) {
+    if (threads.length === 0) {
         return null;
     }
     return (
@@ -41,19 +67,12 @@ const CollapsibleSection = ({
             <button className="wby-collab-section" onClick={() => setOpen(current => !current)}>
                 {open ? <ExpandMoreIcon /> : <ExpandLessIcon />}
                 <span className="wby-collab-section__label">
-                    {label} · {count}
+                    {label} · {threads.length}
                 </span>
             </button>
-            {open
-                ? threads.map(thread => (
-                      <ThreadCard
-                          key={thread.id}
-                          presenter={presenter}
-                          thread={thread}
-                          onJumpToField={onJumpToField}
-                      />
-                  ))
-                : null}
+            {open ? (
+                <ThreadList threads={threads} presenter={presenter} onJumpToField={onJumpToField} />
+            ) : null}
         </div>
     );
 };
@@ -121,14 +140,11 @@ export const CommentsPanel = observer((props: Props) => {
                     resolveLabel={resolveLabel}
                 />
 
-                {openThreads.map(thread => (
-                    <ThreadCard
-                        key={thread.id}
-                        presenter={presenter}
-                        thread={thread}
-                        onJumpToField={onJumpToField}
-                    />
-                ))}
+                <ThreadList
+                    threads={openThreads}
+                    presenter={presenter}
+                    onJumpToField={onJumpToField}
+                />
 
                 {total === 0 && !vm.loading ? (
                     <div className="wby-collab-empty">
@@ -140,14 +156,12 @@ export const CommentsPanel = observer((props: Props) => {
 
                 <CollapsibleSection
                     label="Outdated"
-                    count={outdatedThreads.length}
                     threads={outdatedThreads}
                     presenter={presenter}
                     onJumpToField={onJumpToField}
                 />
                 <CollapsibleSection
                     label="Resolved"
-                    count={resolvedThreads.length}
                     threads={resolvedThreads}
                     presenter={presenter}
                     onJumpToField={onJumpToField}

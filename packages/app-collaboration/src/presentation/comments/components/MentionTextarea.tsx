@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
+import { TextareaPrimitive } from "@webiny/admin-ui";
 import { avatarColor, initials } from "../styles.js";
 import type { CollabUser } from "~/types.js";
 
@@ -143,9 +144,13 @@ export const MentionTextarea = ({
 
     return (
         <div className="wby-collab-mention-wrap">
-            <textarea
-                ref={ref}
-                className={className}
+            <TextareaPrimitive
+                textareaRef={ref}
+                variant="ghost"
+                // `forwardEventOnChange` makes the primitive pass the native event (not just the
+                // value) so we can keep reading `event.target.selectionStart` for caret detection.
+                forwardEventOnChange
+                className={`${className ?? ""} min-h-0`}
                 value={value}
                 placeholder={placeholder}
                 autoFocus={autoFocus}

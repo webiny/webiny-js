@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useContainer, useRoute } from "@webiny/app";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
@@ -6,6 +6,7 @@ import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentat
 import { useCommentsPresenter } from "~/presentation/comments/useComments.js";
 import { CommentsPanel } from "~/presentation/comments/components/CommentsPanel.js";
 import { CommentMarkersProvider } from "~/cms/CommentMarkersContext.js";
+import { collectListFieldLocators } from "~/cms/listFieldLocators.js";
 import { buildLocatorLabel } from "~/cms/fieldLabels.js";
 import { cmsContentId, COLLAB_THREAD_PARAM, COLLAB_FIELD_PARAM } from "~/constants.js";
 
@@ -24,7 +25,14 @@ export const CommentsSidePanelDecorator = ContentEntryFormContent.createDecorato
 
         // Scope the per-field markers to this form's container so they don't leak into a nested
         // referenced-entry drawer (which renders in a child container). See CommentMarkersContext.
-        const markersContext = useMemo(() => ({ contentId, container }), [contentId, container]);
+        // `listLocators` marks fields nested in array/list fields, whose markers are suppressed
+        // (their locator can't uniquely anchor to a single array element yet). Recomputed each
+        // render so it stays in sync as list items are added/removed.
+        const markersContext = {
+            contentId,
+            container,
+            listLocators: collectListFieldLocators(vm.form)
+        };
 
         // Deep-link params (from a notification click or a copied thread link). `params` merges
         // path + query, so these arrive as query-string values on the entry URL.

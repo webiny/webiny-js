@@ -20,14 +20,16 @@ interface WrapperProps {
  */
 export const FieldMarkerDecorator = FormFieldWrapper.createDecorator(Original => {
     return observer(function FieldMarkerWrapper(props: WrapperProps) {
-        const { contentId, container } = useCommentMarkersContext();
+        const { contentId, container, listLocators } = useCommentMarkersContext();
         const currentContainer = useContainer();
 
         // Active only inside the entry form that owns the comments panel — not in a nested
         // referenced-entry drawer (rendered in a child container) or any unrelated form.
         const active = !!contentId && container === currentContainer;
 
-        if (!active) {
+        // Fields nested inside an array/list field can't uniquely anchor a thread yet (their
+        // locator is shared across all array items), so no marker there.
+        if (!active || listLocators.has(props.field.qualifiedName)) {
             return <Original {...props} />;
         }
 

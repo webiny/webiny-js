@@ -18,8 +18,11 @@ class ListThreadsRepositoryImpl implements Repository.Interface {
     ) {}
 
     async execute(params: Repository.Params): Repository.Return {
+        // Exclude soft-deleted threads at the query level (not in JS afterwards), so `limit` and
+        // the returned `meta` describe the same set the caller sees — otherwise a page made up of
+        // soft-deleted rows would return 0 items while `meta` still reports more to load.
         const where = this.cmsWhereMapper.map({
-            input: { ...params.where },
+            input: { ...params.where, deleted: false },
             fields: this.model.fields
         });
 

@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useRef } from "react";
+import { TextareaPrimitive } from "@webiny/admin-ui";
 
 interface Props {
     value: string;
@@ -42,14 +43,18 @@ export const AutoTextarea = ({
     }, [value]);
 
     return (
-        <textarea
-            ref={ref}
-            className={className}
+        <TextareaPrimitive
+            textareaRef={ref}
+            variant="ghost"
+            className={`${className ?? ""} min-h-0`}
             value={value}
             placeholder={placeholder}
             autoFocus={autoFocus}
             rows={1}
-            onChange={event => onChange(event.target.value)}
+            // `TextareaPrimitive` forwards the value (not the event) to `onChange` by default,
+            // which is exactly what `AutoTextarea` needs. The primitive still types the prop as a
+            // native change handler, so we bridge the value-based callback here.
+            onChange={onChange as unknown as React.ChangeEventHandler<HTMLTextAreaElement>}
             onKeyDown={onKeyDown}
         />
     );

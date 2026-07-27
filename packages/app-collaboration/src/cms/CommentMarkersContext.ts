@@ -15,11 +15,17 @@ export interface CommentMarkersContextValue {
     contentId: string | null;
     /** DI container the main entry form renders in. Typed loosely to avoid a @webiny/di dep. */
     container: unknown;
+    /**
+     * Locators of fields nested inside an array/list field. Markers are hidden for these because
+     * their locator can't uniquely anchor a thread to one array element yet.
+     */
+    listLocators: Set<string>;
 }
 
 const CommentMarkersContext = createContext<CommentMarkersContextValue>({
     contentId: null,
-    container: null
+    container: null,
+    listLocators: new Set()
 });
 
 export const CommentMarkersProvider = CommentMarkersContext.Provider;

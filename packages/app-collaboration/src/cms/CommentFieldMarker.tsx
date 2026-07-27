@@ -6,12 +6,16 @@ import type { IFieldVM } from "@webiny/app-admin/features/formModel/abstractions
 import { useCommentsPresenter } from "~/presentation/comments/useComments.js";
 import "~/presentation/comments/styles.js";
 
+interface CommentFieldMarkerProps {
+    field: IFieldVM;
+}
+
 /**
  * Per-field affordance in the CMS entry form: a comment-count badge when the field has open
  * threads, otherwise a hover-revealed "Comment" pill. Clicking opens the panel focused on this
  * field. Renders nothing outside the entry editor (no contentId loaded).
  */
-export const CommentFieldMarker = observer(({ field }: { field: IFieldVM }) => {
+export const CommentFieldMarker = observer(({ field }: CommentFieldMarkerProps) => {
     const presenter = useCommentsPresenter();
     const { vm } = presenter;
 

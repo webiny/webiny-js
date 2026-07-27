@@ -12,7 +12,7 @@ import { ListNotificationsFeature } from "./features/ListNotifications/feature.j
 import { NotificationCountsFeature } from "./features/NotificationCounts/feature.js";
 import { MarkNotificationsFeature } from "./features/MarkNotifications/feature.js";
 import { ArchiveNotificationsFeature } from "./features/ArchiveNotifications/feature.js";
-import { createNotificationsSchema } from "./graphql/notifications.js";
+import { NotificationsSchema } from "./graphql/notifications.js";
 
 export const createNotifications = () => {
     const modelsPlugin = createRegisterExtensionPlugin(context => {
@@ -45,7 +45,7 @@ export const createNotifications = () => {
         MarkNotificationsFeature.register(context.container);
         ArchiveNotificationsFeature.register(context.container);
 
-        context.plugins.register(createNotificationsSchema());
+        context.container.register(NotificationsSchema);
     });
 
     notificationsContextPlugin.name = "notifications.context";
