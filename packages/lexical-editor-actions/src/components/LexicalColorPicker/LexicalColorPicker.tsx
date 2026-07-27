@@ -6,7 +6,11 @@ import { Tooltip } from "@webiny/admin-ui";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
+import { ReactComponent as ResetIcon } from "@webiny/icons/format_color_reset.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
+
+// Applied to reset the font color back to the theme/inherited default.
+const RESET_COLOR = "inherit";
 
 // Popover content: design-system tokens, compact swatches, ring-based selected state.
 // max-w (not fixed w) so the popover hugs its content for a few colors and wraps for many.
@@ -86,7 +90,7 @@ export const LexicalColorPicker = ({
     const themeColors = useMemo(() => theme?.colors ?? [], []);
 
     useEffect(() => {
-        const isThemeColor = themeColors.some(color => color.id === value);
+        const isThemeColor = themeColors.some(color => color.value === value);
         setIsThemeColor(isThemeColor);
     }, [themeColors, value]);
 
@@ -101,7 +105,7 @@ export const LexicalColorPicker = ({
                         trigger={
                             <button
                                 className={
-                                    color.id === value
+                                    color.value === value
                                         ? `${swatchClass} ${swatchSelectedClass}`
                                         : swatchClass
                                 }
@@ -134,6 +138,16 @@ export const LexicalColorPicker = ({
                     }
                 />
             ) : null}
+
+            <Tooltip
+                content={<span>Reset color</span>}
+                side="bottom"
+                trigger={
+                    <button className={swatchClass} onClick={() => onChangeComplete(RESET_COLOR)}>
+                        <ResetIcon className={iconPaletteClass} />
+                    </button>
+                }
+            />
 
             <div style={showPicker ? showPickerStyle : hidePickerStyle}>
                 <ChromePicker
