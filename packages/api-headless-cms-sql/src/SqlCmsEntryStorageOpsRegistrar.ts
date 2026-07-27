@@ -5,15 +5,14 @@ import { SqlEntryOperations } from "~/operations/entry/abstractions/SqlEntryOper
 import type { Container } from "@webiny/di";
 
 class SqlCmsEntryStorageOpsRegistrarImpl implements CmsEntryStorageOpsRegistrar.Interface {
-    constructor(private entryOperations: SqlEntryOperations.Interface) {}
-
     register(container: Container): void {
-        registerCmsEntryStorageOperations(container, this.entryOperations);
+        const entries = container.resolve(SqlEntryOperations);
+        registerCmsEntryStorageOperations(container, entries);
     }
 }
 
 export const SqlCmsEntryStorageOpsRegistrar = createImplementation({
     abstraction: CmsEntryStorageOpsRegistrar,
     implementation: SqlCmsEntryStorageOpsRegistrarImpl,
-    dependencies: [SqlEntryOperations]
+    dependencies: []
 });

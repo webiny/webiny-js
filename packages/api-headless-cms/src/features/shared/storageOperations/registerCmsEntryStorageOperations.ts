@@ -33,48 +33,70 @@ export const registerCmsEntryStorageOperations = (
     container: Container,
     entries: CmsEntryStorageOperations
 ): void => {
-    container.registerInstance(CreateEntryStorageOperation, { execute: entries.create });
-    container.registerInstance(CreateEntryRevisionFromStorageOperation, {
-        execute: entries.createRevisionFrom
+    container.registerInstance(CreateEntryStorageOperation, {
+        execute: (...args) => entries.create(...args)
     });
-    container.registerInstance(UpdateEntryStorageOperation, { execute: entries.update });
-    container.registerInstance(DeleteEntryStorageOperation, { execute: entries.delete });
+    container.registerInstance(CreateEntryRevisionFromStorageOperation, {
+        execute: (...args) => entries.createRevisionFrom(...args)
+    });
+    container.registerInstance(UpdateEntryStorageOperation, {
+        execute: (...args) => entries.update(...args)
+    });
+    container.registerInstance(DeleteEntryStorageOperation, {
+        execute: (...args) => entries.delete(...args)
+    });
     container.registerInstance(DeleteEntryRevisionStorageOperation, {
-        execute: entries.deleteRevision
+        execute: (...args) => entries.deleteRevision(...args)
     });
     container.registerInstance(DeleteMultipleEntriesStorageOperation, {
-        execute: entries.deleteMultipleEntries
+        execute: (...args) => entries.deleteMultipleEntries(...args)
     });
-    container.registerInstance(MoveToBinStorageOperation, { execute: entries.moveToBin });
+    container.registerInstance(MoveToBinStorageOperation, {
+        execute: (...args) => entries.moveToBin(...args)
+    });
     container.registerInstance(RestoreFromBinStorageOperation, {
-        execute: entries.restoreFromBin
+        execute: (...args) => entries.restoreFromBin(...args)
     });
-    container.registerInstance(PublishEntryStorageOperation, { execute: entries.publish });
-    container.registerInstance(UnpublishEntryStorageOperation, { execute: entries.unpublish });
-    container.registerInstance(MoveEntryStorageOperation, { execute: entries.move });
-    container.registerInstance(GetEntryStorageOperation, { execute: entries.get });
-    container.registerInstance(ListEntriesStorageOperation, { execute: entries.list });
-    container.registerInstance(GetEntriesByIdsStorageOperation, { execute: entries.getByIds });
+    container.registerInstance(PublishEntryStorageOperation, {
+        execute: (...args) => entries.publish(...args)
+    });
+    container.registerInstance(UnpublishEntryStorageOperation, {
+        execute: (...args) => entries.unpublish(...args)
+    });
+    container.registerInstance(MoveEntryStorageOperation, {
+        execute: (...args) => entries.move(...args)
+    });
+    container.registerInstance(GetEntryStorageOperation, {
+        execute: (...args) => entries.get(...args)
+    });
+    container.registerInstance(ListEntriesStorageOperation, {
+        execute: (...args) => entries.list(...args)
+    });
+    container.registerInstance(GetEntriesByIdsStorageOperation, {
+        execute: (...args) => entries.getByIds(...args)
+    });
     container.registerInstance(GetLatestEntriesByIdsStorageOperation, {
-        execute: entries.getLatestByIds
+        execute: (...args) => entries.getLatestByIds(...args)
     });
     container.registerInstance(GetPublishedEntriesByIdsStorageOperation, {
-        execute: entries.getPublishedByIds
+        execute: (...args) => entries.getPublishedByIds(...args)
     });
-    container.registerInstance(GetRevisionsStorageOperation, { execute: entries.getRevisions });
+    container.registerInstance(GetRevisionsStorageOperation, {
+        execute: (...args) => entries.getRevisions(...args)
+    });
     container.registerInstance(GetRevisionByIdStorageOperation, {
-        execute: entries.getRevisionById
+        execute: (...args) => entries.getRevisionById(...args)
     });
     container.registerInstance(GetPublishedRevisionByEntryIdStorageOperation, {
-        execute: entries.getPublishedRevisionByEntryId
+        execute: (...args) => entries.getPublishedRevisionByEntryId(...args)
     });
     container.registerInstance(GetLatestRevisionByEntryIdStorageOperation, {
-        execute: entries.getLatestRevisionByEntryId
+        execute: (...args) => entries.getLatestRevisionByEntryId(...args)
     });
     container.registerInstance(GetPreviousRevisionStorageOperation, {
-        execute: entries.getPreviousRevision
+        execute: (...args) => entries.getPreviousRevision(...args)
     });
     container.registerInstance(GetUniqueFieldValuesStorageOperation, {
-        execute: entries.getUniqueFieldValues
+        execute: (...args) => entries.getUniqueFieldValues(...args)
     });
 };
