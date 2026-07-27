@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api/index.js";
-import { SqlEntryOperations } from "@webiny/api-headless-cms-sql/operations/entry/abstractions/SqlEntryOperations.js";
 import { EntryWriteOperations } from "~/operations/entry/abstractions/EntryWriteOperations.js";
 import { EntrySearchOperations } from "~/operations/entry/abstractions/EntrySearchOperations.js";
+
 import { CreateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { UpdateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UpdateEntryStorageOperation.js";
@@ -15,119 +15,276 @@ import { UnpublishEntryStorageOperation } from "@webiny/api-headless-cms/feature
 import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import { GetEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
-import { GetEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntriesByIdsStorageOperation.js";
-import { GetLatestEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestEntriesByIdsStorageOperation.js";
-import { GetPublishedEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedEntriesByIdsStorageOperation.js";
-import { GetRevisionsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionsStorageOperation.js";
-import { GetRevisionByIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
-import { GetPublishedRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
-import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
-import { GetPreviousRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPreviousRevisionStorageOperation.js";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
+
+import { SqlGetRevisions } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetRevisions.js";
+import { SqlGetRevisionById } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetRevisionById.js";
+import { SqlGetEntriesByIds } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetEntriesByIds.js";
+import { SqlGetLatestEntriesByIds } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetLatestEntriesByIds.js";
+import { SqlGetPublishedEntriesByIds } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPublishedEntriesByIds.js";
+import { SqlGetLatestRevisionByEntryId } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetLatestRevisionByEntryId.js";
+import { SqlGetPublishedRevisionByEntryId } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPublishedRevisionByEntryId.js";
+import { SqlGetPreviousRevision } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPreviousRevision.js";
+
+import { createImplementation } from "@webiny/feature/api";
+import type {
+    CmsModel,
+    CmsEntryValues,
+    CmsEntryStorageOperationsCreateParams,
+    CmsEntryStorageOperationsCreateRevisionFromParams,
+    CmsEntryStorageOperationsUpdateParams,
+    CmsEntryStorageOperationsPublishParams,
+    CmsEntryStorageOperationsUnpublishParams,
+    CmsEntryStorageOperationsMoveToBinParams,
+    CmsEntryStorageOperationsRestoreFromBinParams,
+    CmsEntryStorageOperationsDeleteParams,
+    CmsEntryStorageOperationsDeleteRevisionParams,
+    CmsEntryStorageOperationsDeleteEntriesParams,
+    CmsEntryStorageOperationsGetParams,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryStorageOperationsGetUniqueFieldValuesParams
+} from "@webiny/api-headless-cms/types/index.js";
+
+// Write ops (11) — delegate to EntryWriteOperations
+class PgOsCreateEntryImpl implements CreateEntryStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsCreateParams<T>
+    ) {
+        return this.ops.create(model, params);
+    }
+}
+
+const PgOsCreateEntry = createImplementation({
+    abstraction: CreateEntryStorageOperation,
+    implementation: PgOsCreateEntryImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
+    ) {
+        return this.ops.createRevisionFrom(model, params);
+    }
+}
+
+const PgOsCreateEntryRevisionFrom = createImplementation({
+    abstraction: CreateEntryRevisionFromStorageOperation,
+    implementation: PgOsCreateEntryRevisionFromImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUpdateParams<T>
+    ) {
+        return this.ops.update(model, params);
+    }
+}
+
+const PgOsUpdateEntry = createImplementation({
+    abstraction: UpdateEntryStorageOperation,
+    implementation: PgOsUpdateEntryImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsPublishParams<T>
+    ) {
+        return this.ops.publish(model, params);
+    }
+}
+
+const PgOsPublishEntry = createImplementation({
+    abstraction: PublishEntryStorageOperation,
+    implementation: PgOsPublishEntryImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUnpublishParams<T>
+    ) {
+        return this.ops.unpublish(model, params);
+    }
+}
+
+const PgOsUnpublishEntry = createImplementation({
+    abstraction: UnpublishEntryStorageOperation,
+    implementation: PgOsUnpublishEntryImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsMoveEntryImpl implements MoveEntryStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute(model: CmsModel, id: string, folderId: string) {
+        return this.ops.move(model, id, folderId);
+    }
+}
+
+const PgOsMoveEntry = createImplementation({
+    abstraction: MoveEntryStorageOperation,
+    implementation: PgOsMoveEntryImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsMoveToBinImpl implements MoveToBinStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute(model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) {
+        return this.ops.moveToBin(model, params);
+    }
+}
+
+const PgOsMoveToBin = createImplementation({
+    abstraction: MoveToBinStorageOperation,
+    implementation: PgOsMoveToBinImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
+    ) {
+        return this.ops.restoreFromBin(model, params);
+    }
+}
+
+const PgOsRestoreFromBin = createImplementation({
+    abstraction: RestoreFromBinStorageOperation,
+    implementation: PgOsRestoreFromBinImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) {
+        return this.ops.delete(model, params);
+    }
+}
+
+const PgOsDeleteEntry = createImplementation({
+    abstraction: DeleteEntryStorageOperation,
+    implementation: PgOsDeleteEntryImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsDeleteRevisionParams<T>
+    ) {
+        return this.ops.deleteRevision(model, params);
+    }
+}
+
+const PgOsDeleteEntryRevision = createImplementation({
+    abstraction: DeleteEntryRevisionStorageOperation,
+    implementation: PgOsDeleteEntryRevisionImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+class PgOsDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperation.Interface {
+    constructor(private ops: EntryWriteOperations.Interface) {}
+    async execute(model: CmsModel, params: CmsEntryStorageOperationsDeleteEntriesParams) {
+        return this.ops.deleteMultipleEntries(model, params);
+    }
+}
+
+const PgOsDeleteMultipleEntries = createImplementation({
+    abstraction: DeleteMultipleEntriesStorageOperation,
+    implementation: PgOsDeleteMultipleEntriesImpl,
+    dependencies: [EntryWriteOperations]
+});
+
+// Search ops (3) — delegate to EntrySearchOperations
+class PgOsGetEntryImpl implements GetEntryStorageOperation.Interface {
+    constructor(private ops: EntrySearchOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsGetParams
+    ) {
+        return this.ops.get<T>(model, params);
+    }
+}
+
+const PgOsGetEntry = createImplementation({
+    abstraction: GetEntryStorageOperation,
+    implementation: PgOsGetEntryImpl,
+    dependencies: [EntrySearchOperations]
+});
+
+class PgOsListEntriesImpl implements ListEntriesStorageOperation.Interface {
+    constructor(private ops: EntrySearchOperations.Interface) {}
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsListParams
+    ) {
+        return this.ops.list<T>(model, params);
+    }
+}
+
+const PgOsListEntries = createImplementation({
+    abstraction: ListEntriesStorageOperation,
+    implementation: PgOsListEntriesImpl,
+    dependencies: [EntrySearchOperations]
+});
+
+class PgOsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperation.Interface {
+    constructor(private ops: EntrySearchOperations.Interface) {}
+    async execute(model: CmsModel, params: CmsEntryStorageOperationsGetUniqueFieldValuesParams) {
+        return this.ops.getUniqueFieldValues(model, params);
+    }
+}
+
+const PgOsGetUniqueFieldValues = createImplementation({
+    abstraction: GetUniqueFieldValuesStorageOperation,
+    implementation: PgOsGetUniqueFieldValuesImpl,
+    dependencies: [EntrySearchOperations]
+});
 
 export const PgOsEntryStorageOpsFeature = createFeature({
     name: "cms.pgOs.entryStorageOps",
     register: container => {
-        const writeOps = () => container.resolve(EntryWriteOperations);
-        const searchOps = () => container.resolve(EntrySearchOperations);
-        const sqlOps = () => container.resolve(SqlEntryOperations);
+        // Write ops (11) — PG-OS specific
+        container.register(PgOsCreateEntry);
+        container.register(PgOsCreateEntryRevisionFrom);
+        container.register(PgOsUpdateEntry);
+        container.register(PgOsPublishEntry);
+        container.register(PgOsUnpublishEntry);
+        container.register(PgOsMoveEntry);
+        container.register(PgOsMoveToBin);
+        container.register(PgOsRestoreFromBin);
+        container.register(PgOsDeleteEntry);
+        container.register(PgOsDeleteEntryRevision);
+        container.register(PgOsDeleteMultipleEntries);
 
-        // Write ops (11) — from EntryWriteOperations
-        container.registerFactory(CreateEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["create"]>) =>
-                writeOps().create(...args)
-        }));
-        container.registerFactory(CreateEntryRevisionFromStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["createRevisionFrom"]>) =>
-                writeOps().createRevisionFrom(...args)
-        }));
-        container.registerFactory(UpdateEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["update"]>) =>
-                writeOps().update(...args)
-        }));
-        container.registerFactory(PublishEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["publish"]>) =>
-                writeOps().publish(...args)
-        }));
-        container.registerFactory(UnpublishEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["unpublish"]>) =>
-                writeOps().unpublish(...args)
-        }));
-        container.registerFactory(MoveEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["move"]>) =>
-                writeOps().move(...args)
-        }));
-        container.registerFactory(MoveToBinStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["moveToBin"]>) =>
-                writeOps().moveToBin(...args)
-        }));
-        container.registerFactory(RestoreFromBinStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["restoreFromBin"]>) =>
-                writeOps().restoreFromBin(...args)
-        }));
-        container.registerFactory(DeleteEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["delete"]>) =>
-                writeOps().delete(...args)
-        }));
-        container.registerFactory(DeleteEntryRevisionStorageOperation, () => ({
-            execute: (...args: Parameters<EntryWriteOperations.Interface["deleteRevision"]>) =>
-                writeOps().deleteRevision(...args)
-        }));
-        container.registerFactory(DeleteMultipleEntriesStorageOperation, () => ({
-            execute: (
-                ...args: Parameters<EntryWriteOperations.Interface["deleteMultipleEntries"]>
-            ) => writeOps().deleteMultipleEntries(...args)
-        }));
+        // Search ops (3) — PG-OS specific (OpenSearch)
+        container.register(PgOsGetEntry);
+        container.register(PgOsListEntries);
+        container.register(PgOsGetUniqueFieldValues);
 
-        // Search ops (3) — from EntrySearchOperations
-        container.registerFactory(GetEntryStorageOperation, () => ({
-            execute: (...args: Parameters<EntrySearchOperations.Interface["get"]>) =>
-                searchOps().get(...args)
-        }));
-        container.registerFactory(ListEntriesStorageOperation, () => ({
-            execute: (...args: Parameters<EntrySearchOperations.Interface["list"]>) =>
-                searchOps().list(...args)
-        }));
-        container.registerFactory(GetUniqueFieldValuesStorageOperation, () => ({
-            execute: (
-                ...args: Parameters<EntrySearchOperations.Interface["getUniqueFieldValues"]>
-            ) => searchOps().getUniqueFieldValues(...args)
-        }));
-
-        // SQL ops (8) — from SqlEntryOperations
-        container.registerFactory(GetRevisionsStorageOperation, () => ({
-            execute: (...args: Parameters<SqlEntryOperations.Interface["getRevisions"]>) =>
-                sqlOps().getRevisions(...args)
-        }));
-        container.registerFactory(GetRevisionByIdStorageOperation, () => ({
-            execute: (...args: Parameters<SqlEntryOperations.Interface["getRevisionById"]>) =>
-                sqlOps().getRevisionById(...args)
-        }));
-        container.registerFactory(GetEntriesByIdsStorageOperation, () => ({
-            execute: (...args: Parameters<SqlEntryOperations.Interface["getByIds"]>) =>
-                sqlOps().getByIds(...args)
-        }));
-        container.registerFactory(GetLatestEntriesByIdsStorageOperation, () => ({
-            execute: (...args: Parameters<SqlEntryOperations.Interface["getLatestByIds"]>) =>
-                sqlOps().getLatestByIds(...args)
-        }));
-        container.registerFactory(GetPublishedEntriesByIdsStorageOperation, () => ({
-            execute: (...args: Parameters<SqlEntryOperations.Interface["getPublishedByIds"]>) =>
-                sqlOps().getPublishedByIds(...args)
-        }));
-        container.registerFactory(GetLatestRevisionByEntryIdStorageOperation, () => ({
-            execute: (
-                ...args: Parameters<SqlEntryOperations.Interface["getLatestRevisionByEntryId"]>
-            ) => sqlOps().getLatestRevisionByEntryId(...args)
-        }));
-        container.registerFactory(GetPublishedRevisionByEntryIdStorageOperation, () => ({
-            execute: (
-                ...args: Parameters<SqlEntryOperations.Interface["getPublishedRevisionByEntryId"]>
-            ) => sqlOps().getPublishedRevisionByEntryId(...args)
-        }));
-        container.registerFactory(GetPreviousRevisionStorageOperation, () => ({
-            execute: (...args: Parameters<SqlEntryOperations.Interface["getPreviousRevision"]>) =>
-                sqlOps().getPreviousRevision(...args)
-        }));
+        // SQL ops (8) — reuse SQL's per-method DI classes directly
+        container.register(SqlGetRevisions);
+        container.register(SqlGetRevisionById);
+        container.register(SqlGetEntriesByIds);
+        container.register(SqlGetLatestEntriesByIds);
+        container.register(SqlGetPublishedEntriesByIds);
+        container.register(SqlGetLatestRevisionByEntryId);
+        container.register(SqlGetPublishedRevisionByEntryId);
+        container.register(SqlGetPreviousRevision);
     }
 });

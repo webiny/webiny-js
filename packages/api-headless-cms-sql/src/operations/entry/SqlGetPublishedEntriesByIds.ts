@@ -14,7 +14,9 @@ import type { IEntryRow } from "./types.js";
 import { rowToEntry } from "./mappers.js";
 import { createEntryQuery } from "./queryHelpers.js";
 
-class SqlGetPublishedEntriesByIdsImpl implements GetPublishedEntriesByIdsStorageOperation.Interface {
+class SqlGetPublishedEntriesByIdsImpl
+    implements GetPublishedEntriesByIdsStorageOperation.Interface
+{
     private readonly knex: Knex;
 
     public constructor(

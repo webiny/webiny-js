@@ -166,10 +166,7 @@ export const listEntries = async <T extends CmsEntryValues = CmsEntryValues>(
             const entry = rowToEntry(row) as CmsStorageEntry;
 
             for (const field of model.fields) {
-                entry.values[field.fieldId] = await fromStorage(
-                    field,
-                    entry.values[field.fieldId]
-                );
+                entry.values[field.fieldId] = await fromStorage(field, entry.values[field.fieldId]);
             }
 
             return entry as CmsEntry<T>;
