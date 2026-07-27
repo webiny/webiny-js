@@ -69,8 +69,10 @@ import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
     CmsStorageModelProvider,
-    HeadlessCms
+    HeadlessCms,
+    StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
+
 import {
     EntryFromStorageTransform,
     EntryToStorageTransform,
@@ -80,6 +82,9 @@ import {
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import { CmsEntryStorageOpsRegistrar } from "~/features/shared/storageOperations/CmsEntryStorageOpsRegistrar.js";
+import { GroupStorageOperations } from "~/features/shared/storageOperations/GroupStorageOperations.js";
+import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
+import { registerCmsEntryStorageOperations } from "~/features/shared/storageOperations/registerCmsEntryStorageOperations.js";
 
 export interface HeadlessCmsConfig {
     type: ApiEndpoint;
@@ -200,11 +205,25 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
-        // Register the per-request entry storage operations via the entry registrar. Group/model
-        // storage operations are registered as app-scoped DI singletons by the storage adapter
-        // feature (e.g. HeadlessCmsDdbFeature) at boot time, before any request runs.
-        const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
-        entryRegistrar.register(container);
+        // Storage operations registration.
+        // New-style adapters (DDB) register GroupStorageOperations and ModelStorageOperations as
+        // app-scoped singletons at boot time, and provide a CmsEntryStorageOpsRegistrar for entries.
+        // Legacy adapters (ddb-es, sql, pg-os) still register a StorageOperationsFactory.
+        // We detect which path by trying to resolve the entry registrar first.
+        try {
+            const entryRegistrar = container.resolve(CmsEntryStorageOpsRegistrar);
+            entryRegistrar.register(container);
+        } catch {
+            // Legacy path: adapter registered a StorageOperationsFactory instead.
+            // DDB adapter has migrated to direct DI; ddb-es/sql/pg-os still use the factory.
+            const storageOperations = container
+                .resolve(StorageOperationsFactory)
+                .create(cmsContext);
+            storageOperations.beforeInit(cmsContext);
+            container.registerInstance(GroupStorageOperations, storageOperations.groups);
+            container.registerInstance(ModelStorageOperations, storageOperations.models);
+            registerCmsEntryStorageOperations(container, storageOperations.entries);
+        }
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);

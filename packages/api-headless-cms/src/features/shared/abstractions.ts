@@ -3,6 +3,7 @@ import type {
     CmsContext as CmsCtx,
     CmsEntryValues,
     HeadlessCms as HeadlessCmsApi,
+    HeadlessCmsStorageOperations as StorageOps,
     StorageOperationsCmsModel
 } from "~/types/types.js";
 import type { CmsModel } from "~/types/model.js";
@@ -35,6 +36,23 @@ export const CmsStorageModelProvider =
 
 export namespace CmsStorageModelProvider {
     export type Interface = ICmsStorageModelProvider;
+}
+
+/**
+ * @deprecated DDB adapter no longer uses this — migrated to direct DI registration.
+ * Kept for ddb-es, sql, pg-os adapters until they are migrated.
+ */
+export interface IHeadlessCmsStorageOperationsFactory<T> {
+    create(context: T): StorageOps;
+}
+
+export const StorageOperationsFactory = createAbstraction<
+    IHeadlessCmsStorageOperationsFactory<any>
+>("Cms/StorageOperationsFactory");
+
+export namespace StorageOperationsFactory {
+    export type Interface<T extends CmsCtx = CmsCtx> = IHeadlessCmsStorageOperationsFactory<T>;
+    export type Result = StorageOps;
 }
 
 /**
