@@ -1,4 +1,4 @@
 export {
-    registerPgOsStorageOperations,
+    HeadlessCmsPgOsFeature,
     type IPgOsStorageOperationsConfig
 } from "./features/HeadlessCmsPgOsFeature.js";

@@ -1,6 +1,5 @@
 import type { Container } from "@webiny/di";
 import { createFeature } from "@webiny/feature/api/index.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
@@ -23,47 +22,29 @@ export interface IPgOsStorageOperationsConfig {
 
 export const HeadlessCmsPgOsFeature = createFeature({
     name: "cms.storageOperations.pgOs",
-    register: container => {
+    register: (container: Container, config: IPgOsStorageOperationsConfig) => {
+        const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
+
+        container.registerInstance(TableNameResolverConfig, {
+            sharedTables,
+            tableNamePrefix: config.tableNamePrefix,
+            tableNameSuffix: config.tableNameSuffix
+        });
+
+        TableNameResolverFeature.register(container);
+        ValueFilterFeature.register(container);
+        FilterRegistriesFeature.register(container);
+        GroupSchemaManagerFeature.register(container);
+        ModelSchemaManagerFeature.register(container);
+        EntryTableManagerFeature.register(container);
+        SyncTableManagerFeature.register(container);
+        SyncWriterFeature.register(container);
+
         CmsEntryOpenSearchUtilsFeature.register(container);
 
         SqlGroupStorageOpsFeature.register(container);
         SqlModelStorageOpsFeature.register(container);
 
-        // Entry ops: 22 per-method DI classes — write decorators + search impls + SQL reuse
         PgOsEntryStorageOpsFeature.register(container);
     }
 });
-
-export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConfig) => {
-    const storageOperationsFeature = createFeature({
-        name: "cms.storageOperations.pgOs.registration",
-        register: (container: Container) => {
-            const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
-
-            container.registerInstance(TableNameResolverConfig, {
-                sharedTables,
-                tableNamePrefix: config.tableNamePrefix,
-                tableNameSuffix: config.tableNameSuffix
-            });
-
-            TableNameResolverFeature.register(container);
-            ValueFilterFeature.register(container);
-            FilterRegistriesFeature.register(container);
-            GroupSchemaManagerFeature.register(container);
-            ModelSchemaManagerFeature.register(container);
-            EntryTableManagerFeature.register(container);
-            SyncTableManagerFeature.register(container);
-            SyncWriterFeature.register(container);
-
-            HeadlessCmsPgOsFeature.register(container);
-        }
-    });
-
-    const plugin = createRegisterExtensionPlugin(context => {
-        return storageOperationsFeature.register(context.container);
-    });
-
-    plugin.name = "cms.registerPgOsStorageOperations";
-
-    return [plugin];
-};
