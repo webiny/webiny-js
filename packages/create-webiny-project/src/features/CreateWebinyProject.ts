@@ -232,9 +232,10 @@ export class CreateWebinyProject {
             console.log();
             console.log(
                 yellow(
-                    "⚠ The self-hosted (server) hosting type is in ALPHA. It is designed for local\n" +
-                        "  development via `webiny watch`. Standalone production packaging is still a\n" +
-                        "  work in progress (tracked in webiny-js#5429)."
+                    "⚠ The self-hosted (server) hosting type is in ALPHA. Develop locally with\n" +
+                        "  `webiny watch`. You can also build a self-contained, deployable artifact and\n" +
+                        "  run it anywhere with `node start.mjs` — no Webiny CLI or monorepo required on\n" +
+                        "  the server. It's still maturing, so expect some rough edges."
                 )
             );
             console.log();
