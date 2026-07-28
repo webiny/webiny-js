@@ -969,34 +969,6 @@ export interface CmsGroupStorageOperationsDeleteParams {
     group: CmsGroup;
 }
 
-/**
- * Description of the CmsGroup CRUD operations.
- * If user wants to add another database to the application, this is how it is done.
- * This is just plain read, update, write, delete and list - no authentication or permission checks.
- */
-export interface CmsGroupStorageOperations {
-    /**
-     * Gets content model group by given id.
-     */
-    get: (params: CmsGroupStorageOperationsGetParams) => Promise<CmsGroup | null>;
-    /**
-     * List all content model groups. Filterable via params.
-     */
-    list: (params: CmsGroupStorageOperationsListParams) => Promise<CmsGroup[]>;
-    /**
-     * Create a new content model group.
-     */
-    create: (params: CmsGroupStorageOperationsCreateParams) => Promise<void>;
-    /**
-     * Update existing content model group.
-     */
-    update: (params: CmsGroupStorageOperationsUpdateParams) => Promise<void>;
-    /**
-     * Delete the content model group.
-     */
-    delete: (params: CmsGroupStorageOperationsDeleteParams) => Promise<void>;
-}
-
 export interface CmsModelStorageOperationsGetParams {
     tenant: string;
     modelId: string;
@@ -1022,34 +994,6 @@ export interface CmsModelStorageOperationsUpdateParams {
 
 export interface CmsModelStorageOperationsDeleteParams {
     model: CmsModel;
-}
-
-/**
- * Description of the CmsModel storage operations.
- * If user wants to add another database to the application, this is how it is done.
- * This is just plain read, update, write, delete and list - no authentication or permission checks.
- */
-export interface CmsModelStorageOperations {
-    /**
-     * Gets content model by given id.
-     */
-    get: (params: CmsModelStorageOperationsGetParams) => Promise<StorageCmsModel | null>;
-    /**
-     * List all content models. Filterable via params.
-     */
-    list: (params: CmsModelStorageOperationsListParams) => Promise<StorageCmsModel[]>;
-    /**
-     * Create a new content model.
-     */
-    create: (params: CmsModelStorageOperationsCreateParams) => Promise<StorageCmsModel>;
-    /**
-     * Update existing content model.
-     */
-    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<StorageCmsModel>;
-    /**
-     * Delete the content model.
-     */
-    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<void>;
 }
 
 export interface CmsEntryStorageOperationsGetParams {

@@ -1,5 +1,13 @@
-export { GroupStorageOperations } from "./GroupStorageOperations.js";
-export { ModelStorageOperations } from "./ModelStorageOperations.js";
+export { GetGroupStorageOperation } from "./group/GetGroupStorageOperation.js";
+export { ListGroupsStorageOperation } from "./group/ListGroupsStorageOperation.js";
+export { CreateGroupStorageOperation } from "./group/CreateGroupStorageOperation.js";
+export { UpdateGroupStorageOperation } from "./group/UpdateGroupStorageOperation.js";
+export { DeleteGroupStorageOperation } from "./group/DeleteGroupStorageOperation.js";
+export { GetModelStorageOperation } from "./model/GetModelStorageOperation.js";
+export { ListModelsStorageOperation } from "./model/ListModelsStorageOperation.js";
+export { CreateModelStorageOperation } from "./model/CreateModelStorageOperation.js";
+export { UpdateModelStorageOperation } from "./model/UpdateModelStorageOperation.js";
+export { DeleteModelStorageOperation } from "./model/DeleteModelStorageOperation.js";
 export { CreateEntryStorageOperation } from "./entry/CreateEntryStorageOperation.js";
 export { CreateEntryRevisionFromStorageOperation } from "./entry/CreateEntryRevisionFromStorageOperation.js";
 export { UpdateEntryStorageOperation } from "./entry/UpdateEntryStorageOperation.js";

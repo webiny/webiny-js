@@ -12,8 +12,16 @@ import { CmsDdbTable } from "~/abstractions/CmsDdbTable.js";
 import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
 import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
-import { DdbGroupStorageOperations } from "~/operations/group/DdbGroupStorageOperations.js";
-import { DdbModelStorageOperations } from "~/operations/model/DdbModelStorageOperations.js";
+import { DdbGetGroup } from "~/operations/group/DdbGetGroup.js";
+import { DdbListGroups } from "~/operations/group/DdbListGroups.js";
+import { DdbCreateGroup } from "~/operations/group/DdbCreateGroup.js";
+import { DdbUpdateGroup } from "~/operations/group/DdbUpdateGroup.js";
+import { DdbDeleteGroup } from "~/operations/group/DdbDeleteGroup.js";
+import { DdbGetModel } from "~/operations/model/DdbGetModel.js";
+import { DdbListModels } from "~/operations/model/DdbListModels.js";
+import { DdbCreateModel } from "~/operations/model/DdbCreateModel.js";
+import { DdbUpdateModel } from "~/operations/model/DdbUpdateModel.js";
+import { DdbDeleteModel } from "~/operations/model/DdbDeleteModel.js";
 import { DdbEntryStorageOpsFeature } from "~/DdbEntryStorageOpsFeature.js";
 
 /**
@@ -60,9 +68,19 @@ export const HeadlessCmsDdbFeature = createFeature({
             })
         );
 
-        // Group + model: DI classes, app-scoped singletons
-        container.register(DdbGroupStorageOperations).inSingletonScope();
-        container.register(DdbModelStorageOperations).inSingletonScope();
+        // Group: per-method DI classes
+        container.register(DdbGetGroup);
+        container.register(DdbListGroups);
+        container.register(DdbCreateGroup);
+        container.register(DdbUpdateGroup);
+        container.register(DdbDeleteGroup);
+
+        // Model: per-method DI classes
+        container.register(DdbGetModel);
+        container.register(DdbListModels);
+        container.register(DdbCreateModel);
+        container.register(DdbUpdateModel);
+        container.register(DdbDeleteModel);
 
         // Entry ops: 22 per-method DI classes + DataLoaders
         DdbEntryStorageOpsFeature.register(container);

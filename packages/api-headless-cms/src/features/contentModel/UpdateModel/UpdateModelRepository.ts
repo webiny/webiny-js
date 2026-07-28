@@ -7,7 +7,7 @@ import {
     ModelValidationError
 } from "~/domain/contentModel/errors.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
-import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
+import { UpdateModelStorageOperation } from "~/features/shared/storageOperations/model/UpdateModelStorageOperation.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { validateEndingAllowed } from "~/crud/contentModel/validate/endingAllowed.js";
 import { validateSingularApiName } from "~/domain/contentModel/validation/singularApiName.js";
@@ -31,7 +31,7 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private readonly modelCache: ModelCache.Interface,
         private readonly modelsFetcher: ModelsFetcher.Interface,
-        private readonly modelStorageOperations: ModelStorageOperations.Interface,
+        private readonly updateModel: UpdateModelStorageOperation.Interface,
         private readonly cmsContext: CmsContext.Interface,
         private readonly modelFieldCompression: ModelFieldCompression.Interface,
         private readonly identityContext: IdentityContext.Interface
@@ -102,7 +102,7 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             const fields = await this.modelFieldCompression.compress(model.fields);
 
             // Persist to storage
-            await this.modelStorageOperations.update({
+            await this.updateModel.execute({
                 model: {
                     ...model,
                     fields
@@ -124,7 +124,7 @@ export const UpdateModelRepository = RepositoryAbstraction.createImplementation(
     dependencies: [
         ModelCache,
         ModelsFetcher,
-        ModelStorageOperations,
+        UpdateModelStorageOperation,
         CmsContext,
         ModelFieldCompression,
         IdentityContext

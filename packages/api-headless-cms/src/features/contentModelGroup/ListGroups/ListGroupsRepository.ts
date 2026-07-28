@@ -4,7 +4,7 @@ import { ListGroupsRepository as RepositoryAbstraction } from "./abstractions.js
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import { GroupStorageOperations } from "~/features/shared/storageOperations/GroupStorageOperations.js";
+import { ListGroupsStorageOperation } from "~/features/shared/storageOperations/group/ListGroupsStorageOperation.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -27,7 +27,7 @@ class ListGroupsRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private groupStorageOperations: GroupStorageOperations.Interface,
+        private listGroups: ListGroupsStorageOperation.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
@@ -54,7 +54,7 @@ class ListGroupsRepositoryImpl implements RepositoryAbstraction.Interface {
         // 2. Fetch database groups (with caching)
         const dbCacheKey = createCacheKey({ tenant });
         const databaseGroups = await this.groupCache.getOrSet(dbCacheKey, async () => {
-            return await this.groupStorageOperations.list({
+            return await this.listGroups.execute({
                 where: { tenant }
             });
         });
@@ -90,7 +90,7 @@ export const ListGroupsRepository = createImplementation({
     dependencies: [
         GroupCache,
         PluginGroupsProvider,
-        GroupStorageOperations,
+        ListGroupsStorageOperation,
         AccessControl,
         TenantContext,
         IdentityContext,

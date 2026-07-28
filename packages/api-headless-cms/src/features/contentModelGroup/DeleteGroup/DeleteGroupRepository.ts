@@ -6,8 +6,8 @@ import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstra
 import { GroupCannotDeleteCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
 import { GroupHasModelsError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import { GroupStorageOperations } from "~/features/shared/storageOperations/GroupStorageOperations.js";
-import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
+import { DeleteGroupStorageOperation } from "~/features/shared/storageOperations/group/DeleteGroupStorageOperation.js";
+import { ListModelsStorageOperation } from "~/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import type { CmsGroup } from "~/types/index.js";
 
 /**
@@ -23,8 +23,8 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private groupStorageOperations: GroupStorageOperations.Interface,
-        private modelStorageOperations: ModelStorageOperations.Interface
+        private deleteGroup: DeleteGroupStorageOperation.Interface,
+        private listModels: ListModelsStorageOperation.Interface
     ) {}
 
     async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -38,7 +38,7 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Check if any models reference this group
-            const models = await this.modelStorageOperations.list({
+            const models = await this.listModels.execute({
                 where: {
                     tenant: group.tenant
                 }
@@ -50,7 +50,7 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Perform deletion
-            await this.groupStorageOperations.delete({ group });
+            await this.deleteGroup.execute({ group });
 
             // Clear cache
             this.groupCache.clear();
@@ -65,5 +65,10 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 export const DeleteGroupRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: DeleteGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, GroupStorageOperations, ModelStorageOperations]
+    dependencies: [
+        GroupCache,
+        PluginGroupsProvider,
+        DeleteGroupStorageOperation,
+        ListModelsStorageOperation
+    ]
 });

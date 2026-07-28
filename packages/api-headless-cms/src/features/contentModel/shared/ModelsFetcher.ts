@@ -4,7 +4,7 @@ import {
     ModelsFetcher as FetcherAbstraction
 } from "~/features/contentModel/shared/abstractions.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
-import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
+import { ListModelsStorageOperation } from "~/features/shared/storageOperations/model/ListModelsStorageOperation.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ModelNotFoundError, ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { createCacheKey } from "~/utils/index.js";
@@ -25,7 +25,7 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
     public constructor(
         private readonly modelCache: ModelCache.Interface,
         private readonly pluginModelsProvider: PluginModelsProvider.Interface,
-        private readonly modelStorageOperations: ModelStorageOperations.Interface,
+        private readonly listModels: ListModelsStorageOperation.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly modelFieldCompression: ModelFieldCompression.Interface
     ) {}
@@ -73,7 +73,7 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
         // 1. Fetch database models (with caching)
         const dbCacheKey = createCacheKey({ tenant, id: "storage" });
         const databaseModels = await this.modelCache.getOrSet(dbCacheKey, async () => {
-            const models = await this.modelStorageOperations.list({ where: { tenant } });
+            const models = await this.listModels.execute({ where: { tenant } });
 
             return Promise.all(
                 models.map(async model => {
@@ -103,7 +103,7 @@ export const ModelsFetcher = FetcherAbstraction.createImplementation({
     dependencies: [
         ModelCache,
         PluginModelsProvider,
-        ModelStorageOperations,
+        ListModelsStorageOperation,
         TenantContext,
         ModelFieldCompression
     ]

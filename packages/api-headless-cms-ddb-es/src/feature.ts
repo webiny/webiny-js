@@ -17,8 +17,16 @@ import { CmsDdbEsGroupEntity } from "~/abstractions/CmsDdbEsGroupEntity.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
-import { DdbEsGroupStorageOperations } from "~/operations/group/DdbEsGroupStorageOperations.js";
-import { DdbEsModelStorageOperations } from "~/operations/model/DdbEsModelStorageOperations.js";
+import { DdbEsGetGroup } from "~/operations/group/DdbEsGetGroup.js";
+import { DdbEsListGroups } from "~/operations/group/DdbEsListGroups.js";
+import { DdbEsCreateGroup } from "~/operations/group/DdbEsCreateGroup.js";
+import { DdbEsUpdateGroup } from "~/operations/group/DdbEsUpdateGroup.js";
+import { DdbEsDeleteGroup } from "~/operations/group/DdbEsDeleteGroup.js";
+import { DdbEsGetModel } from "~/operations/model/DdbEsGetModel.js";
+import { DdbEsListModels } from "~/operations/model/DdbEsListModels.js";
+import { DdbEsCreateModel } from "~/operations/model/DdbEsCreateModel.js";
+import { DdbEsUpdateModel } from "~/operations/model/DdbEsUpdateModel.js";
+import { DdbEsDeleteModel } from "~/operations/model/DdbEsDeleteModel.js";
 import { DdbEsEntryStorageOpsFeature } from "~/DdbEsEntryStorageOpsFeature.js";
 
 export const HeadlessCmsDdbEsFeature = createFeature({
@@ -84,9 +92,19 @@ export const HeadlessCmsDdbEsFeature = createFeature({
             // DbRegistry not registered — skip entity registration
         }
 
-        // Group + model: DI classes, app-scoped singletons
-        container.register(DdbEsGroupStorageOperations).inSingletonScope();
-        container.register(DdbEsModelStorageOperations).inSingletonScope();
+        // Group: per-method DI classes
+        container.register(DdbEsGetGroup);
+        container.register(DdbEsListGroups);
+        container.register(DdbEsCreateGroup);
+        container.register(DdbEsUpdateGroup);
+        container.register(DdbEsDeleteGroup);
+
+        // Model: per-method DI classes
+        container.register(DdbEsGetModel);
+        container.register(DdbEsListModels);
+        container.register(DdbEsCreateModel);
+        container.register(DdbEsUpdateModel);
+        container.register(DdbEsDeleteModel);
 
         // Entry storage operations: registers all per-method entry abstractions.
         DdbEsEntryStorageOpsFeature.register(container);

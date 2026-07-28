@@ -11,8 +11,16 @@ import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
 import { SyncWriterFeature } from "./SyncWriter/feature.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { SqlGroupStorageOperations } from "@webiny/api-headless-cms-sql/operations/group/SqlGroupStorageOperations.js";
-import { SqlModelStorageOperations } from "@webiny/api-headless-cms-sql/operations/model/SqlModelStorageOperations.js";
+import { SqlGetGroup } from "@webiny/api-headless-cms-sql/operations/group/SqlGetGroup.js";
+import { SqlListGroups } from "@webiny/api-headless-cms-sql/operations/group/SqlListGroups.js";
+import { SqlCreateGroup } from "@webiny/api-headless-cms-sql/operations/group/SqlCreateGroup.js";
+import { SqlUpdateGroup } from "@webiny/api-headless-cms-sql/operations/group/SqlUpdateGroup.js";
+import { SqlDeleteGroup } from "@webiny/api-headless-cms-sql/operations/group/SqlDeleteGroup.js";
+import { SqlGetModel } from "@webiny/api-headless-cms-sql/operations/model/SqlGetModel.js";
+import { SqlListModels } from "@webiny/api-headless-cms-sql/operations/model/SqlListModels.js";
+import { SqlCreateModel } from "@webiny/api-headless-cms-sql/operations/model/SqlCreateModel.js";
+import { SqlUpdateModel } from "@webiny/api-headless-cms-sql/operations/model/SqlUpdateModel.js";
+import { SqlDeleteModel } from "@webiny/api-headless-cms-sql/operations/model/SqlDeleteModel.js";
 import { PgOsEntryStorageOpsFeature } from "~/PgOsEntryStorageOpsFeature.js";
 
 export interface IPgOsStorageOperationsConfig {
@@ -26,9 +34,19 @@ export const HeadlessCmsPgOsFeature = createFeature({
     register: container => {
         CmsEntryOpenSearchUtilsFeature.register(container);
 
-        // Group + model: reuse SQL DI classes, app-scoped singletons
-        container.register(SqlGroupStorageOperations).inSingletonScope();
-        container.register(SqlModelStorageOperations).inSingletonScope();
+        // Group: reuse SQL per-method DI classes
+        container.register(SqlGetGroup);
+        container.register(SqlListGroups);
+        container.register(SqlCreateGroup);
+        container.register(SqlUpdateGroup);
+        container.register(SqlDeleteGroup);
+
+        // Model: reuse SQL per-method DI classes
+        container.register(SqlGetModel);
+        container.register(SqlListModels);
+        container.register(SqlCreateModel);
+        container.register(SqlUpdateModel);
+        container.register(SqlDeleteModel);
 
         // Entry ops: 22 per-method DI classes — write decorators + search impls + SQL reuse
         PgOsEntryStorageOpsFeature.register(container);
