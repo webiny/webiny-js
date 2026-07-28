@@ -16,6 +16,7 @@ import { PlaygroundPresenterFeature } from "./presentation/Playground/feature.js
 import { DocsExplorerFeature } from "./presentation/DocsExplorer/feature.js";
 import { QueryHistoryRepositoryFeature } from "./features/queryHistory/index.js";
 import { QueryHistoryFeature } from "./presentation/QueryHistory/index.js";
+import { ApiPlaygroundBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
 
 const { Route, Menu } = AdminConfig;
 
@@ -31,6 +32,7 @@ const GraphQLPlaygroundExtension = () => {
             <RegisterFeature feature={DocsExplorerFeature} />
             <RegisterFeature feature={QueryHistoryRepositoryFeature} />
             <RegisterFeature feature={QueryHistoryFeature} />
+            <RegisterFeature feature={ApiPlaygroundBreadcrumbsFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <Menu
