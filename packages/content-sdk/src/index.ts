@@ -1,6 +1,22 @@
 export { contentSdk, ContentSdk } from "./ContentSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
 
+// Re-export Result and error types from @webiny/sdk.
+export { Result, HttpError, ApiError, NetworkError, ValidationError } from "@webiny/sdk";
+export type { Language } from "@webiny/sdk";
+
+// Re-export CMS write operation types from @webiny/sdk.
+export type {
+    CmsEntryData,
+    CreateEntryParams,
+    CreateCmsEntryData,
+    UpdateEntryRevisionParams,
+    UpdateCmsEntryData,
+    DeleteEntryRevisionParams,
+    PublishEntryRevisionParams,
+    UnpublishEntryRevisionParams
+} from "@webiny/sdk";
+
 // Re-export useful values and types from both SDKs
 export { createComponent, resolveRefs } from "@webiny/cms-sdk";
 export type {

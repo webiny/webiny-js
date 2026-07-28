@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../cms-sdk" }, { "path": "../website-builder-sdk" }],
+  "references": [
+    { "path": "../cms-sdk" },
+    { "path": "../sdk" },
+    { "path": "../website-builder-sdk" }
+  ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -11,6 +15,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/cms-sdk/*": ["../cms-sdk/src/*"],
       "@webiny/cms-sdk": ["../cms-sdk/src"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }
