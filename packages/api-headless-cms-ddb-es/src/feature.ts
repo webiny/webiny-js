@@ -6,14 +6,7 @@ import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-o
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import {
-    CmsEntryOpenSearchIndexCreate,
-    CmsEntryOpenSearchIndexDelete
-} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
-import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
-import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
-import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { FilterUtilFeature } from "@webiny/db-dynamodb/feature/FilterUtil/feature.js";
@@ -90,29 +83,6 @@ export const HeadlessCmsDdbEsFeature = createFeature({
         } catch {
             // DbRegistry not registered — skip entity registration
         }
-
-        // Event handlers for OpenSearch index lifecycle (resolved lazily so custom
-        // CmsEntryOpenSearchIndex registrations added after this feature are picked up).
-        container.registerFactory(ModelAfterCreateEventHandler, () => ({
-            async handle(event) {
-                const { model } = event.payload;
-                await container.resolve(CmsEntryOpenSearchIndexCreate).execute({ model });
-            }
-        }));
-
-        container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
-            async handle(event) {
-                const { model } = event.payload;
-                await container.resolve(CmsEntryOpenSearchIndexCreate).execute({ model });
-            }
-        }));
-
-        container.registerFactory(ModelAfterDeleteEventHandler, () => ({
-            async handle(event) {
-                const { model } = event.payload;
-                await container.resolve(CmsEntryOpenSearchIndexDelete).execute({ model });
-            }
-        }));
 
         // Group + model: DI classes, app-scoped singletons
         container.register(DdbEsGroupStorageOperations).inSingletonScope();

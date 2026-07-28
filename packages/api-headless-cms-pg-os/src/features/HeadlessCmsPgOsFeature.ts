@@ -2,13 +2,6 @@ import type { Container } from "@webiny/di";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
-import {
-    CmsEntryOpenSearchIndexCreate,
-    CmsEntryOpenSearchIndexDelete
-} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
-import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
-import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
 import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
@@ -32,29 +25,6 @@ export const HeadlessCmsPgOsFeature = createFeature({
     name: "cms.storageOperations.pgOs",
     register: container => {
         CmsEntryOpenSearchUtilsFeature.register(container);
-
-        // Event handlers for OpenSearch index lifecycle (resolved lazily so custom
-        // CmsEntryOpenSearchIndex registrations added after this feature are picked up).
-        container.registerFactory(ModelAfterCreateEventHandler, () => ({
-            async handle(event) {
-                const { model } = event.payload;
-                await container.resolve(CmsEntryOpenSearchIndexCreate).execute({ model });
-            }
-        }));
-
-        container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
-            async handle(event) {
-                const { model } = event.payload;
-                await container.resolve(CmsEntryOpenSearchIndexCreate).execute({ model });
-            }
-        }));
-
-        container.registerFactory(ModelAfterDeleteEventHandler, () => ({
-            async handle(event) {
-                const { model } = event.payload;
-                await container.resolve(CmsEntryOpenSearchIndexDelete).execute({ model });
-            }
-        }));
 
         // Group + model: reuse SQL DI classes, app-scoped singletons
         container.register(SqlGroupStorageOperations).inSingletonScope();
