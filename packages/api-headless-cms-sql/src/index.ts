@@ -1,4 +1,3 @@
-import type { Container } from "@webiny/di";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { GroupSchemaManagerFeature } from "~/features/groupSchemaManager/feature.js";
 import { ModelSchemaManagerFeature } from "~/features/modelSchemaManager/feature.js";
@@ -18,9 +17,9 @@ interface ISqlStorageOperationsConfig {
     tableNameSuffix?: string;
 }
 
-export const HeadlessCmsSqlFeature = createFeature({
+export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>({
     name: "cms.storageOperations.sql",
-    register: (container: Container, config: ISqlStorageOperationsConfig) => {
+    register: (container, config) => {
         const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
 
         container.registerInstance(TableNameResolverConfig, {

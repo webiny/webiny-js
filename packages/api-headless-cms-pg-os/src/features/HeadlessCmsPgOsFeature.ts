@@ -1,4 +1,3 @@
-import type { Container } from "@webiny/di";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
@@ -20,9 +19,9 @@ export interface IPgOsStorageOperationsConfig {
     tableNameSuffix?: string;
 }
 
-export const HeadlessCmsPgOsFeature = createFeature({
+export const HeadlessCmsPgOsFeature = createFeature<IPgOsStorageOperationsConfig>({
     name: "cms.storageOperations.pgOs",
-    register: (container: Container, config: IPgOsStorageOperationsConfig) => {
+    register: (container, config) => {
         const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
 
         container.registerInstance(TableNameResolverConfig, {
