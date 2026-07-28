@@ -1,6 +1,5 @@
 import { createTable, DynamoDBClient } from "@webiny/db-dynamodb";
 import { ENTITIES } from "~/types.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import { createGroupEntity } from "~/definitions/group.js";
@@ -89,14 +88,3 @@ export const HeadlessCmsDdbEsFeature = createFeature({
         DdbEsEntryStorageOpsFeature.register(container);
     }
 });
-
-/** @deprecated use HeadlessCmsDdbEsFeature instead */
-export const registerCmsOpenSearchStorageOperations = () => {
-    const plugin = createRegisterExtensionPlugin(context => {
-        return HeadlessCmsDdbEsFeature.register(context.container);
-    });
-
-    plugin.name = "cms.registerOpenSearchStorageOperations";
-
-    return [plugin];
-};

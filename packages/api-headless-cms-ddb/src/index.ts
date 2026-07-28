@@ -4,7 +4,6 @@ import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { createTable } from "~/definitions/table.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
 import { FilterUtilFeature } from "@webiny/db-dynamodb/feature/FilterUtil/feature.js";
@@ -65,12 +64,3 @@ export const HeadlessCmsDdbFeature = createFeature({
         DdbEntryStorageOpsFeature.register(container);
     }
 });
-
-/** @deprecated use HeadlessCmsDdbFeature instead */
-export const registerDynamoDbStorageOperations = () => {
-    return [
-        createRegisterExtensionPlugin(context => {
-            return HeadlessCmsDdbFeature.register(context.container);
-        })
-    ];
-};

@@ -1,5 +1,4 @@
 import type { Container } from "@webiny/di";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { GroupSchemaManagerFeature } from "~/features/groupSchemaManager/feature.js";
 import { ModelSchemaManagerFeature } from "~/features/modelSchemaManager/feature.js";
@@ -42,13 +41,3 @@ export const HeadlessCmsSqlFeature = createFeature({
         SqlEntryStorageOpsFeature.register(container);
     }
 });
-
-export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig) => {
-    const plugin = createRegisterExtensionPlugin(context => {
-        return HeadlessCmsSqlFeature.register(context.container, config);
-    });
-
-    plugin.name = "cms.registerSqlStorageOperations";
-
-    return [plugin];
-};
