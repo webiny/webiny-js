@@ -18,7 +18,7 @@ const colorPickerClass = "flex flex-wrap gap-[6px] p-sm max-w-[132px] bg-neutral
 const swatchClass =
     "flex items-center justify-center size-4 rounded-[2px] cursor-pointer transition-transform hover:scale-110 " +
     // 2px border (Figma DS) so light/white swatches stay visible.
-    "border-2 border-neutral-dimmed-darker";
+    "border-2 border-[color:var(--border-color-neutral-dimmed-darker)]";
 
 const swatchSelectedClass = "ring-2 ring-offset-1 ring-[color:var(--border-color-accent-default)]";
 
