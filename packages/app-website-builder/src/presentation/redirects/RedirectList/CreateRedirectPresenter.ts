@@ -78,10 +78,16 @@ class CreateRedirectPresenterImpl implements ICreateRedirectPresenter {
                     .text()
                     .label("Redirect Type")
                     .required("This field is required")
-                    .defaultValue("permanent")
+                    .defaultValue("temporary")
+                    .help(
+                        "**Temporary** — browsers check with the server on each visit, so you can " +
+                            "change or remove this redirect later.\n\n" +
+                            "**Permanent** — browsers remember it indefinitely and may keep " +
+                            "redirecting even after you change or delete it."
+                    )
                     .options([
-                        { label: "Permanent", value: "permanent" },
-                        { label: "Temporary", value: "temporary" }
+                        { label: "Temporary", value: "temporary" },
+                        { label: "Permanent", value: "permanent" }
                     ]),
                 isEnabled: fields.boolean().label("Is Enabled?")
             }),
