@@ -5,7 +5,7 @@ import crypto from "crypto";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { Container } from "@webiny/di";
 import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
-import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
+import { DeleteModelStorageOperation } from "~/features/shared/storageOperations/model/DeleteModelStorageOperation.js";
 
 const baseGroup = new CmsGroupPlugin({
     name: "Base group",
@@ -220,8 +220,8 @@ interface DeletePersonModelParams {
 export const deletePersonModel = async (params: DeletePersonModelParams) => {
     const { container } = params;
     try {
-        const modelStorageOperations = container.resolve(ModelStorageOperations);
-        await modelStorageOperations.delete({
+        const deleteModel = container.resolve(DeleteModelStorageOperation);
+        await deleteModel.execute({
             model: createPersonModel()
         });
     } catch (ex) {
