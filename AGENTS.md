@@ -14,6 +14,7 @@ When new backend features are discovered, update `ai-context/core-features-refer
 - Only import one named import per line
 - when generating code, one file MUST only contain one class
 - When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
+- Never use `console.log` / `console.warn` / `console.error` in backend (`api-*`) code. Use the DI logger: inject `Logger` (from `@webiny/api-core/features/logger`) as a dependency and call `logger.info/warn/error(...)`. It is pino-backed and takes `(objOrMsg, ...args)` — pass structured context as the first arg, e.g. `logger.warn({ error }, "message")`.
 - Never pass an inline `class` expression to `createImplementation()`. Declare the class separately and pass it by reference. The implementation class must also declare an `implements` clause for the abstraction's interface (e.g. `class Foo implements EventType.Interface { ... }`, or the raw interface such as `IEventType<T>`). Both are enforced by the `webiny/no-inline-class-in-create-implementation` and `webiny/require-implements-on-create-implementation` oxlint rules.
 
   ```ts

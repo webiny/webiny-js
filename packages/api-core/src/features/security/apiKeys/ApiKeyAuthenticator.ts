@@ -1,11 +1,15 @@
 import { Authenticator } from "~/features/security/authentication/Authenticator/abstractions.js";
 import { ApiKeysRepository } from "./shared/abstractions.js";
+import { Logger } from "~/features/logger/index.js";
 import type { IAuthenticator } from "~/features/security/authentication/Authenticator/abstractions.js";
 import type { IApiKeysRepository } from "./shared/abstractions.js";
 import type { IdentityData } from "~/features/security/IdentityContext/Identity.js";
 
 class ApiKeyAuthenticatorImpl implements IAuthenticator {
-    constructor(private repository: IApiKeysRepository) {}
+    constructor(
+        private repository: IApiKeysRepository,
+        private logger: Logger.Interface
+    ) {}
 
     async authenticate(token: string): Promise<IdentityData | null> {
         if (typeof token !== "string" || !token.startsWith("wat_")) {
@@ -16,9 +20,9 @@ class ApiKeyAuthenticatorImpl implements IAuthenticator {
             // The token looked like an API key ("wat_") but could not be resolved. Log it — otherwise
             // this degrades silently to an anonymous request (which is what made the tenant-ordering
             // bug so hard to find). A genuine unknown/revoked key logs here too, which is acceptable.
-            console.warn(
-                `API key authentication failed; request will proceed as anonymous.`,
-                result.error
+            this.logger.warn(
+                { error: result.error },
+                "API key authentication failed; request will proceed as anonymous."
             );
             return null;
         }
@@ -34,5 +38,5 @@ class ApiKeyAuthenticatorImpl implements IAuthenticator {
 
 export const ApiKeyAuthenticator = Authenticator.createImplementation({
     implementation: ApiKeyAuthenticatorImpl,
-    dependencies: [ApiKeysRepository]
+    dependencies: [ApiKeysRepository, Logger]
 });
