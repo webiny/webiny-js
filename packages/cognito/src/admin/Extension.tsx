@@ -1,7 +1,6 @@
 import React from "react";
 import { RegisterFeature } from "@webiny/app-admin";
 import { CognitoFeature } from "./presentation/Cognito/feature.js";
-import { CognitoBreadcrumbsFeature } from "./breadcrumbs/feature.js";
 import { CognitoAdmin } from "./Cognito.js";
 import { CognitoPermissionsFeature } from "./features/permissions/feature.js";
 import { GetCurrentUserFeature } from "./features/account/getCurrentUser/index.js";
@@ -19,7 +18,6 @@ export const Extension = () => {
 
     return (
         <>
-            <RegisterFeature feature={CognitoBreadcrumbsFeature} />
             <RegisterFeature feature={CognitoFeature} />
             <RegisterFeature feature={CognitoPermissionsFeature} />
             <RegisterFeature feature={GetCurrentUserFeature} />

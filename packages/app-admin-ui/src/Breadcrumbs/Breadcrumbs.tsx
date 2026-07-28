@@ -1,11 +1,7 @@
-import React from "react";
-import { useCallback } from "react";
-import { useMemo } from "react";
-import { BreadcrumbsFeature } from "@webiny/app-admin";
-import { createReactiveComponent } from "@webiny/app-admin";
+import React, { useCallback } from "react";
+import { useAdminConfig } from "@webiny/app-admin";
 import type { BreadcrumbLink } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
-import { useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { RouterPresenter } from "@webiny/app/features/router/abstractions.js";
 import { Breadcrumbs as BreadcrumbsUI } from "@webiny/admin-ui";
@@ -14,10 +10,14 @@ import type { BreadcrumbsItem } from "@webiny/admin-ui";
 
 const HOME_PATH = "/";
 
-const BreadcrumbsBase = () => {
-    const { presenter } = useFeature(BreadcrumbsFeature);
+/**
+ * Header breadcrumbs. Reads the trail from the React Config API (`useAdminConfig().breadcrumbs`,
+ * populated by mounted `<Breadcrumb>` components), prepends the home entry, and renders the
+ * design-system primitive. Re-renders automatically as views mount/unmount their breadcrumbs.
+ */
+export const Breadcrumbs = () => {
+    const { breadcrumbs } = useAdminConfig();
     const container = useContainer();
-    const { vm } = presenter;
 
     // Resolves a `to` (string or Route + params) to a concrete href.
     const resolveLink = useCallback(
@@ -38,28 +38,20 @@ const BreadcrumbsBase = () => {
         [container, resolveLink]
     );
 
-    const items = useMemo<BreadcrumbsItem[]>(() => {
-        const trail = vm.items;
+    // Leading home entry always navigates back to the dashboard.
+    const home = createHomeBreadcrumbItem(() => navigateTo(HOME_PATH));
 
-        // Leading home entry always navigates back to the dashboard.
-        const home = createHomeBreadcrumbItem(() => navigateTo(HOME_PATH));
+    const locations = breadcrumbs.map<BreadcrumbsItem>((item, index) => {
+        const isCurrent = index === breadcrumbs.length - 1;
+        const to = item.to;
+        return {
+            label: item.label,
+            icon: item.icon,
+            title: item.label,
+            current: isCurrent,
+            onClick: !isCurrent && to ? () => navigateTo(to) : undefined
+        };
+    });
 
-        const locations = trail.map<BreadcrumbsItem>((item, index) => {
-            const isCurrent = index === trail.length - 1;
-            const to = item.to;
-            return {
-                label: item.label,
-                icon: item.icon,
-                title: item.title ?? item.label,
-                current: isCurrent,
-                onClick: !isCurrent && to ? () => navigateTo(to) : undefined
-            };
-        });
-
-        return [home, ...locations];
-    }, [vm.items, navigateTo]);
-
-    return <BreadcrumbsUI items={items} />;
+    return <BreadcrumbsUI items={[home, ...locations]} />;
 };
-
-export const Breadcrumbs = createReactiveComponent(BreadcrumbsBase);

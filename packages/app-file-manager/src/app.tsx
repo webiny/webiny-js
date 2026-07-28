@@ -19,7 +19,6 @@ import { ListTagsFeature } from "~/features/tags/index.js";
 import { GetSettingsFeature } from "~/features/settings/index.js";
 import { SharedCacheFeature } from "~/features/shared/index.js";
 import { FileManagerPresenterFeature } from "~/presentation/FileList/index.js";
-import { FileManagerBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
 import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
 import { FileManagerRendererDecorator } from "~/presentation/FileManager/FileManagerRenderer.js";
 import { FileModelProviderFeature } from "~/features/fileModel/index.js";
@@ -77,7 +76,6 @@ export const FileManager = () => {
             <FileManagerRendererDecorator />
             <DefaultFileManagerConfig />
             <RegisterFeature feature={FileFieldTypeFeature} />
-            <RegisterFeature feature={FileManagerBreadcrumbsFeature} />
             <EnterpriseModule />
             <AiEnrichmentModule />
             <SecurityPermissions />

@@ -1,7 +1,6 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { RegisterFeature } from "@webiny/app-admin";
-import { BackgroundTasksBreadcrumbsFeature } from "~/admin/breadcrumbs/feature.js";
 import { ReactComponent as TaskIcon } from "@webiny/icons/task.svg";
 import { ListTasksFeature } from "./features/listTasks/index.js";
 import { GetTaskFeature } from "./features/getTask/index.js";
@@ -25,7 +24,6 @@ export const BackgroundTasks = () => {
     return (
         <>
             {/* Headless features. */}
-            <RegisterFeature feature={BackgroundTasksBreadcrumbsFeature} />
             <RegisterFeature feature={ListTasksFeature} />
             <RegisterFeature feature={GetTaskFeature} />
             <RegisterFeature feature={DeleteTaskFeature} />

@@ -23,7 +23,6 @@ import { CreateApiKeyFeature } from "~/features/accessManagement/apiKeys/createA
 import { UpdateApiKeyFeature } from "~/features/accessManagement/apiKeys/updateApiKey/feature.js";
 import { DeleteApiKeyFeature } from "~/features/accessManagement/apiKeys/deleteApiKey/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/feature.js";
-import { AccessManagementBreadcrumbsFeature } from "~/presentation/accessManagement/breadcrumbs/feature.js";
 import { RolesPresenterFeature } from "~/presentation/accessManagement/roles/feature.js";
 import { SecurityPermissions } from "~/presentation/accessManagement/SecurityPermissions.js";
 import { Routes } from "~/presentation/accessManagement/routes.js";
@@ -41,7 +40,6 @@ export const AccessManagementExtension = () => {
     return (
         <Fragment>
             <RegisterFeature feature={SecurityPermissionsFeature} />
-            <RegisterFeature feature={AccessManagementBreadcrumbsFeature} />
             <RegisterFeature feature={ListPresenterFeature} />
             <RegisterFeature feature={ListRolesFeature} />
             <RegisterFeature feature={GetRoleFeature} />

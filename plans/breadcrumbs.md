@@ -3,160 +3,83 @@
 Design source: Figma "Webiny UI" — Header bar node `2047-22464`
 (https://www.figma.com/design/4XsQ9YFfV1xVbLEvmJ3JDX/Webiny-UI?node-id=2047-22464&m=dev).
 
-A breadcrumb trail in the admin header bar: `home › ancestor › … › current`. Shows the
-user's location within a hierarchy; ancestors are navigable, the current (last) item is not.
+A breadcrumb trail in the admin header bar: `home › ancestor › … › current`. Ancestors are
+navigable; the current (last) item is not.
 
-## Decisions (locked)
+## Architecture — React Config API (not DI)
 
-- **Architecture:** DI-backed, mirroring the command palette (PR #5432). A MobX
-  `BreadcrumbsPresenter` (DI abstraction + `createFeature`) holds the trail state; a
-  **declarative React config layer sits on top** of it (`useBreadcrumbs` hook +
-  `<Breadcrumbs>` / `<Breadcrumbs.Item>`). The presenter is the decoratable seam.
-- **Scope v1:** the mechanism only — DS primitive + DI presenter + React API + header
-  wiring. Populating real trails per module (CMS, Page Builder, File Manager, Settings …)
-  is a **follow-up owned by each module**, same rollout the palette used.
-- **UI:** new `Breadcrumbs` primitive in `@webiny/admin-ui` (none existed). Mounted in the
-  header bar's `start` slot.
-- **Overflow (`…` shortcut) deferred.** Design supports collapsing deep trails; v1 renders
-  the full trail with per-item truncation (`max-w-[150px]`).
+Breadcrumbs are **pure presentation**, so they compose through the same React Config API as
+`AdminConfig.Menu` / `Dashboard.Widget` — **not** dependency injection. (An earlier DI
+`Breadcrumb` abstraction was built and removed: DI is overkill for presentation and, being
+root-resolved + synchronous, couldn't produce dynamic labels — folder path, model name,
+`page.title` — which was the whole wall. Feedback from Pavel confirmed the Config API is the
+right fit.)
 
-## Grounding (what already exists)
+- **`AdminConfig.Breadcrumb`** (`packages/app-admin/src/config/AdminConfig/Breadcrumbs.tsx`) —
+  a config component mirroring `Widget.tsx`. Each mounted `<Breadcrumb name label to? icon?/>`
+  appends an item to the `breadcrumbs` array property. `to` is `string | { route, params }`.
+- **`useAdminConfig().breadcrumbs`** — the assembled trail, in mount order. Added to the
+  `AdminConfig` interface + `useAdminConfig()` return.
+- **Header** (`packages/app-admin-ui/src/Breadcrumbs/Breadcrumbs.tsx`) — reads
+  `useAdminConfig().breadcrumbs`, prepends the home entry (→ `/`), resolves `to` via the
+  router (`RouterPresenter.getLink` for `Route`s), marks the last item current, and renders
+  the DS primitive. Re-renders as views mount/unmount their `<Breadcrumb>`s. Mounted in
+  `Layout.tsx`, `HeaderBar` `start` slot.
+- **DS primitive** (`packages/admin-ui/src/Breadcrumbs/Breadcrumbs.tsx`) — presentational
+  `Breadcrumbs` (Figma node 2047-22464) + `createHomeBreadcrumbItem` + Storybook story.
 
-| Concern                    | Location                                                             | Notes                                                                         |
-| -------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Palette DI pattern to copy | `packages/app-admin/src/presentation/commandPalette/`                | `abstractions.ts` + MobX presenter + `feature.ts`; registered in `Admin.tsx`. |
-| Header bar (mount point)   | `packages/admin-ui/src/HeaderBar/HeaderBar.tsx`                      | `start`/`middle`/`end` slots. Breadcrumbs go in `start`.                      |
-| Layout composition         | `packages/app-admin-ui/src/Layout.tsx`                               | Renders `HeaderBar` with `start={startElement}`. Palette also mounts here.    |
-| Reactive (MobX) UI wrapper | `createReactiveComponent` (`@webiny/app-admin`)                      | Palette UI uses it; breadcrumbs UI does too.                                  |
-| Router                     | `RouterGateway` (`@webiny/app/features/router/abstractions.js`)      | `pushState(to)` for item navigation. Home → `/`.                              |
-| Icons                      | `@webiny/icons/home.svg`, `@webiny/icons/keyboard_arrow_right.svg`   | Material glyphs; `fill` defaults to `currentColor`.                           |
-| DI factory semantics       | `@webiny/di` `registerFactory` runs the factory **on every resolve** | Not memoized — see the singleton note below.                                  |
+## Usage
 
-## Architecture
-
-### DS primitive — `@webiny/admin-ui/src/Breadcrumbs/`
-
-Presentational, props-driven (like `EmptyState`). `Breadcrumbs` takes `items: BreadcrumbsItem[]`:
-
-```ts
-interface BreadcrumbsItem {
-  label?: string; // omitted for the icon-only home item
-  icon?: React.ReactNode; // raw glyph; sized + colored by the breadcrumb
-  title?: string; // native tooltip; defaults to label
-  onClick?: () => void; // navigable when present and not current
-  current?: boolean; // the last item; stronger text, never interactive
-}
-```
-
-- Home = icon-only, muted, clickable. Separator = `keyboard_arrow_right`, `aria-hidden`.
-  Intermediate = `text-neutral-muted` + hover; current = `text-neutral-primary`.
-- Text `text-sm` (12px). Glyphs rendered raw with `size-md fill-current` (DS `Icon` has no
-  `neutral-muted` color variant), so the item's text color drives the icon.
-- `createHomeBreadcrumbItem(onClick)` helper for the leading entry.
-- `makeDecoratable("Breadcrumbs", …)`.
-
-### DI core — `@webiny/app-admin/src/presentation/breadcrumbs/`
-
-- `abstractions.ts`: `BreadcrumbTrailItem` (`{ id?, label, icon?, to?, title? }`);
-  `BreadcrumbLink = string | { route, params? }`; `BreadcrumbsPresenter` abstraction
-  (`vm`, `setTrail`, `clear`); **`Breadcrumb` abstraction** (`createAbstraction`) for DI
-  registration — `{ name, route, getTrail(matchedRoute) }`.
-- `BreadcrumbsPresenter.ts`: MobX `makeAutoObservable`. `vm` first looks for a DI
-  `Breadcrumb` whose `route.name` matches the current route (`RouterPresenter.vm.currentRoute`)
-  and renders its trail; otherwise falls back to the hook-set `dynamicTrail`.
-- `feature.ts`: `createFeature` → **memoizes a single presenter in the factory closure**
-  (breadcrumbs have two consumers — the view that writes the trail and the header that reads
-  it; `registerFactory` isn't memoized by the container, so without the closure singleton
-  the reader and writer would get different instances). Presenter is constructed with
-  `() => container.resolveAll(Breadcrumb)` and `() => RouterPresenter.vm.currentRoute`.
-- Registered in `Admin.tsx` next to `CommandPaletteFeature`; exported from the barrel.
-
-### Declaring a trail — two paths
-
-**Preferred: DI `Breadcrumb` (React-free, static trails)** — mirrors the command palette's
-`Command`. A module registers an implementation; the view stays untouched:
-
-```ts
-class MailerSettingsBreadcrumb implements Breadcrumb.Interface {
-  name = "mailer.settings";
-  route = Routes.Settings;
-  getTrail() {
-    return [{ label: "Settings" }, { label: "Mailer" }];
-  }
-}
-export const mailerSettingsBreadcrumb = createImplementation({
-  abstraction: Breadcrumb,
-  implementation: MailerSettingsBreadcrumb,
-  dependencies: []
-});
-// registered via a feature + <RegisterFeature> (or container.register)
-```
-
-**Hook / declarative config (dynamic trails only)** — when the trail depends on live view
-state a bootstrap-time DI impl can't reach (folder path, entry title):
-
-- `useBreadcrumbs(items)`: sets the trail on mount / when items change (serialized signature
-  dep so inline arrays are safe; icons excluded), clears on unmount.
-- `<Breadcrumbs>` + `<Breadcrumbs.Item label to icon title>`: declarative sugar over the hook.
-
-A DI `Breadcrumb` matching the current route **wins** over the hook.
-
-### Header UI — `@webiny/app-admin-ui/src/Breadcrumbs/Breadcrumbs.tsx`
-
-- `createReactiveComponent` observing `BreadcrumbsPresenter`.
-- Prepends the home item (→ `/`), maps trail items to DS `BreadcrumbsItem` (last = `current`,
-  others navigate via `RouterGateway.pushState(to)`).
-- Mounted in `Layout.tsx` inside `HeaderBar` `start`, before `startElement`.
-
-## Usage (for module authors)
-
-Static trail → register a DI `Breadcrumb` (see above), no React in the view.
-
-Dynamic trail → the hook, from inside a view:
+Static trail — declare at the route (or anywhere in the view), no view logic needed:
 
 ```tsx
-useBreadcrumbs([
-  { label: "File Manager", to: { route: Routes.List } },
-  { label: currentFolder.title } // live state → current item
-]);
+<AdminConfig>
+  <AdminConfig.Breadcrumb name="settings" label="Settings" />
+  <AdminConfig.Breadcrumb name="mailer" label="Mailer" />
+</AdminConfig>
 ```
 
-## Status (implemented)
+Dynamic trail — a plain `observer` component that renders a `<Breadcrumb>` per item from live
+view state:
 
-- DS primitive (+ Storybook story), DI presenter + feature, DI `Breadcrumb` registration,
-  hook + declarative config (available, unused in v1), header wiring (`to` = string | Route).
-- Static DI adoptions: Mailer, File Manager, Headless CMS entries.
-- `@webiny/admin-ui`, `@webiny/app-admin`, `@webiny/app-admin-ui`, `@webiny/app-file-manager`,
-  `@webiny/app-mailer`, `@webiny/app-headless-cms` all build (TS clean); lint + format clean.
+```tsx
+<Breadcrumb name="fm-root" label="File Manager" to={{ route: Routes.List }} />;
+{
+  folderPath.map(f => (
+    <Breadcrumb
+      key={f.id}
+      name={f.id}
+      label={f.title}
+      to={{ route: Routes.List, params: { folderId: f.id } }}
+    />
+  ));
+}
+```
 
-## Reference adoptions — all static DI (`Breadcrumb`), no React in views
+The header always prepends home and marks the last mounted item as current (non-clickable).
 
-v1 keeps every adopted trail **static** so it's a pure DI `Breadcrumb` (route → fixed
-labels), mirroring the command palette. Each is a `…Breadcrumb.ts` impl + a
-`…BreadcrumbsFeature` registered once at the module root via `<RegisterFeature>`. The views
-are untouched. Dynamic labels (folder path, model name) are deferred — see below.
+## Reference adoptions
 
-- **Mailer** — `app-mailer/src/breadcrumbs/MailerSettingsBreadcrumb.ts`, route
-  `Routes.Settings` → `Home › Settings › Mailer`. Registered in `Extension.tsx`.
-- **File Manager** — `app-file-manager/src/breadcrumbs/FileManagerBreadcrumb.ts`, route
-  `Routes.List` → `Home › File Manager`. Registered in `app.tsx`.
-- **Headless CMS entries** — `app-headless-cms/src/breadcrumbs/ContentEntriesBreadcrumb.ts`,
-  route `Routes.ContentEntries.List` → `Home › Headless CMS › Entries` (Headless CMS links
-  to the models list). Registered in `HeadlessCMS.tsx`.
+- **Mailer (static)** — two `<AdminConfig.Breadcrumb>`s at the route in `Extension.tsx` →
+  `Home › Settings › Mailer`. View untouched.
+- **File Manager (dynamic)** —
+  `packages/app-file-manager/src/presentation/FileManager/FileManagerBreadcrumbs.tsx`, an
+  `observer` that emits the folder path (`getAncestorIds`, reversed) as `<Breadcrumb>`s.
+  Mounted in `FileManagerView` **page mode only** (`!overlayConfig`) — the overlay picker has
+  no admin header. Navigation flows through the `folderId` param + `RouteParamsSync`.
 
-### Why static-only for now
+## Status
 
-Dynamic trails (FM folder path, CMS `<Model>` name) need data that lives in a **per-mount
-scoped child container**, loaded async — a root-registered DI `Breadcrumb` (sync,
-root-resolved) can't reach it. Those require the `useBreadcrumbs` hook to read the scoped
-mobx state and push it to the presenter. The hook + declarative `<Breadcrumbs>` config
-remain available for that, but **have no consumers in v1**.
+- Config plumbing, header, DS primitive: done. All packages typecheck; lint + format clean.
+- DI `Breadcrumb` abstraction + presenter + every per-module `*Breadcrumb.ts`/feature:
+  **removed**.
 
 ## Still open
 
-- **Dynamic trails** — FM folder path, CMS `<Model>`/entry title, via `useBreadcrumbs` from
-  inside the scoped views. (Earlier hook-based versions existed; dropped in favour of static
-  DI for the first pass.)
-- **Per-module adoption** — Page Builder, other Settings pages, etc.
-- **Overflow (`…`) shortcut** for deep hierarchies.
-- **Automated tests.**
+- **Re-adopt the remaining apps** with `<Breadcrumb>` (Audit Logs, GraphQL/SDK Playground,
+  Workflows, Website Builder, Access Management, Users, Webhooks, Background Tasks, AI
+  Power-Ups, CMS models/groups/entries + workflows). Removed with the DI sweep; only Mailer +
+  File Manager re-adopted so far.
+- Editors (CMS model, WB page) are full-screen — no shared header, skip.
+- Overflow (`…`) shortcut for deep trails.
+- Automated tests.

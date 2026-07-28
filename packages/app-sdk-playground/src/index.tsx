@@ -1,12 +1,5 @@
 import React, { memo } from "react";
-import {
-    useRouter,
-    AdminConfig,
-    AdminLayout,
-    HasPermission,
-    RegisterFeature
-} from "@webiny/app-admin";
-import { SdkPlaygroundBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
+import { useRouter, AdminConfig, AdminLayout, HasPermission } from "@webiny/app-admin";
 import { ReactComponent as CodeIcon } from "@webiny/icons/code.svg";
 import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg";
 import Playground from "./plugins/Playground.js";
@@ -20,7 +13,6 @@ const SdkPlaygroundExtension = () => {
 
     return (
         <>
-            <RegisterFeature feature={SdkPlaygroundBreadcrumbsFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <Menu

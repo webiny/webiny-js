@@ -8,7 +8,6 @@ import { WorkflowStateListPresenterFeature } from "~/presentation/workflowStateL
 import { WorkflowStatesWidgetPresenterFeature } from "~/presentation/workflowStatesWidget/feature.js";
 import { WorkflowsEditorPresenterFeature } from "~/presentation/workflowsEditor/feature.js";
 import { ContentReviews } from "~/presentation/ContentReviews.js";
-import { WorkflowsBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
 
 export const WorkflowsAdminApp = () => {
     return (
@@ -19,7 +18,6 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={WorkflowStateListPresenterFeature} />
             <RegisterFeature feature={WorkflowStatesWidgetPresenterFeature} />
             <RegisterFeature feature={WorkflowsEditorPresenterFeature} />
-            <RegisterFeature feature={WorkflowsBreadcrumbsFeature} />
             <SecurityPermissions />
             <ContentReviews />
         </Wcp.CanUseWorkflows>
