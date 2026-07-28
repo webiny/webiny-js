@@ -18,6 +18,7 @@ import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feat
 import { NuxtConfigFeature } from "~/presentation/navigation/NuxtConfig/feature.js";
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
+import { WebsiteBuilderBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
 import { DeletePageFeature } from "~/features/pages/deletePage/index.js";
@@ -58,6 +59,7 @@ export const Extension = () => {
             <RegisterFeature feature={NextjsConfigFeature} />
             <RegisterFeature feature={NuxtConfigFeature} />
             <RegisterFeature feature={WbPermissionsFeature} />
+            <RegisterFeature feature={WebsiteBuilderBreadcrumbsFeature} />
             <RegisterFeature feature={TranslatePageFeature} />
             <RegisterFeature feature={DeletePageFeature} />
             <RegisterFeature feature={DeletePageRevisionFeature} />
