@@ -1,16 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useRoute } from "@webiny/app-admin";
-import { useFeature } from "@webiny/app";
-import { OverlayLoader } from "@webiny/admin-ui";
-import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
-import type { EditorPage } from "@webiny/website-builder-sdk";
+import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
 import { useGetPage } from "~/features/pages/index.js";
+import { OverlayLoader } from "@webiny/admin-ui";
+import { useFeature } from "@webiny/app";
+import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
+import { DefaultPageEditorConfig } from "./DefaultPageEditorConfig.js";
+import { DefaultEditorConfig } from "~/BaseEditor/index.js";
+import { EDITOR_NAME } from "~/presentation/pages/PageEditor/constants.js";
+import type { EditorPage } from "@webiny/website-builder-sdk";
+import type { Page } from "~/domain/Page/index.js";
 import { Routes } from "~/routes.js";
+import { WbPageStatus } from "~/constants.js";
+import { RevisionListDrawer } from "./Revisions/RevisionListDrawer.js";
 import { PageEditorDrawerProvider } from "./Revisions/usePageEditorDrawer.js";
-import { PageEditorSurface } from "./PageEditorSurface.js";
-import { pageToEditorDocument } from "./pageDocument.js";
-import { ExperimentsEditorPresenterFeature } from "~/presentation/experiments/ExperimentsEditor/index.js";
-import { ExperimentsDrawerView } from "~/presentation/experiments/ExperimentsManager/index.js";
+
+const getPageDataFromPage = (page: Page): EditorPage => {
+    return {
+        ...page,
+        id: page.id,
+        version: page.version,
+        status: page.status,
+        location: page.location,
+        properties: page.properties as EditorPage["properties"],
+        bindings: page.bindings,
+        elements: page.elements,
+        metadata: page.metadata,
+        state: {}
+    };
+};
 
 export const PageEditor = () => {
     const { useCase: getSettings } = useFeature(GetSettingsFeature);
@@ -23,27 +41,17 @@ export const PageEditor = () => {
 
     const { getPage } = useGetPage();
 
-    const { presenter } = useFeature(ExperimentsEditorPresenterFeature);
-
     useEffect(() => {
         setLoading(true);
         Promise.all([
             getSettings.execute(),
             getPage({ id: route.params.id }).then(page => {
-                setPage(pageToEditorDocument(page));
+                setPage(getPageDataFromPage(page));
             })
         ]).then(() => {
             setLoading(false);
         });
     }, [route.params.id]);
-
-    // Initialize the experiments hub presenter with the page being edited; it owns the shared
-    // selection state so the toolbar and editor surface can swap between the page and a variant.
-    useEffect(() => {
-        if (page) {
-            presenter.init(page.id);
-        }
-    }, [presenter, page?.id]);
 
     if (loading || !page) {
         return <OverlayLoader text={"Loading page..."} />;
@@ -54,8 +62,17 @@ export const PageEditor = () => {
             openRevisionList={openRevisionList}
             isRevisionListOpen={isRevisionListOpen}
         >
-            <PageEditorSurface page={page} />
-            <ExperimentsDrawerView />
+            <DocumentEditor<EditorPage>
+                key={page.id}
+                document={page}
+                name={EDITOR_NAME}
+                readOnly={page.status !== WbPageStatus.Draft}
+            >
+                <DefaultEditorConfig />
+                <DefaultPageEditorConfig />
+
+                <RevisionListDrawer page={page} />
+            </DocumentEditor>
         </PageEditorDrawerProvider>
     );
 };
