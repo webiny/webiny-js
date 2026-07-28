@@ -19,12 +19,19 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
             name: "Website Builder",
             description: "Integrate Next.js or custom frontend with Website Builder.",
             slug: "website-builder",
-            permissions: [
-                // Experiments and variants are governed by the Website Builder page permission,
-                // so read-only page access is all the frontend key needs to serve/preview them.
-                { name: "$wb.readonly" },
-                { name: "wb.page", rwd: "r" }
-            ]
+            // Mirrors exactly what Admin writes when you pick the "Read-only" access level for
+            // Website Builder (see `usePermissionForm`): a synthetic `$wb.readonly` marker plus
+            // `wb.*` with `rwd: "r"`.
+            //
+            // `$wb.readonly` carries no authorization weight — it exists so the Admin form can
+            // round-trip the chosen access level (`deserializePermissions` looks for it first).
+            // Drop it and the key still works, but Admin renders it as "Custom access". Keep it.
+            //
+            // `wb.*` + `rwd: "r"` grants read on every Website Builder entity (page, redirect, and
+            // anything added later) without granting writes — `hasFullSchemaAccess` deliberately
+            // does not treat a permission carrying `rwd` as full access. Enumerating entities
+            // individually is what previously left the frontend unable to read redirects.
+            permissions: [{ name: "$wb.readonly" }, { name: "wb.*", rwd: "r" }]
         });
 
         if (result.isOk()) {
