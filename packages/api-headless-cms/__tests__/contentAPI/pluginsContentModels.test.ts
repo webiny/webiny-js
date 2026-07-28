@@ -4,7 +4,7 @@ import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 import { createModelField } from "~/utils/createModelField.js";
 import { createIcon } from "~tests/__helpers/icon.js";
-import { ModelStorageOperations } from "~/features/shared/storageOperations/ModelStorageOperations.js";
+import { DeleteModelStorageOperation } from "~/features/shared/storageOperations/model/DeleteModelStorageOperation.js";
 
 const contentModelPlugin = new CmsModelPlugin({
     name: "Product",
@@ -146,24 +146,24 @@ describe("content model plugins", () => {
         path: "manage"
     });
 
-    const getModelStorageOperations = async () => {
+    const getDeleteModelOp = async () => {
         if (!handler.getContext()) {
             await handler.isInstalledQuery();
         }
-        return handler.getContext().container.resolve(ModelStorageOperations);
+        return handler.getContext().container.resolve(DeleteModelStorageOperation);
     };
 
     beforeEach(async () => {
-        const modelStorageOperations = await getModelStorageOperations();
-        await modelStorageOperations.delete({
+        const deleteModel = await getDeleteModelOp();
+        await deleteModel.execute({
             model: {
                 ...(contentModelPlugin.contentModel as CmsModel)
             }
         });
     });
     afterEach(async () => {
-        const modelStorageOperations = await getModelStorageOperations();
-        await modelStorageOperations.delete({
+        const deleteModel = await getDeleteModelOp();
+        await deleteModel.execute({
             model: {
                 ...(contentModelPlugin.contentModel as CmsModel)
             }
