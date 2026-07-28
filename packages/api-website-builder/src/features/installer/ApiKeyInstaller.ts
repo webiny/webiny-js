@@ -31,7 +31,6 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
             // anything added later) without granting writes — `hasFullSchemaAccess` deliberately
             // does not treat a permission carrying `rwd` as full access. Enumerating entities
             // individually is what previously left the frontend unable to read redirects.
-            // Configure read-only permissions for CMS, Website Builder, and Languages
             permissions: [
                 {
                     name: "$languages.readonly"
