@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../cms-sdk/tsconfig.build.json" },
+    { "path": "../sdk/tsconfig.build.json" },
     { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -14,6 +15,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/cms-sdk/*": ["../cms-sdk/src/*"],
       "@webiny/cms-sdk": ["../cms-sdk/src"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }

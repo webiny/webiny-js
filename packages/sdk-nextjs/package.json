@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/content-sdk-nextjs",
+  "name": "@webiny/sdk-nextjs",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/cms-nextjs": "0.0.0",
-    "@webiny/content-sdk": "0.0.0",
+    "@webiny/sdk-frontend": "0.0.0",
     "@webiny/website-builder-nextjs": "0.0.0"
   },
   "peerDependencies": {
@@ -33,7 +33,7 @@
     "ignore": {
       "dependencies": [
         "@webiny/cms-nextjs",
-        "@webiny/content-sdk",
+        "@webiny/sdk-frontend",
         "@webiny/website-builder-nextjs"
       ]
     }
