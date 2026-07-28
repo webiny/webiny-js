@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import {
     GetUniqueFieldValuesRepository as RepositoryAbstraction,
     GetUniqueFieldValuesParams
@@ -32,8 +31,7 @@ class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interf
     }
 }
 
-export const GetUniqueFieldValuesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetUniqueFieldValuesRepository = RepositoryAbstraction.createImplementation({
     implementation: GetUniqueFieldValuesRepositoryImpl,
     dependencies: [GetUniqueFieldValuesStorageOperation]
 });

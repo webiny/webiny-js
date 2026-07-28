@@ -3,7 +3,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsGetParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
 import { EntrySearchOperations } from "./abstractions/EntrySearchOperations.js";
 
@@ -18,8 +17,7 @@ class PgOsGetEntryImpl implements GetEntryStorageOperation.Interface {
     }
 }
 
-export const PgOsGetEntry = createImplementation({
-    abstraction: GetEntryStorageOperation,
+export const PgOsGetEntry = GetEntryStorageOperation.createImplementation({
     implementation: PgOsGetEntryImpl,
     dependencies: [EntrySearchOperations]
 });

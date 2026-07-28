@@ -6,7 +6,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -181,8 +180,7 @@ class DdbListEntriesImpl implements ListEntriesStorageOperation.Interface {
     }
 }
 
-export const DdbListEntries = createImplementation({
-    abstraction: ListEntriesStorageOperation,
+export const DdbListEntries = ListEntriesStorageOperation.createImplementation({
     implementation: DdbListEntriesImpl,
     dependencies: [
         CmsDdbEntryEntity,

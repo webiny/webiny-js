@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -52,8 +51,8 @@ class SqlGetLatestRevisionByEntryIdImpl
     }
 }
 
-export const SqlGetLatestRevisionByEntryId = createImplementation({
-    abstraction: GetLatestRevisionByEntryIdStorageOperation,
-    implementation: SqlGetLatestRevisionByEntryIdImpl,
-    dependencies: [KnexClient, EntryTableManager]
-});
+export const SqlGetLatestRevisionByEntryId =
+    GetLatestRevisionByEntryIdStorageOperation.createImplementation({
+        implementation: SqlGetLatestRevisionByEntryIdImpl,
+        dependencies: [KnexClient, EntryTableManager]
+    });

@@ -3,7 +3,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsGetParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -28,8 +27,7 @@ class DdbEsGetEntryImpl implements GetEntryStorageOperation.Interface {
     }
 }
 
-export const DdbEsGetEntry = createImplementation({
-    abstraction: GetEntryStorageOperation,
+export const DdbEsGetEntry = GetEntryStorageOperation.createImplementation({
     implementation: DdbEsGetEntryImpl,
     dependencies: [ListEntriesStorageOperation, CmsStorageModelProvider]
 });

@@ -3,7 +3,6 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsDeleteParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
@@ -74,8 +73,7 @@ class DdbDeleteEntryImpl implements DeleteEntryStorageOperation.Interface {
     }
 }
 
-export const DdbDeleteEntry = createImplementation({
-    abstraction: DeleteEntryStorageOperation,
+export const DdbDeleteEntry = DeleteEntryStorageOperation.createImplementation({
     implementation: DdbDeleteEntryImpl,
     dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
 });

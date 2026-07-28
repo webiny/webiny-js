@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
@@ -62,8 +61,7 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const DeleteGroupRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const DeleteGroupRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteGroupRepositoryImpl,
     dependencies: [
         GroupCache,

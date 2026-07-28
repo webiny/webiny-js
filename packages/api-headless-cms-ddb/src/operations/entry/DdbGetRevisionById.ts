@@ -3,7 +3,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsGetRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionByIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -32,8 +31,7 @@ class DdbGetRevisionByIdImpl implements GetRevisionByIdStorageOperation.Interfac
     }
 }
 
-export const DdbGetRevisionById = createImplementation({
-    abstraction: GetRevisionByIdStorageOperation,
+export const DdbGetRevisionById = GetRevisionByIdStorageOperation.createImplementation({
     implementation: DdbGetRevisionByIdImpl,
     dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider]
 });

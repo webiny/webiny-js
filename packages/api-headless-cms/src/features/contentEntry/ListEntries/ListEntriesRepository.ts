@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { ListEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
@@ -73,8 +73,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const ListEntriesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const ListEntriesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListEntriesRepositoryImpl,
     dependencies: [SearchableFieldsProvider, EntryFromStorageTransform, ListEntriesStorageOperation]
 });

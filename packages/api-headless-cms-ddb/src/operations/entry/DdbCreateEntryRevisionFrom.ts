@@ -5,7 +5,6 @@ import type {
     CmsEntryStorageOperationsCreateRevisionFromParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
@@ -111,8 +110,8 @@ class DdbCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
     }
 }
 
-export const DdbCreateEntryRevisionFrom = createImplementation({
-    abstraction: CreateEntryRevisionFromStorageOperation,
-    implementation: DdbCreateEntryRevisionFromImpl,
-    dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
-});
+export const DdbCreateEntryRevisionFrom =
+    CreateEntryRevisionFromStorageOperation.createImplementation({
+        implementation: DdbCreateEntryRevisionFromImpl,
+        dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
+    });

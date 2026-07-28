@@ -5,7 +5,6 @@ import type {
     CmsEntryStorageOperationsCreateRevisionFromParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -161,16 +160,16 @@ class DdbEsCreateEntryRevisionFromImpl
     }
 }
 
-export const DdbEsCreateEntryRevisionFrom = createImplementation({
-    abstraction: CreateEntryRevisionFromStorageOperation,
-    implementation: DdbEsCreateEntryRevisionFromImpl,
-    dependencies: [
-        CmsDdbEsEntryEntity,
-        CmsDdbEsEntriesEsEntity,
-        CmsDdbEsDataLoaders,
-        CmsStorageModelProvider,
-        CmsEntryOpenSearchFieldIndexRegistry,
-        CompressionHandler,
-        [CmsEntryOpenSearchValuesModifier, { multiple: true }]
-    ]
-});
+export const DdbEsCreateEntryRevisionFrom =
+    CreateEntryRevisionFromStorageOperation.createImplementation({
+        implementation: DdbEsCreateEntryRevisionFromImpl,
+        dependencies: [
+            CmsDdbEsEntryEntity,
+            CmsDdbEsEntriesEsEntity,
+            CmsDdbEsDataLoaders,
+            CmsStorageModelProvider,
+            CmsEntryOpenSearchFieldIndexRegistry,
+            CompressionHandler,
+            [CmsEntryOpenSearchValuesModifier, { multiple: true }]
+        ]
+    });

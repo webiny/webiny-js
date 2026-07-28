@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsListParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
@@ -126,8 +125,7 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
     }
 }
 
-export const DdbEsListEntries = createImplementation({
-    abstraction: ListEntriesStorageOperation,
+export const DdbEsListEntries = ListEntriesStorageOperation.createImplementation({
     implementation: DdbEsListEntriesImpl,
     dependencies: [
         CmsStorageModelProvider,

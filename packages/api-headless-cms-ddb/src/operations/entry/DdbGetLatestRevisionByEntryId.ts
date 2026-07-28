@@ -3,7 +3,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsGetLatestRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -38,8 +37,8 @@ class DdbGetLatestRevisionByEntryIdImpl
     }
 }
 
-export const DdbGetLatestRevisionByEntryId = createImplementation({
-    abstraction: GetLatestRevisionByEntryIdStorageOperation,
-    implementation: DdbGetLatestRevisionByEntryIdImpl,
-    dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider]
-});
+export const DdbGetLatestRevisionByEntryId =
+    GetLatestRevisionByEntryIdStorageOperation.createImplementation({
+        implementation: DdbGetLatestRevisionByEntryIdImpl,
+        dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider]
+    });

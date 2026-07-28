@@ -5,7 +5,6 @@ import type {
     CmsModel,
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { UnpublishEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -54,8 +53,7 @@ class SqlUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interface 
     }
 }
 
-export const SqlUnpublishEntry = createImplementation({
-    abstraction: UnpublishEntryStorageOperation,
+export const SqlUnpublishEntry = UnpublishEntryStorageOperation.createImplementation({
     implementation: SqlUnpublishEntryImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

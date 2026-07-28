@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
@@ -24,8 +23,7 @@ class DeleteEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const DeleteEntryRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const DeleteEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteEntryRepositoryImpl,
     dependencies: [DeleteEntryStorageOperation]
 });

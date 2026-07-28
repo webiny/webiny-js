@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { RestoreEntryFromBinRepository as RepositoryAbstraction } from "./abstractions.js";
 import { RestoreFromBinStorageOperation } from "~/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
@@ -45,8 +45,7 @@ class RestoreEntryFromBinRepositoryImpl implements RepositoryAbstraction.Interfa
     }
 }
 
-export const RestoreEntryFromBinRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const RestoreEntryFromBinRepository = RepositoryAbstraction.createImplementation({
     implementation: RestoreEntryFromBinRepositoryImpl,
     dependencies: [
         EntryToStorageTransform,

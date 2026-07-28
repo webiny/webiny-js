@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { RestoreFromBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -57,8 +56,7 @@ class SqlRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface 
     }
 }
 
-export const SqlRestoreFromBin = createImplementation({
-    abstraction: RestoreFromBinStorageOperation,
+export const SqlRestoreFromBin = RestoreFromBinStorageOperation.createImplementation({
     implementation: SqlRestoreFromBinImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import { ListDeletedEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListEntriesUseCase } from "./abstractions.js";
 import type { CmsEntryListParams, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -28,8 +27,7 @@ class ListDeletedEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const ListDeletedEntriesUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const ListDeletedEntriesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListDeletedEntriesUseCaseImpl,
     dependencies: [ListEntriesUseCase]
 });

@@ -3,7 +3,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsListParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { EntrySearchOperations } from "./abstractions/EntrySearchOperations.js";
 
@@ -18,8 +17,7 @@ class PgOsListEntriesImpl implements ListEntriesStorageOperation.Interface {
     }
 }
 
-export const PgOsListEntries = createImplementation({
-    abstraction: ListEntriesStorageOperation,
+export const PgOsListEntries = ListEntriesStorageOperation.createImplementation({
     implementation: PgOsListEntriesImpl,
     dependencies: [EntrySearchOperations]
 });

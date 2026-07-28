@@ -1,7 +1,6 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
@@ -91,8 +90,7 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const GetGroupRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetGroupRepository = RepositoryAbstraction.createImplementation({
     implementation: GetGroupRepositoryImpl,
     dependencies: [
         GroupCache,

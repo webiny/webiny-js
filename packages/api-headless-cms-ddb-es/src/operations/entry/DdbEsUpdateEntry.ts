@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { UpdateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UpdateEntryStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -234,8 +233,7 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
     }
 }
 
-export const DdbEsUpdateEntry = createImplementation({
-    abstraction: UpdateEntryStorageOperation,
+export const DdbEsUpdateEntry = UpdateEntryStorageOperation.createImplementation({
     implementation: DdbEsUpdateEntryImpl,
     dependencies: [
         CmsDdbEsEntryEntity,

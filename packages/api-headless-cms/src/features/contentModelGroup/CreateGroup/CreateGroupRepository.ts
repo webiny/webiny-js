@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
@@ -108,8 +107,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const CreateGroupRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const CreateGroupRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateGroupRepositoryImpl,
     dependencies: [
         GroupCache,

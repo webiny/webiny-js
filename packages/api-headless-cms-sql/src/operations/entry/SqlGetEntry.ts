@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -62,8 +61,7 @@ class SqlGetEntryImpl implements GetEntryStorageOperation.Interface {
     }
 }
 
-export const SqlGetEntry = createImplementation({
-    abstraction: GetEntryStorageOperation,
+export const SqlGetEntry = GetEntryStorageOperation.createImplementation({
     implementation: SqlGetEntryImpl,
     dependencies: [
         KnexClient,

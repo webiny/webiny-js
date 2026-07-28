@@ -3,7 +3,6 @@ import type {
     CmsEntryStorageOperationsMoveToBinParams,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { MoveToBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveToBinStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -53,8 +52,7 @@ class SqlMoveToBinImpl implements MoveToBinStorageOperation.Interface {
     }
 }
 
-export const SqlMoveToBin = createImplementation({
-    abstraction: MoveToBinStorageOperation,
+export const SqlMoveToBin = MoveToBinStorageOperation.createImplementation({
     implementation: SqlMoveToBinImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

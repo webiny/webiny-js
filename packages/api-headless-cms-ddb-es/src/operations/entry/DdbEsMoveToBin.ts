@@ -4,7 +4,6 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsMoveToBinParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { MoveToBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveToBinStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -206,8 +205,7 @@ class DdbEsMoveToBinImpl implements MoveToBinStorageOperation.Interface {
     }
 }
 
-export const DdbEsMoveToBin = createImplementation({
-    abstraction: MoveToBinStorageOperation,
+export const DdbEsMoveToBin = MoveToBinStorageOperation.createImplementation({
     implementation: DdbEsMoveToBinImpl,
     dependencies: [
         CmsDdbEsEntryEntity,

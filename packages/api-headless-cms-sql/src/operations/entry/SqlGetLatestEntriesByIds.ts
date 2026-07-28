@@ -5,7 +5,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetLatestEntriesByIdsStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestEntriesByIdsStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -50,8 +49,7 @@ class SqlGetLatestEntriesByIdsImpl implements GetLatestEntriesByIdsStorageOperat
     }
 }
 
-export const SqlGetLatestEntriesByIds = createImplementation({
-    abstraction: GetLatestEntriesByIdsStorageOperation,
+export const SqlGetLatestEntriesByIds = GetLatestEntriesByIdsStorageOperation.createImplementation({
     implementation: SqlGetLatestEntriesByIdsImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

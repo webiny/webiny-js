@@ -5,7 +5,6 @@ import type {
     CmsEntryStorageOperationsPublishParams
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { PublishEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
@@ -223,8 +222,7 @@ class DdbPublishEntryImpl implements PublishEntryStorageOperation.Interface {
     }
 }
 
-export const DdbPublishEntry = createImplementation({
-    abstraction: PublishEntryStorageOperation,
+export const DdbPublishEntry = PublishEntryStorageOperation.createImplementation({
     implementation: DdbPublishEntryImpl,
     dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
 });

@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -151,8 +150,7 @@ class DdbEsMoveEntryImpl implements MoveEntryStorageOperation.Interface {
     }
 }
 
-export const DdbEsMoveEntry = createImplementation({
-    abstraction: MoveEntryStorageOperation,
+export const DdbEsMoveEntry = MoveEntryStorageOperation.createImplementation({
     implementation: DdbEsMoveEntryImpl,
     dependencies: [
         CmsDdbEsEntryEntity,

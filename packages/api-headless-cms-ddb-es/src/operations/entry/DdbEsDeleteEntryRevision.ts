@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsDeleteRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -169,8 +168,7 @@ class DdbEsDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperatio
     }
 }
 
-export const DdbEsDeleteEntryRevision = createImplementation({
-    abstraction: DeleteEntryRevisionStorageOperation,
+export const DdbEsDeleteEntryRevision = DeleteEntryRevisionStorageOperation.createImplementation({
     implementation: DdbEsDeleteEntryRevisionImpl,
     dependencies: [
         CmsDdbEsEntryEntity,

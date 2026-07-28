@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionByIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -46,8 +45,7 @@ class SqlGetRevisionByIdImpl implements GetRevisionByIdStorageOperation.Interfac
     }
 }
 
-export const SqlGetRevisionById = createImplementation({
-    abstraction: GetRevisionByIdStorageOperation,
+export const SqlGetRevisionById = GetRevisionByIdStorageOperation.createImplementation({
     implementation: SqlGetRevisionByIdImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

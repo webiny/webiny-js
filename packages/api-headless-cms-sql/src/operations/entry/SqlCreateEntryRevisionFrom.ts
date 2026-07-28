@@ -5,7 +5,6 @@ import type {
     CmsModel,
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRevisionFromStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -77,8 +76,8 @@ class SqlCreateEntryRevisionFromImpl implements CreateEntryRevisionFromStorageOp
     }
 }
 
-export const SqlCreateEntryRevisionFrom = createImplementation({
-    abstraction: CreateEntryRevisionFromStorageOperation,
-    implementation: SqlCreateEntryRevisionFromImpl,
-    dependencies: [KnexClient, EntryTableManager]
-});
+export const SqlCreateEntryRevisionFrom =
+    CreateEntryRevisionFromStorageOperation.createImplementation({
+        implementation: SqlCreateEntryRevisionFromImpl,
+        dependencies: [KnexClient, EntryTableManager]
+    });

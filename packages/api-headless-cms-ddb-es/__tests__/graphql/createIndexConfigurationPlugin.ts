@@ -1,7 +1,6 @@
 import { getBaseConfiguration } from "@webiny/api-opensearch";
 import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
 import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex";
-import { createImplementation } from "@webiny/feature/api";
 
 class CustomOpenSearchIndexImpl implements CmsEntryOpenSearchIndex.Interface {
     public readonly body: OpenSearchIndexRequestBody;
@@ -54,8 +53,7 @@ class CustomOpenSearchIndexImpl implements CmsEntryOpenSearchIndex.Interface {
     }
 }
 
-export const CustomOpenSearchIndex = createImplementation({
-    abstraction: CmsEntryOpenSearchIndex,
+export const CustomOpenSearchIndex = CmsEntryOpenSearchIndex.createImplementation({
     implementation: CustomOpenSearchIndexImpl,
     dependencies: []
 });

@@ -2,7 +2,6 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetUniqueFieldValuesParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { EntrySearchOperations } from "./abstractions/EntrySearchOperations.js";
 
@@ -14,8 +13,7 @@ class PgOsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperati
     }
 }
 
-export const PgOsGetUniqueFieldValues = createImplementation({
-    abstraction: GetUniqueFieldValuesStorageOperation,
+export const PgOsGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: PgOsGetUniqueFieldValuesImpl,
     dependencies: [EntrySearchOperations]
 });

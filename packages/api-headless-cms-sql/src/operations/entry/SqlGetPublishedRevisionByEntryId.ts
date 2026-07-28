@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPublishedRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -52,8 +51,8 @@ class SqlGetPublishedRevisionByEntryIdImpl
     }
 }
 
-export const SqlGetPublishedRevisionByEntryId = createImplementation({
-    abstraction: GetPublishedRevisionByEntryIdStorageOperation,
-    implementation: SqlGetPublishedRevisionByEntryIdImpl,
-    dependencies: [KnexClient, EntryTableManager]
-});
+export const SqlGetPublishedRevisionByEntryId =
+    GetPublishedRevisionByEntryIdStorageOperation.createImplementation({
+        implementation: SqlGetPublishedRevisionByEntryIdImpl,
+        dependencies: [KnexClient, EntryTableManager]
+    });

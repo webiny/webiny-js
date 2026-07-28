@@ -3,7 +3,6 @@ import type {
     CmsEntryStorageOperationsDeleteEntriesParams,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteMultipleEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -34,8 +33,7 @@ class SqlDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
     }
 }
 
-export const SqlDeleteMultipleEntries = createImplementation({
-    abstraction: DeleteMultipleEntriesStorageOperation,
+export const SqlDeleteMultipleEntries = DeleteMultipleEntriesStorageOperation.createImplementation({
     implementation: SqlDeleteMultipleEntriesImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

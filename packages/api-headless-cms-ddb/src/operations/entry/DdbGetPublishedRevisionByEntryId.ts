@@ -3,7 +3,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsGetPublishedRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPublishedRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -38,8 +37,8 @@ class DdbGetPublishedRevisionByEntryIdImpl
     }
 }
 
-export const DdbGetPublishedRevisionByEntryId = createImplementation({
-    abstraction: GetPublishedRevisionByEntryIdStorageOperation,
-    implementation: DdbGetPublishedRevisionByEntryIdImpl,
-    dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider]
-});
+export const DdbGetPublishedRevisionByEntryId =
+    GetPublishedRevisionByEntryIdStorageOperation.createImplementation({
+        implementation: DdbGetPublishedRevisionByEntryIdImpl,
+        dependencies: [CmsDdbDataLoaders, CmsStorageModelProvider]
+    });

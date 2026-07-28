@@ -2,7 +2,6 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsDeleteEntriesParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteMultipleEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
@@ -65,8 +64,7 @@ class DdbDeleteMultipleEntriesImpl implements DeleteMultipleEntriesStorageOperat
     }
 }
 
-export const DdbDeleteMultipleEntries = createImplementation({
-    abstraction: DeleteMultipleEntriesStorageOperation,
+export const DdbDeleteMultipleEntries = DeleteMultipleEntriesStorageOperation.createImplementation({
     implementation: DdbDeleteMultipleEntriesImpl,
     dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
 });

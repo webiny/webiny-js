@@ -12,7 +12,6 @@ import { getDataLoaderFactory } from "~/operations/entry/dataLoader/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { DataLoadersHandlerInterfaceClearAllParams, IDataLoadersHandler } from "~/types.js";
 import type { IEntryEntity } from "~/definitions/types.js";
-import { createImplementation } from "@webiny/feature/api";
 import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 
@@ -153,8 +152,7 @@ class DataLoadersHandlerImpl implements IDataLoadersHandler {
     }
 }
 
-export const DataLoadersHandler = createImplementation({
-    abstraction: CmsDdbEsDataLoaders,
+export const DataLoadersHandler = CmsDdbEsDataLoaders.createImplementation({
     implementation: DataLoadersHandlerImpl,
     dependencies: [CmsDdbEsEntryEntity]
 });

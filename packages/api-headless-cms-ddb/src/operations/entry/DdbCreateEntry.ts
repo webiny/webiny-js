@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsCreateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
@@ -99,8 +98,7 @@ class DdbCreateEntryImpl implements CreateEntryStorageOperation.Interface {
     }
 }
 
-export const DdbCreateEntry = createImplementation({
-    abstraction: CreateEntryStorageOperation,
+export const DdbCreateEntry = CreateEntryStorageOperation.createImplementation({
     implementation: DdbCreateEntryImpl,
     dependencies: [CmsDdbEntryEntity, CmsDdbDataLoaders, CmsStorageModelProvider]
 });

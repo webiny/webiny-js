@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteMultipleEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { DeleteMultipleEntriesStorageOperation } from "~/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
@@ -32,8 +31,7 @@ class DeleteMultipleEntriesRepositoryImpl implements RepositoryAbstraction.Inter
     }
 }
 
-export const DeleteMultipleEntriesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const DeleteMultipleEntriesRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteMultipleEntriesRepositoryImpl,
     dependencies: [DeleteMultipleEntriesStorageOperation]
 });

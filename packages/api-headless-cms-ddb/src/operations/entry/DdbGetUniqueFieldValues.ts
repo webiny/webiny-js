@@ -3,7 +3,6 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetUniqueFieldValuesParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { aggregateUniqueFieldValues } from "@webiny/api-headless-cms-storage";
@@ -34,8 +33,7 @@ class DdbGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperatio
     }
 }
 
-export const DdbGetUniqueFieldValues = createImplementation({
-    abstraction: GetUniqueFieldValuesStorageOperation,
+export const DdbGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: DdbGetUniqueFieldValuesImpl,
     dependencies: [ListEntriesStorageOperation]
 });

@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { MoveEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { MoveEntryStorageOperation } from "~/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
@@ -29,8 +28,7 @@ class MoveEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const MoveEntryRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const MoveEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: MoveEntryRepositoryImpl,
     dependencies: [MoveEntryStorageOperation]
 });

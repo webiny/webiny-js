@@ -1,6 +1,5 @@
 import type { Knex } from "knex";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { MoveEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -34,8 +33,7 @@ class SqlMoveEntryImpl implements MoveEntryStorageOperation.Interface {
     }
 }
 
-export const SqlMoveEntry = createImplementation({
-    abstraction: MoveEntryStorageOperation,
+export const SqlMoveEntry = MoveEntryStorageOperation.createImplementation({
     implementation: SqlMoveEntryImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

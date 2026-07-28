@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionsByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -39,8 +38,7 @@ class GetRevisionsByEntryIdRepositoryImpl implements RepositoryAbstraction.Inter
     }
 }
 
-export const GetRevisionsByEntryIdRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetRevisionsByEntryIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetRevisionsByEntryIdRepositoryImpl,
     dependencies: [EntryFromStorageTransform, GetRevisionsStorageOperation]
 });

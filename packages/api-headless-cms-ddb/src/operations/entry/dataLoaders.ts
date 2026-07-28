@@ -13,7 +13,6 @@ import { parseIdentifier } from "@webiny/utils";
 import type { DataLoadersHandlerInterfaceClearAllParams, IDataLoadersHandler } from "~/types.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsDdbDataLoaders } from "~/abstractions/CmsDdbDataLoaders.js";
-import { createImplementation } from "@webiny/feature/api";
 
 interface DataLoaderParams {
     model: Pick<CmsModel, "tenant" | "modelId">;
@@ -148,8 +147,7 @@ class DataLoadersHandlerImpl implements IDataLoadersHandler {
     }
 }
 
-export const DataLoadersHandler = createImplementation({
-    abstraction: CmsDdbDataLoaders,
+export const DataLoadersHandler = CmsDdbDataLoaders.createImplementation({
     implementation: DataLoadersHandlerImpl,
     dependencies: [CmsDdbEntryEntity]
 });

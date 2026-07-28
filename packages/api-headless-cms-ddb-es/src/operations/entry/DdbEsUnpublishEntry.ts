@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsUnpublishParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { UnpublishEntryStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -153,8 +152,7 @@ class DdbEsUnpublishEntryImpl implements UnpublishEntryStorageOperation.Interfac
     }
 }
 
-export const DdbEsUnpublishEntry = createImplementation({
-    abstraction: UnpublishEntryStorageOperation,
+export const DdbEsUnpublishEntry = UnpublishEntryStorageOperation.createImplementation({
     implementation: DdbEsUnpublishEntryImpl,
     dependencies: [
         CmsDdbEsEntryEntity,

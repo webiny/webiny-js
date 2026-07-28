@@ -5,7 +5,6 @@ import type {
     CmsModel,
     CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -70,8 +69,7 @@ class SqlDeleteEntryRevisionImpl implements DeleteEntryRevisionStorageOperation.
     }
 }
 
-export const SqlDeleteEntryRevision = createImplementation({
-    abstraction: DeleteEntryRevisionStorageOperation,
+export const SqlDeleteEntryRevision = DeleteEntryRevisionStorageOperation.createImplementation({
     implementation: SqlDeleteEntryRevisionImpl,
     dependencies: [KnexClient, EntryTableManager]
 });

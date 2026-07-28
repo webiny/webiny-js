@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateEntryRevisionFromRepository as RepositoryAbstraction } from "./abstractions.js";
 import { CreateEntryRevisionFromStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryRevisionFromStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
@@ -47,8 +46,7 @@ class CreateEntryRevisionFromRepositoryImpl implements RepositoryAbstraction.Int
     }
 }
 
-export const CreateEntryRevisionFromRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const CreateEntryRevisionFromRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateEntryRevisionFromRepositoryImpl,
     dependencies: [
         EntryToStorageTransform,

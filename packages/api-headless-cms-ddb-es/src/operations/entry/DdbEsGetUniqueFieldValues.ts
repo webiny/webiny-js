@@ -3,7 +3,6 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetUniqueFieldValuesParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { Client } from "@webiny/api-opensearch";
@@ -103,8 +102,7 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
     }
 }
 
-export const DdbEsGetUniqueFieldValues = createImplementation({
-    abstraction: GetUniqueFieldValuesStorageOperation,
+export const DdbEsGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: DdbEsGetUniqueFieldValuesImpl,
     dependencies: [CmsEntryOpenSearchBodyBuilder, OpenSearchClient]
 });

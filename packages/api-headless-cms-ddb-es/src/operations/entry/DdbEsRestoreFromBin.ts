@@ -5,7 +5,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsRestoreFromBinParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { RestoreFromBinStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/RestoreFromBinStorageOperation.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
@@ -204,8 +203,7 @@ class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interfac
     }
 }
 
-export const DdbEsRestoreFromBin = createImplementation({
-    abstraction: RestoreFromBinStorageOperation,
+export const DdbEsRestoreFromBin = RestoreFromBinStorageOperation.createImplementation({
     implementation: DdbEsRestoreFromBinImpl,
     dependencies: [
         CmsDdbEsEntryEntity,

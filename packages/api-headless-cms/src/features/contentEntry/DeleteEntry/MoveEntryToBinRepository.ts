@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { MoveEntryToBinRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
@@ -36,8 +35,7 @@ class MoveEntryToBinRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const MoveEntryToBinRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const MoveEntryToBinRepository = RepositoryAbstraction.createImplementation({
     implementation: MoveEntryToBinRepositoryImpl,
     dependencies: [EntryToStorageTransform, MoveToBinStorageOperation]
 });

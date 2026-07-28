@@ -3,7 +3,6 @@ import type {
     CmsEntryStorageOperationsGetUniqueFieldValuesParams,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { KnexClient } from "@webiny/api-core-sql";
 import { EntryTableManager } from "~/features/entryTableManager/abstractions.js";
@@ -68,8 +67,7 @@ class SqlGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperatio
     }
 }
 
-export const SqlGetUniqueFieldValues = createImplementation({
-    abstraction: GetUniqueFieldValuesStorageOperation,
+export const SqlGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: SqlGetUniqueFieldValuesImpl,
     dependencies: [
         KnexClient,

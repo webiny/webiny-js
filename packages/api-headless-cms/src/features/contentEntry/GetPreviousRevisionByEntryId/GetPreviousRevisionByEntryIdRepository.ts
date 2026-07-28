@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPreviousRevisionByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
@@ -42,8 +41,7 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
     }
 }
 
-export const GetPreviousRevisionByEntryIdRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetPreviousRevisionByEntryIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPreviousRevisionByEntryIdRepositoryImpl,
     dependencies: [EntryFromStorageTransform, GetPreviousRevisionStorageOperation]
 });

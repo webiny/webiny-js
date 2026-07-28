@@ -4,7 +4,6 @@ import type {
     CmsEntryValues,
     CmsEntryStorageOperationsGetPreviousRevisionParams
 } from "@webiny/api-headless-cms/types/index.js";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPreviousRevisionStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPreviousRevisionStorageOperation.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -64,8 +63,7 @@ class DdbGetPreviousRevisionImpl implements GetPreviousRevisionStorageOperation.
     }
 }
 
-export const DdbGetPreviousRevision = createImplementation({
-    abstraction: GetPreviousRevisionStorageOperation,
+export const DdbGetPreviousRevision = GetPreviousRevisionStorageOperation.createImplementation({
     implementation: DdbGetPreviousRevisionImpl,
     dependencies: [CmsDdbEntryEntity, CmsStorageModelProvider]
 });
