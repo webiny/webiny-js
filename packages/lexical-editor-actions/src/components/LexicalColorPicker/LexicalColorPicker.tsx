@@ -117,7 +117,9 @@ export const LexicalColorPicker = ({
                                         ? `${swatchClass} ${swatchSelectedClass}`
                                         : swatchClass
                                 }
-                                style={{ backgroundColor: color.value }}
+                                // Border matches the color so there's no gray ring on
+                                // colored swatches; the gray border only shows for light/white.
+                                style={{ backgroundColor: color.value, borderColor: color.value }}
                                 onClick={() => {
                                     onChangeComplete(color.value, color.id);
                                 }}
