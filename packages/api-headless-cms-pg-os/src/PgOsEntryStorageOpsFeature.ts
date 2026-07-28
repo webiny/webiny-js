@@ -25,7 +25,7 @@ import { SqlGetPublishedEntriesByIds } from "@webiny/api-headless-cms-sql/operat
 import { SqlGetLatestRevisionByEntryId } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetLatestRevisionByEntryId.js";
 import { SqlGetPublishedRevisionByEntryId } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPublishedRevisionByEntryId.js";
 import { SqlGetPreviousRevision } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetPreviousRevision.js";
-a;
+
 export const PgOsEntryStorageOpsFeature = createFeature({
     name: "cms.pgOs.entryStorageOps",
     register: container => {
