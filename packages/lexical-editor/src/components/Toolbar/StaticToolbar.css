@@ -257,7 +257,6 @@
   display: block;
   border: 1px solid var(--border-color-neutral-muted);
   border-radius: var(--radius-md);
-  min-height: 40px;
   background-color: var(--color-neutral-base);
   color: var(--text-color-neutral-primary);
   max-height: 250px;
