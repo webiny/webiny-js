@@ -72,14 +72,17 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
             ApiGatewayFeature.register(container);
 
-            // ── Auth + tenant (extract → shared load) ──────────────────
-            // These decorators depend on api-core (RequestIdentityLoader/RequestTenantLoader), so
+            // ── Tenant + auth (extract → shared load) ──────────────────
+            // These decorators depend on api-core (RequestTenantLoader/RequestIdentityLoader), so
             // they live in this composition layer, not event-handler-aws. registerDecorator applies
-            // LATER registrations as the OUTER wrapper (whose execute() runs first). Identity must be
-            // established before tenant, so register tenant first (inner) and identity last (outer)
-            // → identity runs, then tenant, then the router.
-            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
+            // LATER registrations as the OUTER wrapper (whose execute() runs first). TENANT must be
+            // established before IDENTITY: API-key authentication resolves the key by tenant partition
+            // (ApiKeysRepository reads TenantContext.getTenant()), so identity establishment depends on
+            // the tenant. The reverse is not true — RequestTenantLoader has no identity dependency. So
+            // register identity first (inner) and tenant last (outer) → tenant runs, then identity,
+            // then the router.
             container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
+            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
 
             // Background task invocations (Step Functions → Lambda directly). BackgroundTasksAwsFeature
             // registers the Lambda handler + StepFunctionService (the AWS dispatch transport).

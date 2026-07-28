@@ -13,6 +13,13 @@ class ApiKeyAuthenticatorImpl implements IAuthenticator {
         }
         const result = await this.repository.getByToken(token);
         if (!result.isOk()) {
+            // The token looked like an API key ("wat_") but could not be resolved. Log it — otherwise
+            // this degrades silently to an anonymous request (which is what made the tenant-ordering
+            // bug so hard to find). A genuine unknown/revoked key logs here too, which is acceptable.
+            console.warn(
+                `API key authentication failed; request will proceed as anonymous.`,
+                result.error
+            );
             return null;
         }
         const apiKey = result.value;
