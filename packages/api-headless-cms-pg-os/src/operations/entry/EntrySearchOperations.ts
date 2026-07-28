@@ -6,6 +6,7 @@ import {
     CmsEntryOpenSearchFieldIndexRegistry
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { SearchOperationDeps } from "./search/types.js";
 import { createListOperation } from "./search/list.js";
@@ -29,7 +30,7 @@ class EntrySearchOperationsImpl implements IEntrySearchOperations {
             bodyBuilder,
             fieldRegistry,
             fieldIndexRegistry,
-            getStorageOperationsModel: model => storageModelProvider.getModel(model)
+            getStorageOperationsModel: (model: CmsModel) => storageModelProvider.getModel(model)
         };
 
         this.list = createListOperation(deps);

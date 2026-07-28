@@ -1,5 +1,4 @@
 import type { Container } from "@webiny/di";
-import { SqlEntryOperationsFeature } from "~/operations/entry/feature.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { GroupSchemaManagerFeature } from "~/features/groupSchemaManager/feature.js";
@@ -37,13 +36,12 @@ export const HeadlessCmsSqlFeature = createFeature({
         GroupSchemaManagerFeature.register(container);
         ModelSchemaManagerFeature.register(container);
         EntryTableManagerFeature.register(container);
-        SqlEntryOperationsFeature.register(container);
 
         // Group + model: DI classes, app-scoped singletons
         container.register(SqlGroupStorageOperations).inSingletonScope();
         container.register(SqlModelStorageOperations).inSingletonScope();
 
-        // Entry ops: 22 per-method factories delegating to SqlEntryOperations
+        // Entry ops: 22 per-method DI classes
         SqlEntryStorageOpsFeature.register(container);
     }
 });

@@ -1,5 +1,4 @@
 import type {
-    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsEntryValues,
     CmsModel,
     CmsStorageEntry
@@ -9,10 +8,6 @@ export enum ENTITIES {
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries"
-}
-
-export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: IDataLoadersHandler;
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {

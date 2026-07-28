@@ -5,7 +5,6 @@ import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { WebsocketsFeature } from "~/features/feature.js";
@@ -67,7 +66,7 @@ const defaultPermissions: SecurityPermission[] = [
 
 export const useGraphQLHandler = (params?: UseGraphQLHandlerParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
     const websocketsStorage = getStorageOps("websockets");
 
     const resolvedIdentity = params?.identity ?? defaultIdentity;

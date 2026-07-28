@@ -1,6 +1,5 @@
 import type {
     CmsContext,
-    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsEntryValues,
     CmsModel,
     CmsStorageEntry
@@ -13,10 +12,6 @@ export enum ENTITIES {
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries",
     ENTRIES_ES = "CmsEntriesElasticsearch"
-}
-
-export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: IDataLoadersHandler;
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {

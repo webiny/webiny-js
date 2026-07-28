@@ -15,7 +15,6 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { createTable } from "@webiny/db-dynamodb";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createEntryEntity } from "~/definitions/entry";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { CmsContext } from "~/types";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
@@ -42,7 +41,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     const elasticsearchClient = createTestOpenSearchClient();
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const table = createTable({
         name: process.env.DB_TABLE as string,

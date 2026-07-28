@@ -1,7 +1,6 @@
 import type { Container } from "@webiny/di";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { SqlEntryOperationsFeature } from "@webiny/api-headless-cms-sql/operations/entry/feature.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
 import {
     CmsEntryOpenSearchIndexCreate,
@@ -18,7 +17,6 @@ import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features
 import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/entryTableManager/feature.js";
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
 import { SyncWriterFeature } from "./SyncWriter/feature.js";
-import { EntryOperationsFeature } from "~/operations/entry/feature.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { SqlGroupStorageOperations } from "@webiny/api-headless-cms-sql/operations/group/SqlGroupStorageOperations.js";
 import { SqlModelStorageOperations } from "@webiny/api-headless-cms-sql/operations/model/SqlModelStorageOperations.js";
@@ -63,7 +61,7 @@ export const HeadlessCmsPgOsFeature = createFeature({
         container.register(SqlGroupStorageOperations).inSingletonScope();
         container.register(SqlModelStorageOperations).inSingletonScope();
 
-        // Entry ops: 22 per-method factories composing WriteOps + SearchOps + SqlOps
+        // Entry ops: 22 per-method DI classes — write decorators + search impls + SQL reuse
         PgOsEntryStorageOpsFeature.register(container);
     }
 });
@@ -86,10 +84,8 @@ export const registerPgOsStorageOperations = (config: IPgOsStorageOperationsConf
             GroupSchemaManagerFeature.register(container);
             ModelSchemaManagerFeature.register(container);
             EntryTableManagerFeature.register(container);
-            SqlEntryOperationsFeature.register(container);
             SyncTableManagerFeature.register(container);
             SyncWriterFeature.register(container);
-            EntryOperationsFeature.register(container);
 
             HeadlessCmsPgOsFeature.register(container);
         }

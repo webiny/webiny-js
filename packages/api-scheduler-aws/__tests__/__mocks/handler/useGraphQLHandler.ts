@@ -34,7 +34,6 @@ import type {
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -64,7 +63,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams) => {
     const { permissions, identity, plugins: extraPlugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];

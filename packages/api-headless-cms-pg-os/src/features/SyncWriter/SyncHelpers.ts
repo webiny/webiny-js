@@ -12,7 +12,8 @@ import { WriteLatest } from "./abstractions/WriteLatest.js";
 import { WritePublished } from "./abstractions/WritePublished.js";
 import { RemovePublished } from "./abstractions/RemovePublished.js";
 import { SyncTableManager } from "~/features/syncTableManager/abstractions.js";
-import { SqlEntryOperations } from "@webiny/api-headless-cms-sql/operations/entry/abstractions/SqlEntryOperations.js";
+import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
+import { GetPublishedRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 
 class SyncHelpersImpl implements Abstraction.Interface {
     public constructor(
@@ -21,7 +22,8 @@ class SyncHelpersImpl implements Abstraction.Interface {
         private readonly writeLatest: WriteLatest.Interface,
         private readonly writePublished: WritePublished.Interface,
         private readonly removePublished: RemovePublished.Interface,
-        private readonly sqlOps: SqlEntryOperations.Interface
+        private readonly getLatestRevision: GetLatestRevisionByEntryIdStorageOperation.Interface,
+        private readonly getPublishedRevision: GetPublishedRevisionByEntryIdStorageOperation.Interface
     ) {}
 
     public async ensureSyncTable(): Promise<void> {
@@ -41,12 +43,12 @@ class SyncHelpersImpl implements Abstraction.Interface {
         model: StorageOperationsCmsModel<T>,
         id: string
     ): Promise<void> {
-        const latest = await this.sqlOps.getLatestRevisionByEntryId<T>(initialModel, { id });
+        const latest = await this.getLatestRevision.execute<T>(initialModel, { id });
         if (latest) {
             await this.writeLatest.execute({ model, entry: latest, storageEntry: latest });
         }
 
-        const published = await this.sqlOps.getPublishedRevisionByEntryId<T>(initialModel, { id });
+        const published = await this.getPublishedRevision.execute<T>(initialModel, { id });
         if (published) {
             await this.writePublished.execute({
                 model,
@@ -68,6 +70,7 @@ export const SyncHelpers = Abstraction.createImplementation({
         WriteLatest,
         WritePublished,
         RemovePublished,
-        SqlEntryOperations
+        GetLatestRevisionByEntryIdStorageOperation,
+        GetPublishedRevisionByEntryIdStorageOperation
     ]
 });
