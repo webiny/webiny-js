@@ -11,9 +11,9 @@ import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
 import { SyncWriterFeature } from "./SyncWriter/feature.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { SqlGroupStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/group/SqlGroupStorageOpsFeature.js";
-import { SqlModelStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/model/SqlModelStorageOpsFeature.js";
-import { PgOsEntryStorageOpsFeature } from "~/PgOsEntryStorageOpsFeature.js";
+import { SqlGroupStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/group/feature.js";
+import { SqlModelStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/model/feature.js";
+import { PgOsEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 export interface IPgOsStorageOperationsConfig {
     knex: any;

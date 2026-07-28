@@ -1,21 +1,21 @@
 import { createFeature } from "@webiny/feature/api/index.js";
-import { EntrySearchOperations } from "~/operations/entry/EntrySearchOperations.js";
+import { EntrySearchOperations } from "./EntrySearchOperations.js";
 
-import { PgOsCreateEntry } from "~/operations/entry/PgOsCreateEntry.js";
-import { PgOsCreateEntryRevisionFrom } from "~/operations/entry/PgOsCreateEntryRevisionFrom.js";
-import { PgOsUpdateEntry } from "~/operations/entry/PgOsUpdateEntry.js";
-import { PgOsPublishEntry } from "~/operations/entry/PgOsPublishEntry.js";
-import { PgOsUnpublishEntry } from "~/operations/entry/PgOsUnpublishEntry.js";
-import { PgOsMoveEntry } from "~/operations/entry/PgOsMoveEntry.js";
-import { PgOsMoveToBin } from "~/operations/entry/PgOsMoveToBin.js";
-import { PgOsRestoreFromBin } from "~/operations/entry/PgOsRestoreFromBin.js";
-import { PgOsDeleteEntry } from "~/operations/entry/PgOsDeleteEntry.js";
-import { PgOsDeleteEntryRevision } from "~/operations/entry/PgOsDeleteEntryRevision.js";
-import { PgOsDeleteMultipleEntries } from "~/operations/entry/PgOsDeleteMultipleEntries.js";
+import { PgOsCreateEntry } from "./PgOsCreateEntry.js";
+import { PgOsCreateEntryRevisionFrom } from "./PgOsCreateEntryRevisionFrom.js";
+import { PgOsUpdateEntry } from "./PgOsUpdateEntry.js";
+import { PgOsPublishEntry } from "./PgOsPublishEntry.js";
+import { PgOsUnpublishEntry } from "./PgOsUnpublishEntry.js";
+import { PgOsMoveEntry } from "./PgOsMoveEntry.js";
+import { PgOsMoveToBin } from "./PgOsMoveToBin.js";
+import { PgOsRestoreFromBin } from "./PgOsRestoreFromBin.js";
+import { PgOsDeleteEntry } from "./PgOsDeleteEntry.js";
+import { PgOsDeleteEntryRevision } from "./PgOsDeleteEntryRevision.js";
+import { PgOsDeleteMultipleEntries } from "./PgOsDeleteMultipleEntries.js";
 
-import { PgOsGetEntry } from "~/operations/entry/PgOsGetEntry.js";
-import { PgOsListEntries } from "~/operations/entry/PgOsListEntries.js";
-import { PgOsGetUniqueFieldValues } from "~/operations/entry/PgOsGetUniqueFieldValues.js";
+import { PgOsGetEntry } from "./PgOsGetEntry.js";
+import { PgOsListEntries } from "./PgOsListEntries.js";
+import { PgOsGetUniqueFieldValues } from "./PgOsGetUniqueFieldValues.js";
 
 import { SqlGetRevisions } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetRevisions.js";
 import { SqlGetRevisionById } from "@webiny/api-headless-cms-sql/operations/entry/SqlGetRevisionById.js";

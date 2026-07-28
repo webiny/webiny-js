@@ -17,9 +17,9 @@ import { CmsDdbEsGroupEntity } from "~/abstractions/CmsDdbEsGroupEntity.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
 import { CmsDdbEsEntryEntity } from "~/abstractions/CmsDdbEsEntryEntity.js";
 import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.js";
-import { DdbEsGroupStorageOpsFeature } from "~/operations/group/DdbEsGroupStorageOpsFeature.js";
-import { DdbEsModelStorageOpsFeature } from "~/operations/model/DdbEsModelStorageOpsFeature.js";
-import { DdbEsEntryStorageOpsFeature } from "~/DdbEsEntryStorageOpsFeature.js";
+import { DdbEsGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { DdbEsModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { DdbEsEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",

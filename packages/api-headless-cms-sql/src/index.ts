@@ -9,9 +9,9 @@ import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { SqlGroupStorageOpsFeature } from "~/operations/group/SqlGroupStorageOpsFeature.js";
-import { SqlModelStorageOpsFeature } from "~/operations/model/SqlModelStorageOpsFeature.js";
-import { SqlEntryStorageOpsFeature } from "~/SqlEntryStorageOpsFeature.js";
+import { SqlGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { SqlModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { SqlEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 interface ISqlStorageOperationsConfig {
     knex: Knex;

@@ -12,9 +12,9 @@ import { CmsDdbTable } from "~/abstractions/CmsDdbTable.js";
 import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
 import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
 import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
-import { DdbGroupStorageOpsFeature } from "~/operations/group/DdbGroupStorageOpsFeature.js";
-import { DdbModelStorageOpsFeature } from "~/operations/model/DdbModelStorageOpsFeature.js";
-import { DdbEntryStorageOpsFeature } from "~/DdbEntryStorageOpsFeature.js";
+import { DdbGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { DdbModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { DdbEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 /**
  * DI-native feature — registers the DynamoDB CMS storage operations directly via the DI container.
