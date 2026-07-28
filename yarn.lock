@@ -12509,34 +12509,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/content-sdk-nextjs@workspace:packages/content-sdk-nextjs":
-  version: 0.0.0-use.local
-  resolution: "@webiny/content-sdk-nextjs@workspace:packages/content-sdk-nextjs"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cms-nextjs": "npm:0.0.0"
-    "@webiny/content-sdk": "npm:0.0.0"
-    "@webiny/website-builder-nextjs": "npm:0.0.0"
-    typescript: "npm:7.0.2"
-    vitest: "npm:^4.1.10"
-  peerDependencies:
-    next: ">=15"
-    react: ">=19"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/content-sdk@npm:0.0.0, @webiny/content-sdk@workspace:packages/content-sdk":
-  version: 0.0.0-use.local
-  resolution: "@webiny/content-sdk@workspace:packages/content-sdk"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cms-sdk": "npm:0.0.0"
-    "@webiny/website-builder-sdk": "npm:0.0.0"
-    typescript: "npm:7.0.2"
-    vitest: "npm:^4.1.10"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/db-dynamodb@npm:0.0.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
@@ -13217,6 +13189,35 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     react: "npm:18.3.1"
     vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk-frontend@npm:0.0.0, @webiny/sdk-frontend@workspace:packages/sdk-frontend":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk-frontend@workspace:packages/sdk-frontend"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-sdk": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
+    "@webiny/website-builder-sdk": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk-nextjs@workspace:packages/sdk-nextjs":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk-nextjs@workspace:packages/sdk-nextjs"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-nextjs": "npm:0.0.0"
+    "@webiny/sdk-frontend": "npm:0.0.0"
+    "@webiny/website-builder-nextjs": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.10"
+  peerDependencies:
+    next: ">=15"
+    react: ">=19"
   languageName: unknown
   linkType: soft
 
