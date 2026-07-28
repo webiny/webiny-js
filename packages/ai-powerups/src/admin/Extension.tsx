@@ -1,6 +1,7 @@
 import React from "react";
 import { AdminConfig, AdminLayout, useRouter, RegisterFeature } from "@webiny/app-admin";
 import { AiPowerUpsSettingsFeature } from "./presentation/AiPowerUpsSettings/index.js";
+import { AiPowerUpsBreadcrumbsFeature } from "~/admin/breadcrumbs/feature.js";
 import { AiPowerUpsSettingsPage } from "./presentation/AiPowerUpsSettings/AiPowerUpsSettingsPage.js";
 import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
 import { CmsContentGeneration } from "~/admin/presentation/CmsContentGeneration/Extension.js";
@@ -44,6 +45,7 @@ const AiPowerUpsSettings = () => {
 export const Extension = () => {
     return (
         <>
+            <RegisterFeature feature={AiPowerUpsBreadcrumbsFeature} />
             <RegisterFeature feature={AiPromptFormFeature} />
             <RegisterFeature feature={AiPowerUpsHeadlessFeatures} />
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />

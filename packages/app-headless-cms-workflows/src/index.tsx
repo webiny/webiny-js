@@ -1,6 +1,7 @@
 import React from "react";
 import { RegisterFeature, Wcp } from "@webiny/app-admin";
 import { CmsWorkflowsEditor } from "~/Routes/index.js";
+import { CmsWorkflowsBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
 import {
     CmsEntryFormScheduleMenuItemAction,
     CmsEntryFormTooltipButton,
@@ -16,6 +17,7 @@ import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsE
 export const CmsWorkflows = () => {
     return (
         <Wcp.CanUseWorkflows>
+            <RegisterFeature feature={CmsWorkflowsBreadcrumbsFeature} />
             <RegisterFeature feature={CmsWorkflowsFeature} />
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />

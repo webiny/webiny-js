@@ -1,6 +1,7 @@
 import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { RegisterFeature } from "@webiny/app-admin";
+import { WebhooksBreadcrumbsFeature } from "~/admin/breadcrumbs/feature.js";
 import { ReactComponent as WebhookIcon } from "@webiny/icons/webhook.svg";
 import { ListWebhooksFeature } from "./features/ListWebhooks/index.js";
 import { GetWebhookFeature } from "./features/getWebhook/index.js";
@@ -26,6 +27,7 @@ export const Webhooks = () => {
     return (
         <>
             {/* Headless features. */}
+            <RegisterFeature feature={WebhooksBreadcrumbsFeature} />
             <RegisterFeature feature={ListWebhooksFeature} />
             <RegisterFeature feature={GetWebhookFeature} />
             <RegisterFeature feature={CreateWebhookFeature} />
