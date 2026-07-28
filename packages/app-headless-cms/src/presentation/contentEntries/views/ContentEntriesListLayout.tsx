@@ -8,7 +8,6 @@ import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/list/ContentEntryListConfig.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
-import { ContentEntriesBreadcrumbs } from "./ContentEntriesBreadcrumbs.js";
 import { ContentEntryFormView } from "./ContentEntryFormView.js";
 import { Table } from "./Table/Table.js";
 import { CmsAdvancedSearch } from "./CmsAdvancedSearch.js";
@@ -17,12 +16,11 @@ import { SidebarFooter } from "./SidebarFooter.js";
 export const ContentEntriesListLayout = observer(() => {
     const presenter = useContentEntriesPresenter();
 
-    return (
-        <>
-            <ContentEntriesBreadcrumbs />
-            {presenter.vm.showingEntry ? <ContentEntryFormView /> : <DocumentList />}
-        </>
-    );
+    if (presenter.vm.showingEntry) {
+        return <ContentEntryFormView />;
+    }
+
+    return <DocumentList />;
 });
 
 const DocumentList = observer(() => {

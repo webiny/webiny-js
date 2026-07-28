@@ -124,39 +124,39 @@ useBreadcrumbs([
 ## Status (implemented)
 
 - DS primitive (+ Storybook story), DI presenter + feature, DI `Breadcrumb` registration,
-  hook + declarative config, header wiring (`to` = string | Route).
+  hook + declarative config (available, unused in v1), header wiring (`to` = string | Route).
+- Static DI adoptions: Mailer, File Manager, Headless CMS entries.
 - `@webiny/admin-ui`, `@webiny/app-admin`, `@webiny/app-admin-ui`, `@webiny/app-file-manager`,
-  `@webiny/app-mailer` all build (TS clean); lint + format clean.
+  `@webiny/app-mailer`, `@webiny/app-headless-cms` all build (TS clean); lint + format clean.
 
-## Reference adoptions
+## Reference adoptions — all static DI (`Breadcrumb`), no React in views
 
-**Mailer (static, DI — preferred)**:
-`packages/app-mailer/src/breadcrumbs/MailerSettingsBreadcrumb.ts` registers a `Breadcrumb`
-for `Routes.Settings` returning `[{ label: "Settings" }, { label: "Mailer" }]`. Registered
-via `MailerBreadcrumbsFeature` + `<RegisterFeature>` in `Extension.tsx`. **No React in the
-view** — `SettingsView` is untouched. Renders `Home › Settings › Mailer`.
+v1 keeps every adopted trail **static** so it's a pure DI `Breadcrumb` (route → fixed
+labels), mirroring the command palette. Each is a `…Breadcrumb.ts` impl + a
+`…BreadcrumbsFeature` registered once at the module root via `<RegisterFeature>`. The views
+are untouched. Dynamic labels (folder path, model name) are deferred — see below.
 
-**File Manager (dynamic, hook)**:
-`packages/app-file-manager/src/presentation/FileManager/FileManagerBreadcrumbs.tsx` publishes
-the folder path (`Home › File Manager › Marketing › Demo`). Mounted in `FileManagerView`
-**page mode only** (`!overlayConfig`, beside `RouteParamsSync`) — the overlay file picker
-has no admin header. Trail built from the folder-tree VM (`getAncestorIds`, reversed to
-root→current) with `to = { route: Routes.List, params: { folderId } }`; `RouteParamsSync`
-mirrors the `folderId` param back into the tree selection. The DI presenter is registered on
-the root container; the FM child container resolves it via parent delegation. A DI
-`Breadcrumb` can't be used here because the folder data lives in a per-mount scoped
-container, not the route.
+- **Mailer** — `app-mailer/src/breadcrumbs/MailerSettingsBreadcrumb.ts`, route
+  `Routes.Settings` → `Home › Settings › Mailer`. Registered in `Extension.tsx`.
+- **File Manager** — `app-file-manager/src/breadcrumbs/FileManagerBreadcrumb.ts`, route
+  `Routes.List` → `Home › File Manager`. Registered in `app.tsx`.
+- **Headless CMS entries** — `app-headless-cms/src/breadcrumbs/ContentEntriesBreadcrumb.ts`,
+  route `Routes.ContentEntries.List` → `Home › Headless CMS › Entries` (Headless CMS links
+  to the models list). Registered in `HeadlessCMS.tsx`.
 
-Caveat: deep-linking straight to a nested `folderId` can render a partial trail until the
-ancestor folders are in the cache (`getAncestorIds` stops at the first missing ancestor).
+### Why static-only for now
+
+Dynamic trails (FM folder path, CMS `<Model>` name) need data that lives in a **per-mount
+scoped child container**, loaded async — a root-registered DI `Breadcrumb` (sync,
+root-resolved) can't reach it. Those require the `useBreadcrumbs` hook to read the scoped
+mobx state and push it to the presenter. The hook + declarative `<Breadcrumbs>` config
+remain available for that, but **have no consumers in v1**.
 
 ## Still open
 
-- **Per-module adoption** — remaining modules (CMS / Page Builder / other Settings). Mailer
-  (DI) and File Manager (hook) done as references for each path.
+- **Dynamic trails** — FM folder path, CMS `<Model>`/entry title, via `useBreadcrumbs` from
+  inside the scoped views. (Earlier hook-based versions existed; dropped in favour of static
+  DI for the first pass.)
+- **Per-module adoption** — Page Builder, other Settings pages, etc.
 - **Overflow (`…`) shortcut** for deep hierarchies.
-- **Unmount ordering caveat:** `useBreadcrumbs` clears on unmount. On a route swap the
-  outgoing view's cleanup and the incoming view's `setTrail` both run in the same commit
-  (cleanup first), so the final trail is correct; a one-frame stale trail is possible in
-  edge cases. Revisit if it shows in practice (e.g. only clear if we were the last writer).
 - **Automated tests.**

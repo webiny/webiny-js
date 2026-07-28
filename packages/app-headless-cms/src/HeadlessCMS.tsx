@@ -41,6 +41,7 @@ import {
 } from "~/presentation/fieldTypes/types/dynamicZone/EditTemplateDialog.js";
 import { ContentEntriesModule } from "~/ContentEntriesModule.js";
 import { CmsPlaygroundTabsFeature } from "~/admin/features/playgroundTabs/feature.js";
+import { CmsBreadcrumbsFeature } from "~/breadcrumbs/feature.js";
 import { PreviewDecorator } from "~/presentation/contentEntries/preview/PreviewDecorator.js";
 import { ModelEditorComponentDiscovery } from "~/presentation/contentEntries/preview/ModelEditorComponentDiscovery.js";
 import { LivePreviewFeature } from "~/presentation/contentEntries/preview/feature.js";
@@ -70,6 +71,7 @@ const HeadlessCMSExtension = () => {
             <RegisterFeature feature={FieldEditorFeature} />
             <RegisterFeature feature={CmsFieldValidatorFeature} />
             <RegisterFeature feature={CmsPlaygroundTabsFeature} />
+            <RegisterFeature feature={CmsBreadcrumbsFeature} />
             <RoutesConfig />
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />
