@@ -17,15 +17,19 @@ const colorPickerClass = "flex flex-wrap gap-[6px] p-sm max-w-[132px] bg-neutral
 
 const swatchClass =
     "flex items-center justify-center size-4 rounded-[2px] cursor-pointer transition-transform hover:scale-110 " +
-    // Subtle border so light/white swatches stay visible (Figma DS white swatch).
-    "border border-neutral-dimmed-darker";
+    // 2px border (Figma DS) so light/white swatches stay visible.
+    "border-2 border-neutral-dimmed-darker";
 
 const swatchSelectedClass = "ring-2 ring-offset-1 ring-[color:var(--border-color-accent-default)]";
 
 const iconPaletteClass = "size-4 text-neutral-strong";
 
 // "No color" swatch: bordered square with a diagonal line, resets the font color.
-const noColorSwatchClass = `${swatchClass} border border-neutral-muted bg-neutral-base relative overflow-hidden`;
+const noColorSwatchClass = `${swatchClass} bg-neutral-base relative overflow-hidden`;
+// No-color border is neutral-muted (Figma), applied inline to win over swatchClass's color.
+const noColorSwatchStyle: React.CSSProperties = {
+    borderColor: "var(--border-color-neutral-muted)"
+};
 const noColorLineStyle: React.CSSProperties = {
     background:
         "linear-gradient(45deg, transparent 44%, var(--border-color-neutral-strong) 44%, var(--border-color-neutral-strong) 56%, transparent 56%)"
@@ -155,6 +159,7 @@ export const LexicalColorPicker = ({
                 trigger={
                     <button
                         className={noColorSwatchClass}
+                        style={noColorSwatchStyle}
                         onClick={() => onChangeComplete(RESET_COLOR)}
                     >
                         <span className={"absolute inset-0"} style={noColorLineStyle} />
