@@ -39,5 +39,5 @@ export const usePreviewLink = () => {
         url.searchParams.set("wb.id", String(id));
         url.searchParams.set("wb.path", path);
         return url.toString();
-    }, [iframeUrl, id, path, documentType, /*previewVariantId*/]);
+    }, [iframeUrl, id, path, documentType /*previewVariantId*/]);
 };

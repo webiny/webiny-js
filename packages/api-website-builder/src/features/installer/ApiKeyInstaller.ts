@@ -16,14 +16,46 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
 
     async install(): Promise<void> {
         const result = await this.createApiKey.execute({
-            name: "Website Builder",
-            description: "Integrate Next.js or custom frontend with Website Builder.",
-            slug: "website-builder",
+            name: "Frontend Integration",
+            description: "Integrate Next.js or any other frontend with Webiny.",
+            slug: "frontend-integration",
+            // Configure read-only permissions for CMS, Website Builder, and Languages
             permissions: [
-                // Experiments and variants are governed by the Website Builder page permission,
-                // so read-only page access is all the frontend key needs to serve/preview them.
-                { name: "$wb.readonly" },
-                { name: "wb.page", rwd: "r" }
+                {
+                    name: "$languages.readonly"
+                },
+                {
+                    name: "languages.*",
+                    rwd: "r"
+                },
+                {
+                    name: "cms.endpoint.read"
+                },
+                {
+                    pw: null,
+                    rwd: "r",
+                    name: "cms.contentModel",
+                    own: false
+                },
+                {
+                    own: false,
+                    name: "cms.contentModelGroup",
+                    rwd: "r",
+                    pw: null
+                },
+                {
+                    rwd: "r",
+                    own: false,
+                    pw: null,
+                    name: "cms.contentEntry"
+                },
+                {
+                    name: "$wb.readonly"
+                },
+                {
+                    name: "wb.*",
+                    rwd: "r"
+                }
             ]
         });
 

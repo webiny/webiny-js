@@ -34,7 +34,6 @@ import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index
 import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
-import { AbTesting } from "~/modules/AbTesting.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
