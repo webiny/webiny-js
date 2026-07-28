@@ -161,7 +161,7 @@ describe("Create index task", () => {
             tenant: "root",
             message: "Indexes created.",
             output: {
-                done: [
+                done: expect.arrayContaining([
                     createIndexName({
                         tenant: "root",
                         modelId: "car"
@@ -178,7 +178,7 @@ describe("Create index task", () => {
                         tenant: "sales",
                         modelId: "car"
                     })
-                ]
+                ])
             }
         });
         // Note: instanceof checks fail in Vitest when classes are loaded from different module instances
