@@ -1,4 +1,4 @@
-export { contentSdk, ContentSdk } from "./ContentSdk.js";
+export { sdk, FrontendSdk } from "./FrontendSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
 
 // Re-export Result and error types from @webiny/sdk.

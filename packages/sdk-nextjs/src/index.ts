@@ -1,5 +1,5 @@
 // Importing from website-builder-nextjs triggers the setHeadersProvider side effect.
-export * from "@webiny/content-sdk";
+export * from "@webiny/sdk-frontend";
 export {
     EntryRenderer,
     useComponents,
@@ -49,7 +49,7 @@ export {
     DEFAULT_VISITOR_COOKIE,
     CONTROL_VARIANT_ID
 } from "@webiny/website-builder-nextjs";
-export type { ComponentGroup } from "@webiny/content-sdk";
+export type { ComponentGroup } from "@webiny/sdk-frontend";
 export type {
     ComponentProps,
     ComponentPropsWithChildren,

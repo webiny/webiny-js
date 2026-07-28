@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/content-sdk",
+  "name": "@webiny/sdk-frontend",
   "version": "0.0.0",
   "type": "module",
   "repository": {
