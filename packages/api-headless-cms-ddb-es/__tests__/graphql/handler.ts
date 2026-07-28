@@ -17,7 +17,7 @@ import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createEntryEntity } from "~/definitions/entry";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { CmsContext } from "~/types";
-import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
+import { CustomOpenSearchIndex } from "~tests/graphql/createIndexConfigurationPlugin";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
@@ -73,7 +73,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, cmsStorage.plugins);
         processLegacyPlugins(container, legacyPlugins);
-        processLegacyPlugins(container, [createIndexConfigurationPlugin()]);
+        container.register(CustomOpenSearchIndex);
 
         HeadlessCmsFeature.register(container, {
             type: "manage",

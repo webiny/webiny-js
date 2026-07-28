@@ -91,27 +91,26 @@ export const HeadlessCmsDdbEsFeature = createFeature({
             // DbRegistry not registered — skip entity registration
         }
 
-        // Event handlers for OpenSearch index lifecycle
-        const indexCreate = container.resolve(CmsEntryOpenSearchIndexCreate);
+        // Event handlers for OpenSearch index lifecycle (resolved lazily so custom
+        // CmsEntryOpenSearchIndex registrations added after this feature are picked up).
         container.registerFactory(ModelAfterCreateEventHandler, () => ({
             async handle(event) {
                 const { model } = event.payload;
-                await indexCreate.execute({ model });
+                await container.resolve(CmsEntryOpenSearchIndexCreate).execute({ model });
             }
         }));
 
         container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
             async handle(event) {
                 const { model } = event.payload;
-                await indexCreate.execute({ model });
+                await container.resolve(CmsEntryOpenSearchIndexCreate).execute({ model });
             }
         }));
 
-        const indexDelete = container.resolve(CmsEntryOpenSearchIndexDelete);
         container.registerFactory(ModelAfterDeleteEventHandler, () => ({
             async handle(event) {
                 const { model } = event.payload;
-                await indexDelete.execute({ model });
+                await container.resolve(CmsEntryOpenSearchIndexDelete).execute({ model });
             }
         }));
 

@@ -1,9 +1,9 @@
 import { getBaseConfiguration } from "@webiny/api-opensearch";
 import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
 import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { createImplementation } from "@webiny/feature/api";
 
-class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
+class CustomOpenSearchIndexImpl implements CmsEntryOpenSearchIndex.Interface {
     public readonly body: OpenSearchIndexRequestBody;
 
     public constructor() {
@@ -14,9 +14,6 @@ class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
                     ...body.mappings,
                     dynamic_templates: (body.mappings?.dynamic_templates || [])
                         .map(template => {
-                            /**
-                             * This part replaces the default numbers mapping with the one containing keyword field.
-                             */
                             const numbers = template["numbers"];
                             if (numbers) {
                                 return {
@@ -57,17 +54,8 @@ class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
     }
 }
 
-export const createIndexConfigurationPlugin = () => {
-    const plugin = createRegisterExtensionPlugin(({ container }) => {
-        container.register(
-            CmsEntryOpenSearchIndex.createImplementation({
-                implementation: CustomOpenSearchIndex,
-                dependencies: []
-            })
-        );
-    });
-
-    plugin.name = "test-cms-entry-opensearch-index-plugin";
-
-    return plugin;
-};
+export const CustomOpenSearchIndex = createImplementation({
+    abstraction: CmsEntryOpenSearchIndex,
+    implementation: CustomOpenSearchIndexImpl,
+    dependencies: []
+});
