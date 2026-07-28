@@ -9,16 +9,8 @@ import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { SqlGetGroup } from "~/operations/group/SqlGetGroup.js";
-import { SqlListGroups } from "~/operations/group/SqlListGroups.js";
-import { SqlCreateGroup } from "~/operations/group/SqlCreateGroup.js";
-import { SqlUpdateGroup } from "~/operations/group/SqlUpdateGroup.js";
-import { SqlDeleteGroup } from "~/operations/group/SqlDeleteGroup.js";
-import { SqlGetModel } from "~/operations/model/SqlGetModel.js";
-import { SqlListModels } from "~/operations/model/SqlListModels.js";
-import { SqlCreateModel } from "~/operations/model/SqlCreateModel.js";
-import { SqlUpdateModel } from "~/operations/model/SqlUpdateModel.js";
-import { SqlDeleteModel } from "~/operations/model/SqlDeleteModel.js";
+import { SqlGroupStorageOpsFeature } from "~/operations/group/SqlGroupStorageOpsFeature.js";
+import { SqlModelStorageOpsFeature } from "~/operations/model/SqlModelStorageOpsFeature.js";
 import { SqlEntryStorageOpsFeature } from "~/SqlEntryStorageOpsFeature.js";
 
 interface ISqlStorageOperationsConfig {
@@ -45,21 +37,8 @@ export const HeadlessCmsSqlFeature = createFeature({
         ModelSchemaManagerFeature.register(container);
         EntryTableManagerFeature.register(container);
 
-        // Group: per-method DI classes
-        container.register(SqlGetGroup);
-        container.register(SqlListGroups);
-        container.register(SqlCreateGroup);
-        container.register(SqlUpdateGroup);
-        container.register(SqlDeleteGroup);
-
-        // Model: per-method DI classes
-        container.register(SqlGetModel);
-        container.register(SqlListModels);
-        container.register(SqlCreateModel);
-        container.register(SqlUpdateModel);
-        container.register(SqlDeleteModel);
-
-        // Entry ops: 22 per-method DI classes
+        SqlGroupStorageOpsFeature.register(container);
+        SqlModelStorageOpsFeature.register(container);
         SqlEntryStorageOpsFeature.register(container);
     }
 });
