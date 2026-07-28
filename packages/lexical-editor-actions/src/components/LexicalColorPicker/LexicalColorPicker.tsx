@@ -144,7 +144,10 @@ export const LexicalColorPicker = ({
                                     ? `${swatchClass} ${swatchSelectedClass}`
                                     : swatchClass
                             }
-                            style={{ backgroundColor: isThemeColor ? "#fff" : value }}
+                            style={{
+                                backgroundColor: isThemeColor ? "#fff" : value,
+                                borderColor: "var(--border-color-neutral-dimmed-darker)"
+                            }}
                             onClick={togglePicker}
                         >
                             <IconPalette className={iconPaletteClass} />
