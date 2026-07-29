@@ -67,25 +67,19 @@ export async function runApiServer(
     // fetches a fresh license rather than reading the build-time plaintext value.
     const runtimeEnv = pickServerRuntimeEnvVariables();
 
-    // The database is mandatory and must be configured via `<Infra.Sqlite filename="..." />` in
-    // webiny.config (which bakes WEBINY_SQL_FILENAME). No implicit default: the child runs from the
-    // disposable app workspace, so a cwd-relative fallback would silently put the DB somewhere that's
-    // wiped on the next build and lose all data. Fail loudly instead.
-    const sqlFilename = process.env.WEBINY_SQL_FILENAME;
-    if (!sqlFilename) {
-        throw new Error(
-            `No database configured for the server hosting type. Add ${'`<Infra.Sqlite filename="./.webiny/server.sqlite" />`'} ` +
-                `to your webiny.config (or set WEBINY_SQL_FILENAME).`
-        );
-    }
-
+    // The database is driver-agnostic here: the DB infra extension in webiny.config (<Infra.Sqlite> /
+    // <Infra.Postgres>) emits its own connection env — an absolute WEBINY_SQL_FILENAME, or the
+    // WEBINY_PG_* set — which is forwarded via the runtime allowlist above. The connection factory the
+    // api build wired in (createSqliteConnection / createPostgresConnection) validates that env at boot
+    // and fails loud if the database is missing or misconfigured, so there's no driver-specific check
+    // in the runner.
     const args = watch ? ["--watch-path", buildDir.toString(), runnerPath] : [runnerPath];
 
     const child = spawn(process.execPath, args, {
         cwd: workspaceApi.toString(),
         // Piped so the caller can prefix/filter + render the output.
         stdio: ["ignore", "pipe", "pipe"],
-        env: { ...runtimeEnv, PORT: port, WEBINY_SQL_FILENAME: sqlFilename }
+        env: { ...runtimeEnv, PORT: port }
     });
 
     const cleanup = () => {
