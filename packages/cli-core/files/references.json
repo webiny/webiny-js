@@ -2,12 +2,12 @@
   "dependencies": [
     {
       "name": "@ai-sdk/anthropic",
-      "version": "4.0.18",
+      "version": "4.0.21",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
       "name": "@ai-sdk/openai",
-      "version": "4.0.18",
+      "version": "4.0.20",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
@@ -27,107 +27,107 @@
     },
     {
       "name": "@aws-sdk/client-apigatewaymanagementapi",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudfront",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-events",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-logs",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cognito-identity-provider",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb-streams",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-eventbridge",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iam",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iot",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-lambda",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-s3",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-scheduler",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sfn",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sqs",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sts",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/credential-providers",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-dynamodb",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-storage",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-presigned-post",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-request-presigner",
-      "version": "3.1093.0",
+      "version": "3.1095.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
@@ -293,7 +293,7 @@
     },
     {
       "name": "@iconify/json",
-      "version": "2.2.504",
+      "version": "2.2.506",
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
@@ -454,7 +454,7 @@
     },
     {
       "name": "@pulumi/aws",
-      "version": "7.38.0",
+      "version": "7.39.0",
       "files": [
         "/packages/project-aws/package.json",
         "/packages/pulumi-sdk/package.json",
@@ -464,7 +464,7 @@
     },
     {
       "name": "@pulumi/pulumi",
-      "version": "3.253.0",
+      "version": "3.254.0",
       "files": [
         "/packages/project-aws/package.json",
         "/packages/pulumi/package.json",
@@ -481,12 +481,12 @@
     },
     {
       "name": "@radix-ui/react-scroll-area",
-      "version": "1.2.16",
+      "version": "1.2.18",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@rsbuild/core",
-      "version": "2.1.7",
+      "version": "2.1.8",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -586,7 +586,7 @@
     },
     {
       "name": "ai",
-      "version": "7.0.35",
+      "version": "7.0.37",
       "files": [
         "/packages/ai-powerups/package.json",
         "/packages/api-core/package.json",
@@ -1078,7 +1078,7 @@
     },
     {
       "name": "fs-extra",
-      "version": "11.3.6",
+      "version": "11.4.0",
       "files": [
         "/scripts/buildPackages/package.json",
         "/scripts/prepublishOnly/package.json",
@@ -1225,7 +1225,7 @@
     },
     {
       "name": "js-yaml",
-      "version": "5.2.1",
+      "version": "5.2.2",
       "files": [
         "/scripts/buildPackages/package.json",
         "/packages/create-webiny-project/package.json",
@@ -1798,7 +1798,7 @@
     },
     {
       "name": "postcss",
-      "version": "8.5.22",
+      "version": "8.5.23",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nuxt/package.json",
@@ -1823,7 +1823,7 @@
     },
     {
       "name": "radix-ui",
-      "version": "1.6.5",
+      "version": "1.6.7",
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/app-website-builder/package.json",
@@ -2132,7 +2132,7 @@
     },
     {
       "name": "sass",
-      "version": "1.101.6",
+      "version": "1.102.0",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -2236,7 +2236,7 @@
     },
     {
       "name": "tar",
-      "version": "7.5.21",
+      "version": "7.5.22",
       "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
     },
     {
@@ -2402,7 +2402,7 @@
     },
     {
       "name": "yargs",
-      "version": "18.0.0",
+      "version": "18.1.0",
       "files": [
         "/scripts/buildPackages/package.json",
         "/scripts/cli/package.json",
@@ -2572,7 +2572,7 @@
     { "name": "@octokit/rest", "version": "22.0.1", "files": ["/package.json"] },
     {
       "name": "@rsbuild/core",
-      "version": "2.1.7",
+      "version": "2.1.8",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2582,17 +2582,17 @@
     },
     {
       "name": "@storybook/addon-a11y",
-      "version": "10.5.3",
+      "version": "10.5.4",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/addon-docs",
-      "version": "10.5.3",
+      "version": "10.5.4",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/react",
-      "version": "10.5.3",
+      "version": "10.5.4",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -3046,7 +3046,7 @@
       ]
     },
     { "name": "fast-glob", "version": "3.3.3", "files": ["/package.json"] },
-    { "name": "fs-extra", "version": "11.3.6", "files": ["/package.json"] },
+    { "name": "fs-extra", "version": "11.4.0", "files": ["/package.json"] },
     { "name": "github-actions-wac", "version": "2.0.0", "files": ["/package.json"] },
     {
       "name": "graphql",
@@ -3149,7 +3149,7 @@
       "version": "6.0.0",
       "files": ["/package.json", "/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
-    { "name": "next", "version": "16.2.11", "files": ["/package.json"] },
+    { "name": "next", "version": "16.2.12", "files": ["/package.json"] },
     {
       "name": "oxfmt",
       "version": "0.60.0",
@@ -3373,13 +3373,13 @@
     },
     {
       "name": "sass",
-      "version": "1.101.6",
+      "version": "1.102.0",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     { "name": "semver", "version": "7.8.5", "files": ["/package.json"] },
     {
       "name": "storybook",
-      "version": "10.5.3",
+      "version": "10.5.4",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -3897,7 +3897,7 @@
     },
     {
       "name": "webpack",
-      "version": "5.108.4",
+      "version": "5.109.0",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nextjs/package.json"
@@ -3914,7 +3914,7 @@
     },
     {
       "name": "yargs",
-      "version": "18.0.0",
+      "version": "18.1.0",
       "files": [
         "/package.json",
         "/packages/project-utils/package.json",
@@ -4378,7 +4378,7 @@
       "name": "fs-extra",
       "versions": [
         {
-          "version": "11.3.6",
+          "version": "11.4.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
@@ -4596,7 +4596,7 @@
       "name": "next",
       "versions": [
         {
-          "version": "16.2.11",
+          "version": "16.2.12",
           "files": [{ "file": "/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -5302,7 +5302,7 @@
       "name": "yargs",
       "versions": [
         {
-          "version": "18.0.0",
+          "version": "18.1.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
@@ -5438,7 +5438,7 @@
       "name": "js-yaml",
       "versions": [
         {
-          "version": "5.2.1",
+          "version": "5.2.2",
           "files": [
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
             { "file": "/packages/create-webiny-project/package.json", "types": ["dependencies"] }
@@ -5807,7 +5807,7 @@
       "name": "@radix-ui/react-scroll-area",
       "versions": [
         {
-          "version": "1.2.16",
+          "version": "1.2.18",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -5934,7 +5934,7 @@
       "name": "radix-ui",
       "versions": [
         {
-          "version": "1.6.5",
+          "version": "1.6.7",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] },
@@ -6050,7 +6050,7 @@
       "name": "@rsbuild/core",
       "versions": [
         {
-          "version": "2.1.7",
+          "version": "2.1.8",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] }
@@ -6074,7 +6074,7 @@
       "name": "@storybook/addon-a11y",
       "versions": [
         {
-          "version": "10.5.3",
+          "version": "10.5.4",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6083,7 +6083,7 @@
       "name": "@storybook/addon-docs",
       "versions": [
         {
-          "version": "10.5.3",
+          "version": "10.5.4",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6092,7 +6092,7 @@
       "name": "@storybook/react",
       "versions": [
         {
-          "version": "10.5.3",
+          "version": "10.5.4",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6146,7 +6146,7 @@
       "name": "sass",
       "versions": [
         {
-          "version": "1.101.6",
+          "version": "1.102.0",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
             { "file": "/packages/build-tools/package.json", "types": ["dependencies"] }
@@ -6158,7 +6158,7 @@
       "name": "storybook",
       "versions": [
         {
-          "version": "10.5.3",
+          "version": "10.5.4",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6176,7 +6176,7 @@
       "name": "ai",
       "versions": [
         {
-          "version": "7.0.35",
+          "version": "7.0.37",
           "files": [
             { "file": "/packages/ai-powerups/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] }
@@ -6348,7 +6348,7 @@
       "name": "@ai-sdk/anthropic",
       "versions": [
         {
-          "version": "4.0.18",
+          "version": "4.0.21",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -6357,7 +6357,7 @@
       "name": "@ai-sdk/openai",
       "versions": [
         {
-          "version": "4.0.18",
+          "version": "4.0.20",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7069,7 +7069,7 @@
       "name": "@iconify/json",
       "versions": [
         {
-          "version": "2.2.504",
+          "version": "2.2.506",
           "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7458,7 +7458,7 @@
       "name": "@aws-sdk/client-apigatewaymanagementapi",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7467,7 +7467,7 @@
       "name": "@aws-sdk/client-cloudfront",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7476,7 +7476,7 @@
       "name": "@aws-sdk/client-cloudwatch-events",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7485,7 +7485,7 @@
       "name": "@aws-sdk/client-cloudwatch-logs",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7494,7 +7494,7 @@
       "name": "@aws-sdk/client-cognito-identity-provider",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7503,7 +7503,7 @@
       "name": "@aws-sdk/client-dynamodb",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7512,7 +7512,7 @@
       "name": "@aws-sdk/client-dynamodb-streams",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7521,7 +7521,7 @@
       "name": "@aws-sdk/client-eventbridge",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7530,7 +7530,7 @@
       "name": "@aws-sdk/client-iam",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7539,7 +7539,7 @@
       "name": "@aws-sdk/client-iot",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7548,7 +7548,7 @@
       "name": "@aws-sdk/client-lambda",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7557,7 +7557,7 @@
       "name": "@aws-sdk/client-s3",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7566,7 +7566,7 @@
       "name": "@aws-sdk/client-scheduler",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7575,7 +7575,7 @@
       "name": "@aws-sdk/client-sfn",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7584,7 +7584,7 @@
       "name": "@aws-sdk/client-sqs",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7593,7 +7593,7 @@
       "name": "@aws-sdk/client-sts",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7602,7 +7602,7 @@
       "name": "@aws-sdk/credential-providers",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7611,7 +7611,7 @@
       "name": "@aws-sdk/lib-dynamodb",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7620,7 +7620,7 @@
       "name": "@aws-sdk/lib-storage",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7629,7 +7629,7 @@
       "name": "@aws-sdk/s3-presigned-post",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7638,7 +7638,7 @@
       "name": "@aws-sdk/s3-request-presigner",
       "versions": [
         {
-          "version": "3.1093.0",
+          "version": "3.1095.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8206,7 +8206,7 @@
       "name": "@pulumi/aws",
       "versions": [
         {
-          "version": "7.38.0",
+          "version": "7.39.0",
           "files": [
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }
@@ -8218,7 +8218,7 @@
       "name": "@pulumi/pulumi",
       "versions": [
         {
-          "version": "3.253.0",
+          "version": "3.254.0",
           "files": [
             { "file": "/packages/project-aws/package.json", "types": ["dependencies"] },
             { "file": "/packages/pulumi/package.json", "types": ["dependencies"] },
@@ -8270,7 +8270,7 @@
       "name": "tar",
       "versions": [
         {
-          "version": "7.5.21",
+          "version": "7.5.22",
           "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8359,7 +8359,7 @@
       "name": "postcss",
       "versions": [
         {
-          "version": "8.5.22",
+          "version": "8.5.23",
           "files": [
             { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
@@ -8398,7 +8398,7 @@
       "name": "webpack",
       "versions": [
         {
-          "version": "5.108.4",
+          "version": "5.109.0",
           "files": [
             {
               "file": "/packages/website-builder-nextjs/package.json",
