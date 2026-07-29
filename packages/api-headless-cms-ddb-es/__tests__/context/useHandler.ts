@@ -18,7 +18,6 @@ import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -51,7 +50,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
     const elasticsearchClient = createTestOpenSearchClient();
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = params.identity ?? defaultIdentity;
     const resolvedPermissions = (params.permissions ?? [{ name: "*" }]) as SecurityPermission[];

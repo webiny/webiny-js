@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -90,8 +89,7 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
     }
 }
 
-export const PluginGroupsProvider = createImplementation({
-    abstraction: ProviderAbstraction,
+export const PluginGroupsProvider = ProviderAbstraction.createImplementation({
     implementation: PluginGroupsProviderImpl,
     dependencies: [
         TenantContext,

@@ -32,6 +32,7 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-storage": "0.0.0",
     "@webiny/api-headless-cms-utils-os": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/api-search-index-tasks": "0.0.0",

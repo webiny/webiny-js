@@ -1,6 +1,6 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { PublishEntryRepository as RepositoryAbstraction } from "./abstractions.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { PublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/PublishEntryStorageOperation.js";
 import { EntryFromStorageTransform, EntryToStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
@@ -18,7 +18,7 @@ class PublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private publishEntryStorage: PublishEntryStorageOperation.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -30,7 +30,7 @@ class PublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
             const storageEntry = await this.entryToStorageTransform(model, entry);
 
             // Publish the entry
-            const result = await this.storageOperations.entries.publish(model, {
+            const result = await this.publishEntryStorage.execute(model, {
                 entry,
                 storageEntry
             });
@@ -45,8 +45,7 @@ class PublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const PublishEntryRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const PublishEntryRepository = RepositoryAbstraction.createImplementation({
     implementation: PublishEntryRepositoryImpl,
-    dependencies: [EntryToStorageTransform, EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryToStorageTransform, EntryFromStorageTransform, PublishEntryStorageOperation]
 });

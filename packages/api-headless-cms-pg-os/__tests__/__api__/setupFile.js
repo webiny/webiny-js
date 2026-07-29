@@ -1,5 +1,5 @@
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { registerPgOsStorageOperations } from "../../src/index.js";
+import { HeadlessCmsPgOsFeature } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import { registerSQLCore } from "@webiny/api-core-sql";
 import { createApiCoreSql } from "@webiny/api-core-sql/createApiCoreSql.js";
@@ -100,7 +100,9 @@ setStorageOps("cms", () => {
         plugins: [
             registerSQLCore({ knex }),
             registerOpenSearchCoreForTests(),
-            ...registerPgOsStorageOperations({ knex, tableNamePrefix }),
+            createRegisterExtensionPlugin(context =>
+                HeadlessCmsPgOsFeature.register(context.container, { knex, tableNamePrefix })
+            ),
             createOrRefreshIndexSubscription,
             fruitModifierPlugin,
             createCmsEntryFieldSortingPlugin({

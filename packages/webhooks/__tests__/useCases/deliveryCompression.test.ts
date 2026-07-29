@@ -4,7 +4,7 @@ import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.
 import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 import { UpdateWebhookDeliveryRepository } from "~/api/features/UpdateWebhookDelivery/abstractions.js";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { StorageOperations } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
 
 describe("Webhook delivery fields are compressed in storage", () => {
@@ -18,7 +18,9 @@ describe("Webhook delivery fields are compressed in storage", () => {
         const triggerWebhook = container.resolve(TriggerWebhookUseCase);
         const updateDelivery = container.resolve(UpdateWebhookDeliveryRepository);
         const getModel = container.resolve(GetModelRepository);
-        const storageOps = container.resolve(StorageOperations);
+        const getLatestRevisionByEntryId = container.resolve(
+            GetLatestRevisionByEntryIdStorageOperation
+        );
 
         const webhookResult = await createWebhook.execute({
             name: "Compression Test",
@@ -51,7 +53,7 @@ describe("Webhook delivery fields are compressed in storage", () => {
         expect(modelResult.isOk()).toBe(true);
         const model = modelResult.value;
 
-        const rawEntry = await storageOps.entries.getLatestRevisionByEntryId(model, {
+        const rawEntry = await getLatestRevisionByEntryId.execute(model, {
             id: deliveryId
         });
         expect(rawEntry).not.toBeNull();

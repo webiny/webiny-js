@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import { ListLatestEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListEntriesUseCase } from "./abstractions.js";
 import type { CmsEntryListParams, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -27,8 +26,7 @@ class ListLatestEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const ListLatestEntriesUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const ListLatestEntriesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListLatestEntriesUseCaseImpl,
     dependencies: [ListEntriesUseCase]
 });

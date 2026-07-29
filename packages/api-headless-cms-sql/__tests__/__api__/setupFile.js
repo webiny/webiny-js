@@ -1,5 +1,5 @@
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { registerSqlStorageOperations } from "../../src/index.js";
+import { HeadlessCmsSqlFeature } from "../../src/index.js";
 import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
 import { registerSQLCore } from "@webiny/api-core-sql";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
@@ -25,7 +25,9 @@ setStorageOps("cms", () => {
         registerSQLCore({
             knex
         }),
-        ...registerSqlStorageOperations({ knex, tableNamePrefix }),
+        createRegisterExtensionPlugin(context =>
+            HeadlessCmsSqlFeature.register(context.container, { knex, tableNamePrefix })
+        ),
         createRegisterExtensionPlugin(({ container }) => {
             const sortingRegistry = container.resolve(FieldSortingRegistry);
             sortingRegistry.register({

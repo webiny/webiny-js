@@ -19,7 +19,6 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { Extension } from "~/api/Extension.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -36,7 +35,7 @@ const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 describe("Languages api extension — registered via the app indirection", () => {
     it("registers the wbyLanguage model through registerExtension + RequestContextInitializer", async () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+        const cmsStorage = getStorageOps("cms");
 
         const capturedCtx: { value?: Record<string, any> } = {};
 

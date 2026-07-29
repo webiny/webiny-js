@@ -1,7 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteMultipleEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { DeleteMultipleEntriesStorageOperation } from "~/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
@@ -13,14 +12,16 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  * - Handle storage errors
  */
 class DeleteMultipleEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
-    public constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(
+        private deleteMultipleEntriesStorage: DeleteMultipleEntriesStorageOperation.Interface
+    ) {}
 
     async execute(
         model: CmsModel,
         entryIds: string[]
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.entries.deleteMultipleEntries(model, {
+            await this.deleteMultipleEntriesStorage.execute(model, {
                 entries: entryIds
             });
             return Result.ok();
@@ -30,8 +31,7 @@ class DeleteMultipleEntriesRepositoryImpl implements RepositoryAbstraction.Inter
     }
 }
 
-export const DeleteMultipleEntriesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const DeleteMultipleEntriesRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteMultipleEntriesRepositoryImpl,
-    dependencies: [StorageOperations]
+    dependencies: [DeleteMultipleEntriesStorageOperation]
 });

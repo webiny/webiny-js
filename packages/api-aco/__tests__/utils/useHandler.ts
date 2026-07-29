@@ -10,7 +10,6 @@ import { AuthenticationContext } from "@webiny/api-core/features/security/authen
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { AcoFeature } from "~/index";
@@ -29,7 +28,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const apiAcoStorage = getStorageOps<any>("aco");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = createIdentity();
     const resolvedPermissions = permissions;
