@@ -26,6 +26,9 @@ const withColorFallback = (color: string, fallback: string): string => {
 // Color menu (Figma Webiny DS): square 16px swatches, 2px radius, 6px gap, 8px padding.
 // max-w keeps ~5 swatches per row and lets it wrap for larger palettes.
 const colorPickerClass = "flex flex-wrap gap-[6px] p-sm max-w-[132px] bg-neutral-base";
+// When the custom ChromePicker is open (allowCustomColors), the compact max-w would clip the
+// picker (the dropdown has overflow:hidden), so widen to fit the picker's natural ~225px width.
+const colorPickerExpandedClass = "flex flex-wrap gap-[6px] p-sm w-[257px] bg-neutral-base";
 
 const swatchClass =
     "flex items-center justify-center size-4 rounded-[2px] cursor-pointer transition-transform hover:scale-110 " +
@@ -45,7 +48,8 @@ const noColorLineStyle: React.CSSProperties = {
         "linear-gradient(45deg, transparent 44%, var(--border-color-neutral-muted) 44%, var(--border-color-neutral-muted) 56%, transparent 56%)"
 };
 
-const chromePickerClass = "w-[270px]! m-[15px_-15px_-15px_-15px]";
+// Natural width, centered on its own full-width row below the swatches, with a top gap.
+const chromePickerClass = "mx-auto mt-sm shadow-none!";
 
 interface LexicalColorPickerProps {
     value: string;
@@ -117,7 +121,7 @@ export const LexicalColorPicker = ({
     }, [themeColors, value]);
 
     return (
-        <div className={colorPickerClass}>
+        <div className={showPicker ? colorPickerExpandedClass : colorPickerClass}>
             {themeColors.map(color => {
                 return (
                     <Tooltip
@@ -175,7 +179,7 @@ export const LexicalColorPicker = ({
                 }
             />
 
-            <div style={showPicker ? showPickerStyle : hidePickerStyle}>
+            <div className={"w-full"} style={showPicker ? showPickerStyle : hidePickerStyle}>
                 <ChromePicker
                     className={chromePickerClass}
                     color={actualSelectedColor}
