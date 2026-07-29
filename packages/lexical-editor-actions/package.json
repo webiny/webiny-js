@@ -11,7 +11,6 @@
     "@webiny/admin-ui": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",
-    "clsx": "^2.1.1",
     "react": "18.3.1",
     "react-color": "^2.19.3",
     "react-dom": "18.3.1"
