@@ -17,11 +17,8 @@ export const LexicalColorPickerDropdown = ({
             buttonClassName="toolbar-item color-picker"
             buttonAriaLabel={"Formatting options for text color"}
             buttonIcon={
-                // The A icon plus a swatch box showing the current font color.
-                <span className="flex items-center gap-[2px]">
-                    <FontColorIcon className="icon" />
-                    <span className="size-4 rounded-[2px]" style={{ backgroundColor: value }} />
-                </span>
+                // Tint the A icon with the current font color.
+                <FontColorIcon className="icon" style={value ? { fill: value } : undefined} />
             }
             stopCloseOnClickSelf={true}
             disabled={false}
