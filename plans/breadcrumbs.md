@@ -58,15 +58,26 @@ view state:
 
 The header always prepends home and marks the last mounted item as current (non-clickable).
 
-## Reference adoptions
+## Adoptions
 
-- **Mailer (static)** — two `<AdminConfig.Breadcrumb>`s at the route in `Extension.tsx` →
-  `Home › Settings › Mailer`. View untouched.
-- **File Manager (dynamic)** —
-  `packages/app-file-manager/src/presentation/FileManager/FileManagerBreadcrumbs.tsx`, an
-  `observer` that emits the folder path (`getAncestorIds`, reversed) as `<Breadcrumb>`s.
-  Mounted in `FileManagerView` **page mode only** (`!overlayConfig`) — the overlay picker has
-  no admin header. Navigation flows through the `folderId` param + `RouteParamsSync`.
+Every Route-based admin page now declares its trail. Two shapes:
+
+**Static** — `<AdminConfig.Breadcrumb>` at the route (no view logic): Mailer, Audit Logs,
+GraphQL/SDK Playground, Workflows, Access Management (Roles/Teams/API Keys), Users/Account,
+Webhooks, Background Tasks, AI Power-Ups, Website Builder Redirects, CMS Models/Model Groups,
+CMS & WB workflow editors.
+
+**Dynamic** — an `observer` component inside the scoped view that emits a `<Breadcrumb>` per
+item from live state:
+
+- **File Manager** — `FileManagerBreadcrumbs.tsx`, folder path. Page mode only
+  (`!overlayConfig`).
+- **CMS entries** — `ContentEntriesBreadcrumbs.tsx` → `Headless CMS › <Model> › <folders>`
+  (model name + folder path from the scoped presenter). Static route crumbs removed.
+- **Website Builder pages** — `WbPagesBreadcrumbs.tsx` → `Website Builder › Pages › <folders>`.
+  Static route crumbs removed.
+
+Navigation flows through route params (`folderId`, `modelId`) + `RouteParamsSync`.
 
 ## Status
 
@@ -76,10 +87,13 @@ The header always prepends home and marks the last mounted item as current (non-
 
 ## Still open
 
-- **Re-adopt the remaining apps** with `<Breadcrumb>` (Audit Logs, GraphQL/SDK Playground,
-  Workflows, Website Builder, Access Management, Users, Webhooks, Background Tasks, AI
-  Power-Ups, CMS models/groups/entries + workflows). Removed with the DI sweep; only Mailer +
-  File Manager re-adopted so far.
 - Editors (CMS model, WB page) are full-screen — no shared header, skip.
 - Overflow (`…`) shortcut for deep trails.
 - Automated tests.
+
+## Notes
+
+- The `Cms/ContentEntries/WorkflowStateList` and `WebsiteBuilder/Pages/WorkflowStateList`
+  routes in `routes.ts` are **dead** — no `Route` element / `getLink` references them, so
+  there's no mounted page to add crumbs to. "Content reviews" renders inside the entries /
+  pages list views (which already carry their trails).

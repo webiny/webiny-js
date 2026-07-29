@@ -107,18 +107,9 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"page"}>
-                    <Route
-                        route={Routes.Pages.List}
-                        element={
-                            <>
-                                <AdminConfig>
-                                    <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
-                                    <AdminConfig.Breadcrumb name={"wb.pages"} label={"Pages"} />
-                                </AdminConfig>
-                                <PagesList />
-                            </>
-                        }
-                    />
+                    {/* Breadcrumbs (Website Builder › Pages › folder path) are emitted
+                        dynamically from within PagesList. */}
+                    <Route route={Routes.Pages.List} element={<PagesList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
                     <Menu
                         name="wb.pages"

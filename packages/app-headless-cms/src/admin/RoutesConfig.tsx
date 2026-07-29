@@ -83,14 +83,8 @@ export const RoutesConfig = () => {
                             <Helmet>
                                 <title>{t`Content`}</title>
                             </Helmet>
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name={"cms"}
-                                    label={"Headless CMS"}
-                                    to={{ route: Routes.ContentModels.List }}
-                                />
-                                <AdminConfig.Breadcrumb name={"cms.entries"} label={"Entries"} />
-                            </AdminConfig>
+                            {/* Breadcrumbs (Headless CMS › Model › folder path) are emitted
+                                dynamically from within the entries view. */}
                             <CompositionScope name={"cms"}>
                                 <ContentEntriesRouteAdapter />
                             </CompositionScope>
