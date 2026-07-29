@@ -1,48 +1,15 @@
-import type { CmsContext, SqlStorageOperationsFactory } from "~/types.js";
-import { createGroupsStorageOperations } from "~/operations/group/index.js";
-import { createModelsStorageOperations } from "~/operations/model/index.js";
-import { SqlEntryOperations } from "~/operations/entry/abstractions/SqlEntryOperations.js";
-import { SqlEntryOperationsFeature } from "~/operations/entry/feature.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
-import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { GroupSchemaManagerFeature } from "~/features/groupSchemaManager/feature.js";
 import { ModelSchemaManagerFeature } from "~/features/modelSchemaManager/feature.js";
 import { EntryTableManagerFeature } from "~/features/entryTableManager/feature.js";
-import { GroupSchemaManager } from "~/features/groupSchemaManager/abstractions.js";
-import { ModelSchemaManager } from "~/features/modelSchemaManager/abstractions.js";
-import { TableNameResolver } from "~/features/tableNameResolver/abstractions.js";
 import { TableNameResolverConfig } from "~/features/tableNameResolver/abstractions.js";
 import type { Knex } from "knex";
 import { TableNameResolverFeature } from "~/features/tableNameResolver/feature.js";
 import { ValueFilterFeature } from "@webiny/db-utils";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
-import { KnexClient } from "@webiny/api-core-sql";
-
-const createSqlStorageOperations: SqlStorageOperationsFactory = params => {
-    const { container } = params;
-
-    const knex = container.resolve(KnexClient);
-    const tableNameResolver = container.resolve(TableNameResolver);
-    const groupSchemaManager = container.resolve(GroupSchemaManager);
-    const modelSchemaManager = container.resolve(ModelSchemaManager);
-
-    const groups = createGroupsStorageOperations(knex, tableNameResolver, groupSchemaManager);
-
-    const models = createModelsStorageOperations(knex, tableNameResolver, modelSchemaManager);
-
-    const entries = container.resolve(SqlEntryOperations);
-
-    return {
-        name: "sql",
-        beforeInit: () => {
-            /* Schema managers handle table creation lazily on first access. */
-        },
-        groups,
-        models,
-        entries
-    };
-};
+import { SqlGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { SqlModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { SqlEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 interface ISqlStorageOperationsConfig {
     knex: Knex;
@@ -50,45 +17,26 @@ interface ISqlStorageOperationsConfig {
     tableNameSuffix?: string;
 }
 
-class SqlStorageOperationsFactoryImpl implements StorageOperationsFactoryAbstraction.Interface {
-    public create(context: CmsContext) {
-        return createSqlStorageOperations({
-            container: context.container
+export const HeadlessCmsSqlFeature = createFeature<ISqlStorageOperationsConfig>({
+    name: "cms.storageOperations.sql",
+    register: (container, config) => {
+        const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
+
+        container.registerInstance(TableNameResolverConfig, {
+            sharedTables,
+            tableNamePrefix: config.tableNamePrefix,
+            tableNameSuffix: config.tableNameSuffix
         });
+
+        TableNameResolverFeature.register(container);
+        ValueFilterFeature.register(container);
+        FilterRegistriesFeature.register(container);
+        GroupSchemaManagerFeature.register(container);
+        ModelSchemaManagerFeature.register(container);
+        EntryTableManagerFeature.register(container);
+
+        SqlGroupStorageOpsFeature.register(container);
+        SqlModelStorageOpsFeature.register(container);
+        SqlEntryStorageOpsFeature.register(container);
     }
-}
-
-export const registerSqlStorageOperations = (config: ISqlStorageOperationsConfig) => {
-    const storageOperationsFeature = createFeature({
-        name: "cms.storageOperations.sql",
-        register: container => {
-            const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
-
-            container.registerInstance(TableNameResolverConfig, {
-                sharedTables,
-                tableNamePrefix: config.tableNamePrefix,
-                tableNameSuffix: config.tableNameSuffix
-            });
-
-            TableNameResolverFeature.register(container);
-            ValueFilterFeature.register(container);
-            FilterRegistriesFeature.register(container);
-            GroupSchemaManagerFeature.register(container);
-            ModelSchemaManagerFeature.register(container);
-            EntryTableManagerFeature.register(container);
-            SqlEntryOperationsFeature.register(container);
-
-            container.registerFactory(StorageOperationsFactoryAbstraction, () => {
-                return new SqlStorageOperationsFactoryImpl();
-            });
-        }
-    });
-
-    const plugin = createRegisterExtensionPlugin(context => {
-        return storageOperationsFeature.register(context.container);
-    });
-
-    plugin.name = "cms.registerSqlStorageOperations";
-
-    return [plugin];
-};
+});

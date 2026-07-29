@@ -1,4 +1,4 @@
-import { type Container, createFeature } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import {
     EntriesBulkAction,
@@ -20,9 +20,9 @@ export interface HcmsBulkActionsFeatureConfig {
     batchSize?: number;
 }
 
-export const HcmsBulkActionsFeature = createFeature<HcmsBulkActionsFeatureConfig>({
+export const HcmsBulkActionsFeature = createFeature<HcmsBulkActionsFeatureConfig | undefined>({
     name: "HcmsBulkActions",
-    register(container: Container, config?: HcmsBulkActionsFeatureConfig) {
+    register(container, config) {
         container.registerInstance(EntriesBulkActionConfig, {
             batchSize: config?.batchSize ?? 100
         });

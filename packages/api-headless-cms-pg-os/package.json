@@ -44,8 +44,9 @@
     "@electric-sql/pglite-socket": "^0.2.7",
     "@webiny/api-sync-pg-to-opensearch": "0.0.0",
     "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.2",
     "@webiny/project-utils": "0.0.0",
-    "@webiny/stdlib": "^0.0.12",
+    "@webiny/stdlib": "^0.0.13",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },

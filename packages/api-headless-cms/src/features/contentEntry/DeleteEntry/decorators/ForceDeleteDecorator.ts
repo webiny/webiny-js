@@ -1,7 +1,7 @@
 import { createDecorator } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "../abstractions.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { DeleteEntryStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
 import type { CmsModel, CmsDeleteEntryOptions } from "~/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
@@ -15,7 +15,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
  */
 class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
     public constructor(
-        private storageOperations: StorageOperations.Interface,
+        private deleteEntryStorage: DeleteEntryStorageOperation.Interface,
         private decoratee: DeleteEntryUseCase.Interface
     ) {}
 
@@ -33,7 +33,7 @@ class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
 
             try {
                 // Not the nicest way to do it, but we need to revisit storage operations anyway.
-                await this.storageOperations.entries.delete(model, {
+                await this.deleteEntryStorage.execute(model, {
                     entry: {
                         id,
                         entryId
@@ -53,5 +53,5 @@ class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
 export const ForceDeleteDecorator = createDecorator({
     abstraction: DeleteEntryUseCase,
     decorator: ForceDeleteDecoratorImpl,
-    dependencies: [StorageOperations]
+    dependencies: [DeleteEntryStorageOperation]
 });

@@ -19,7 +19,6 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { Extension } from "~/api/Extension.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
@@ -50,7 +49,7 @@ const GET_MODEL = /* GraphQL */ `
 describe("Languages model via the CMS manage route (createCmsRoute)", () => {
     it("getContentModel('wbyLanguage') resolves through /cms/manage", async () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+        const cmsStorage = getStorageOps("cms");
 
         const handler = createTestHttpHandler({
             root: container => {
@@ -100,7 +99,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
 
     it("REPRO: an earlier initializer that lists models (like ACO) must NOT hide wbyLanguage", async () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+        const cmsStorage = getStorageOps("cms");
 
         const handler = createTestHttpHandler({
             root: container => {

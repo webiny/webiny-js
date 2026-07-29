@@ -2,7 +2,7 @@ import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features
 import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { registerCmsOpenSearchStorageOperations } from "../../src/index";
+import { HeadlessCmsDdbEsFeature } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
@@ -15,10 +15,6 @@ import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
-
-if (typeof registerCmsOpenSearchStorageOperations !== "function") {
-    throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
-}
 
 const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
@@ -109,7 +105,9 @@ setStorageOps("cms", () => {
                 documentClient
             }),
             registerOpenSearchCoreForTests(),
-            registerCmsOpenSearchStorageOperations(),
+            createRegisterExtensionPlugin(context =>
+                HeadlessCmsDdbEsFeature.register(context.container)
+            ),
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
             fruitModifierPlugin

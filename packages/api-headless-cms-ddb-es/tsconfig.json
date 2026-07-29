@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-storage" },
     { "path": "../api-headless-cms-utils-os" },
     { "path": "../api-opensearch" },
     { "path": "../api-search-index-tasks" },
@@ -34,6 +35,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-storage/*": ["../api-headless-cms-storage/src/*"],
+      "@webiny/api-headless-cms-storage": ["../api-headless-cms-storage/src"],
       "@webiny/api-headless-cms-utils-os/*": ["../api-headless-cms-utils-os/src/*"],
       "@webiny/api-headless-cms-utils-os": ["../api-headless-cms-utils-os/src"],
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],

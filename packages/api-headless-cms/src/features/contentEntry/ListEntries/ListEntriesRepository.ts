@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { ListEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
@@ -10,7 +10,7 @@ import type {
     CmsModel,
     CmsStorageEntry
 } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { ListEntriesStorageOperation } from "~/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/abstractions.js";
 
 /**
@@ -21,7 +21,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private searchableFieldsProvider: SearchableFieldsProvider.Interface,
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private listEntriesStorage: ListEntriesStorageOperation.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
@@ -48,7 +48,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
 
             let result: CmsEntryStorageOperationsListResponse<CmsStorageEntry<T>> | undefined;
             try {
-                result = await this.storageOperations.entries.list<T>(model, listParams);
+                result = await this.listEntriesStorage.execute<T>(model, listParams);
             } catch (ex) {
                 return Result.fail(ex);
             }
@@ -73,8 +73,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const ListEntriesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const ListEntriesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListEntriesRepositoryImpl,
-    dependencies: [SearchableFieldsProvider, EntryFromStorageTransform, StorageOperations]
+    dependencies: [SearchableFieldsProvider, EntryFromStorageTransform, ListEntriesStorageOperation]
 });

@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import {
     GetPublishedRevisionByEntryIdRepository,
     GetPublishedRevisionByEntryIdUseCase as UseCaseAbstraction
@@ -30,8 +30,7 @@ class GetPublishedRevisionByEntryIdUseCaseImpl implements UseCaseAbstraction.Int
     }
 }
 
-export const GetPublishedRevisionByEntryIdUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetPublishedRevisionByEntryIdUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetPublishedRevisionByEntryIdUseCaseImpl,
     dependencies: [GetPublishedRevisionByEntryIdRepository]
 });
