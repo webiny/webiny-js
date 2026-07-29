@@ -18,9 +18,11 @@ import { createInitialQuery } from "~/operations/entry/elasticsearch/initialQuer
 import { applyFullTextSearch } from "~/operations/entry/elasticsearch/fullTextSearch.js";
 import { assignMinimumShouldMatchToQuery } from "~/operations/entry/elasticsearch/assignMinimumShouldMatchToQuery.js";
 import { createElasticsearchSort } from "./sort.js";
-import { CmsEntryOpenSearchBodyBuilder } from "./abstractions.js";
+import { CmsEntryOpenSearchBodyBuilder as CmsEntryOpenSearchBodyBuilderAbstraction } from "./abstractions.js";
 
-class CmsEntryOpenSearchBodyBuilderClass implements CmsEntryOpenSearchBodyBuilder.Interface {
+class CmsEntryOpenSearchBodyBuilderImpl
+    implements CmsEntryOpenSearchBodyBuilderAbstraction.Interface
+{
     public constructor(
         private readonly execFiltering: CmsEntryOpenSearchExecFiltering.Interface,
         private readonly fieldPathFactory: CmsEntryOpenSearchFieldPathFactory.Interface,
@@ -34,7 +36,7 @@ class CmsEntryOpenSearchBodyBuilderClass implements CmsEntryOpenSearchBodyBuilde
         private readonly fieldFactory: OpenSearchFieldFactory.Interface
     ) {}
 
-    public build(params: CmsEntryOpenSearchBodyBuilder.Params): SearchBody {
+    public build(params: CmsEntryOpenSearchBodyBuilderAbstraction.Params): SearchBody {
         const { model } = params;
         const { fields, search: term, where, sort: initialSort, after, limit } = params.params;
 
@@ -133,9 +135,9 @@ class CmsEntryOpenSearchBodyBuilderClass implements CmsEntryOpenSearchBodyBuilde
     }
 }
 
-export const CmsEntryOpenSearchBodyBuilderImpl = CmsEntryOpenSearchBodyBuilder.createImplementation(
-    {
-        implementation: CmsEntryOpenSearchBodyBuilderClass,
+export const CmsEntryOpenSearchBodyBuilder =
+    CmsEntryOpenSearchBodyBuilderAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchBodyBuilderImpl,
         dependencies: [
             CmsEntryOpenSearchExecFiltering,
             CmsEntryOpenSearchFieldPathFactory,
@@ -148,5 +150,4 @@ export const CmsEntryOpenSearchBodyBuilderImpl = CmsEntryOpenSearchBodyBuilder.c
             [CmsEntryOpenSearchFullTextSearch, { multiple: true }],
             OpenSearchFieldFactory
         ]
-    }
-);
+    });

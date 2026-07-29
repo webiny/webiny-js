@@ -1,8 +1,10 @@
 import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import type { OpenSearchQueryBuilderOperators } from "~/operations/entry/elasticsearch/types.js";
-import { CmsEntryOpenSearchOperatorList } from "./abstractions.js";
+import { CmsEntryOpenSearchOperatorList as CmsEntryOpenSearchOperatorListAbstraction } from "./abstractions.js";
 
-class CmsEntryOpenSearchOperatorListClass implements CmsEntryOpenSearchOperatorList.Interface {
+class CmsEntryOpenSearchOperatorListImpl
+    implements CmsEntryOpenSearchOperatorListAbstraction.Interface
+{
     public constructor(
         private readonly registry: OpenSearchQueryBuilderOperatorRegistry.Interface
     ) {}
@@ -15,8 +17,8 @@ class CmsEntryOpenSearchOperatorListClass implements CmsEntryOpenSearchOperatorL
     }
 }
 
-export const CmsEntryOpenSearchOperatorListImpl =
-    CmsEntryOpenSearchOperatorList.createImplementation({
-        implementation: CmsEntryOpenSearchOperatorListClass,
+export const CmsEntryOpenSearchOperatorList =
+    CmsEntryOpenSearchOperatorListAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchOperatorListImpl,
         dependencies: [OpenSearchQueryBuilderOperatorRegistry]
     });

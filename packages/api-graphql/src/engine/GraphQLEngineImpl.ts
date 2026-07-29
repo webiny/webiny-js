@@ -3,7 +3,7 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { GraphQLEngine } from "./abstractions.js";
+import { GraphQLEngine as GraphQLEngineAbstraction } from "./abstractions.js";
 import { GraphQLContextEnhancer } from "./GraphQLContextEnhancer.js";
 import { GraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
@@ -15,7 +15,7 @@ import type { IGraphQLContextualSchema } from "./GraphQLContextualSchema.js";
 import type { GraphQLRequestBody } from "~/types.js";
 import type { GraphQLSchema } from "graphql";
 
-class GraphQLEngineImplClass implements GraphQLEngine.Interface {
+class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
     constructor(
         private composer: IGraphQLSchemaComposer,
         private container: Container,
@@ -119,8 +119,8 @@ class GraphQLEngineImplClass implements GraphQLEngine.Interface {
     }
 }
 
-export const GraphQLEngineImpl = GraphQLEngine.createImplementation({
-    implementation: GraphQLEngineImplClass,
+export const GraphQLEngine = GraphQLEngineAbstraction.createImplementation({
+    implementation: GraphQLEngineImpl,
     dependencies: [
         GraphQLSchemaComposer,
         RequestContainer,

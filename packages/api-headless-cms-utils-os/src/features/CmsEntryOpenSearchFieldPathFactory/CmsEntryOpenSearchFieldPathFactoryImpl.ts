@@ -1,16 +1,16 @@
 import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
-import { CmsEntryOpenSearchFieldPathFactory } from "./abstractions.js";
+import { CmsEntryOpenSearchFieldPathFactory as CmsEntryOpenSearchFieldPathFactoryAbstraction } from "./abstractions.js";
 
-class CmsEntryOpenSearchFieldPathFactoryClass
-    implements CmsEntryOpenSearchFieldPathFactory.Interface
+class CmsEntryOpenSearchFieldPathFactoryImpl
+    implements CmsEntryOpenSearchFieldPathFactoryAbstraction.Interface
 {
     public constructor(
         private readonly valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface
     ) {}
 
     public create(
-        params: CmsEntryOpenSearchFieldPathFactory.Params
-    ): CmsEntryOpenSearchFieldPathFactory.Result {
+        params: CmsEntryOpenSearchFieldPathFactoryAbstraction.Params
+    ): CmsEntryOpenSearchFieldPathFactoryAbstraction.Result {
         const { field, key, value, keyword, originalValue } = params;
         const search = this.valueSearchRegistry.get(field.type);
 
@@ -34,8 +34,8 @@ class CmsEntryOpenSearchFieldPathFactoryClass
     }
 }
 
-export const CmsEntryOpenSearchFieldPathFactoryImpl =
-    CmsEntryOpenSearchFieldPathFactory.createImplementation({
-        implementation: CmsEntryOpenSearchFieldPathFactoryClass,
+export const CmsEntryOpenSearchFieldPathFactory =
+    CmsEntryOpenSearchFieldPathFactoryAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchFieldPathFactoryImpl,
         dependencies: [CmsEntryOpenSearchValueSearchRegistry]
     });

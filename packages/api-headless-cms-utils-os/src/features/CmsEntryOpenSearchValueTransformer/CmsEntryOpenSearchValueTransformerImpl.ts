@@ -1,14 +1,14 @@
 import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
-import { CmsEntryOpenSearchValueTransformer } from "./abstractions.js";
+import { CmsEntryOpenSearchValueTransformer as CmsEntryOpenSearchValueTransformerAbstraction } from "./abstractions.js";
 
-class CmsEntryOpenSearchValueTransformerClass
-    implements CmsEntryOpenSearchValueTransformer.Interface
+class CmsEntryOpenSearchValueTransformerImpl
+    implements CmsEntryOpenSearchValueTransformerAbstraction.Interface
 {
     public constructor(
         private readonly valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface
     ) {}
 
-    public transform(params: CmsEntryOpenSearchValueTransformer.Params): any {
+    public transform(params: CmsEntryOpenSearchValueTransformerAbstraction.Params): any {
         const { field, value } = params;
         const search = this.valueSearchRegistry.get(field.type);
         if (!search) {
@@ -18,8 +18,8 @@ class CmsEntryOpenSearchValueTransformerClass
     }
 }
 
-export const CmsEntryOpenSearchValueTransformerImpl =
-    CmsEntryOpenSearchValueTransformer.createImplementation({
-        implementation: CmsEntryOpenSearchValueTransformerClass,
+export const CmsEntryOpenSearchValueTransformer =
+    CmsEntryOpenSearchValueTransformerAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchValueTransformerImpl,
         dependencies: [CmsEntryOpenSearchValueSearchRegistry]
     });

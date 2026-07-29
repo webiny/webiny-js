@@ -1,6 +1,6 @@
 import type { FieldSortOptions } from "~/types.js";
 import type { SortOrder } from "~/types.js";
-import type { OpenSearchField } from "./abstractions/OpenSearchField.js";
+import type { OpenSearchField as OpenSearchFieldAbstraction } from "./abstractions/OpenSearchField.js";
 
 const keywordLessUnmappedType = ["date", "long"];
 
@@ -13,16 +13,20 @@ const unmappedTypeHasKeyword = (type?: string): boolean => {
     return true;
 };
 
-export class OpenSearchFieldImpl implements OpenSearchField.Interface {
+export class OpenSearchField implements OpenSearchFieldAbstraction.Interface {
     public readonly field: string;
     public readonly path: string;
     public readonly keyword: boolean;
     public readonly unmappedType?: string;
     public readonly sortable: boolean;
     public readonly searchable: boolean;
-    private readonly searchValueFn?: (params: OpenSearchField.SearchValueParams) => any;
+    private readonly searchValueFn?: (params: OpenSearchFieldAbstraction.SearchValueParams) => any;
 
-    public constructor(params: OpenSearchField.Params) {
+    public static create(params: OpenSearchFieldAbstraction.Params) {
+        return new OpenSearchField(params);
+    }
+
+    private constructor(params: OpenSearchFieldAbstraction.Params) {
         this.field = params.field;
         this.path = params.path || params.field;
         this.unmappedType = params.unmappedType;
@@ -57,7 +61,7 @@ export class OpenSearchFieldImpl implements OpenSearchField.Interface {
         return this.path;
     }
 
-    public toSearchValue(params: OpenSearchField.SearchValueParams): any {
+    public toSearchValue(params: OpenSearchFieldAbstraction.SearchValueParams): any {
         if (this.searchValueFn) {
             return this.searchValueFn(params);
         }

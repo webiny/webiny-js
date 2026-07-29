@@ -1,12 +1,14 @@
 import { configurations } from "~/configurations.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { isSharedOpenSearchIndex } from "@webiny/api-opensearch";
-import { CmsEntryOpenSearchIndexDelete } from "./abstractions.js";
+import { CmsEntryOpenSearchIndexDelete as CmsEntryOpenSearchIndexDeleteAbstraction } from "./abstractions.js";
 
-class CmsEntryOpenSearchIndexDeleteClass implements CmsEntryOpenSearchIndexDelete.Interface {
+class CmsEntryOpenSearchIndexDeleteImpl
+    implements CmsEntryOpenSearchIndexDeleteAbstraction.Interface
+{
     public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
 
-    public async execute(params: CmsEntryOpenSearchIndexDelete.Params): Promise<void> {
+    public async execute(params: CmsEntryOpenSearchIndexDeleteAbstraction.Params): Promise<void> {
         if (isSharedOpenSearchIndex()) {
             return;
         }
@@ -33,9 +35,8 @@ class CmsEntryOpenSearchIndexDeleteClass implements CmsEntryOpenSearchIndexDelet
     }
 }
 
-export const CmsEntryOpenSearchIndexDeleteImpl = CmsEntryOpenSearchIndexDelete.createImplementation(
-    {
-        implementation: CmsEntryOpenSearchIndexDeleteClass,
+export const CmsEntryOpenSearchIndexDelete =
+    CmsEntryOpenSearchIndexDeleteAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchIndexDeleteImpl,
         dependencies: [OpenSearchClient]
-    }
-);
+    });

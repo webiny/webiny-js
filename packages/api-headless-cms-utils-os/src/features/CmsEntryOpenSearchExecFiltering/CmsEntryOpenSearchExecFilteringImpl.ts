@@ -8,19 +8,19 @@ import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchF
 import { CmsEntryOpenSearchOperatorList } from "~/features/CmsEntryOpenSearchOperatorList/index.js";
 import { CmsEntryOpenSearchValueTransformer } from "~/features/CmsEntryOpenSearchValueTransformer/index.js";
 import { CmsEntryOpenSearchFieldPathFactory } from "~/features/CmsEntryOpenSearchFieldPathFactory/index.js";
-import { CmsEntryOpenSearchExecFiltering } from "./abstractions.js";
+import { CmsEntryOpenSearchExecFiltering as CmsEntryOpenSearchExecFilteringAbstraction } from "./abstractions.js";
 import { getWhereValues } from "./values.js";
 import { getPopulated } from "./populated.js";
 import { createApplyFiltering } from "./applyFiltering.js";
 
 interface InternalExecParams {
     where: CmsEntryListWhere;
-    query: CmsEntryOpenSearchExecFiltering.Params["query"];
+    query: CmsEntryOpenSearchExecFilteringAbstraction.Params["query"];
     isValues?: boolean;
 }
 
-export class CmsEntryOpenSearchExecFilteringClass
-    implements CmsEntryOpenSearchExecFiltering.Interface
+class CmsEntryOpenSearchExecFilteringImpl
+    implements CmsEntryOpenSearchExecFilteringAbstraction.Interface
 {
     public constructor(
         private readonly operatorList: CmsEntryOpenSearchOperatorList.Interface,
@@ -29,7 +29,7 @@ export class CmsEntryOpenSearchExecFilteringClass
         private readonly filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface
     ) {}
 
-    public execute(params: CmsEntryOpenSearchExecFiltering.Params): void {
+    public execute(params: CmsEntryOpenSearchExecFilteringAbstraction.Params): void {
         const { model, fields, where, query } = params;
 
         const operators = this.operatorList.getAll();
@@ -130,9 +130,9 @@ export class CmsEntryOpenSearchExecFilteringClass
     }
 }
 
-export const CmsEntryOpenSearchExecFilteringImpl =
-    CmsEntryOpenSearchExecFiltering.createImplementation({
-        implementation: CmsEntryOpenSearchExecFilteringClass,
+export const CmsEntryOpenSearchExecFiltering =
+    CmsEntryOpenSearchExecFilteringAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchExecFilteringImpl,
         dependencies: [
             CmsEntryOpenSearchOperatorList,
             CmsEntryOpenSearchValueTransformer,

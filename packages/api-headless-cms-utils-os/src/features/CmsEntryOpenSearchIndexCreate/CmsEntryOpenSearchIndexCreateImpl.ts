@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { configurations } from "~/configurations.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
-import { CmsEntryOpenSearchIndexCreate } from "./abstractions.js";
+import { CmsEntryOpenSearchIndexCreate as CmsEntryOpenSearchIndexCreateAbstraction } from "./abstractions.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 const getLastUsable = (
@@ -19,13 +19,15 @@ const getLastUsable = (
     return usable[usable.length - 1];
 };
 
-class CmsEntryOpenSearchIndexCreateClass implements CmsEntryOpenSearchIndexCreate.Interface {
+class CmsEntryOpenSearchIndexCreateImpl
+    implements CmsEntryOpenSearchIndexCreateAbstraction.Interface
+{
     public constructor(
         private readonly openSearchClient: OpenSearchClient.Interface,
         private readonly indexConfigs: CmsEntryOpenSearchIndex.Interface[]
     ) {}
 
-    public async execute(params: CmsEntryOpenSearchIndexCreate.Params): Promise<void> {
+    public async execute(params: CmsEntryOpenSearchIndexCreateAbstraction.Params): Promise<void> {
         const { model } = params;
         const client = this.openSearchClient.use();
 
@@ -88,9 +90,8 @@ class CmsEntryOpenSearchIndexCreateClass implements CmsEntryOpenSearchIndexCreat
     }
 }
 
-export const CmsEntryOpenSearchIndexCreateImpl = CmsEntryOpenSearchIndexCreate.createImplementation(
-    {
-        implementation: CmsEntryOpenSearchIndexCreateClass,
+export const CmsEntryOpenSearchIndexCreate =
+    CmsEntryOpenSearchIndexCreateAbstraction.createImplementation({
+        implementation: CmsEntryOpenSearchIndexCreateImpl,
         dependencies: [OpenSearchClient, [CmsEntryOpenSearchIndex, { multiple: true }]]
-    }
-);
+    });
