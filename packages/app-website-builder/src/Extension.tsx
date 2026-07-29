@@ -107,7 +107,18 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"page"}>
-                    <Route route={Routes.Pages.List} element={<PagesList />} />
+                    <Route
+                        route={Routes.Pages.List}
+                        element={
+                            <>
+                                <AdminConfig>
+                                    <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
+                                    <AdminConfig.Breadcrumb name={"wb.pages"} label={"Pages"} />
+                                </AdminConfig>
+                                <PagesList />
+                            </>
+                        }
+                    />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
                     <Menu
                         name="wb.pages"
@@ -125,7 +136,21 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"redirect"}>
-                    <Route route={Routes.Redirects.List} element={<RedirectsList />} />
+                    <Route
+                        route={Routes.Redirects.List}
+                        element={
+                            <>
+                                <AdminConfig>
+                                    <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
+                                    <AdminConfig.Breadcrumb
+                                        name={"wb.redirects"}
+                                        label={"Redirects"}
+                                    />
+                                </AdminConfig>
+                                <RedirectsList />
+                            </>
+                        }
+                    />
                     <Menu
                         name="wb.redirects"
                         parent={"wb"}

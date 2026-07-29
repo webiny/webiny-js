@@ -48,6 +48,12 @@ export const AuditLogs = () => {
                         route={Routes.AuditLogsList}
                         element={
                             <AdminLayout title={"Audit Logs - Logs"}>
+                                <AdminConfig>
+                                    <AdminConfig.Breadcrumb
+                                        name={"auditLogs"}
+                                        label={"Audit Logs"}
+                                    />
+                                </AdminConfig>
                                 <AuditLogsListWithConfig>
                                     <LogsView />
                                 </AuditLogsListWithConfig>

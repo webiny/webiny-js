@@ -40,6 +40,10 @@ export const WebsiteBuilderWorkflowsMenu = () => {
                             <Helmet>
                                 <title>{t`Workflows`}</title>
                             </Helmet>
+                            <AdminConfig>
+                                <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
+                                <AdminConfig.Breadcrumb name={"wb.workflows"} label={"Workflows"} />
+                            </AdminConfig>
                             <Loader>
                                 <PageWorkflowsEditorView />
                             </Loader>

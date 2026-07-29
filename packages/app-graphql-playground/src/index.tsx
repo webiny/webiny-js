@@ -67,6 +67,13 @@ const GraphQLPlaygroundExtension = () => {
                     route={Routes.ApiPlayground}
                     element={
                         <AdminLayout title={"GraphQL Playground"}>
+                            <AdminConfig>
+                                <AdminConfig.Breadcrumb name={"dev-tools"} label={"Dev Tools"} />
+                                <AdminConfig.Breadcrumb
+                                    name={"graphql-playground"}
+                                    label={"GraphQL Playground"}
+                                />
+                            </AdminConfig>
                             <PlaygroundPage />
                         </AdminLayout>
                     }

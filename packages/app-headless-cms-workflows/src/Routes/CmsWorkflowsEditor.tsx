@@ -38,6 +38,13 @@ export const CmsWorkflowsEditor = () => {
                             <Helmet>
                                 <title>{t`Workflows`}</title>
                             </Helmet>
+                            <AdminConfig>
+                                <AdminConfig.Breadcrumb name={"cms"} label={"Headless CMS"} />
+                                <AdminConfig.Breadcrumb
+                                    name={"cms.workflows"}
+                                    label={"Workflows"}
+                                />
+                            </AdminConfig>
                             <Loader>
                                 <CmsWorkflowsEditorView />
                             </Loader>

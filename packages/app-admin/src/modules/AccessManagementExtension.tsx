@@ -66,6 +66,13 @@ export const AccessManagementExtension = () => {
                         route={Routes.Roles.List}
                         element={
                             <AdminLayout title={"Access Management - Roles"}>
+                                <AdminConfig>
+                                    <AdminConfig.Breadcrumb
+                                        name={"access-management"}
+                                        label={"Access Management"}
+                                    />
+                                    <AdminConfig.Breadcrumb name={"roles"} label={"Roles"} />
+                                </AdminConfig>
                                 <RolesView />
                             </AdminLayout>
                         }
@@ -77,6 +84,13 @@ export const AccessManagementExtension = () => {
                             route={Routes.Teams.List}
                             element={
                                 <AdminLayout title={"Access Management - Teams"}>
+                                    <AdminConfig>
+                                        <AdminConfig.Breadcrumb
+                                            name={"access-management"}
+                                            label={"Access Management"}
+                                        />
+                                        <AdminConfig.Breadcrumb name={"teams"} label={"Teams"} />
+                                    </AdminConfig>
                                     <TeamsView />
                                 </AdminLayout>
                             }
@@ -88,6 +102,13 @@ export const AccessManagementExtension = () => {
                         route={Routes.ApiKeys.List}
                         element={
                             <AdminLayout title={"Access Management - API Keys"}>
+                                <AdminConfig>
+                                    <AdminConfig.Breadcrumb
+                                        name={"access-management"}
+                                        label={"Access Management"}
+                                    />
+                                    <AdminConfig.Breadcrumb name={"api-keys"} label={"API Keys"} />
+                                </AdminConfig>
                                 <ApiKeysView />
                             </AdminLayout>
                         }
