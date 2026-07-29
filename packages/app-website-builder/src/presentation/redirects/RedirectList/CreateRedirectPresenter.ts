@@ -83,10 +83,8 @@ class CreateRedirectPresenterImpl implements ICreateRedirectPresenter {
                         "**Temporary** (302/307) — browsers check with the server on each visit, so " +
                             "you can change or remove this redirect later.\n\n" +
                             "**Permanent** (301/308) — browsers may cache it indefinitely and keep " +
-                            "redirecting even after you change or delete it."
-                    )
-                    .description(
-                        "Learn more about [HTTP redirections](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Redirections)."
+                            "redirecting even after you change or delete it.\n\n" +
+                            "[Learn more about HTTP redirections](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Redirections)"
                     )
                     .options([
                         { label: "Temporary", value: "temporary" },
