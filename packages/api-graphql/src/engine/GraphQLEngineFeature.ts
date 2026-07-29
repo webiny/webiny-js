@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { GraphQLSchemaComposerFeature } from "~/features/GraphQLSchemaBuilder/feature.js";
-import { GraphQLEngine } from "./GraphQLEngineImpl.js";
+import { GraphQLEngine } from "./GraphQLEngine.js";
 import { GraphQLRoute } from "./GraphQLRoute.js";
 
 export const GraphQLEngineFeature = createFeature({

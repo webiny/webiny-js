@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { CmsEntryOpenSearchExecFiltering } from "./CmsEntryOpenSearchExecFilteringImpl.js";
+import { CmsEntryOpenSearchExecFiltering } from "./CmsEntryOpenSearchExecFiltering.js";
 
 export const CmsEntryOpenSearchExecFilteringFeature = createFeature({
     name: "Cms/Entry/OpenSearch/ExecFilteringFeature",

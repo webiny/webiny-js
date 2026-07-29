@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { CmsEntryOpenSearchFieldPathFactory } from "./CmsEntryOpenSearchFieldPathFactoryImpl.js";
+import { CmsEntryOpenSearchFieldPathFactory } from "./CmsEntryOpenSearchFieldPathFactory.js";
 
 export const CmsEntryOpenSearchFieldPathFactoryFeature = createFeature({
     name: "Cms/Entry/OpenSearch/FieldPathFactoryFeature",

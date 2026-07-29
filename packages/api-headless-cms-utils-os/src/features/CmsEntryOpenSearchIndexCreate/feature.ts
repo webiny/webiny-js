@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { CmsEntryOpenSearchIndexCreate } from "./CmsEntryOpenSearchIndexCreateImpl.js";
+import { CmsEntryOpenSearchIndexCreate } from "./CmsEntryOpenSearchIndexCreate.js";
 
 export const CmsEntryOpenSearchIndexCreateFeature = createFeature({
     name: "Cms/Entry/OpenSearch/IndexCreateFeature",
