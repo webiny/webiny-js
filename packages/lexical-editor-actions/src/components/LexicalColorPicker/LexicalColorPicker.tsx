@@ -20,8 +20,6 @@ const swatchClass =
     // 2px border (Figma DS) so light/white swatches stay visible.
     "border-2 border-neutral-dimmed-darker";
 
-const swatchSelectedClass = "ring-2 ring-offset-1 ring-[color:var(--border-color-accent-default)]";
-
 const iconPaletteClass = "size-4 text-neutral-strong";
 
 // "No color" swatch: bordered square with a diagonal line, resets the font color.
@@ -116,11 +114,7 @@ export const LexicalColorPicker = ({
                         side="bottom"
                         trigger={
                             <button
-                                className={
-                                    color.value === value
-                                        ? `${swatchClass} ${swatchSelectedClass}`
-                                        : swatchClass
-                                }
+                                className={swatchClass}
                                 // Border matches the color so there's no gray ring on
                                 // colored swatches; the gray border only shows for light/white.
                                 style={{ backgroundColor: color.value, borderColor: color.value }}
@@ -139,11 +133,7 @@ export const LexicalColorPicker = ({
                     side="bottom"
                     trigger={
                         <button
-                            className={
-                                value && !isThemeColor
-                                    ? `${swatchClass} ${swatchSelectedClass}`
-                                    : swatchClass
-                            }
+                            className={swatchClass}
                             style={{
                                 backgroundColor: isThemeColor ? "#fff" : value,
                                 borderColor: "var(--border-color-neutral-dimmed-darker)"
