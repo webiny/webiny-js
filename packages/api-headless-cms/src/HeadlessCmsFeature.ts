@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
@@ -86,9 +85,9 @@ export interface HeadlessCmsConfig {
     extraPlugins?: any[];
 }
 
-export const HeadlessCmsFeature = createFeature({
+export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
     name: "HeadlessCms",
-    register(container: Container, config: HeadlessCmsConfig) {
+    register(container, config) {
         const { type } = config;
 
         // Pre-register the CMS SDK namespace schema (Query.cms / Mutation.cms) so it is
