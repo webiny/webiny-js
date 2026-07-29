@@ -108,10 +108,13 @@ class EditRedirectPresenterImpl implements IEditRedirectPresenter {
                     .required("This field is required")
                     .defaultValue("temporary")
                     .help(
-                        "**Temporary** — browsers check with the server on each visit, so you can " +
-                            "change or remove this redirect later.\n\n" +
-                            "**Permanent** — browsers remember it indefinitely and may keep " +
+                        "**Temporary** (302/307) — browsers check with the server on each visit, so " +
+                            "you can change or remove this redirect later.\n\n" +
+                            "**Permanent** (301/308) — browsers may cache it indefinitely and keep " +
                             "redirecting even after you change or delete it."
+                    )
+                    .description(
+                        "Learn more about [HTTP redirections](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Redirections)."
                     )
                     .options([
                         { label: "Temporary", value: "temporary" },
