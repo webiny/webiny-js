@@ -32,6 +32,7 @@
     "@webiny/background-tasks": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
+    "@webiny/languages": "0.0.0",
     "@webiny/lexical-converter": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
