@@ -110,6 +110,7 @@ class EditRedirectPresenterImpl implements IEditRedirectPresenter {
                     .help(
                         "**Temporary** (302/307) — browsers check with the server on each visit, so " +
                             "you can change or remove this redirect later.\n\n" +
+                            "&nbsp;\n\n" +
                             "**Permanent** (301/308) — browsers may cache it indefinitely and keep " +
                             "redirecting even after you change or delete it.\n\n" +
                             "&nbsp;\n\n" +
