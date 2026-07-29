@@ -7,6 +7,7 @@ import { createUiStateProvider } from "./providers/UiStateProvider.js";
 import { createAdminUiStateProvider } from "./providers/AdminUiStateProvider.js";
 import { createUiProviders } from "./providers/UiProviders.js";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext.js";
+import { createDrawersProvider } from "~/components/Drawers/DrawersContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
 import { createRootContainer } from "~/base/createRootContainer.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
@@ -53,6 +54,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     const UiStateProvider = createUiStateProvider();
     const AdminUiStateProvider = createAdminUiStateProvider();
     const DialogsProvider = createDialogsProvider();
+    const DrawersProvider = createDrawersProvider();
     const TenancyProvider = createTenancyProvider();
 
     return (
@@ -67,6 +69,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
                         UIProviders,
                         UiStateProvider,
                         DialogsProvider,
+                        DrawersProvider,
                         IconPickerConfigProvider,
                         AdminUiStateProvider,
                         TenancyProvider
