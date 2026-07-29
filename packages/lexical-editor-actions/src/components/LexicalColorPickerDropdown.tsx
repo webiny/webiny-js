@@ -20,13 +20,7 @@ export const LexicalColorPickerDropdown = ({
                 // The A icon plus a swatch box showing the current font color.
                 <span className="flex items-center gap-[2px]">
                     <FontColorIcon className="icon" />
-                    <span
-                        className="size-4 rounded-[2px] border-2"
-                        style={{
-                            backgroundColor: value,
-                            borderColor: "var(--border-color-neutral-dimmed-darker)"
-                        }}
-                    />
+                    <span className="size-4 rounded-[2px]" style={{ backgroundColor: value }} />
                 </span>
             }
             stopCloseOnClickSelf={true}
