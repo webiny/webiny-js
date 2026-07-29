@@ -280,7 +280,7 @@
   align-items: center;
   flex-direction: row;
   flex-shrink: 0;
-  gap: var(--spacing-sm-extra);
+  gap: var(--spacing-sm);
   background-color: transparent;
   color: var(--text-color-neutral-primary);
   border-radius: var(--radius-sm);

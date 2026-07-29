@@ -11,6 +11,18 @@ import { useRichTextEditor } from "@webiny/lexical-editor";
 // Applied to reset the font color back to the theme/inherited default.
 const RESET_COLOR = "inherit";
 
+// Some theme colors are bare CSS vars (e.g. `var(--wa-theme-color3)`) that may be undefined,
+// which renders black. Inject a fallback so an undefined color renders as a white swatch with
+// a gray border (bg falls back to white, border to gray) instead.
+const BG_FALLBACK = "var(--color-neutral-base)";
+const BORDER_FALLBACK = "var(--border-color-neutral-dimmed-darker)";
+const withColorFallback = (color: string, fallback: string): string => {
+    const trimmed = color.trim();
+    return /^var\(\s*--[^,()]+\)$/.test(trimmed)
+        ? trimmed.replace(/\)$/, `, ${fallback})`)
+        : trimmed;
+};
+
 // Color menu (Figma Webiny DS): square 16px swatches, 2px radius, 6px gap, 8px padding.
 // max-w keeps ~5 swatches per row and lets it wrap for larger palettes.
 const colorPickerClass = "flex flex-wrap gap-[6px] p-sm max-w-[132px] bg-neutral-base";
@@ -30,7 +42,7 @@ const noColorSwatchStyle: React.CSSProperties = {
 };
 const noColorLineStyle: React.CSSProperties = {
     background:
-        "linear-gradient(45deg, transparent 44%, var(--border-color-neutral-strong) 44%, var(--border-color-neutral-strong) 56%, transparent 56%)"
+        "linear-gradient(45deg, transparent 44%, var(--border-color-neutral-muted) 44%, var(--border-color-neutral-muted) 56%, transparent 56%)"
 };
 
 const chromePickerClass = "w-[270px]! m-[15px_-15px_-15px_-15px]";
@@ -117,7 +129,10 @@ export const LexicalColorPicker = ({
                                 className={swatchClass}
                                 // Border matches the color so there's no gray ring on
                                 // colored swatches; the gray border only shows for light/white.
-                                style={{ backgroundColor: color.value, borderColor: color.value }}
+                                style={{
+                                    backgroundColor: withColorFallback(color.value, BG_FALLBACK),
+                                    borderColor: withColorFallback(color.value, BORDER_FALLBACK)
+                                }}
                                 onClick={() => {
                                     onChangeComplete(color.value, color.id);
                                 }}
