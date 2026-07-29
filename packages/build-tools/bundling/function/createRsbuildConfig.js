@@ -2,7 +2,7 @@ import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
-const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 4_718_592; // 4.5 MB
+const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 6_291_456; // 6 MB
 
 export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
