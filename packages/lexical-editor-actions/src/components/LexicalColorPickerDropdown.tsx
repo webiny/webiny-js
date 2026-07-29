@@ -16,7 +16,11 @@ export const LexicalColorPickerDropdown = ({
         <DropDown
             buttonClassName="toolbar-item color-picker"
             buttonAriaLabel={"Formatting options for text color"}
-            buttonIcon={<FontColorIcon className="icon" />}
+            buttonIcon={
+                // Tint the toolbar icon with the current font color so the active color
+                // shows on the button itself, not only inside the dropdown.
+                <FontColorIcon className="icon" style={value ? { fill: value } : undefined} />
+            }
             stopCloseOnClickSelf={true}
             disabled={false}
             showScroll={false}
