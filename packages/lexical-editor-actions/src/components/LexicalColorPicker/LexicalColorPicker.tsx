@@ -1,7 +1,5 @@
 import type { SyntheticEvent } from "react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import styled from "@emotion/styled";
-import { css } from "@emotion/css";
 import type { ColorResult, RGBColor } from "react-color";
 import { ChromePicker } from "react-color";
 import { Tooltip } from "@webiny/admin-ui";
@@ -10,107 +8,44 @@ import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
 import { useRichTextEditor } from "@webiny/lexical-editor";
 
-const ColorPickerStyle = styled("div")({
-    position: "relative",
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    width: 240,
-    padding: 15,
-    backgroundColor: "#fff"
-});
+// Applied to reset the font color back to the theme/inherited default.
+const RESET_COLOR = "inherit";
 
-const ColorBox = styled("div")({
-    cursor: "pointer",
-    width: 40,
-    height: 40,
-    borderRadius: "50%",
-    margin: 5,
-    border: "1px solid var(--mdc-theme-on-background)",
-    padding: 3,
-    boxSizing: "content-box"
-});
-
-const Color = styled("button")({
-    cursor: "pointer",
-    width: 40,
-    height: 40,
-    transition: "transform 0.1s, border 0.2s",
-    borderColor: "transparent",
-    display: "flex",
-    alignItems: "center",
-    borderRadius: "50%",
-    "&::after": {
-        transition: "opacity 0.5s cubic-bezier(0.165, 0.84, 0.44, 1)",
-        content: '""',
-        position: "absolute",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: -1,
-        opacity: 0
-    },
-    "&:hover": {
-        transform: "scale(1.1)",
-        boxShadow: "0 0.25rem 0.125rem 0 rgba(0,0,0,0.05)",
-        "&::after": {
-            opacity: 1
-        }
-    }
-});
-
-const iconPaletteStyle = css({
-    height: 20,
-    width: "100%",
-    marginTop: 1,
-    color: "var(--mdc-theme-secondary)"
-});
-
-const COLORS = {
-    lightGray: "hsla(0, 0%, 97%, 1)",
-    gray: "hsla(300, 2%, 92%, 1)",
-    darkGray: "hsla(0, 0%, 70%, 1)",
-    darkestGray: "hsla(0, 0%, 20%, 1)",
-    black: "hsla(208, 100%, 5%, 1)"
+// Some theme colors are bare CSS vars (e.g. `var(--wa-theme-color3)`) that may be undefined,
+// which renders black. Inject a fallback so an undefined color renders as a white swatch with
+// a gray border (bg falls back to white, border to gray) instead.
+const BG_FALLBACK = "var(--color-neutral-base)";
+const BORDER_FALLBACK = "var(--border-color-neutral-dimmed-darker)";
+const withColorFallback = (color: string, fallback: string): string => {
+    const trimmed = color.trim();
+    return /^var\(\s*--[^,()]+\)$/.test(trimmed)
+        ? trimmed.replace(/\)$/, `, ${fallback})`)
+        : trimmed;
 };
 
-const styles = {
-    selectedColor: css({
-        boxShadow: "inset 0px 0px 0px 10px var(--mdc-theme-secondary)",
-        button: {
-            border: "5px solid var(--mdc-theme-surface)"
-        }
-    }),
-    button: css({
-        cursor: "pointer",
-        height: 30,
-        boxSizing: "border-box",
-        "&:hover:not(:disabled)": { backgroundColor: COLORS.gray },
-        "&:focus:not(:disabled)": {
-            outline: "none"
-        },
-        "&:disabled": {
-            opacity: 0.5,
-            cursor: "not-allowed"
-        },
-        "& svg": {
-            width: 16,
-            height: 16
-        }
-    }),
-    color: css({
-        width: "40px",
-        height: "100%"
-    })
+// Color menu (Figma Webiny DS): square 16px swatches, 2px radius, 6px gap, 8px padding.
+// max-w keeps ~5 swatches per row and lets it wrap for larger palettes.
+const colorPickerClass = "flex flex-wrap gap-[6px] p-sm max-w-[132px] bg-neutral-base";
+
+const swatchClass =
+    "flex items-center justify-center size-4 rounded-[2px] cursor-pointer transition-transform hover:scale-110 " +
+    // 2px border (Figma DS) so light/white swatches stay visible.
+    "border-2 border-neutral-dimmed-darker";
+
+const iconPaletteClass = "size-4 text-neutral-strong";
+
+// "No color" swatch: bordered square with a diagonal line, resets the font color.
+const noColorSwatchClass = `${swatchClass} bg-neutral-base relative overflow-hidden`;
+// No-color border is neutral-muted (Figma), applied inline to win over swatchClass's color.
+const noColorSwatchStyle: React.CSSProperties = {
+    borderColor: "var(--border-color-neutral-muted)"
+};
+const noColorLineStyle: React.CSSProperties = {
+    background:
+        "linear-gradient(45deg, transparent 44%, var(--border-color-neutral-muted) 44%, var(--border-color-neutral-muted) 56%, transparent 56%)"
 };
 
-const chromePickerStyle = css({
-    boxShadow: "none !important",
-    marginTop: "15px",
-    marginLeft: "-15px",
-    width: "240px !important"
-});
+const chromePickerClass = "w-[270px]! m-[15px_-15px_-15px_-15px]";
 
 interface LexicalColorPickerProps {
     value: string;
@@ -120,7 +55,7 @@ interface LexicalColorPickerProps {
     allowCustomColor?: boolean;
 }
 
-const showPickerStyle = { display: "block", width: "100%" };
+const showPickerStyle = { display: "block" };
 const hidePickerStyle = { display: "none" };
 
 export const LexicalColorPicker = ({
@@ -177,60 +112,78 @@ export const LexicalColorPicker = ({
     const themeColors = useMemo(() => theme?.colors ?? [], []);
 
     useEffect(() => {
-        const isThemeColor = themeColors.some(color => color.id === value);
+        const isThemeColor = themeColors.some(color => color.value === value);
         setIsThemeColor(isThemeColor);
     }, [themeColors, value]);
 
     return (
-        <ColorPickerStyle>
+        <div className={colorPickerClass}>
             {themeColors.map(color => {
                 return (
-                    <ColorBox
+                    <Tooltip
                         key={color.id}
-                        className={color.id === value ? styles.selectedColor : ""}
-                    >
-                        <Tooltip
-                            content={<span>{color.label}</span>}
-                            side="bottom"
-                            trigger={
-                                <Color
-                                    style={{ backgroundColor: color.value }}
-                                    onClick={() => {
-                                        onChangeComplete(color.value, color.id);
-                                    }}
-                                />
-                            }
-                        />
-                    </ColorBox>
+                        content={<span>{color.label}</span>}
+                        side="bottom"
+                        trigger={
+                            <button
+                                className={swatchClass}
+                                // Border matches the color so there's no gray ring on
+                                // colored swatches; the gray border only shows for light/white.
+                                style={{
+                                    backgroundColor: withColorFallback(color.value, BG_FALLBACK),
+                                    borderColor: withColorFallback(color.value, BORDER_FALLBACK)
+                                }}
+                                onClick={() => {
+                                    onChangeComplete(color.value, color.id);
+                                }}
+                            />
+                        }
+                    />
                 );
             })}
 
             {allowCustomColor ? (
-                <ColorBox className={value && !isThemeColor ? styles.selectedColor : ""}>
-                    <Tooltip
-                        content={<span>Color picker</span>}
-                        side="bottom"
-                        trigger={
-                            <Color
-                                style={{ backgroundColor: isThemeColor ? "#fff" : value }}
-                                onClick={togglePicker}
-                            >
-                                <IconPalette className={iconPaletteStyle} />
-                            </Color>
-                        }
-                    />
-                </ColorBox>
+                <Tooltip
+                    content={<span>Color picker</span>}
+                    side="bottom"
+                    trigger={
+                        <button
+                            className={swatchClass}
+                            style={{
+                                backgroundColor: isThemeColor ? "#fff" : value,
+                                borderColor: "var(--border-color-neutral-dimmed-darker)"
+                            }}
+                            onClick={togglePicker}
+                        >
+                            <IconPalette className={iconPaletteClass} />
+                        </button>
+                    }
+                />
             ) : null}
+
+            <Tooltip
+                content={<span>No color</span>}
+                side="bottom"
+                trigger={
+                    <button
+                        className={noColorSwatchClass}
+                        style={noColorSwatchStyle}
+                        onClick={() => onChangeComplete(RESET_COLOR)}
+                    >
+                        <span className={"absolute inset-0"} style={noColorLineStyle} />
+                    </button>
+                }
+            />
 
             <div style={showPicker ? showPickerStyle : hidePickerStyle}>
                 <ChromePicker
-                    className={chromePickerStyle}
+                    className={chromePickerClass}
                     color={actualSelectedColor}
                     disableAlpha={true}
                     onChange={onColorChange}
                     onChangeComplete={onColorChangeComplete}
                 />
             </div>
-        </ColorPickerStyle>
+        </div>
     );
 };
