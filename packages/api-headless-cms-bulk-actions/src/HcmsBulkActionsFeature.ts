@@ -1,4 +1,4 @@
-import { type Container, createFeature } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import {
     EntriesBulkAction,
