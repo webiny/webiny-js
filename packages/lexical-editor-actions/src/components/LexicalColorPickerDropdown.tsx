@@ -1,7 +1,6 @@
 import React from "react";
 import { useFontColorPicker, DropDown } from "@webiny/lexical-editor";
 import { LexicalColorPicker } from "~/components/LexicalColorPicker/LexicalColorPicker.js";
-import { ReactComponent as FontColorIcon } from "@webiny/icons/format_color_text.svg";
 
 export interface LexicalColorPickerDropdownProps {
     allowCustomColor?: boolean;
@@ -17,9 +16,14 @@ export const LexicalColorPickerDropdown = ({
             buttonClassName="toolbar-item color-picker"
             buttonAriaLabel={"Formatting options for text color"}
             buttonIcon={
-                // Tint the toolbar icon with the current font color so the active color
-                // shows on the button itself, not only inside the dropdown.
-                <FontColorIcon className="icon" style={value ? { fill: value } : undefined} />
+                // Show the current font color as a swatch box on the toolbar button.
+                <span
+                    className="size-4 rounded-[2px] border-2"
+                    style={{
+                        backgroundColor: value,
+                        borderColor: "var(--border-color-neutral-dimmed-darker)"
+                    }}
+                />
             }
             stopCloseOnClickSelf={true}
             disabled={false}
