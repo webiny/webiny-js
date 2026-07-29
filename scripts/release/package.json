@@ -14,7 +14,7 @@
     "p-retry": "^8.0.0",
     "semver": "^7.8.5",
     "write-json-file": "^7.0.0",
-    "yargs": "^18.0.0"
+    "yargs": "^18.1.0"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.35",

@@ -16,7 +16,7 @@
     "@webiny/di": "^1.0.2",
     "@webiny/feature": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/stdlib": "^0.0.12",
+    "@webiny/stdlib": "^0.0.13",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^5.6.2",
     "ci-info": "^4.4.0",
@@ -33,7 +33,7 @@
     "semver": "^7.8.5",
     "type-fest": "^5.8.0",
     "write-json-file": "^7.0.0",
-    "yargs": "^18.0.0",
+    "yargs": "^18.1.0",
     "zod": "4.4.3"
   },
   "devDependencies": {
