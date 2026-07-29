@@ -1,11 +1,16 @@
 import { configurations } from "~/configurations.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import { CmsEntryOpenSearchIndexDelete } from "./abstractions.js";
 
 class CmsEntryOpenSearchIndexDeleteClass implements CmsEntryOpenSearchIndexDelete.Interface {
     public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
 
     public async execute(params: CmsEntryOpenSearchIndexDelete.Params): Promise<void> {
+        if (isSharedOpenSearchIndex()) {
+            return;
+        }
+
         const { model } = params;
         const client = this.openSearchClient.use();
 
