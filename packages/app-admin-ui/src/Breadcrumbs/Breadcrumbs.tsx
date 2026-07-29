@@ -1,6 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useAdminConfig } from "@webiny/app-admin";
-import type { BreadcrumbLink } from "@webiny/app-admin";
+import type { BreadcrumbConfig, BreadcrumbLink } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { RouterPresenter } from "@webiny/app/features/router/abstractions.js";
@@ -18,6 +18,24 @@ const HOME_PATH = "/";
 export const Breadcrumbs = () => {
     const { breadcrumbs } = useAdminConfig();
     const container = useContainer();
+
+    // Keep the previous trail visible while a newly-entered view loads its own (dynamic
+    // views mount their breadcrumbs only after their data resolves, which would otherwise
+    // flash an empty trail). The retained trail is cleared on the dashboard, which is
+    // legitimately breadcrumb-less.
+    const lastTrail = useRef<BreadcrumbConfig[]>([]);
+    const onDashboard = container.resolve(RouterPresenter).vm.currentRoute?.path === HOME_PATH;
+
+    let trail: BreadcrumbConfig[];
+    if (breadcrumbs.length > 0) {
+        lastTrail.current = breadcrumbs;
+        trail = breadcrumbs;
+    } else if (onDashboard) {
+        lastTrail.current = [];
+        trail = [];
+    } else {
+        trail = lastTrail.current;
+    }
 
     // Resolves a `to` (string or Route + params) to a concrete href.
     const resolveLink = useCallback(
@@ -41,8 +59,8 @@ export const Breadcrumbs = () => {
     // Leading home entry always navigates back to the dashboard.
     const home = createHomeBreadcrumbItem(() => navigateTo(HOME_PATH));
 
-    const locations = breadcrumbs.map<BreadcrumbsItem>((item, index) => {
-        const isCurrent = index === breadcrumbs.length - 1;
+    const locations = trail.map<BreadcrumbsItem>((item, index) => {
+        const isCurrent = index === trail.length - 1;
         const to = item.to;
         return {
             label: item.label,
