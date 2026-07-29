@@ -53,12 +53,15 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // NodeHttpFeature registers the event type + HttpFeature (router) + the routing terminal.
             NodeHttpFeature.register(rootContainer);
 
-            // ── Auth + tenant (extract → shared load) ──────────────────
+            // ── Tenant + auth (extract → shared load) ──────────────────
             // registerDecorator applies LATER registrations as the OUTER wrapper (whose execute()
-            // runs first). Identity must be established before tenant, so register tenant first
-            // (inner) and identity last (outer) → identity runs, then tenant, then the router.
-            rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
+            // runs first). TENANT must be established before IDENTITY: API-key authentication resolves
+            // the key by tenant partition (ApiKeysRepository reads TenantContext.getTenant()), so
+            // identity depends on the tenant; the reverse is not true (RequestTenantLoader has no
+            // identity dependency). Register identity first (inner) and tenant last (outer) → tenant
+            // runs, then identity, then the router.
             rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
+            rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer);
