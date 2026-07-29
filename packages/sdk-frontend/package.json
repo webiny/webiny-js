@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/content-sdk",
+  "name": "@webiny/sdk-frontend",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/cms-sdk": "0.0.0",
+    "@webiny/sdk": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0"
   },
   "devDependencies": {
@@ -26,5 +27,8 @@
   },
   "webiny": {
     "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

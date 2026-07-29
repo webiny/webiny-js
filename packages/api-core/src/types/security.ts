@@ -185,7 +185,7 @@ export interface StorageApiKey {
     name: string;
     slug: string;
     description: string;
-    token: string;
+    token: `wat_${string}`;
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;

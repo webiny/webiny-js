@@ -11,9 +11,9 @@ export interface CmsConfig {
 }
 
 export interface ContentSdkConfig {
-    apiHost: string;
-    apiKey: string;
-    apiTenant?: string;
+    endpoint: string;
+    token: string;
+    tenant?: string;
     preview?: boolean;
     fetch?: typeof fetch;
     cms?: CmsConfig;

@@ -2,6 +2,7 @@ import set from "lodash/set";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languages.js";
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
@@ -28,6 +29,7 @@ interface TranslatedData {
 
 class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
     constructor(
+        private getDefaultLanguage: GetDefaultLanguageUseCase.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private encryption: Encryption.Interface,
@@ -43,7 +45,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         }
 
         const page = result.value;
-        const sourceLanguage = page.properties["sourcePage"] ? page.properties["language"] : "en";
+        const sourceLanguage = await this.resolveSourceLanguage(page);
 
         const translations = await this.translate(page, sourceLanguage, params.languageCode);
         if (!translations) {
@@ -57,6 +59,19 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         }
 
         return Result.ok(updateResult.value);
+    }
+
+    private async resolveSourceLanguage(page: WbPage): Promise<string> {
+        if (page.properties["sourcePage"]) {
+            return page.properties["language"] ?? "en";
+        }
+
+        const result = await this.getDefaultLanguage.execute();
+        if (result.isOk()) {
+            return result.value.code;
+        }
+
+        return "en";
     }
 
     private async translate(
@@ -182,5 +197,12 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
 
 export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
     decorator: WbTranslatePageDecoratorImpl,
-    dependencies: [GetSettingsUseCase, Ai, Encryption, LexicalParser, UpdatePageRepository]
+    dependencies: [
+        GetDefaultLanguageUseCase,
+        GetSettingsUseCase,
+        Ai,
+        Encryption,
+        LexicalParser,
+        UpdatePageRepository
+    ]
 });
