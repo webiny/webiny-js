@@ -1,3 +1,4 @@
+import type { Webiny } from "@webiny/sdk";
 import type {
     CmsSdkConfig,
     CmsEntryValues,
@@ -47,14 +48,14 @@ export class ContentSdk implements IContentSdk {
     protected sdk?: InternalContentSdk;
     private lastConfig?: string;
 
-    init(config: CmsSdkConfig): void {
+    init(config: CmsSdkConfig, webiny: Webiny): void {
         const configHash = JSON.stringify(config);
         if (this.lastConfig && this.lastConfig === configHash) {
             return;
         }
         this.lastConfig = configHash;
 
-        const liveSdk = new LiveSdk(config);
+        const liveSdk = new LiveSdk(config, webiny);
 
         let editingSdk: EditingSdk | undefined;
         if (environment.isEditing()) {

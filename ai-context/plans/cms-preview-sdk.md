@@ -57,7 +57,7 @@ The thinnest possible end-to-end slice: a CMS model gets a preview URL setting, 
 
 **API side**: Add `previewUrl` to the `CmsModel.settings` schema. The model editor UI gets a "Preview URL" text field in the model settings area. The value is persisted and returned in `getContentModel` responses.
 
-**SDK packages**: Create `@webiny/cms-sdk` with the core architecture — `ContentSdk` singleton with `init(config)`, environment detection (`isClient`, `isServer`, `isEditing`), and a data provider that wraps the existing `@webiny/sdk` `CmsSdk`. The SDK always passes `["id", "entryId", "values.*"]` to `getEntry`. Create `@webiny/cms-nextjs` as a thin Next.js wrapper (headers provider, re-exports).
+**SDK packages**: Create `@webiny/cms-sdk` with the core architecture — `FrontendSdk` singleton with `init(config)`, environment detection (`isClient`, `isServer`, `isEditing`), and a data provider that wraps the existing `@webiny/sdk` `CmsSdk`. The SDK always passes `["id", "entryId", "values.*"]` to `getEntry`. Create `@webiny/cms-nextjs` as a thin Next.js wrapper (headers provider, re-exports).
 
 **Next.js demo**: A basic Next.js page fetches an entry via the SDK and renders scalar fields (title, slug, body) as plain HTML. No DZ component rendering yet — DZ values are accessible as raw data.
 

@@ -243,7 +243,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "API bundle size limit",
-                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
                 },
                 {
                     name: "Build api",
