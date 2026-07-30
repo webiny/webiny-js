@@ -159,7 +159,9 @@ const getEnvVars = () => {
     // Provide values one by one, not as a single process.env object,
     // because otherwise plugin will put a big JSON object every time process.env is used in code.
     // This way minifier also removes redundant code on prod (like if(process.env.NODE_ENV === 'development')).
-    const envVarsAsStrings = {};
+    const envVarsAsStrings = {
+        "process.env": "{}"
+    };
     for (const key of Object.keys(raw)) {
         envVarsAsStrings[`process.env.${key}`] = JSON.stringify(raw[key]);
     }
