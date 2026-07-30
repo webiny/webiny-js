@@ -64,6 +64,11 @@ export { ToolsFeature } from "./features/tools/feature.js";
 export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
 
+export { DateFormatter } from "./features/dateFormatter/abstractions.js";
+export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";
+export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
+export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
+
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
