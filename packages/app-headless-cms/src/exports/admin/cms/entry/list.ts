@@ -11,3 +11,14 @@ export type { IGetEntryGraphQLFieldSelection } from "~/features/contentEntry/get
 // on the API side (webiny/api/cms/entry).
 export { BulkActionFeature } from "~/features/contentEntry/bulkAction/feature.js";
 export { BulkActionUseCase } from "~/features/contentEntry/bulkAction/abstractions.js";
+
+// Code-based ("headless") bulk actions. Implement `CmsBulkAction` and register it with
+// `CmsBulkAction.createImplementation({ implementation, dependencies })` + `<RegisterFeature>`;
+// the framework generates the toolbar button and websocket notification handlers.
+export { CmsBulkAction } from "~/features/contentEntry/bulkAction/CmsBulkAction/index.js";
+export type {
+    ICmsBulkAction,
+    BulkActionCtx,
+    ConfirmSpec,
+    NotificationSpec
+} from "~/features/contentEntry/bulkAction/CmsBulkAction/index.js";

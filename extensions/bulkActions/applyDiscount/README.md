@@ -7,15 +7,13 @@ One artifact spans all three posts.
 
 Organized by side (`api/` + `admin/`), with a full-stack entry component:
 
-| File                                   | Role                                                                                                                                   |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `ApplyDiscountExtension.tsx`           | **Entry.** Full-stack component — wires up the API and Admin extensions below.                                                         |
-| `api/ApplyDiscountBulkAction.ts`       | **API.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. Emits a websocket message per processed entry. |
-| `admin/Extension.tsx`                  | **Admin entry.** Registers the bulk-action button + the websocket listener.                                                            |
-| `admin/ApplyDiscountAction.tsx`        | **Admin.** The bulk-action button that triggers the task.                                                                              |
-| `admin/DiscountAppliedEventHandler.ts` | **Admin.** Websocket listener that toasts when a discount is applied.                                                                  |
-| `../models/ProductModel.ts`            | The demo CMS model (`product`, with `price` + `onSale`).                                                                               |
-| `../models/ProductCategoryModel.ts`    | Referenced by Product; registered so the category picker isn't dangling.                                                               |
+| File                                | Role                                                                                                                                                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ApplyDiscountExtension.tsx`        | **Entry.** Full-stack component — wires up the API and Admin extensions below.                                                                                                                                                       |
+| `api/ApplyDiscountBulkAction.ts`    | **API.** A custom `EntriesBulkAction`. Webiny auto-generates a background task from it. Emits a websocket message per processed entry.                                                                                               |
+| `admin/ApplyDiscountBulkAction.tsx` | **Admin.** A single code-based `CmsBulkAction` class (button, confirm, trigger, notification), registered via `RegisterFeature`. The framework generates the toolbar button and the websocket toast handler — no hand-written React. |
+| `../models/ProductModel.ts`         | The demo CMS model (`product`, with `price` + `onSale`).                                                                                                                                                                             |
+| `../models/ProductCategoryModel.ts` | Referenced by Product; registered so the category picker isn't dangling.                                                                                                                                                             |
 
 Registered in `webiny.config.tsx` as `<ApplyDiscountExtension />` (plus the two model
 `<Api.Extension>` entries under `extensions/models/`).
@@ -71,7 +69,7 @@ triggered the action (`WebsocketsSendToIdentityUseCase`), and the admin toasts i
 ```
 [processData] → sendToIdentity({ action: "cms.product.discountApplied", data: { id, price, percent } })
      ▼
-[DiscountAppliedEventHandler] (WebsocketEventHandler) → notifications.success(...)
+[generated WebsocketEventHandler] (from CmsBulkAction.notifications) → notifications.success(...)
 ```
 
 Mirrors the File Manager AI-enrichment pattern. Fires per processed entry, so toasts pop

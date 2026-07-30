@@ -7,3 +7,10 @@ export { GetEntryGraphQLFieldSelection } from "@webiny/app-headless-cms/features
 export type { IGetEntryGraphQLFieldSelection } from "@webiny/app-headless-cms/features/contentEntry/getEntry/abstractions.js";
 export { BulkActionFeature } from "@webiny/app-headless-cms/features/contentEntry/bulkAction/feature.js";
 export { BulkActionUseCase } from "@webiny/app-headless-cms/features/contentEntry/bulkAction/abstractions.js";
+export { CmsBulkAction } from "@webiny/app-headless-cms/features/contentEntry/bulkAction/CmsBulkAction/index.js";
+export type {
+    ICmsBulkAction,
+    BulkActionCtx,
+    ConfirmSpec,
+    NotificationSpec
+} from "@webiny/app-headless-cms/features/contentEntry/bulkAction/CmsBulkAction/index.js";

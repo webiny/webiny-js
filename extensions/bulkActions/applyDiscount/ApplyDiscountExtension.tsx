@@ -13,7 +13,9 @@ export const ApplyDiscountExtension = () => {
             <Api.Extension
                 src={"@/extensions/bulkActions/applyDiscount/api/ApplyDiscountBulkAction.ts"}
             />
-            <Admin.Extension src={"@/extensions/bulkActions/applyDiscount/admin/Extension.tsx"} />
+            <Admin.Extension
+                src={"@/extensions/bulkActions/applyDiscount/admin/ApplyDiscountBulkAction.tsx"}
+            />
         </>
     );
 };

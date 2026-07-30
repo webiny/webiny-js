@@ -19,6 +19,7 @@ import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
+import { IconRegistryFeature } from "~/features/icons/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -76,6 +77,8 @@ export function createRootContainer() {
     ConfirmationFeature.register(container);
 
     ClipboardFeature.register(container);
+
+    IconRegistryFeature.register(container);
 
     return container;
 }

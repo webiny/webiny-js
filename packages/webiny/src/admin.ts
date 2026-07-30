@@ -24,6 +24,8 @@ export {
     useBulkActionDialog
 } from "@webiny/app-admin/components/BulkActions/index.js";
 export { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+export { IconRegistry, registerIcon } from "@webiny/app-admin/features/icons/index.js";
+export type { IIconRegistry, IconComponent } from "@webiny/app-admin/features/icons/index.js";
 export {
     Command,
     CommandPalettePresenter

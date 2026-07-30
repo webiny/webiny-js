@@ -11881,6 +11881,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
+    "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"

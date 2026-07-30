@@ -35,6 +35,7 @@ import {
     CellStatus
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
+import { CmsBulkActionsRegistrar } from "~/features/contentEntry/bulkAction/CmsBulkAction/index.js";
 import { FilterByStatus } from "~/admin/components/ContentEntries/FilterByStatus.js";
 import { CmsTrashBin } from "~/presentation/contentEntries/trashBin/CmsTrashBin.js";
 import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryConfirmDialog.js";
@@ -85,6 +86,8 @@ export const ContentEntriesModule = () => {
                 <Browser.Sidebar.Footer name={"trashBin"} element={<CmsTrashBin />} />
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
+                {/* Code-based (headless) bulk actions registered via CmsBulkAction. */}
+                <CmsBulkActionsRegistrar />
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
