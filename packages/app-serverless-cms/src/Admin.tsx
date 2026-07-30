@@ -7,7 +7,6 @@ import { FileManager } from "@webiny/app-file-manager/app.js";
 import { GraphQLPlayground } from "@webiny/app-graphql-playground";
 import { SdkPlayground } from "@webiny/app-sdk-playground";
 import { imagePlugin } from "@webiny/app/plugins/index.js";
-import { createApolloClient } from "./apolloClientFactory.js";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Extension as MailerSettings } from "@webiny/app-mailer";
@@ -40,7 +39,7 @@ const App = (props: AdminProps) => {
         <BaseAdmin createLegacyPlugins={createLegacyPlugins}>
             <AdminUI />
             <SystemInstallerProvider />
-            <GraphQLPlayground createApolloClient={createApolloClient} />
+            <GraphQLPlayground />
             <SdkPlayground />
             <Websockets />
             <RecordLocking />
