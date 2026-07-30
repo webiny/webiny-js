@@ -12198,17 +12198,14 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
     graphql: "npm:^16.14.2"
     history: "npm:^5.3.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.16.1"
-    nanoid: "npm:^6.0.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
-    ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.8.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
@@ -26678,15 +26675,6 @@ __metadata:
   version: 1.3.0
   resolution: "ts-expect@npm:1.3.0"
   checksum: 10/3f33ba17f9cdad550e9b12a23d78b19836d4fd5741da590c25426ea31ceb8f1765feeeeef2c529bab3e2350b5f9ce5fbbb207012db2c7c4b4b116d1b7fed7ec5
-  languageName: node
-  linkType: hard
-
-"ts-invariant@npm:^0.10.3":
-  version: 0.10.3
-  resolution: "ts-invariant@npm:0.10.3"
-  dependencies:
-    tslib: "npm:^2.1.0"
-  checksum: 10/bb07d56fe4aae69d8860e0301dfdee2d375281159054bc24bf1e49e513fb0835bf7f70a11351344d213a79199c5e695f37ebbf5a447188a377ce0cd81d91ddb5
   languageName: node
   linkType: hard
 
