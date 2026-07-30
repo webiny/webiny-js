@@ -28,6 +28,27 @@ describe("SecureHeadersDecorator", () => {
         expect(result.headers?.["access-control-allow-methods"]).toContain("POST");
     });
 
+    it("should allow every custom request header Webiny clients send", async () => {
+        // A header missing from this list makes the browser fail the preflight CORS check and never
+        // send the actual request — which surfaces as an opaque "Failed to fetch", not a 4xx.
+        const container = new Container();
+        container.register(HttpRouterImpl).inSingletonScope();
+        container.registerDecorator(SecureHeadersDecorator);
+        const router = container.resolve(HttpRouter);
+
+        const result = await router.route(req("OPTIONS", "/stream/x", "https://example.com"));
+        const allowed = result.headers?.["access-control-allow-headers"] ?? "";
+
+        for (const header of [
+            "authorization",
+            "x-webiny-authorization",
+            "x-tenant",
+            "content-type"
+        ]) {
+            expect(allowed).toContain(header);
+        }
+    });
+
     it("should add CORS headers to normal responses", async () => {
         const container = new Container();
 

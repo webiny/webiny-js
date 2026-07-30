@@ -8,6 +8,10 @@ const ALLOWED_HEADERS = [
     "content-type",
     "x-i18n-locale",
     "x-tenant",
+    // Streaming clients send the auth token here rather than in `Authorization`, which SigV4 occupies
+    // when a Lambda Function URL sits behind CloudFront with Origin Access Control. Omitting it makes
+    // the browser fail the preflight CORS check and never send the actual request.
+    "x-webiny-authorization",
     "x-apollo-tracing",
     "apollo-query-plan-experimental"
 ].join(", ");
