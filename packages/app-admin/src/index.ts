@@ -64,6 +64,16 @@ export { ToolsFeature } from "./features/tools/feature.js";
 export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
 
+export { StringFormatter } from "./features/stringFormatter/abstractions.js";
+export type { IStringFormatter } from "./features/stringFormatter/abstractions.js";
+export { StringFormatterFeature } from "./features/stringFormatter/feature.js";
+export { useStringFormatter } from "./features/stringFormatter/useStringFormatter.js";
+
+// Fine-grained, decoratable transform behind StringFormatter.slugify(). Decorate this to change slug
+// logic without touching the rest of the string formatter.
+export { Slugify } from "./features/slugify/abstractions.js";
+export type { ISlugify } from "./features/slugify/abstractions.js";
+
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
