@@ -38,17 +38,27 @@ export interface IAwsLambdaGlobal {
 export function getAwsLambdaGlobal(): IAwsLambdaGlobal {
     const global = (globalThis as any).awslambda as IAwsLambdaGlobal | undefined;
 
-    if (!global) {
+    if (typeof global?.streamifyResponse !== "function") {
         throw new Error(
-            "The `awslambda` global is not available. Response streaming only works in the AWS " +
-                "Lambda Node.js runtime, on a function invoked through a Function URL with " +
-                "`InvokeMode: RESPONSE_STREAM`."
+            "The `awslambda` global does not provide `streamifyResponse`. Response streaming only " +
+                "works in the AWS Lambda Node.js runtime, on a function invoked through a Function " +
+                "URL with `InvokeMode: RESPONSE_STREAM`."
         );
     }
 
     return global;
 }
 
+/**
+ * Whether the real streaming runtime is present.
+ *
+ * Tests for `streamifyResponse` rather than for the `awslambda` object, because the object's presence
+ * proves nothing: `@aws/lambda-invoke-store` (pulled in transitively by the AWS SDK) runs
+ * `globalThis.awslambda = globalThis.awslambda || {}` at import time. In Lambda that preserves the
+ * runtime's real global, but everywhere else it leaves an EMPTY object — so an object-presence check
+ * passes outside Lambda and then `streamifyResponse` blows up at module load, taking the whole bundle
+ * with it.
+ */
 export function isAwsLambdaStreamingRuntime(): boolean {
-    return Boolean((globalThis as any).awslambda);
+    return typeof (globalThis as any).awslambda?.streamifyResponse === "function";
 }

@@ -345,4 +345,16 @@ describe("Lambda Function URL response streaming", () => {
             makeHandler(makeRoute(async () => ({ statusCode: 200, body: "ok" })))
         ).not.toThrow();
     });
+
+    it("should tolerate an awslambda global that has no streamifyResponse", () => {
+        // `@aws/lambda-invoke-store` (transitive via the AWS SDK) runs
+        // `globalThis.awslambda = globalThis.awslambda || {}` at import time. Outside Lambda that
+        // leaves an EMPTY object, so checking the object's presence isn't enough — doing so threw at
+        // module load and took down the whole bundle, buffered handler included.
+        (globalThis as any).awslambda = {};
+
+        expect(() =>
+            makeHandler(makeRoute(async () => ({ statusCode: 200, body: "ok" })))
+        ).not.toThrow();
+    });
 });

@@ -57,6 +57,14 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
         },
         tools: {
             rspack: {
+                output: {
+                    // Declares the entry's exports as the bundle's public API, so ALL of them survive.
+                    // Without this, rspack tree-shakes any entry export nothing imports — which silently
+                    // dropped `streamHandler` (and every module reachable only from it) from the api
+                    // bundle, leaving the response-streaming Lambda with no handler to call. `handler`
+                    // survived only by accident of being the first export.
+                    library: { type: "module" }
+                },
                 ...(enforceMaxBundleSize && {
                     performance: {
                         hints: "error",
