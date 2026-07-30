@@ -16,11 +16,6 @@
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
-      "name": "@apollo/react-hooks",
-      "version": "3.1.5",
-      "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
-    },
-    {
       "name": "@auth0/auth0-spa-js",
       "version": "2.24.0",
       "files": ["/packages/auth0/package.json", "/packages/auth0/package.json"]
@@ -737,7 +732,7 @@
     },
     {
       "name": "chalk",
-      "version": "5.6.2",
+      "version": "6.0.0",
       "files": [
         "/scripts/buildPackages/package.json",
         "/scripts/prepublishOnly/package.json",
@@ -1159,10 +1154,8 @@
       "version": "2.12.7",
       "files": [
         "/packages/api-headless-cms/package.json",
-        "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/api-headless-cms/package.json",
-        "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json"
       ]
     },
@@ -1235,7 +1228,7 @@
     },
     {
       "name": "jsdom",
-      "version": "29.1.1",
+      "version": "30.0.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
     },
     {
@@ -2582,17 +2575,17 @@
     },
     {
       "name": "@storybook/addon-a11y",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/addon-docs",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/react",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2991,7 +2984,7 @@
     },
     {
       "name": "chalk",
-      "version": "5.6.2",
+      "version": "6.0.0",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -3107,7 +3100,7 @@
     { "name": "jest-extended", "version": "7.0.0", "files": ["/package.json"] },
     {
       "name": "jsdom",
-      "version": "29.1.1",
+      "version": "30.0.0",
       "files": [
         "/packages/lexical-converter/package.json",
         "/packages/lexical-converter/package.json"
@@ -3379,7 +3372,7 @@
     { "name": "semver", "version": "7.8.5", "files": ["/package.json"] },
     {
       "name": "storybook",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -3699,7 +3692,7 @@
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     { "name": "validator", "version": "13.15.35", "files": ["/package.json"] },
-    { "name": "verdaccio", "version": "6.8.0", "files": ["/package.json"] },
+    { "name": "verdaccio", "version": "6.9.0", "files": ["/package.json"] },
     {
       "name": "vite",
       "version": "8.1.5",
@@ -4293,7 +4286,7 @@
       "name": "chalk",
       "versions": [
         {
-          "version": "5.6.2",
+          "version": "6.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
@@ -5100,7 +5093,7 @@
     {
       "name": "verdaccio",
       "versions": [
-        { "version": "6.8.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
+        { "version": "6.9.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
       ]
     },
     {
@@ -6074,7 +6067,7 @@
       "name": "@storybook/addon-a11y",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6083,7 +6076,7 @@
       "name": "@storybook/addon-docs",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6092,7 +6085,7 @@
       "name": "@storybook/react",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6158,7 +6151,7 @@
       "name": "storybook",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6616,7 +6609,6 @@
           "version": "2.12.7",
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
           ]
         }
@@ -7000,15 +6992,6 @@
     },
     {
       "name": "@apollo/react-components",
-      "versions": [
-        {
-          "version": "3.1.5",
-          "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@apollo/react-hooks",
       "versions": [
         {
           "version": "3.1.5",
@@ -8062,7 +8045,7 @@
       "name": "jsdom",
       "versions": [
         {
-          "version": "29.1.1",
+          "version": "30.0.0",
           "files": [
             { "file": "/packages/lexical-converter/package.json", "types": ["devDependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] }
