@@ -23,10 +23,8 @@ export const Extension = () => {
                         route={Routes.Settings}
                         element={
                             <AdminLayout title={"Mailer - Settings"}>
-                                <AdminConfig>
-                                    <AdminConfig.Breadcrumb name={"settings"} label={"Settings"} />
-                                    <AdminConfig.Breadcrumb name={"mailer"} label={"Mailer"} />
-                                </AdminConfig>
+                                <AdminConfig.Breadcrumb name={"settings"} label={"Settings"} />
+                                <AdminConfig.Breadcrumb name={"mailer"} label={"Mailer"} />
                                 <SettingsView />
                             </AdminLayout>
                         }

@@ -21,16 +21,14 @@ export const BackgroundTaskRoutes = () => {
                     route={Routes.Definitions}
                     element={
                         <AdminLayout title="Task Definitions">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name="background-tasks"
-                                    label="Background Tasks"
-                                />
-                                <AdminConfig.Breadcrumb
-                                    name="background-tasks.definitions"
-                                    label="Definitions"
-                                />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name="background-tasks"
+                                label="Background Tasks"
+                            />
+                            <AdminConfig.Breadcrumb
+                                name="background-tasks.definitions"
+                                label="Definitions"
+                            />
                             <TaskDefinitionsView />
                         </AdminLayout>
                     }
@@ -39,16 +37,14 @@ export const BackgroundTaskRoutes = () => {
                     route={Routes.Executions}
                     element={
                         <AdminLayout title="Task Executions">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name="background-tasks"
-                                    label="Background Tasks"
-                                />
-                                <AdminConfig.Breadcrumb
-                                    name="background-tasks.executions"
-                                    label="Executions"
-                                />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name="background-tasks"
+                                label="Background Tasks"
+                            />
+                            <AdminConfig.Breadcrumb
+                                name="background-tasks.executions"
+                                label="Executions"
+                            />
                             <TaskExecutionsView />
                         </AdminLayout>
                     }
@@ -74,16 +70,14 @@ export const BackgroundTaskRoutes = () => {
                     route={Routes.Settings}
                     element={
                         <AdminLayout title="Background Task Settings">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name="background-tasks"
-                                    label="Background Tasks"
-                                />
-                                <AdminConfig.Breadcrumb
-                                    name="background-tasks.settings"
-                                    label="Settings"
-                                />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name="background-tasks"
+                                label="Background Tasks"
+                            />
+                            <AdminConfig.Breadcrumb
+                                name="background-tasks.settings"
+                                label="Settings"
+                            />
                             <BackgroundTaskSettingsView />
                         </AdminLayout>
                     }

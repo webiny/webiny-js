@@ -21,9 +21,7 @@ const AiPowerUpsSettings = () => {
                 route={Routes.Settings}
                 element={
                     <AdminLayout title={"AI Power-Ups"}>
-                        <AdminConfig>
-                            <AdminConfig.Breadcrumb name={"ai-powerups"} label={"AI Power-Ups"} />
-                        </AdminConfig>
+                        <AdminConfig.Breadcrumb name={"ai-powerups"} label={"AI Power-Ups"} />
                         <AiPowerUpsSettingsPage />
                     </AdminLayout>
                 }

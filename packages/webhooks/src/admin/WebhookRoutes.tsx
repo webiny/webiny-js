@@ -24,9 +24,7 @@ export const WebhookRoutes = () => {
                     route={Routes.List}
                     element={
                         <AdminLayout title="Webhooks">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb name="webhooks" label="Webhooks" />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb name="webhooks" label="Webhooks" />
                             <WebhookListView />
                         </AdminLayout>
                     }
@@ -35,17 +33,15 @@ export const WebhookRoutes = () => {
                     route={Routes.Deliveries}
                     element={
                         <AdminLayout title="Delivery Log">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name="webhooks"
-                                    label="Webhooks"
-                                    to={{ route: Routes.List }}
-                                />
-                                <AdminConfig.Breadcrumb
-                                    name="webhooks.deliveries"
-                                    label="Delivery Log"
-                                />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name="webhooks"
+                                label="Webhooks"
+                                to={{ route: Routes.List }}
+                            />
+                            <AdminConfig.Breadcrumb
+                                name="webhooks.deliveries"
+                                label="Delivery Log"
+                            />
                             <WebhookDeliveriesPage />
                         </AdminLayout>
                     }
@@ -54,14 +50,12 @@ export const WebhookRoutes = () => {
                     route={Routes.Settings}
                     element={
                         <AdminLayout title="Webhook Settings">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name="webhooks"
-                                    label="Webhooks"
-                                    to={{ route: Routes.List }}
-                                />
-                                <AdminConfig.Breadcrumb name="webhooks.settings" label="Settings" />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name="webhooks"
+                                label="Webhooks"
+                                to={{ route: Routes.List }}
+                            />
+                            <AdminConfig.Breadcrumb name="webhooks.settings" label="Settings" />
                             <WebhookSettingsView />
                         </AdminLayout>
                     }
@@ -70,14 +64,12 @@ export const WebhookRoutes = () => {
                     route={Routes.Form}
                     element={
                         <AdminLayout title="Webhooks">
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name="webhooks"
-                                    label="Webhooks"
-                                    to={{ route: Routes.List }}
-                                />
-                                <AdminConfig.Breadcrumb name="webhooks.form" label="Webhook" />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name="webhooks"
+                                label="Webhooks"
+                                to={{ route: Routes.List }}
+                            />
+                            <AdminConfig.Breadcrumb name="webhooks.form" label="Webhook" />
                             <WebhookFormView />
                         </AdminLayout>
                     }

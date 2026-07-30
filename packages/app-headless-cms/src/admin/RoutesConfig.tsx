@@ -57,17 +57,12 @@ export const RoutesConfig = () => {
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>
                             </Helmet>
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb
-                                    name={"cms"}
-                                    label={"Headless CMS"}
-                                    to={{ route: Routes.ContentModels.List }}
-                                />
-                                <AdminConfig.Breadcrumb
-                                    name={"cms.groups"}
-                                    label={"Model Groups"}
-                                />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb
+                                name={"cms"}
+                                label={"Headless CMS"}
+                                to={{ route: Routes.ContentModels.List }}
+                            />
+                            <AdminConfig.Breadcrumb name={"cms.groups"} label={"Model Groups"} />
                             <Loader>
                                 <ContentModelGroupsView />
                             </Loader>
@@ -113,10 +108,8 @@ export const RoutesConfig = () => {
                     <SecureRoute permission={"cms.contentModel"}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
-                            <AdminConfig>
-                                <AdminConfig.Breadcrumb name={"cms"} label={"Headless CMS"} />
-                                <AdminConfig.Breadcrumb name={"cms.models"} label={"Models"} />
-                            </AdminConfig>
+                            <AdminConfig.Breadcrumb name={"cms"} label={"Headless CMS"} />
+                            <AdminConfig.Breadcrumb name={"cms.models"} label={"Models"} />
                             <Loader>
                                 <ContentModelsView />
                             </Loader>

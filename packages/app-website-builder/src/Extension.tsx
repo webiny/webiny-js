@@ -131,13 +131,8 @@ export const Extension = () => {
                         route={Routes.Redirects.List}
                         element={
                             <>
-                                <AdminConfig>
-                                    <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
-                                    <AdminConfig.Breadcrumb
-                                        name={"wb.redirects"}
-                                        label={"Redirects"}
-                                    />
-                                </AdminConfig>
+                                <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
+                                <AdminConfig.Breadcrumb name={"wb.redirects"} label={"Redirects"} />
                                 <RedirectsList />
                             </>
                         }
