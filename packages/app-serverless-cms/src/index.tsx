@@ -45,5 +45,3 @@ export type {
 
 export { useTenantContext } from "@webiny/app-admin";
 export type { Tenant } from "@webiny/app-admin";
-
-export * from "./apolloClientFactory.js";
