@@ -11,16 +11,6 @@
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
-      "name": "@apollo/react-components",
-      "version": "3.1.5",
-      "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
-    },
-    {
-      "name": "@apollo/react-hooks",
-      "version": "3.1.5",
-      "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
-    },
-    {
       "name": "@auth0/auth0-spa-js",
       "version": "2.24.0",
       "files": ["/packages/auth0/package.json", "/packages/auth0/package.json"]
@@ -420,9 +410,11 @@
       "version": "4.7.0",
       "files": [
         "/packages/admin-ui/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/admin-ui/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json",
         "/packages/app-website-builder/package.json"
       ]
@@ -595,97 +587,6 @@
       ]
     },
     {
-      "name": "apollo-cache",
-      "version": "1.3.5",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-cache-inmemory",
-      "version": "1.6.6",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
-      "name": "apollo-client",
-      "version": "2.6.10",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link",
-      "version": "1.2.14",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link-batch-http",
-      "version": "1.2.14",
-      "files": [
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link-context",
-      "version": "1.0.20",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link-error",
-      "version": "1.1.13",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
-      "name": "apollo-link-http-common",
-      "version": "0.2.16",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
-      "name": "apollo-utilities",
-      "version": "1.3.4",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
       "name": "aws-amplify",
       "version": "6.19.0",
       "files": ["/packages/cognito/package.json", "/packages/cognito/package.json"]
@@ -737,7 +638,7 @@
     },
     {
       "name": "chalk",
-      "version": "5.6.2",
+      "version": "6.0.0",
       "files": [
         "/scripts/buildPackages/package.json",
         "/scripts/prepublishOnly/package.json",
@@ -1145,6 +1046,14 @@
       ]
     },
     {
+      "name": "graphql-language-service",
+      "version": "5.5.2",
+      "files": [
+        "/packages/app-graphql-playground/package.json",
+        "/packages/app-graphql-playground/package.json"
+      ]
+    },
+    {
       "name": "graphql-request",
       "version": "7.4.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
@@ -1159,10 +1068,8 @@
       "version": "2.12.7",
       "files": [
         "/packages/api-headless-cms/package.json",
-        "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/api-headless-cms/package.json",
-        "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json"
       ]
     },
@@ -1235,7 +1142,7 @@
     },
     {
       "name": "jsdom",
-      "version": "29.1.1",
+      "version": "30.0.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
     },
     {
@@ -1341,14 +1248,6 @@
         "/packages/project/package.json",
         "/packages/pulumi-sdk/package.json",
         "/packages/telemetry/package.json"
-      ]
-    },
-    {
-      "name": "load-script",
-      "version": "2.0.0",
-      "files": [
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-graphql-playground/package.json"
       ]
     },
     {
@@ -1491,6 +1390,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-workflows/package.json",
         "/packages/app-mailer/package.json",
@@ -1515,6 +1415,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-workflows/package.json",
         "/packages/app-mailer/package.json",
@@ -1543,6 +1444,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-scheduler/package.json",
         "/packages/app-headless-cms-workflows/package.json",
@@ -1563,6 +1465,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-scheduler/package.json",
         "/packages/app-headless-cms-workflows/package.json",
@@ -1587,9 +1490,11 @@
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/app-admin/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json",
         "/packages/admin-ui/package.json",
         "/packages/app-admin/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json"
       ]
     },
@@ -1602,11 +1507,9 @@
       "name": "nanoid",
       "version": "6.0.0",
       "files": [
-        "/packages/app/package.json",
         "/packages/react-properties/package.json",
         "/packages/utils/package.json",
         "/packages/website-builder-sdk/package.json",
-        "/packages/app/package.json",
         "/packages/react-properties/package.json",
         "/packages/utils/package.json",
         "/packages/website-builder-sdk/package.json"
@@ -2245,11 +2148,6 @@
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
-      "name": "ts-invariant",
-      "version": "0.10.3",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
       "name": "ts-morph",
       "version": "28.0.0",
       "files": [
@@ -2582,17 +2480,17 @@
     },
     {
       "name": "@storybook/addon-a11y",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/addon-docs",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/react",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2956,14 +2854,6 @@
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     {
-      "name": "apollo-graphql",
-      "version": "0.9.7",
-      "files": [
-        "/packages/api-headless-cms/package.json",
-        "/packages/api-headless-cms/package.json"
-      ]
-    },
-    {
       "name": "aws-sdk-client-mock",
       "version": "4.1.0",
       "files": [
@@ -2991,7 +2881,7 @@
     },
     {
       "name": "chalk",
-      "version": "5.6.2",
+      "version": "6.0.0",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -3107,7 +2997,7 @@
     { "name": "jest-extended", "version": "7.0.0", "files": ["/package.json"] },
     {
       "name": "jsdom",
-      "version": "29.1.1",
+      "version": "30.0.0",
       "files": [
         "/packages/lexical-converter/package.json",
         "/packages/lexical-converter/package.json"
@@ -3379,7 +3269,7 @@
     { "name": "semver", "version": "7.8.5", "files": ["/package.json"] },
     {
       "name": "storybook",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -3699,7 +3589,7 @@
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     { "name": "validator", "version": "13.15.35", "files": ["/package.json"] },
-    { "name": "verdaccio", "version": "6.8.0", "files": ["/package.json"] },
+    { "name": "verdaccio", "version": "6.9.0", "files": ["/package.json"] },
     {
       "name": "vite",
       "version": "8.1.5",
@@ -3767,6 +3657,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
@@ -3853,6 +3744,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
@@ -4293,7 +4185,7 @@
       "name": "chalk",
       "versions": [
         {
-          "version": "5.6.2",
+          "version": "6.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
@@ -4584,7 +4476,6 @@
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
             { "file": "/packages/react-properties/package.json", "types": ["dependencies"] },
             { "file": "/packages/utils/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
@@ -5100,7 +4991,7 @@
     {
       "name": "verdaccio",
       "versions": [
-        { "version": "6.8.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
+        { "version": "6.9.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
       ]
     },
     {
@@ -5228,6 +5119,10 @@
             { "file": "/packages/app-aco/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-file-manager/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/app-graphql-playground/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/app-headless-cms/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
             { "file": "/packages/background-tasks/package.json", "types": ["devDependencies"] },
@@ -5797,6 +5692,7 @@
           "version": "4.7.0",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-sdk-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] }
           ]
@@ -5891,6 +5787,7 @@
             { "file": "/packages/app-aco/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-file-manager/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/app-headless-cms-workflows/package.json",
@@ -5925,6 +5822,7 @@
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-sdk-playground/package.json", "types": ["dependencies"] }
           ]
         }
@@ -6074,7 +5972,7 @@
       "name": "@storybook/addon-a11y",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6083,7 +5981,7 @@
       "name": "@storybook/addon-docs",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6092,7 +5990,7 @@
       "name": "@storybook/react",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6158,7 +6056,7 @@
       "name": "storybook",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6206,6 +6104,7 @@
             { "file": "/packages/app-aco/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-file-manager/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/app-headless-cms-scheduler/package.json",
@@ -6616,7 +6515,6 @@
           "version": "2.12.7",
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
           ]
         }
@@ -6655,17 +6553,6 @@
       "versions": [
         {
           "version": "0.0.33",
-          "files": [
-            { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-graphql",
-      "versions": [
-        {
-          "version": "0.9.7",
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] }
           ]
@@ -6852,102 +6739,6 @@
       ]
     },
     {
-      "name": "apollo-cache",
-      "versions": [
-        {
-          "version": "1.3.5",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-cache-inmemory",
-      "versions": [
-        {
-          "version": "1.6.6",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "apollo-client",
-      "versions": [
-        {
-          "version": "2.6.10",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link",
-      "versions": [
-        {
-          "version": "1.2.14",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-context",
-      "versions": [
-        {
-          "version": "1.0.20",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-error",
-      "versions": [
-        {
-          "version": "1.1.13",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-http-common",
-      "versions": [
-        {
-          "version": "0.2.16",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "apollo-utilities",
-      "versions": [
-        {
-          "version": "1.3.4",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "history",
       "versions": [
         {
@@ -6972,15 +6763,6 @@
       ]
     },
     {
-      "name": "ts-invariant",
-      "versions": [
-        {
-          "version": "0.10.3",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
       "name": "warning",
       "versions": [
         {
@@ -6995,24 +6777,6 @@
         {
           "version": "3.0.4",
           "files": [{ "file": "/packages/app/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@apollo/react-components",
-      "versions": [
-        {
-          "version": "3.1.5",
-          "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@apollo/react-hooks",
-      "versions": [
-        {
-          "version": "3.1.5",
-          "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
         }
       ]
     },
@@ -7294,10 +7058,10 @@
       ]
     },
     {
-      "name": "load-script",
+      "name": "graphql-language-service",
       "versions": [
         {
-          "version": "2.0.0",
+          "version": "5.5.2",
           "files": [
             { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] }
           ]
@@ -7379,17 +7143,6 @@
           "files": [
             { "file": "/packages/app-scheduler/package.json", "types": ["dependencies"] },
             { "file": "/packages/icons/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-batch-http",
-      "versions": [
-        {
-          "version": "1.2.14",
-          "files": [
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -8062,7 +7815,7 @@
       "name": "jsdom",
       "versions": [
         {
-          "version": "29.1.1",
+          "version": "30.0.0",
           "files": [
             { "file": "/packages/lexical-converter/package.json", "types": ["devDependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] }

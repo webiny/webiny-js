@@ -54,7 +54,6 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/sdk": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "apollo-graphql": "^0.9.7",
     "graphql": "^16.14.2",
     "oxfmt": "^0.60.0",
     "rimraf": "^6.1.3",

@@ -33,9 +33,6 @@ export { Sorting as TableSorting } from "./config/table/Sorting.js";
 
 export type { AdminProps } from "./base/Admin.js";
 
-// Plugins
-export * from "./base/plugins/AddGraphQLQuerySelection.js";
-
 // Permissions
 export * from "./permissions/index.js";
 

@@ -1,7 +1,6 @@
 import React, { Fragment, memo } from "react";
 import { plugins } from "@webiny/plugins";
 import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
-import apiInformation from "~/admin/plugins/apiInformation/index.js";
 import headlessCmsPlugins from "~/admin/plugins/index.js";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin.js";
 import { RoutesConfig } from "./admin/RoutesConfig.js";
@@ -41,9 +40,9 @@ import {
     EDIT_DZ_TEMPLATE_DIALOG
 } from "~/presentation/fieldTypes/types/dynamicZone/EditTemplateDialog.js";
 import { ContentEntriesModule } from "~/ContentEntriesModule.js";
+import { CmsPlaygroundTabsFeature } from "~/admin/features/playgroundTabs/index.js";
 
 const HeadlessCMSExtension = () => {
-    plugins.register(apiInformation);
     plugins.register(headlessCmsPlugins());
 
     return (
@@ -66,6 +65,7 @@ const HeadlessCMSExtension = () => {
             <RegisterFeature feature={CmsFieldTypeFeature} />
             <RegisterFeature feature={FieldEditorFeature} />
             <RegisterFeature feature={CmsFieldValidatorFeature} />
+            <RegisterFeature feature={CmsPlaygroundTabsFeature} />
             <RoutesConfig />
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />

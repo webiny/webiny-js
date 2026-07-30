@@ -31,8 +31,7 @@ export {
     UserMenuHandle,
     UserMenuHandleRenderer,
     UserMenuItem,
-    UserMenuItemRenderer,
-    AddGraphQLQuerySelection
+    UserMenuItemRenderer
 } from "@webiny/app-admin";
 export type {
     ComposeProps,
@@ -45,5 +44,3 @@ export type {
 
 export { useTenantContext } from "@webiny/app-admin";
 export type { Tenant } from "@webiny/app-admin";
-
-export * from "./apolloClientFactory.js";

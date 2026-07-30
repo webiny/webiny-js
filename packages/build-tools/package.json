@@ -28,7 +28,7 @@
     "@swc/plugin-emotion": "^14.15.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@webiny/stdlib": "^0.0.13",
-    "chalk": "^5.6.2",
+    "chalk": "^6.0.0",
     "css-loader": "^7.1.4",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",

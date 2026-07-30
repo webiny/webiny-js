@@ -2,8 +2,6 @@ import React from "react";
 import type { Container } from "@webiny/di";
 import { plugins } from "@webiny/plugins";
 import { App, DiContainerProvider } from "@webiny/app";
-import type { ApolloClientFactory } from "./providers/ApolloProvider.js";
-import { createApolloProvider } from "./providers/ApolloProvider.js";
 import { Base } from "./Base.js";
 import { createUiStateProvider } from "./providers/UiStateProvider.js";
 import { createAdminUiStateProvider } from "./providers/AdminUiStateProvider.js";
@@ -11,11 +9,9 @@ import { createUiProviders } from "./providers/UiProviders.js";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
 import { createRootContainer } from "~/base/createRootContainer.js";
-import { resolveGraphqlUrl } from "~/base/resolveApiUrl.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
-import { ApolloClientFeature } from "~/features/apolloClient/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
@@ -23,27 +19,28 @@ import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js"
 import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/index.js";
 import { NotificationsRenderer } from "~/features/notifications/NotificationsRenderer.js";
+import { ListCustomIconsFeature } from "~/features/iconPicker/listCustomIcons/feature.js";
+import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIcons/feature.js";
 
 export interface AdminProps {
-    createApolloClient: ApolloClientFactory;
-    createLegacyPlugins: (container: Container) => PluginCollection;
+    createLegacyPlugins?: (container: Container) => PluginCollection;
     children?: React.ReactNode;
 }
 
 const container = createRootContainer();
 
-export const Admin = ({ children, createApolloClient, createLegacyPlugins }: AdminProps) => {
-    const apolloClient = createApolloClient({ uri: resolveGraphqlUrl() });
+export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
+    if (createLegacyPlugins) {
+        plugins.register(...createLegacyPlugins(container));
+    }
 
-    plugins.register(...createLegacyPlugins(container));
-
-    ApolloClientFeature.register(container, apolloClient);
     SecurityFeature.register(container);
     FormModelFeature.register(container);
     WebinySdkFeature.register(container);
     ListPresenterFeature.register(container);
+    ListCustomIconsFeature.register(container);
+    CustomIconsPresenterFeature.register(container);
 
-    const ApolloProvider = createApolloProvider(apolloClient);
     const UIProviders = createUiProviders();
     const UiStateProvider = createUiStateProvider();
     const AdminUiStateProvider = createAdminUiStateProvider();
@@ -53,28 +50,26 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
     return (
         <DiContainerProvider container={container}>
             <TelemetryAdminAppStart />
-            <ApolloProvider>
-                <WcpProvider>
-                    <App
-                        plugins={[AdminConfigPlugin]}
-                        routes={[]}
-                        providers={[
-                            AdminConfigProvider,
-                            UIProviders,
-                            UiStateProvider,
-                            DialogsProvider,
-                            IconPickerConfigProvider,
-                            AdminUiStateProvider,
-                            TenancyProvider
-                        ]}
-                    >
-                        <Base />
-                        <DefaultIcons />
-                        <NotificationsRenderer />
-                        {children}
-                    </App>
-                </WcpProvider>
-            </ApolloProvider>
+            <WcpProvider>
+                <App
+                    plugins={[AdminConfigPlugin]}
+                    routes={[]}
+                    providers={[
+                        AdminConfigProvider,
+                        UIProviders,
+                        UiStateProvider,
+                        DialogsProvider,
+                        IconPickerConfigProvider,
+                        AdminUiStateProvider,
+                        TenancyProvider
+                    ]}
+                >
+                    <Base />
+                    <DefaultIcons />
+                    <NotificationsRenderer />
+                    {children}
+                </App>
+            </WcpProvider>
         </DiContainerProvider>
     );
 };

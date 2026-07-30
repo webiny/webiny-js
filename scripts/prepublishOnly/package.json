@@ -8,7 +8,7 @@
   "main": "./src/index.js",
   "dependencies": {
     "@webiny/stdlib": "^0.0.13",
-    "chalk": "^5.6.2",
+    "chalk": "^6.0.0",
     "find-up": "^8.0.0",
     "fs-extra": "^11.4.0",
     "load-json-file": "^7.0.1",

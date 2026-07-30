@@ -1,30 +1,36 @@
 import React, { memo } from "react";
-import type { ApolloClient } from "apollo-client";
-import { plugins } from "@webiny/plugins";
-import { useRouter, AdminConfig, AdminLayout, HasPermission } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app-admin";
+import { AdminConfig } from "@webiny/app-admin";
+import { AdminLayout } from "@webiny/app-admin";
+import { HasPermission } from "@webiny/app-admin";
+import { RegisterFeature } from "@webiny/app-admin";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/graphql_playground.svg";
 import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg";
-import Playground from "./plugins/Playground.js";
-import playgroundPlugins from "./plugins/index.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { Routes } from "~/routes.js";
+import { PlaygroundPage } from "./presentation/Playground/components/PlaygroundPage.js";
+import { PlaygroundClientFeature } from "./features/playgroundClient/feature.js";
+import { PlaygroundTabRegistryFeature } from "./features/tabRegistry/feature.js";
+import { PlaygroundRepositoryFeature } from "./features/repository/feature.js";
+import { PlaygroundPresenterFeature } from "./presentation/Playground/feature.js";
+import { DocsExplorerFeature } from "./presentation/DocsExplorer/feature.js";
+import { QueryHistoryRepositoryFeature } from "./features/queryHistory/index.js";
+import { QueryHistoryFeature } from "./presentation/QueryHistory/index.js";
 
 const { Route, Menu } = AdminConfig;
 
-interface CreateApolloClientParams {
-    uri: string;
-}
-
-interface GraphQLPlaygroundProps {
-    createApolloClient(params: CreateApolloClientParams): ApolloClient<any>;
-}
-
-const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundProps) => {
+const GraphQLPlaygroundExtension = () => {
     const router = useRouter();
-    plugins.register(playgroundPlugins);
 
     return (
         <>
+            <RegisterFeature feature={PlaygroundClientFeature} />
+            <RegisterFeature feature={PlaygroundTabRegistryFeature} />
+            <RegisterFeature feature={PlaygroundRepositoryFeature} />
+            <RegisterFeature feature={PlaygroundPresenterFeature} />
+            <RegisterFeature feature={DocsExplorerFeature} />
+            <RegisterFeature feature={QueryHistoryRepositoryFeature} />
+            <RegisterFeature feature={QueryHistoryFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <Menu
@@ -61,7 +67,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
                     route={Routes.ApiPlayground}
                     element={
                         <AdminLayout title={"GraphQL Playground"}>
-                            <Playground createApolloClient={createApolloClient} />
+                            <PlaygroundPage />
                         </AdminLayout>
                     }
                 />
