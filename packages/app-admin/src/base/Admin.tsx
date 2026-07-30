@@ -23,6 +23,8 @@ import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js"
 import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/index.js";
 import { NotificationsRenderer } from "~/features/notifications/NotificationsRenderer.js";
+import { ListCustomIconsFeature } from "~/features/iconPicker/listCustomIcons/feature.js";
+import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIcons/feature.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -42,6 +44,8 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
     FormModelFeature.register(container);
     WebinySdkFeature.register(container);
     ListPresenterFeature.register(container);
+    ListCustomIconsFeature.register(container);
+    CustomIconsPresenterFeature.register(container);
 
     const ApolloProvider = createApolloProvider(apolloClient);
     const UIProviders = createUiProviders();
