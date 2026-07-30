@@ -32,6 +32,7 @@ import { ApiKeysView } from "~/presentation/accessManagement/apiKeys/components/
 import { ApiKeysPresenterFeature } from "~/presentation/accessManagement/apiKeys/feature.js";
 import { TeamsPresenterFeature } from "~/presentation/accessManagement/teams/feature.js";
 import { RolesAutocompletePresenterFeature } from "~/presentation/accessManagement/roles/rolesAutocomplete/feature.js";
+import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
 const { Menu, Route } = AdminConfig;
 
@@ -55,6 +56,7 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={UpdateTeamFeature} />
             <RegisterFeature feature={DeleteTeamFeature} />
             <RegisterFeature feature={TeamsPresenterFeature} />
+            <RegisterFeature feature={TeamsAutocompletePresenterFeature} />
             <RegisterFeature feature={ListApiKeysFeature} />
             <RegisterFeature feature={GetApiKeyFeature} />
             <RegisterFeature feature={CreateApiKeyFeature} />
