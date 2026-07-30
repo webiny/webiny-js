@@ -66,6 +66,16 @@ export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/a
 export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
 export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
 
+export { StringFormatter } from "./features/stringFormatter/abstractions.js";
+export type { IStringFormatter } from "./features/stringFormatter/abstractions.js";
+export { StringFormatterFeature } from "./features/stringFormatter/feature.js";
+export { useStringFormatter } from "./features/stringFormatter/useStringFormatter.js";
+
+// Fine-grained, decoratable transform behind StringFormatter.slugify(). Decorate this to change slug
+// logic without touching the rest of the string formatter.
+export { Slugify } from "./features/slugify/abstractions.js";
+export type { ISlugify } from "./features/slugify/abstractions.js";
+
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";

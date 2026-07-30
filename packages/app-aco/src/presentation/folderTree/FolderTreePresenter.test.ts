@@ -11,6 +11,7 @@ import { ListFoldersByParentIdsUseCase } from "~/features/folders/listFoldersByP
 import { GetFolderAncestorsUseCase } from "~/features/folders/getFolderAncestors/abstractions.js";
 import { GetFolderLevelPermissionUseCase } from "~/features/folders/getFolderLevelPermission/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { StringFormatter } from "@webiny/app-admin/features/stringFormatter/abstractions.js";
 import { ListCache } from "~/features/folders/cache/index.js";
 import { Folder } from "~/domain/folder/Folder.js";
 import type {
@@ -191,6 +192,9 @@ function createTestPresenter(folders: Folder[] = []) {
         FormModelFactory,
         formModelFactory as unknown as FormModelFactory.Interface
     );
+    container.registerInstance(StringFormatter, {
+        slugify: (value: string) => value
+    });
 
     FolderTreePresenterFeature.register(container);
 
