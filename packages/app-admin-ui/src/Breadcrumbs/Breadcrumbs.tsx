@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { useAdminConfig } from "@webiny/app-admin";
+import { useAdminConfig, createReactiveComponent } from "@webiny/app-admin";
 import type { BreadcrumbConfig, BreadcrumbLink } from "@webiny/app-admin";
 import { useContainer } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -13,28 +13,37 @@ const HOME_PATH = "/";
 /**
  * Header breadcrumbs. Reads the trail from the React Config API (`useAdminConfig().breadcrumbs`,
  * populated by mounted `<Breadcrumb>` components), prepends the home entry, and renders the
- * design-system primitive. Re-renders automatically as views mount/unmount their breadcrumbs.
+ * design-system primitive.
+ *
+ * Wrapped in `createReactiveComponent` so it re-renders on route changes too (it reads the
+ * router's current route) — config changes alone don't fire on every navigation.
  */
-export const Breadcrumbs = () => {
+const BreadcrumbsBase = () => {
     const { breadcrumbs } = useAdminConfig();
     const container = useContainer();
 
-    // Keep the previous trail visible while a newly-entered view loads its own (dynamic
-    // views mount their breadcrumbs only after their data resolves, which would otherwise
-    // flash an empty trail). The retained trail is cleared on the dashboard, which is
-    // legitimately breadcrumb-less.
-    const lastTrail = useRef<BreadcrumbConfig[]>([]);
-    const onDashboard = container.resolve(RouterPresenter).vm.currentRoute?.path === HOME_PATH;
+    // Reading `currentRoute` inside the reactive component subscribes to route changes, so the
+    // header updates on every navigation — and lets us detect the (breadcrumb-less) dashboard.
+    const currentRoute = container.resolve(RouterPresenter).vm.currentRoute;
+    const routeName = currentRoute?.name;
+    const onDashboard = currentRoute?.path === HOME_PATH;
+
+    // Keep the previous trail visible while a newly-entered view loads its own (dynamic views
+    // mount their breadcrumbs only after their data resolves, which would otherwise flash an
+    // empty trail). Cleared on the dashboard, which is legitimately breadcrumb-less.
+    const lastTrail = useRef<{ routeName?: string; items: BreadcrumbConfig[] }>({ items: [] });
 
     let trail: BreadcrumbConfig[];
     if (breadcrumbs.length > 0) {
-        lastTrail.current = breadcrumbs;
+        lastTrail.current = { routeName, items: breadcrumbs };
         trail = breadcrumbs;
     } else if (onDashboard) {
-        lastTrail.current = [];
+        lastTrail.current = { routeName, items: [] };
         trail = [];
     } else {
-        trail = lastTrail.current;
+        // Empty trail on a non-dashboard route = the view is still loading its breadcrumbs;
+        // hold the last known trail until they arrive.
+        trail = lastTrail.current.items;
     }
 
     // Resolves a `to` (string or Route + params) to a concrete href.
@@ -73,3 +82,5 @@ export const Breadcrumbs = () => {
 
     return <BreadcrumbsUI items={[home, ...locations]} />;
 };
+
+export const Breadcrumbs = createReactiveComponent(BreadcrumbsBase);
