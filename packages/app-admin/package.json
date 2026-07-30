@@ -49,7 +49,7 @@
     "lodash": "^4.18.1",
     "markdown-to-jsx": "^9.9.0",
     "mime": "^4.1.0",
-    "minimatch": "^10.2.5",
+    "minimatch": "^10.2.6",
     "mobx": "^6.16.1",
     "mobx-react-lite": "^4.1.1",
     "monaco-editor": "0.53.0",
