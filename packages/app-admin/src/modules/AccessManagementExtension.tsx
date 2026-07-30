@@ -34,6 +34,11 @@ import { TeamsPresenterFeature } from "~/presentation/accessManagement/teams/fea
 
 const { Menu, Route } = AdminConfig;
 
+// Shared leading breadcrumb for all access-management routes.
+const AccessManagementRoot = () => (
+    <AdminConfig.Breadcrumb name={"access-management"} label={"Access Management"} />
+);
+
 export const AccessManagementExtension = () => {
     const router = useRouter();
 
@@ -66,10 +71,7 @@ export const AccessManagementExtension = () => {
                         route={Routes.Roles.List}
                         element={
                             <AdminLayout title={"Access Management - Roles"}>
-                                <AdminConfig.Breadcrumb
-                                    name={"access-management"}
-                                    label={"Access Management"}
-                                />
+                                <AccessManagementRoot />
                                 <AdminConfig.Breadcrumb name={"roles"} label={"Roles"} />
                                 <RolesView />
                             </AdminLayout>
@@ -82,10 +84,7 @@ export const AccessManagementExtension = () => {
                             route={Routes.Teams.List}
                             element={
                                 <AdminLayout title={"Access Management - Teams"}>
-                                    <AdminConfig.Breadcrumb
-                                        name={"access-management"}
-                                        label={"Access Management"}
-                                    />
+                                    <AccessManagementRoot />
                                     <AdminConfig.Breadcrumb name={"teams"} label={"Teams"} />
                                     <TeamsView />
                                 </AdminLayout>
@@ -98,10 +97,7 @@ export const AccessManagementExtension = () => {
                         route={Routes.ApiKeys.List}
                         element={
                             <AdminLayout title={"Access Management - API Keys"}>
-                                <AdminConfig.Breadcrumb
-                                    name={"access-management"}
-                                    label={"Access Management"}
-                                />
+                                <AccessManagementRoot />
                                 <AdminConfig.Breadcrumb name={"api-keys"} label={"API Keys"} />
                                 <ApiKeysView />
                             </AdminLayout>

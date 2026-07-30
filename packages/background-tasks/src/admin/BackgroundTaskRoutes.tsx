@@ -11,6 +11,11 @@ import { ReactComponent as TaskIcon } from "@webiny/icons/task.svg";
 
 const { Menu, Route } = AdminConfig;
 
+// Shared leading breadcrumb for all background-task routes.
+const BackgroundTasksRoot = () => (
+    <AdminConfig.Breadcrumb name="background-tasks" label="Background Tasks" />
+);
+
 export const BackgroundTaskRoutes = () => {
     const { getLink } = useRouter();
 
@@ -21,10 +26,7 @@ export const BackgroundTaskRoutes = () => {
                     route={Routes.Definitions}
                     element={
                         <AdminLayout title="Task Definitions">
-                            <AdminConfig.Breadcrumb
-                                name="background-tasks"
-                                label="Background Tasks"
-                            />
+                            <BackgroundTasksRoot />
                             <AdminConfig.Breadcrumb
                                 name="background-tasks.definitions"
                                 label="Definitions"
@@ -37,10 +39,7 @@ export const BackgroundTaskRoutes = () => {
                     route={Routes.Executions}
                     element={
                         <AdminLayout title="Task Executions">
-                            <AdminConfig.Breadcrumb
-                                name="background-tasks"
-                                label="Background Tasks"
-                            />
+                            <BackgroundTasksRoot />
                             <AdminConfig.Breadcrumb
                                 name="background-tasks.executions"
                                 label="Executions"
@@ -70,10 +69,7 @@ export const BackgroundTaskRoutes = () => {
                     route={Routes.Settings}
                     element={
                         <AdminLayout title="Background Task Settings">
-                            <AdminConfig.Breadcrumb
-                                name="background-tasks"
-                                label="Background Tasks"
-                            />
+                            <BackgroundTasksRoot />
                             <AdminConfig.Breadcrumb
                                 name="background-tasks.settings"
                                 label="Settings"
