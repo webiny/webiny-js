@@ -7,6 +7,7 @@ import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterG
 import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
 import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature.js";
 import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
+import { ApiStreamClientFeature } from "@webiny/app/features/apiStreamClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
@@ -57,6 +58,10 @@ export function createRootContainer() {
     GraphQLClientFeature.register(container, { batching: true, retry: true });
 
     MainGraphQLClientFeature.register(container);
+
+    // Registered before TenancyFeature / AuthenticationContextFeature, which decorate it to add the
+    // tenant and auth headers.
+    ApiStreamClientFeature.register(container);
 
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
 

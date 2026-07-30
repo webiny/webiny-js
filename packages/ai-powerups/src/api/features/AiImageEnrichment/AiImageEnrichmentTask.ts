@@ -1,31 +1,25 @@
 import { Output } from "ai";
-import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
-import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/abstractions.js";
-import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    AI_ENRICHMENT_PROMPT,
+    aiEnrichmentSchema,
+    ApplyImageEnrichmentUseCase,
+    PrepareImageEnrichmentUseCase
+} from "./abstractions.js";
+import { EnrichmentNotAnImageError } from "./errors.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
-
-const AI_PROMPT =
-    "Analyze this image and return up to 5 lowercase descriptive tags and one short sentence describing the image.";
-
-const aiOutputSchema = Output.object({
-    schema: z.object({
-        tags: z.array(z.string()),
-        description: z.string()
-    })
-});
 
 export interface IAiImageEnrichmentTaskInput {
     fileId: string;
 }
 
+/**
+ * Background enrichment, triggered after a file is created. Shares its preparation and persistence
+ * with the streaming HTTP route (`AiImageEnrichmentStreamRoute`); the only difference is that this
+ * one waits for the whole AI response, because a background task has no one to stream to.
+ */
 class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnrichmentTaskInput> {
     id = AI_IMAGE_ENRICHMENT_TASK_ID;
     title = "File Manager - AI Image Enrichment";
@@ -37,14 +31,9 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
     public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
     constructor(
-        private getFile: GetFileUseCase.Interface,
-        private getFileContents: GetFileContentsByIdUseCase.Interface,
-        private updateFile: UpdateFileUseCase.Interface,
-        private ai: Ai.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface,
-        private identityContext: IdentityContext.Interface,
-        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
+        private prepare: PrepareImageEnrichmentUseCase.Interface,
+        private apply: ApplyImageEnrichmentUseCase.Interface,
+        private ai: Ai.Interface
     ) {}
 
     async run({
@@ -57,72 +46,37 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             return controller.response.aborted();
         }
 
-        const fileResult = await this.getFile.execute(input.fileId);
-        if (fileResult.isFail()) {
-            return controller.response.error({
-                message: `File not found: ${input.fileId}`
-            });
+        const preparedResult = await this.prepare.execute(input.fileId);
+        if (preparedResult.isFail()) {
+            const error = preparedResult.error;
+            // A non-image isn't a failure — nothing to enrich, so the task is simply done.
+            if (error instanceof EnrichmentNotAnImageError) {
+                return controller.response.done(error.message);
+            }
+            return controller.response.error({ message: error.message });
         }
 
-        const file = fileResult.value;
+        const prepared = preparedResult.value;
 
-        if (!file.type.startsWith("image/")) {
-            return controller.response.done("File is not an image; skipping AI enrichment.");
-        }
-
-        // Read the image bytes and send them to the AI as base64, NOT a URL. A URL forces the
-        // provider to fetch the file — which fails for private/access-controlled files, leaks the
-        // domain, and can't reach a non-public origin (e.g. local dev). base64 is a portable standard
-        // that works on every setup. (Also resolves the AI-SDK "image part" deprecation.)
-        const contentsResult = await this.getFileContents.execute(input.fileId);
-        if (contentsResult.isFail()) {
-            return controller.response.error({
-                message: `Unable to read file contents: ${contentsResult.error.message}`
-            });
-        }
-        const imageBase64 = contentsResult.value.buffer.toString("base64");
-        const imageMediaType = contentsResult.value.contentType;
-
-        const aiSettingsResult = await this.getSettings.execute();
-
-        if (aiSettingsResult.isFail()) {
-            return controller.response.error({
-                message: "No AI provider configured. Add a provider in AI Power Ups settings."
-            });
-        }
-
-        const aiSettings = aiSettingsResult.value;
-
-        const firstProvider = aiSettings.providers.presets[0];
-
-        if (!firstProvider) {
-            return controller.response.done({
-                message: "No AI provider configured. Add a provider in AI Power Ups settings."
-            });
-        }
-
-        let tags: string[] = [];
-        let description = "";
+        let tags: string[];
+        let description: string;
         try {
             const aiResult = await this.ai.generateText({
-                model: firstProvider.model,
-                output: aiOutputSchema,
-                connection: {
-                    sdkName: firstProvider.model.split("/")[0],
-                    apiKey: await this.encryption.decrypt(firstProvider.apiKeyEncrypted)
-                },
+                model: prepared.model,
+                output: Output.object({ schema: aiEnrichmentSchema }),
+                connection: prepared.connection,
                 messages: [
                     {
                         role: "user",
                         content: [
                             {
                                 type: "file",
-                                data: imageBase64,
-                                mediaType: imageMediaType
+                                data: prepared.imageBase64,
+                                mediaType: prepared.imageMediaType
                             },
                             {
                                 type: "text",
-                                text: AI_PROMPT
+                                text: AI_ENRICHMENT_PROMPT
                             }
                         ]
                     }
@@ -132,38 +86,21 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             tags = aiResult.output.tags;
             description = aiResult.output.description;
         } catch (error) {
-            console.log("error", error.message);
             return controller.response.error({
                 message: `AI enrichment failed: ${error instanceof Error ? error.message : String(error)}`
             });
         }
 
-        const mergedTags = [...new Set([...file.tags, ...tags])];
-
-        const updateResult = await this.updateFile.execute({
-            id: file.id,
-            tags: mergedTags,
+        const appliedResult = await this.apply.execute({
+            fileId: prepared.fileId,
+            existingTags: prepared.existingTags,
+            tags,
             description
         });
 
-        if (updateResult.isFail()) {
-            return controller.response.error({
-                message: `Failed to update file: ${updateResult.error.message}`
-            });
+        if (appliedResult.isFail()) {
+            return controller.response.error({ message: appliedResult.error.message });
         }
-
-        const identity = this.identityContext.getIdentity();
-        await this.sendToIdentity.execute(
-            { id: identity.id },
-            {
-                action: "fm.file.enrichment",
-                data: {
-                    id: file.id,
-                    tags: mergedTags,
-                    description
-                }
-            }
-        );
 
         return controller.response.done("AI image enrichment completed successfully.");
     }
@@ -171,14 +108,5 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
 
 export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
     implementation: AiImageEnrichmentTaskImpl,
-    dependencies: [
-        GetFileUseCase,
-        GetFileContentsByIdUseCase,
-        UpdateFileUseCase,
-        Ai,
-        GetSettingsUseCase,
-        Encryption,
-        IdentityContext,
-        WebsocketsSendToIdentityUseCase
-    ]
+    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
 });

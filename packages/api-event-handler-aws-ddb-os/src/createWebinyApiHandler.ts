@@ -9,6 +9,7 @@
  */
 import {
     createWebinyApiHandler as createBaseHandler,
+    createWebinyStreamApiHandler as createBaseStreamHandler,
     type CreateWebinyApiHandlerConfig as BaseConfig
 } from "@webiny/api-event-handler-aws";
 import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
@@ -53,13 +54,24 @@ const openSearchClientFromEnv = () => {
     return createAwsOpenSearchClient(openSearchClientOptions);
 };
 
-export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
-    const openSearchClient = config.openSearchClient ?? openSearchClientFromEnv();
-
-    return createBaseHandler({
+/**
+ * The storage half of the composition, shared by the buffered and the response-streaming entry points
+ * so the two Lambda functions built from this bundle cannot drift.
+ */
+function storageConfig(
+    config: CreateAwsDdbOsApiHandlerConfig
+): Pick<
+    BaseConfig,
+    "extensions" | "documentClient" | "registerRootStorage" | "registerRequestStorage"
+> {
+    return {
         extensions: config.extensions,
         documentClient: config.documentClient,
         registerRootStorage: (container, { documentClient }) => {
+            // Built here rather than at factory time: one bundle exports both the buffered and the
+            // streaming handler, so an eager client would be created twice per cold start.
+            const openSearchClient = config.openSearchClient ?? openSearchClientFromEnv();
+
             // ── OpenSearch core (client + query-builder operators + fields + index registries) ──
             // The DDB+ES CMS storage factory resolves all of these.
             OpenSearchClientFeature.register(container, openSearchClient);
@@ -80,5 +92,17 @@ export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig)
             // (its beforeInit registers into it). Must be registered before HeadlessCmsFeature builds.
             DbRegistryFeature.register(container);
         }
-    });
+    };
+}
+
+export function createAwsDdbOsApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
+    return createBaseHandler(storageConfig(config));
+}
+
+/**
+ * Response-streaming counterpart, for the Lambda function whose Function URL uses
+ * `InvokeMode: RESPONSE_STREAM`. Identical storage; only the transport differs.
+ */
+export function createAwsDdbOsStreamApiHandler(config: CreateAwsDdbOsApiHandlerConfig) {
+    return createBaseStreamHandler(storageConfig(config));
 }
