@@ -31,8 +31,7 @@ export {
     UserMenuHandle,
     UserMenuHandleRenderer,
     UserMenuItem,
-    UserMenuItemRenderer,
-    AddGraphQLQuerySelection
+    UserMenuItemRenderer
 } from "@webiny/app-admin";
 export type {
     ComposeProps,
