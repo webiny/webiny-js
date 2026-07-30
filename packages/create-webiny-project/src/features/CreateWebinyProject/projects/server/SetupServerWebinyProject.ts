@@ -3,11 +3,25 @@ import path from "path";
 import { runInteractivePrompt } from "./runInteractivePrompt.js";
 import { CliParams } from "../../../../types.js";
 import { GetProjectRootPath } from "../../../../services/index.js";
-import { ServerProjectParams } from "./types.js";
+import { ServerProjectParams, StorageOps } from "./types.js";
 import { GetTemplatesFolderPath } from "../../../../services/GetTemplatesFolderPath.js";
 import { addProjectDependencies } from "../addProjectDependencies.js";
 
-const DOT_ENV = `# Self-hosted (server) hosting-type environment variables.
+// The database section of `.env` depends on the chosen storage.
+const DB_ENV: Record<StorageOps, string> = {
+    sqlite: `# SQLite database file (relative paths resolve against the project root).
+WEBINY_SQL_FILENAME=./.webiny/server.sqlite`,
+    postgres: `# Postgres connection.
+WEBINY_PG_HOST=localhost
+WEBINY_PG_PORT=5432
+WEBINY_PG_USER=postgres
+WEBINY_PG_PASSWORD=postgres
+WEBINY_PG_DATABASE=webiny`
+};
+
+const buildDotEnv = (
+    storageOps: StorageOps
+) => `# Self-hosted (server) hosting-type environment variables.
 # The values below are safe dev defaults. CHANGE the secrets before any real deployment.
 
 # Ports the API and Admin servers listen on during \`webiny watch\` / \`webiny serve\`.
@@ -17,8 +31,7 @@ WEBINY_ADMIN_PORT=3001
 # Public origin of the API (used by the Admin app + for file-upload URLs).
 WEBINY_API_URL=http://localhost:3002
 
-# SQLite database file (relative paths resolve against the project root).
-WEBINY_SQL_FILENAME=./.webiny/server.sqlite
+${DB_ENV[storageOps]}
 
 # Local file storage for uploaded files + upload signing secret.
 WEBINY_LOCAL_STORAGE_PATH=./.webiny/storage
@@ -53,8 +66,11 @@ export class SetupServerWebinyProject {
             "@webiny/self-hosted-auth": "latest"
         });
 
-        // Write the `.env` with the server hosting-type dev defaults.
-        fs.writeFileSync(path.join(projectRootFolderPath, ".env"), DOT_ENV);
+        // Write the `.env` with the server hosting-type dev defaults (DB section matches the choice).
+        fs.writeFileSync(
+            path.join(projectRootFolderPath, ".env"),
+            buildDotEnv(serverArgs.storageOps)
+        );
 
         return serverArgs;
     }
