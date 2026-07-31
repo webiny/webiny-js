@@ -2,12 +2,12 @@
   "dependencies": [
     {
       "name": "@ai-sdk/anthropic",
-      "version": "4.0.21",
+      "version": "4.0.23",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
       "name": "@ai-sdk/openai",
-      "version": "4.0.20",
+      "version": "4.0.22",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
@@ -577,8 +577,13 @@
       "files": ["/packages/i18n/package.json", "/packages/i18n/package.json"]
     },
     {
+      "name": "adm-zip",
+      "version": "0.6.0",
+      "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
+    },
+    {
       "name": "ai",
-      "version": "7.0.37",
+      "version": "7.0.40",
       "files": [
         "/packages/ai-powerups/package.json",
         "/packages/api-core/package.json",
@@ -784,11 +789,6 @@
       "name": "debounce",
       "version": "3.0.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
-    },
-    {
-      "name": "decompress",
-      "version": "4.2.1",
-      "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
     },
     {
       "name": "deep-equal",
@@ -2530,6 +2530,11 @@
       "files": ["/packages/i18n/package.json", "/packages/i18n/package.json"]
     },
     {
+      "name": "@types/adm-zip",
+      "version": "0.5.8",
+      "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
+    },
+    {
       "name": "@types/bytes",
       "version": "3.1.5",
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
@@ -3789,7 +3794,7 @@
     },
     {
       "name": "webpack",
-      "version": "5.109.0",
+      "version": "5.109.1",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nextjs/package.json"
@@ -6074,7 +6079,7 @@
       "name": "ai",
       "versions": [
         {
-          "version": "7.0.37",
+          "version": "7.0.40",
           "files": [
             { "file": "/packages/ai-powerups/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] }
@@ -6247,7 +6252,7 @@
       "name": "@ai-sdk/anthropic",
       "versions": [
         {
-          "version": "4.0.21",
+          "version": "4.0.23",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -6256,7 +6261,7 @@
       "name": "@ai-sdk/openai",
       "versions": [
         {
-          "version": "4.0.20",
+          "version": "4.0.22",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8011,10 +8016,10 @@
       ]
     },
     {
-      "name": "decompress",
+      "name": "adm-zip",
       "versions": [
         {
-          "version": "4.2.1",
+          "version": "0.6.0",
           "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8025,6 +8030,15 @@
         {
           "version": "7.5.22",
           "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "@types/adm-zip",
+      "versions": [
+        {
+          "version": "0.5.8",
+          "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] }]
         }
       ]
     },
@@ -8151,7 +8165,7 @@
       "name": "webpack",
       "versions": [
         {
-          "version": "5.109.0",
+          "version": "5.109.1",
           "files": [
             {
               "file": "/packages/website-builder-nextjs/package.json",
