@@ -9,7 +9,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createContextPlugin } from "@webiny/api";
-import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
+import { WbInvalidateCloudfrontCacheTaskDefinition } from "~/features/redirects/InvalidateRedirectsCache/WbInvalidateCloudfrontCacheTask.js";
 import { createTenancyAndSecurity } from "./tenancySecurity.js";
 import { createCmsExtension } from "@webiny/api-headless-cms";
 import { createWebsiteBuilder } from "~/index.js";
@@ -55,7 +55,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             createBackgroundTasks(),
             createWebsiteBuilder(),
             createContextPlugin(context => {
-                context.container.register(InvalidateCloudfrontCacheTaskDefinition);
+                context.container.register(WbInvalidateCloudfrontCacheTaskDefinition);
             }),
             languagesExtensionPlugin,
             createEventHandler<any, ApiCoreContext, ApiCoreContext>(async ({ context }) => {

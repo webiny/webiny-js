@@ -3,6 +3,7 @@ import { InvalidateRedirectsCacheUseCase } from "./InvalidateRedirectsCacheUseCa
 import { RedirectAfterCreateCacheHandler } from "./RedirectAfterCreateHandler.js";
 import { RedirectAfterUpdateCacheHandler } from "./RedirectAfterUpdateHandler.js";
 import { RedirectAfterDeleteCacheHandler } from "./RedirectAfterDeleteHandler.js";
+import { WbInvalidateCloudfrontCacheTaskDefinition } from "./WbInvalidateCloudfrontCacheTask.js";
 
 export const InvalidateRedirectsCacheFeature = createFeature({
     name: "WebsiteBuilder/InvalidateRedirectsCache",
@@ -11,5 +12,6 @@ export const InvalidateRedirectsCacheFeature = createFeature({
         container.register(RedirectAfterCreateCacheHandler);
         container.register(RedirectAfterUpdateCacheHandler);
         container.register(RedirectAfterDeleteCacheHandler);
+        container.register(WbInvalidateCloudfrontCacheTaskDefinition);
     }
 });
