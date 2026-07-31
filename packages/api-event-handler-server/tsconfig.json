@@ -14,8 +14,7 @@
     { "path": "../event-handler-core" },
     { "path": "../event-handler-server" },
     { "path": "../feature" },
-    { "path": "../handler" },
-    { "path": "../utils" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -53,9 +52,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }
