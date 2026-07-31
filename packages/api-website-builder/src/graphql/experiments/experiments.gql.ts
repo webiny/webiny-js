@@ -1,8 +1,8 @@
-import { GraphQLSchemaPlugin, NotFoundError } from "@webiny/api-graphql";
+import { NotFoundError } from "@webiny/api-graphql";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { experimentsTypeDefs } from "~/graphql/experiments/experiments.typeDefs.js";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { CONTROL_VARIANT_ID } from "~/domain/experiment/abstractions.js";
 import type { WbExperiment } from "~/domain/experiment/abstractions.js";
 import type { WbVariant } from "~/domain/variant/abstractions.js";
@@ -23,7 +23,6 @@ import {
 } from "~/features/experiments/ExperimentPause/index.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
 import { VariantModel } from "~/domain/variant/abstractions.js";
-import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { CreateVariantUseCase } from "~/features/variants/CreateVariant/index.js";
 import { UpdateVariantUseCase } from "~/features/variants/UpdateVariant/index.js";
 import { DeleteVariantUseCase } from "~/features/variants/DeleteVariant/index.js";
@@ -64,283 +63,362 @@ const mapVariant = (variant: WbVariant) => ({
     savedOn: variant.savedOn
 });
 
-export const createExperimentsSchema = () => {
-    const schema = new GraphQLSchemaPlugin<ApiCoreContext>({
-        typeDefs: experimentsTypeDefs,
-        resolvers: {
-            WbQuery: {
-                getExperiment: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(GetExperimentByIdUseCase);
-                        const result = await useCase.execute(id);
-                        if (result.isFail()) {
-                            throw new NotFoundError(`Experiment "${id}" was not found!`);
-                        }
-                        return mapExperiment(result.value);
-                    });
-                },
-                getActiveExperiment: async (_, { revisionId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(
-                            GetActiveExperimentForRevisionUseCase
-                        );
-                        const result = await useCase.execute(revisionId);
-                        if (result.isFail()) {
-                            if (
-                                result.error.code === "WebsiteBuilder/Experiment/NoActiveExperiment"
-                            ) {
-                                return null;
-                            }
-                            throw new Error(result.error.message);
-                        }
-                        return mapExperiment(result.value);
-                    });
-                },
-                listExperiments: async (_, { pageEntryId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(ListExperimentsUseCase);
-                        const result = await useCase.execute({ pageEntryId });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return result.value.map(mapExperiment);
-                    });
-                },
-                getVariant: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(GetVariantByIdUseCase);
-                        const result = await useCase.execute(id);
-                        if (result.isFail()) {
-                            throw new NotFoundError(`Variant "${id}" was not found!`);
-                        }
-                        return mapVariant(result.value);
-                    });
-                },
-                listVariants: async (_, { experimentId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(ListVariantsUseCase);
-                        const result = await useCase.execute({ experimentId });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return result.value.map(mapVariant);
-                    });
-                },
-                getPageExperiment: async (_, { path }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(
-                            GetActiveExperimentForPathUseCase
-                        );
-                        const result = await useCase.execute(path);
-                        if (result.isFail()) {
-                            // No experiment to serve (none running, paused, or no such page) — the
-                            // SDK reads this null as "serve the control", so it isn't an error.
-                            const code = result.error.code;
-                            if (
-                                code === "WebsiteBuilder/Experiment/NoActiveExperiment" ||
-                                code === "WebsiteBuilder/Experiment/Paused" ||
-                                code === "WebsiteBuilder/Page/NotFound"
-                            ) {
-                                return null;
-                            }
-                            throw new Error(result.error.message);
-                        }
-                        const active = result.value;
-                        const trafficSplit = active.experiment.trafficSplit ?? {
-                            control: 100,
-                            variants: {}
-                        };
-                        return {
-                            experimentId: active.experiment.entryId,
-                            revisionId: active.revisionId,
-                            pageEntryId: active.pageEntryId,
-                            path: active.path,
-                            status: active.experiment.status,
-                            tenantId: active.experiment.tenant,
-                            controlVariantId: CONTROL_VARIANT_ID,
-                            trafficSplit,
-                            targeting: active.experiment.targeting,
-                            analytics: active.experiment.analytics,
-                            // Participating variants are the (published) variant entryIds carried
-                            // in the traffic split. Their content is fetched via getVariantContent.
-                            variants: Object.keys(trafficSplit.variants ?? {}).map(variantId => ({
-                                variantId,
-                                name: ""
-                            }))
-                        };
-                    });
-                },
-                getVariantContent: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        // Serve only PUBLISHED variant content, by entryId.
-                        const getPublished = context.container.resolve(
-                            GetPublishedRevisionByEntryIdUseCase
-                        );
-                        const variantModel = context.container.resolve(VariantModel);
-                        const result = await getPublished.execute<CmsEntryWbVariantValues>(
-                            variantModel,
-                            id
-                        );
-                        if (result.isFail() || !result.value) {
-                            throw new NotFoundError(`Published variant "${id}" was not found!`);
-                        }
-                        const values = result.value.values;
-                        return {
-                            id: result.value.entryId,
-                            properties: values.properties,
-                            bindings: values.bindings,
-                            elements: values.elements,
-                            extensions: values.extensions,
-                            metadata: values.metadata
-                        };
-                    });
-                },
-                getExperimentPaused: async (_, { experimentId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(IsExperimentPausedUseCase);
-                        const result = await useCase.execute(experimentId);
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return result.value;
-                    });
-                }
-            },
-            WbMutation: {
-                createExperiment: async (_, { data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(CreateExperimentUseCase);
-                        const result = await useCase.execute(data);
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return mapExperiment(result.value);
-                    });
-                },
-                updateExperiment: async (_, { id, data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(UpdateExperimentUseCase);
-                        const result = await useCase.execute({ id, data });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return mapExperiment(result.value);
-                    });
-                },
-                startExperiment: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(StartExperimentUseCase);
-                        const result = await useCase.execute({ id });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return mapExperiment(result.value);
-                    });
-                },
-                stopExperiment: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(StopExperimentUseCase);
-                        const result = await useCase.execute({ id });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return mapExperiment(result.value);
-                    });
-                },
-                pauseExperiment: async (_, { experimentId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(PauseExperimentUseCase);
-                        const result = await useCase.execute(experimentId);
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return result.value;
-                    });
-                },
-                resumeExperiment: async (_, { experimentId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(ResumeExperimentUseCase);
-                        const result = await useCase.execute(experimentId);
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return result.value;
-                    });
-                },
-                deleteExperiment: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(DeleteExperimentUseCase);
-                        const result = await useCase.execute({ id });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return true;
-                    });
-                },
-                graduateVariant: async (_, { experimentId, variantId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(GraduateVariantUseCase);
-                        const result = await useCase.execute({ experimentId, variantId });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return result.value;
-                    });
-                },
-                createVariant: async (_, { data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(CreateVariantUseCase);
-                        const result = await useCase.execute(data);
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return mapVariant(result.value);
-                    });
-                },
-                updateVariant: async (_, { id, data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(UpdateVariantUseCase);
-                        const result = await useCase.execute({ id, data });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return mapVariant(result.value);
-                    });
-                },
-                deleteVariant: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const useCase = context.container.resolve(DeleteVariantUseCase);
-                        const result = await useCase.execute({ id });
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-                        return true;
-                    });
-                }
-            }
+export const addExperimentsSchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(experimentsTypeDefs);
+
+    // --- Queries ---
+
+    builder.addResolver({
+        path: "WbQuery.getExperiment",
+        dependencies: [GetExperimentByIdUseCase],
+        resolver(getExperimentById) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getExperimentById.execute(args.id);
+                    if (result.isFail()) {
+                        throw new NotFoundError(`Experiment "${args.id}" was not found!`);
+                    }
+                    return mapExperiment(result.value);
+                });
         }
     });
 
-    schema.name = "wb.graphql.experiments";
+    builder.addResolver({
+        path: "WbQuery.getActiveExperiment",
+        dependencies: [GetActiveExperimentForRevisionUseCase],
+        resolver(getActiveForRevision) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getActiveForRevision.execute(args.revisionId);
+                    if (result.isFail()) {
+                        if (result.error.code === "WebsiteBuilder/Experiment/NoActiveExperiment") {
+                            return null;
+                        }
+                        throw new Error(result.error.message);
+                    }
+                    return mapExperiment(result.value);
+                });
+        }
+    });
 
-    return schema;
+    builder.addResolver({
+        path: "WbQuery.listExperiments",
+        dependencies: [ListExperimentsUseCase],
+        resolver(listExperiments) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await listExperiments.execute({
+                        pageEntryId: args.pageEntryId
+                    });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return result.value.map(mapExperiment);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getVariant",
+        dependencies: [GetVariantByIdUseCase],
+        resolver(getVariantById) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getVariantById.execute(args.id);
+                    if (result.isFail()) {
+                        throw new NotFoundError(`Variant "${args.id}" was not found!`);
+                    }
+                    return mapVariant(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.listVariants",
+        dependencies: [ListVariantsUseCase],
+        resolver(listVariants) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await listVariants.execute({
+                        experimentId: args.experimentId
+                    });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return result.value.map(mapVariant);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getPageExperiment",
+        dependencies: [GetActiveExperimentForPathUseCase],
+        resolver(getActiveForPath) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getActiveForPath.execute(args.path);
+                    if (result.isFail()) {
+                        const code = result.error.code;
+                        if (
+                            code === "WebsiteBuilder/Experiment/NoActiveExperiment" ||
+                            code === "WebsiteBuilder/Experiment/Paused" ||
+                            code === "WebsiteBuilder/Page/NotFound"
+                        ) {
+                            return null;
+                        }
+                        throw new Error(result.error.message);
+                    }
+                    const active = result.value;
+                    const trafficSplit = active.experiment.trafficSplit ?? {
+                        control: 100,
+                        variants: {}
+                    };
+                    return {
+                        experimentId: active.experiment.entryId,
+                        revisionId: active.revisionId,
+                        pageEntryId: active.pageEntryId,
+                        path: active.path,
+                        status: active.experiment.status,
+                        tenantId: active.experiment.tenant,
+                        controlVariantId: CONTROL_VARIANT_ID,
+                        trafficSplit,
+                        targeting: active.experiment.targeting,
+                        analytics: active.experiment.analytics,
+                        variants: Object.keys(trafficSplit.variants ?? {}).map(variantId => ({
+                            variantId,
+                            name: ""
+                        }))
+                    };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getVariantContent",
+        dependencies: [GetPublishedRevisionByEntryIdUseCase, VariantModel],
+        resolver(getPublished, variantModel) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getPublished.execute(variantModel, args.id);
+                    if (result.isFail() || !result.value) {
+                        throw new NotFoundError(
+                            `Published variant "${args.id}" was not found!`
+                        );
+                    }
+                    const values = result.value.values;
+                    return {
+                        id: result.value.entryId,
+                        properties: values.properties,
+                        bindings: values.bindings,
+                        elements: values.elements,
+                        extensions: values.extensions,
+                        metadata: values.metadata
+                    };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getExperimentPaused",
+        dependencies: [IsExperimentPausedUseCase],
+        resolver(isExperimentPaused) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await isExperimentPaused.execute(args.experimentId);
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return result.value;
+                });
+        }
+    });
+
+    // --- Mutations ---
+
+    builder.addResolver({
+        path: "WbMutation.createExperiment",
+        dependencies: [CreateExperimentUseCase],
+        resolver(createExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await createExperiment.execute(args.data);
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return mapExperiment(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.updateExperiment",
+        dependencies: [UpdateExperimentUseCase],
+        resolver(updateExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await updateExperiment.execute({ id: args.id, data: args.data });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return mapExperiment(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.startExperiment",
+        dependencies: [StartExperimentUseCase],
+        resolver(startExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await startExperiment.execute({ id: args.id });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return mapExperiment(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.stopExperiment",
+        dependencies: [StopExperimentUseCase],
+        resolver(stopExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await stopExperiment.execute({ id: args.id });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return mapExperiment(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.pauseExperiment",
+        dependencies: [PauseExperimentUseCase],
+        resolver(pauseExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await pauseExperiment.execute(args.experimentId);
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.resumeExperiment",
+        dependencies: [ResumeExperimentUseCase],
+        resolver(resumeExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await resumeExperiment.execute(args.experimentId);
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deleteExperiment",
+        dependencies: [DeleteExperimentUseCase],
+        resolver(deleteExperiment) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await deleteExperiment.execute({ id: args.id });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.graduateVariant",
+        dependencies: [GraduateVariantUseCase],
+        resolver(graduateVariant) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await graduateVariant.execute({
+                        experimentId: args.experimentId,
+                        variantId: args.variantId
+                    });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.createVariant",
+        dependencies: [CreateVariantUseCase],
+        resolver(createVariant) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await createVariant.execute(args.data);
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return mapVariant(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.updateVariant",
+        dependencies: [UpdateVariantUseCase],
+        resolver(updateVariant) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await updateVariant.execute({ id: args.id, data: args.data });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return mapVariant(result.value);
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deleteVariant",
+        dependencies: [DeleteVariantUseCase],
+        resolver(deleteVariant) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await deleteVariant.execute({ id: args.id });
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+                    return true;
+                });
+        }
+    });
 };
