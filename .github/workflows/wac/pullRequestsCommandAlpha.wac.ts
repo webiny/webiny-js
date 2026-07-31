@@ -20,7 +20,8 @@ const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANC
 export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
     command: "alpha",
     name: "Pull Requests Command - Alpha Release",
-    comment: "Alpha release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
+    comment:
+        "Alpha release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     workflow: {
         concurrency: {
             group: "alpha-release-${{ github.event.issue.number }}",
