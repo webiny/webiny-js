@@ -19,7 +19,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
-    "@webiny/stdlib": "^0.0.14",
+    "@webiny/stdlib": "^0.0.15",
     "graphql": "^16.14.2",
     "graphql-language-service": "^5.5.2",
     "mobx": "^6.16.1",

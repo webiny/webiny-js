@@ -498,7 +498,7 @@
     },
     {
       "name": "@rsbuild/plugin-type-check",
-      "version": "1.5.0",
+      "version": "1.6.0",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -513,7 +513,7 @@
     },
     {
       "name": "@rspack/core",
-      "version": "2.1.5",
+      "version": "2.1.6",
       "files": ["/packages/build-tools/package.json", "/packages/build-tools/package.json"]
     },
     {
@@ -1701,7 +1701,7 @@
     },
     {
       "name": "postcss",
-      "version": "8.5.23",
+      "version": "8.5.24",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nuxt/package.json",
@@ -3843,7 +3843,7 @@
   "resolutions": [
     { "name": "@types/react", "version": "18.3.31", "files": ["/package.json"] },
     { "name": "@types/react-dom", "version": "18.3.7", "files": ["/package.json"] },
-    { "name": "postcss", "version": "8.5.23", "files": ["/package.json"] },
+    { "name": "postcss", "version": "8.5.24", "files": ["/package.json"] },
     { "name": "react", "version": "18.3.1", "files": ["/package.json"] },
     { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] },
     { "name": "sharp", "version": "0.35.3", "files": ["/package.json"] }
@@ -5234,7 +5234,7 @@
       "name": "postcss",
       "versions": [
         {
-          "version": "8.5.23",
+          "version": "8.5.24",
           "files": [
             { "file": "/package.json", "types": ["resolutions"] },
             { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
@@ -7486,7 +7486,7 @@
       "name": "@rsbuild/plugin-type-check",
       "versions": [
         {
-          "version": "1.5.0",
+          "version": "1.6.0",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7513,7 +7513,7 @@
       "name": "@rspack/core",
       "versions": [
         {
-          "version": "2.1.5",
+          "version": "2.1.6",
           "files": [{ "file": "/packages/build-tools/package.json", "types": ["dependencies"] }]
         }
       ]

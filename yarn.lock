@@ -344,15 +344,15 @@ __metadata:
   linkType: hard
 
 "@aws-amplify/data-schema@npm:^1.7.0":
-  version: 1.26.0
-  resolution: "@aws-amplify/data-schema@npm:1.26.0"
+  version: 1.26.1
+  resolution: "@aws-amplify/data-schema@npm:1.26.1"
   dependencies:
     "@aws-amplify/data-schema-types": "npm:*"
     "@smithy/util-base64": "npm:^3.0.0"
     "@types/aws-lambda": "npm:^8.10.134"
     "@types/json-schema": "npm:^7.0.15"
     rxjs: "npm:^7.8.1"
-  checksum: 10/9193d448cb4c4bae815a2ee7a287136eca054ac3a30c582e01e9fc30bf6b7c1fa00de5d30dbc5db49eceac851089c7a75b4e1eb4b1f290520fc8c2c2472752bf
+  checksum: 10/bd93681defa54d0b3be7621e7fe681e96042d87e3bcaa1c29727c9c5d3df076730271a6cf20c34718b85118c94fe48a8b78c6c2741641dd7fea72303ee7e0193
   languageName: node
   linkType: hard
 
@@ -3906,7 +3906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@napi-rs/wasm-runtime@npm:1.1.6, @napi-rs/wasm-runtime@npm:^1.1.1, @napi-rs/wasm-runtime@npm:^1.1.4, @napi-rs/wasm-runtime@npm:^1.1.6":
+"@napi-rs/wasm-runtime@npm:1.1.6":
   version: 1.1.6
   resolution: "@napi-rs/wasm-runtime@npm:1.1.6"
   dependencies:
@@ -3915,6 +3915,18 @@ __metadata:
     "@emnapi/core": ^1.7.1
     "@emnapi/runtime": ^1.7.1
   checksum: 10/3e43425df17547d9d58ab69cce8e6cef38a062eccec4d2def5fc9e10e81cd19ae228b3ab9be4b149b57078d33913687511312d2414089877759b7db1f43625ba
+  languageName: node
+  linkType: hard
+
+"@napi-rs/wasm-runtime@npm:^1.1.1, @napi-rs/wasm-runtime@npm:^1.1.4, @napi-rs/wasm-runtime@npm:^1.1.6":
+  version: 1.2.0
+  resolution: "@napi-rs/wasm-runtime@npm:1.2.0"
+  dependencies:
+    "@tybys/wasm-util": "npm:^0.10.3"
+  peerDependencies:
+    "@emnapi/core": ^2.0.0-alpha.3
+    "@emnapi/runtime": ^2.0.0-alpha.3
+  checksum: 10/e227c1d9405e0e0830f810bd5aebbcda79168842ce3ec124704cad94d326611b23e013e4602366c86f7c25449ab99c145aa71e3e1e3112a59a0ca906332b989a
   languageName: node
   linkType: hard
 
@@ -7146,7 +7158,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsbuild/plugin-type-check@npm:^1.3.4, @rsbuild/plugin-type-check@npm:^1.5.0":
+"@rsbuild/plugin-type-check@npm:^1.3.4, @rsbuild/plugin-type-check@npm:^1.6.0":
   version: 1.6.0
   resolution: "@rsbuild/plugin-type-check@npm:1.6.0"
   dependencies:
@@ -7303,65 +7315,65 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-darwin-arm64@npm:2.1.5"
+"@rspack/binding-darwin-arm64@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-darwin-arm64@npm:2.1.6"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-darwin-x64@npm:2.1.5"
+"@rspack/binding-darwin-x64@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-darwin-x64@npm:2.1.6"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:2.1.5"
+"@rspack/binding-linux-arm64-gnu@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:2.1.6"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-linux-arm64-musl@npm:2.1.5"
+"@rspack/binding-linux-arm64-musl@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-linux-arm64-musl@npm:2.1.6"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-riscv64-gnu@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-linux-riscv64-gnu@npm:2.1.5"
+"@rspack/binding-linux-riscv64-gnu@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-linux-riscv64-gnu@npm:2.1.6"
   conditions: os=linux & cpu=riscv64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-riscv64-musl@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-linux-riscv64-musl@npm:2.1.5"
+"@rspack/binding-linux-riscv64-musl@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-linux-riscv64-musl@npm:2.1.6"
   conditions: os=linux & cpu=riscv64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-linux-x64-gnu@npm:2.1.5"
+"@rspack/binding-linux-x64-gnu@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-linux-x64-gnu@npm:2.1.6"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-linux-x64-musl@npm:2.1.5"
+"@rspack/binding-linux-x64-musl@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-linux-x64-musl@npm:2.1.6"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-wasm32-wasi@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-wasm32-wasi@npm:2.1.5"
+"@rspack/binding-wasm32-wasi@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-wasm32-wasi@npm:2.1.6"
   dependencies:
     "@emnapi/core": "npm:1.11.2"
     "@emnapi/runtime": "npm:1.11.2"
@@ -7370,43 +7382,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:2.1.5"
+"@rspack/binding-win32-arm64-msvc@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:2.1.6"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:2.1.5"
+"@rspack/binding-win32-ia32-msvc@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:2.1.6"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding-win32-x64-msvc@npm:2.1.5"
+"@rspack/binding-win32-x64-msvc@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding-win32-x64-msvc@npm:2.1.6"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/binding@npm:2.1.5"
+"@rspack/binding@npm:2.1.6":
+  version: 2.1.6
+  resolution: "@rspack/binding@npm:2.1.6"
   dependencies:
-    "@rspack/binding-darwin-arm64": "npm:2.1.5"
-    "@rspack/binding-darwin-x64": "npm:2.1.5"
-    "@rspack/binding-linux-arm64-gnu": "npm:2.1.5"
-    "@rspack/binding-linux-arm64-musl": "npm:2.1.5"
-    "@rspack/binding-linux-riscv64-gnu": "npm:2.1.5"
-    "@rspack/binding-linux-riscv64-musl": "npm:2.1.5"
-    "@rspack/binding-linux-x64-gnu": "npm:2.1.5"
-    "@rspack/binding-linux-x64-musl": "npm:2.1.5"
-    "@rspack/binding-wasm32-wasi": "npm:2.1.5"
-    "@rspack/binding-win32-arm64-msvc": "npm:2.1.5"
-    "@rspack/binding-win32-ia32-msvc": "npm:2.1.5"
-    "@rspack/binding-win32-x64-msvc": "npm:2.1.5"
+    "@rspack/binding-darwin-arm64": "npm:2.1.6"
+    "@rspack/binding-darwin-x64": "npm:2.1.6"
+    "@rspack/binding-linux-arm64-gnu": "npm:2.1.6"
+    "@rspack/binding-linux-arm64-musl": "npm:2.1.6"
+    "@rspack/binding-linux-riscv64-gnu": "npm:2.1.6"
+    "@rspack/binding-linux-riscv64-musl": "npm:2.1.6"
+    "@rspack/binding-linux-x64-gnu": "npm:2.1.6"
+    "@rspack/binding-linux-x64-musl": "npm:2.1.6"
+    "@rspack/binding-wasm32-wasi": "npm:2.1.6"
+    "@rspack/binding-win32-arm64-msvc": "npm:2.1.6"
+    "@rspack/binding-win32-ia32-msvc": "npm:2.1.6"
+    "@rspack/binding-win32-x64-msvc": "npm:2.1.6"
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -7432,15 +7444,15 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 10/d1054348d3ba734485f977d574c6311311707adfcc5e53f03c8dbbbdc5778cff9b815e1d675992e2832241606d4cce7678acc3999b259139120b4ec30751f1e1
+  checksum: 10/0d164b7425f448ed6b8b81e687f4a82377289476cee41553ced9532e211d216fa13429b9125f3e3f025e391709bf752983c16eb4549341a21cbd0c61510afbeb
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:^2.1.5, @rspack/core@npm:~2.1.5":
-  version: 2.1.5
-  resolution: "@rspack/core@npm:2.1.5"
+"@rspack/core@npm:^2.1.6, @rspack/core@npm:~2.1.5":
+  version: 2.1.6
+  resolution: "@rspack/core@npm:2.1.6"
   dependencies:
-    "@rspack/binding": "npm:2.1.5"
+    "@rspack/binding": "npm:2.1.6"
   peerDependencies:
     "@module-federation/runtime-tools": ^0.24.1 || ^2.0.0
     "@swc/helpers": ^0.5.23
@@ -7449,7 +7461,7 @@ __metadata:
       optional: true
     "@swc/helpers":
       optional: true
-  checksum: 10/714064de701211724f7d859bc269d357fa2ad2f7ea0ac34d1e4e48b534981cf3961bd723c0659b9c093330f04e01e16a0c5587d6a18301727e27d717f764ded7
+  checksum: 10/334f8e13aa3540b7320d3186250fc4e2f128711f765d2073274188f23c692d4262e7cbb88c10571626b55e480186c474bdbcb564e7fa97df803479554de855b4
   languageName: node
   linkType: hard
 
@@ -10009,7 +10021,7 @@ __metadata:
   dependencies:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/yargs": "npm:^17.0.35"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     chalk: "npm:^6.0.0"
     execa: "npm:^10.0.0"
     fs-extra: "npm:^11.4.0"
@@ -10073,7 +10085,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     chalk: "npm:^6.0.0"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.4.0"
@@ -10540,7 +10552,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     better-sqlite3: "npm:^13.0.1"
     knex: "npm:^3.3.0"
     pg: "npm:^8.22.0"
@@ -10797,7 +10809,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
@@ -10879,7 +10891,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/utils": "npm:0.0.0"
     knex: "npm:^3.3.0"
     typescript: "npm:^7.0.2"
@@ -11288,7 +11300,7 @@ __metadata:
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
@@ -11302,7 +11314,7 @@ __metadata:
     "@webiny/api-sync-to-opensearch": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
@@ -11348,7 +11360,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/utils": "npm:0.0.0"
     p-retry: "npm:^8.0.0"
     typescript: "npm:^7.0.2"
@@ -11781,7 +11793,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     graphql: "npm:^16.14.2"
     graphql-language-service: "npm:^5.5.2"
     mobx: "npm:^6.16.1"
@@ -12324,7 +12336,7 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
@@ -12384,13 +12396,13 @@ __metadata:
     "@rsbuild/plugin-react": "npm:^2.1.0"
     "@rsbuild/plugin-sass": "npm:^2.0.1"
     "@rsbuild/plugin-svgr": "npm:^2.0.5"
-    "@rsbuild/plugin-type-check": "npm:^1.5.0"
+    "@rsbuild/plugin-type-check": "npm:^1.6.0"
     "@rsdoctor/rspack-plugin": "npm:^1.6.1"
     "@rslib/core": "npm:^0.23.2"
-    "@rspack/core": "npm:^2.1.5"
+    "@rspack/core": "npm:^2.1.6"
     "@swc/plugin-emotion": "npm:^14.15.0"
     "@tailwindcss/postcss": "npm:^4.3.3"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     chalk: "npm:^6.0.0"
     css-loader: "npm:^7.1.4"
     fast-glob: "npm:^3.3.3"
@@ -12446,7 +12458,7 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.0"
     ci-info: "npm:^4.4.0"
@@ -12702,7 +12714,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     ci-info: "npm:^4.4.0"
     load-json-file: "npm:^7.0.1"
     write-json-file: "npm:^7.0.0"
@@ -13091,7 +13103,7 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     jest-dynalite: "npm:^3.6.1"
     listr2: "npm:^11.0.0"
     load-json-file: "npm:^7.0.1"
@@ -13310,9 +13322,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/stdlib@npm:^0.0.14":
-  version: 0.0.14
-  resolution: "@webiny/stdlib@npm:0.0.14"
+"@webiny/stdlib@npm:^0.0.15":
+  version: 0.0.15
+  resolution: "@webiny/stdlib@npm:0.0.15"
   dependencies:
     "@11ty/gray-matter": "npm:^2.1.0"
     "@modelcontextprotocol/sdk": "npm:^1.30.0"
@@ -13328,7 +13340,7 @@ __metadata:
     zod: "npm:^4.4.3"
   bin:
     stdlib-mcp: mcp/cli.js
-  checksum: 10/ed3d170d8438e076ba5518d846432c26c12c65550805b708b749ac7fe881bb2c3424676e096e26ee0c75fedfd014cdafc78cfb695383244209ee2f8dc33e2645
+  checksum: 10/dcf9ef76b23e271d247f13600f3f7d48a271fe91bf061ef52bf1ef13193cc94f99abe564720dcd44947ca0c145a9b431b7be10a07ee8a9d3e824d2b4db94cc97
   languageName: node
   linkType: hard
 
@@ -13469,7 +13481,7 @@ __metadata:
     "@types/postcss-import": "npm:^14.0.3"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-react": "npm:0.0.0"
-    postcss: "npm:^8.5.23"
+    postcss: "npm:^8.5.24"
     postcss-import: "npm:^16.1.1"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
@@ -13486,7 +13498,7 @@ __metadata:
     "@types/postcss-import": "npm:^14.0.3"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-vue": "npm:0.0.0"
-    postcss: "npm:^8.5.23"
+    postcss: "npm:^8.5.24"
     postcss-import: "npm:^16.1.1"
     typescript: "npm:^7.0.2"
     vite: "npm:^8.1.5"
@@ -15583,7 +15595,7 @@ __metadata:
     "@types/validate-npm-package-name": "npm:^4.0.2"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/mcp": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.0"
@@ -23088,14 +23100,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:8.5.23":
-  version: 8.5.23
-  resolution: "postcss@npm:8.5.23"
+"postcss@npm:8.5.24":
+  version: 8.5.24
+  resolution: "postcss@npm:8.5.24"
   dependencies:
     nanoid: "npm:^3.3.16"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10/8387f421216696bf62a13e5a270e9fefdafc81e196903c0f8d7653f8bab315367cc2261b3c22cf197e492cb075f31bdfc07fd9c3be1cb165ff3cabe14c5a039a
+  checksum: 10/4e26169ed6fe8c2a32702d233b16368124d162a9399606381ed7a2f99ba6237360717aab339a0bd0f072280663413ff5115189b282085d1be74ffb2d25bdb562
   languageName: node
   linkType: hard
 
@@ -24335,7 +24347,7 @@ __metadata:
     "@types/react-dom": "npm:18.3.7"
     "@vitest/coverage-v8": "npm:^4.1.10"
     "@webiny/di": "npm:^1.0.2"
-    "@webiny/stdlib": "npm:^0.0.14"
+    "@webiny/stdlib": "npm:^0.0.15"
     adio: "npm:^3.0.1"
     chalk: "npm:^6.0.0"
     cross-env: "npm:^10.1.0"
