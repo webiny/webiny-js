@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { mdbid } from "@webiny/utils";
+import { uuid } from "@webiny/stdlib";
 import {
     EmptyTrashBinRoute,
     BulkActionsInternalToken
@@ -12,7 +12,7 @@ const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
 const EMPTY_TRASH_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 export function registerBulkActionsServer(rootContainer: Container): void {
-    const token = mdbid();
+    const token = uuid();
     rootContainer.registerInstance(BulkActionsInternalToken, { value: token });
     rootContainer.register(EmptyTrashBinRoute);
 }
