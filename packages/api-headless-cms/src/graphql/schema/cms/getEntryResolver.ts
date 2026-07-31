@@ -1,6 +1,6 @@
 import type { CmsContext, ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
-import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
+import { getModel, getErrorMessage, buildFieldsSelection, expandFieldWildcards } from "./helpers.js";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 
 export interface GetEntryArgs {
@@ -21,7 +21,8 @@ export const createGetEntryResolver = () => {
             // preview=true -> preview API, preview=false -> read API
             const apiType: ApiEndpoint = preview ? "preview" : "read";
 
-            const fieldsSelection = buildFieldsSelection(fields);
+            const expandedFields = expandFieldWildcards(fields, model, context);
+            const fieldsSelection = buildFieldsSelection(expandedFields);
 
             const query = /* GraphQL */ `
                 query Get${model.singularApiName}($where: ${model.singularApiName}GetWhereInput!) {
