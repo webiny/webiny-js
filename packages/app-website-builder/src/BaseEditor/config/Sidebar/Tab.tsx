@@ -1,12 +1,15 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { SegmentedControl } from "@webiny/admin-ui";
+import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
+
+// Height of the tab header (the segmented control) above the scrollable content.
+const TAB_HEADER_HEIGHT = 49;
 
 export const TabContainer = styled("div")({
     display: "flex",
     position: "relative",
     flexDirection: "column",
-    height: "calc(100vh - 44px - 49px)", // Subtract top-bar and tab-header height
     overflowY: "auto",
     // Style scrollbar
     "&::-webkit-scrollbar": {
@@ -31,6 +34,12 @@ export interface TabProps {
 }
 
 export const Tab = ({ name, label, icon, disabled, element, visible }: TabProps) => {
+    // The chrome above the editor content (top bar, etc.) is measured at runtime and stored as
+    // `uiReservedSpace.height` — the same value the canvas uses (see PreviewContainer). The old
+    // code guessed this at a fixed 44px, so when the real chrome was taller the scroll box
+    // overflowed the viewport and its bottom rows became unreachable. Use the measured value.
+    const uiHeight = useSelectFromEditor(state => state.uiReservedSpace.height);
+
     return (
         <SegmentedControl.Tabs.Tab
             value={name}
@@ -38,7 +47,13 @@ export const Tab = ({ name, label, icon, disabled, element, visible }: TabProps)
             icon={icon}
             disabled={disabled}
             visible={visible}
-            content={<TabContainer>{element}</TabContainer>}
+            content={
+                <TabContainer
+                    style={{ height: `calc(100vh - ${uiHeight}px - ${TAB_HEADER_HEIGHT}px)` }}
+                >
+                    {element}
+                </TabContainer>
+            }
         />
     );
 };
