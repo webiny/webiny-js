@@ -69,7 +69,7 @@ const BreadcrumbItem = ({ item }: { item: BreadcrumbsItem }) => {
                 aria-current={item.current ? "page" : undefined}
                 title={title}
                 className={cn(
-                    "flex items-center rounded-sm px-xxs py-none",
+                    "flex items-center rounded-sm px-xs py-xxs",
                     item.current ? "text-neutral-primary" : "text-neutral-muted"
                 )}
             >
@@ -84,7 +84,7 @@ const BreadcrumbItem = ({ item }: { item: BreadcrumbsItem }) => {
             onClick={item.onClick}
             title={title}
             className={cn(
-                "flex items-center rounded-sm px-xxs py-none",
+                "flex items-center rounded-sm px-xs py-xxs",
                 "text-neutral-muted transition-colors",
                 "hover:bg-neutral-dimmed hover:text-neutral-primary",
                 "focus-visible:outline-none focus-visible:ring-md focus-visible:ring-primary-dimmed"
