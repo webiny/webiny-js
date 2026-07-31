@@ -95,6 +95,20 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
 
     const fileInfo = metadata.get<FileInfo>("backgroundImage");
 
+    // The FilePicker expects a FileItemDto (`mimeType`, `src`), but our metadata stores the
+    // legacy shape (`type`, `url`). Map it across so the picker can detect an image and render
+    // the thumbnail (otherwise `mimeType` is undefined and it shows the generic file icon).
+    const pickerValue =
+        url && fileInfo
+            ? {
+                  id: fileInfo.id,
+                  name: fileInfo.name,
+                  size: fileInfo.size,
+                  mimeType: fileInfo.type,
+                  src: fileInfo.url
+              }
+            : undefined;
+
     return (
         <SidebarRow
             label={
@@ -113,7 +127,7 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
                     <FilePicker
                         variant={"secondary"}
                         type="compact"
-                        value={url ? fileInfo : undefined}
+                        value={pickerValue}
                         onSelectItem={() => showFileManager()}
                         onRemoveItem={onRemove}
                         onEditItem={() => showFileManager()}
