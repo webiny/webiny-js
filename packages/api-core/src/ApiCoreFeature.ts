@@ -13,6 +13,8 @@ import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { MaskerFeature } from "~/features/masker/feature.js";
+import { StringFormatterFeature } from "~/features/stringFormatter/feature.js";
+import { DateFormatterFeature } from "~/features/dateFormatter/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
 import { WebhookProviderFeature } from "~/features/webhooks/index.js";
@@ -22,6 +24,8 @@ export const ApiCoreFeature = createFeature({
     register(container: Container, config: ApiCoreStorageOperations) {
         // Register features
         MaskerFeature.register(container);
+        StringFormatterFeature.register(container);
+        DateFormatterFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
         EventPublisherFeature.register(container);
