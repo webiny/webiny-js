@@ -3851,7 +3851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.29.0, @modelcontextprotocol/sdk@npm:^1.30.0":
+"@modelcontextprotocol/sdk@npm:^1.30.0":
   version: 1.30.0
   resolution: "@modelcontextprotocol/sdk@npm:1.30.0"
   dependencies:
@@ -7147,13 +7147,13 @@ __metadata:
   linkType: hard
 
 "@rsbuild/plugin-type-check@npm:^1.3.4, @rsbuild/plugin-type-check@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "@rsbuild/plugin-type-check@npm:1.5.0"
+  version: 1.6.0
+  resolution: "@rsbuild/plugin-type-check@npm:1.6.0"
   dependencies:
     deepmerge: "npm:^4.3.1"
     json5: "npm:^2.2.3"
     reduce-configs: "npm:^1.1.2"
-    ts-checker-rspack-plugin: "npm:^1.5.1"
+    ts-checker-rspack-plugin: "npm:^1.6.0"
   peerDependencies:
     "@rsbuild/core": ^1.0.0 || ^2.0.0-0
     "@typescript/native-preview": ^7.0.0-0
@@ -7162,7 +7162,7 @@ __metadata:
       optional: true
     "@typescript/native-preview":
       optional: true
-  checksum: 10/4c6a7af1034e2876890662fac4bfed99fb067f395aed6cd204a840b8858fdffdfa7097f674583ac8a34cdd69659aa1759e4593ed0d895568c3b1387390607a90
+  checksum: 10/bf9104178bdb13a657e86b902d1f7a21e8ea8faebf1afe34a098d2c3318f37cea791ccbd770bc37f4a501f252a7a91ecb55fe74720dbc09eb4e2d9190a4872da
   languageName: node
   linkType: hard
 
@@ -10009,7 +10009,7 @@ __metadata:
   dependencies:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/yargs": "npm:^17.0.35"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     chalk: "npm:^6.0.0"
     execa: "npm:^10.0.0"
     fs-extra: "npm:^11.4.0"
@@ -10073,7 +10073,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     chalk: "npm:^6.0.0"
     find-up: "npm:^8.0.0"
     fs-extra: "npm:^11.4.0"
@@ -10540,7 +10540,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/self-hosted-auth": "npm:0.0.0"
     "@webiny/self-hosted-auth-sql": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     better-sqlite3: "npm:^13.0.1"
     knex: "npm:^3.3.0"
     pg: "npm:^8.22.0"
@@ -10797,7 +10797,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
@@ -10879,7 +10879,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/utils": "npm:0.0.0"
     knex: "npm:^3.3.0"
     typescript: "npm:^7.0.2"
@@ -11288,7 +11288,7 @@ __metadata:
     "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
@@ -11302,7 +11302,7 @@ __metadata:
     "@webiny/api-sync-to-opensearch": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:^7.0.2"
   languageName: unknown
@@ -11348,7 +11348,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/utils": "npm:0.0.0"
     p-retry: "npm:^8.0.0"
     typescript: "npm:^7.0.2"
@@ -11781,7 +11781,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     graphql: "npm:^16.14.2"
     graphql-language-service: "npm:^5.5.2"
     mobx: "npm:^6.16.1"
@@ -12324,7 +12324,7 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
@@ -12390,7 +12390,7 @@ __metadata:
     "@rspack/core": "npm:^2.1.5"
     "@swc/plugin-emotion": "npm:^14.15.0"
     "@tailwindcss/postcss": "npm:^4.3.3"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     chalk: "npm:^6.0.0"
     css-loader: "npm:^7.1.4"
     fast-glob: "npm:^3.3.3"
@@ -12446,7 +12446,7 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.0"
     ci-info: "npm:^4.4.0"
@@ -12702,7 +12702,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/global-config@workspace:packages/global-config"
   dependencies:
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     ci-info: "npm:^4.4.0"
     load-json-file: "npm:^7.0.1"
     write-json-file: "npm:^7.0.0"
@@ -13091,7 +13091,7 @@ __metadata:
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     jest-dynalite: "npm:^3.6.1"
     listr2: "npm:^11.0.0"
     load-json-file: "npm:^7.0.1"
@@ -13310,12 +13310,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/stdlib@npm:^0.0.13":
-  version: 0.0.13
-  resolution: "@webiny/stdlib@npm:0.0.13"
+"@webiny/stdlib@npm:^0.0.14":
+  version: 0.0.14
+  resolution: "@webiny/stdlib@npm:0.0.14"
   dependencies:
     "@11ty/gray-matter": "npm:^2.1.0"
-    "@modelcontextprotocol/sdk": "npm:^1.29.0"
+    "@modelcontextprotocol/sdk": "npm:^1.30.0"
     "@webiny/di": "npm:^1.0.2"
     bson-objectid: "npm:^2.0.4"
     dot-prop: "npm:^10.2.0"
@@ -13327,8 +13327,8 @@ __metadata:
     type-fest: "npm:^5.8.0"
     zod: "npm:^4.4.3"
   bin:
-    stdlib-mcp: dist/mcp/cli.js
-  checksum: 10/b2a7d3618faf27dc655644c68574ca9b5212db076b3ab4381f56080b67a4d8ef222f5861ee85da3e26843aabc0a491d91900540d8b627d1c26d658ab0a5bac1f
+    stdlib-mcp: mcp/cli.js
+  checksum: 10/ed3d170d8438e076ba5518d846432c26c12c65550805b708b749ac7fe881bb2c3424676e096e26ee0c75fedfd014cdafc78cfb695383244209ee2f8dc33e2645
   languageName: node
   linkType: hard
 
@@ -15583,7 +15583,7 @@ __metadata:
     "@types/validate-npm-package-name": "npm:^4.0.2"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/mcp": "npm:0.0.0"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.0"
@@ -24335,7 +24335,7 @@ __metadata:
     "@types/react-dom": "npm:18.3.7"
     "@vitest/coverage-v8": "npm:^4.1.10"
     "@webiny/di": "npm:^1.0.2"
-    "@webiny/stdlib": "npm:^0.0.13"
+    "@webiny/stdlib": "npm:^0.0.14"
     adio: "npm:^3.0.1"
     chalk: "npm:^6.0.0"
     cross-env: "npm:^10.1.0"
@@ -26417,7 +26417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-checker-rspack-plugin@npm:^1.5.1":
+"ts-checker-rspack-plugin@npm:^1.6.0":
   version: 1.6.0
   resolution: "ts-checker-rspack-plugin@npm:1.6.0"
   dependencies:
