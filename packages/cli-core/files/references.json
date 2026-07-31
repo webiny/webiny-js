@@ -3843,6 +3843,7 @@
   "resolutions": [
     { "name": "@types/react", "version": "18.3.31", "files": ["/package.json"] },
     { "name": "@types/react-dom", "version": "18.3.7", "files": ["/package.json"] },
+    { "name": "postcss", "version": "8.5.23", "files": ["/package.json"] },
     { "name": "react", "version": "18.3.1", "files": ["/package.json"] },
     { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] },
     { "name": "sharp", "version": "0.35.3", "files": ["/package.json"] }
@@ -5225,6 +5226,19 @@
             { "file": "/package.json", "types": ["resolutions"] },
             { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "postcss",
+      "versions": [
+        {
+          "version": "8.5.23",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
+            { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -8118,18 +8132,6 @@
           "files": [
             { "file": "/packages/utils/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "postcss",
-      "versions": [
-        {
-          "version": "8.5.23",
-          "files": [
-            { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
-            { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
           ]
         }
       ]
