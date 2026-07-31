@@ -1,7 +1,8 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { AutoComplete } from "@webiny/admin-ui";
-import { LIST_TEAMS } from "./graphql.js";
-import { useQuery } from "@apollo/react-hooks";
+import { useFeature } from "@webiny/app";
+import { observer } from "mobx-react-lite";
+import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
 type TeamAutocompleteProps = Omit<
     React.ComponentProps<typeof AutoComplete>,
@@ -10,23 +11,21 @@ type TeamAutocompleteProps = Omit<
     onChange?: (value: string) => void;
 };
 
-export const TeamAutocomplete = ({ onChange, value, ...props }: TeamAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_TEAMS);
-    const rawOptions = loading || !data ? [] : data.security.teams.data;
+export const TeamAutocomplete = observer(({ onChange, value, ...props }: TeamAutocompleteProps) => {
+    const { presenter } = useFeature(TeamsAutocompletePresenterFeature);
 
-    const options = useMemo(
-        () => rawOptions.map((team: any) => ({ label: team.name, value: team.id })),
-        [rawOptions]
-    );
+    useEffect(() => {
+        presenter.init();
+    }, [presenter]);
 
     const onValueChange = useCallback((id: string) => onChange?.(id), [onChange]);
 
     return (
         <AutoComplete
             {...props}
-            options={options}
-            value={loading ? undefined : (value as string | undefined)}
+            options={presenter.vm.options}
+            value={presenter.vm.loading ? undefined : (value as string | undefined)}
             onValueChange={onValueChange}
         />
     );
-};
+});

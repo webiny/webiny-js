@@ -2,23 +2,13 @@
   "dependencies": [
     {
       "name": "@ai-sdk/anthropic",
-      "version": "4.0.21",
+      "version": "4.0.23",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
     },
     {
       "name": "@ai-sdk/openai",
-      "version": "4.0.20",
+      "version": "4.0.22",
       "files": ["/packages/api-core/package.json", "/packages/api-core/package.json"]
-    },
-    {
-      "name": "@apollo/react-components",
-      "version": "3.1.5",
-      "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
-    },
-    {
-      "name": "@apollo/react-hooks",
-      "version": "3.1.5",
-      "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
       "name": "@auth0/auth0-spa-js",
@@ -27,107 +17,107 @@
     },
     {
       "name": "@aws-sdk/client-apigatewaymanagementapi",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudfront",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-events",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cloudwatch-logs",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-cognito-identity-provider",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-dynamodb-streams",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-eventbridge",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iam",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-iot",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-lambda",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-s3",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-scheduler",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sfn",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sqs",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/client-sts",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/credential-providers",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-dynamodb",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/lib-storage",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-presigned-post",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
       "name": "@aws-sdk/s3-request-presigner",
-      "version": "3.1095.0",
+      "version": "3.1096.0",
       "files": ["/packages/aws-sdk/package.json", "/packages/aws-sdk/package.json"]
     },
     {
@@ -412,7 +402,7 @@
     },
     {
       "name": "@modelcontextprotocol/sdk",
-      "version": "1.29.0",
+      "version": "1.30.0",
       "files": ["/packages/mcp/package.json", "/packages/mcp/package.json"]
     },
     {
@@ -420,9 +410,11 @@
       "version": "4.7.0",
       "files": [
         "/packages/admin-ui/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/admin-ui/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json",
         "/packages/app-website-builder/package.json"
       ]
@@ -585,104 +577,18 @@
       "files": ["/packages/i18n/package.json", "/packages/i18n/package.json"]
     },
     {
+      "name": "adm-zip",
+      "version": "0.6.0",
+      "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
+    },
+    {
       "name": "ai",
-      "version": "7.0.37",
+      "version": "7.0.40",
       "files": [
         "/packages/ai-powerups/package.json",
         "/packages/api-core/package.json",
         "/packages/ai-powerups/package.json",
         "/packages/api-core/package.json"
-      ]
-    },
-    {
-      "name": "apollo-cache",
-      "version": "1.3.5",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-cache-inmemory",
-      "version": "1.6.6",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
-      "name": "apollo-client",
-      "version": "2.6.10",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link",
-      "version": "1.2.14",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link-batch-http",
-      "version": "1.2.14",
-      "files": [
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app-serverless-cms/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link-context",
-      "version": "1.0.20",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json"
-      ]
-    },
-    {
-      "name": "apollo-link-error",
-      "version": "1.1.13",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
-      "name": "apollo-link-http-common",
-      "version": "0.2.16",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
-      "name": "apollo-utilities",
-      "version": "1.3.4",
-      "files": [
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json",
-        "/packages/app/package.json",
-        "/packages/app-admin/package.json",
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-serverless-cms/package.json"
       ]
     },
     {
@@ -737,7 +643,7 @@
     },
     {
       "name": "chalk",
-      "version": "5.6.2",
+      "version": "6.0.0",
       "files": [
         "/scripts/buildPackages/package.json",
         "/scripts/prepublishOnly/package.json",
@@ -883,11 +789,6 @@
       "name": "debounce",
       "version": "3.0.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
-    },
-    {
-      "name": "decompress",
-      "version": "4.2.1",
-      "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
     },
     {
       "name": "deep-equal",
@@ -1145,6 +1046,14 @@
       ]
     },
     {
+      "name": "graphql-language-service",
+      "version": "5.5.2",
+      "files": [
+        "/packages/app-graphql-playground/package.json",
+        "/packages/app-graphql-playground/package.json"
+      ]
+    },
+    {
       "name": "graphql-request",
       "version": "7.4.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
@@ -1159,10 +1068,8 @@
       "version": "2.12.7",
       "files": [
         "/packages/api-headless-cms/package.json",
-        "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/api-headless-cms/package.json",
-        "/packages/app-admin/package.json",
         "/packages/app-headless-cms/package.json"
       ]
     },
@@ -1235,7 +1142,7 @@
     },
     {
       "name": "jsdom",
-      "version": "29.1.1",
+      "version": "30.0.0",
       "files": ["/packages/project/package.json", "/packages/project/package.json"]
     },
     {
@@ -1341,14 +1248,6 @@
         "/packages/project/package.json",
         "/packages/pulumi-sdk/package.json",
         "/packages/telemetry/package.json"
-      ]
-    },
-    {
-      "name": "load-script",
-      "version": "2.0.0",
-      "files": [
-        "/packages/app-graphql-playground/package.json",
-        "/packages/app-graphql-playground/package.json"
       ]
     },
     {
@@ -1467,7 +1366,7 @@
     },
     {
       "name": "minimatch",
-      "version": "10.2.5",
+      "version": "10.2.6",
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/api-core/package.json",
@@ -1491,6 +1390,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-workflows/package.json",
         "/packages/app-mailer/package.json",
@@ -1515,6 +1415,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-workflows/package.json",
         "/packages/app-mailer/package.json",
@@ -1543,6 +1444,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-scheduler/package.json",
         "/packages/app-headless-cms-workflows/package.json",
@@ -1563,6 +1465,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-headless-cms-scheduler/package.json",
         "/packages/app-headless-cms-workflows/package.json",
@@ -1587,9 +1490,11 @@
       "files": [
         "/packages/admin-ui/package.json",
         "/packages/app-admin/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json",
         "/packages/admin-ui/package.json",
         "/packages/app-admin/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-sdk-playground/package.json"
       ]
     },
@@ -1602,11 +1507,9 @@
       "name": "nanoid",
       "version": "6.0.0",
       "files": [
-        "/packages/app/package.json",
         "/packages/react-properties/package.json",
         "/packages/utils/package.json",
         "/packages/website-builder-sdk/package.json",
-        "/packages/app/package.json",
         "/packages/react-properties/package.json",
         "/packages/utils/package.json",
         "/packages/website-builder-sdk/package.json"
@@ -2245,11 +2148,6 @@
       "files": ["/packages/app-admin/package.json", "/packages/app-admin/package.json"]
     },
     {
-      "name": "ts-invariant",
-      "version": "0.10.3",
-      "files": ["/packages/app/package.json", "/packages/app/package.json"]
-    },
-    {
       "name": "ts-morph",
       "version": "28.0.0",
       "files": [
@@ -2582,17 +2480,17 @@
     },
     {
       "name": "@storybook/addon-a11y",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/addon-docs",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
       "name": "@storybook/react",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -2630,6 +2528,11 @@
       "name": "@types/accounting",
       "version": "0.4.5",
       "files": ["/packages/i18n/package.json", "/packages/i18n/package.json"]
+    },
+    {
+      "name": "@types/adm-zip",
+      "version": "0.5.8",
+      "files": ["/packages/pulumi-sdk/package.json", "/packages/pulumi-sdk/package.json"]
     },
     {
       "name": "@types/bytes",
@@ -2956,14 +2859,6 @@
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     {
-      "name": "apollo-graphql",
-      "version": "0.9.7",
-      "files": [
-        "/packages/api-headless-cms/package.json",
-        "/packages/api-headless-cms/package.json"
-      ]
-    },
-    {
       "name": "aws-sdk-client-mock",
       "version": "4.1.0",
       "files": [
@@ -2991,7 +2886,7 @@
     },
     {
       "name": "chalk",
-      "version": "5.6.2",
+      "version": "6.0.0",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -3107,7 +3002,7 @@
     { "name": "jest-extended", "version": "7.0.0", "files": ["/package.json"] },
     {
       "name": "jsdom",
-      "version": "29.1.1",
+      "version": "30.0.0",
       "files": [
         "/packages/lexical-converter/package.json",
         "/packages/lexical-converter/package.json"
@@ -3133,7 +3028,7 @@
       "version": "4.18.1",
       "files": ["/package.json", "/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
-    { "name": "minimatch", "version": "10.2.5", "files": ["/package.json"] },
+    { "name": "minimatch", "version": "10.2.6", "files": ["/package.json"] },
     {
       "name": "mobx",
       "version": "6.16.1",
@@ -3152,7 +3047,7 @@
     { "name": "next", "version": "16.2.12", "files": ["/package.json"] },
     {
       "name": "oxfmt",
-      "version": "0.60.0",
+      "version": "0.61.0",
       "files": [
         "/package.json",
         "/packages/admin-ui/package.json",
@@ -3163,7 +3058,7 @@
         "/packages/react-properties/package.json"
       ]
     },
-    { "name": "oxlint", "version": "1.75.0", "files": ["/package.json"] },
+    { "name": "oxlint", "version": "1.76.0", "files": ["/package.json"] },
     {
       "name": "pg",
       "version": "8.22.0",
@@ -3379,7 +3274,7 @@
     { "name": "semver", "version": "7.8.5", "files": ["/package.json"] },
     {
       "name": "storybook",
-      "version": "10.5.4",
+      "version": "10.5.5",
       "files": ["/packages/admin-ui/package.json", "/packages/admin-ui/package.json"]
     },
     {
@@ -3699,7 +3594,7 @@
       "files": ["/cypress-tests/package.json", "/cypress-tests/package.json"]
     },
     { "name": "validator", "version": "13.15.35", "files": ["/package.json"] },
-    { "name": "verdaccio", "version": "6.8.0", "files": ["/package.json"] },
+    { "name": "verdaccio", "version": "6.9.0", "files": ["/package.json"] },
     {
       "name": "vite",
       "version": "8.1.5",
@@ -3767,6 +3662,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
@@ -3853,6 +3749,7 @@
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
         "/packages/app-file-manager/package.json",
+        "/packages/app-graphql-playground/package.json",
         "/packages/app-headless-cms/package.json",
         "/packages/app-website-builder/package.json",
         "/packages/background-tasks/package.json",
@@ -3897,7 +3794,7 @@
     },
     {
       "name": "webpack",
-      "version": "5.109.0",
+      "version": "5.109.1",
       "files": [
         "/packages/website-builder-nextjs/package.json",
         "/packages/website-builder-nextjs/package.json"
@@ -3946,6 +3843,7 @@
   "resolutions": [
     { "name": "@types/react", "version": "18.3.31", "files": ["/package.json"] },
     { "name": "@types/react-dom", "version": "18.3.7", "files": ["/package.json"] },
+    { "name": "postcss", "version": "8.5.23", "files": ["/package.json"] },
     { "name": "react", "version": "18.3.1", "files": ["/package.json"] },
     { "name": "react-dom", "version": "18.3.1", "files": ["/package.json"] },
     { "name": "sharp", "version": "0.35.3", "files": ["/package.json"] }
@@ -4293,7 +4191,7 @@
       "name": "chalk",
       "versions": [
         {
-          "version": "5.6.2",
+          "version": "6.0.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/scripts/buildPackages/package.json", "types": ["dependencies"] },
@@ -4564,7 +4462,7 @@
       "name": "minimatch",
       "versions": [
         {
-          "version": "10.2.5",
+          "version": "10.2.6",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
@@ -4584,7 +4482,6 @@
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/cypress-tests/package.json", "types": ["devDependencies"] },
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
             { "file": "/packages/react-properties/package.json", "types": ["dependencies"] },
             { "file": "/packages/utils/package.json", "types": ["dependencies"] },
             { "file": "/packages/website-builder-sdk/package.json", "types": ["dependencies"] }
@@ -4605,7 +4502,7 @@
       "name": "oxfmt",
       "versions": [
         {
-          "version": "0.60.0",
+          "version": "0.61.0",
           "files": [
             { "file": "/package.json", "types": ["devDependencies"] },
             { "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] },
@@ -4619,7 +4516,7 @@
       "name": "oxlint",
       "versions": [
         {
-          "version": "1.75.0",
+          "version": "1.76.0",
           "files": [{ "file": "/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -5100,7 +4997,7 @@
     {
       "name": "verdaccio",
       "versions": [
-        { "version": "6.8.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
+        { "version": "6.9.0", "files": [{ "file": "/package.json", "types": ["devDependencies"] }] }
       ]
     },
     {
@@ -5228,6 +5125,10 @@
             { "file": "/packages/app-aco/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-file-manager/package.json", "types": ["devDependencies"] },
+            {
+              "file": "/packages/app-graphql-playground/package.json",
+              "types": ["devDependencies"]
+            },
             { "file": "/packages/app-headless-cms/package.json", "types": ["devDependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["devDependencies"] },
             { "file": "/packages/background-tasks/package.json", "types": ["devDependencies"] },
@@ -5325,6 +5226,19 @@
             { "file": "/package.json", "types": ["resolutions"] },
             { "file": "/packages/api-file-manager-s3/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-file-manager-server/package.json", "types": ["dependencies"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "postcss",
+      "versions": [
+        {
+          "version": "8.5.23",
+          "files": [
+            { "file": "/package.json", "types": ["resolutions"] },
+            { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
+            { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
           ]
         }
       ]
@@ -5797,6 +5711,7 @@
           "version": "4.7.0",
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-sdk-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-website-builder/package.json", "types": ["dependencies"] }
           ]
@@ -5891,6 +5806,7 @@
             { "file": "/packages/app-aco/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-file-manager/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/app-headless-cms-workflows/package.json",
@@ -5925,6 +5841,7 @@
           "files": [
             { "file": "/packages/admin-ui/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-sdk-playground/package.json", "types": ["dependencies"] }
           ]
         }
@@ -6074,7 +5991,7 @@
       "name": "@storybook/addon-a11y",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6083,7 +6000,7 @@
       "name": "@storybook/addon-docs",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6092,7 +6009,7 @@
       "name": "@storybook/react",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6158,7 +6075,7 @@
       "name": "storybook",
       "versions": [
         {
-          "version": "10.5.4",
+          "version": "10.5.5",
           "files": [{ "file": "/packages/admin-ui/package.json", "types": ["devDependencies"] }]
         }
       ]
@@ -6176,7 +6093,7 @@
       "name": "ai",
       "versions": [
         {
-          "version": "7.0.37",
+          "version": "7.0.40",
           "files": [
             { "file": "/packages/ai-powerups/package.json", "types": ["dependencies"] },
             { "file": "/packages/api-core/package.json", "types": ["dependencies"] }
@@ -6206,6 +6123,7 @@
             { "file": "/packages/app-aco/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-file-manager/package.json", "types": ["dependencies"] },
+            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/app-headless-cms-scheduler/package.json",
@@ -6348,7 +6266,7 @@
       "name": "@ai-sdk/anthropic",
       "versions": [
         {
-          "version": "4.0.21",
+          "version": "4.0.23",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -6357,7 +6275,7 @@
       "name": "@ai-sdk/openai",
       "versions": [
         {
-          "version": "4.0.20",
+          "version": "4.0.22",
           "files": [{ "file": "/packages/api-core/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -6616,7 +6534,6 @@
           "version": "2.12.7",
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
             { "file": "/packages/app-headless-cms/package.json", "types": ["dependencies"] }
           ]
         }
@@ -6655,17 +6572,6 @@
       "versions": [
         {
           "version": "0.0.33",
-          "files": [
-            { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-graphql",
-      "versions": [
-        {
-          "version": "0.9.7",
           "files": [
             { "file": "/packages/api-headless-cms/package.json", "types": ["devDependencies"] }
           ]
@@ -6852,102 +6758,6 @@
       ]
     },
     {
-      "name": "apollo-cache",
-      "versions": [
-        {
-          "version": "1.3.5",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-cache-inmemory",
-      "versions": [
-        {
-          "version": "1.6.6",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "apollo-client",
-      "versions": [
-        {
-          "version": "2.6.10",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link",
-      "versions": [
-        {
-          "version": "1.2.14",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-context",
-      "versions": [
-        {
-          "version": "1.0.20",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-error",
-      "versions": [
-        {
-          "version": "1.1.13",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "apollo-link-http-common",
-      "versions": [
-        {
-          "version": "0.2.16",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "apollo-utilities",
-      "versions": [
-        {
-          "version": "1.3.4",
-          "files": [
-            { "file": "/packages/app/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-admin/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] },
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "history",
       "versions": [
         {
@@ -6972,15 +6782,6 @@
       ]
     },
     {
-      "name": "ts-invariant",
-      "versions": [
-        {
-          "version": "0.10.3",
-          "files": [{ "file": "/packages/app/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
       "name": "warning",
       "versions": [
         {
@@ -6995,24 +6796,6 @@
         {
           "version": "3.0.4",
           "files": [{ "file": "/packages/app/package.json", "types": ["devDependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@apollo/react-components",
-      "versions": [
-        {
-          "version": "3.1.5",
-          "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
-        }
-      ]
-    },
-    {
-      "name": "@apollo/react-hooks",
-      "versions": [
-        {
-          "version": "3.1.5",
-          "files": [{ "file": "/packages/app-admin/package.json", "types": ["dependencies"] }]
         }
       ]
     },
@@ -7294,10 +7077,10 @@
       ]
     },
     {
-      "name": "load-script",
+      "name": "graphql-language-service",
       "versions": [
         {
-          "version": "2.0.0",
+          "version": "5.5.2",
           "files": [
             { "file": "/packages/app-graphql-playground/package.json", "types": ["dependencies"] }
           ]
@@ -7384,17 +7167,6 @@
       ]
     },
     {
-      "name": "apollo-link-batch-http",
-      "versions": [
-        {
-          "version": "1.2.14",
-          "files": [
-            { "file": "/packages/app-serverless-cms/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "deep-equal",
       "versions": [
         {
@@ -7458,7 +7230,7 @@
       "name": "@aws-sdk/client-apigatewaymanagementapi",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7467,7 +7239,7 @@
       "name": "@aws-sdk/client-cloudfront",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7476,7 +7248,7 @@
       "name": "@aws-sdk/client-cloudwatch-events",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7485,7 +7257,7 @@
       "name": "@aws-sdk/client-cloudwatch-logs",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7494,7 +7266,7 @@
       "name": "@aws-sdk/client-cognito-identity-provider",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7503,7 +7275,7 @@
       "name": "@aws-sdk/client-dynamodb",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7512,7 +7284,7 @@
       "name": "@aws-sdk/client-dynamodb-streams",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7521,7 +7293,7 @@
       "name": "@aws-sdk/client-eventbridge",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7530,7 +7302,7 @@
       "name": "@aws-sdk/client-iam",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7539,7 +7311,7 @@
       "name": "@aws-sdk/client-iot",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7548,7 +7320,7 @@
       "name": "@aws-sdk/client-lambda",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7557,7 +7329,7 @@
       "name": "@aws-sdk/client-s3",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7566,7 +7338,7 @@
       "name": "@aws-sdk/client-scheduler",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7575,7 +7347,7 @@
       "name": "@aws-sdk/client-sfn",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7584,7 +7356,7 @@
       "name": "@aws-sdk/client-sqs",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7593,7 +7365,7 @@
       "name": "@aws-sdk/client-sts",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7602,7 +7374,7 @@
       "name": "@aws-sdk/credential-providers",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7611,7 +7383,7 @@
       "name": "@aws-sdk/lib-dynamodb",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7620,7 +7392,7 @@
       "name": "@aws-sdk/lib-storage",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7629,7 +7401,7 @@
       "name": "@aws-sdk/s3-presigned-post",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -7638,7 +7410,7 @@
       "name": "@aws-sdk/s3-request-presigner",
       "versions": [
         {
-          "version": "3.1095.0",
+          "version": "3.1096.0",
           "files": [{ "file": "/packages/aws-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8062,7 +7834,7 @@
       "name": "jsdom",
       "versions": [
         {
-          "version": "29.1.1",
+          "version": "30.0.0",
           "files": [
             { "file": "/packages/lexical-converter/package.json", "types": ["devDependencies"] },
             { "file": "/packages/project/package.json", "types": ["dependencies"] }
@@ -8083,7 +7855,7 @@
       "name": "@modelcontextprotocol/sdk",
       "versions": [
         {
-          "version": "1.29.0",
+          "version": "1.30.0",
           "files": [{ "file": "/packages/mcp/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8258,10 +8030,10 @@
       ]
     },
     {
-      "name": "decompress",
+      "name": "adm-zip",
       "versions": [
         {
-          "version": "4.2.1",
+          "version": "0.6.0",
           "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }]
         }
       ]
@@ -8272,6 +8044,15 @@
         {
           "version": "7.5.22",
           "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["dependencies"] }]
+        }
+      ]
+    },
+    {
+      "name": "@types/adm-zip",
+      "versions": [
+        {
+          "version": "0.5.8",
+          "files": [{ "file": "/packages/pulumi-sdk/package.json", "types": ["devDependencies"] }]
         }
       ]
     },
@@ -8356,18 +8137,6 @@
       ]
     },
     {
-      "name": "postcss",
-      "versions": [
-        {
-          "version": "8.5.23",
-          "files": [
-            { "file": "/packages/website-builder-nextjs/package.json", "types": ["dependencies"] },
-            { "file": "/packages/website-builder-nuxt/package.json", "types": ["dependencies"] }
-          ]
-        }
-      ]
-    },
-    {
       "name": "postcss-import",
       "versions": [
         {
@@ -8398,7 +8167,7 @@
       "name": "webpack",
       "versions": [
         {
-          "version": "5.109.0",
+          "version": "5.109.1",
           "files": [
             {
               "file": "/packages/website-builder-nextjs/package.json",

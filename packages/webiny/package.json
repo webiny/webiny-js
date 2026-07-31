@@ -27,6 +27,7 @@
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-file-manager": "0.0.0",
+    "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
@@ -118,6 +119,7 @@
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/ui/file-manager": "./admin/ui/file-manager.js",
     "./admin/ui/lexical": "./admin/ui/lexical.js",
+    "./admin/graphql-playground": "./admin/graphql-playground.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
@@ -142,7 +144,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "08a15f079d00072353b73c0b9fe25c1bef6a61148de218acc65b22bc323a1aed",
+  "exportGenerationHash": "97fbe8db7d10f89595fc393ba701dfd5e6008f0bcf3943e8cafa74db991ee41b",
   "webiny": {
     "publishFrom": "dist"
   }
