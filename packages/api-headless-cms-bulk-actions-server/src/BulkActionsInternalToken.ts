@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/feature/api";
 
 interface IBulkActionsInternalToken {
     value: string;
 }
 
-export const BulkActionsInternalToken = new Abstraction<IBulkActionsInternalToken>(
+export const BulkActionsInternalToken = createAbstraction<IBulkActionsInternalToken>(
     "BulkActionsInternalToken"
 );
 

@@ -30,7 +30,7 @@ import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
-import { BulkActionsEventBridgeLambdaHandler } from "@webiny/api-headless-cms-bulk-actions-aws";
+import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
@@ -95,7 +95,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // dispatcher can't match an EventBridge-shaped event; without the handler the container
             // can't resolve EventBridgeEventHandler.
             container.register(EventBridgeEventType);
-            container.register(BulkActionsEventBridgeLambdaHandler);
+            BulkActionsEventBridgeLambdaHandlerFeature.register(container);
 
             // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
             // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
