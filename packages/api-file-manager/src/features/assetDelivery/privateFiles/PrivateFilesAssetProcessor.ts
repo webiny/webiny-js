@@ -2,6 +2,7 @@ import type { File } from "~/domain/file/types.js";
 import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetFileUseCase } from "~/features/file/GetFile/index.js";
 import { NotAuthorizedOutputStrategy } from "./NotAuthorizedOutputStrategy.js";
 import { RedirectToPublicUrlOutputStrategy } from "./RedirectToPublicUrlOutputStrategy.js";
@@ -21,23 +22,33 @@ interface MaybePrivate {
 
 export class PrivateFilesAssetProcessor implements IAssetProcessor {
     private readonly identityContext: IdentityContext.Interface;
+    private readonly wcp: WcpContext.Interface;
     private readonly getFile: GetFileUseCase.Interface;
     private readonly assetAuthorizer: IAssetAuthorizer;
     private readonly assetProcessor: IAssetProcessor;
 
     constructor(
         identityContext: IdentityContext.Interface,
+        wcp: WcpContext.Interface,
         getFile: GetFileUseCase.Interface,
         assetAuthorizer: IAssetAuthorizer,
         assetProcessor: IAssetProcessor
     ) {
         this.identityContext = identityContext;
+        this.wcp = wcp;
         this.getFile = getFile;
         this.assetAuthorizer = assetAuthorizer;
         this.assetProcessor = assetProcessor;
     }
 
     async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
+        // WCP-gated at request time (the license is only known post-auth). When private files aren't
+        // licensed, pass through unchanged — behaviourally identical to this decorator not being
+        // registered (public delivery only).
+        if (!this.wcp.canUsePrivateFiles()) {
+            return this.assetProcessor.process(assetRequest, asset);
+        }
+
         const id = asset.getId();
 
         const file = await this.identityContext.withoutAuthorization(async () => {
@@ -94,5 +105,5 @@ export class PrivateFilesAssetProcessor implements IAssetProcessor {
 
 export const PrivateFilesAssetProcessorDecorator = AssetProcessor.createDecorator({
     decorator: PrivateFilesAssetProcessor,
-    dependencies: [IdentityContext, GetFileUseCase, AssetAuthorizer]
+    dependencies: [IdentityContext, WcpContext, GetFileUseCase, AssetAuthorizer]
 });
