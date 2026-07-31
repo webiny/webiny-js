@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { FilesAssetRequestResolverImpl } from "./FilesAssetRequestResolver.js";
 import { NullAssetResolverImpl } from "./NullAssetResolver.js";
 import { NullAssetOutputStrategyImpl } from "./NullAssetOutputStrategy.js";
@@ -27,10 +26,11 @@ export const AssetDeliveryFeature = createFeature({
 
         container.registerDecorator(PrivateFileAssetRequestResolverDecorator);
 
-        const wcp = container.resolve(WcpContext);
-        if (wcp.canUsePrivateFiles()) {
-            container.register(PrivateAuthenticatedAuthorizerImpl);
-            container.registerDecorator(PrivateFilesAssetProcessorDecorator);
-        }
+        // Private files are WCP-gated, but the license is per-request (loaded post-register, refreshed
+        // on a 5-min TTL), so a `canUsePrivateFiles()` check here would always read the NullLicense and
+        // never register. Register unconditionally; PrivateFilesAssetProcessor guards on the license at
+        // request time and passes through to its decoratee when unlicensed (== not registered).
+        container.register(PrivateAuthenticatedAuthorizerImpl);
+        container.registerDecorator(PrivateFilesAssetProcessorDecorator);
     }
 });
