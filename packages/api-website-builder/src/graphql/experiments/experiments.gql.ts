@@ -208,9 +208,7 @@ export const addExperimentsSchema = (builder: IGraphQLSchemaBuilder): void => {
                     ensureAuthentication(context);
                     const result = await getPublished.execute(variantModel, args.id);
                     if (result.isFail() || !result.value) {
-                        throw new NotFoundError(
-                            `Published variant "${args.id}" was not found!`
-                        );
+                        throw new NotFoundError(`Published variant "${args.id}" was not found!`);
                     }
                     const values = result.value.values;
                     return {

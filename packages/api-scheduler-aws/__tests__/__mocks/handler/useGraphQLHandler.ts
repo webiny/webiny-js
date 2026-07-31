@@ -101,7 +101,8 @@ export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
             body
         });
 
-        const parsed = typeof response.body === "string" ? JSON.parse(response.body) : response.body;
+        const parsed =
+            typeof response.body === "string" ? JSON.parse(response.body) : response.body;
         return [parsed, response] as const;
     };
 
@@ -115,9 +116,10 @@ export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
 
     const createMutation = <TVariables, TResponse>(mutation: string) => {
         return async (variables: TVariables) => {
-            return invoke({ query: mutation, variables: variables as Record<string, any> }) as Promise<
-                readonly [TResponse, any]
-            >;
+            return invoke({
+                query: mutation,
+                variables: variables as Record<string, any>
+            }) as Promise<readonly [TResponse, any]>;
         };
     };
 
