@@ -33,6 +33,7 @@ jobs:
           }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
           content=eyes
       - name: Create comment
+        id: create-comment
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.issue.number }}

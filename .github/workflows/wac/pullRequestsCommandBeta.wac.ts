@@ -1,6 +1,5 @@
-import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
-import { createJob, checkCommandStep, commandTriggeredIf } from "./jobs/index.js";
+import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
     createRunBuildCacheSteps,
@@ -16,30 +15,17 @@ const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH 
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANCH });
 
-export const pullRequestsCommandBeta = createWorkflow({
+export const pullRequestsCommandBeta = createSlashCommandWorkflow({
+    command: "beta",
     name: "Pull Requests Command - Beta Release",
-    on: "issue_comment",
-    concurrency: {
-        group: "beta-release-${{ github.event.issue.number }}",
-        "cancel-in-progress": true
+    comment: "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
+    workflow: {
+        concurrency: {
+            group: "beta-release-${{ github.event.issue.number }}",
+            "cancel-in-progress": true
+        }
     },
     jobs: {
-        checkComment: createJob({
-            name: "Check comment for /beta",
-            if: commandTriggeredIf("beta"),
-            checkout: false,
-            steps: [
-                checkCommandStep(),
-                {
-                    name: "Create comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
-                    with: {
-                        "issue-number": "${{ github.event.issue.number }}",
-                        body: "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
-                    }
-                }
-            ]
-        }),
         prBranch: createJob({
             needs: "checkComment",
             name: "Get PR branch",
