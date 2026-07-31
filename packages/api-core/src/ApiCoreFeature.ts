@@ -15,6 +15,8 @@ import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { HasherFeature } from "~/features/hashing/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { MaskerFeature } from "~/features/masker/feature.js";
+import { StringFormatterFeature } from "~/features/stringFormatter/feature.js";
+import { DateFormatterFeature } from "~/features/dateFormatter/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";
 import { NullWebhookDispatcher } from "./features/webhooks/WebhookDispatcher/NullWebhookDispatcher.js";
@@ -36,6 +38,8 @@ export const ApiCoreFeature = createFeature({
         // Register features
         WcpFeature.register(container, config.wcpLicense);
         MaskerFeature.register(container);
+        StringFormatterFeature.register(container);
+        DateFormatterFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
         EventPublisherFeature.register(container);
