@@ -65,9 +65,15 @@ const BreadcrumbsBase = () => {
         [container, resolveLink]
     );
 
-    // No trail (e.g. the dashboard) → render nothing, rather than a lone, orphaned home icon.
+    // No trail (e.g. the dashboard) → show the home entry as a labelled, current crumb
+    // ("🏠 Home") rather than a lone, orphaned home icon (or an empty bar after clicking home).
     if (trail.length === 0) {
-        return null;
+        const homeCrumb: BreadcrumbsItem = {
+            ...createHomeBreadcrumbItem(),
+            label: "Home",
+            current: true
+        };
+        return <BreadcrumbsUI items={[homeCrumb]} />;
     }
 
     // Leading home entry always navigates back to the dashboard.
