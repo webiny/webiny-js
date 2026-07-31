@@ -6,6 +6,7 @@
     { "path": "../api-event-handler-core" },
     { "path": "../api-file-manager-server" },
     { "path": "../api-graphql" },
+    { "path": "../api-headless-cms-bulk-actions-server" },
     { "path": "../api-scheduler" },
     { "path": "../api-scheduler-server" },
     { "path": "../api-websockets-server" },
@@ -31,6 +32,12 @@
       "@webiny/api-file-manager-server": ["../api-file-manager-server/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms-bulk-actions-server/*": [
+        "../api-headless-cms-bulk-actions-server/src/*"
+      ],
+      "@webiny/api-headless-cms-bulk-actions-server": [
+        "../api-headless-cms-bulk-actions-server/src"
+      ],
       "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-scheduler-server/*": ["../api-scheduler-server/src/*"],

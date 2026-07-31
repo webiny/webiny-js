@@ -11223,6 +11223,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"
+    "@webiny/api-headless-cms-bulk-actions-aws": "npm:0.0.0"
     "@webiny/api-scheduler-aws": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-websockets-aws": "npm:0.0.0"
@@ -11312,6 +11313,7 @@ __metadata:
     "@webiny/api-event-handler-core": "npm:0.0.0"
     "@webiny/api-file-manager-server": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-headless-cms-bulk-actions-server": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-scheduler-server": "npm:0.0.0"
     "@webiny/api-websockets-server": "npm:0.0.0"
@@ -11497,6 +11499,40 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-bulk-actions-aws@npm:0.0.0, @webiny/api-headless-cms-bulk-actions-aws@workspace:packages/api-headless-cms-bulk-actions-aws":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-bulk-actions-aws@workspace:packages/api-headless-cms-bulk-actions-aws"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.2"
+    "@webiny/event-handler-aws": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-headless-cms-bulk-actions-server@npm:0.0.0, @webiny/api-headless-cms-bulk-actions-server@workspace:packages/api-headless-cms-bulk-actions-server":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-bulk-actions-server@workspace:packages/api-headless-cms-bulk-actions-server"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.2"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  peerDependencies:
+    "@webiny/di": ">=0.2.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-bulk-actions@npm:0.0.0, @webiny/api-headless-cms-bulk-actions@workspace:packages/api-headless-cms-bulk-actions":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-bulk-actions@workspace:packages/api-headless-cms-bulk-actions"
@@ -11506,11 +11542,9 @@ __metadata:
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-testing": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
-    "@webiny/event-handler-aws": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"

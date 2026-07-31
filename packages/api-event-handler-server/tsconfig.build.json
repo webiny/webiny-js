@@ -6,6 +6,7 @@
     { "path": "../api-event-handler-core/tsconfig.build.json" },
     { "path": "../api-file-manager-server/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-headless-cms-bulk-actions-server/tsconfig.build.json" },
     { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../api-scheduler-server/tsconfig.build.json" },
     { "path": "../api-websockets-server/tsconfig.build.json" },
@@ -31,6 +32,12 @@
       "@webiny/api-file-manager-server": ["../api-file-manager-server/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms-bulk-actions-server/*": [
+        "../api-headless-cms-bulk-actions-server/src/*"
+      ],
+      "@webiny/api-headless-cms-bulk-actions-server": [
+        "../api-headless-cms-bulk-actions-server/src"
+      ],
       "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-scheduler-server/*": ["../api-scheduler-server/src/*"],

@@ -22,6 +22,7 @@
     "@webiny/api-event-handler-core": "0.0.0",
     "@webiny/api-file-manager-server": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-headless-cms-bulk-actions-server": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-scheduler-server": "0.0.0",
     "@webiny/api-websockets-server": "0.0.0",

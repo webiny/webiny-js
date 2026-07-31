@@ -15,6 +15,7 @@ import {
     createLambdaHandler,
     ApiGatewayFeature,
     BackgroundTaskEventType,
+    EventBridgeEventType,
     WebSocketEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
@@ -29,6 +30,7 @@ import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
+import { BulkActionsEventBridgeLambdaHandler } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
@@ -88,6 +90,12 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // registers the Lambda handler + StepFunctionService (the AWS dispatch transport).
             container.register(BackgroundTaskEventType);
             BackgroundTasksAwsFeature.register(container);
+
+            // EventBridge invocations (e.g. scheduled empty-trash-bin). Without the event type the
+            // dispatcher can't match an EventBridge-shaped event; without the handler the container
+            // can't resolve EventBridgeEventHandler.
+            container.register(EventBridgeEventType);
+            container.register(BulkActionsEventBridgeLambdaHandler);
 
             // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
             // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
