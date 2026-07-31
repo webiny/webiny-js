@@ -47,6 +47,21 @@ export function createStreamLambdaHandler(
         // Outside the Lambda runtime (tests, local dev) there is no `awslambda` global to mark the
         // handler with. Return it unwrapped so merely importing the module doesn't throw — it still
         // routes and writes to whatever stream it is handed.
+        //
+        // Inside Lambda this is never expected, and it fails SILENTLY: an unmarked handler is invoked
+        // in buffered mode, returns undefined, and the caller gets an empty 200 with
+        // `content-type: application/octet-stream` and none of the headers the route set. Say so
+        // loudly, because nothing else in the response distinguishes it from a working stream.
+        if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
+            const shape = (globalThis as any).awslambda;
+            console.error(
+                "[webiny] Response streaming is UNAVAILABLE in this Lambda: `awslambda" +
+                    ".streamifyResponse` was not a function at module load, so the handler was not " +
+                    "marked as streaming and will return buffered, header-less responses. " +
+                    `awslambda=${typeof shape}, keys=${JSON.stringify(Object.keys(shape ?? {}))}`
+            );
+        }
+
         return handler;
     }
 

@@ -84,6 +84,13 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
 
         const { body } = response;
 
+        // The runtime emits the prelude LAZILY, on the first write to the stream (its
+        // `_onBeforeFirstWrite` hook). A response that writes nothing therefore sends no prelude at
+        // all, and Lambda falls back to a default 200 with `application/octet-stream` and none of the
+        // headers set above — silently, with no error. A CORS preflight (204, no body) and an empty
+        // stream both hit this, so every path below guarantees at least one write.
+        let wrote = false;
+
         if (HttpStreamBody.is(body)) {
             for await (const chunk of body.source) {
                 if (stream.destroyed) {
@@ -91,13 +98,16 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
                     break;
                 }
                 await this.write(stream, chunk);
+                wrote = true;
             }
-            stream.end();
-            return;
+        } else if (body !== undefined && body !== null) {
+            await this.write(stream, this.serialize(body));
+            wrote = true;
         }
 
-        if (body !== undefined && body !== null) {
-            await this.write(stream, this.serialize(body));
+        if (!wrote) {
+            // Zero-length write: flushes the prelude without adding body bytes, so a 204 stays a 204.
+            await this.write(stream, "");
         }
 
         stream.end();

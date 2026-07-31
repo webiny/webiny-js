@@ -255,13 +255,37 @@ describe("Lambda Function URL response streaming", () => {
         expect(stream.body).toBe(JSON.stringify({ ok: true }));
     });
 
-    it("should send an empty body for null", async () => {
+    it("should still write once for a body-less response so the prelude flushes", async () => {
+        // The runtime emits the prelude on the FIRST write. With zero writes it sends nothing at all
+        // and Lambda substitutes a default 200 + application/octet-stream, dropping every header —
+        // which is exactly how a CORS preflight silently lost its access-control-* headers.
         const handler = makeHandler(makeRoute(async () => ({ statusCode: 204, body: null })));
         const stream = new FakeResponseStream();
 
         await handler(functionUrlEvent(), stream);
 
-        expect(stream.chunks).toHaveLength(0);
+        expect(stream.chunks).toHaveLength(1);
+        expect(stream.body).toBe("");
+        expect(stream.ended).toBe(true);
+    });
+
+    it("should write once when a stream yields no chunks", async () => {
+        const handler = makeHandler(
+            makeRoute(async () => ({
+                statusCode: 200,
+                body: new HttpStreamBody({
+                    async *[Symbol.asyncIterator]() {
+                        // no chunks
+                    }
+                })
+            }))
+        );
+        const stream = new FakeResponseStream();
+
+        await handler(functionUrlEvent(), stream);
+
+        expect(stream.chunks).toHaveLength(1);
+        expect(stream.body).toBe("");
         expect(stream.ended).toBe(true);
     });
 

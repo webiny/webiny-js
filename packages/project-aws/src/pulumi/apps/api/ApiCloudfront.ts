@@ -41,6 +41,42 @@ export const ApiCloudfront = createAppModule({
             }
         });
 
+        // The streaming behavior uses a cache policy + origin request policy instead of the legacy
+        // `forwardedValues` the other behaviors use. That is not cosmetic: legacy forwarded values are
+        // deprecated and do not compose with OAC request signing — with them in place, Lambda rejected
+        // every signed request from CloudFront with `AccessDeniedException` and the function was never
+        // invoked.
+        const streamOriginRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
+            name: "api-stream-origin-request-policy",
+            config: {
+                comment: "Headers/cookies forwarded to the streaming Lambda Function URL origin",
+                headersConfig: {
+                    headerBehavior: "whitelist",
+                    headers: {
+                        items: [
+                            "Origin",
+                            "Accept",
+                            "Accept-Language",
+                            // Required for CORS preflight: without these the origin can't build a
+                            // correct 204, so the browser blocks the real request.
+                            "Access-Control-Request-Method",
+                            "Access-Control-Request-Headers",
+                            "X-Tenant",
+                            "X-Webiny-Sdk",
+                            // `Authorization` is deliberately ABSENT — OAC signing owns that header.
+                            // Clients send their token in `X-Webiny-Authorization` instead.
+                            "X-Webiny-Authorization"
+                        ]
+                    }
+                },
+                cookiesConfig: {
+                    cookieBehavior: "whitelist",
+                    cookies: { items: ["wby-id-token"] }
+                },
+                queryStringsConfig: { queryStringBehavior: "all" }
+            }
+        });
+
         const distribution = app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
@@ -82,25 +118,11 @@ export const ApiCloudfront = createAppModule({
                             "DELETE"
                         ],
                         cachedMethods: ["GET", "HEAD"],
-                        forwardedValues: {
-                            cookies,
-                            // `Authorization` is deliberately absent: OAC signing puts SigV4 in that
-                            // header, so a viewer token there could not survive. Clients send the
-                            // token in `X-Webiny-Authorization` instead, which both the AWS and the
-                            // self-hosted identity extractors read first.
-                            headers: [
-                                "Origin",
-                                "Accept",
-                                "Accept-Language",
-                                "X-Tenant",
-                                "X-Webiny-Sdk",
-                                "X-Webiny-Authorization"
-                            ],
-                            queryString: true
-                        },
-                        minTtl: 0,
-                        defaultTtl: 0,
-                        maxTtl: 0,
+                        // Managed-CachingDisabled. Nothing on a streaming route is cacheable, and a
+                        // cache policy is also what replaces the legacy `forwardedValues` that OAC
+                        // signing can't live with. TTLs must NOT be set alongside a cache policy.
+                        cachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                        originRequestPolicyId: streamOriginRequestPolicy.output.id,
                         pathPattern: "/stream/*",
                         viewerProtocolPolicy: "https-only",
                         targetOriginId: STREAM_ORIGIN_ID
@@ -245,6 +267,10 @@ export const ApiCloudfront = createAppModule({
 
         // Allows THIS distribution — and nothing else — to invoke the streaming Function URL. Created
         // after the distribution because it needs its ARN; the Function URL is useless until it exists.
+        //
+        // BOTH statements are required. The OAC-for-Lambda docs list `lambda:InvokeFunctionUrl` AND
+        // `lambda:InvokeFunction`; with only the former, Lambda's authorizer rejects every signed
+        // request from CloudFront with `AccessDeniedException` and the function is never invoked.
         app.addResource(aws.lambda.Permission, {
             name: "graphql-stream-url-cloudfront-invoke",
             config: {
@@ -254,6 +280,17 @@ export const ApiCloudfront = createAppModule({
                 sourceArn: distribution.output.arn,
                 functionUrlAuthType: "AWS_IAM",
                 statementId: "allow-cloudfront-invoke-function-url"
+            }
+        });
+
+        app.addResource(aws.lambda.Permission, {
+            name: "graphql-stream-cloudfront-invoke-function",
+            config: {
+                action: "lambda:InvokeFunction",
+                function: graphqlStream.functions.graphqlStream.output.name,
+                principal: "cloudfront.amazonaws.com",
+                sourceArn: distribution.output.arn,
+                statementId: "allow-cloudfront-invoke-function"
             }
         });
 
