@@ -46,6 +46,11 @@ const SdkPlaygroundExtension = () => {
                     route={Routes.SdkPlayground}
                     element={
                         <AdminLayout title={"SDK Playground"}>
+                            <AdminConfig.Breadcrumb name={"dev-tools"} label={"Dev Tools"} />
+                            <AdminConfig.Breadcrumb
+                                name={"sdk-playground"}
+                                label={"SDK Playground"}
+                            />
                             <Playground />
                         </AdminLayout>
                     }

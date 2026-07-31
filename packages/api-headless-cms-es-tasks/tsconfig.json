@@ -9,10 +9,12 @@
     { "path": "../background-tasks" },
     { "path": "../error" },
     { "path": "../feature" },
+    { "path": "../handler" },
     { "path": "../utils" },
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms-testing" },
-    { "path": "../db-dynamodb" }
+    { "path": "../db-dynamodb" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -35,6 +37,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
@@ -42,7 +46,9 @@
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

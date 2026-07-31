@@ -10,6 +10,7 @@ const GENERATE_ENTRY_CONTENT = /* GraphQL */ `
         $excludedFileIds: [String!]
         $readerPersonaId: String
         $writerPersonaId: String
+        $additionalFileIds: [String!]
     ) {
         aiPowerUps {
             generateEntryContent(
@@ -19,6 +20,7 @@ const GENERATE_ENTRY_CONTENT = /* GraphQL */ `
                 excludedFileIds: $excludedFileIds
                 readerPersonaId: $readerPersonaId
                 writerPersonaId: $writerPersonaId
+                additionalFileIds: $additionalFileIds
             )
         }
     }

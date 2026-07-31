@@ -20,7 +20,9 @@
     "@webiny/di": "^1.0.2",
     "@webiny/project": "0.0.0",
     "@webiny/project-server": "0.0.0",
+    "@webiny/system-requirements": "0.0.0",
     "chalk": "^6.0.0",
+    "execa": "^5.1.1",
     "tsx": "4.23.1"
   },
   "devDependencies": {

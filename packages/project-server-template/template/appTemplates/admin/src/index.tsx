@@ -1,5 +1,7 @@
 import React from "react";
-{GLOBAL_CSS}
+{
+    GLOBAL_CSS;
+}
 
 import { App } from "./App";
 

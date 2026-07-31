@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Input, Textarea, Tags } from "@webiny/admin-ui";
+import { Grid, Input, Switch, Textarea, Tags } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import type { BindComponent } from "@webiny/form";
 import GroupSelect from "./GroupSelect.js";
@@ -54,6 +54,36 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                 <Grid.Column span={12}>
                     <Bind name={"tags"}>
                         <Tags label={"Tags"} protectedValues={["type:model"]} />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"settings.aiEntryWizard"}>
+                        <Switch
+                            label={"Generate with AI"}
+                            note={
+                                "Show an AI-powered wizard that generates content before opening the editor."
+                            }
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Bind name={"settings.previewPrefix"}>
+                        <Input
+                            label={"Preview URL Prefix"}
+                            placeholder={"http://localhost:3000/articles"}
+                            description={"Base URL for live preview."}
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={6}>
+                    <Bind name={"settings.previewSlug"}>
+                        <Input
+                            label={"Preview Slug"}
+                            placeholder={"{values.slug}"}
+                            description={
+                                "Entry field pattern for the URL slug. Use {values.<fieldId>}."
+                            }
+                        />
                     </Bind>
                 </Grid.Column>
             </Grid>

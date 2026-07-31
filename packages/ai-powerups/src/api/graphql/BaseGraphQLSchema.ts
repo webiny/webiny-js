@@ -53,6 +53,7 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     excludedFileIds: [String!]
                     readerPersonaId: String
                     writerPersonaId: String
+                    additionalFileIds: [String!]
                 ): JSON!
                 generateEntryContent(
                     prompt: String!
@@ -61,6 +62,7 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     excludedFileIds: [String!]
                     readerPersonaId: String
                     writerPersonaId: String
+                    additionalFileIds: [String!]
                 ): JSON!
             }
 
@@ -123,7 +125,8 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             projectId: args.projectId ?? null,
                             excludedFileIds: args.excludedFileIds ?? null,
                             readerPersonaId: args.readerPersonaId ?? null,
-                            writerPersonaId: args.writerPersonaId ?? null
+                            writerPersonaId: args.writerPersonaId ?? null,
+                            additionalFileIds: args.additionalFileIds ?? null
                         }
                     });
 
@@ -149,7 +152,8 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             projectId: args.projectId ?? null,
                             excludedFileIds: args.excludedFileIds ?? null,
                             readerPersonaId: args.readerPersonaId ?? null,
-                            writerPersonaId: args.writerPersonaId ?? null
+                            writerPersonaId: args.writerPersonaId ?? null,
+                            additionalFileIds: args.additionalFileIds ?? null
                         }
                     });
 

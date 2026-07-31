@@ -10,6 +10,8 @@ import { AuditLogsListWithConfig } from "~/config/list/index.js";
 import { Routes } from "~/routes.js";
 import { AlPermissionsFeature } from "~/features/permissions/feature.js";
 import { ListAuditLogsFeature } from "~/features/listAuditLogs/index.js";
+import { AuditLogDetailsPresenterFeature } from "~/views/Logs/Preview/feature.js";
+import { AiPromptPreviewTabs } from "~/views/Logs/Preview/tabs/AiPromptTabs.js";
 
 const { Menu, Route } = AdminConfig;
 
@@ -25,8 +27,10 @@ export const AuditLogs = () => {
         <>
             <RegisterFeature feature={AlPermissionsFeature} />
             <RegisterFeature feature={ListAuditLogsFeature} />
+            <RegisterFeature feature={AuditLogDetailsPresenterFeature} />
             <LogsModule />
             <SecurityPermission />
+            <AiPromptPreviewTabs />
             <AdminConfig>
                 <HasPermission any={["al.*"]}>
                     <Menu
@@ -44,6 +48,7 @@ export const AuditLogs = () => {
                         route={Routes.AuditLogsList}
                         element={
                             <AdminLayout title={"Audit Logs - Logs"}>
+                                <AdminConfig.Breadcrumb name={"auditLogs"} label={"Audit Logs"} />
                                 <AuditLogsListWithConfig>
                                     <LogsView />
                                 </AuditLogsListWithConfig>

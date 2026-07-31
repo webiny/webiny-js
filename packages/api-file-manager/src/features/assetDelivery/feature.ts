@@ -5,7 +5,6 @@ import { NullAssetOutputStrategyImpl } from "./NullAssetOutputStrategy.js";
 import { AssetFactory } from "./Asset/Asset.js";
 import { ObjectKey } from "./ObjectKey/ObjectKey.js";
 import { StreamAssetReply } from "./StreamAssetReply/StreamAssetReply.js";
-import { PassthroughAssetTransformationStrategyImpl } from "./transformation/PassthroughAssetTransformationStrategy.js";
 import { TransformationAssetProcessorImpl } from "./transformation/TransformationAssetProcessor.js";
 import { PrivateFileAssetRequestResolverDecorator } from "./privateFiles/PrivateFileAssetRequestResolver.js";
 import { PrivateAuthenticatedAuthorizerImpl } from "./privateFiles/PrivateAuthenticatedAuthorizer.js";
@@ -21,7 +20,6 @@ export const AssetDeliveryFeature = createFeature({
         container.register(AssetFactory).inSingletonScope();
         container.register(ObjectKey).inSingletonScope();
         container.register(StreamAssetReply).inSingletonScope();
-        container.register(PassthroughAssetTransformationStrategyImpl);
         container.register(TransformationAssetProcessorImpl);
 
         container.registerDecorator(PrivateFileAssetRequestResolverDecorator);

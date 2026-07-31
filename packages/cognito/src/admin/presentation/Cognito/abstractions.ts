@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { IFederatedProvider } from "./CognitoSignInConfig.js";
 
 export type AuthState =
     | "signIn"
@@ -7,7 +8,9 @@ export type AuthState =
     | "requestPasswordResetCode"
     | "passwordResetCodeSent"
     | "setNewPassword"
-    | "requireNewPassword";
+    | "requireNewPassword"
+    | "confirmTotpCode"
+    | "setupTotp";
 
 export interface AuthDataVerified {
     email?: string;
@@ -49,6 +52,10 @@ export interface ICognitoInitParams {
 export interface SignInVM {
     isLoading: boolean;
     message: AuthMessage | null;
+    title: string;
+    description: string | undefined;
+    allowCredentialsLogin: boolean;
+    federatedProviders: IFederatedProvider[];
 }
 
 export interface RequireNewPasswordVM {
@@ -71,6 +78,18 @@ export interface SetNewPasswordVM {
     message: AuthMessage | null;
 }
 
+export interface ConfirmTotpCodeVM {
+    isLoading: boolean;
+    message: AuthMessage | null;
+}
+
+export interface SetupTotpVM {
+    isLoading: boolean;
+    sharedSecret: string;
+    qrCodeUri: string;
+    message: AuthMessage | null;
+}
+
 export interface ICognitoPresenter {
     vm: {
         authState: AuthState;
@@ -82,6 +101,8 @@ export interface ICognitoPresenter {
         requestPasswordResetCode: RequestPasswordResetCodeVM;
         passwordResetCodeSent: PasswordResetCodeSentVM;
         setNewPassword: SetNewPasswordVM;
+        confirmTotpCode: ConfirmTotpCodeVM;
+        setupTotp: SetupTotpVM;
     };
 
     // Lifecycle
@@ -93,6 +114,8 @@ export interface ICognitoPresenter {
     requestPasswordReset(username: string): Promise<void>;
     resendPasswordResetCode(): Promise<void>;
     confirmPasswordReset(code: string, password: string): Promise<void>;
+    confirmTotpCode(code: string): Promise<void>;
+    verifyTotpSetup(code: string): Promise<void>;
 
     // Navigation actions
     showSignIn(): void;
