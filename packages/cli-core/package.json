@@ -16,7 +16,7 @@
     "@webiny/di": "^1.0.2",
     "@webiny/feature": "0.0.0",
     "@webiny/project": "0.0.0",
-    "@webiny/stdlib": "^0.0.13",
+    "@webiny/stdlib": "^0.0.14",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^6.0.0",
     "ci-info": "^4.4.0",
