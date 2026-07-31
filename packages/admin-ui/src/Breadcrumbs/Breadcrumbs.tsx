@@ -86,8 +86,8 @@ const BreadcrumbItem = ({ item }: { item: BreadcrumbsItem }) => {
             className={cn(
                 "flex items-center rounded-sm px-xxs py-none",
                 "text-neutral-muted transition-colors",
-                "hover:bg-neutral-light hover:text-neutral-strong",
-                "focus-visible:outline-none focus-visible:ring-sm focus-visible:ring-primary-dimmed"
+                "hover:bg-neutral-dimmed hover:text-neutral-primary",
+                "focus-visible:outline-none focus-visible:ring-md focus-visible:ring-primary-dimmed"
             )}
         >
             {content}
