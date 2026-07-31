@@ -44,7 +44,7 @@
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitest/coverage-v8": "^4.1.10",
-    "@webiny/stdlib": "^0.0.13",
+    "@webiny/stdlib": "^0.0.14",
     "adio": "^3.0.1",
     "chalk": "^6.0.0",
     "cross-env": "^10.1.0",
@@ -190,7 +190,8 @@
     "sharp": "^0.35.3",
     "react-dom": "18.3.1",
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
-    "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
+    "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
+    "postcss": "8.5.23"
   },
   "packageManager": "yarn@4.18.0",
   "dependencies": {

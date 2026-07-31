@@ -7,7 +7,7 @@ import {
     withCommonParams
 } from "./steps/index.js";
 
-// The HEAD branch of the PR (e.g. "release/6.3.0") — used as checkout path and working dir.
+// The HEAD branch of the PR (e.g. "release/6.6.0") — used as checkout path and working dir.
 const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
 const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
@@ -15,13 +15,15 @@ const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH 
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANCH });
 
-export const pullRequestsCommandBeta = createSlashCommandWorkflow({
-    command: "beta",
-    name: "Pull Requests Command - Beta Release",
-    comment: "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
+// Unlike /beta (which publishes a beta and can then immediately proceed to a "latest"
+// release), /alpha only ever publishes an alpha prerelease. There is no follow-up job.
+export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
+    command: "alpha",
+    name: "Pull Requests Command - Alpha Release",
+    comment: "Alpha release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     workflow: {
         concurrency: {
-            group: "beta-release-${{ github.event.issue.number }}",
+            group: "alpha-release-${{ github.event.issue.number }}",
             "cancel-in-progress": true
         }
     },
@@ -75,9 +77,9 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheSteps]
         }),
-        npmReleaseBeta: createJob({
+        npmReleaseAlpha: createJob({
             needs: ["prBranch", "constants", "build"],
-            name: 'NPM release ("beta" tag)',
+            name: 'NPM release ("alpha" tag)',
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
@@ -103,86 +105,28 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                             run: 'git config --global user.name "webiny-bot"'
                         },
                         {
-                            name: 'Version and publish "beta" tag to NPM',
+                            name: 'Version and publish "alpha" tag to NPM',
                             id: "release",
                             run: [
                                 "set -o pipefail",
-                                `yarn release --type=beta --tag=beta --version=${RELEASE_VERSION} 2>&1 | tee /tmp/release-output.txt`,
-                                "BETA_VERSION=$(grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+' /tmp/release-output.txt | tail -1)",
-                                'echo "beta-version=$BETA_VERSION" >> $GITHUB_OUTPUT'
+                                `yarn release --type=alpha --version=${RELEASE_VERSION} 2>&1 | tee /tmp/release-output.txt`,
+                                "ALPHA_VERSION=$(grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+-alpha\\.[0-9]+' /tmp/release-output.txt | tail -1)",
+                                'echo "alpha-version=$ALPHA_VERSION" >> $GITHUB_OUTPUT'
                             ].join("\n")
                         }
                     ],
                     { "working-directory": PR_BRANCH }
                 ),
                 {
-                    name: "Notify Slack - Beta Release",
+                    name: "Notify Slack - Alpha Release",
                     env: {
-                        BETA_VERSION: "${{ steps.release.outputs.beta-version }}"
+                        ALPHA_VERSION: "${{ steps.release.outputs.alpha-version }}"
                     },
                     run: [
                         '[ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not configured, skipping." && exit 0',
-                        "PROJECT_NAME=webiny-$(echo $BETA_VERSION | tr . -)",
-                        'INSTALL_CMD="npx create-webiny-project@${BETA_VERSION} ${PROJECT_NAME}"',
-                        'MSG="Webiny \\`${BETA_VERSION}\\` is out! :rocket:\\nTo install, run: \\`\\`\\`${INSTALL_CMD}\\`\\`\\`"',
-                        "curl -s -o /dev/null -X POST \\",
-                        '  -H "Content-type: application/json" \\',
-                        '  --data "{\\"text\\":\\"${MSG}\\"}" \\',
-                        '  "$SLACK_RELEASE_CHANNEL_WEBHOOK"'
-                    ].join("\n")
-                }
-            ]
-        }),
-        npmReleaseLatest: createJob({
-            needs: ["prBranch", "constants", "npmReleaseBeta"],
-            name: 'NPM release ("latest" tag)',
-            environment: "release",
-            env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
-                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
-            },
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
-            steps: [
-                ...yarnCacheSteps,
-                ...runBuildCacheSteps,
-                ...installBuildSteps,
-                ...withCommonParams(
-                    [
-                        {
-                            name: 'Create ".npmrc" file in the project root',
-                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                        },
-                        {
-                            name: "Set git email",
-                            run: 'git config --global user.email "webiny-bot@webiny.com"'
-                        },
-                        {
-                            name: "Set git username",
-                            run: 'git config --global user.name "webiny-bot"'
-                        },
-                        {
-                            name: 'Version and publish "latest" tag to NPM',
-                            id: "release",
-                            run: [
-                                "set -o pipefail",
-                                `yarn release --type=latest --version=${RELEASE_VERSION} --createGithubRelease=latest 2>&1 | tee /tmp/release-output.txt`,
-                                'echo "latest-version=' + RELEASE_VERSION + '" >> $GITHUB_OUTPUT'
-                            ].join("\n")
-                        }
-                    ],
-                    { "working-directory": PR_BRANCH }
-                ),
-                {
-                    name: "Notify Slack - Latest Release",
-                    env: {
-                        LATEST_VERSION: "${{ steps.release.outputs.latest-version }}"
-                    },
-                    run: [
-                        '[ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not configured, skipping." && exit 0',
-                        "PROJECT_NAME=webiny-$(echo $LATEST_VERSION | tr . -)",
-                        'INSTALL_CMD="npx create-webiny-project@${LATEST_VERSION} ${PROJECT_NAME}"',
-                        'MSG="Webiny \\`${LATEST_VERSION}\\` is out! :rocket:\\nTo install, run: \\`\\`\\`${INSTALL_CMD}\\`\\`\\`"',
+                        "PROJECT_NAME=webiny-$(echo $ALPHA_VERSION | tr . -)",
+                        'INSTALL_CMD="npx create-webiny-project@${ALPHA_VERSION} ${PROJECT_NAME}"',
+                        'MSG="Webiny \\`${ALPHA_VERSION}\\` (alpha) is out! :rocket:\\nTo install, run: \\`\\`\\`${INSTALL_CMD}\\`\\`\\`"',
                         "curl -s -o /dev/null -X POST \\",
                         '  -H "Content-type: application/json" \\',
                         '  --data "{\\"text\\":\\"${MSG}\\"}" \\',

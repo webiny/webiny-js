@@ -1,4 +1,4 @@
-import { createWorkflow, NormalJob } from "github-actions-wac";
+import { NormalJob } from "github-actions-wac";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -13,7 +13,7 @@ import {
     NODE_VERSION,
     runNodeScript
 } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     DdbStorageOps,
     DdbOsStorageOps,
@@ -196,46 +196,18 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     };
 };
 
-export const pullRequestsCommandVitest = createWorkflow({
+export const pullRequestsCommandVitest = createSlashCommandWorkflow({
+    command: "vitest",
     name: "Pull Requests Command - Vitest",
-    on: "issue_comment",
-    env: {
-        NODE_OPTIONS,
-        AWS_REGION
+    comment: INITIAL_COMMENT_BODY,
+    captureCommentId: true,
+    workflow: {
+        env: {
+            NODE_OPTIONS,
+            AWS_REGION
+        }
     },
     jobs: {
-        checkComment: createJob({
-            name: `Check comment for /vitest`,
-            if: "${{ github.event.issue.pull_request }}",
-            checkout: false,
-            outputs: {
-                "comment-id": "${{ steps.create-comment.outputs.comment-id }}"
-            },
-            steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "vitest",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
-                {
-                    name: "Create comment",
-                    id: "create-comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
-                    with: {
-                        "issue-number": "${{ github.event.issue.number }}",
-                        body: INITIAL_COMMENT_BODY
-                    }
-                }
-            ]
-        }),
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",

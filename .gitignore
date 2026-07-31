@@ -71,7 +71,6 @@ CLAUDE.local.md
 .claude/worktrees/
 .claire/**
 .codegraph
-.mcp.json
 docs/.reports
 tsconfig.check-tests.json
 tsconfig.build.tmp-*.json
