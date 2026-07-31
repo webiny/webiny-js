@@ -2,8 +2,6 @@ import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
-import { ReactComponent as BoldIcon } from "@webiny/icons/format_bold.svg";
-import cn from "clsx";
 
 export const BoldAction = () => {
     const { editor } = useRichTextEditor();
@@ -17,10 +15,10 @@ export const BoldAction = () => {
     return (
         <button
             onClick={handleClick}
-            className={cn("popup-item", "spaced", { active: isBoldSelected })}
+            className={"popup-item spaced " + (isBoldSelected ? "active" : "")}
             aria-label="Format text as bold"
         >
-            <BoldIcon className="format" />
+            <i className="format bold" />
         </button>
     );
 };

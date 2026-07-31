@@ -1,7 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import LanguageModel from "./domain/LanguageModel.js";
 import { EnsureSingleDefaultLanguageFeature } from "./features/EnsureSingleDefaultLanguage/feature.js";
-import { GetDefaultLanguageFeature } from "./features/GetDefaultLanguage/feature.js";
 import { GetLanguageByCodeFeature } from "./features/GetLanguageByCode/feature.js";
 import { ListLanguagesFeature } from "./features/ListLanguages/feature.js";
 import { LanguagesGraphQLSchema } from "./graphql/LanguagesGraphQLSchema.js";
@@ -15,7 +14,6 @@ export const Extension = createFeature({
 
         // Features
         EnsureSingleDefaultLanguageFeature.register(container);
-        GetDefaultLanguageFeature.register(container);
         GetLanguageByCodeFeature.register(container);
         ListLanguagesFeature.register(container);
         AddCmsPermissionsFeature.register(container);

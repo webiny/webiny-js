@@ -4,8 +4,6 @@ import { useRichTextEditor } from "~/hooks/useRichTextEditor.js";
 import type { ListNode } from "@webiny/lexical-nodes";
 import { $isListNode } from "@webiny/lexical-nodes";
 import { useCurrentElement } from "~/hooks/useCurrentElement.js";
-import { ReactComponent as BulletListIcon } from "@webiny/icons/format_list_bulleted.svg";
-import cn from "clsx";
 
 export const BulletListAction = () => {
     const { editor } = useRichTextEditor();
@@ -29,10 +27,10 @@ export const BulletListAction = () => {
     return (
         <button
             onClick={() => formatBulletList()}
-            className={cn("popup-item", "spaced", { active: isBullet })}
+            className={"popup-item spaced " + (isBullet ? "active" : "")}
             aria-label="Format text as bullet list"
         >
-            <BulletListIcon className="icon" />
+            <i className="icon bullet-list" />
         </button>
     );
 };

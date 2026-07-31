@@ -141,7 +141,7 @@ Tests should verify external behavior through public interfaces, not implementat
 
 ## Further Notes
 
-- The architecture closely mirrors the WB SDK (`FrontendSdk`, `EditingSdk`, `LiveSdk`, `PreviewSdk`, `Messenger`, `ComponentRegistry`, `ComponentResolver`) but is purpose-built for CMS entries rather than WB page documents.
+- The architecture closely mirrors the WB SDK (`ContentSdk`, `EditingSdk`, `LiveSdk`, `PreviewSdk`, `Messenger`, `ComponentRegistry`, `ComponentResolver`) but is purpose-built for CMS entries rather than WB page documents.
 - The `_templateId` discriminator becomes the universal identifier for DZ template resolution — replacing `__typename` which is a GraphQL-only artifact. This is a philosophical shift: the CMS model definition is the source of truth for component mapping, not GraphQL type names.
 - The existing `ValuesSelectionGenerator` on the server can be leveraged to provide field lists to the SDK, but the SDK may also generate its own field list from the model definition fetched via API — implementation will determine the best approach.
 - The CMS live preview extension (`extensions/livePreview/`) serves as a reference implementation but will eventually be superseded by the SDK-based approach.

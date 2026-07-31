@@ -34,6 +34,11 @@ import { TeamsPresenterFeature } from "~/presentation/accessManagement/teams/fea
 
 const { Menu, Route } = AdminConfig;
 
+// Shared leading breadcrumb for all access-management routes.
+const AccessManagementBreadcrumbsRoot = () => (
+    <AdminConfig.Breadcrumb name={"access-management"} label={"Access Management"} />
+);
+
 export const AccessManagementExtension = () => {
     const router = useRouter();
 
@@ -66,6 +71,8 @@ export const AccessManagementExtension = () => {
                         route={Routes.Roles.List}
                         element={
                             <AdminLayout title={"Access Management - Roles"}>
+                                <AccessManagementBreadcrumbsRoot />
+                                <AdminConfig.Breadcrumb name={"roles"} label={"Roles"} />
                                 <RolesView />
                             </AdminLayout>
                         }
@@ -77,6 +84,8 @@ export const AccessManagementExtension = () => {
                             route={Routes.Teams.List}
                             element={
                                 <AdminLayout title={"Access Management - Teams"}>
+                                    <AccessManagementBreadcrumbsRoot />
+                                    <AdminConfig.Breadcrumb name={"teams"} label={"Teams"} />
                                     <TeamsView />
                                 </AdminLayout>
                             }
@@ -88,6 +97,8 @@ export const AccessManagementExtension = () => {
                         route={Routes.ApiKeys.List}
                         element={
                             <AdminLayout title={"Access Management - API Keys"}>
+                                <AccessManagementBreadcrumbsRoot />
+                                <AdminConfig.Breadcrumb name={"api-keys"} label={"API Keys"} />
                                 <ApiKeysView />
                             </AdminLayout>
                         }

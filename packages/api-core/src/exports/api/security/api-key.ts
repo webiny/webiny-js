@@ -12,7 +12,6 @@ export {
 
 export { GetApiKeyUseCase } from "~/features/security/apiKeys/GetApiKey/index.js";
 export { GetApiKeyByTokenUseCase } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
-export { GetApiKeyBySlugUseCase } from "~/features/security/apiKeys/GetApiKeyBySlug/index.js";
 export { ListApiKeysUseCase } from "~/features/security/apiKeys/ListApiKeys/index.js";
 export {
     ApiKeyAfterUpdateEventHandler,

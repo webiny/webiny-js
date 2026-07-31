@@ -81,10 +81,6 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
             featureFlagsDto.recordLocking,
             license.canUseRecordLocking()
         );
-        featureFlagsDto.abTesting = applyLicenseFlag(
-            featureFlagsDto.abTesting,
-            license.canUseAbTesting()
-        );
 
         // fileManager is always enabled; only restrict threatDetection via license.
         if (!featureFlagsDto.fileManager) {

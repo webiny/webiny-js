@@ -5,8 +5,8 @@ import { Alert } from "@webiny/admin-ui";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
-import { useDateFormatter } from "@webiny/app-admin";
 import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
+import { formatScheduledDate } from "~/utils/index.js";
 
 /**
  * Full-width bar shown below the entry-form header (above the form content) when the entry has a
@@ -15,7 +15,6 @@ import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresent
 const ScheduledActionBar = observer(() => {
     const formPresenter = useContentEntryFormPresenter();
     const presenter = useScheduledActionsPresenter();
-    const dateFormatter = useDateFormatter();
 
     const vm = formPresenter.vm;
     const entryId = vm.entry?.id;
@@ -55,7 +54,7 @@ const ScheduledActionBar = observer(() => {
                 {goLiveOn ? (
                     <>
                         This entry is scheduled to {actionLabel} on{" "}
-                        <strong>{dateFormatter.format(goLiveOn)}</strong>.
+                        <strong>{formatScheduledDate(goLiveOn)}</strong>.
                     </>
                 ) : (
                     <>This entry is scheduled to {actionLabel}.</>

@@ -2,7 +2,6 @@
 // Each renderer file declares its registry entry via `declare module`.
 import "../../base/Base/FieldRenderers/InputRenderer.js";
 import "../../base/Base/FieldRenderers/SelectRenderer.js";
-import "../../base/Base/FieldRenderers/AutoCompleteRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectAccordionMultipleRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/DynamicZoneRenderer.js";

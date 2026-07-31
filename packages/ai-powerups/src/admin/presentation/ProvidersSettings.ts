@@ -37,8 +37,7 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .text()
                         .label("Model")
                         .required("Model is required")
-                        .options(() => this.getModelOptions())
-                        .renderer("autoComplete"),
+                        .options(() => this.getModelOptions()),
                     apiKey: f.text().label("API Key").required("API Key is required")
                 }))
                 .list()

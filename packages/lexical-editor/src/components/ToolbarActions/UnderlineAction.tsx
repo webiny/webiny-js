@@ -1,8 +1,6 @@
 import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection, useRichTextEditor } from "~/hooks/index.js";
-import { ReactComponent as UnderlineIcon } from "@webiny/icons/format_underlined.svg";
-import cn from "clsx";
 
 export const UnderlineAction = () => {
     const { editor } = useRichTextEditor();
@@ -16,10 +14,10 @@ export const UnderlineAction = () => {
     return (
         <button
             onClick={handleClick}
-            className={cn("popup-item", "spaced", { active: isUnderlineSelected })}
+            className={"popup-item spaced " + (isUnderlineSelected ? "active" : "")}
             aria-label="Underline text"
         >
-            <UnderlineIcon className="format" />
+            <i className="format underline" />
         </button>
     );
 };

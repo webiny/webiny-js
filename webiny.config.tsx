@@ -11,8 +11,6 @@ import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContent
 export const Extensions = () => {
     return (
         <>
-            <Api.Extension src={"@/extensions/tenantTheme/TenantThemeExtension.ts"} />
-            <Api.Extension src={"/extensions/WebsiteBuilderApiKey.ts"} />
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
@@ -42,7 +40,7 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
-            <Infra.Api.MaxBundleSize size={6291456} />
+            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />

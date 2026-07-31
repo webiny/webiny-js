@@ -2,8 +2,6 @@ import React from "react";
 import { $isQuoteNode, formatToQuote, formatToParagraph } from "@webiny/lexical-nodes";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor.js";
 import { useCurrentElement } from "~/hooks/useCurrentElement.js";
-import { ReactComponent as QuoteIcon } from "@webiny/icons/format_quote.svg";
-import cn from "clsx";
 
 const QUOTE_TAG = "quote";
 
@@ -25,10 +23,10 @@ export const QuoteAction = () => {
     return (
         <button
             onClick={formatText}
-            className={cn("popup-item", { active: isQuote })}
+            className={"popup-item " + (isQuote ? "active" : "")}
             aria-label="Format text as quote"
         >
-            <QuoteIcon className="icon" />
+            <i className="icon quote" />
         </button>
     );
 };

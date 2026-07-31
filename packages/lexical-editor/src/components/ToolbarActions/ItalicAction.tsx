@@ -2,8 +2,6 @@ import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
-import { ReactComponent as ItalicIcon } from "@webiny/icons/format_italic.svg";
-import cn from "clsx";
 
 export const ItalicAction = () => {
     const { editor } = useRichTextEditor();
@@ -17,10 +15,10 @@ export const ItalicAction = () => {
     return (
         <button
             onClick={handleClick}
-            className={cn("popup-item", "spaced", { active: isItalicSelected })}
+            className={"popup-item spaced " + (isItalicSelected ? "active" : "")}
             aria-label="Format text as italic"
         >
-            <ItalicIcon className="format" />
+            <i className="format italic" />
         </button>
     );
 };

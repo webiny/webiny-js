@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDialog } from "@webiny/app-admin";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { useLanguages } from "@webiny/languages/exports/admin/languages.js";
@@ -17,7 +17,6 @@ export const TranslatePageDialog = () => {
     const { translatePage } = useTranslatePage();
     const { goToPageEditor } = useEditPageUrl();
     const { languages, loading } = useLanguages();
-    const [translating, setTranslating] = useState(false);
 
     const handleSubmit = async (data: Record<string, unknown>) => {
         const { languageCode, folderId } = data as {
@@ -25,20 +24,14 @@ export const TranslatePageDialog = () => {
             folderId: string;
         };
 
-        setTranslating(true);
+        const newPage = await translatePage({
+            id: params.pageId,
+            languageCode,
+            folderId
+        });
 
-        try {
-            const newPage = await translatePage({
-                id: params.pageId,
-                languageCode,
-                folderId
-            });
-
-            closeDialog();
-            goToPageEditor(newPage.id);
-        } finally {
-            setTranslating(false);
-        }
+        closeDialog();
+        goToPageEditor(newPage.id);
     };
 
     return (
@@ -47,21 +40,14 @@ export const TranslatePageDialog = () => {
                 <Dialog
                     open={true}
                     onClose={closeDialog}
-                    dismissible={!translating}
-                    loading={translating ? { text: "Translating page..." } : undefined}
                     title="Translate Page"
                     description="Select a target language and destination folder"
                     actions={
                         <>
-                            <Dialog.CancelAction
-                                onClick={closeDialog}
-                                text="Cancel"
-                                disabled={translating}
-                            />
+                            <Dialog.CancelAction onClick={closeDialog} text="Cancel" />
                             <Dialog.ConfirmAction
                                 onClick={submit}
                                 text={loading ? "Loading..." : "Confirm"}
-                                disabled={translating}
                             />
                         </>
                     }

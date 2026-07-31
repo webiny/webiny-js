@@ -2,8 +2,6 @@ import React from "react";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import { useCurrentSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
-import { ReactComponent as CodeIcon } from "@webiny/icons/code.svg";
-import cn from "clsx";
 
 export const CodeHighlightAction = () => {
     const { editor } = useRichTextEditor();
@@ -17,10 +15,10 @@ export const CodeHighlightAction = () => {
     return (
         <button
             onClick={handleClick}
-            className={cn("popup-item", "spaced", { active: isCodeSelected })}
+            className={"popup-item spaced " + (isCodeSelected ? "active" : "")}
             aria-label="Text code highlight"
         >
-            <CodeIcon className="format" />
+            <i className="format code" />
         </button>
     );
 };

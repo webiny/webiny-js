@@ -4,10 +4,9 @@
   max-width: 400px;
   width: 100%;
   opacity: 0;
-  /* Border-defined like admin-ui menus (no shadow), rounded-md. */
-  background-color: var(--color-neutral-base);
-  border: 1px solid var(--border-color-neutral-muted);
-  border-radius: var(--radius-md);
+  background-color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
   pointer-events: all;
 }
 .link-editor .button {

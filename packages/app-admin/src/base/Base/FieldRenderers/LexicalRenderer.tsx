@@ -16,35 +16,18 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-// Overlay the contentEditable: same origin + same padding as `contentEditableStyles`, and
-// neutralize the Placeholder component's default -20px margin. This makes the placeholder's
-// first line land exactly on the editor's text start.
-const placeholderStyles: React.CSSProperties = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    padding: "8px 12px",
-    marginTop: 0,
-    // Font size/family come from the paragraph typography class (applied by RichTextEditor);
-    // keep the placeholder muted.
-    color: "var(--text-color-neutral-muted)"
-};
+const placeholderStyles: React.CSSProperties = { position: "absolute", top: 40, left: 25 };
 
 const contentEditableStyles: React.CSSProperties = {
     minHeight: 200,
     display: "block",
-    padding: "8px 12px"
+    padding: 10
 };
 
 const styles: React.CSSProperties = {
-    backgroundColor: "var(--color-neutral-base)",
-    border: "1px solid var(--border-color-neutral-muted)",
-    // The static toolbar sits directly above and carries the top border, so the body
-    // drops its top border and rounds only the bottom corners — together one seamless
-    // rounded container, no internal divider (matches Figma).
-    borderTop: "none",
-    borderRadius: "0 0 var(--radius-md) var(--radius-md)",
-    // Padding lives on the contentEditable only (avoids doubled inset).
+    backgroundColor: "#fff",
+    border: "1px solid #e1e1e1",
+    padding: "10px 14px",
     minHeight: 200,
     maxHeight: 350
 };

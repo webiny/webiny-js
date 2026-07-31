@@ -592,7 +592,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -762,7 +762,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev

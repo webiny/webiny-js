@@ -3,13 +3,9 @@
   position: relative;
   padding: 4px;
   vertical-align: middle;
-  border: 1px solid var(--border-color-neutral-muted);
-  /* No divider between toolbar and body (matches Figma): the body carries the
-     bottom border, the toolbar the top — together one seamless rounded box. */
-  border-bottom: none;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border: 1px solid #eee;
   will-change: transform;
-  background: var(--color-neutral-base);
+  background: #fff;
   flex-wrap: wrap;
   z-index: 1;
 }
@@ -17,10 +13,8 @@
 .static-toolbar button.popup-item {
   border: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border-radius: var(--radius-md);
+  background: #fff;
+  border-radius: 10px;
   padding: 8px;
   cursor: pointer;
   vertical-align: middle;
@@ -34,11 +28,14 @@
   margin-right: 2px;
 }
 
-.static-toolbar button.popup-item .format {
+.static-toolbar button.popup-item i.format {
+  background-size: contain;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  margin-top: 2px;
+  vertical-align: -0.25em;
   display: flex;
-  height: 16px;
-  width: 16px;
-  flex-shrink: 0;
 }
 
 .static-toolbar button.popup-item:disabled i.format {
@@ -46,7 +43,7 @@
 }
 
 .static-toolbar button.popup-item.active {
-  background-color: var(--color-primary-subtle);
+  background-color: rgba(223, 232, 250, 0.3);
 }
 
 .static-toolbar button.popup-item.active i {
@@ -54,21 +51,20 @@
 }
 
 .static-toolbar .popup-item:hover:not([disabled]) {
-  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
-  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
+  background-color: #eee;
 }
 
 .static-toolbar select.popup-item {
   border: 0;
   display: flex;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   padding: 8px;
   vertical-align: middle;
   -webkit-appearance: none;
   -moz-appearance: none;
   width: 70px;
   font-size: 14px;
-  color: var(--text-color-neutral-strong);
+  color: #777;
   text-overflow: ellipsis;
 }
 
@@ -83,7 +79,7 @@
   width: 200px;
   vertical-align: middle;
   font-size: 14px;
-  color: var(--text-color-neutral-strong);
+  color: #777;
   text-overflow: ellipsis;
   width: 70px;
   overflow: hidden;
@@ -93,14 +89,14 @@
 
 .static-toolbar .popup-item .icon {
   display: flex;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   user-select: none;
   line-height: 16px;
   background-size: contain;
 }
 
-.static-toolbar .chevron-down {
+.static-toolbar i.chevron-down {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -108,7 +104,7 @@
   user-select: none;
 }
 
-.static-toolbar .chevron-down.inside {
+.static-toolbar i.chevron-down.inside {
   width: 16px;
   height: 16px;
   display: flex;
@@ -120,20 +116,30 @@
 
 .static-toolbar .divider {
   width: 1px;
-  background-color: var(--border-color-neutral-dimmed);
+  background-color: #eee;
   margin: 0 4px;
+}
+
+.static-toolbar .icon.bullet-list,
+.static-toolbar .icon.bullet {
+  background-image: url("../../images/icons/list-ul.svg");
+}
+
+.static-toolbar .icon.numbered-list,
+.static-toolbar .icon.number {
+  background-image: url("../../images/icons/list-ol.svg");
 }
 
 .static-toolbar .link-editor .button.active,
 .static-toolbar .button.active {
-  background-color: var(--color-primary-subtle);
+  background-color: rgb(223, 232, 250);
 }
 
 .static-toolbar button.toolbar-item {
   border: 0;
   display: flex;
   background: none;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   padding: 8px;
   cursor: pointer;
   vertical-align: middle;
@@ -150,11 +156,14 @@
   margin-right: 2px;
 }
 
-.static-toolbar button.toolbar-item .format {
+.static-toolbar button.toolbar-item i.format {
+  background-size: contain;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  vertical-align: -0.25em;
   display: flex;
-  height: 16px;
-  width: 16px;
-  flex-shrink: 0;
+  opacity: 0.6;
 }
 
 .static-toolbar button.toolbar-item:disabled .icon,
@@ -165,7 +174,7 @@
 }
 
 .static-toolbar button.toolbar-item.active {
-  background-color: var(--color-primary-subtle);
+  background-color: rgba(223, 232, 250, 0.3);
 }
 
 .static-toolbar button.toolbar-item.active i {
@@ -173,8 +182,7 @@
 }
 
 .static-toolbar .toolbar-item:hover:not([disabled]) {
-  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
-  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
+  background-color: #eee;
 }
 
 .static-toolbar .toolbar-item.font-family .text {
@@ -186,20 +194,12 @@
   width: 150px;
 }
 
-/* Fixed-width label so the trigger doesn't resize as the selected heading changes. */
-.static-toolbar .block-type-dropdown .dropdown-button-text {
-  width: 92px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
 .static-toolbar .toolbar-item .text {
   display: flex;
   line-height: 20px;
   vertical-align: middle;
   font-size: 14px;
-  color: var(--text-color-neutral-strong);
+  color: #777;
   text-overflow: ellipsis;
   overflow: hidden;
   height: 20px;
@@ -209,15 +209,15 @@
 
 .static-toolbar .toolbar-item .icon {
   display: flex;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   user-select: none;
   margin-right: 8px;
   line-height: 16px;
   background-size: contain;
 }
 
-.static-toolbar .chevron-down {
+.static-toolbar i.chevron-down {
   margin-top: 3px;
   width: 16px;
   height: 16px;
@@ -225,7 +225,7 @@
   user-select: none;
 }
 
-.static-toolbar .chevron-down.inside {
+.static-toolbar i.chevron-down.inside {
   width: 16px;
   height: 16px;
   display: flex;
@@ -237,28 +237,129 @@
 
 .static-toolbar .divider {
   width: 1px;
-  background-color: var(--border-color-neutral-dimmed);
+  background-color: #eee;
   margin: 0 4px;
+}
+
+.static-toolbar button.item i {
+  opacity: 0.6;
+}
+
+.static-toolbar button.item.dropdown-item-active {
+  background-color: rgba(223, 232, 250, 0.3);
+}
+
+.static-toolbar button.item.dropdown-item-active i {
+  opacity: 1;
+}
+
+i.bold {
+  background-image: url("../../images/icons/type-bold.svg");
+}
+
+i.italic {
+  background-image: url("../../images/icons/type-italic.svg");
+}
+
+i.code {
+  background-image: url("../../images/icons/code.svg");
+}
+
+i.underline {
+  background-image: url("../../images/icons/type-underline.svg");
+}
+
+i.strikethrough {
+  background-image: url("../../images/icons/type-strikethrough.svg");
+}
+
+i.link {
+  background-image: url("../../images/icons/link.svg");
+}
+
+i.quote {
+  background-image: url("../../images/icons/chat-square-quote.svg");
+}
+
+.icon.left-align,
+i.left-align {
+  background-image: url("../../images/icons/text-left.svg");
+}
+
+i.center-align {
+  background-image: url("../../images/icons/text-center.svg");
+}
+
+i.right-align {
+  background-image: url("../../images/icons/text-right.svg");
+}
+
+i.indent {
+  background-image: url("../../images/icons/indent.svg");
+}
+
+i.outdent {
+  background-image: url("../../images/icons/outdent.svg");
+}
+
+i.justify-align {
+  background-image: url("../../images/icons/justify.svg");
+}
+
+i.chevron-down {
+  background-color: transparent;
+  background-size: contain;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-image: url("../../images/icons/chevron-down.svg");
+}
+
+i.insert-image,
+.icon.insert-image {
+  background-color: transparent;
+  background-size: contain;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+  background-image: url("../../images/icons/insert-image.svg");
+}
+
+.icon.bullet-list,
+.icon.bullet {
+  background-image: url("../../images/icons/list-ul.svg");
+}
+
+.icon.numbered-list,
+.icon.number {
+  background-image: url("../../images/icons/list-ol.svg");
+}
+
+i.font-color,
+.icon.font-color {
+  background-image: url("../../images/icons/font-color.svg");
 }
 
 .link-editor .button.active,
 .toolbar .button.active {
-  background-color: var(--color-primary-subtle);
+  background-color: rgb(223, 232, 250);
 }
 
 .toolbar .divider {
   width: 1px;
-  background-color: var(--border-color-neutral-dimmed);
+  background-color: #eee;
   margin: 0 4px;
 }
 
 .lexical-dropdown {
-  /* Matches admin-ui DropdownMenu: border-defined (no heavy shadow), rounded-md. */
   display: block;
-  border: 1px solid var(--border-color-neutral-muted);
-  border-radius: var(--radius-md);
-  background-color: var(--color-neutral-base);
-  color: var(--text-color-neutral-primary);
+  box-shadow:
+    0 12px 28px 0 rgba(0, 0, 0, 0.2),
+    0 2px 4px 0 rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  min-height: 40px;
+  background-color: #fff;
   max-height: 250px;
   overflow: hidden;
   overflow-y: auto;
@@ -272,20 +373,21 @@
 
 .lexical-dropdown .item {
   margin: 0 8px 0 8px;
-  padding: var(--padding-xs-plus) var(--padding-sm);
+  padding: 8px;
+  color: #050505;
   cursor: pointer;
-  line-height: 20px;
-  font-size: 14px;
+  line-height: 16px;
+  font-size: 15px;
   display: flex;
-  align-items: center;
+  align-content: center;
   flex-direction: row;
   flex-shrink: 0;
-  gap: var(--spacing-sm);
-  background-color: transparent;
-  color: var(--text-color-neutral-primary);
-  border-radius: var(--radius-sm);
+  justify-content: space-between;
+  background-color: #fff;
+  border-radius: 8px;
   border: 0;
   max-width: 250px;
+  min-width: 100px;
 }
 
 .lexical-dropdown .item.fontsize-item,
@@ -293,13 +395,11 @@
   min-width: unset;
 }
 
-/* Selected-item check indicator (admin-ui style): a check, no background tint. */
-.lexical-dropdown .item-check {
+.lexical-dropdown .item .active {
   display: flex;
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  fill: var(--fill-neutral-xstrong);
+  width: 20px;
+  height: 20px;
+  background-size: contain;
 }
 
 .lexical-dropdown .item:first-child {
@@ -311,27 +411,31 @@
 }
 
 .lexical-dropdown .item:hover {
-  background-color: var(--color-neutral-dimmed);
+  background-color: #eee;
 }
 
 .lexical-dropdown .item .text {
   display: flex;
   line-height: 20px;
   flex-grow: 1;
+  min-width: 150px;
 }
 
 .lexical-dropdown .item .icon {
   display: flex;
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
   user-select: none;
-  fill: var(--fill-neutral-xstrong);
+  margin-right: 12px;
+  line-height: 16px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .lexical-dropdown .divider {
   width: auto;
-  background-color: var(--border-color-neutral-dimmed);
+  background-color: #eee;
   margin: 4px 8px;
   height: 1px;
 }
@@ -346,6 +450,18 @@
   .code-language .dropdown-button-text {
     display: flex !important;
   }
+}
+
+button.item i {
+  opacity: 0.6;
+}
+
+button.item.dropdown-item-active {
+  background-color: rgba(223, 232, 250, 0.3);
+}
+
+button.item.dropdown-item-active i {
+  opacity: 1;
 }
 
 .editor-shell span.editor-image {
@@ -543,24 +659,4 @@
   min-width: 100%;
   color: #000;
   overflow: hidden;
-}
-
-/*
- * Toolbar icons are inline SVGs from @webiny/icons (Material Symbols), replacing the
- * legacy background-image glyphs. Sizing is handled per-button above; color via `fill`.
- */
-.static-toolbar .format,
-.static-toolbar .icon,
-.lexical-dropdown .item .icon {
-  fill: var(--fill-neutral-xstrong);
-}
-
-.static-toolbar .chevron-down {
-  fill: var(--fill-neutral-strong);
-}
-
-.static-toolbar button:disabled .format,
-.static-toolbar button:disabled .icon,
-.static-toolbar button:disabled .chevron-down {
-  fill: var(--fill-neutral-disabled);
 }

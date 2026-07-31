@@ -2,16 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import type { CmsReferenceEntry, CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { CmsModel } from "~/types.js";
 import { EntryImage } from "./EntryImage.js";
-import {
-    Tag,
-    TimeAgo,
-    Text,
-    DropdownMenu,
-    IconButton,
-    Checkbox,
-    Tooltip,
-    cn
-} from "@webiny/admin-ui";
+import { Tag, TimeAgo, Text, DropdownMenu, IconButton, Checkbox, cn } from "@webiny/admin-ui";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -180,17 +171,13 @@ export const EntryCard = (props: EntryCardProps) => {
                             </div>
                         ) : null}
                         {!disabled && onEdit ? (
-                            <Tooltip
-                                content={"Edit"}
-                                trigger={
-                                    <IconButton
-                                        variant={"ghost"}
-                                        size={"sm"}
-                                        aria-label={"Edit"}
-                                        icon={<EditIcon />}
-                                        onClick={() => onEdit(entry)}
-                                    />
-                                }
+                            <IconButton
+                                variant={"ghost"}
+                                size={"sm"}
+                                title={"Edit"}
+                                aria-label={"Edit"}
+                                icon={<EditIcon />}
+                                onClick={() => onEdit(entry)}
                             />
                         ) : null}
                         {!disabled ? (

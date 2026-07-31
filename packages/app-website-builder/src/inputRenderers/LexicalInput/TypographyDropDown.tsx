@@ -85,7 +85,7 @@ export const TypographyDropDown = () => {
         <>
             {!!styles?.length ? (
                 <DropDown
-                    buttonClassName="toolbar-item typography-dropdown block-type-dropdown"
+                    buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Typography formatting options"}
                     buttonLabel={value?.label || "Typography"}
                     stopCloseOnClickSelf={true}
@@ -94,8 +94,9 @@ export const TypographyDropDown = () => {
                 >
                     {styles?.map(option => (
                         <DropDownItem
-                            className="item typography-item"
-                            selected={value?.id === option.id}
+                            className={`item typography-item ${
+                                value?.id === option.id ? "active dropdown-item-active" : ""
+                            }`}
                             onClick={() => applyTypography(option)}
                             key={option.id}
                         >

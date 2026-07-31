@@ -1,15 +1,9 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { ScheduleActionType, SchedulerEntry } from "~/types.js";
 
-export interface IScheduleDialogRescheduling {
-    actionName: string;
-    scheduleOn: string;
-}
-
 export interface IScheduleDialogPresenterViewModel {
     loading: boolean;
     entry: SchedulerEntry | null;
-    rescheduling: IScheduleDialogRescheduling | null;
 }
 
 export interface IScheduleDialogPresenterLoadParams {

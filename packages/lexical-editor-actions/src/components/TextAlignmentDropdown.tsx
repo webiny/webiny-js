@@ -2,27 +2,18 @@ import React from "react";
 import { $isParentElementRTL } from "@lexical/selection";
 import { Divider, DropDown, DropDownItem, useTextAlignmentAction } from "@webiny/lexical-editor";
 import { useDeriveValueFromSelection } from "@webiny/lexical-editor/hooks/useCurrentSelection.js";
-import { ReactComponent as AlignLeftIcon } from "@webiny/icons/format_align_left.svg";
-import { ReactComponent as AlignCenterIcon } from "@webiny/icons/format_align_center.svg";
-import { ReactComponent as AlignRightIcon } from "@webiny/icons/format_align_right.svg";
-import { ReactComponent as AlignJustifyIcon } from "@webiny/icons/format_align_justify.svg";
-import { ReactComponent as IndentIcon } from "@webiny/icons/format_indent_increase.svg";
-import { ReactComponent as OutdentIcon } from "@webiny/icons/format_indent_decrease.svg";
 
 export const TextAlignmentDropdown = () => {
-    const { applyTextAlignment, outdentText, indentText, value } = useTextAlignmentAction();
+    const { applyTextAlignment, outdentText, indentText } = useTextAlignmentAction();
 
     const isRTL = useDeriveValueFromSelection(({ rangeSelection }) => {
         return rangeSelection ? $isParentElementRTL(rangeSelection) : false;
     });
 
-    // Empty format defaults to left alignment.
-    const alignment = value || "left";
-
     return (
         <DropDown
             buttonLabel="Align"
-            buttonIcon={<AlignLeftIcon className="icon" />}
+            buttonIconClassName="icon left-align"
             buttonClassName="toolbar-item spaced alignment"
             buttonAriaLabel="Formatting options for text alignment"
         >
@@ -31,9 +22,8 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("left");
                 }}
                 className="item"
-                selected={alignment === "left"}
             >
-                <AlignLeftIcon className="icon" />
+                <i className="icon left-align" />
                 <span className="text">Left Align</span>
             </DropDownItem>
             <DropDownItem
@@ -41,9 +31,8 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("center");
                 }}
                 className="item"
-                selected={alignment === "center"}
             >
-                <AlignCenterIcon className="icon" />
+                <i className="icon center-align" />
                 <span className="text">Center Align</span>
             </DropDownItem>
             <DropDownItem
@@ -51,9 +40,8 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("right");
                 }}
                 className="item"
-                selected={alignment === "right"}
             >
-                <AlignRightIcon className="icon" />
+                <i className="icon right-align" />
                 <span className="text">Right Align</span>
             </DropDownItem>
             <DropDownItem
@@ -61,9 +49,8 @@ export const TextAlignmentDropdown = () => {
                     applyTextAlignment("justify");
                 }}
                 className="item"
-                selected={alignment === "justify"}
             >
-                <AlignJustifyIcon className="icon" />
+                <i className="icon justify-align" />
                 <span className="text">Justify Align</span>
             </DropDownItem>
             <Divider />
@@ -72,9 +59,8 @@ export const TextAlignmentDropdown = () => {
                     outdentText();
                 }}
                 className="item"
-                selected={false}
             >
-                {isRTL ? <IndentIcon className="icon" /> : <OutdentIcon className="icon" />}
+                <i className={"icon " + (isRTL ? "indent" : "outdent")} />
                 <span className="text">Outdent</span>
             </DropDownItem>
             <DropDownItem
@@ -82,9 +68,8 @@ export const TextAlignmentDropdown = () => {
                     indentText();
                 }}
                 className="item"
-                selected={false}
             >
-                {isRTL ? <OutdentIcon className="icon" /> : <IndentIcon className="icon" />}
+                <i className={"icon " + (isRTL ? "outdent" : "indent")} />
                 <span className="text">Indent</span>
             </DropDownItem>
         </DropDown>

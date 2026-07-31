@@ -2,8 +2,8 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Alert } from "@webiny/admin-ui";
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
-import { useDateFormatter } from "@webiny/app-admin";
 import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
+import { formatScheduledDate } from "~/utils/index.js";
 
 interface ScheduleNoticeAlertProps {
     targetId: string | undefined;
@@ -18,7 +18,6 @@ interface ScheduleNoticeAlertProps {
  */
 export const ScheduleNoticeAlert = observer(({ targetId, verb }: ScheduleNoticeAlertProps) => {
     const presenter = useScheduledActionsPresenter();
-    const dateFormatter = useDateFormatter();
 
     const scheduled = targetId ? presenter.getScheduledAction(targetId) : undefined;
 
@@ -33,7 +32,7 @@ export const ScheduleNoticeAlert = observer(({ targetId, verb }: ScheduleNoticeA
     return (
         <Alert type={"warning"} variant={"subtle"} className={"mb-md"}>
             This entry has a {actionLabel} scheduled
-            {goLiveOn ? ` for ${dateFormatter.format(goLiveOn)}` : ""}. {verb} now will cancel it.
+            {goLiveOn ? ` for ${formatScheduledDate(goLiveOn)}` : ""}. {verb} now will cancel it.
         </Alert>
     );
 });

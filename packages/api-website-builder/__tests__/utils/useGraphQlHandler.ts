@@ -18,7 +18,7 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createWbSdk } from "~tests/utils/createWbSdk.js";
 import { createContextPlugin } from "@webiny/api";
-import { WbInvalidateCloudfrontCacheTaskDefinition } from "~/features/redirects/InvalidateRedirectsCache/WbInvalidateCloudfrontCacheTask.js";
+import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manager-s3/features/FlushCache/InvalidateCacheTask.js";
 import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
 
 export interface UseGQLHandlerParams {
@@ -62,7 +62,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createCmsExtension(),
             createBackgroundTasks(),
             createContextPlugin(context => {
-                context.container.register(WbInvalidateCloudfrontCacheTaskDefinition);
+                context.container.register(InvalidateCloudfrontCacheTaskDefinition);
             }),
             createWebsiteBuilder(),
             plugins

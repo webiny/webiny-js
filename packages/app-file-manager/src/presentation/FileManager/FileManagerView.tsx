@@ -50,6 +50,7 @@ import { UploadProgress } from "~/presentation/FileList/components/Upload/index.
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
 import { OverlayProvider, useOverlay } from "./OverlayContext.js";
 import { RouteParamsSync } from "./RouteParamsSync.js";
+import { FileManagerBreadcrumbs } from "./FileManagerBreadcrumbs.js";
 
 import type { FmFile } from "~/features/shared/types.js";
 import type {
@@ -308,6 +309,7 @@ const FileManagerViewInner = observer(
                         <FileManagerViewLayout />
                         {children}
                         {!overlayConfig && <RouteParamsSync />}
+                        {!overlayConfig && <FileManagerBreadcrumbs />}
                     </FileManagerPresenterProvider>
                 </FileManagerViewWithConfig>
             </DialogsProvider>

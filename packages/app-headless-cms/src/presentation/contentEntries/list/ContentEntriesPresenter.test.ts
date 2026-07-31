@@ -24,7 +24,6 @@ import { PublishEntryGateway } from "~/features/contentEntry/publishEntry/abstra
 import { UnpublishEntryGateway } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { MoveEntryGateway } from "~/features/contentEntry/moveEntry/abstractions.js";
 import { UpdateRevisionDescriptionGateway } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
-import { EventPublisher } from "@webiny/app/features/eventPublisher/index.js";
 import { ContentEntriesPresenter as Abstraction } from "./abstractions.js";
 import { ContentEntriesPresenter } from "./ContentEntriesPresenter.js";
 import type { IContentEntriesPresenter } from "./abstractions.js";
@@ -148,7 +147,6 @@ function setup(): TestSetup {
         execute: getDescendantFolders
     });
 
-    container.registerInstance(EventPublisher, { publish: vi.fn() });
     container.register(ContentEntriesCacheProvider).inSingletonScope();
     container.register(CmsModelContextImpl).inSingletonScope();
     container.resolve(CmsModelContext).setModel(MODEL);

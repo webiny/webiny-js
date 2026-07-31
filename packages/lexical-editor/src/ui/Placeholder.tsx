@@ -21,7 +21,7 @@ export function Placeholder({
     styles?: React.CSSProperties;
 }): React.JSX.Element {
     return (
-        <div style={{ ...styles }} className={`Placeholder__root ${className ?? ""}`.trim()}>
+        <div style={{ ...styles }} className={className || "Placeholder__root"}>
             {children}
         </div>
     );

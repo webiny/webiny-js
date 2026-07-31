@@ -1,11 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { Grid } from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import type { IScheduleDialogPresenter } from "../abstractions.js";
-import { createMinDateValidator } from "../createMinDateValidator.js";
-import { useDateFormatter } from "@webiny/app-admin";
+import { minDateValidator } from "../minDateValidator.js";
 import { ReschedulingAlert } from "./ReschedulingAlert.js";
 import { SchedulerDialogFormComponentDateTimeInput } from "./SchedulerDialogFormComponentDateTimeInput.js";
 
@@ -14,13 +13,13 @@ interface FormComponentProps {
 }
 
 export const FormComponent = observer(({ presenter }: FormComponentProps) => {
-    const { rescheduling } = presenter.vm;
-    const dateFormatter = useDateFormatter();
-    const minDateValidator = useMemo(() => createMinDateValidator(dateFormatter), [dateFormatter]);
+    const { entry } = presenter.vm;
+    const scheduleOn = entry?.publishOn || entry?.unpublishOn;
+    const actionType = entry?.actionType;
 
     return (
         <>
-            <ReschedulingAlert rescheduling={rescheduling} />
+            <ReschedulingAlert actionType={actionType} scheduleOn={scheduleOn} />
             <Grid>
                 <Grid.Column span={12}>
                     <Bind

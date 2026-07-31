@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import debounce from "lodash/debounce.js";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import {
+    Button,
     DataTable,
     DatePicker,
-    Drawer,
     DropdownMenu,
+    Grid,
     Heading,
     IconButton,
     Input,
@@ -23,7 +24,6 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as StopCircleIcon } from "@webiny/icons/stop_circle.svg";
-import { ReactComponent as FilterIcon } from "@webiny/icons/filter_list.svg";
 import { useToast } from "@webiny/admin-ui";
 import { TaskExecutionsPresenterFeature } from "../feature.js";
 import { ListTasksFeature } from "~/admin/features/listTasks/feature.js";
@@ -230,120 +230,101 @@ const TaskExecutionsViewInner = observer(function TaskExecutionsViewInner() {
         [vm.permissions, vm.definitionOptions]
     );
 
-    const [filtersOpen, setFiltersOpen] = useState(false);
     const hasFilters = Object.keys(vm.list.filters).length > 0;
-    const hasActiveFilters = hasFilters || !!vm.list.search;
-
-    const clearAllFilters = () => {
-        presenter.filter.clearAll();
-        presenter.search.set("");
-    };
 
     return (
         <>
             <div className="flex flex-col h-main-content">
                 <div className="flex items-center justify-between py-sm px-md">
                     <Heading level={5}>Task Executions</Heading>
-                    <div className="flex items-center gap-sm">
-                        <IconButton
-                            variant={hasActiveFilters ? "primary" : "ghost"}
-                            icon={<FilterIcon />}
-                            onClick={() => setFiltersOpen(true)}
-                            data-testid="background-tasks.toggle-filters"
-                        />
-                        <TaskDefinitionsButton />
-                    </div>
+                    <TaskDefinitionsButton />
                 </div>
                 <Separator />
-                <Drawer
-                    open={filtersOpen}
-                    onClose={() => setFiltersOpen(false)}
-                    modal={true}
-                    width={360}
-                    title="Filters"
-                    headerSeparator={true}
-                    footerSeparator={true}
-                    bodyPadding={false}
-                    actions={
-                        <>
-                            <Drawer.CancelButton text="Clear all" onClick={clearAllFilters} />
-                            <Drawer.ConfirmButton
-                                text="Apply filters"
-                                onClick={() => setFiltersOpen(false)}
+                <div className={"p-sm"}>
+                    <Grid>
+                        <Grid.Column span={2}>
+                            <Input
+                                size={"md"}
+                                placeholder="Search by name..."
+                                value={vm.list.search}
+                                onChange={value => {
+                                    presenter.search.set(value);
+                                }}
                             />
-                        </>
-                    }
-                >
-                    <div className="flex flex-col gap-lg p-lg">
-                        <Input
-                            size={"md"}
-                            label="Search"
-                            placeholder="Search by name..."
-                            value={vm.list.search}
-                            onChange={value => {
-                                presenter.search.set(value);
-                            }}
-                        />
-                        <Select
-                            size={"md"}
-                            label="Status"
-                            placeholder="Status"
-                            options={STATUS_OPTIONS}
-                            value={(vm.list.filters.taskStatus_in as string) ?? ""}
-                            onChange={value => {
-                                if (value) {
-                                    presenter.filter.set("taskStatus_in", value);
-                                } else {
-                                    presenter.filter.clear("taskStatus_in");
-                                }
-                            }}
-                        />
-                        {vm.definitionOptions.length > 0 ? (
+                        </Grid.Column>
+                        <Grid.Column span={2}>
                             <Select
                                 size={"md"}
-                                label="Definition"
-                                placeholder="Definition"
-                                options={vm.definitionOptions}
-                                value={vm.list.filters.definitionId as string}
+                                placeholder="Status"
+                                options={STATUS_OPTIONS}
+                                value={(vm.list.filters.taskStatus_in as string) ?? ""}
                                 onChange={value => {
                                     if (value) {
-                                        presenter.filter.set("definitionId", value);
+                                        presenter.filter.set("taskStatus_in", value);
                                     } else {
-                                        presenter.filter.clear("definitionId");
+                                        presenter.filter.clear("taskStatus_in");
                                     }
                                 }}
                             />
+                        </Grid.Column>
+                        {vm.definitionOptions.length > 0 ? (
+                            <Grid.Column span={2}>
+                                <Select
+                                    size={"md"}
+                                    placeholder="Definition"
+                                    options={vm.definitionOptions}
+                                    value={vm.list.filters.definitionId as string}
+                                    onChange={value => {
+                                        if (value) {
+                                            presenter.filter.set("definitionId", value);
+                                        } else {
+                                            presenter.filter.clear("definitionId");
+                                        }
+                                    }}
+                                />
+                            </Grid.Column>
                         ) : null}
-                        <DatePicker
-                            size={"md"}
-                            type="dateTimeTz"
-                            label="Created from"
-                            placeholder="Created from"
-                            value={vm.list.filters.createdOn_gte as string}
-                            onChange={value => {
-                                if (value) {
-                                    presenter.filter.set("createdOn_gte", value);
-                                } else {
-                                    presenter.filter.clear("createdOn_gte");
-                                }
-                            }}
-                        />
-                        <DatePicker
-                            size={"md"}
-                            type="dateTimeTz"
-                            label="Created to"
-                            placeholder="Created to"
-                            value={vm.list.filters.createdOn_lte as string}
-                            onChange={value => {
-                                if (value) {
-                                    presenter.filter.set("createdOn_lte", value);
-                                } else {
-                                    presenter.filter.clear("createdOn_lte");
-                                }
-                            }}
-                        />
-                    </div>
-                </Drawer>
+                        <Grid.Column span={2}>
+                            <DatePicker
+                                size={"md"}
+                                type="dateTimeTz"
+                                placeholder="Created from"
+                                value={vm.list.filters.createdOn_gte as string}
+                                onChange={value => {
+                                    if (value) {
+                                        presenter.filter.set("createdOn_gte", value);
+                                    } else {
+                                        presenter.filter.clear("createdOn_gte");
+                                    }
+                                }}
+                            />
+                        </Grid.Column>
+                        <Grid.Column span={2}>
+                            <DatePicker
+                                size={"md"}
+                                type="dateTimeTz"
+                                placeholder="Created to"
+                                value={vm.list.filters.createdOn_lte as string}
+                                onChange={value => {
+                                    if (value) {
+                                        presenter.filter.set("createdOn_lte", value);
+                                    } else {
+                                        presenter.filter.clear("createdOn_lte");
+                                    }
+                                }}
+                            />
+                        </Grid.Column>
+                        <Button
+                            variant="tertiary"
+                            size="md"
+                            onClick={() => presenter.filter.clearAll()}
+                            disabled={!hasFilters}
+                        >
+                            Clear filters
+                        </Button>
+                    </Grid>
+                </div>
+                <Separator />
                 <div className="flex-1 overflow-hidden">
                     {!vm.list.pagination.loading &&
                     !vm.list.pagination.loadingMore &&

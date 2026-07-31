@@ -3,9 +3,6 @@ import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
 
 const ANTHROPIC_MODELS: IAiSdkModel[] = [
-    { id: "claude-opus-5", name: "Claude Opus 5" },
-    { id: "claude-sonnet-5", name: "Claude Sonnet 5" },
-    { id: "claude-fable-5", name: "Claude Fable 5" },
     { id: "claude-opus-4-7", name: "Claude Opus 4.7" },
     { id: "claude-opus-4-6", name: "Claude Opus 4.6" },
     { id: "claude-opus-4-5", name: "Claude Opus 4.5" },

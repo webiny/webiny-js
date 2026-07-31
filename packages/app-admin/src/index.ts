@@ -64,11 +64,6 @@ export { ToolsFeature } from "./features/tools/feature.js";
 export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
 
-export { DateFormatter } from "./features/dateFormatter/abstractions.js";
-export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";
-export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
-export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
-
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
@@ -90,6 +85,15 @@ export type {
     ActiveCommandVm,
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
+
+// Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
+// anywhere in a view; the header renders every mounted one as the trail.
+export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";
+export type {
+    BreadcrumbProps,
+    BreadcrumbConfig,
+    BreadcrumbLink
+} from "./config/AdminConfig/Breadcrumbs.js";
 
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";

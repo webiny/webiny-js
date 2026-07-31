@@ -17,7 +17,7 @@ class GetApiKeyUseCaseImpl implements GetApiKeyUseCaseAbstraction.Interface {
         this.identityContext = identityContext;
     }
 
-    async execute(id: string): Promise<Result<ApiKey, GetApiKeyUseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<ApiKey | null, GetApiKeyUseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new ApiKeyNotAuthorizedError());

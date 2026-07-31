@@ -10,8 +10,6 @@ import { ApiKeyNotFoundError, ApiKeyPersistenceError, ApiKeyValidationError } fr
 // TODO: create an ApiKeyMapper
 
 class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
-    private resolving = false;
-
     constructor(
         private tenantContext: TenantContext.Interface,
         private storageOperations: SecurityStorageOperations.Interface,
@@ -34,6 +32,7 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async getByToken(token: string): Promise<Result<ApiKey, RepositoryAbstraction.Error>> {
         try {
+            // First, check the database (database keys have priority over factory keys)
             const tenant = this.tenantContext.getTenant();
             const apiKey = await this.storageOperations.getApiKeyByToken({
                 token,
@@ -44,16 +43,10 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.ok(apiKey);
             }
 
-            if (!this.resolving) {
-                this.resolving = true;
-                try {
-                    const factoryApiKey = await this.apiKeyProvider.getByToken(token);
-                    if (factoryApiKey) {
-                        return Result.ok(factoryApiKey);
-                    }
-                } finally {
-                    this.resolving = false;
-                }
+            // If not found in database, check if the API key is provided by a factory
+            const factoryApiKey = await this.apiKeyProvider.getByToken(token);
+            if (factoryApiKey) {
+                return Result.ok(factoryApiKey);
             }
 
             return Result.fail(new ApiKeyNotFoundError());
@@ -64,6 +57,7 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async getBySlug(slug: string): Promise<Result<ApiKey, RepositoryAbstraction.Error>> {
         try {
+            // First, check the database (database keys have priority over factory keys)
             const tenant = this.tenantContext.getTenant();
             const apiKey = await this.storageOperations.getApiKeyBySlug({
                 slug,
@@ -74,16 +68,10 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
                 return Result.ok(apiKey);
             }
 
-            if (!this.resolving) {
-                this.resolving = true;
-                try {
-                    const factoryApiKey = await this.apiKeyProvider.getBySlug(slug);
-                    if (factoryApiKey) {
-                        return Result.ok(factoryApiKey);
-                    }
-                } finally {
-                    this.resolving = false;
-                }
+            // If not found in database, check if the API key is provided by a factory
+            const factoryApiKey = await this.apiKeyProvider.getBySlug(slug);
+            if (factoryApiKey) {
+                return Result.ok(factoryApiKey);
             }
 
             return Result.fail(new ApiKeyNotFoundError());

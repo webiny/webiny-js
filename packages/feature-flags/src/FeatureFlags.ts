@@ -87,27 +87,7 @@ export class FeatureFlags {
         return this.flags.aiPowerups?.options?.fileManager?.imageEnrichment !== false;
     }
 
-    isAiPageTranslationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.websiteBuilder?.pageTranslation !== false;
-    }
-
     isAiLexicalGenerationEnabled(): boolean {
         return this.flags.aiPowerups?.options?.lexicalGeneration !== false;
-    }
-
-    isAiEntryGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryGeneration !== false;
-    }
-
-    isAiEntryComparisonEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryComparison !== false;
-    }
-
-    isAiEntryTranslationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryTranslation !== false;
-    }
-
-    isAbTestingEnabled(): boolean {
-        return this.flags.abTesting !== false;
     }
 }

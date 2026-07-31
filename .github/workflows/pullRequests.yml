@@ -157,7 +157,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
       - name: Build api
         run: yarn webiny build api --no-deployment-checks
         working-directory: ${{ github.base_ref }}

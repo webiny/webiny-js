@@ -12,18 +12,18 @@ class NextjsConfigImpl implements Abstraction.Interface {
 
     async execute(): Abstraction.Return {
         const tenant = this.tenantContext.getTenant();
-        const apiKeyResult = await this.apiKeyRepo.getBySlug("frontend-integration");
+        const apiKeyResult = await this.apiKeyRepo.getBySlug("website-builder");
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
         const domains = await this.getDomains();
 
         const envVars = [
-            `NEXT_PUBLIC_WEBINY_API_KEY={API_TOKEN}`,
-            `NEXT_PUBLIC_WEBINY_API_HOST={API_HOST}`,
-            `NEXT_PUBLIC_WEBINY_API_TENANT={TENANT_ID}`
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY={API_TOKEN}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST={API_HOST}`,
+            `NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT={TENANT_ID}`
         ];
 
         if (domains.adminHost) {
-            envVars.push(`NEXT_PUBLIC_WEBINY_ADMIN_HOST={ADMIN_HOST}`);
+            envVars.push(`NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST={ADMIN_HOST}`);
         }
 
         const builder = new MarkdownContentBuilder();

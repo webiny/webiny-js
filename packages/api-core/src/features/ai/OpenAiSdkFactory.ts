@@ -3,10 +3,6 @@ import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
 
 const OPENAI_MODELS: IAiSdkModel[] = [
-    { id: "gpt-5.6-sol", name: "GPT-5.6 Sol" },
-    { id: "gpt-5.6-terra", name: "GPT-5.6 Terra" },
-    { id: "gpt-5.6-luna", name: "GPT-5.6 Luna" },
-    { id: "gpt-5.5", name: "GPT-5.5" },
     { id: "gpt-5.4", name: "GPT-5.4" },
     { id: "gpt-5.4-mini", name: "GPT-5.4 Mini" },
     { id: "gpt-5.4-nano", name: "GPT-5.4 Nano" },

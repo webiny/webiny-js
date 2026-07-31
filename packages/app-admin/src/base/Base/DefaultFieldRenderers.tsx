@@ -30,7 +30,6 @@ import { PermissionsRenderer } from "~/base/Base/FieldRenderers/PermissionsRende
 import { RolesMultiSelectRenderer } from "~/base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
 import { ApiKeyTokenRenderer } from "~/base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
 import { MultiAutoCompleteRenderer } from "~/base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
-import { AutoCompleteRenderer } from "~/base/Base/FieldRenderers/AutoCompleteRenderer.js";
 import { MultiSelectRenderer } from "~/base/Base/FieldRenderers/MultiSelectRenderer.js";
 import { RegisterFeature } from "~/exports/admin.js";
 import { MultiValueDynamicZoneFeature } from "~/base/Base/FieldRenderers/ObjectRenderer/MultiValueDynamicZone/feature.js";
@@ -43,10 +42,6 @@ export const DefaultFieldRenderers = () => {
                 <AdminConfig.Form.FieldRenderer name={"textInput"} component={InputRenderer} />
                 <AdminConfig.Form.FieldRenderer name={"textarea"} component={TextareaRenderer} />
                 <AdminConfig.Form.FieldRenderer name={"select"} component={SelectRenderer} />
-                <AdminConfig.Form.FieldRenderer
-                    name={"autoComplete"}
-                    component={AutoCompleteRenderer}
-                />
                 <AdminConfig.Form.FieldRenderer
                     name={"multiSelect"}
                     component={MultiSelectRenderer}

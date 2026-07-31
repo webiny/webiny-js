@@ -63,7 +63,6 @@ export const ColumnsVisibility = <T,>(props: ColumnsVisibilityProps<T>) => {
                 return (
                     <DropdownMenu.Item
                         key={option.id}
-                        preventClose
                         text={
                             <Checkbox
                                 label={option.header}
