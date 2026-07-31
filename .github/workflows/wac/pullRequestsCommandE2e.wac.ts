@@ -9,7 +9,7 @@ import {
     withCommonParams
 } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, checkCommandStep, commandTriggeredIf } from "./jobs/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -245,25 +245,13 @@ export const pullRequestsCommandE2e = createWorkflow({
     jobs: {
         checkComment: createJob({
             name: `Check comment for /e2e`,
-            if: "${{ github.event.issue.pull_request }}",
+            if: commandTriggeredIf("e2e"),
             checkout: false,
             outputs: {
                 "comment-id": "${{ steps.create-comment.outputs.comment-id }}"
             },
             steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "e2e",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
+                checkCommandStep(),
                 {
                     name: "Create comment",
                     id: "create-comment",

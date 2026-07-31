@@ -1,6 +1,6 @@
 import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, checkCommandStep, commandTriggeredIf } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
     createRunBuildCacheSteps,
@@ -26,22 +26,10 @@ export const pullRequestsCommandBeta = createWorkflow({
     jobs: {
         checkComment: createJob({
             name: "Check comment for /beta",
-            if: "${{ github.event.issue.pull_request }}",
+            if: commandTriggeredIf("beta"),
             checkout: false,
             steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "beta",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
+                checkCommandStep(),
                 {
                     name: "Create comment",
                     uses: "peter-evans/create-or-update-comment@v2",

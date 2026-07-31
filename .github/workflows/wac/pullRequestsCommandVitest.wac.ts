@@ -13,7 +13,7 @@ import {
     NODE_VERSION,
     runNodeScript
 } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, checkCommandStep, commandTriggeredIf } from "./jobs/index.js";
 import {
     DdbStorageOps,
     DdbOsStorageOps,
@@ -206,25 +206,13 @@ export const pullRequestsCommandVitest = createWorkflow({
     jobs: {
         checkComment: createJob({
             name: `Check comment for /vitest`,
-            if: "${{ github.event.issue.pull_request }}",
+            if: commandTriggeredIf("vitest"),
             checkout: false,
             outputs: {
                 "comment-id": "${{ steps.create-comment.outputs.comment-id }}"
             },
             steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "vitest",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
+                checkCommandStep(),
                 {
                     name: "Create comment",
                     id: "create-comment",

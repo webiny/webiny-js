@@ -10,23 +10,30 @@ env:
 jobs:
   checkComment:
     name: Check comment for /vitest
-    if: ${{ github.event.issue.pull_request }}
+    if: >-
+      ${{ github.event.issue.pull_request && (github.event.comment.body ==
+      '/vitest' || startsWith(github.event.comment.body, '/vitest ')) }}
     outputs:
       comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - name: Check for Command
-        id: command
-        uses: xt0rted/slash-command-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: vitest
-          reaction: 'true'
-          reaction-type: eyes
-          allow-edits: 'false'
-          permission-level: write
+      - name: Check permission and react to comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{
+          github.event.comment.user.login }}/permission" -q .permission)
+
+          if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then
+            echo "::error::User ${{ github.event.comment.user.login }} does not have write permission (has: $PERMISSION)."
+            exit 1
+          fi
+
+          gh api --silent -X POST "/repos/${{ github.repository
+          }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
+          content=eyes
       - name: Create comment
         id: create-comment
         uses: peter-evans/create-or-update-comment@v2
