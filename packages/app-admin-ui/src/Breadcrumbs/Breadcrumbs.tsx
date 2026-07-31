@@ -65,6 +65,11 @@ const BreadcrumbsBase = () => {
         [container, resolveLink]
     );
 
+    // No trail (e.g. the dashboard) → render nothing, rather than a lone, orphaned home icon.
+    if (trail.length === 0) {
+        return null;
+    }
+
     // Leading home entry always navigates back to the dashboard.
     const home = createHomeBreadcrumbItem(() => navigateTo(HOME_PATH));
 
