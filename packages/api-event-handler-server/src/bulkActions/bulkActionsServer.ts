@@ -1,7 +1,5 @@
 import type { Container } from "@webiny/di";
-import { uuid } from "@webiny/stdlib";
 import {
-    EmptyTrashBinRoute,
     BulkActionsInternalToken
 } from "@webiny/api-headless-cms-bulk-actions-server";
 
@@ -10,12 +8,6 @@ const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
 
 // Default: trigger every 6 hours (in milliseconds).
 const EMPTY_TRASH_INTERVAL_MS = 6 * 60 * 60 * 1000;
-
-export function registerBulkActionsServer(rootContainer: Container): void {
-    const token = uuid();
-    rootContainer.registerInstance(BulkActionsInternalToken, { value: token });
-    rootContainer.register(EmptyTrashBinRoute);
-}
 
 export function startBulkActionsServer(rootContainer: Container): void {
     const token = rootContainer.resolve(BulkActionsInternalToken).value;

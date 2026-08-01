@@ -30,12 +30,12 @@ import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
 import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
 import {
-    registerBulkActionsServer,
     startBulkActionsServer
 } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
+import {EmptyTrashBinRouteFeature} from "@webiny/api-headless-cms-bulk-actions-server";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -102,7 +102,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // ── Bulk actions (root) ───────────────────────────────────
             // Registers the `/empty-trash-bins` HTTP route + internal token so the periodic trigger
             // (startBulkActionsServer, onServer below) can POST to it after the server is listening.
-            registerBulkActionsServer(rootContainer);
+            EmptyTrashBinRouteFeature.register(rootContainer);
         },
 
         request: async container => {
