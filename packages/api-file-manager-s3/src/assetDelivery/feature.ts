@@ -1,10 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "./abstractions.js";
 import type { AssetDeliveryParams } from "./types.js";
 import { S3AssetResolverImpl } from "./s3/S3AssetResolver.js";
 import { S3OutputStrategyImpl } from "./s3/S3OutputStrategy.js";
-import { SharpTransformImpl } from "./s3/SharpTransform.js";
 
 export const createS3AssetDeliveryFeature = (params: AssetDeliveryParams = {}) => {
     return createFeature({
@@ -26,7 +26,19 @@ export const createS3AssetDeliveryFeature = (params: AssetDeliveryParams = {}) =
 
             container.register(S3AssetResolverImpl);
             container.register(S3OutputStrategyImpl);
-            container.register(SharpTransformImpl).inSingletonScope();
+
+            if (process.env.WEBINY_FUNCTION_TYPE === "asset-delivery") {
+                container.registerInstance(RequestContextInitializer, {
+                    async init(ctx) {
+                        const { SharpTransformImpl } = await import(
+                            /* webpackChunkName: "s3AssetDelivery" */ "./s3/SharpTransform.js"
+                        );
+                        (ctx.container as typeof container)
+                            .register(SharpTransformImpl)
+                            .inSingletonScope();
+                    }
+                });
+            }
         }
     });
 };

@@ -1,10 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
+import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { LocalStoragePath } from "./abstractions.js";
 import { LocalAssetDeliveryConfig } from "./abstractions.js";
 import type { AssetDeliveryParams } from "./types.js";
 import { LocalAssetResolver } from "./LocalAssetResolver.js";
 import { LocalOutputStrategy } from "./LocalOutputStrategy.js";
-import { LocalSharpTransformImpl } from "./LocalSharpTransform.js";
 
 export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}) => {
     return createFeature({
@@ -24,7 +24,19 @@ export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}
 
             container.register(LocalAssetResolver);
             container.register(LocalOutputStrategy);
-            container.register(LocalSharpTransformImpl).inSingletonScope();
+
+            if (process.env.WEBINY_FUNCTION_TYPE === "asset-delivery") {
+                container.registerInstance(RequestContextInitializer, {
+                    async init(ctx) {
+                        const { LocalSharpTransformImpl } = await import(
+                            /* webpackChunkName: "localAssetDelivery" */ "./LocalSharpTransform.js"
+                        );
+                        (ctx.container as typeof container)
+                            .register(LocalSharpTransformImpl)
+                            .inSingletonScope();
+                    }
+                });
+            }
         }
     });
 };

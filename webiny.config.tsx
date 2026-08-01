@@ -1,5 +1,6 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
+import { Wcp } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
 import { ServerExtensions } from "./webiny.config.server.js";
@@ -31,7 +32,9 @@ export const Extensions = () => {
             {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
-            <AiContentExtension />
+            <Wcp.CanUseMultiTenancy>
+                <AiContentExtension />
+            </Wcp.CanUseMultiTenancy>
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}

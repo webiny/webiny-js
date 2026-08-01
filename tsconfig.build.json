@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node", "static", "vitest"],
+    "types": ["node", "static", "vitest", "webiny-env"],
     "target": "esnext",
     "skipLibCheck": true,
     "allowJs": true,
