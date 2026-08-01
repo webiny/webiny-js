@@ -20,7 +20,6 @@
     "@pulumi/aws": "^7.39.0",
     "@pulumi/pulumi": "^3.254.0",
     "adm-zip": "^0.6.0",
-    "decompress": "^4.2.1",
     "execa": "^10.0.0",
     "find-up": "^8.0.0",
     "fs-extra": "^11.4.0",
