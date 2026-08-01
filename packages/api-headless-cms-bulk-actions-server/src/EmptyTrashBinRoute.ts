@@ -1,6 +1,5 @@
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { Container } from "@webiny/feature/api";
+import { HttpRoute } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
@@ -12,20 +11,24 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
     public readonly path = "/empty-trash-bins";
 
     public constructor(
-        private readonly container: Container,
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly taskService: TaskService.Interface,
         private readonly internalToken: BulkActionsInternalToken.Interface
     ) {}
 
     public async handle(request: IHttpRequest): Promise<IHttpResponse> {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return { statusCode: 403, body: { error: "Forbidden." } };
+            return {
+                statusCode: 403,
+                body: {
+                    error: "Forbidden."
+                }
+            };
         }
 
         try {
-            await this.container.resolve(TenantContext).withRootTenant(async () => {
-                await this.container
-                    .resolve(TaskService)
-                    .trigger({ definition: "hcmsEntriesEmptyTrashBins" });
+            await this.tenantContext.withRootTenant(async () => {
+                await this.taskService.trigger({ definition: "hcmsEntriesEmptyTrashBins" });
             });
 
             return {
@@ -43,5 +46,5 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
 
 export const EmptyTrashBinRoute = HttpRoute.createImplementation({
     implementation: EmptyTrashBinRouteImpl,
-    dependencies: [RequestContainer, BulkActionsInternalToken]
+    dependencies: [TenantContext, TaskService, BulkActionsInternalToken]
 });

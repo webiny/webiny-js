@@ -10,12 +10,12 @@ import type { EventContext } from "@webiny/event-handler-core";
 const DETAIL_TYPE = "WebinyEmptyTrashBin";
 
 class BulkActionsEventBridgeLambdaHandlerImpl implements EventBridgeEventHandler.Interface {
-    constructor(
+    public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly taskService: TaskService.Interface
     ) {}
 
-    async execute(
+    public async execute(
         eventCtx: EventContext<EventBridgeEvent<string, any>>
     ): Promise<EventBridgeResult> {
         if (eventCtx.event["detail-type"] !== DETAIL_TYPE) {
