@@ -32,9 +32,10 @@ export const Extensions = () => {
             {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
-            <Wcp.CanUseMultiTenancy>
-                <AiContentExtension />
-            </Wcp.CanUseMultiTenancy>
+            {/* IMPORTANT: commented out until we resolve bulk actions bootstrap! */}
+            {/*<Wcp.CanUseMultiTenancy>*/}
+            {/*    <AiContentExtension />*/}
+            {/*</Wcp.CanUseMultiTenancy>*/}
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}

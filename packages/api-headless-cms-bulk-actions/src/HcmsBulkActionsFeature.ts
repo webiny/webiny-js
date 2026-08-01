@@ -37,24 +37,18 @@ export const HcmsBulkActionsFeature = createFeature<HcmsBulkActionsFeatureConfig
 
         container.register(EmptyTrashBinTaskDefinition);
 
-        // Per-action task definitions (list + process). resolveAll works now that the actions are
-        // registered above; the task definitions need no per-request/model data.
-        const bulkActionsConfig = container.resolve(EntriesBulkActionConfig);
-        for (const bulkAction of container.resolveAll(EntriesBulkAction)) {
-            createBulkActionTasks(bulkAction, bulkActionsConfig).register(container);
-        }
-
-        // The bulk-action GraphQL is model-derived (per-tenant models are known only at request
-        // time), so it's built in a RequestContextInitializer that registers CmsGraphQLSchemaFactory
-        // instances — merged by the CMS schema build that runs after initializers.
-        container.registerInstance(RequestContextInitializer, {
-            async init(ctx: Record<string, any>) {
-                const context = ctx as HcmsBulkActionsContext;
-                await registerDefaultBulkActionGraphQL(context);
-                for (const bulkAction of container.resolveAll(EntriesBulkAction)) {
-                    await createBulkActionGraphQL(context, bulkAction);
-                }
-            }
-        });
+        // TODO: temporarily disabled to debug FileModel resolution ordering
+        // container.registerInstance(RequestContextInitializer, {
+        //     async init(ctx: Record<string, any>) {
+        //         const context = ctx as HcmsBulkActionsContext;
+        //         const bulkActionsConfig = container.resolve(EntriesBulkActionConfig);
+        //         const bulkActions = container.resolveAll(EntriesBulkAction);
+        //         for (const bulkAction of bulkActions) {
+        //             createBulkActionTasks(bulkAction, bulkActionsConfig).register(container);
+        //             await createBulkActionGraphQL(context, bulkAction);
+        //         }
+        //         await registerDefaultBulkActionGraphQL(context);
+        //     }
+        // });
     }
 });
