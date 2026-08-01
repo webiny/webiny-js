@@ -16,7 +16,7 @@ type State = {
 const state: State = {
     listenerAttached: false,
     zIndex: null,
-    handlers: {}
+    handlers: Object.create(null)
 };
 
 function triggerHotkeys(e: KeyboardEvent) {
@@ -39,7 +39,7 @@ function registerZIndex({ zIndex, keys }: HookProps) {
     }
 
     if (!state.handlers[zIndex]) {
-        state.handlers[zIndex] = {};
+        state.handlers[zIndex] = Object.create(null);
     }
 
     if (!keys || Object.keys(keys).length === 0) {
