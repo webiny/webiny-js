@@ -4,27 +4,23 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
-import {
-    contentTypeForFormat,
-    DEFAULT_IMAGE_QUALITY,
-    type ImageFormat
-} from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import {
-    extractFramedRegion,
-    transformImageBuffer
-} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/transformImage.js";
-import type {
-    AssetImageEdit,
-    Framing,
-    ImageRequestOptions
-} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/imageTypes.js";
-import { normalizeImageOptions } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/normalizeImageOptions.js";
-import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
-import { ImageAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
+import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/CallableContentsReader.js";
 import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
 import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
+import {
+    contentTypeForFormat,
+    DEFAULT_IMAGE_QUALITY,
+    type ImageFormat,
+    extractFramedRegion,
+    transformImageBuffer,
+    normalizeImageOptions,
+    AssetKeyGenerator,
+    ImageAssetTypeHandler,
+    type AssetImageEdit,
+    type Framing,
+    type ImageRequestOptions
+} from "@webiny/api-file-manager-image";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";

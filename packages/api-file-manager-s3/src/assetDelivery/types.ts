@@ -1,4 +1,4 @@
-import type { ImageFormat } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import type { ImageFormat } from "@webiny/api-file-manager-image";
 
 export type AssetDeliveryParams = {
     imageResizeWidths?: number[];

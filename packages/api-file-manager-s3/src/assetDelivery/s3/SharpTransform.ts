@@ -3,26 +3,22 @@ import type { Sharp } from "sharp";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/CallableContentsReader.js";
+import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import {
     contentTypeForFormat,
     DEFAULT_IMAGE_QUALITY,
-    type ImageFormat
-} from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import {
+    type ImageFormat,
     extractFramedRegion,
-    transformImageBuffer
-} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/transformImage.js";
-import type {
-    AssetImageEdit,
-    Framing,
-    ImageRequestOptions
-} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/imageTypes.js";
-import { normalizeImageOptions } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/normalizeImageOptions.js";
-import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
-import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
-import { ImageAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
-import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
-import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
+    transformImageBuffer,
+    normalizeImageOptions,
+    AssetKeyGenerator,
+    ImageAssetTypeHandler,
+    type AssetImageEdit,
+    type Framing,
+    type ImageRequestOptions
+} from "@webiny/api-file-manager-image";
 import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { IS3AssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 

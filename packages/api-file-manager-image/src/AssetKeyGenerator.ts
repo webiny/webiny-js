@@ -1,4 +1,4 @@
-import type { Asset } from "../../../../delivery/index.js";
+import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
 import type { Framing } from "./imageTypes.js";
 import * as newUtils from "./utils.js";
 

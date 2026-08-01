@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-file-manager-image/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
@@ -24,6 +25,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-file-manager-image/*": ["../api-file-manager-image/src/*"],
+      "@webiny/api-file-manager-image": ["../api-file-manager-image/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],

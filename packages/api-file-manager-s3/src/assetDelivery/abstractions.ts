@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import type { ImageFormat } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import type { ImageFormat } from "@webiny/api-file-manager-image";
 
 export interface IS3AssetDeliveryConfig {
     presignedUrlTtl: number;

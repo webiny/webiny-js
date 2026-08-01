@@ -16,6 +16,7 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-file-manager-image": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
