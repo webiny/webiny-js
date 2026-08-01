@@ -35,7 +35,7 @@
     "packages/admin-ui/scripts/importFromFigma/exports/Alias tokens.json",
     "packages/project-aws/_templates/appTemplates/",
     "coverage/**",
-    "packages/cli/files/**/*.json",
+    "packages/cli-core/files/**/*.json",
     "packages/create-webiny-project/utils/binaries/**",
     ".github/workflows/**/*.yml",
     "./nextjs/",
