@@ -11526,10 +11526,9 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/stdlib": "npm:^0.0.15"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
-  peerDependencies:
-    "@webiny/di": ">=0.2.3"
   languageName: unknown
   linkType: soft
 

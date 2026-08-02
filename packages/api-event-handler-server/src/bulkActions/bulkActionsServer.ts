@@ -1,7 +1,5 @@
 import type { Container } from "@webiny/di";
-import {
-    BulkActionsInternalToken
-} from "@webiny/api-headless-cms-bulk-actions-server";
+import { BulkActionsInternalToken } from "@webiny/api-headless-cms-bulk-actions-server";
 
 const BULK_ACTIONS_HEADER = "x-webiny-bulk-actions-token";
 const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;

@@ -29,13 +29,11 @@ import {
 import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
 import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
-import {
-    startBulkActionsServer
-} from "~/bulkActions/bulkActionsServer.js";
+import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
-import {EmptyTrashBinRouteFeature} from "@webiny/api-headless-cms-bulk-actions-server";
+import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-server";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
