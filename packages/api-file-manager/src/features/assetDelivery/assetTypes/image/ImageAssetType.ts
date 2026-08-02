@@ -1,4 +1,4 @@
-import { AssetType } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
+import { AssetType } from "../../abstractions/AssetType.js";
 import { SUPPORTED_TRANSFORMABLE_IMAGES } from "./utils.js";
 import { ImageAssetTypeHandler } from "./ImageAssetTypeHandler.js";
 

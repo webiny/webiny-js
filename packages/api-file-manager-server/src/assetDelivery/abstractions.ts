@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ImageFormat } from "@webiny/api-file-manager-image";
+import type { ImageFormat } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 
 export interface ILocalAssetDeliveryConfig {
     imageResizeWidths: number[];

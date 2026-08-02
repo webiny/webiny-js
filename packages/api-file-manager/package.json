@@ -38,6 +38,7 @@
     "cache-control-parser": "^2.2.0",
     "graphql": "^16.14.2",
     "mime": "^4.1.0",
+    "object-hash": "^3.0.0",
     "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.4",
     "zod": "4.4.3"

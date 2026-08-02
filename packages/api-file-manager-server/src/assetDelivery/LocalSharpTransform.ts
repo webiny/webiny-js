@@ -1,26 +1,25 @@
-import sharp from "sharp";
-import type { Sharp } from "sharp";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
-import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/CallableContentsReader.js";
-import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
-import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
-import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
 import {
     contentTypeForFormat,
     DEFAULT_IMAGE_QUALITY,
-    type ImageFormat,
-    extractFramedRegion,
-    transformImageBuffer,
-    normalizeImageOptions,
-    AssetKeyGenerator,
-    ImageAssetTypeHandler,
-    type AssetImageEdit,
-    type Framing,
-    type ImageRequestOptions
-} from "@webiny/api-file-manager-image";
+    type ImageFormat
+} from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import type {
+    AssetImageEdit,
+    Framing,
+    ImageRequestOptions
+} from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/imageTypes.js";
+import { normalizeImageOptions } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/normalizeImageOptions.js";
+import { CallableContentsReader } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
+import { AssetKeyGenerator } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
+import { ImageAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/index.js";
+import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
+import type { Asset } from "@webiny/api-file-manager/delivery/AssetDelivery/Asset.js";
+import type { AssetRequest } from "@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.js";
+import type { SharpTransformer } from "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js";
 import { LocalStoragePath } from "~/assetDelivery/abstractions.js";
 import { LocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
 import type { ILocalAssetDeliveryConfig } from "~/assetDelivery/abstractions.js";
@@ -39,6 +38,7 @@ export class LocalSharpTransform implements IAssetTypeHandler {
     private readonly imageQuality: Record<ImageFormat, number>;
     private readonly identityContext: IdentityContext.Interface;
     private readonly getFile: GetFileUseCase.Interface;
+    private transformer?: SharpTransformer;
 
     constructor(
         storagePath: string,
@@ -51,6 +51,16 @@ export class LocalSharpTransform implements IAssetTypeHandler {
         this.imageQuality = { ...DEFAULT_IMAGE_QUALITY, ...(config.imageQuality ?? {}) };
         this.identityContext = identityContext;
         this.getFile = getFile;
+    }
+
+    private async getTransformer(): Promise<SharpTransformer> {
+        if (!this.transformer) {
+            const { SharpTransformer } = await import(
+                "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js"
+            );
+            this.transformer = new SharpTransformer();
+        }
+        return this.transformer;
     }
 
     async handle(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
@@ -117,8 +127,9 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
             console.log(`Transform the asset`, options);
             const baseBuffer = await optimizedImage.getContents();
+            const transformer = await this.getTransformer();
             const { buffer: transformedBuffer, contentType: outputContentType } =
-                await transformImageBuffer({
+                await transformer.transformBuffer({
                     buffer: baseBuffer,
                     animated: this.isAssetAnimated(asset),
                     sourceContentType: asset.getContentType(),
@@ -171,24 +182,30 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             console.log("Create an optimized version of the original asset", asset.getKey());
             let buffer = await asset.getContents();
 
-            const framed = await extractFramedRegion(buffer, framing);
+            const transformer = await this.getTransformer();
+            const framed = await transformer.extractFramedRegion(buffer, framing);
             const cropped = framed !== buffer;
             buffer = framed;
 
-            const optimizationMap: Record<string, ((buffer: Buffer) => Sharp) | undefined> = {
-                "image/png": (buffer: Buffer) => this.optimizePng(buffer),
-                "image/jpeg": (buffer: Buffer) => this.optimizeJpeg(buffer),
-                "image/jpg": (buffer: Buffer) => this.optimizeJpeg(buffer)
-            };
+            const contentType = asset.getContentType();
+            const canOptimize =
+                contentType === "image/png" ||
+                contentType === "image/jpeg" ||
+                contentType === "image/jpg";
 
-            const optimization = optimizationMap[asset.getContentType()];
-
-            if (!optimization && !cropped) {
-                console.log(`No optimizations defined for ${asset.getContentType()}`);
+            if (!canOptimize && !cropped) {
+                console.log(`No optimizations defined for ${contentType}`);
                 return asset;
             }
 
-            const finalBuffer = optimization ? await optimization(buffer).toBuffer() : buffer;
+            let finalBuffer = buffer;
+            if (canOptimize) {
+                const pipeline =
+                    contentType === "image/png"
+                        ? await transformer.optimizePng(buffer)
+                        : await transformer.optimizeJpeg(buffer);
+                finalBuffer = await pipeline.toBuffer();
+            }
 
             console.log("Optimized asset size", finalBuffer.length);
 
@@ -204,20 +221,6 @@ export class LocalSharpTransform implements IAssetTypeHandler {
 
     private isAssetAnimated(asset: Asset) {
         return ["gif", "webp"].includes(asset.getExtension());
-    }
-
-    private optimizePng(buffer: Buffer) {
-        return sharp(buffer)
-            .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
-            .png({ compressionLevel: 9, adaptiveFiltering: true, force: true })
-            .withMetadata();
-    }
-
-    private optimizeJpeg(buffer: Buffer) {
-        return sharp(buffer)
-            .resize({ width: 2560, withoutEnlargement: true, fit: "inside" })
-            .withMetadata()
-            .toFormat("jpeg", { quality: 90 });
     }
 }
 

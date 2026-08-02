@@ -16,7 +16,6 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-file-manager-image": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
@@ -26,8 +25,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "exifreader": "^4.41.3",
-    "p-map": "^7.0.6",
-    "sharp": "^0.35.3"
+    "p-map": "^7.0.6"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

@@ -7,6 +7,7 @@ import { AssetFactory } from "./Asset/Asset.js";
 import { ObjectKey } from "./ObjectKey/ObjectKey.js";
 import { StreamAssetReply } from "./StreamAssetReply/StreamAssetReply.js";
 import { TransformationAssetProcessor } from "./transformation/TransformationAssetProcessor.js";
+import { ImageAssetType } from "./assetTypes/image/ImageAssetType.js";
 import { PrivateFileAssetRequestResolverDecorator } from "./privateFiles/PrivateFileAssetRequestResolver.js";
 import { PrivateAuthenticatedAuthorizerImpl } from "./privateFiles/PrivateAuthenticatedAuthorizer.js";
 import { PrivateFilesAssetProcessorDecorator } from "./privateFiles/PrivateFilesAssetProcessor.js";
@@ -20,6 +21,7 @@ export const AssetDeliveryFeature = createFeature({
         container.register(AssetFactory).inSingletonScope();
         container.register(ObjectKey).inSingletonScope();
         container.register(StreamAssetReply).inSingletonScope();
+        container.register(ImageAssetType);
         container.registerInstance(AssetProcessor, new TransformationAssetProcessor(container));
 
         container.registerDecorator(PrivateFileAssetRequestResolverDecorator);

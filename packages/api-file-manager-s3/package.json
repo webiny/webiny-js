@@ -17,7 +17,6 @@
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-file-manager-image": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -35,8 +34,7 @@
     "object-hash": "^3.0.0",
     "p-map": "^7.0.6",
     "p-reduce": "^3.0.0",
-    "sanitize-filename": "^1.6.4",
-    "sharp": "^0.35.3"
+    "sanitize-filename": "^1.6.4"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

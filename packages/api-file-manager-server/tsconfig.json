@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api-core" },
     { "path": "../api-file-manager" },
-    { "path": "../api-file-manager-image" },
     { "path": "../api-graphql" },
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
@@ -25,8 +24,6 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
-      "@webiny/api-file-manager-image/*": ["../api-file-manager-image/src/*"],
-      "@webiny/api-file-manager-image": ["../api-file-manager-image/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],

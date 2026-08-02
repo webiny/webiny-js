@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IAssetTypeHandler } from "@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.js";
+import type { IAssetTypeHandler } from "../../abstractions/AssetType.js";
 
 export const ImageAssetTypeHandler = createAbstraction<IAssetTypeHandler>(
     "AssetDelivery/ImageAssetTypeHandler"

@@ -1,6 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { ImageAssetType } from "@webiny/api-file-manager-image";
 import { LocalStoragePath } from "./abstractions.js";
 import { LocalAssetDeliveryConfig } from "./abstractions.js";
 import type { AssetDeliveryParams } from "./types.js";
@@ -25,7 +24,6 @@ export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}
 
             container.register(LocalAssetResolver);
             container.register(LocalOutputStrategy);
-            container.register(ImageAssetType);
 
             if (process.env.WEBINY_FUNCTION_TYPE === "asset-delivery") {
                 container.registerInstance(RequestContextInitializer, {
