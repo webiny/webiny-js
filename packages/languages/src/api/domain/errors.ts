@@ -13,16 +13,6 @@ export class LanguageNotFoundError extends BaseError<{ code: string }> {
     }
 }
 
-export class DefaultLanguageNotFoundError extends BaseError {
-    override readonly code = "Languages/DefaultNotFound" as const;
-
-    constructor() {
-        super({
-            message: "No default language is configured."
-        });
-    }
-}
-
 export class LanguagePersistenceError extends BaseError {
     override readonly code = "Languages/PersistenceError" as const;
 

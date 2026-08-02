@@ -5,7 +5,7 @@ export interface ApiKey {
     name: string;
     slug: string;
     description: string;
-    token: `wat_${string}`;
+    token: string;
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;

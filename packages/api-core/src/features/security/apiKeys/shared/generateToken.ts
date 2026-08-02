@@ -6,12 +6,12 @@ import crypto from "crypto";
  * When authentication plugins kick in, they will be able to tell if they should handle
  * the token by checking the first letter.
  */
-export const generateToken = (tokenLength = 40): `wat_${string}` => {
+export const generateToken = (tokenLength = 40): string => {
     const token = crypto.randomBytes(Math.ceil(tokenLength / 2)).toString("hex");
 
     // API Keys are prefixed with letters "wat_" to make token verification easier
     if (token.startsWith("wat_")) {
-        return token as `wat_${string}`;
+        return token;
     }
 
     return `wat_${token.slice(0, tokenLength - 4)}`;

@@ -86,6 +86,15 @@ export type {
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
 
+// Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
+// anywhere in a view; the header renders every mounted one as the trail.
+export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";
+export type {
+    BreadcrumbProps,
+    BreadcrumbConfig,
+    BreadcrumbLink
+} from "./config/AdminConfig/Breadcrumbs.js";
+
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 

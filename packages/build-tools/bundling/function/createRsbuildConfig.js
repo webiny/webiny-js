@@ -2,7 +2,7 @@ import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
-const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 6_291_456; // 6 MB
+const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 4_718_592; // 4.5 MB
 
 export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
@@ -63,11 +63,11 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     /^knex(\/|$)/
                 ],
                 plugins: [
-                    // Ignore optional `canvas` native module required by jsdom.
+                    // This is necessary to enable JSDOM usage in Lambda.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
                     new rspack.IgnorePlugin({
-                        resourceRegExp: /^canvas$/,
-                        contextRegExp: /jsdom/
+                        resourceRegExp: /canvas/,
+                        contextRegExp: /jsdom$/
                     })
                 ],
                 resolve: {

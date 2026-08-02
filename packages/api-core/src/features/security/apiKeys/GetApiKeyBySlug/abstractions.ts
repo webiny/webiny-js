@@ -12,7 +12,7 @@ type GetApiKeyBySlugError =
     | ApiKeysRepository.Error;
 
 export interface IGetApiKeyBySlug {
-    execute(slug: string): Promise<Result<ApiKey, GetApiKeyBySlugError>>;
+    execute(slug: string): Promise<Result<ApiKey | null, GetApiKeyBySlugError>>;
 }
 
 /** Retrieve an API key by its slug. */

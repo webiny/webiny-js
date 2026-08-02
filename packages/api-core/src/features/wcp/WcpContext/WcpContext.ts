@@ -144,28 +144,8 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAiPageGeneration();
     }
 
-    canUseAiPageTranslation(): boolean {
-        return this.license.canUseAiPageTranslation();
-    }
-
     canUseAiLexicalGeneration(): boolean {
         return this.license.canUseAiLexicalGeneration();
-    }
-
-    canUseAiEntryGeneration(): boolean {
-        return this.license.canUseAiEntryGeneration();
-    }
-
-    canUseAiEntryComparison(): boolean {
-        return this.license.canUseAiEntryComparison();
-    }
-
-    canUseAiEntryTranslation(): boolean {
-        return this.license.canUseAiEntryTranslation();
-    }
-
-    canUseAbTesting(): boolean {
-        return this.license.canUseAbTesting();
     }
 
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {

@@ -7,25 +7,14 @@ import { ListApiKeysFeature } from "./ListApiKeys/feature.js";
 import { CreateApiKeyFeature } from "./CreateApiKey/feature.js";
 import { UpdateApiKeyFeature } from "./UpdateApiKey/feature.js";
 import { DeleteApiKeyFeature } from "./DeleteApiKey/feature.js";
-import {
-    ApiKeyFactory,
-    ApiKeyProvider as ApiKeyProviderAbstraction
-} from "~/features/security/apiKeys/shared/abstractions.js";
 import { ApiKeyProvider } from "./shared/ApiKeyProvider.js";
-import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 
 export const ApiKeysFeature = createFeature({
     name: "ApiKeys",
     register(container) {
         // Register repository in singleton scope
         container.register(ApiKeysRepository).inSingletonScope();
-
-        container.registerFactory(ApiKeyProviderAbstraction, () => {
-            const tenantContext = container.resolve(TenantContext);
-            return new ApiKeyProvider(tenantContext, () => {
-                return container.resolveAll(ApiKeyFactory);
-            });
-        });
+        container.register(ApiKeyProvider).inSingletonScope();
 
         // Register all use cases
         GetApiKeyFeature.register(container);
