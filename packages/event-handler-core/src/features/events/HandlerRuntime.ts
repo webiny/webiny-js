@@ -1,35 +1,51 @@
-import { Abstraction } from "@webiny/di";
+import { Container } from "@webiny/di";
 import { EventType } from "./EventType.js";
-import { RootContainerFactory } from "./RootContainerFactory.js";
-import { ChildContainerFactory } from "./ChildContainerFactory.js";
+import { HandlerConfig } from "./HandlerConfig.js";
+import { RootContainerFactory, DefaultRootContainerFactory } from "./RootContainerFactory.js";
+import { ChildContainerFactory, DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
 
 /**
- * The DI-native handler app: the top-level orchestrator returned (indirectly) by `createHandler`.
- * It owns the whole per-invocation flow — obtain the root container, create the per-request child,
- * match the incoming event to its {@link EventType}, and dispatch through the handler chain.
+ * The DI-native handler app. `HandlerRuntime.init(config)` builds a small "app container" (distinct
+ * from the per-process root container and the per-request child container it goes on to create),
+ * wires the default lifecycle abstractions, and returns a runtime whose `handle()` is the
+ * platform-invocable handler.
  *
- * Decoratable (distinct from {@link EventHandler}, which is a single handler IN the dispatch chain).
- * The root and child container steps are delegated to the {@link RootContainerFactory} /
- * {@link ChildContainerFactory} abstractions so each is independently decoratable.
+ * The lifecycle is delegated to decoratable DI abstractions — {@link RootContainerFactory} (build
+ * the root once) and {@link ChildContainerFactory} (create + set up the per-request child) — so
+ * transports/composition layers extend it by decoration (`config.app`) instead of this class
+ * growing new branches. `HandlerRuntime` is distinct from {@link EventHandler}, which is a single
+ * handler IN the dispatch chain.
  */
-export interface IHandlerRuntime {
-    handle(rawArgs: any[]): Promise<any>;
-}
-
-export const HandlerRuntime = new Abstraction<IHandlerRuntime>("HandlerRuntime");
-
-export namespace HandlerRuntime {
-    export type Interface = IHandlerRuntime;
-}
-
-class HandlerRuntimeImpl implements IHandlerRuntime {
-    constructor(
+export class HandlerRuntime {
+    private constructor(
         private rootContainerFactory: RootContainerFactory.Interface,
         private childContainerFactory: ChildContainerFactory.Interface
     ) {}
 
-    async handle(rawArgs: any[]): Promise<any> {
+    static init(config: HandlerConfig.Interface): HandlerRuntime {
+        const appContainer = new Container();
+
+        // Register the config as-is — the default lifecycle factories resolve HandlerConfig directly.
+        appContainer.registerInstance(HandlerConfig, config);
+
+        // Register the default lifecycle abstractions. Singleton-scoped so the memoized root
+        // container (held by RootContainerFactory) is shared across every warm invocation.
+        appContainer.register(DefaultRootContainerFactory).inSingletonScope();
+        appContainer.register(DefaultChildContainerFactory).inSingletonScope();
+
+        // Seam: let callers decorate the factories before the app is resolved.
+        config.app?.(appContainer);
+
+        // Resolve the factories once (decorators applied) so their state — notably the memoized
+        // root — is reused across every invocation of handle().
+        return new HandlerRuntime(
+            appContainer.resolve(RootContainerFactory),
+            appContainer.resolve(ChildContainerFactory)
+        );
+    }
+
+    async handle(...rawArgs: any[]): Promise<any> {
         const root = await this.rootContainerFactory.get();
         const child = await this.childContainerFactory.create(root, rawArgs);
 
@@ -63,8 +79,3 @@ class HandlerRuntimeImpl implements IHandlerRuntime {
         return executeChain(handlers, event);
     }
 }
-
-export const DefaultHandlerRuntime = HandlerRuntime.createImplementation({
-    implementation: HandlerRuntimeImpl,
-    dependencies: [RootContainerFactory, ChildContainerFactory]
-});

@@ -1,6 +1,6 @@
 import { HttpFeature } from "~/features/http/feature.js";
 import { HttpRouterHandler } from "./HttpRouterHandler.js";
-import { createHandler } from "~/features/events/createHandler.js";
+import { HandlerRuntime } from "~/features/events/HandlerRuntime.js";
 import { TestHttpEventType } from "./TestHttpEventType.js";
 import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
@@ -15,7 +15,7 @@ export interface createTestHttpHandlerOptions {
  * Callers layer middleware on top via container.registerDecorator() in options.root.
  */
 export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
-    const invoke = createHandler({
+    const runtime = HandlerRuntime.init({
         root: async container => {
             container.register(TestHttpEventType);
             container.register(HttpRouterHandler);
@@ -28,7 +28,7 @@ export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
     return async (
         request: Partial<IHttpRequest> & { method: string; path: string }
     ): Promise<IHttpResponse> => {
-        return invoke({
+        return runtime.handle({
             method: request.method,
             path: request.path,
             headers: request.headers ?? {},

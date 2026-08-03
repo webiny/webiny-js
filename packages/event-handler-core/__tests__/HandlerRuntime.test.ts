@@ -5,7 +5,7 @@ import type { IEventType } from "~/features/events/EventType.js";
 import { ChildContainerFactory } from "~/features/events/ChildContainerFactory.js";
 import { RootContainerFactory } from "~/features/events/RootContainerFactory.js";
 import type { IEventHandler } from "~/features/events/EventHandler.js";
-import { createHandler } from "~/features/events/createHandler.js";
+import { HandlerRuntime } from "~/features/events/HandlerRuntime.js";
 
 describe("HandlerRuntime (DI-native handler app)", () => {
     class HttpEventType implements IEventType {
@@ -34,14 +34,14 @@ describe("HandlerRuntime (DI-native handler app)", () => {
     };
 
     it("dispatches through the runtime like the previous closure", async () => {
-        const invoke = createHandler({
+        const runtime = HandlerRuntime.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
             }
         });
 
-        expect(await invoke(httpEvent)).toBe("ok");
+        expect(await runtime.handle(httpEvent)).toBe("ok");
     });
 
     it("runs a ChildContainerFactory decorator on every request (the seam)", async () => {
@@ -62,7 +62,7 @@ describe("HandlerRuntime (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const invoke = createHandler({
+        const runtime = HandlerRuntime.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -72,8 +72,8 @@ describe("HandlerRuntime (DI-native handler app)", () => {
             }
         });
 
-        expect(await invoke(httpEvent)).toBe("ok");
-        expect(await invoke(httpEvent)).toBe("ok");
+        expect(await runtime.handle(httpEvent)).toBe("ok");
+        expect(await runtime.handle(httpEvent)).toBe("ok");
 
         // Decorator wraps create() once per request (before + after), twice over two invocations.
         expect(calls).toEqual(["before", "after", "before", "after"]);
@@ -97,7 +97,7 @@ describe("HandlerRuntime (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const invoke = createHandler({
+        const runtime = HandlerRuntime.init({
             root: container => {
                 rootSetupCalls++;
                 container.register(httpType);
@@ -108,8 +108,8 @@ describe("HandlerRuntime (DI-native handler app)", () => {
             }
         });
 
-        await invoke(httpEvent);
-        await invoke(httpEvent);
+        await runtime.handle(httpEvent);
+        await runtime.handle(httpEvent);
 
         // get() is called per request, but the underlying root is built (root setup runs) only once.
         expect(rootBuilds).toBe(2);

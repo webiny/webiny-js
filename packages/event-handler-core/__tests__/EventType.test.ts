@@ -3,7 +3,7 @@ import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
-import { createHandler } from "~/features/events/createHandler.js";
+import { HandlerRuntime } from "~/features/events/HandlerRuntime.js";
 
 describe("EventType dispatch", () => {
     it("should route to correct handler based on canHandle", async () => {
@@ -30,14 +30,14 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const invoke = createHandler({
+        const runtime = HandlerRuntime.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
             }
         });
 
-        const result = await invoke({
+        const result = await runtime.handle({
             method: "GET",
             path: "/test",
             headers: {},
@@ -62,13 +62,13 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const invoke = createHandler({
+        const runtime = HandlerRuntime.init({
             root: container => {
                 container.register(httpType);
             }
         });
 
-        await expect(invoke({ Records: [{ eventSource: "aws:s3" }] })).rejects.toThrow(
+        await expect(runtime.handle({ Records: [{ eventSource: "aws:s3" }] })).rejects.toThrow(
             "No event type matched the incoming event"
         );
     });
@@ -123,7 +123,7 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const invoke = createHandler({
+        const runtime = HandlerRuntime.init({
             root: container => {
                 container.register(httpType);
                 container.register(otherType);
@@ -133,7 +133,7 @@ describe("EventType dispatch", () => {
         });
 
         expect(
-            await invoke({
+            await runtime.handle({
                 method: "GET",
                 path: "/",
                 headers: {},
@@ -142,6 +142,6 @@ describe("EventType dispatch", () => {
                 body: undefined
             })
         ).toBe("http");
-        expect(await invoke({ Records: [{}] })).toBe("other");
+        expect(await runtime.handle({ Records: [{}] })).toBe("other");
     });
 });
