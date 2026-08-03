@@ -582,6 +582,8 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     permissions:
       id-token: write
+      contents: read
+      actions: write
   vitest-sql-constants:
     needs:
       - build

@@ -425,6 +425,8 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
+      contents: read
+      actions: write
   vitest-ddb-os-constants:
     needs:
       - constants
@@ -518,6 +520,8 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
+      contents: read
+      actions: write
   vitest-sql-constants:
     needs:
       - constants
@@ -603,3 +607,5 @@ jobs:
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
+      contents: read
+      actions: write

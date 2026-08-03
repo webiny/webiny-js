@@ -340,6 +340,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: read
+      actions: write
   e2e-wby-cms-ddb-os-constants:
     needs:
       - baseBranch
@@ -553,3 +555,5 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
+      contents: read
+      actions: write

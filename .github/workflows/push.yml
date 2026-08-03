@@ -307,6 +307,8 @@ jobs:
         working-directory: v6
     permissions:
       id-token: write
+      contents: read
+      actions: write
   vitest-ddb-os-constants:
     needs:
       - build
@@ -389,6 +391,8 @@ jobs:
         working-directory: v6
     permissions:
       id-token: write
+      contents: read
+      actions: write
   vitest-sql-constants:
     needs:
       - build
@@ -465,6 +469,8 @@ jobs:
         working-directory: v6
     permissions:
       id-token: write
+      contents: read
+      actions: write
   e2eTests-ddb-constants:
     name: E2E (DDB) - Constants
     needs:
@@ -621,6 +627,8 @@ jobs:
         working-directory: v6
     permissions:
       id-token: write
+      contents: read
+      actions: write
   e2eTests-ddb-os-constants:
     name: E2E (DDB+OS) - Constants
     needs:
@@ -798,3 +806,5 @@ jobs:
         working-directory: v6
     permissions:
       id-token: write
+      contents: read
+      actions: write

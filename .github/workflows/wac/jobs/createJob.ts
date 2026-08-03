@@ -30,7 +30,13 @@ export const createJob = (params: CreateJobParams): NormalJob => {
         job.permissions = {
             // Required in order for the `aws-actions/configure-aws-credentials` to work.
             // https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-permissions-settings
-            "id-token": "write"
+            "id-token": "write",
+            // Declaring a `permissions` block resets every unlisted scope to `none`, which
+            // would leave the token with no writable scope - `actions/cache` then refuses to
+            // SAVE ("cache write denied: token has no writable scopes"). Re-grant the scopes
+            // these jobs still need: `contents: read` for checkout, `actions: write` for cache.
+            contents: "read",
+            actions: "write"
         };
 
         job.steps!.push({
