@@ -22,10 +22,6 @@ export async function createServerHandler(
         request: options.request
     });
 
-    // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
-    // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
-    const rootContainer = await app.getRootContainer();
-
     const server = http.createServer(async (req, res) => {
         try {
             const response = (await app.handle(req)) as IHttpResponse;
@@ -52,6 +48,9 @@ export async function createServerHandler(
     });
 
     if (options.onServer) {
+        // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
+        // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
+        const rootContainer = await app.getRootContainer();
         await options.onServer(server, rootContainer);
     }
 
