@@ -30,7 +30,14 @@ export const Tab = ({ name, label, icon, disabled, element, visible }: TabProps)
             visible={visible}
             content={
                 <ScrollArea
-                    style={{ maxHeight: `calc(100vh - ${uiHeight}px - ${TAB_HEADER_HEIGHT}px)` }}
+                    // `fit-content` keeps the box as tall as its content (no empty gap when
+                    // short) while giving the ScrollArea viewport a definite height so it can
+                    // scroll; `max-height` caps it to the available space and triggers scrolling
+                    // once the content is taller.
+                    style={{
+                        height: "fit-content",
+                        maxHeight: `calc(100vh - ${uiHeight}px - ${TAB_HEADER_HEIGHT}px)`
+                    }}
                 >
                     {element}
                 </ScrollArea>
