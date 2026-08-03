@@ -1,8 +1,8 @@
 import { Container } from "@webiny/di";
 import { EventType } from "./EventType.js";
-import { HandlerConfig } from "./HandlerConfig.js";
-import { RootContainerFactory, DefaultRootContainerFactory } from "./RootContainerFactory.js";
-import { ChildContainerFactory, DefaultChildContainerFactory } from "./ChildContainerFactory.js";
+import { HandlerConfig, RootContainerFactory, ChildContainerFactory } from "./abstractions.js";
+import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
+import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
 import { executeChain } from "./chain.js";
 
 /**

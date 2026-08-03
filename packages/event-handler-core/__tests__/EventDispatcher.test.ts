@@ -2,8 +2,7 @@ import { describe, it, expect } from "vitest";
 import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import type { IEventType } from "~/features/events/EventType.js";
-import { ChildContainerFactory } from "~/features/events/ChildContainerFactory.js";
-import { RootContainerFactory } from "~/features/events/RootContainerFactory.js";
+import { ChildContainerFactory, RootContainerFactory } from "~/features/events/abstractions.js";
 import type { IEventHandler } from "~/features/events/EventHandler.js";
 import { EventDispatcher } from "~/features/events/EventDispatcher.js";
 

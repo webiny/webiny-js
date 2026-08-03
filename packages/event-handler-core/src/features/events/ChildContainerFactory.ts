@@ -1,30 +1,10 @@
-import { Abstraction, Container } from "@webiny/di";
-import { HandlerConfig } from "./HandlerConfig.js";
+import { Container } from "@webiny/di";
+import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
 import { RequestInitializer } from "./RequestInitializer.js";
 import { noopTransport } from "./Transport.js";
 
-/**
- * Creates and sets up the per-request (child) container: spawns the child, binds transport
- * primitives, runs request setup, and runs the pre-dispatch {@link RequestInitializer} loop.
- *
- * Decoratable — this is the seam for per-request work that must run BEFORE the register/dispatch
- * flow (e.g. refreshing a project-level license so register-time checks see it). Since such work
- * typically needs only root-scoped state, a decorator can act before delegating to `create()`.
- */
-export interface IChildContainerFactory {
-    create(root: Container, rawArgs: any[]): Promise<Container>;
-}
-
-export const ChildContainerFactory = new Abstraction<IChildContainerFactory>(
-    "ChildContainerFactory"
-);
-
-export namespace ChildContainerFactory {
-    export type Interface = IChildContainerFactory;
-}
-
-class ChildContainerFactoryImpl implements IChildContainerFactory {
+class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
     constructor(private config: HandlerConfig.Interface) {}
 
     async create(root: Container, rawArgs: any[]): Promise<Container> {
