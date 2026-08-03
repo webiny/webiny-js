@@ -34,7 +34,8 @@
     "object-hash": "^3.0.0",
     "p-map": "^7.0.6",
     "p-reduce": "^3.0.0",
-    "sanitize-filename": "^1.6.4"
+    "sanitize-filename": "^1.6.4",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

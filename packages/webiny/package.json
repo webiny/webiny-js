@@ -17,6 +17,7 @@
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-bulk-actions": "0.0.0",
+    "@webiny/api-headless-cms-ddb-es": "0.0.0",
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-headless-cms-utils-os": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
