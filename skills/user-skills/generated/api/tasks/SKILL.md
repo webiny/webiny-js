@@ -1,6 +1,5 @@
 ---
 name: webiny-api-tasks-catalog
-context: webiny-api
 description: >
   api/tasks — 2 abstractions.
 ---

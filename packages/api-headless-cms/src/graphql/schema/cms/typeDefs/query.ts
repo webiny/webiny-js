@@ -22,6 +22,7 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                     fields: [String!]!
                     preview: Boolean
                 ): CmsListResponse!
+                getModel(modelId: ID!): CmsModelResponse!
             }
 
             extend type Query {

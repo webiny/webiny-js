@@ -1,8 +1,7 @@
 ---
 name: webiny-infra-catalog
-context: webiny-api
 description: >
-  Infrastructure — 30 abstractions.
+  Infrastructure — 35 abstractions.
   Infrastructure extensions.
 ---
 
@@ -47,6 +46,12 @@ Infrastructure extensions.
 **Name:** `AdminBeforeWatch`
 **Import:** `import { AdminBeforeWatch } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminBeforeWatch.ts`
+
+---
+
+**Name:** `AdminPulumi`
+**Import:** `import { AdminPulumi } from "webiny/infra/admin"`
+**Source:** `@webiny/project-aws/abstractions/features/pulumi/AdminPulumi.ts`
 
 ---
 
@@ -110,6 +115,12 @@ Infrastructure extensions.
 
 ---
 
+**Name:** `ApiPulumi`
+**Import:** `import { ApiPulumi } from "webiny/infra/api"`
+**Source:** `@webiny/project-aws/abstractions/features/pulumi/ApiPulumi.ts`
+
+---
+
 **Name:** `ApiStackOutputService`
 **Import:** `import { ApiStackOutputService } from "webiny/infra/api"`
 **Source:** `@webiny/project-aws/abstractions/services/ApiStackOutputService.ts`
@@ -164,6 +175,12 @@ Infrastructure extensions.
 
 ---
 
+**Name:** `CorePulumi`
+**Import:** `import { CorePulumi } from "webiny/infra/core"`
+**Source:** `@webiny/project-aws/abstractions/features/pulumi/CorePulumi.ts`
+
+---
+
 **Name:** `CoreStackOutputService`
 **Import:** `import { CoreStackOutputService } from "webiny/infra/core"`
 **Source:** `@webiny/project-aws/abstractions/services/CoreStackOutputService.ts`
@@ -192,6 +209,18 @@ Infrastructure extensions.
 **Name:** `LoggerService`
 **Import:** `import { LoggerService } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/services/LoggerService.ts`
+
+---
+
+**Name:** `SetAdminCustomDomains`
+**Import:** `import { SetAdminCustomDomains } from "webiny/infra/admin"`
+**Source:** `@webiny/project-aws/abstractions/features/pulumi/SetAdminCustomDomains.ts`
+
+---
+
+**Name:** `SetApiCustomDomains`
+**Import:** `import { SetApiCustomDomains } from "webiny/infra/api"`
+**Source:** `@webiny/project-aws/abstractions/features/pulumi/SetApiCustomDomains.ts`
 
 ---
 

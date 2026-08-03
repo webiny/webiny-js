@@ -20,6 +20,7 @@ export type EditorTheme = {
     typography: Record<string, TypographyValue[]>;
     tokens: EditorThemeClasses;
     fontSizes: FontSizes;
+    allowCustomColors?: boolean;
 };
 
 export type TypographyMap = Record<string, TypographyValue>;

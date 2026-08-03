@@ -7,5 +7,8 @@ export default async () => {
         ["@webiny/api-core", "storage-operations"]
     );
 
-    return createTestConfig({ path: import.meta.dirname, presets });
+    return createTestConfig({
+        path: import.meta.dirname,
+        presets
+    });
 };
