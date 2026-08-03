@@ -9,6 +9,7 @@ import type {
 
 type InternalProps = {
     $colors: EditorTheme["colors"];
+    $allowCustomColor: EditorTheme["allowCustomColor"];
     $fontSizes: EditorTheme["fontSizes"];
     $typography: EditorTheme["typography"];
     $cacheKey: string;
@@ -24,14 +25,17 @@ export class Theme {
     private readonly _fontSizes: FontSizes;
     private readonly _typography: Record<string, TypographyValue[]>;
     private readonly _typographyMap: TypographyMap;
+    private readonly _allowCustomColor: EditorTheme["allowCustomColor"];
 
     constructor(params: {
         colors: EditorTheme["colors"];
         typography: EditorTheme["typography"];
         fontSizes: EditorTheme["fontSizes"];
         tokens: EditorThemeClasses;
+        allowCustomColor?: boolean;
     }) {
         this._colors = params.colors;
+        this._allowCustomColor = params.allowCustomColor;
         this._typography = params.typography;
         this._fontSizes = params.fontSizes;
         this._typographyMap = this.toTypographyMap(params.typography);
@@ -43,7 +47,7 @@ export class Theme {
     }
 
     static from(lexicalTheme: EditorThemeClasses) {
-        const { $colors, $typography, $fontSizes, $cacheKey, ...tokens } =
+        const { $colors, $typography, $fontSizes, $allowCustomColor, $cacheKey, ...tokens } =
             lexicalTheme as InternalTheme;
 
         if (!$colors) {
@@ -55,7 +59,8 @@ export class Theme {
                 colors: $colors,
                 typography: $typography,
                 fontSizes: $fontSizes,
-                tokens
+                tokens,
+                allowCustomColor: $allowCustomColor
             });
         }
 
@@ -66,6 +71,14 @@ export class Theme {
 
     get colors() {
         return this._colors;
+    }
+
+    /**
+     * Whether the colour picker may offer a free value. `undefined` means the active theme has no
+     * opinion, so the caller's own default stands.
+     */
+    get allowCustomColor() {
+        return this._allowCustomColor;
     }
 
     get typography() {

@@ -1,0 +1,41 @@
+{
+  "name": "@webiny/app-theme",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/app-theme"
+  },
+  "description": "Admin UI for the Webiny Theme app.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-websockets": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/theme-common": "0.0.0",
+    "mobx": "^6.16.1",
+    "mobx-react-lite": "^4.1.1",
+    "react": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

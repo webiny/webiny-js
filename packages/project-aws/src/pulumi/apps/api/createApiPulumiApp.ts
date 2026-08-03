@@ -246,6 +246,19 @@ export const createApiPulumiApp = () => {
                     method: "OPTIONS",
                     function: graphql.functions.graphql.output.arn
                 },
+                // Theme artifact delivery. Public and immutable for published versions — the
+                // stylesheet is fetched by the visitor's browser through the frontend's rewrite,
+                // so it cannot require an API key.
+                "theme-artifacts-get": {
+                    path: "/_webiny/theme/{path+}",
+                    method: "GET",
+                    function: graphql.functions.graphql.output.arn
+                },
+                "theme-artifacts-options": {
+                    path: "/_webiny/theme/{path+}",
+                    method: "OPTIONS",
+                    function: graphql.functions.graphql.output.arn
+                },
                 "files-catch-all": {
                     path: "/{path+}",
                     method: "ANY",

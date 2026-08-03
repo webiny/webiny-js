@@ -1,0 +1,45 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../theme-common/tsconfig.build.json" },
+    { "path": "../api-core-ddb/tsconfig.build.json" },
+    { "path": "../api-headless-cms-testing/tsconfig.build.json" },
+    { "path": "../api-opensearch/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/theme-common/*": ["../theme-common/src/*"],
+      "@webiny/theme-common": ["../theme-common/src"],
+      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
+      "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
+      "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@webiny/theme-common",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Shared design-token domain for the Webiny Theme app: DTCG schema, canonical slots, alias resolution, fluid sizing and accessibility checks.",
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

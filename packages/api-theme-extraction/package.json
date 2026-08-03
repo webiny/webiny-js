@@ -1,0 +1,44 @@
+{
+  "name": "@webiny/api-theme-extraction",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-theme-extraction"
+  },
+  "description": "Generates a Webiny theme by analysing an existing website.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@sparticuz/chromium-min": "123.0.1",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-theme": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/di": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/theme-common": "0.0.0",
+    "ai": "^7.0.40",
+    "puppeteer-core": "^22.6.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "jsdom": "^30.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

@@ -12,6 +12,7 @@
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {
+    "@webiny/theme-common": "0.0.0",
     "csstype": "^3.2.3",
     "deep-equal": "^2.2.3",
     "deepmerge": "^4.3.1",

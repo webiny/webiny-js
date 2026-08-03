@@ -1,9 +1,18 @@
 import type { EditorConfig, LexicalNode, SerializedTextNode, Spread } from "lexical";
 import { $getSelection, $isRangeSelection, createCommand, TextNode } from "lexical";
 import { Theme } from "@webiny/lexical-theme";
+import { isCanonicalPath } from "@webiny/theme-common/canonical/index.js";
+import { toCssVariableName } from "@webiny/theme-common/naming/cssVariable.js";
 
 export class ThemeColorValue {
-    // Webiny theme color variable, like color1, color2, etc.
+    /**
+     * Identifies where the colour came from. Three cases:
+     *
+     * - `"custom"` — a literal the author typed.
+     * - a design token path (`color.text.primary`) — a reference into the active theme's canonical
+     *   slots. These render through their CSS variable, so existing content follows theme changes.
+     * - any other id — a legacy project-defined theme colour (`color1`), kept working unchanged.
+     */
     private readonly id: string;
     // This can be a HEX value or a CSS variable.
     private value: string;
@@ -21,6 +30,28 @@ export class ThemeColorValue {
         return this.id;
     }
 
+    /** True when this colour is a reference into the Theme app's canonical slots. */
+    isDesignToken() {
+        return this.id !== "custom" && isCanonicalPath(this.id);
+    }
+
+    /**
+     * The value to put on the DOM.
+     *
+     * A design token renders as `var(--wby-…, <cached literal>)`. The variable is what makes
+     * already-published content follow a theme change; the fallback is what keeps it rendering if
+     * the theme is later deactivated, when the variable would otherwise resolve to nothing and the
+     * browser would drop the declaration entirely.
+     */
+    getCssValue() {
+        if (!this.isDesignToken()) {
+            return this.value;
+        }
+
+        const variable = toCssVariableName(this.id);
+        return this.value ? `var(${variable}, ${this.value})` : `var(${variable})`;
+    }
+
     updateFromTheme(theme: Theme) {
         if (theme.colors && this.id !== "custom") {
             const color = theme.colors.find(color => color.id === this.id);
@@ -34,6 +65,9 @@ export class ThemeColorValue {
 export const ADD_FONT_COLOR_COMMAND = createCommand<FontColorPayload>("ADD_FONT_COLOR_COMMAND");
 
 const FontColorNodeAttrName = "data-theme-font-color-name";
+
+/** Carries a design token path on exported HTML, so the reference survives the round trip. */
+const TokenAttrName = "data-wby-token";
 
 export interface FontColorPayload {
     color: ThemeColorValue;
@@ -127,21 +161,32 @@ export class FontColorNode extends TextNode {
         };
     }
 
-    private addColorValueToHTMLElement(element: HTMLElement, theme: Theme): HTMLElement {
-        // Update color from webiny theme
+    /**
+     * Writes the colour onto an element.
+     *
+     * Both attributes are emitted on purpose. `data-theme-font-color-name` is long-standing and
+     * anything consuming exported HTML may already read it, so it stays. `data-wby-token` is added
+     * only for design-token references, and is what lets a themed consumer recover the reference
+     * from exported HTML rather than being stuck with the resolved literal.
+     */
+    private applyColorTo(element: HTMLElement, theme: Theme): HTMLElement {
         this.__color.updateFromTheme(theme);
+
         element.setAttribute(FontColorNodeAttrName, this.__color.getName());
-        element.style.color = this.__color.getValue();
+
+        if (this.__color.isDesignToken()) {
+            element.setAttribute(TokenAttrName, this.__color.getName());
+        } else {
+            element.removeAttribute(TokenAttrName);
+        }
+
+        element.style.color = this.__color.getCssValue();
         return element;
     }
 
     override updateDOM(prevNode: this, dom: HTMLElement, config: EditorConfig): boolean {
         const isUpdated = super.updateDOM(prevNode, dom, config);
-        const theme = Theme.from(config.theme);
-        this.__color.updateFromTheme(theme);
-
-        dom.setAttribute(FontColorNodeAttrName, this.__color.getName());
-        dom.style.color = this.__color.getValue();
+        this.applyColorTo(dom, Theme.from(config.theme));
         return isUpdated;
     }
 
@@ -154,8 +199,7 @@ export class FontColorNode extends TextNode {
 
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
-        const theme = Theme.from(config.theme);
-        return this.addColorValueToHTMLElement(element, theme);
+        return this.applyColorTo(element, Theme.from(config.theme));
     }
 }
 

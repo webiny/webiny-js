@@ -32,6 +32,7 @@ export function useStyles(elementId: string) {
     return {
         store,
         styles: store.vm.styles,
+        tokens: store.vm.tokens,
         metadata: store.vm.metadata,
         inheritanceMap: store.vm.inheritanceMap,
         onChange: store.onChange,

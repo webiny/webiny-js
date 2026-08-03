@@ -6,9 +6,10 @@ import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
 import { DropDown } from "~/ui/DropDown.js";
 import { DropDownItem } from "~/ui/DropDown.js";
+import type { FontSizes } from "@webiny/lexical-theme";
 
 interface FontSizeDropdownProps {
-    sizes: string[];
+    sizes: FontSizes;
 }
 
 const FontSizeDropdown = ({ sizes }: FontSizeDropdownProps) => {
@@ -21,10 +22,9 @@ const FontSizeDropdown = ({ sizes }: FontSizeDropdownProps) => {
                 label: "Auto"
             },
             ...sizes.map(size => {
-                return {
-                    value: size,
-                    label: `${size}`
-                };
+                // A labelled option comes from a theme ramp step; a bare string is a plain size a
+                // project configured itself.
+                return typeof size === "string" ? { value: size, label: size } : size;
             })
         ];
     }, [sizes]);

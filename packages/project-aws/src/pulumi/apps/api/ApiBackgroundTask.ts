@@ -27,10 +27,26 @@ export const ApiBackgroundTask = createAppModule({
             config: {
                 ...baseConfig,
                 layers: graphql.functions.graphql.output.layers.apply(arns => {
-                    return Array.from(new Set([...(arns || []), getLayerArn("sharp")]));
+                    return Array.from(
+                        new Set([
+                            ...(arns || []),
+                            getLayerArn("sharp"),
+                            // Chromium, for theme extraction. Attached here rather than to a
+                            // dedicated function because every TaskDefinition executes on THIS
+                            // Lambda — v6 ships one API bundle and the Step Function invokes this
+                            // ARN. A separate crawler function would need its own invocation path
+                            // and would forfeit the progress, abort and retry machinery the task
+                            // framework already provides.
+                            getLayerArn("chromium")
+                        ])
+                    );
                 }),
                 timeout: 900,
-                memorySize: 1024,
+                // Headless Chromium needs materially more than the 1024 MB the other background
+                // tasks were sized for. This raises the floor for every background task, which is a
+                // real per-GB-second cost change — the alternative is a dedicated crawler function,
+                // and that trade-off is written up in the Phase 6 notes.
+                memorySize: 2048,
                 description: "Performs background tasks.",
                 loggingConfig: {
                     logFormat: "JSON"

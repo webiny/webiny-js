@@ -28,6 +28,7 @@
     "@webiny/app-record-locking": "0.0.0",
     "@webiny/app-scheduler": "0.0.0",
     "@webiny/app-sdk-playground": "0.0.0",
+    "@webiny/app-theme": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
     "@webiny/app-website-builder-scheduler": "0.0.0",
     "@webiny/app-website-builder-workflows": "0.0.0",

@@ -1,0 +1,39 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-theme/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" },
+    { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../background-tasks/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../theme-common/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-theme/*": ["../api-theme/src/*"],
+      "@webiny/api-theme": ["../api-theme/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
+      "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/theme-common/*": ["../theme-common/src/*"],
+      "@webiny/theme-common": ["../theme-common/src"]
+    }
+  }
+}

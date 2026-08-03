@@ -87,7 +87,11 @@ export const LexicalColorPicker = ({
 
     const { theme } = useRichTextEditor();
 
-    const themeColors = useMemo(() => theme?.colors ?? [], []);
+    const themeColors = useMemo(() => theme?.colors ?? [], [theme]);
+
+    // The active theme's policy wins over the caller's default: a theme set to "theme only" must
+    // hide the colour wheel wherever this picker is mounted.
+    const freeValueAllowed = theme?.allowCustomColor ?? allowCustomColor;
 
     useEffect(() => {
         const isThemeColor = themeColors.some(color => color.id === value);
@@ -123,7 +127,7 @@ export const LexicalColorPicker = ({
                 );
             })}
 
-            {allowCustomColor ? (
+            {freeValueAllowed ? (
                 <div
                     className={
                         value && !isThemeColor

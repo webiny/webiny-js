@@ -16,6 +16,7 @@ import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
+import { ThemeFeature } from "@webiny/api-theme";
 import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
 import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
@@ -104,6 +105,11 @@ export async function registerApiRequestStack(
     FileManagerAppFeature.register(container);
     FileManagerAcoFeature.register(container);
     await config.transports?.fileManager?.(container);
+
+    // ── Theme (design tokens) ──────────────────────────────────
+    // Registered before Website Builder: WB's pickers and the Lexical toolbar read theme policy, so
+    // the Theme features must already be in the container when they resolve.
+    ThemeFeature.register(container);
 
     // ── Website Builder ────────────────────────────────────────
     WebsiteBuilderFeature.register(container);

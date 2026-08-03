@@ -1,9 +1,14 @@
 import set from "lodash/set.js";
 import unset from "lodash/unset.js";
 import { toJS } from "mobx";
-import type { DocumentElementBindings, DocumentElementStyleBindings } from "~/types.js";
+import type {
+    DocumentElementBindings,
+    DocumentElementStyleBindings,
+    TokenReference
+} from "~/types.js";
 import { InheritedValueResolver } from "~/InheritedValueResolver.js";
 import { StylesUpdater } from "./StylesUpdater.js";
+import { isTokenBinding, tokenToCssValue } from "./tokenBinding.js";
 
 type DeepBindings = Record<string, any>;
 
@@ -33,12 +38,32 @@ export class StylesBindingsProcessor {
 
     /**
      * Converts flat style bindings into deep styles object (removes `.static`).
+     *
+     * A token reference yields its `var(--wby-…)` form, so the editor preview renders the themed
+     * value. Use {@link toTokenMap} alongside this when you need to know that a value came from a
+     * token rather than a literal — a picker has to show which token is selected.
      */
     public toDeepStyles(styles: DocumentElementBindings["styles"] = {}): DeepBindings {
         const result: DeepBindings = {};
         Object.keys(styles).forEach(key => {
             // @ts-expect-error Style keys cannot be indexed with a string.
-            result[key] = styles[key].static;
+            const binding = styles[key];
+            result[key] = isTokenBinding(binding) ? tokenToCssValue(binding.token) : binding.static;
+        });
+        return result;
+    }
+
+    /** The token references among these bindings, keyed by CSS property. */
+    public toTokenMap(
+        styles: DocumentElementBindings["styles"] = {}
+    ): Record<string, TokenReference> {
+        const result: Record<string, TokenReference> = {};
+        Object.keys(styles).forEach(key => {
+            // @ts-expect-error Style keys cannot be indexed with a string.
+            const binding = styles[key];
+            if (isTokenBinding(binding)) {
+                result[key] = binding.token;
+            }
         });
         return result;
     }
@@ -46,8 +71,16 @@ export class StylesBindingsProcessor {
     /**
      * Flattens deep styles object into flat bindings with `.static` wrappers.
      * Skips overrides where the value matches inherited parent breakpoint.
+     *
+     * @param tokens Properties in this map are written as token references instead of literals.
+     *               A property absent from it is written as `static`, which is what clears a
+     *               reference when someone picks a free value over a token.
      */
-    public createUpdate(styles: DeepBindings, currentBreakpoint: string) {
+    public createUpdate(
+        styles: DeepBindings,
+        currentBreakpoint: string,
+        tokens: Record<string, TokenReference> = {}
+    ) {
         const rebuilt = this.getBaseStyles();
         const valueResolver = new InheritedValueResolver(this.breakpoints, breakpoint => {
             if (this.isBaseBreakpoint(breakpoint)) {
@@ -76,13 +109,28 @@ export class StylesBindingsProcessor {
         }
 
         for (const [key, value] of Object.entries(styles)) {
+            const token = tokens[key];
+
             if (this.isBaseBreakpoint(currentBreakpoint)) {
-                set(rebuilt, `styles.${key}.static`, value);
+                if (token) {
+                    // A binding holds either a reference or a literal, never both — leaving a stale
+                    // `static` behind would make the stored value ambiguous.
+                    unset(rebuilt, `styles.${key}`);
+                    set(rebuilt, `styles.${key}.token`, token);
+                } else {
+                    unset(rebuilt, `styles.${key}`);
+                    set(rebuilt, `styles.${key}.static`, value);
+                }
             } else {
                 const inheritedValue = valueResolver.getInheritedValue(key, currentBreakpoint);
 
                 if (value !== inheritedValue) {
-                    set(rebuilt, `overrides.${currentBreakpoint}.styles.${key}.static`, value);
+                    unset(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
+                    if (token) {
+                        set(rebuilt, `overrides.${currentBreakpoint}.styles.${key}.token`, token);
+                    } else {
+                        set(rebuilt, `overrides.${currentBreakpoint}.styles.${key}.static`, value);
+                    }
                 } else {
                     unset(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
                 }

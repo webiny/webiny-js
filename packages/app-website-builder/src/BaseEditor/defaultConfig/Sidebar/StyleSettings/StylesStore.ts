@@ -14,7 +14,8 @@ import { type InheritanceInfo, InheritanceProcessor } from "@webiny/website-buil
 import {
     BindingsProcessor,
     type DocumentElementBindings,
-    type Document
+    type Document,
+    type TokenReference
 } from "@webiny/website-builder-sdk";
 import { $getComponentManifestByElementId } from "~/editorSdk/utils/index.js";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
@@ -22,6 +23,8 @@ import { BASE_BREAKPOINT } from "~/constants.js";
 
 export type ElementBreakpointStyles = {
     styles: Record<string, any>;
+    /** Which CSS properties are bound to a design token rather than a literal. */
+    tokens: Record<string, TokenReference>;
     metadata: IMetadata;
     inheritanceMap: InheritanceInfo["styles"];
 };
@@ -33,6 +36,7 @@ export class StylesStore {
     private stylesProcessor: StylesBindingsProcessor | undefined;
     private elementMetadata: IMetadata = new NullMetadata();
     private devFriendlyStyles: Record<string, any> = {};
+    private tokenBindings: Record<string, TokenReference> = {};
     private localPreviewStyles: Record<string, any> | undefined = undefined;
     private currentBreakpoint: string;
     private inheritanceMap: InheritanceInfo["styles"] = {};
@@ -75,6 +79,7 @@ export class StylesStore {
     get vm(): ElementBreakpointStyles {
         return {
             styles: this.localPreviewStyles ?? this.devFriendlyStyles,
+            tokens: this.tokenBindings,
             metadata: this.elementMetadata,
             inheritanceMap: this.inheritanceMap
         };
@@ -85,14 +90,15 @@ export class StylesStore {
             return;
         }
 
-        const styles = new StylesValueObject(this.devFriendlyStyles);
+        const styles = new StylesValueObject(this.devFriendlyStyles, { ...this.tokenBindings });
         cb({ styles, metadata: this.elementMetadata });
 
         const finalStyles = styles.getAll();
 
         const updatedStyles = this.stylesProcessor.createUpdate(
             finalStyles,
-            this.currentBreakpoint
+            this.currentBreakpoint,
+            styles.getTokens()
         );
 
         this.editor.updateDocument(document => {
@@ -110,7 +116,9 @@ export class StylesStore {
             return;
         }
 
-        const styles = new StylesValueObject(structuredClone(toJS(this.devFriendlyStyles)));
+        const styles = new StylesValueObject(structuredClone(toJS(this.devFriendlyStyles)), {
+            ...this.tokenBindings
+        });
 
         cb({ styles, metadata: this.elementMetadata });
 
@@ -120,7 +128,8 @@ export class StylesStore {
 
         const updatedStyles = this.stylesProcessor.createUpdate(
             finalStyles,
-            this.currentBreakpoint
+            this.currentBreakpoint,
+            styles.getTokens()
         );
 
         this.editor.executeCommand(Commands.PreviewPatchElement, {
@@ -154,18 +163,43 @@ export class StylesStore {
         );
 
         this.devFriendlyStyles = this.stylesProcessor.toDeepStyles(resolvedBindings.styles);
+        this.tokenBindings = this.stylesProcessor.toTokenMap(resolvedBindings.styles);
     }
 }
 
 export class StylesValueObject {
     private readonly value: Record<string, any>;
+    private readonly tokens: Record<string, TokenReference>;
 
-    constructor(value: any = {}) {
+    constructor(value: any = {}, tokens: Record<string, TokenReference> = {}) {
         this.value = value;
+        this.tokens = tokens;
     }
 
+    /**
+     * Sets a literal. This also clears any token binding on the same property: picking a free
+     * colour is how you stop following a token.
+     */
     set(key: string, value: any) {
         this.value[key] = value;
+        delete this.tokens[key];
+    }
+
+    /**
+     * Binds a property to a design token. The resolved value is stored too, so the editor preview
+     * renders and the reference carries a fallback for when no theme is active.
+     */
+    setToken(key: string, token: TokenReference, resolvedValue: string) {
+        this.value[key] = resolvedValue;
+        this.tokens[key] = token;
+    }
+
+    getToken(key: string): TokenReference | undefined {
+        return this.tokens[key];
+    }
+
+    getTokens() {
+        return this.tokens;
     }
 
     get(key: string) {
@@ -178,5 +212,6 @@ export class StylesValueObject {
 
     unset(key: string) {
         delete this.value[key];
+        delete this.tokens[key];
     }
 }

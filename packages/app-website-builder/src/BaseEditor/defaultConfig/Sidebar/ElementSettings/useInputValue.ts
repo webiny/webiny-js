@@ -2,7 +2,12 @@ import { useCallback, useMemo, useState } from "react";
 import set from "lodash/set.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
-import type { ValueBinding, CreateElementParams } from "@webiny/website-builder-sdk";
+import type {
+    ValueBinding,
+    CreateElementParams,
+    TokenReference
+} from "@webiny/website-builder-sdk";
+import { isTokenBinding } from "@webiny/website-builder-sdk";
 import { Commands } from "~/BaseEditor/index.js";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
 import {
@@ -32,13 +37,40 @@ export type InputBindingOnChange = (cb: (params: OnChangeParams) => void) => voi
 
 export class InputValueObject {
     private value: any;
+    private token: TokenReference | undefined;
 
-    constructor(value: any) {
+    constructor(value: any, token?: TokenReference) {
         this.value = value;
+        this.token = token;
     }
 
+    /**
+     * Sets a literal value, clearing any token reference.
+     *
+     * Clearing is the point: a binding holds either a reference or a literal, so picking a free value is
+     * how a user detaches an input from the theme. A renderer that offers both does not need to think
+     * about it — `set` and `setToken` are mutually exclusive by construction.
+     */
     set(value: any) {
         this.value = value;
+        this.token = undefined;
+    }
+
+    /**
+     * Binds this input to a design token.
+     *
+     * `value` is still set, to the token's resolved colour: it becomes the reference's `fallback`, so
+     * content keeps rendering the value it had if the theme is later deactivated.
+     */
+    setToken(token: TokenReference, resolvedValue?: any) {
+        this.token = token;
+        if (resolvedValue !== undefined) {
+            this.value = resolvedValue;
+        }
+    }
+
+    getToken() {
+        return this.token;
     }
 
     get() {
@@ -47,6 +79,7 @@ export class InputValueObject {
 
     unset() {
         this.value = undefined;
+        this.token = undefined;
     }
 }
 
@@ -141,7 +174,10 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
         withTimeout((cb: (params: OnChangeParams) => void) => {
             const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
 
-            const valueObject = new InputValueObject(value);
+            const valueObject = new InputValueObject(
+                value,
+                isTokenBinding(value) ? value.token : undefined
+            );
 
             const updaterInput = {
                 value: valueObject,
@@ -194,8 +230,24 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
                 deepStyles: devFriendlyStyles
             });
 
+            // Seeded from every token already on this element, then adjusted for the one input that
+            // changed. Passing only the changed path would rewrite every other token binding on the
+            // element as a frozen literal, because an absent path is how `createUpdate` is told to clear
+            // a reference.
+            const tokens = inputsProcessor.toTokenMap(resolvedBindings.inputs);
+            const changedToken = valueObject.getToken();
+            if (changedToken) {
+                tokens[node.path] = changedToken;
+            } else {
+                delete tokens[node.path];
+            }
+
             editor.updateDocument(document => {
-                const inputs = inputsProcessor.createUpdate(devFriendlyInputs, breakpoint.name);
+                const inputs = inputsProcessor.createUpdate(
+                    devFriendlyInputs,
+                    breakpoint.name,
+                    tokens
+                );
                 const styles = stylesProcessor.createUpdate(devFriendlyStyles, breakpoint.name);
 
                 inputs.applyToDocument(document);
@@ -242,9 +294,24 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
                 valueObject.get()
             );
 
-            setLocalValue({ static: valueObject.get() });
+            const previewToken = valueObject.getToken();
 
-            const updatedInputs = inputsProcessor.createUpdate(devFriendlyInputs, breakpoint.name);
+            // Mirrors the binding shape, so a token picked in preview looks the same to the renderer as
+            // one that has been committed.
+            setLocalValue(previewToken ? { token: previewToken } : { static: valueObject.get() });
+
+            const previewTokens = inputsProcessor.toTokenMap(resolvedBindings.inputs);
+            if (previewToken) {
+                previewTokens[node.path] = previewToken;
+            } else {
+                delete previewTokens[node.path];
+            }
+
+            const updatedInputs = inputsProcessor.createUpdate(
+                devFriendlyInputs,
+                breakpoint.name,
+                previewTokens
+            );
             const patch = updatedInputs.createJsonPatch(rawBindings);
 
             editor.executeCommand(Commands.PreviewPatchElement, { elementId, patch });

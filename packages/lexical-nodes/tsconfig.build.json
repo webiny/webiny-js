@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../lexical-theme/tsconfig.build.json" }],
+  "references": [
+    { "path": "../lexical-theme/tsconfig.build.json" },
+    { "path": "../theme-common/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -10,7 +13,9 @@
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
-      "@webiny/lexical-theme": ["../lexical-theme/src"]
+      "@webiny/lexical-theme": ["../lexical-theme/src"],
+      "@webiny/theme-common/*": ["../theme-common/src/*"],
+      "@webiny/theme-common": ["../theme-common/src"]
     }
   }
 }

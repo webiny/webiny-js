@@ -10,6 +10,7 @@ import type {
     ValueBinding
 } from "~/types.js";
 import type { InputAstNode } from "./ComponentManifestToAstConverter.js";
+import { isTokenBinding, tokenToCssValue } from "./tokenBinding.js";
 
 export interface OnResolved {
     (value: any, input: ComponentInput): any;
@@ -172,6 +173,12 @@ export class BindingsResolver {
 
         if (binding.expression) {
             return this.evaluateExpression(binding.expression, context);
+        }
+
+        // A token reference becomes `var(--wby-…)` here, at output time. This is the only place
+        // that conversion happens, for both the editor preview and the published renderer.
+        if (isTokenBinding(binding)) {
+            return tokenToCssValue(binding.token);
         }
 
         return binding.static;

@@ -68,12 +68,50 @@ export const CoreFileManger = createAppModule({
             }
         });
 
+        /**
+         * Expire transient working data.
+         *
+         * Theme extraction writes page screenshots under `theme-extraction/`. They are not user files
+         * and never appear in the media library — they exist so a retry after a failed AI call can
+         * reuse a crawl without re-reading somebody else's website. Nothing in the application can
+         * safely delete them on completion (the crawl cache still references them), so retention
+         * belongs here.
+         *
+         * Kept in step with `CRAWL_CACHE_MAX_AGE_DAYS` in `@webiny/api-theme-extraction`, which
+         * refuses to reuse a crawl older than this — so a cache entry can never outlive the images it
+         * points at. If you change one, change the other.
+         */
+        const bucketLifecycleConfiguration = app.addResource(aws.s3.BucketLifecycleConfiguration, {
+            name: `${name}-lifecycle`,
+            config: {
+                bucket: bucket.output.id,
+                rules: [
+                    {
+                        id: "expire-theme-extraction-screenshots",
+                        status: "Enabled",
+                        filter: {
+                            prefix: "theme-extraction/"
+                        },
+                        expiration: {
+                            days: 7
+                        },
+                        // Multipart uploads are not used for these, but an interrupted one would
+                        // otherwise linger indefinitely and is invisible in the console.
+                        abortIncompleteMultipartUpload: {
+                            daysAfterInitiation: 1
+                        }
+                    }
+                ]
+            }
+        });
+
         return {
             bucket,
             bucketOwnershipControls,
             bucketAcl,
             blockPublicAccessBlock,
-            bucketCorsConfiguration
+            bucketCorsConfiguration,
+            bucketLifecycleConfiguration
         };
     }
 });

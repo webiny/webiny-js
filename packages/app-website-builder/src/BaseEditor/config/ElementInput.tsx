@@ -4,7 +4,8 @@ import type {
     ComponentInput,
     DocumentElement,
     DocumentElementBindings,
-    InputAstNode
+    InputAstNode,
+    TokenReference
 } from "@webiny/website-builder-sdk";
 import type { InputBindingOnChange } from "../defaultConfig/Sidebar/ElementSettings/useInputValue.js";
 import type { IMetadata } from "~/BaseEditor/metadata/index.js";
@@ -13,6 +14,14 @@ export interface ElementInputRendererProps {
     label: React.ReactNode;
     metadata: IMetadata;
     value: any;
+    /**
+     * Set when this input is bound to a design token rather than a literal.
+     *
+     * Passed separately from `value` because a token binding has no `static` value — a picker that only
+     * received `value` could render the resolved colour but could not show *which* token is selected, so
+     * reopening it would look like nothing was chosen.
+     */
+    token?: TokenReference;
     onChange: InputBindingOnChange;
     onPreviewChange: InputBindingOnChange;
     input: ComponentInput;

@@ -35,6 +35,8 @@ export function InputField({ element, node, bindings }: InputFieldProps) {
             metadata={metadata}
             label={label}
             value={value?.static}
+            // A token binding carries no `static`, so the reference travels alongside it.
+            token={value?.token}
             onChange={onChange}
             onPreviewChange={onPreviewChange}
             input={node.input}

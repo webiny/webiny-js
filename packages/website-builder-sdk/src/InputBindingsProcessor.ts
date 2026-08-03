@@ -1,7 +1,12 @@
 import deepEqual from "deep-equal";
 import set from "lodash/set.js";
-import type { DocumentElementBindings, DocumentElementInputBindings } from "~/types.js";
+import type {
+    DocumentElementBindings,
+    DocumentElementInputBindings,
+    TokenReference
+} from "~/types.js";
 import { InheritedValueResolver } from "~/InheritedValueResolver.js";
+import { isTokenBinding, tokenToCssValue } from "./tokenBinding.js";
 import type { InputAstNode } from "~/ComponentManifestToAstConverter.js";
 import { DocumentOperations, type IDocumentOperation } from "~/documentOperations/index.js";
 import type { ElementFactory } from "~/ElementFactory.js";
@@ -46,7 +51,36 @@ export class InputsBindingsProcessor {
     }
 
     /**
+     * The token references among these bindings, keyed by flat binding path.
+     *
+     * The counterpart to {@link toDeepInputs}: that resolves a reference to the CSS value so the preview
+     * renders it, this reports *that it was a reference* so a picker can show which token is selected and
+     * so {@link createUpdate} can write it back as one.
+     *
+     * Callers must seed their token map from this before editing. `createUpdate` treats an absent key as
+     * "make this a literal", which is what clears a reference when someone picks a free value — so an
+     * incomplete map silently converts every other token on the element into a frozen literal.
+     */
+    public toTokenMap(
+        flat: NonNullable<DocumentElementBindings["inputs"]> = {}
+    ): Record<string, TokenReference> {
+        const result: Record<string, TokenReference> = {};
+
+        for (const [key, binding] of Object.entries(flat)) {
+            if (isTokenBinding(binding)) {
+                result[key] = binding.token;
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Converts flat input bindings into deep inputs object (removes `.static` wrappers).
+     *
+     * A token reference yields its `var(--wby-…)` form, so an input bound to a theme colour renders the
+     * themed value in the editor exactly as it will on the site. Use {@link toTokenMap} alongside this
+     * when you need to know a value came from a token rather than a literal.
      */
     public toDeepInputs(flat: NonNullable<DocumentElementBindings["inputs"]>): DeepBindings {
         const result: DeepBindings = {};
@@ -86,7 +120,11 @@ export class InputsBindingsProcessor {
                 const pathParts = [...prefix, node.name];
                 const flatKey = pathParts.join("/");
                 const entry = flat[flatKey];
-                const staticValue = entry?.static;
+                // A token binding has no `static`, so it has to be resolved here or the input would
+                // read as unset and the preview would fall back to the component's default.
+                const staticValue = isTokenBinding(entry)
+                    ? tokenToCssValue(entry.token)
+                    : entry?.static;
 
                 if (node.children.length > 0) {
                     if (node.list) {
@@ -129,8 +167,17 @@ export class InputsBindingsProcessor {
     /**
      * Flattens deep inputs object into flat bindings with `.static` wrappers,
      * skipping overrides that match inherited parent breakpoint values.
+     *
+     * @param tokens Flat binding paths in this map are written as token references instead of literals.
+     *               A path absent from it is written as `static`, which is what clears a reference when
+     *               someone picks a free value over a token — so callers must seed the map from
+     *               {@link toTokenMap} rather than passing only the path they changed.
      */
-    public createUpdate(inputs: DeepBindings, breakpoint: string) {
+    public createUpdate(
+        inputs: DeepBindings,
+        breakpoint: string,
+        tokens: Record<string, TokenReference> = {}
+    ) {
         const operations: IDocumentOperation[] = [];
         const originalInputs = this.rawBindings.inputs ?? {};
 
@@ -313,38 +360,58 @@ export class InputsBindingsProcessor {
                         const existingId = originalEntry?.id;
                         const idToUse = existingId ?? generateElementId();
 
-                        // Merge existing original entry data with updated static value
-                        const binding = {
+                        const token = tokens[flatKey];
+
+                        // A binding holds either a reference or a literal, never both. `originalEntry` is
+                        // spread first, so whichever of the two it used to carry has to be removed —
+                        // leaving a stale `static` beside a new `token` would make the stored value
+                        // ambiguous, and which one won would depend on the reader.
+                        //
+                        // The unused key is deleted rather than set to `undefined`: an explicit
+                        // `undefined` survives in memory and some serializers write it out as `null`,
+                        // which reads back as a real value.
+                        const binding: DocumentElementInputBindings[string] = {
                             ...(originalEntry ?? {}),
-                            static: newValue,
                             type: node.type,
                             list: node.list,
                             id: idToUse
                         };
 
+                        if (token) {
+                            binding.token = token;
+                            delete binding.static;
+                        } else {
+                            binding.static = newValue;
+                            delete binding.token;
+                        }
+
                         if (isResponsive) {
-                            const inheritedValue = valueResolver.getInheritedValue(
+                            const inherited = valueResolver.getInheritedBinding(
                                 flatKey,
                                 breakpoint
                             );
 
-                            if (binding.static === undefined) {
-                                // Unset override
+                            // Compared like against like: a token override is redundant when it points at
+                            // the same token as the breakpoint above, and a literal override is redundant
+                            // when it equals the inherited literal. Comparing a token against a literal
+                            // always differs, which is correct — they are genuinely different bindings.
+                            const isRedundant = token
+                                ? inherited?.token !== undefined &&
+                                  deepEqual(inherited.token, token)
+                                : inherited?.static !== undefined &&
+                                  deepEqual(inherited.static, newValue);
+
+                            const isUnset = token === undefined && newValue === undefined;
+
+                            if (isUnset || isRedundant) {
                                 if (rebuilt.overrides[breakpoint]?.inputs?.[flatKey]) {
                                     delete rebuilt.overrides[breakpoint].inputs[flatKey];
                                 }
-                            } else if (
-                                inheritedValue === undefined ||
-                                !deepEqual(inheritedValue, binding.static)
-                            ) {
+                            } else {
                                 if (!rebuilt.overrides[breakpoint]) {
                                     rebuilt.overrides[breakpoint] = { inputs: {} };
                                 }
                                 rebuilt.overrides[breakpoint].inputs[flatKey] = binding;
-                            } else {
-                                if (rebuilt.overrides[breakpoint]?.inputs?.[flatKey]) {
-                                    delete rebuilt.overrides[breakpoint].inputs[flatKey];
-                                }
                             }
 
                             if (originalEntry) {

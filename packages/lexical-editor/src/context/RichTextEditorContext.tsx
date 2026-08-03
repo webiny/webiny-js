@@ -52,7 +52,8 @@ export const RichTextEditorProvider = ({
                 colors: theme.colors,
                 typography: theme.typography,
                 fontSizes: theme.fontSizes,
-                tokens: theme.tokens
+                tokens: theme.tokens,
+                allowCustomColor: theme.allowCustomColor
             }),
         [theme]
     );

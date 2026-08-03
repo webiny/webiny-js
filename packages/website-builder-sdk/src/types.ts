@@ -22,9 +22,31 @@ export type InputValueBinding<T = any> = ValueBinding<T> & {
 
 export type StyleValueBinding<T = any> = ValueBinding<T>;
 
+/**
+ * A reference to a design token, stored in place of a literal value.
+ *
+ * `path` is a dot-path into the theme's token document (`color.action.primary.background`). The
+ * CSS variable name is derived from it at render time — see `tokenBinding.ts` for why the variable
+ * string itself is deliberately not stored.
+ */
+export type TokenReference = {
+    path: string;
+    /**
+     * The value the token resolved to when it was picked, emitted as the `var()` fallback so
+     * content keeps rendering if the theme is later deactivated.
+     */
+    fallback?: string;
+};
+
+/**
+ * A bound value. Exactly one of these is meaningful at a time, and all three must be able to
+ * coexist in the same field across a document indefinitely: a project can hold literals authored
+ * before it adopted a theme and token references authored after, with no migration between them.
+ */
 export type ValueBinding<T = any> = {
     static?: T;
     expression?: string;
+    token?: TokenReference;
 };
 
 export type RepeatValueBinding = {

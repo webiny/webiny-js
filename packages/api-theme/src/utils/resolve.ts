@@ -1,0 +1,9 @@
+import { ErrorResponse, Response } from "@webiny/api-graphql";
+
+export const resolve = async (fn: () => Promise<any>) => {
+    try {
+        return new Response(await fn());
+    } catch (e) {
+        return new ErrorResponse(e);
+    }
+};

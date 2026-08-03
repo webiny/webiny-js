@@ -1,0 +1,43 @@
+{
+  "name": "@webiny/api-theme",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-theme"
+  },
+  "description": "Design token storage, versioning, publishing and activation for the Webiny Theme app.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/theme-common": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/api-core-ddb": "0.0.0",
+    "@webiny/api-headless-cms-testing": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "graphql": "^16.14.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}
