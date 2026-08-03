@@ -1,11 +1,11 @@
 import { Container } from "@webiny/di";
-import { EventType } from "~/features/events/EventType.js";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
-import { RequestInitializer } from "~/features/events/RequestInitializer.js";
-import { executeChain } from "~/features/events/chain.js";
-import { noopTransport } from "~/features/events/Transport.js";
-import type { Transport } from "~/features/events/Transport.js";
-import type { HandlerSetup } from "~/features/events/types.js";
+import { HandlerConfig } from "./HandlerConfig.js";
+import { HandlerRuntime, DefaultHandlerRuntime } from "./HandlerRuntime.js";
+import { DefaultRootContainerFactory } from "./RootContainerFactory.js";
+import { DefaultChildContainerFactory } from "./ChildContainerFactory.js";
+import { noopTransport } from "./Transport.js";
+import type { Transport } from "./Transport.js";
+import type { HandlerSetup } from "./types.js";
 
 export interface CreateHandlerOptions {
     root: HandlerSetup;
@@ -22,62 +22,44 @@ export interface CreateHandlerOptions {
      * needs the root container ready to attach a WebSockets upgrade handler before the first request).
      */
     rootContainer?: Container;
+    /**
+     * Decorate the DI-native handler app before its first use. Runs against the APP container (the
+     * small container holding {@link HandlerRuntime}, {@link RootContainerFactory} and
+     * {@link ChildContainerFactory}), so callers can `registerDecorator(...)` around any lifecycle
+     * step — e.g. wrapping `ChildContainerFactory` to refresh a license before each request.
+     */
+    app?: (container: Container) => void;
 }
 
+/**
+ * Wires the DI-native handler app and returns the platform-invocable handler.
+ *
+ * The handler is itself a small DI app living in an "app container" (distinct from the per-process
+ * root container and the per-request child container it goes on to create). `HandlerRuntime` owns
+ * the flow; `RootContainerFactory` and `ChildContainerFactory` own container creation. Each is a
+ * decoratable abstraction, so transports/composition layers extend the lifecycle without this
+ * function growing new branches.
+ */
 export function createHandler(options: CreateHandlerOptions) {
-    let rootContainer: Container | null = options.rootContainer ?? null;
-    const transport = options.transport ?? noopTransport;
+    const appContainer = new Container();
 
-    return async (...rawArgs: any[]): Promise<any> => {
-        if (!rootContainer) {
-            rootContainer = new Container();
-            await options.root(rootContainer);
-        }
+    appContainer.registerInstance(HandlerConfig, {
+        root: options.root,
+        request: options.request,
+        transport: options.transport ?? noopTransport,
+        rootContainer: options.rootContainer ?? null
+    });
 
-        const child = rootContainer.createChildContainer();
-        child.registerInstance(RequestContainer, child);
+    // Register the default lifecycle abstractions. Singleton-scoped so the memoized root container
+    // (held by RootContainerFactory) is shared across every warm invocation.
+    appContainer.register(DefaultRootContainerFactory).inSingletonScope();
+    appContainer.register(DefaultChildContainerFactory).inSingletonScope();
+    appContainer.register(DefaultHandlerRuntime).inSingletonScope();
 
-        // Transport-specific bind: register the raw platform arguments into the request container
-        // before request setup runs. The default transport binds nothing.
-        await transport.bind(child, ...rawArgs);
+    // Seam: let callers decorate the runtime / factories before the app is resolved.
+    options.app?.(appContainer);
 
-        if (options.request) {
-            await options.request(child);
-        }
+    const runtime = appContainer.resolve(HandlerRuntime);
 
-        // Per-request async initialization (tenant-agnostic), before the event is dispatched and
-        // before auth/tenant are established. For tenant-dependent setup use lazy DI factories.
-        for (const initializer of child.resolveAll(RequestInitializer)) {
-            await initializer.init();
-        }
-
-        // The event to match on is always the first raw argument (transports never change this).
-        const event = rawArgs[0];
-        const eventTypes = child.resolveAll(EventType);
-        const matched = eventTypes.find(et => et.canHandle(event));
-
-        if (!matched) {
-            // Include a non-sensitive shape summary so this is debuggable: which event types were
-            // registered vs. what the event actually looks like (keys + EventBridge discriminators).
-            const shape =
-                event && typeof event === "object"
-                    ? {
-                          keys: Object.keys(event),
-                          source: (event as any).source,
-                          detailType: (event as any)["detail-type"]
-                      }
-                    : { type: typeof event };
-            const registered = eventTypes.map(et => (et as any)?.constructor?.name);
-            throw new Error(
-                `No event type matched the incoming event. Event shape: ${JSON.stringify(
-                    shape
-                )}; registered event types: ${JSON.stringify(registered)}`
-            );
-        }
-
-        const abstraction = matched.getHandlerAbstraction();
-        const handlers = child.resolveAll(abstraction);
-
-        return executeChain(handlers, event);
-    };
+    return (...rawArgs: any[]): Promise<any> => runtime.handle(rawArgs);
 }
