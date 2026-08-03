@@ -51,6 +51,11 @@ Durable across all phases:
 
 ---
 
+<!-- Follow-up (HandlerConfig naming): the `root` / `request` setup hooks are an inconsistent pair —
+`root` names a container, `request` names a lifecycle phase. Rename to name the containers they set
+up: `root` → `rootContainer`, `request` → `childContainer`. (Aligns with RootContainerFactory /
+ChildContainerFactory.) Own small PR. -->
+
 ## [ ] Phase 2: Decisions (blocks correctness of Phase 3+)
 
 **Goal:** resolve the two open questions that change Phase 3 wiring.
