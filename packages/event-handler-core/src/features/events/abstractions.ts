@@ -18,12 +18,6 @@ export interface IHandlerConfig {
      */
     transport?: Transport;
     /**
-     * A pre-built, already root-initialized container. When provided, `root` is NOT called again —
-     * used by transports that must build the root eagerly at startup (e.g. the Node server, which
-     * needs the root container ready to attach a WebSockets upgrade handler before the first request).
-     */
-    rootContainer?: Container;
-    /**
      * Decorate the DI-native handler app before its first use. Runs against the APP container (the
      * small container holding the lifecycle abstractions), so callers can `registerDecorator(...)`
      * around any lifecycle step — e.g. wrapping `ChildContainerFactory` to refresh a license before
@@ -40,10 +34,9 @@ export namespace HandlerConfig {
 
 /**
  * Builds the ROOT container once per process and reuses it across warm invocations. Decoratable —
- * wrap it to run process-lifetime setup around the root build.
- *
- * When {@link HandlerConfig.rootContainer} is supplied (the Node server builds the root eagerly at
- * startup), that container is returned as-is and `config.root` is NOT called again.
+ * wrap it to run process-lifetime setup around the root build. `get()` is idempotent — the root is
+ * built (and `config.root` run) on the first call and the same instance is returned thereafter, so a
+ * transport can call it eagerly (see `HandlerApp.getRootContainer`) without rebuilding.
  */
 export interface IRootContainerFactory {
     get(): Promise<Container>;

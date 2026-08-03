@@ -17,16 +17,14 @@ export interface CreateServerHandlerOptions {
 export async function createServerHandler(
     options: CreateServerHandlerOptions
 ): Promise<http.Server> {
-    // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
-    // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
-    const rootContainer = new Container();
-    await options.root(rootContainer);
-
     const app = HandlerApp.init({
         root: options.root,
-        request: options.request,
-        rootContainer
+        request: options.request
     });
+
+    // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
+    // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
+    const rootContainer = await app.getRootContainer();
 
     const server = http.createServer(async (req, res) => {
         try {

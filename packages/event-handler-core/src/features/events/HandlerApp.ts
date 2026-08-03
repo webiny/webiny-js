@@ -45,6 +45,15 @@ export class HandlerApp {
         );
     }
 
+    /**
+     * Build (once) and return the root container. Lets a transport that needs the root before the
+     * first request — e.g. the Node server attaching a WebSockets upgrade handler at startup — get
+     * it eagerly. The same memoized root is then reused by every `handle()` call.
+     */
+    getRootContainer(): Promise<Container> {
+        return this.rootContainerFactory.get();
+    }
+
     async handle(...rawArgs: any[]): Promise<any> {
         const root = await this.rootContainerFactory.get();
         const child = await this.childContainerFactory.create(root, rawArgs);

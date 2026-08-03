@@ -2,11 +2,9 @@ import { Container } from "@webiny/di";
 import { HandlerConfig, RootContainerFactory } from "./abstractions.js";
 
 class RootContainerFactoryImpl implements RootContainerFactory.Interface {
-    private rootContainer: Container | null;
+    private rootContainer: Container | null = null;
 
-    constructor(private config: HandlerConfig.Interface) {
-        this.rootContainer = config.rootContainer ?? null;
-    }
+    constructor(private config: HandlerConfig.Interface) {}
 
     async get(): Promise<Container> {
         if (!this.rootContainer) {

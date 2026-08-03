@@ -114,4 +114,24 @@ describe("HandlerApp (DI-native handler app)", () => {
         expect(rootBuilds).toBe(2);
         expect(rootSetupCalls).toBe(1);
     });
+
+    it("getRootContainer builds the root eagerly and handle() reuses it", async () => {
+        let rootSetupCalls = 0;
+
+        const app = HandlerApp.init({
+            root: container => {
+                rootSetupCalls++;
+                container.register(httpType);
+                container.register(okHandler());
+            }
+        });
+
+        const root1 = await app.getRootContainer();
+        const root2 = await app.getRootContainer();
+        await app.handle(httpEvent);
+
+        // Same instance every time; root setup runs exactly once across getter + handle.
+        expect(root1).toBe(root2);
+        expect(rootSetupCalls).toBe(1);
+    });
 });
