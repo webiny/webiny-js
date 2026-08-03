@@ -1,55 +1,83 @@
 import React from "react";
-import Image from "next/image";
-import type { CssProperties } from "@webiny/website-builder-react";
-import type { ComponentProps } from "@webiny/website-builder-react";
+import NextImage from "next/image";
+import type { ComponentProps, CssProperties, Asset } from "@webiny/website-builder-react";
+import {
+    getAssetUrl,
+    getImageDimensions,
+    getImageSrcSet,
+    normalizeToAsset
+} from "@webiny/website-builder-react";
 
 type ImageProps = ComponentProps<{
     title: string;
     altText: string;
     highPriority: boolean;
-    image: {
-        id: string;
-        name: string;
-        size: number;
-        mimeType: string;
-        src: string;
-        width: number;
-        height: number;
-    };
+    // Accepts the unified asset shape or a legacy value (existing pages).
+    image: Asset;
 }>;
 
 export const ImageComponent = (props: ImageProps) => {
-    const image = useImage(props);
+    const { title = "", altText, image, highPriority } = props.inputs;
+    const asset = normalizeToAsset(image);
 
-    if (!image.src) {
+    if (!asset?.src) {
         return <ImagePlaceholder style={props.styles} />;
     }
 
-    if (image.tag === "object") {
-        return <object style={image.styles} title={image.title} data={image.src} />;
+    const alt = altText || asset.image?.alt || "";
+
+    // SVGs are vector — nothing to crop, resize, or re-encode.
+    if (asset.src.endsWith(".svg")) {
+        return (
+            <object style={{ maxWidth: "100%", ...props.styles }} title={title} data={asset.src} />
+        );
+    }
+
+    // The delivery bakes the per-usage crop (`?crop`), resizes (`?width`), and serves
+    // a modern format negotiated from Accept (`?format=auto`). We hand `next/image` a
+    // loader that builds that URL, and it drives the responsive `srcSet`.
+    const loader = ({ width }: { width: number }) => getAssetUrl(asset, { width, format: "auto" });
+
+    // Intrinsic size of the *delivered* (cropped) image, so next/image lays out at
+    // the correct aspect ratio. Falls back to a plain <img> when dimensions are
+    // unknown (next/image requires width + height unless `fill`).
+    const { width, height } = getImageDimensions(asset);
+
+    const style: CssProperties = { maxWidth: "100%", height: "auto", ...props.styles };
+
+    if (!width || !height) {
+        // No intrinsic size to lay out with — fall back to a plain <img>, still
+        // responsive via the SDK's framework-agnostic srcSet (crop/format baked in).
+        const { src, srcSet } = getImageSrcSet(asset, {
+            format: "auto",
+            cssWidth: props.styles?.width
+        });
+        // eslint-disable-next-line @next/next/no-img-element
+        return (
+            <img
+                src={src}
+                srcSet={srcSet}
+                sizes="100vw"
+                alt={alt}
+                title={title || undefined}
+                loading={highPriority ? "eager" : "lazy"}
+                style={style}
+            />
+        );
     }
 
     return (
-        <div
-            style={{
-                position: "relative",
-                ...props.styles
-            }}
-        >
-            {/* <ImagePlaceholder style={image.styles} /> */}
-            <Image
-                alt={image.altText}
-                title={image.title}
-                src={image.src}
-                width={props.inputs.image.width}
-                height={props.inputs.image.height}
-                style={image.styles}
-                priority={props.inputs.highPriority}
-                loading={props.inputs.highPriority ? "eager" : "lazy"}
-                sizes={"100vw"}
-                loader={({ src, width }) => `${src}?width=${width}`}
-            />
-        </div>
+        <NextImage
+            src={asset.src}
+            loader={loader}
+            alt={alt}
+            title={title || undefined}
+            width={width}
+            height={height}
+            sizes={"100vw"}
+            priority={highPriority}
+            style={style}
+        />
     );
 };
 
@@ -81,24 +109,4 @@ const ImagePlaceholder = ({ style }: { style: CssProperties }) => {
             </svg>
         </div>
     );
-};
-
-const useImage = ({ inputs, styles }: ImageProps) => {
-    const { title = "", altText, image } = inputs;
-    const src = image?.src;
-
-    const tag = src && src.endsWith(".svg") ? "object" : "img";
-
-    const imageStyles = {
-        maxWidth: "100%",
-        ...styles
-    };
-
-    return {
-        altText,
-        src: inputs.image?.src,
-        styles: imageStyles,
-        tag,
-        title
-    };
 };

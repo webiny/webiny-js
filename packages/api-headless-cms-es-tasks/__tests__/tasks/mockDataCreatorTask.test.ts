@@ -14,6 +14,7 @@ import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import type { Context } from "~/types.js";
 import { MOCK_DATA_MANAGER_TASK_ID } from "~/tasks/MockDataManagerTask.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/index.js";
 
 vi.setConfig({
     testTimeout: 120_000
@@ -41,6 +42,7 @@ describe("mock data creator task", () => {
 
         const context = await handler();
         const opensearch = context.container.resolve(OpenSearchClient);
+        const indexProvider = context.container.resolve(CmsModelOpenSearchIndexProvider);
 
         const definition = getDataCreatorTaskDefinition(context);
 
@@ -52,7 +54,8 @@ describe("mock data creator task", () => {
 
         await disableIndexing({
             client: opensearch.use(),
-            model: modelAndGroupResult.model
+            model: modelAndGroupResult.model,
+            indexProvider
         });
 
         const task = await context.tasks.createTask<IMockDataCreatorInput>({
@@ -76,7 +79,8 @@ describe("mock data creator task", () => {
 
         await enableIndexing({
             client: opensearch.use(),
-            model: modelAndGroupResult.model
+            model: modelAndGroupResult.model,
+            indexProvider
         });
 
         expect(result).toMatchObject({

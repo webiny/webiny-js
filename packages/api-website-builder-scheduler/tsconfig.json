@@ -10,7 +10,8 @@
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-testing" },
     { "path": "../api-opensearch" },
-    { "path": "../background-tasks" }
+    { "path": "../background-tasks" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -36,7 +37,9 @@
       "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
       "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
-      "@webiny/background-tasks": ["../background-tasks/src"]
+      "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

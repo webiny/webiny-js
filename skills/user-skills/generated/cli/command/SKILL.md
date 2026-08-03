@@ -1,6 +1,5 @@
 ---
 name: webiny-cli-command-catalog
-context: webiny-api
 description: >
   cli/command — 1 abstractions.
 ---

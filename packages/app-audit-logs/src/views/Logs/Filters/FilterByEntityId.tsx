@@ -20,5 +20,5 @@ export const FilterByEntityId = () => {
         }
     });
 
-    return <Input {...bind} size={"md"} placeholder={"Filter by EntityId"} />;
+    return <Input {...bind} label={"Entity ID"} size={"md"} placeholder={"Enter entity ID"} />;
 };

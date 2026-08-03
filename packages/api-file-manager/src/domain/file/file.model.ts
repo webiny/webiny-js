@@ -30,7 +30,11 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
                             width: fields.number().label("Width"),
                             height: fields.number().label("Height"),
                             format: fields.text().label("Format"),
-                            orientation: fields.number().label("Orientation")
+                            orientation: fields.number().label("Orientation"),
+                            crop: fields.json().label("Crop"),
+                            focalPoint: fields.json().label("Focal point"),
+                            alt: fields.text().label("Alt text"),
+                            caption: fields.text().label("Caption")
                         })),
                     // Store complete raw EXIF as JSON
                     exif: fields.searchableJson().label("EXIF Data"),

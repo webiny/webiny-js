@@ -19,7 +19,12 @@ class ApiKeyInstallerImpl implements AppInstaller.Interface {
             name: "Website Builder",
             description: "Integrate Next.js or custom frontend with Website Builder.",
             slug: "website-builder",
-            permissions: [{ name: "$wb.readonly" }, { name: "wb.page", rwd: "r" }]
+            permissions: [
+                // Experiments and variants are governed by the Website Builder page permission,
+                // so read-only page access is all the frontend key needs to serve/preview them.
+                { name: "$wb.readonly" },
+                { name: "wb.page", rwd: "r" }
+            ]
         });
 
         if (result.isOk()) {

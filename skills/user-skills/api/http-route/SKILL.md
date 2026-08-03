@@ -1,6 +1,5 @@
 ---
 name: webiny-http-route
-context: webiny-extensions
 description: >
   Adding custom HTTP routes to the API using Api.Route and Route.Interface.
   Use this skill when the developer wants to expose a custom HTTP endpoint (GET, POST, PUT, etc.)

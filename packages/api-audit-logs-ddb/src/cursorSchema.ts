@@ -15,10 +15,12 @@ const schema = zod
         }
     })
     .pipe(
-        zod.object({
-            PK: zod.string(),
-            SK: zod.string()
-        })
+        zod
+            .object({
+                PK: zod.string(),
+                SK: zod.string()
+            })
+            .passthrough()
     );
 
 export const fetchCursor = (input: unknown) => {

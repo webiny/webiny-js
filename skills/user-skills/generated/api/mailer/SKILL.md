@@ -1,6 +1,5 @@
 ---
 name: webiny-api-mailer-catalog
-context: webiny-api
 description: >
   api/mailer — 11 abstractions.
 ---

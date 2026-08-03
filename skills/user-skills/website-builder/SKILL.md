@@ -1,6 +1,5 @@
 ---
 name: webiny-website-builder
-context: webiny-extensions
 description: >
   Building Website Builder editor components, theming, and CMS integration using
   @webiny/website-builder-nextjs. Use this skill when the developer wants to create editor
