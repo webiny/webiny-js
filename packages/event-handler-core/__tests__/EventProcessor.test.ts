@@ -4,9 +4,9 @@ import { EventType } from "~/features/events/EventType.js";
 import type { IEventType } from "~/features/events/EventType.js";
 import { ChildContainerFactory, RootContainerFactory } from "~/features/events/abstractions.js";
 import type { IEventHandler } from "~/features/events/EventHandler.js";
-import { EventDispatcher } from "~/features/events/EventDispatcher.js";
+import { EventProcessor } from "~/features/events/EventProcessor.js";
 
-describe("EventDispatcher (DI-native handler app)", () => {
+describe("EventProcessor (DI-native handler app)", () => {
     class HttpEventType implements IEventType {
         canHandle(e: any): e is any {
             return !!e.method;
@@ -33,14 +33,14 @@ describe("EventDispatcher (DI-native handler app)", () => {
     };
 
     it("dispatches an event like the previous closure", async () => {
-        const dispatcher = EventDispatcher.init({
+        const processor = EventProcessor.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
             }
         });
 
-        expect(await dispatcher.handle(httpEvent)).toBe("ok");
+        expect(await processor.process(httpEvent)).toBe("ok");
     });
 
     it("runs a ChildContainerFactory decorator on every request (the seam)", async () => {
@@ -61,7 +61,7 @@ describe("EventDispatcher (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const dispatcher = EventDispatcher.init({
+        const processor = EventProcessor.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -71,8 +71,8 @@ describe("EventDispatcher (DI-native handler app)", () => {
             }
         });
 
-        expect(await dispatcher.handle(httpEvent)).toBe("ok");
-        expect(await dispatcher.handle(httpEvent)).toBe("ok");
+        expect(await processor.process(httpEvent)).toBe("ok");
+        expect(await processor.process(httpEvent)).toBe("ok");
 
         // Decorator wraps create() once per request (before + after), twice over two invocations.
         expect(calls).toEqual(["before", "after", "before", "after"]);
@@ -96,7 +96,7 @@ describe("EventDispatcher (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const dispatcher = EventDispatcher.init({
+        const processor = EventProcessor.init({
             root: container => {
                 rootSetupCalls++;
                 container.register(httpType);
@@ -107,8 +107,8 @@ describe("EventDispatcher (DI-native handler app)", () => {
             }
         });
 
-        await dispatcher.handle(httpEvent);
-        await dispatcher.handle(httpEvent);
+        await processor.process(httpEvent);
+        await processor.process(httpEvent);
 
         // get() is called per request, but the underlying root is built (root setup runs) only once.
         expect(rootBuilds).toBe(2);
