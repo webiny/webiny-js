@@ -2,6 +2,7 @@ import { Abstraction, Container } from "@webiny/di";
 import { HandlerConfig } from "./HandlerConfig.js";
 import { RequestContainer } from "./RequestContainer.js";
 import { RequestInitializer } from "./RequestInitializer.js";
+import { noopTransport } from "./Transport.js";
 
 /**
  * Creates and sets up the per-request (child) container: spawns the child, binds transport
@@ -32,7 +33,8 @@ class ChildContainerFactoryImpl implements IChildContainerFactory {
 
         // Transport-specific bind: register the raw platform arguments into the request container
         // before request setup runs. The default transport binds nothing.
-        await this.config.transport.bind(child, ...rawArgs);
+        const transport = this.config.transport ?? noopTransport;
+        await transport.bind(child, ...rawArgs);
 
         if (this.config.request) {
             await this.config.request(child);

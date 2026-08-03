@@ -3,20 +3,33 @@ import type { Transport } from "./Transport.js";
 import type { HandlerSetup } from "./types.js";
 
 /**
- * Internal plumbing: the `createHandler` options, exposed as a DI value so the default
- * {@link RootContainerFactory} / {@link ChildContainerFactory} implementations can resolve them
- * (and stay decoratable). Not part of the public handler API — callers configure via
- * `createHandler` options, not by resolving this.
+ * Configuration for `createHandler` — and the DI value the default lifecycle abstractions
+ * ({@link RootContainerFactory} / {@link ChildContainerFactory}) resolve. The object passed to
+ * `createHandler` is registered as-is under this abstraction (no remapping), so the config the
+ * caller writes is exactly the config the factories read.
  */
 export interface IHandlerConfig {
     root: HandlerSetup;
     request?: HandlerSetup;
-    transport: Transport;
     /**
-     * A pre-built, already root-initialized container. When set, the root is NOT built again — the
-     * Node server uses this to build the root eagerly at startup (WebSockets upgrade wiring).
+     * Transport-specific extract step: binds the raw platform arguments (e.g. the AWS Lambda
+     * event + context) into the per-request container. Defaults to a no-op, which leaves the
+     * event to pass straight through — the plain server/HTTP behavior.
      */
-    rootContainer: Container | null;
+    transport?: Transport;
+    /**
+     * A pre-built, already root-initialized container. When provided, `root` is NOT called again —
+     * used by transports that must build the root eagerly at startup (e.g. the Node server, which
+     * needs the root container ready to attach a WebSockets upgrade handler before the first request).
+     */
+    rootContainer?: Container;
+    /**
+     * Decorate the DI-native handler app before its first use. Runs against the APP container (the
+     * small container holding {@link HandlerRuntime}, {@link RootContainerFactory} and
+     * {@link ChildContainerFactory}), so callers can `registerDecorator(...)` around any lifecycle
+     * step — e.g. wrapping `ChildContainerFactory` to refresh a license before each request.
+     */
+    app?: (container: Container) => void;
 }
 
 export const HandlerConfig = new Abstraction<IHandlerConfig>("HandlerConfig");
