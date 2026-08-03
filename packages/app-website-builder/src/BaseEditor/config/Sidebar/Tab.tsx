@@ -29,18 +29,18 @@ export const Tab = ({ name, label, icon, disabled, element, visible }: TabProps)
             disabled={disabled}
             visible={visible}
             content={
-                <ScrollArea
-                    // `fit-content` keeps the box as tall as its content (no empty gap when
-                    // short) while giving the ScrollArea viewport a definite height so it can
-                    // scroll; `max-height` caps it to the available space and triggers scrolling
-                    // once the content is taller.
+                // Outer flex column capped at the available height: it hugs the content when
+                // short (no empty gap) and clamps to the cap when tall. The ScrollArea then
+                // fills that clamped height (flex-1 + min-h-0 gives it a definite height, which
+                // radix needs to actually scroll) and scrolls the overflow.
+                <div
+                    className={"flex flex-col"}
                     style={{
-                        height: "fit-content",
                         maxHeight: `calc(100vh - ${uiHeight}px - ${TAB_HEADER_HEIGHT}px)`
                     }}
                 >
-                    {element}
-                </ScrollArea>
+                    <ScrollArea className={"flex-1 min-h-0"}>{element}</ScrollArea>
+                </div>
             }
         />
     );
