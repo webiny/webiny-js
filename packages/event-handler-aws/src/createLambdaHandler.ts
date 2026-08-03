@@ -1,4 +1,4 @@
-import { HandlerRuntime } from "@webiny/event-handler-core";
+import { EventDispatcher } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { awsLambdaTransport } from "./AwsLambdaTransport.js";
@@ -14,7 +14,7 @@ export interface CreateLambdaHandlerOptions {
  * lives in {@link awsLambdaTransport}; everything else is the shared handler loop.
  */
 export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
-    const runtime = HandlerRuntime.init({
+    const runtime = EventDispatcher.init({
         root: options.root,
         request: options.request,
         transport: awsLambdaTransport

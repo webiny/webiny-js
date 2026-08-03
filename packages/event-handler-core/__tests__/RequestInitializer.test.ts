@@ -5,7 +5,7 @@ import type { IEventType } from "~/features/events/EventType.js";
 import { RequestInitializer } from "~/features/events/RequestInitializer.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
-import { HandlerRuntime } from "~/features/events/HandlerRuntime.js";
+import { EventDispatcher } from "~/features/events/EventDispatcher.js";
 
 describe("RequestInitializer", () => {
     class HttpEventType implements IEventType {
@@ -69,7 +69,7 @@ describe("RequestInitializer", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
@@ -95,7 +95,7 @@ describe("RequestInitializer", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);

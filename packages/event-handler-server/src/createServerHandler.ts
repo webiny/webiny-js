@@ -1,6 +1,6 @@
 import http from "node:http";
 import { Container } from "@webiny/di";
-import { HandlerRuntime } from "@webiny/event-handler-core";
+import { EventDispatcher } from "@webiny/event-handler-core";
 import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 
 export interface CreateServerHandlerOptions {
@@ -22,7 +22,7 @@ export async function createServerHandler(
     const rootContainer = new Container();
     await options.root(rootContainer);
 
-    const runtime = HandlerRuntime.init({
+    const runtime = EventDispatcher.init({
         root: options.root,
         request: options.request,
         rootContainer

@@ -3,7 +3,7 @@ import { EventHandler } from "~/features/events/EventHandler.js";
 import { EventType } from "~/features/events/EventType.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
-import { HandlerRuntime } from "~/features/events/HandlerRuntime.js";
+import { EventDispatcher } from "~/features/events/EventDispatcher.js";
 
 describe("EventType dispatch", () => {
     it("should route to correct handler based on canHandle", async () => {
@@ -30,7 +30,7 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
@@ -62,7 +62,7 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
             }
@@ -123,7 +123,7 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(otherType);

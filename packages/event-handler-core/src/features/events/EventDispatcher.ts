@@ -6,7 +6,7 @@ import { ChildContainerFactory, DefaultChildContainerFactory } from "./ChildCont
 import { executeChain } from "./chain.js";
 
 /**
- * The DI-native handler app. `HandlerRuntime.init(config)` builds a small "app container" (distinct
+ * The DI-native handler app. `EventDispatcher.init(config)` builds a small "app container" (distinct
  * from the per-process root container and the per-request child container it goes on to create),
  * wires the default lifecycle abstractions, and returns a runtime whose `handle()` is the
  * platform-invocable handler.
@@ -14,16 +14,16 @@ import { executeChain } from "./chain.js";
  * The lifecycle is delegated to decoratable DI abstractions — {@link RootContainerFactory} (build
  * the root once) and {@link ChildContainerFactory} (create + set up the per-request child) — so
  * transports/composition layers extend it by decoration (`config.app`) instead of this class
- * growing new branches. `HandlerRuntime` is distinct from {@link EventHandler}, which is a single
+ * growing new branches. `EventDispatcher` is distinct from {@link EventHandler}, which is a single
  * handler IN the dispatch chain.
  */
-export class HandlerRuntime {
+export class EventDispatcher {
     private constructor(
         private rootContainerFactory: RootContainerFactory.Interface,
         private childContainerFactory: ChildContainerFactory.Interface
     ) {}
 
-    static init(config: HandlerConfig.Interface): HandlerRuntime {
+    static init(config: HandlerConfig.Interface): EventDispatcher {
         const appContainer = new Container();
 
         // Register the config as-is — the default lifecycle factories resolve HandlerConfig directly.
@@ -39,7 +39,7 @@ export class HandlerRuntime {
 
         // Resolve the factories once (decorators applied) so their state — notably the memoized
         // root — is reused across every invocation of handle().
-        return new HandlerRuntime(
+        return new EventDispatcher(
             appContainer.resolve(RootContainerFactory),
             appContainer.resolve(ChildContainerFactory)
         );

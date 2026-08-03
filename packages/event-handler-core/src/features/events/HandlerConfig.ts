@@ -25,7 +25,7 @@ export interface IHandlerConfig {
     rootContainer?: Container;
     /**
      * Decorate the DI-native handler app before its first use. Runs against the APP container (the
-     * small container holding {@link HandlerRuntime}, {@link RootContainerFactory} and
+     * small container holding {@link EventDispatcher}, {@link RootContainerFactory} and
      * {@link ChildContainerFactory}), so callers can `registerDecorator(...)` around any lifecycle
      * step — e.g. wrapping `ChildContainerFactory` to refresh a license before each request.
      */

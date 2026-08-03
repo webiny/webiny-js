@@ -5,9 +5,9 @@ import type { IEventType } from "~/features/events/EventType.js";
 import { ChildContainerFactory } from "~/features/events/ChildContainerFactory.js";
 import { RootContainerFactory } from "~/features/events/RootContainerFactory.js";
 import type { IEventHandler } from "~/features/events/EventHandler.js";
-import { HandlerRuntime } from "~/features/events/HandlerRuntime.js";
+import { EventDispatcher } from "~/features/events/EventDispatcher.js";
 
-describe("HandlerRuntime (DI-native handler app)", () => {
+describe("EventDispatcher (DI-native handler app)", () => {
     class HttpEventType implements IEventType {
         canHandle(e: any): e is any {
             return !!e.method;
@@ -34,7 +34,7 @@ describe("HandlerRuntime (DI-native handler app)", () => {
     };
 
     it("dispatches through the runtime like the previous closure", async () => {
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -62,7 +62,7 @@ describe("HandlerRuntime (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -97,7 +97,7 @@ describe("HandlerRuntime (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const runtime = HandlerRuntime.init({
+        const runtime = EventDispatcher.init({
             root: container => {
                 rootSetupCalls++;
                 container.register(httpType);
