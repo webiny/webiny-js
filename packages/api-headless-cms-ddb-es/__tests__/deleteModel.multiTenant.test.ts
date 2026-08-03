@@ -1,10 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createModelPlugin } from "@webiny/api-headless-cms";
-import { configurations } from "~/configurations";
 import type { CmsContext } from "~/types";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
+import { DeleteModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import type { Container } from "@webiny/di";
 
+// @ts-expect-error This is enough for tests.
 const productPlugin = createModelPlugin({
     noValidate: true,
     modelId: "product",
@@ -30,6 +38,27 @@ const productPlugin = createModelPlugin({
 
 process.env.OPENSEARCH_SHARED_INDEXES = "true";
 
+const getIndex = async (container: Container, model: CmsModel) => {
+    const provider = container.resolve(CmsModelOpenSearchIndexProvider);
+    const { index: rawIndex } = await provider.execute({ model });
+    const prefix = getOpenSearchIndexPrefix();
+    return prefix ? prefix + rawIndex : rawIndex;
+};
+
+const resolveUseCases = (container: Container) => ({
+    identityCtx: container.resolve(IdentityContext),
+    getModel: container.resolve(GetModelUseCase),
+    createEntry: container.resolve(CreateEntryUseCase),
+    listLatest: container.resolve(ListLatestEntriesUseCase),
+    deleteModelStorage: container.resolve(DeleteModelStorageOperation),
+    getProductModel: async (identityCtx: IdentityContext.Interface) => {
+        const result = await identityCtx.withoutAuthorization(() =>
+            container.resolve(GetModelUseCase).execute("product")
+        );
+        return result.value;
+    }
+});
+
 describe("delete model - shared index must survive model deletion", () => {
     const { handler, elasticsearch } = useHandler<CmsContext>({
         plugins: [productPlugin]
@@ -38,71 +67,54 @@ describe("delete model - shared index must survive model deletion", () => {
     const createContext = () => {
         return handler({
             path: "/cms/manage/en-US",
-            headers: {
-                "x-tenant": "root"
-            }
+            headers: { "x-tenant": "root" }
         });
     };
 
     it("should not destroy shared ES index when model is deleted via storage operations", async () => {
         const context = await createContext();
-        const model = await context.cms.getModel("product");
+        const { identityCtx, createEntry, deleteModelStorage, getProductModel } = resolveUseCases(
+            context.container
+        );
 
-        // Create entries so the index gets populated.
+        const model = await getProductModel(identityCtx);
+
         for (let i = 0; i < 3; i++) {
-            await context.cms.createEntry(model, {
-                values: { name: `Product ${i}` }
-            });
+            await createEntry.execute(model, { values: { name: `Product ${i}` } });
         }
 
-        const { index } = configurations.es({ model });
+        const index = await getIndex(context.container, model);
         await elasticsearch.indices.refresh({ index });
 
-        // Verify index exists and has entries.
-        const existsBefore = await elasticsearch.indices.exists({ index });
-        expect(existsBefore.body).toBeTrue();
+        expect((await elasticsearch.indices.exists({ index })).body).toBeTrue();
+        expect((await elasticsearch.count({ index })).body.count).toBeGreaterThanOrEqual(3);
 
-        const countBefore = await elasticsearch.count({ index });
-        expect(countBefore.body.count).toBeGreaterThanOrEqual(3);
+        await deleteModelStorage.execute({ model: model as CmsModel });
 
-        // Delete model via storage operations.
-        // With shared indexes, this index is shared across ALL tenants.
-        // Deleting it here would nuke every tenant's product entries.
-        await context.cms.storageOperations.models.delete({
-            model: model as CmsModel
-        });
-
-        // The shared index must still exist after model deletion.
-        const existsAfter = await elasticsearch.indices.exists({ index });
-        expect(existsAfter.body).toBeTrue();
-
-        // Entries must still be in the index.
-        const countAfter = await elasticsearch.count({ index });
-        expect(countAfter.body.count).toBeGreaterThanOrEqual(3);
+        expect((await elasticsearch.indices.exists({ index })).body).toBeTrue();
+        expect((await elasticsearch.count({ index })).body.count).toBeGreaterThanOrEqual(3);
     });
 
     it("should preserve entries queryable via CMS API after model storage record is deleted", async () => {
         const context = await createContext();
-        const model = await context.cms.getModel("product");
+        const { identityCtx, createEntry, listLatest, deleteModelStorage, getProductModel } =
+            resolveUseCases(context.container);
 
-        await context.cms.createEntry(model, {
-            values: { name: "Survivor" }
-        });
+        const model = await getProductModel(identityCtx);
 
-        const { index } = configurations.es({ model });
+        await createEntry.execute(model, { values: { name: "Survivor" } });
+
+        const index = await getIndex(context.container, model);
         await elasticsearch.indices.refresh({ index });
 
-        // Delete model record from storage (DDB + ES index).
-        await context.cms.storageOperations.models.delete({
-            model: model as CmsModel
-        });
+        await deleteModelStorage.execute({ model: model as CmsModel });
 
-        // Model still resolves (it's a plugin model).
-        const modelAfter = await context.cms.getModel("product");
+        const modelAfter = await getProductModel(identityCtx);
         expect(modelAfter).toBeTruthy();
 
-        // Entries must still be listable.
-        const [entries] = await context.cms.listLatestEntries(modelAfter, {});
+        const entriesResult = await listLatest.execute(modelAfter, {});
+        expect(entriesResult.isOk()).toBe(true);
+        const { entries } = entriesResult.value;
         expect(entries).toHaveLength(1);
         expect(entries[0].values.name).toBe("Survivor");
     });

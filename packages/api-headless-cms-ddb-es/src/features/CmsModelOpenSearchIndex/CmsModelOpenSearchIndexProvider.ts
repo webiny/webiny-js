@@ -1,29 +1,13 @@
-import { createAbstraction } from "@webiny/feature/api/index.js";
-import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
+export {
+    CmsModelOpenSearchIndexProvider,
+    type ICmsModelOpenSearchIndexProvider,
+    type ICmsModelOpenSearchIndexProviderResult
+} from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
+import type { ICmsModelOpenSearchIndexProviderResult } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { CmsModelOpenSearchIndex } from "./abstractions.js";
 
-export interface ICmsModelOpenSearchIndexProviderResult {
-    index: string;
-    settings: OpenSearchIndexRequestBody;
-    shared: boolean;
-}
-
-export interface ICmsModelOpenSearchIndexProvider {
-    execute(
-        params: CmsModelOpenSearchIndex.Params
-    ): Promise<ICmsModelOpenSearchIndexProviderResult>;
-}
-
-export const CmsModelOpenSearchIndexProvider = createAbstraction<ICmsModelOpenSearchIndexProvider>(
-    "Cms/Model/OpenSearch/IndexProvider"
-);
-
-export namespace CmsModelOpenSearchIndexProvider {
-    export type Interface = ICmsModelOpenSearchIndexProvider;
-    export type Result = ICmsModelOpenSearchIndexProviderResult;
-}
-
-class CmsModelOpenSearchIndexProviderImpl implements ICmsModelOpenSearchIndexProvider {
+class CmsModelOpenSearchIndexProviderImpl implements CmsModelOpenSearchIndexProvider.Interface {
     private readonly cache = new Map<string, ICmsModelOpenSearchIndexProviderResult>();
 
     public constructor(private readonly indexConfig: CmsModelOpenSearchIndex.Interface) {}
