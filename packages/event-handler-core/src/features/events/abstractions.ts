@@ -3,7 +3,7 @@ import type { Transport } from "./Transport.js";
 import type { HandlerSetup } from "./types.js";
 
 /**
- * Configuration for `EventDispatcher.init` — and the DI value the default lifecycle abstractions
+ * Configuration for `HandlerApp.init` — and the DI value the default lifecycle abstractions
  * ({@link RootContainerFactory} / {@link ChildContainerFactory}) resolve. The object passed to
  * `init` is registered as-is under this abstraction (no remapping), so the config the caller writes
  * is exactly the config the factories read.
