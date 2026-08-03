@@ -5,7 +5,7 @@ export * from "./RequestContextInitializer.js";
 export * from "./RequestInitializer.js";
 export * from "./chain.js";
 export * from "./abstractions.js";
-export * from "./EventProcessor.js";
+export * from "./HandlerApp.js";
 export * from "./RootContainerFactory.js";
 export * from "./ChildContainerFactory.js";
 export * from "./Transport.js";

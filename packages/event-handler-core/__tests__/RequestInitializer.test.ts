@@ -5,7 +5,7 @@ import type { IEventType } from "~/features/events/EventType.js";
 import { RequestInitializer } from "~/features/events/RequestInitializer.js";
 import type { IEventHandler, EventContext } from "~/features/events/EventHandler.js";
 import type { NextFunction } from "~/features/events/types.js";
-import { EventProcessor } from "~/features/events/EventProcessor.js";
+import { HandlerApp } from "~/features/events/HandlerApp.js";
 
 describe("RequestInitializer", () => {
     class HttpEventType implements IEventType {
@@ -69,7 +69,7 @@ describe("RequestInitializer", () => {
             dependencies: []
         });
 
-        const processor = EventProcessor.init({
+        const app = HandlerApp.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
@@ -78,7 +78,7 @@ describe("RequestInitializer", () => {
             }
         });
 
-        await processor.process(httpEvent);
+        await app.handle(httpEvent);
 
         expect(order).toEqual(["a", "b", "handler"]);
     });
@@ -95,13 +95,13 @@ describe("RequestInitializer", () => {
             dependencies: []
         });
 
-        const processor = EventProcessor.init({
+        const app = HandlerApp.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
             }
         });
 
-        expect(await processor.process(httpEvent)).toBe("ok");
+        expect(await app.handle(httpEvent)).toBe("ok");
     });
 });

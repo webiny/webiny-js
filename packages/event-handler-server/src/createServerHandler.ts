@@ -1,6 +1,6 @@
 import http from "node:http";
 import { Container } from "@webiny/di";
-import { EventProcessor } from "@webiny/event-handler-core";
+import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 
 export interface CreateServerHandlerOptions {
@@ -22,7 +22,7 @@ export async function createServerHandler(
     const rootContainer = new Container();
     await options.root(rootContainer);
 
-    const processor = EventProcessor.init({
+    const app = HandlerApp.init({
         root: options.root,
         request: options.request,
         rootContainer
@@ -30,7 +30,7 @@ export async function createServerHandler(
 
     const server = http.createServer(async (req, res) => {
         try {
-            const response = (await processor.process(req)) as IHttpResponse;
+            const response = (await app.handle(req)) as IHttpResponse;
             res.writeHead(response.statusCode, response.headers);
             const { body } = response;
             if (body === undefined || body === null) {
