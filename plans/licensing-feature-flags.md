@@ -110,6 +110,11 @@ Decisions only, recorded in this file:
 
 ---
 
+<!-- Naming (future, Phase 5 / api-infra): `HandlerApp` (event-handler-core) is the GENERIC,
+domain-agnostic handler app. The Webiny backend API composition (`createWebinyApiHandler` in
+api-event-handler-aws/-server — wires ApiCore/CMS/FM/auth/GraphQL onto a HandlerApp) should become
+`WebinyApiApp.init(...)` / `ApiApp`. Two layers, two names — do NOT rename HandlerApp to ApiApp. -->
+
 ## [ ] Phase 5: Delete WcpContext machinery
 
 **Goal:** remove the dead request-time WCP path from api-core.
