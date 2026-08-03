@@ -39,7 +39,7 @@ export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowPar
             {
                 name: "Create comment",
                 id: "create-comment",
-                uses: "peter-evans/create-or-update-comment@v2",
+                uses: "peter-evans/create-or-update-comment@v5",
                 with: {
                     "issue-number": "${{ github.event.issue.number }}",
                     body: comment
