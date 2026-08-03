@@ -29,7 +29,7 @@ export const InsertElements = () => {
     const isGrid = viewType === "grid";
 
     return (
-        <div className={"mb-sm"}>
+        <div className={"mb-sm pt-sm"}>
             <div className={"flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
