@@ -55,9 +55,8 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
 
     private async getTransformer(): Promise<SharpTransformer> {
         if (!this.transformer) {
-            const { SharpTransformer } = await import(
-                "@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js"
-            );
+            const { SharpTransformer } =
+                await import("@webiny/api-file-manager/features/assetDelivery/assetTypes/image/SharpTransformer.js");
             this.transformer = new SharpTransformer();
         }
         return this.transformer;

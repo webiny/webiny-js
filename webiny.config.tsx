@@ -33,9 +33,9 @@ export const Extensions = () => {
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             {/* IMPORTANT: commented out until we resolve bulk actions bootstrap! */}
-            {/*<Wcp.CanUseMultiTenancy>*/}
-            {/*    <AiContentExtension />*/}
-            {/*</Wcp.CanUseMultiTenancy>*/}
+            <Wcp.CanUseMultiTenancy>
+                <AiContentExtension />
+            </Wcp.CanUseMultiTenancy>
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}

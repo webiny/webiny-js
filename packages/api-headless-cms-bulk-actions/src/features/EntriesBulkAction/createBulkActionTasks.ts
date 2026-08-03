@@ -28,9 +28,10 @@ const resolveBulkAction = (container: Container, actionName: string) => {
     return action;
 };
 
-class BulkActionListTask
-    implements TaskDefinition.Interface<IBulkActionOperationByModelInput, IBulkActionOperationByModelOutput>
-{
+class BulkActionListTask implements TaskDefinition.Interface<
+    IBulkActionOperationByModelInput,
+    IBulkActionOperationByModelOutput
+> {
     public readonly id = BULK_ACTION_LIST_TASK_ID;
     public readonly title = "Headless CMS: list entries for bulk action";
     public readonly maxIterations = 500;
@@ -50,7 +51,10 @@ class BulkActionListTask
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IBulkActionOperationByModelInput, IBulkActionOperationByModelOutput>) {
+    }: TaskDefinition.RunParams<
+        IBulkActionOperationByModelInput,
+        IBulkActionOperationByModelOutput
+    >) {
         try {
             if (!input.modelId) {
                 return controller.response.error(`Missing "modelId" in the input.`);
@@ -123,9 +127,10 @@ class BulkActionListTask
     }
 }
 
-class BulkActionProcessTask
-    implements TaskDefinition.Interface<IBulkActionOperationInput, IBulkActionOperationOutput>
-{
+class BulkActionProcessTask implements TaskDefinition.Interface<
+    IBulkActionOperationInput,
+    IBulkActionOperationOutput
+> {
     public readonly id = BULK_ACTION_PROCESS_TASK_ID;
     public readonly title = "Headless CMS: process entries for bulk action";
     public readonly maxIterations = 2;
