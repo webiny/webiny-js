@@ -56,21 +56,33 @@ Durable across all phases:
 up: `root` → `rootContainer`, `request` → `childContainer`. (Aligns with RootContainerFactory /
 ChildContainerFactory.) Own small PR. -->
 
-## [ ] Phase 2: Decisions (blocks correctness of Phase 3+)
+## [x] Phase 2: Decisions (RESOLVED)
 
-**Goal:** resolve the two open questions that change Phase 3 wiring.
+**Goal:** resolve the two open questions that change Phase 3/5 wiring.
 
-### What to build
+### Decision 1 — build-time `GetFeatureFlagsWithLicense`: leave as-is (no conflict)
 
-Decisions only, recorded in this file:
+Verified: there is NO conflict. Two independent paths:
+- **API runtime:** `FeatureFlags.tsx` renders `<BuildParam "FeatureFlags" value={features}>` = **raw user webiny.config flags, no license**. api-core `FeatureFlagsImpl` reads exactly that. License is applied at REQUEST time by `WcpContextWithFeatureFlagsDecorator` (`canUseX() = realLicense.canUseX() && userFlag`). So BuildParams is already user-flags-only — the desired state.
+- **CLI/ProjectSdk:** `GetFeatureFlagsWithLicense` decorates `project.getFeatureFlags()` (reads `WCP_PROJECT_LICENSE` env), used by the SDK/deploy side — it NEVER feeds api BuildParams. Independent, legit deploy-time license view.
 
-1. **Build-time `project/GetFeatureFlagsWithLicense`** (bakes `WCP_PROJECT_LICENSE` env into BuildParams) now conflicts with the live runtime refresh — it would bake a stale license. Decide: BuildParams carries **user flags only**; runtime applies the license. Confirm whether the build-time merge is still needed for any consumer (CLI/admin scaffold) or is removed.
-2. **`wcp` gql query (`WcpSchemaFactory` in `ApiCoreFeature`)** — admin reads it. Decide: keep and re-back it by the merged `FeatureFlags`, or admin reads flags via its own path (admin already receives merged features via gql at init).
+→ Leave `GetFeatureFlagsWithLicense` untouched; BuildParams stays user-flags-only. Phase 3 just relocates the *runtime* merge from `WcpContextWithFeatureFlagsDecorator` onto `FeatureFlags`. No build-side change.
+
+### Decision 2 — add a dedicated `featureFlags` gql query; demote `wcp`
+
+Admin should know feature flags, not WCP.
+- **New `featureFlags` query** (a `CoreGraphQLSchemaFactory` contributor in api-core) — returns the merged effective flags (`FeatureFlags.get()` → license ∧ userFlag after Phase 3). Admin queries this at init and gates UI on booleans. Never exposes WCP.
+- **`wcp` query (`WcpSchemaFactory`)** — stops being the feature-gating surface. Audit what admin actually reads from `wcp`/`getProjectWithFeatureFlags`: if only feature booleans → the `wcp` query can be deleted once admin moves to `featureFlags`; if it also renders seats/tenants/expiry/plan → keep it as a license-DETAIL query, resolver repointed (Phase 5) to source from the `licensing` package (License provider) instead of the deleted `WcpContext`.
 
 ### Acceptance criteria
 
-- [ ] Decision 1 recorded; follow-up scoped (remove or retarget `GetFeatureFlagsWithLicense`).
-- [ ] Decision 2 recorded; `wcp` query fate scoped.
+- [x] Decision 1 recorded: no build-side change; BuildParams = user flags; runtime merges license.
+- [x] Decision 2 recorded: add `featureFlags` query for admin gating; audit + demote/repoint `wcp` query.
+
+### Follow-up TODO (feeds Phase 3/5)
+
+- [ ] Add the `featureFlags` gql query (Phase 3, alongside the FeatureFlags merge).
+- [ ] Audit admin's `wcp`/`getProjectWithFeatureFlags` field usage → decide delete vs keep-as-license-detail.
 
 ---
 
