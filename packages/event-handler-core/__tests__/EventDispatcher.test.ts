@@ -32,15 +32,15 @@ describe("EventDispatcher (DI-native handler app)", () => {
         return EventHandler.createImplementation({ implementation: OkHandler, dependencies: [] });
     };
 
-    it("dispatches through the runtime like the previous closure", async () => {
-        const runtime = EventDispatcher.init({
+    it("dispatches an event like the previous closure", async () => {
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
             }
         });
 
-        expect(await runtime.handle(httpEvent)).toBe("ok");
+        expect(await dispatcher.handle(httpEvent)).toBe("ok");
     });
 
     it("runs a ChildContainerFactory decorator on every request (the seam)", async () => {
@@ -61,7 +61,7 @@ describe("EventDispatcher (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(okHandler());
@@ -71,8 +71,8 @@ describe("EventDispatcher (DI-native handler app)", () => {
             }
         });
 
-        expect(await runtime.handle(httpEvent)).toBe("ok");
-        expect(await runtime.handle(httpEvent)).toBe("ok");
+        expect(await dispatcher.handle(httpEvent)).toBe("ok");
+        expect(await dispatcher.handle(httpEvent)).toBe("ok");
 
         // Decorator wraps create() once per request (before + after), twice over two invocations.
         expect(calls).toEqual(["before", "after", "before", "after"]);
@@ -96,7 +96,7 @@ describe("EventDispatcher (DI-native handler app)", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 rootSetupCalls++;
                 container.register(httpType);
@@ -107,8 +107,8 @@ describe("EventDispatcher (DI-native handler app)", () => {
             }
         });
 
-        await runtime.handle(httpEvent);
-        await runtime.handle(httpEvent);
+        await dispatcher.handle(httpEvent);
+        await dispatcher.handle(httpEvent);
 
         // get() is called per request, but the underlying root is built (root setup runs) only once.
         expect(rootBuilds).toBe(2);

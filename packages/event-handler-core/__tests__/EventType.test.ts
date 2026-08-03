@@ -30,14 +30,14 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
             }
         });
 
-        const result = await runtime.handle({
+        const result = await dispatcher.handle({
             method: "GET",
             path: "/test",
             headers: {},
@@ -62,13 +62,13 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
             }
         });
 
-        await expect(runtime.handle({ Records: [{ eventSource: "aws:s3" }] })).rejects.toThrow(
+        await expect(dispatcher.handle({ Records: [{ eventSource: "aws:s3" }] })).rejects.toThrow(
             "No event type matched the incoming event"
         );
     });
@@ -123,7 +123,7 @@ describe("EventType dispatch", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(otherType);
@@ -133,7 +133,7 @@ describe("EventType dispatch", () => {
         });
 
         expect(
-            await runtime.handle({
+            await dispatcher.handle({
                 method: "GET",
                 path: "/",
                 headers: {},
@@ -142,6 +142,6 @@ describe("EventType dispatch", () => {
                 body: undefined
             })
         ).toBe("http");
-        expect(await runtime.handle({ Records: [{}] })).toBe("other");
+        expect(await dispatcher.handle({ Records: [{}] })).toBe("other");
     });
 });

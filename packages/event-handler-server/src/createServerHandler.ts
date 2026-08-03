@@ -22,7 +22,7 @@ export async function createServerHandler(
     const rootContainer = new Container();
     await options.root(rootContainer);
 
-    const runtime = EventDispatcher.init({
+    const dispatcher = EventDispatcher.init({
         root: options.root,
         request: options.request,
         rootContainer
@@ -30,7 +30,7 @@ export async function createServerHandler(
 
     const server = http.createServer(async (req, res) => {
         try {
-            const response = (await runtime.handle(req)) as IHttpResponse;
+            const response = (await dispatcher.handle(req)) as IHttpResponse;
             res.writeHead(response.statusCode, response.headers);
             const { body } = response;
             if (body === undefined || body === null) {

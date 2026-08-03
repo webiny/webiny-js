@@ -15,7 +15,7 @@ export interface createTestHttpHandlerOptions {
  * Callers layer middleware on top via container.registerDecorator() in options.root.
  */
 export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
-    const runtime = EventDispatcher.init({
+    const dispatcher = EventDispatcher.init({
         root: async container => {
             container.register(TestHttpEventType);
             container.register(HttpRouterHandler);
@@ -28,7 +28,7 @@ export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
     return async (
         request: Partial<IHttpRequest> & { method: string; path: string }
     ): Promise<IHttpResponse> => {
-        return runtime.handle({
+        return dispatcher.handle({
             method: request.method,
             path: request.path,
             headers: request.headers ?? {},

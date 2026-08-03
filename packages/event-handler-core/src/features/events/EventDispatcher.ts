@@ -8,7 +8,7 @@ import { executeChain } from "./chain.js";
 /**
  * The DI-native handler app. `EventDispatcher.init(config)` builds a small "app container" (distinct
  * from the per-process root container and the per-request child container it goes on to create),
- * wires the default lifecycle abstractions, and returns a runtime whose `handle()` is the
+ * wires the default lifecycle abstractions, and returns a dispatcher whose `handle()` is the
  * platform-invocable handler.
  *
  * The lifecycle is delegated to decoratable DI abstractions — {@link RootContainerFactory} (build

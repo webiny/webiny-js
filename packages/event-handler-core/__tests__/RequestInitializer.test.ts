@@ -69,7 +69,7 @@ describe("RequestInitializer", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
@@ -78,7 +78,7 @@ describe("RequestInitializer", () => {
             }
         });
 
-        await runtime.handle(httpEvent);
+        await dispatcher.handle(httpEvent);
 
         expect(order).toEqual(["a", "b", "handler"]);
     });
@@ -95,13 +95,13 @@ describe("RequestInitializer", () => {
             dependencies: []
         });
 
-        const runtime = EventDispatcher.init({
+        const dispatcher = EventDispatcher.init({
             root: container => {
                 container.register(httpType);
                 container.register(handler);
             }
         });
 
-        expect(await runtime.handle(httpEvent)).toBe("ok");
+        expect(await dispatcher.handle(httpEvent)).toBe("ok");
     });
 });

@@ -14,11 +14,11 @@ export interface CreateLambdaHandlerOptions {
  * lives in {@link awsLambdaTransport}; everything else is the shared handler loop.
  */
 export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
-    const runtime = EventDispatcher.init({
+    const dispatcher = EventDispatcher.init({
         root: options.root,
         request: options.request,
         transport: awsLambdaTransport
     });
 
-    return (event: any, context?: Context): Promise<any> => runtime.handle(event, context);
+    return (event: any, context?: Context): Promise<any> => dispatcher.handle(event, context);
 }
