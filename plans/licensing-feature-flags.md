@@ -24,26 +24,26 @@ Durable across all phases:
 - **`WcpLicenseProvider` = ROOT singleton, single-flight.** Root so concurrent child requests share it (dedup concurrent WCP calls) and so it exists before the per-request register phase. Single-flight = memoized in-flight promise; TTL cache (5 min) handles steady state, the promise closes the concurrent-expiry race.
 - **Register-time gating restored.** The clean `if (flags.isPrivateFilesEnabled()) { register... }` shape returns; #5523's runtime pass-through guards are reverted.
 - **Custom (non-WCP) flags — PARKED.** Today `IFeatureFlagsDto` + `FeatureFlags` accessors are a fixed WCP enum. A generic `isEnabled(key)` + open `custom` slot is deferred until needed.
-- **Handler abstractions (new):** `HandlerApp` (app-level orchestrator — note `EventHandler`/`IEventHandler` is already the per-event *chain* handler, distinct), `RootContainerFactory`, `ChildContainerFactory`. Factories own container *creation* (so a decorator wraps make+populate). They live in an **app container** built in `createHandler` (3 containers total: app + root + child).
+- **Handler abstractions (new):** `EventDispatcher` (app-level orchestrator — note `EventHandler`/`IEventHandler` is already the per-event *chain* handler, distinct), `RootContainerFactory`, `ChildContainerFactory`. Factories own container *creation* (so a decorator wraps make+populate). They live in an **app container** built in `createHandler` (3 containers total: app + root + child).
 
 ---
 
 ## [ ] Phase 1: DI-native handler app (behavior-preserving)
 
-**Goal:** replace the `createHandler` closure with a DI-native app: `HandlerApp` + `RootContainerFactory` + `ChildContainerFactory`, all decoratable. No behavior change.
+**Goal:** replace the `createHandler` closure with a DI-native app: `EventDispatcher` + `RootContainerFactory` + `ChildContainerFactory`, all decoratable. No behavior change.
 
 ### What to build
 
-- An **app container** built inside `createHandler` (event-handler-core). Register defaults: `HandlerApp`, `RootContainerFactory`, `ChildContainerFactory`. Let callers decorate before first use.
-- `createHandler` becomes thin: build app container → register defaults → `resolve(HandlerApp)` → return `(...rawArgs) => runtime.handle(rawArgs)`.
+- An **app container** built inside `createHandler` (event-handler-core). Register defaults: `EventDispatcher`, `RootContainerFactory`, `ChildContainerFactory`. Let callers decorate before first use.
+- `createHandler` becomes thin: build app container → register defaults → `resolve(EventDispatcher)` → return `(...rawArgs) => runtime.handle(rawArgs)`.
 - `RootContainerFactory.get(): Container` — lazy-once root build (honors the prebuilt-`rootContainer` path the Node server uses for eager WS-upgrade wiring). Decoratable.
 - `ChildContainerFactory.create(root, rawArgs): Container` — owns: `createChildContainer()` + `registerInstance(RequestContainer, child)` + `transport.bind(child, ...rawArgs)` + `options.request(child)` + (for now) the `RequestInitializer` loop. Decoratable.
-- `HandlerApp.handle(rawArgs)` — orchestrates: `root = rootContainerFactory.get()`; `child = childContainerFactory.create(root, rawArgs)`; event-type match; `executeChain`. Decoratable.
+- `EventDispatcher.handle(rawArgs)` — orchestrates: `root = rootContainerFactory.get()`; `child = childContainerFactory.create(root, rawArgs)`; event-type match; `executeChain`. Decoratable.
 - `RequestInitializer` loop stays (relocated inside `create`) — dies in Phase 3.
 
 ### Acceptance criteria
 
-- [ ] `createHandler` builds an app container and resolves `HandlerApp`; the returned invocable behaves identically to today.
+- [ ] `createHandler` builds an app container and resolves `EventDispatcher`; the returned invocable behaves identically to today.
 - [ ] AWS (`createLambdaHandler`/`createWebinyApiHandler`) and Node server handlers work unchanged (root/request/transport wiring intact, incl. prebuilt-root path).
 - [ ] All existing event-handler-core tests pass (chain, EventType, RequestInitializer, TestHttpEventHandler).
 - [ ] A test decorates `ChildContainerFactory` and observes the decorator running per request (proves the seam).
