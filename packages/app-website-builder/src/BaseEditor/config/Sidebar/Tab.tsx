@@ -30,7 +30,7 @@ export const Tab = ({ name, label, icon, disabled, element, visible }: TabProps)
             visible={visible}
             content={
                 <ScrollArea
-                    style={{ height: `calc(100vh - ${uiHeight}px - ${TAB_HEADER_HEIGHT}px)` }}
+                    style={{ maxHeight: `calc(100vh - ${uiHeight}px - ${TAB_HEADER_HEIGHT}px)` }}
                 >
                     {element}
                 </ScrollArea>
