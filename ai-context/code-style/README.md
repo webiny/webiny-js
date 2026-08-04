@@ -14,5 +14,6 @@ Read every rule in this folder before writing or editing code.
 | [no-console-in-backend.md](./no-console-in-backend.md)                                       | No `console.*` in `api-*` code; use the DI `Logger`.                       |
 | [no-inline-class-in-create-implementation.md](./no-inline-class-in-create-implementation.md) | Declare implementation classes separately with an `implements` clause.     |
 | [compose-css-class-names.md](./compose-css-class-names.md)                                   | Compose class names with a `cn` helper, never `+` or template literals.    |
+| [no-inline-conditional-spreads.md](./no-inline-conditional-spreads.md)                       | Build objects with `if` statements, not inline conditional spreads/casts.  |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.
