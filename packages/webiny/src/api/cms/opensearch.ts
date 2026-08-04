@@ -19,10 +19,6 @@ export {
     CmsEntryOpenSearchIndex,
     BaseOpenSearchIndex
 } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndex/index.js";
-export {
-    CmsModelOpenSearchIndex,
-    CmsModelOpenSearchIndexProvider
-} from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchValuesModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchValuesModifier/index.js";
 export { CmsEntryOpenSearchIndexCreate } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexCreate/index.js";
 export { CmsEntryOpenSearchIndexDelete } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchIndexDelete/index.js";

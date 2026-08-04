@@ -9,7 +9,7 @@
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "chalk": "^6.0.0",
-    "execa": "^10.0.0",
+    "execa": "^10.0.1",
     "load-json-file": "^7.0.1",
     "p-retry": "^8.0.0",
     "semver": "^7.8.5",
