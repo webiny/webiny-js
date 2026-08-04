@@ -19,6 +19,8 @@ jobs:
     name: Assign milestone based on base branch
     if: ${{ !github.event.pull_request.head.repo.fork }}
     permissions:
+      contents: read
+      actions: write
       issues: write
       pull-requests: write
     env:
