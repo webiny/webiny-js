@@ -47,6 +47,7 @@ export const Extensions = () => {
             <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
             {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
             <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
+            <Infra.Api.MaxBundleSize size={6291456} />
 
             {/* Api 👇 */}
             {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}

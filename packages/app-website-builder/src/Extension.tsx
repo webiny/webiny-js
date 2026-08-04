@@ -34,11 +34,6 @@ import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index
 import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
-import { ExperimentsEditorConfig } from "./presentation/experiments/config/ExperimentsEditorConfig.js";
-import { ExperimentsFeature } from "~/features/experiments/index.js";
-import { ExperimentsEditorPresenterFeature } from "~/presentation/experiments/ExperimentsEditor/index.js";
-import { ExperimentsManagerPresenterFeature } from "~/presentation/experiments/ExperimentsManager/index.js";
-import { ExperimentFormPresenterFeature } from "~/presentation/experiments/ExperimentForm/index.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
@@ -63,10 +58,7 @@ export const Extension = () => {
             <RegisterFeature feature={DeletePageRevisionFeature} />
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
-            <RegisterFeature feature={ExperimentsFeature} />
-            <RegisterFeature feature={ExperimentsEditorPresenterFeature} />
-            <RegisterFeature feature={ExperimentsManagerPresenterFeature} />
-            <RegisterFeature feature={ExperimentFormPresenterFeature} />
+            {/*<AbTesting />*/}
             <RegisterFeature feature={UnpublishPageFeature} />
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />
@@ -160,7 +152,6 @@ export const Extension = () => {
             <RedirectsListConfig />
             <CreatePageConfig />
             <TranslatePageConfig />
-            <ExperimentsEditorConfig />
         </>
     );
 };
