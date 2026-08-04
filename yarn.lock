@@ -11143,6 +11143,7 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
     "@webiny/api-headless-cms-testing": "npm:0.0.0"
+    "@webiny/api-headless-cms-utils-os": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
