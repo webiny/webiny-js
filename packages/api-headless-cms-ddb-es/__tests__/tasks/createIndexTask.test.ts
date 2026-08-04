@@ -58,9 +58,7 @@ describe("Create index task", () => {
             }))
         );
 
-        expect(indexes).toEqual(
-            expectedIndexes.sort((a, b) => (a.index > b.index ? 1 : -1))
-        );
+        expect(indexes).toEqual(expectedIndexes.sort((a, b) => (a.index > b.index ? 1 : -1)));
     });
 
     it("should create an index for each of the models defined", async () => {
