@@ -20,6 +20,7 @@ class WcpSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
                 recordLocking: WcpProjectPackageFeaturesFeature
                 fileManager: WcpProjectPackageFeaturesFeature
                 aiPowerups: WcpProjectPackageFeaturesFeature
+                abTesting: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {
