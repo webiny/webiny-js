@@ -6,12 +6,15 @@ import { createApiCoreSql } from "@webiny/api-core-sql/createApiCoreSql.js";
 import { getSqlTablePrefix } from "@webiny/api-core-sql/getSqlTablePrefix.js";
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
 } from "@webiny/api-opensearch/testing/index.js";
-import { getBaseConfiguration, getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import {
+    getBaseConfiguration,
+    getOpenSearchIndexPrefix,
+    isSharedOpenSearchIndex
+} from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createPgToOpenSearchHandler } from "@webiny/api-sync-pg-to-opensearch";
@@ -46,8 +49,12 @@ setStorageOps("apiCore", () => {
 
 setStorageOps("cms", () => {
     const createIndexName = model => {
-        const { index } = configurations.es({ model });
-        return index;
+        const shared = isSharedOpenSearchIndex();
+        const base = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
+            .join("-")
+            .toLowerCase();
+        const p = getOpenSearchIndexPrefix();
+        return p ? p + base : base;
     };
 
     const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {

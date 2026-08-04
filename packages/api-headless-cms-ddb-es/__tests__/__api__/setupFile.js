@@ -5,13 +5,12 @@ import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing
 import { HeadlessCmsDdbEsFeature } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
 } from "@webiny/api-opensearch/testing/index.js";
-import { getBaseConfiguration } from "@webiny/api-opensearch";
+import { getBaseConfiguration, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
@@ -28,10 +27,12 @@ simulateStream(documentClient, createDdbToOpenSearchStreamHandler(opensearchClie
 
 setStorageOps("cms", () => {
     const createIndexName = model => {
-        const { index } = configurations.es({
-            model
-        });
-        return index;
+        const shared = isSharedOpenSearchIndex();
+        const idx = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
+            .join("-")
+            .toLowerCase();
+        const pfx = getOpenSearchIndexPrefix();
+        return pfx ? pfx + idx : idx;
     };
 
     /**

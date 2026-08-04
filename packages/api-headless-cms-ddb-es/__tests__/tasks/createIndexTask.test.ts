@@ -5,16 +5,18 @@ import type { Context as TasksContext } from "@webiny/background-tasks/api/types
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
 import type { CreateIndexesRunner } from "@webiny/api-search-index-tasks";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
+import { getOpenSearchIndexPrefix, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
-    const { index } = configurations.es({
-        model
-    });
-    return index;
+    const shared = isSharedOpenSearchIndex();
+    const index = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
+        .join("-")
+        .toLowerCase();
+    const prefix = getOpenSearchIndexPrefix();
+    return prefix ? prefix + index : index;
 };
 
 interface Context extends TasksContext, CmsContext {}
