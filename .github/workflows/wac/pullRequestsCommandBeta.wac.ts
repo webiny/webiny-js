@@ -2,7 +2,8 @@ import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
@@ -13,7 +14,12 @@ const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANCH });
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: PR_BRANCH
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: PR_BRANCH
+});
 
 export const pullRequestsCommandBeta = createSlashCommandWorkflow({
     command: "beta",
@@ -54,30 +60,15 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                 }
             ]
         }),
-        constants: createJob({
-            needs: ["checkComment", "prBranch"],
-            name: "Create constants",
-            checkout: false,
-            outputs: {
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
-            },
-            steps: [
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
-                }
-            ]
-        }),
         build: createJob({
             name: "Build",
-            needs: ["prBranch", "constants"],
+            needs: ["prBranch"],
             checkout: { path: PR_BRANCH, ref: PR_BRANCH },
             "runs-on": BUILD_PACKAGES_RUNNER,
-            steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheSteps]
+            steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheUploadSteps]
         }),
         npmReleaseBeta: createJob({
-            needs: ["prBranch", "constants", "build"],
+            needs: ["prBranch", "build"],
             name: 'NPM release ("beta" tag)',
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
@@ -87,7 +78,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
                 ...withCommonParams(
                     [
@@ -135,7 +126,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             ]
         }),
         npmReleaseLatest: createJob({
-            needs: ["prBranch", "constants", "npmReleaseBeta"],
+            needs: ["prBranch", "npmReleaseBeta"],
             name: 'NPM release ("latest" tag)',
             environment: "release",
             env: {
@@ -146,7 +137,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
                 ...withCommonParams(
                     [

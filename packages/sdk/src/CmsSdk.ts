@@ -10,6 +10,7 @@ import type {
 import type { DeleteEntryRevisionParams } from "./methods/cms/deleteEntryRevision.js";
 import type { PublishEntryRevisionParams } from "./methods/cms/publishEntryRevision.js";
 import type { UnpublishEntryRevisionParams } from "./methods/cms/unpublishEntryRevision.js";
+import type { GetModelParams, CmsModelData } from "./methods/cms/getModel.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 import type { Result } from "./Result.js";
 import { getEntry as getEntryFn } from "./methods/cms/getEntry.js";
@@ -19,6 +20,7 @@ import { updateEntryRevision as updateEntryRevisionFn } from "./methods/cms/upda
 import { deleteEntryRevision as deleteEntryRevisionFn } from "./methods/cms/deleteEntryRevision.js";
 import { publishEntryRevision as publishEntryRevisionFn } from "./methods/cms/publishEntryRevision.js";
 import { unpublishEntryRevision as unpublishEntryRevisionFn } from "./methods/cms/unpublishEntryRevision.js";
+import { getModel as getModelFn } from "./methods/cms/getModel.js";
 
 export class CmsSdk {
     private config: WebinyConfig;
@@ -27,6 +29,12 @@ export class CmsSdk {
     constructor(config: WebinyConfig) {
         this.config = config;
         this.fetchFn = config.fetch || fetch;
+    }
+
+    async getModel(
+        params: GetModelParams
+    ): Promise<Result<CmsModelData, HttpError | ApiError | NetworkError | ValidationError>> {
+        return getModelFn(this.config, this.fetchFn, params);
     }
 
     async getEntry<TValues extends CmsEntryValues = CmsEntryValues>(

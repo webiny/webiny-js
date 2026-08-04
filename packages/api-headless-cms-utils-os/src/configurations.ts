@@ -1,34 +1,14 @@
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import {
+    getBaseConfiguration,
     getOpenSearchIndexPrefix,
-    isSharedOpenSearchIndex as isSharedElasticsearchIndex
+    isSharedOpenSearchIndex
 } from "@webiny/api-opensearch";
-import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
-import type { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 
-interface ConfigurationsElasticsearch {
-    index: string;
-}
-
-export interface CmsElasticsearchParams {
-    model: Pick<CmsModel, "tenant" | "modelId">;
-}
-
-export interface ConfigurationsIndexSettingsParams {
-    indexConfigs: CmsEntryOpenSearchIndex.Interface[];
-    model: Pick<CmsModel, "tenant" | "modelId" | "group">;
-}
-
-export interface Configurations {
-    es: (params: CmsElasticsearchParams) => ConfigurationsElasticsearch;
-    indexSettings: (
-        params: ConfigurationsIndexSettingsParams
-    ) => Partial<OpenSearchIndexRequestBody>;
-}
-
-export const configurations: Configurations = {
-    es({ model }) {
+export const configurations = {
+    es(params: { model: Pick<StorageCmsModel, "tenant" | "modelId"> }) {
+        const { model } = params;
         const { tenant } = model;
 
         if (!tenant) {
@@ -38,27 +18,17 @@ export const configurations: Configurations = {
             );
         }
 
-        const sharedIndex = isSharedElasticsearchIndex();
-        const index = [sharedIndex ? "root" : tenant, "headless-cms", model.modelId]
+        const shared = isSharedOpenSearchIndex();
+        const index = [shared ? "root" : tenant, "headless-cms", model.modelId]
             .join("-")
             .toLowerCase();
 
         const prefix = getOpenSearchIndexPrefix();
 
-        if (!prefix) {
-            return {
-                index
-            };
-        }
         return {
-            index: prefix + index
+            index: prefix ? prefix + index : index,
+            settings: getBaseConfiguration(),
+            shared
         };
-    },
-    indexSettings: ({ indexConfigs, model }) => {
-        const usable = indexConfigs.filter(c => c.canUse({ model }));
-        if (usable.length === 0) {
-            return {};
-        }
-        return usable[usable.length - 1].body;
     }
 };

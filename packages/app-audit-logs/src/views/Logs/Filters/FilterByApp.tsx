@@ -25,8 +25,9 @@ export const FilterByApp = () => {
     return (
         <Select
             {...bind}
+            label={"Application"}
             size={"md"}
-            placeholder={"Filter by App"}
+            placeholder={"All applications"}
             options={[
                 { label: "All", value: "all" },
                 ...auditLogsApps.map(app => ({ label: app.displayName, value: app.app }))

@@ -50,13 +50,22 @@ import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
 import { NextjsFeature } from "./features/nextjs/feature.js";
 import { NuxtFeature } from "./features/nuxt/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
+import { ExperimentFeature } from "./features/experiments/feature.js";
+import { VariantFeature } from "./features/variants/feature.js";
 import { NextjsGraphQLSchema } from "./graphql/nextjs/NextjsGraphQLSchema.js";
 import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
 // Models
 import { PAGE_MODEL_ID, PageModelPlugin } from "~/domain/page/page.model.js";
 import { REDIRECT_MODEL_ID, RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
+import {
+    ExperimentModelPlugin,
+    EXPERIMENT_MODEL_ID
+} from "~/domain/experiment/experiment.model.js";
+import { VariantModelPlugin, VARIANT_MODEL_ID } from "~/domain/variant/variant.model.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { VariantModel } from "~/domain/variant/abstractions.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -75,6 +84,8 @@ export const WebsiteBuilderFeature = createFeature({
         // WB model factories so ModelsProvider can build CmsModel instances.
         container.register(PageModelPlugin);
         container.register(RedirectModelPlugin);
+        container.register(ExperimentModelPlugin);
+        container.register(VariantModelPlugin);
 
         // Permissions.
         WbPermissionsFeature.register(container);
@@ -111,6 +122,10 @@ export const WebsiteBuilderFeature = createFeature({
         TranslatePageFeature.register(container);
         MovePageFeature.register(container);
 
+        // A/B testing — experiments and variants.
+        ExperimentFeature.register(container);
+        VariantFeature.register(container);
+
         // Misc features + framework GraphQL (Next.js / Nuxt).
         ApiKeyInstallerFeature.register(container);
         NextjsFeature.register(container);
@@ -119,7 +134,7 @@ export const WebsiteBuilderFeature = createFeature({
         container.register(NextjsGraphQLSchema);
         container.register(NuxtGraphQLSchema);
 
-        // Static WB GraphQL schema (base + pages + redirects).
+        // Static WB GraphQL schema (base + pages + redirects + experiments).
         registerWebsiteBuilderGraphQL(container);
 
         // Per-request resolution of the WB CmsModel instances (Page/Redirect) for the GraphQL path.
@@ -131,13 +146,18 @@ export const WebsiteBuilderFeature = createFeature({
                 const getModel = requestContainer.resolve(GetModelUseCase);
 
                 await identityContext.withoutAuthorization(async () => {
-                    const [pageModel, redirectModel] = await Promise.all([
-                        getModel.execute(PAGE_MODEL_ID),
-                        getModel.execute(REDIRECT_MODEL_ID)
-                    ]);
+                    const [pageModel, redirectModel, experimentModel, variantModel] =
+                        await Promise.all([
+                            getModel.execute(PAGE_MODEL_ID),
+                            getModel.execute(REDIRECT_MODEL_ID),
+                            getModel.execute(EXPERIMENT_MODEL_ID),
+                            getModel.execute(VARIANT_MODEL_ID)
+                        ]);
 
                     requestContainer.registerInstance(PageModel, pageModel.value);
                     requestContainer.registerInstance(RedirectModel, redirectModel.value);
+                    requestContainer.registerInstance(ExperimentModel, experimentModel.value);
+                    requestContainer.registerInstance(VariantModel, variantModel.value);
                 });
             }
         });
@@ -163,11 +183,19 @@ export async function setupWebsiteBuilderModels(container: Container): Promise<v
 
     const redirectModel = models.find(m => m.modelId === REDIRECT_MODEL_ID);
     const pageModel = models.find(m => m.modelId === PAGE_MODEL_ID);
+    const experimentModel = models.find(m => m.modelId === EXPERIMENT_MODEL_ID);
+    const variantModel = models.find(m => m.modelId === VARIANT_MODEL_ID);
 
     if (redirectModel) {
         container.registerInstance(RedirectModel, redirectModel);
     }
     if (pageModel) {
         container.registerInstance(PageModel, pageModel);
+    }
+    if (experimentModel) {
+        container.registerInstance(ExperimentModel, experimentModel);
+    }
+    if (variantModel) {
+        container.registerInstance(VariantModel, variantModel);
     }
 }

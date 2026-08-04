@@ -16,6 +16,8 @@ interface DatePickerBaseProps {
     weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
     onOpenChange?: (open: boolean) => void;
     displayFormat?: string;
+    minDate?: Date;
+    maxDate?: Date;
 }
 
 interface DateOnlyPickerProps extends DatePickerBaseProps {

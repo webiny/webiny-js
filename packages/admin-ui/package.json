@@ -29,7 +29,7 @@
     "date-fns": "^4.4.0",
     "lodash": "^4.18.1",
     "minimatch": "^10.2.6",
-    "mobx": "^6.16.1",
+    "mobx": "^7.0.0",
     "monaco-editor": "0.53.0",
     "radix-ui": "^1.6.7",
     "react": "18.3.1",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
-    "@rsbuild/core": "^2.1.8",
+    "@rsbuild/core": "^2.1.9",
     "@rsbuild/plugin-svgr": "^2.0.5",
     "@storybook/addon-a11y": "^10.5.5",
     "@storybook/addon-docs": "^10.5.5",

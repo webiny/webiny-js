@@ -11,6 +11,8 @@ import { GetModelFeature } from "./GetModel/feature.js";
 import { ListModelsFeature } from "./ListModels/feature.js";
 import { ModelToAstConverterFeature } from "./ModelToAstConverter/feature.js";
 import { ValuesSelectionGeneratorFeature } from "./ValuesSelectionGenerator/feature.js";
+import { ComponentMapGeneratorFeature } from "./ComponentMapGenerator/feature.js";
+import { RefModelsGeneratorFeature } from "./RefModelsGenerator/feature.js";
 import { ModelFieldCompressionFeature } from "./ModelFieldCompression/feature.js";
 
 export const ContentModelFeature = createFeature({
@@ -22,6 +24,8 @@ export const ContentModelFeature = createFeature({
 
         ModelToAstConverterFeature.register(container);
         ValuesSelectionGeneratorFeature.register(container);
+        ComponentMapGeneratorFeature.register(container);
+        RefModelsGeneratorFeature.register(container);
 
         ModelFieldCompressionFeature.register(container);
 

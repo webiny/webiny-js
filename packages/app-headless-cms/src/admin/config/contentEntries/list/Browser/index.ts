@@ -15,6 +15,8 @@ import { FolderConfig } from "@webiny/app-aco/config/folder";
 import { RecordConfig } from "@webiny/app-aco/config/record";
 import type { SidebarFooterConfig } from "./SidebarFooter.js";
 import { SidebarFooter } from "./SidebarFooter.js";
+import type { BreadcrumbRootConfig } from "./BreadcrumbRoot.js";
+import { BreadcrumbRoot } from "./BreadcrumbRoot.js";
 
 export type { SidebarFooterConfig };
 
@@ -27,11 +29,13 @@ export interface BrowserConfig {
     filters: FilterConfig[];
     filtersToWhere: FiltersToWhereConverter[];
     sidebarFooter: SidebarFooterConfig[];
+    breadcrumbRoot?: BreadcrumbRootConfig;
 }
 
 export const Browser = {
     AdvancedSearch,
     BulkAction,
+    BreadcrumbRoot,
     Filter,
     FiltersToWhere,
     Table,

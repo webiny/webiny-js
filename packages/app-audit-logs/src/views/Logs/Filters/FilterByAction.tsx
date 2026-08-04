@@ -34,9 +34,16 @@ export const FilterByAction = () => {
         ];
     }, [data]);
 
-    if (!data.app || !data.entity) {
-        return null;
-    }
+    const disabled = !data.app || !data.entity;
 
-    return <Select {...bind} size={"md"} placeholder={"Filter by Action"} options={options} />;
+    return (
+        <Select
+            {...bind}
+            label={"Action"}
+            size={"md"}
+            placeholder={"All actions"}
+            options={disabled ? [] : options}
+            disabled={disabled}
+        />
+    );
 };

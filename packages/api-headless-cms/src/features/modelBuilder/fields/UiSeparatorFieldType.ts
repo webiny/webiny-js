@@ -18,7 +18,8 @@ class SeparatorFieldBuilder
             layoutCell: {
                 type: "separator",
                 label: this.config.label,
-                description: this.config.description
+                description: this.config.description,
+                rules: this.config.rules
             }
         };
     }

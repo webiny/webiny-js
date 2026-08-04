@@ -221,6 +221,15 @@ export class Field implements IField {
         if (all.length === 0) {
             return { visible: true, disabled: false };
         }
+        if (this._parentPath) {
+            const resolved = all.map(rule => {
+                if (rule.target.startsWith("$.")) {
+                    return { ...rule, target: `${this._parentPath}.${rule.target.slice(2)}` };
+                }
+                return rule;
+            });
+            return this._form.evaluateRules(resolved);
+        }
         return this._form.evaluateRules(all);
     }
 

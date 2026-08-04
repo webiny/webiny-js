@@ -24,26 +24,14 @@ class CognitoIdentityProviderImpl implements OidcIdentityProvider.Interface {
     async getIdentity(
         token: OidcIdentityProvider.JwtPayload
     ): Promise<OidcIdentityProvider.IdentityData> {
-        const customIdentity = this.config ? await this.config.getIdentity(token) : null;
+        const isFederated = Array.isArray(token.identities) && token.identities.length > 0;
 
-        if (customIdentity) {
-            return {
-                ...customIdentity,
-                type: "admin",
-                profile: {
-                    ...customIdentity,
-                    external: false
-                }
-            };
-        }
-
-        // Default identity
         const customId = token["custom:id"] as string | undefined;
         const givenName = token["given_name"] as string | undefined;
         const familyName = token["family_name"] as string | undefined;
         const email = token["email"] as string | undefined;
 
-        return {
+        const defaultIdentity: OidcIdentityProvider.IdentityData = {
             id: customId || token.sub || "",
             displayName: `${givenName || ""} ${familyName || ""}`.trim() || email || "Unknown User",
             type: "admin",
@@ -51,7 +39,24 @@ class CognitoIdentityProviderImpl implements OidcIdentityProvider.Interface {
                 email: email || "",
                 firstName: givenName || "",
                 lastName: familyName || "",
-                external: false
+                external: isFederated
+            }
+        };
+
+        const customIdentity = this.config ? await this.config.getIdentity(token) : null;
+
+        if (!customIdentity) {
+            return defaultIdentity;
+        }
+
+        return {
+            ...defaultIdentity,
+            ...customIdentity,
+            type: "admin",
+            profile: {
+                ...defaultIdentity.profile,
+                ...customIdentity.profile,
+                external: isFederated
             }
         };
     }

@@ -13,9 +13,15 @@ class DynamicZoneRendererImpl implements CmsFieldRenderer.Interface {
 
     buildSettingsForm(form: CmsFieldRenderer.FormBuilder) {
         form.fields(fields => ({
-            open: fields.boolean().label("Expand Accordion").defaultValue(false)
+            container: fields.boolean().label("Show container").defaultValue(true),
+            open: fields.boolean().label("Expand Accordion").defaultValue(false),
+            addItemLabel: fields.text().label('"Add Item" button label')
         }));
-        form.layout(layout => [layout.row("open")]);
+        form.layout(layout => [
+            layout.row("container"),
+            layout.row("open"),
+            layout.row("addItemLabel")
+        ]);
     }
 }
 

@@ -1,6 +1,5 @@
 ---
 name: webiny-api-logger-catalog
-context: webiny-api
 description: >
   api/logger — 1 abstractions.
 ---

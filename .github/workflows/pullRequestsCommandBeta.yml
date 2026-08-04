@@ -13,6 +13,11 @@ jobs:
     if: >-
       ${{ github.event.issue.pull_request && (github.event.comment.body ==
       '/beta' || startsWith(github.event.comment.body, '/beta ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -34,7 +39,7 @@ jobs:
           content=eyes
       - name: Create comment
         id: create-comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
@@ -78,31 +83,13 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  constants:
-    needs:
-      - checkComment
-      - prBranch
-    name: Create constants
-    outputs:
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
       - prBranch
-      - constants
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5
@@ -122,17 +109,29 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
-      - uses: actions/cache@v5
+      - name: Compress build cache
+        run: >-
+          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}" .webiny/cached-packages
+        env:
+          WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Upload build cache
+        uses: actions/upload-artifact@v7
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+          path: run-build-cache.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   npmReleaseBeta:
     needs:
       - prBranch
-      - constants
       - build
     name: NPM release ("beta" tag)
     env:
@@ -154,10 +153,16 @@ jobs:
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -207,10 +212,12 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   npmReleaseLatest:
     needs:
       - prBranch
-      - constants
       - npmReleaseBeta
     name: NPM release ("latest" tag)
     environment: release
@@ -233,10 +240,16 @@ jobs:
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -284,3 +297,6 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

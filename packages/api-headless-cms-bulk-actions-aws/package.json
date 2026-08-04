@@ -1,0 +1,41 @@
+{
+  "name": "@webiny/api-headless-cms-bulk-actions-aws",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "AWS EventBridge handler for Webiny Headless CMS bulk actions",
+  "keywords": [
+    "api-headless-cms-bulk-actions-aws:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-headless-cms-bulk-actions-aws"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/event-handler-aws": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/feature": "0.0.0"
+  },
+  "peerDependencies": {
+    "@webiny/di": ">=0.2.3"
+  },
+  "devDependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

@@ -1,38 +1,35 @@
 import React from "react";
-import { useFontColorPicker, DropDown } from "@webiny/lexical-editor";
+import { useFontColorPicker, useRichTextEditor, DropDown } from "@webiny/lexical-editor";
 import { LexicalColorPicker } from "~/components/LexicalColorPicker/LexicalColorPicker.js";
+import { ReactComponent as FontColorIcon } from "@webiny/icons/format_color_text.svg";
 
 export interface LexicalColorPickerDropdownProps {
     allowCustomColor?: boolean;
 }
 
 export const LexicalColorPickerDropdown = ({
-    allowCustomColor = false
+    allowCustomColor
 }: LexicalColorPickerDropdownProps) => {
     const { value, applyColor } = useFontColorPicker();
-
-    // The current color is dynamic, so it's passed as a CSS custom property on a
-    // `display: contents` wrapper (no layout box) and read by the icon's static class.
-    const wrapperStyle = { display: "contents", "--wby-font-color": value } as React.CSSProperties;
+    const { theme } = useRichTextEditor();
 
     return (
-        <span style={wrapperStyle}>
-            <DropDown
-                buttonClassName="toolbar-item color-picker"
-                buttonAriaLabel={"Formatting options for text color"}
-                buttonIconClassName={
-                    "icon font-color [border-bottom:3px_solid_var(--wby-font-color)]"
-                }
-                stopCloseOnClickSelf={true}
-                disabled={false}
-                showScroll={false}
-            >
-                <LexicalColorPicker
-                    value={value}
-                    onChangeComplete={applyColor}
-                    allowCustomColor={allowCustomColor}
-                />
-            </DropDown>
-        </span>
+        <DropDown
+            buttonClassName="toolbar-item color-picker"
+            buttonAriaLabel={"Formatting options for text color"}
+            buttonIcon={
+                // Tint the A icon with the current font color.
+                <FontColorIcon className="icon" style={value ? { fill: value } : undefined} />
+            }
+            stopCloseOnClickSelf={true}
+            disabled={false}
+            showScroll={false}
+        >
+            <LexicalColorPicker
+                value={value}
+                onChangeComplete={applyColor}
+                allowCustomColor={allowCustomColor ?? theme.allowCustomColors}
+            />
+        </DropDown>
     );
 };
