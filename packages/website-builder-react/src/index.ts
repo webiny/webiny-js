@@ -1,5 +1,5 @@
 export * from "./components/index.js";
-export * from "./createComponent.js";
+export { createComponent } from "@webiny/website-builder-sdk";
 
 export {
     createTextInput,
