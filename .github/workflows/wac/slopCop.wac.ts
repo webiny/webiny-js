@@ -80,6 +80,8 @@ export const slopCop = createWorkflow({
                     env: {
                         PR_JSON_FILE: "${{ runner.temp }}/slop-cop/pr.json",
                         DIFF_FILE: "${{ runner.temp }}/slop-cop/diff.patch",
+                        // Diff's added lines are checked against these rule files too.
+                        CODE_STYLE_DIR: "ai-context/code-style",
                         SLOP_COP_OUTPUT: "${{ runner.temp }}/slop-cop/report.md"
                     },
                     run: "node .github/workflows/wac/utils/runNodeScripts/slopCop.js"

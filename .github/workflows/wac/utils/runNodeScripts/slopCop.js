@@ -1,9 +1,11 @@
 // "Slop cop" PR analyzer. Reads a pull request's stated intent (title/body),
 // its footprint (per-file additions/deletions, commit list) and a capped raw
-// diff, then asks Claude whether anything looks like it should NOT be in the
-// PR - e.g. a bad rebase/merge that wiped commits (the diff footprint does not
-// match the stated intent), leaked secrets, committed debug code, conflict
-// markers, focused tests, etc.
+// diff, then asks Claude two things:
+//   (A) integrity - does anything look like it should NOT be in the PR? e.g. a
+//       bad rebase/merge that wiped commits (the footprint does not match the
+//       stated intent), leaked secrets, committed debug code, conflict markers.
+//   (B) style - do the diff's added lines break any project code-style rule?
+//       (only when CODE_STYLE_DIR is provided; otherwise skipped.)
 //
 // This script ONLY analyzes and prints a Markdown report to a file. It never
 // blocks and never touches GitHub - posting the sticky comment is the caller's
@@ -17,16 +19,21 @@
 //                        additions, deletions, changedFiles, commits, files,
 //                        baseRefName, headRefName).
 //   DIFF_FILE          - path to the raw unified diff (may be truncated).
+//   CODE_STYLE_DIR     - optional; dir of `*.md` code-style rule files. When set,
+//                        the analysis also checks the diff's added lines against
+//                        those rules. Absent/empty -> code-style check is skipped.
 //   SLOP_COP_OUTPUT    - path to write the Markdown report to.
 //
 // Output file contract for the caller: if the file is written and non-empty,
 // post it as a comment; if it is absent or empty, post nothing.
 
 import fs from "fs";
+import path from "path";
 
 const MARKER = "<!-- slop-cop -->";
 const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
 const MAX_DIFF_BYTES = 200_000;
+const MAX_RULES_BYTES = 60_000;
 
 const readFileSafe = path => {
     if (!path) {
@@ -57,6 +64,31 @@ const loadPr = () => {
     }
 };
 
+// Concatenate every `*.md` rule file (except the README index) into one block,
+// each prefixed with its filename so the model can cite the rule it broke.
+// Returns "" when the dir is unset/missing, which turns the style check off.
+const loadCodeStyleRules = () => {
+    const dir = process.env.CODE_STYLE_DIR;
+    if (!dir) {
+        return "";
+    }
+
+    let names;
+    try {
+        names = fs.readdirSync(dir);
+    } catch {
+        return "";
+    }
+
+    const rules = names
+        .filter(name => name.endsWith(".md") && name.toLowerCase() !== "readme.md")
+        .sort()
+        .map(name => `--- RULE: ${name} ---\n${readFileSafe(path.join(dir, name))}`)
+        .join("\n\n");
+
+    return truncate(rules, MAX_RULES_BYTES).text;
+};
+
 const buildPrompt = pr => {
     // Keep only the fields the model needs, and drop GitHub's verbose commit
     // objects down to their headlines.
@@ -72,15 +104,16 @@ const buildPrompt = pr => {
 
     const filesJson = JSON.stringify(files);
     const { text: diff, truncated } = truncate(readFileSafe(process.env.DIFF_FILE), MAX_DIFF_BYTES);
+    const rules = loadCodeStyleRules();
 
     return [
         "You are reviewing a GitHub pull request for a large TypeScript monorepo",
-        "(the Webiny framework). Your ONLY job is to catch content that most likely",
-        "should NOT be in the PR - things the author probably did by accident and",
-        "would want to know about BEFORE merging. You are not a code-quality or style",
-        "reviewer; ignore normal design/naming/refactor opinions.",
+        "(the Webiny framework). You have two jobs.",
         "",
-        "Look specifically for:",
+        'JOB A ("integrity") - catch content that most likely should NOT be in the',
+        "PR: things the author probably did by accident and would want to know about",
+        "BEFORE merging. This is NOT general code-quality review; ignore normal",
+        "design/naming/refactor opinions. Look specifically for:",
         "  1. FOOTPRINT MISMATCH (highest priority): the stated intent (title/body)",
         "     is narrow (a fix, a single feature) but the diff deletes a large number",
         "     of files or lines, or touches unrelated areas. This is the classic",
@@ -96,16 +129,32 @@ const buildPrompt = pr => {
         "  6. Commit-list smells: many unrelated commits, or revert/wip/fixup noise",
         "     suggesting the branch history is not what the author intended.",
         "",
-        "Be conservative: only report a finding when you are reasonably confident it",
-        "is unintended. A large but coherent PR (its diff matches its intent) is FINE",
-        "- say so. Do NOT invent problems to look useful.",
+        rules
+            ? [
+                  'JOB B ("style") - check the code the PR ADDS or CHANGES against the',
+                  "project's code-style rules, listed under CODE-STYLE RULES below. Only",
+                  "flag lines the diff actually adds or modifies (added lines start with",
+                  "'+' in the raw diff) - never pre-existing/unchanged code, and never",
+                  "removed lines. For each violation, cite the file and the rule filename",
+                  "(e.g. one-import-per-line.md). Respect each rule's scope (e.g.",
+                  "no-console-in-backend applies only to api-* / backend code). Be precise",
+                  "and conservative - skip anything you are not confident violates a rule -",
+                  "and report at most the ~15 most important style violations."
+              ].join("\n")
+            : 'JOB B is DISABLED for this run (no code-style rules provided). Do not report any "style" findings.',
+        "",
+        "Be conservative overall: only report a finding when you are reasonably",
+        "confident. A large but coherent PR (its diff matches its intent) with no rule",
+        "violations is FINE - say so. Do NOT invent problems to look useful.",
         "",
         "Respond with ONLY a JSON object, no prose, no markdown fences:",
         '{ "verdict": "ok" | "warnings",',
         '  "summary": "<one short sentence>",',
-        '  "findings": [ { "severity": "high"|"medium"|"low", "title": "<short>", "detail": "<1-3 sentences, cite files/numbers>" } ] }',
-        "If nothing is suspicious, return verdict \"ok\" with an empty findings array.",
+        '  "findings": [ { "category": "integrity"|"style", "severity": "high"|"medium"|"low",',
+        '                  "title": "<short>", "detail": "<1-3 sentences; cite files/lines/rule>" } ] }',
+        'If nothing is worth flagging, return verdict "ok" with an empty findings array.',
         "",
+        ...(rules ? ["=== CODE-STYLE RULES ===", rules, ""] : []),
         "=== PR TITLE ===",
         pr.title || "(none)",
         "",
@@ -139,7 +188,7 @@ const callClaude = async prompt => {
         },
         body: JSON.stringify({
             model: MODEL,
-            max_tokens: 2000,
+            max_tokens: 4000,
             messages: [{ role: "user", content: prompt }]
         })
     });
@@ -174,12 +223,31 @@ const SEVERITY = {
     low: { emoji: "🟡", label: "Low" }
 };
 
+const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 };
+
+// Render one "### severity — title / detail" block per finding, sorted high -> low.
+const renderFindings = (lines, findings) => {
+    findings
+        .slice()
+        .sort((a, b) => (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3))
+        .forEach(f => {
+            const sev = SEVERITY[f.severity] || { emoji: "⚪", label: f.severity || "Note" };
+            lines.push(`### ${sev.emoji} ${sev.label} — ${f.title || "Finding"}`);
+            lines.push("");
+            lines.push(f.detail || "");
+            lines.push("");
+        });
+};
+
 const renderReport = result => {
     const findings = Array.isArray(result.findings) ? result.findings : [];
+    // Anything not explicitly tagged "style" is treated as an integrity finding.
+    const style = findings.filter(f => f.category === "style");
+    const integrity = findings.filter(f => f.category !== "style");
     const lines = [MARKER, "## 🚓 Slop Cop", ""];
 
     if (result.verdict !== "warnings" || findings.length === 0) {
-        lines.push("✅ Nothing suspicious found. The diff looks consistent with the PR's stated intent.");
+        lines.push("✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules.");
         if (result.summary) {
             lines.push("", `_${result.summary}_`);
         }
@@ -189,18 +257,15 @@ const renderReport = result => {
             lines.push("", result.summary);
         }
         lines.push("");
-        // Sort high -> low so the scariest finding is first.
-        const order = { high: 0, medium: 1, low: 2 };
-        findings
-            .slice()
-            .sort((a, b) => (order[a.severity] ?? 3) - (order[b.severity] ?? 3))
-            .forEach(f => {
-                const sev = SEVERITY[f.severity] || { emoji: "⚪", label: f.severity || "Note" };
-                lines.push(`### ${sev.emoji} ${sev.label} — ${f.title || "Finding"}`);
-                lines.push("");
-                lines.push(f.detail || "");
-                lines.push("");
-            });
+
+        if (integrity.length > 0) {
+            lines.push("## 🚨 Should this be in the PR?", "");
+            renderFindings(lines, integrity);
+        }
+        if (style.length > 0) {
+            lines.push("## 📏 Code-style rule checks", "");
+            renderFindings(lines, style);
+        }
     }
 
     lines.push("");
