@@ -7,6 +7,7 @@ import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/t
 import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/feature.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { SyncTableManagerFeature } from "../../src/features/syncTableManager/feature.js";
 import { SyncTableManager } from "../../src/features/syncTableManager/abstractions.js";
@@ -99,6 +100,7 @@ export const createSyncTestSetup = async () => {
     TableNameResolverFeature.register(container);
     CompressionFeature.register(container);
     CmsEntryOpenSearchFieldIndexFeature.register(container);
+    CmsModelOpenSearchIndexFeature.register(container);
     SyncTableManagerFeature.register(container);
     SyncWriterFeature.register(container);
     OperationsFactoryFeature.register(container);

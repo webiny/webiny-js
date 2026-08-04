@@ -9,6 +9,7 @@ import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/feature.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { SyncTableManagerFeature } from "../src/features/syncTableManager/feature.js";
 import { SyncTableManager } from "../src/features/syncTableManager/abstractions.js";
@@ -89,6 +90,7 @@ describe("SyncWriter", () => {
         TableNameResolverFeature.register(container);
         CompressionFeature.register(container);
         CmsEntryOpenSearchFieldIndexFeature.register(container);
+        CmsModelOpenSearchIndexFeature.register(container);
         SyncTableManagerFeature.register(container);
         SyncWriterFeature.register(container);
 
