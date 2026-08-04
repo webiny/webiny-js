@@ -2,6 +2,7 @@ import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractio
 import { Response, ErrorResponse } from "@webiny/api-graphql/responses.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
 import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
@@ -141,9 +142,18 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<ICmsGenerateEntryContentTaskInput>({
             path: "AiPowerUpsMutation.generateEntryContent",
-            dependencies: [TaskService],
-            resolver: (taskService: TaskService.Interface) => {
+            dependencies: [TaskService, WcpContext],
+            resolver: (taskService: TaskService.Interface, wcp: WcpContext.Interface) => {
                 return async ({ args }) => {
+                    // Gated at resolver-time, NOT at feature-registration time: the WCP license is
+                    // loaded per request, so a register-time check reads the placeholder
+                    // NullLicense (canUse* → false).
+                    if (!wcp.canUseAiEntryGeneration()) {
+                        throw new Error(
+                            "AI entry generation cannot be used because your project license does not permit it."
+                        );
+                    }
+
                     const result = await taskService.trigger<ICmsGenerateEntryContentTaskInput>({
                         definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
                         input: {

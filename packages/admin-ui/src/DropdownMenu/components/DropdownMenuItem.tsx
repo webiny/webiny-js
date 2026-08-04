@@ -15,6 +15,11 @@ interface DropdownMenuItemBaseProps {
     text?: React.ReactNode;
     disabled?: boolean;
     onClick?: React.MouseEventHandler;
+    /**
+     * Keep the menu open after selecting this item. Useful for items that toggle a value
+     * (e.g. a checkbox), where the user expects to make multiple selections in one session.
+     */
+    preventClose?: boolean;
 }
 
 type DropdownMenuItemButtonProps = (DropdownMenuItemBaseProps &
@@ -52,7 +57,18 @@ const DropdownMenuItemBase = React.forwardRef<
     DropdownMenuItemProps
 >(
     (
-        { className, icon, text, readOnly, variant, disabled, onClick, children, ...linkProps },
+        {
+            className,
+            icon,
+            text,
+            readOnly,
+            variant,
+            disabled,
+            onClick,
+            preventClose,
+            children,
+            ...linkProps
+        },
         ref
     ) => {
         const { linkComponent: LinkComponent } = useAdminUi();
@@ -96,6 +112,7 @@ const DropdownMenuItemBase = React.forwardRef<
                 disabled={disabled}
                 ref={ref}
                 className={cn(variants({ readOnly, variant }), className)}
+                onSelect={preventClose ? event => event.preventDefault() : undefined}
             >
                 {content}
             </DropdownMenuPrimitive.Item>
