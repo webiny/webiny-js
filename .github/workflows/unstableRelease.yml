@@ -37,6 +37,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs: constants
@@ -70,6 +73,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   npmReleaseUnstable:
     needs:
       - constants
@@ -117,3 +123,6 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=unstable
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
