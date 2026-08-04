@@ -10,15 +10,13 @@ import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
 } from "@webiny/api-opensearch/testing/index.js";
-import {
-    getBaseConfiguration,
-    getOpenSearchIndexPrefix,
-    isSharedOpenSearchIndex
-} from "@webiny/api-opensearch";
+import { getBaseConfiguration } from "@webiny/api-opensearch";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createPgToOpenSearchHandler } from "@webiny/api-sync-pg-to-opensearch";
 import { createSyncBridge } from "./syncBridge.js";
+import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 
 const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
@@ -48,21 +46,12 @@ setStorageOps("apiCore", () => {
 });
 
 setStorageOps("cms", () => {
-    const createIndexName = model => {
-        const shared = isSharedOpenSearchIndex();
-        const base = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
-            .join("-")
-            .toLowerCase();
-        const p = getOpenSearchIndexPrefix();
-        return p ? p + base : base;
-    };
-
     const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {
         container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 const client = container.resolve(OpenSearchClient);
                 const { model } = event.payload;
-                const index = createIndexName(model);
+                const index = await createTestModelIndexName(container, { model });
                 try {
                     const response = await client.use().indices.exists({ index });
                     if (response.body) {
