@@ -96,7 +96,6 @@ jobs:
     name: Create constants
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -107,11 +106,6 @@ jobs:
           echo "global-cache-key=${{ needs.baseBranch.outputs.base-branch }}-${{
           runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
           }}" >> $GITHUB_OUTPUT
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -151,10 +145,18 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v5
+      - name: Compress build cache
+        run: >-
+          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
+          needs.baseBranch.outputs.base-branch }} .webiny/cached-packages
+      - name: Upload build cache
+        uses: actions/upload-artifact@v7
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+          path: run-build-cache.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -294,10 +296,14 @@ jobs:
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
+          needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -444,10 +450,14 @@ jobs:
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
+          needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -605,10 +615,14 @@ jobs:
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
+          needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -756,10 +770,14 @@ jobs:
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
+          needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -908,10 +926,14 @@ jobs:
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
+          needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
