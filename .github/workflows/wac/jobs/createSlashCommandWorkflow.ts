@@ -31,6 +31,13 @@ export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowPar
         name: `Check comment for /${command}`,
         if: commandTriggeredIf(command),
         checkout: false,
+        // The gate step reacts to the comment and create-or-update-comment posts a status
+        // comment, both via the default GITHUB_TOKEN - so this job needs write access to the
+        // PR/issue. Merged on top of createJob's baseline permissions.
+        permissions: {
+            "pull-requests": "write",
+            issues: "write"
+        },
         ...(captureCommentId
             ? { outputs: { "comment-id": "${{ steps.create-comment.outputs.comment-id }}" } }
             : {}),
@@ -39,7 +46,7 @@ export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowPar
             {
                 name: "Create comment",
                 id: "create-comment",
-                uses: "peter-evans/create-or-update-comment@v2",
+                uses: "peter-evans/create-or-update-comment@v5",
                 with: {
                     "issue-number": "${{ github.event.issue.number }}",
                     body: comment
