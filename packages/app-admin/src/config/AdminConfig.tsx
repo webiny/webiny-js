@@ -17,6 +17,8 @@ import { Title } from "./AdminConfig/Title.js";
 import { Logo } from "./AdminConfig/Logo.js";
 import { Dialog } from "./AdminConfig/Dialog.js";
 import type { DialogConfig } from "./AdminConfig/Dialog.js";
+import { Drawer } from "./AdminConfig/Drawer.js";
+import type { DrawerConfig } from "./AdminConfig/Drawer.js";
 import { Form } from "./AdminConfig/Form.js";
 import type { FieldRendererConfig } from "./AdminConfig/FieldRenderer.js";
 import type { LayoutRendererConfig } from "./AdminConfig/LayoutRenderer.js";
@@ -43,6 +45,7 @@ interface AdminConfig {
     permissionRenderers: PermissionRendererConfig[];
     lexicalTheme: EditorTheme;
     dialogs: DialogConfig[];
+    drawers: DrawerConfig[];
     fieldRenderers: FieldRendererConfig[];
     layoutRenderers: LayoutRendererConfig[];
 }
@@ -88,6 +91,7 @@ export const useAdminConfig = () => {
         permissionRenderers: baseConfig.permissionRenderers ?? [],
         lexicalTheme,
         dialogs: baseConfig.dialogs ?? [],
+        drawers: baseConfig.drawers ?? [],
         fieldRenderers: baseConfig.fieldRenderers ?? [],
         layoutRenderers: baseConfig.layoutRenderers ?? []
     };
@@ -122,6 +126,7 @@ export const AdminConfig = Object.assign(Private, {
     Security,
     LexicalTheme,
     Dialog,
+    Drawer,
     Form,
     useAdminConfig
 });

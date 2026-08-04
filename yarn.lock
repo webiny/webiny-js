@@ -10435,6 +10435,7 @@ __metadata:
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -10445,6 +10446,8 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
+    "@webiny/lexical-converter": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -10452,6 +10455,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^7.0.47"
     front-matter: "npm:^4.0.2"
+    happy-dom: "npm:^20.11.1"
     lodash: "npm:^4.18.1"
     mobx: "npm:^7.0.0"
     mobx-react-lite: "npm:^5.0.0"
@@ -12865,34 +12869,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/content-sdk-nextjs@workspace:packages/content-sdk-nextjs":
-  version: 0.0.0-use.local
-  resolution: "@webiny/content-sdk-nextjs@workspace:packages/content-sdk-nextjs"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cms-nextjs": "npm:0.0.0"
-    "@webiny/content-sdk": "npm:0.0.0"
-    "@webiny/website-builder-nextjs": "npm:0.0.0"
-    typescript: "npm:7.0.2"
-    vitest: "npm:^4.1.10"
-  peerDependencies:
-    next: ">=15"
-    react: ">=19"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/content-sdk@npm:0.0.0, @webiny/content-sdk@workspace:packages/content-sdk":
-  version: 0.0.0-use.local
-  resolution: "@webiny/content-sdk@workspace:packages/content-sdk"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cms-sdk": "npm:0.0.0"
-    "@webiny/website-builder-sdk": "npm:0.0.0"
-    typescript: "npm:7.0.2"
-    vitest: "npm:^4.1.10"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/db-dynamodb@npm:0.0.0, @webiny/db-dynamodb@workspace:packages/db-dynamodb":
   version: 0.0.0-use.local
   resolution: "@webiny/db-dynamodb@workspace:packages/db-dynamodb"
@@ -13611,6 +13587,35 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     react: "npm:18.3.1"
     vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk-frontend@npm:0.0.0, @webiny/sdk-frontend@workspace:packages/sdk-frontend":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk-frontend@workspace:packages/sdk-frontend"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-sdk": "npm:0.0.0"
+    "@webiny/sdk": "npm:0.0.0"
+    "@webiny/website-builder-sdk": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/sdk-nextjs@workspace:packages/sdk-nextjs":
+  version: 0.0.0-use.local
+  resolution: "@webiny/sdk-nextjs@workspace:packages/sdk-nextjs"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-nextjs": "npm:0.0.0"
+    "@webiny/sdk-frontend": "npm:0.0.0"
+    "@webiny/website-builder-nextjs": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.10"
+  peerDependencies:
+    next: ">=15"
+    react: ">=19"
   languageName: unknown
   linkType: soft
 
@@ -18556,7 +18561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"happy-dom@npm:^20.9.0":
+"happy-dom@npm:^20.11.1, happy-dom@npm:^20.9.0":
   version: 20.11.1
   resolution: "happy-dom@npm:20.11.1"
   dependencies:
