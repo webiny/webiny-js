@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.5.0",
-    "@types/lodash": "^4.17.24",
+    "@types/lodash": "^4.17.25",
     "@webiny/api-core-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",

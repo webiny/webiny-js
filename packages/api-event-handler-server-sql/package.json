@@ -28,7 +28,7 @@
     "@webiny/self-hosted-auth": "0.0.0",
     "@webiny/self-hosted-auth-sql": "0.0.0",
     "@webiny/stdlib": "^0.0.15",
-    "better-sqlite3": "^13.0.1",
+    "better-sqlite3": "^13.0.2",
     "knex": "^3.3.0",
     "pg": "^8.22.0"
   },
