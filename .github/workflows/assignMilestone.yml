@@ -4,7 +4,7 @@
 # For more information, run "github-actions-wac --help".
 name: Assign Milestone
 'on':
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
@@ -17,6 +17,7 @@ concurrency:
 jobs:
   assignMilestone:
     name: Assign milestone based on base branch
+    if: ${{ !github.event.pull_request.head.repo.fork }}
     permissions:
       issues: write
       pull-requests: write

@@ -3,18 +3,20 @@ import { createJob } from "./jobs/index.js";
 
 // A PR opened against `release/6.5.0` gets the `6.5.0` milestone assigned automatically.
 //
-// Uses `pull_request_target` instead of `pull_request` so the workflow also works for PRs
-// opened from forks: `pull_request` hands fork runs a read-only token (and no secrets), which
-// cannot write a milestone. `pull_request_target` runs the base branch's copy of this workflow
-// with a writable token. That is only safe because we never check out or execute the PR's code -
-// keep this job checkout-free and free of any `run` step that touches PR content.
+// Uses `pull_request`, not `pull_request_target`. `pull_request_target` would also cover PRs
+// opened from forks (they get a read-only token and no secrets on `pull_request`, so they cannot
+// write a milestone), but it runs the base branch's copy of the workflow with a writable token
+// against the PR's head - a footgun that only stays safe as long as nobody adds a checkout. Fork
+// PRs against release branches are not worth that risk, so they are skipped instead: the job is
+// gated on the PR not coming from a fork, which keeps fork PRs green rather than failing them on
+// a permission error.
 //
 // The `branches` filter applies to the PR's BASE branch, so the workflow only ever starts for
 // release branches. `edited` is included to catch a PR being retargeted onto (or off of) one.
 export const assignMilestone = createWorkflow({
     name: "Assign Milestone",
     on: {
-        pull_request_target: {
+        pull_request: {
             types: ["opened", "reopened", "edited"],
             branches: ["release/*"]
         }
@@ -26,6 +28,8 @@ export const assignMilestone = createWorkflow({
     jobs: {
         assignMilestone: createJob({
             name: "Assign milestone based on base branch",
+            // Fork PRs get a read-only token on `pull_request` and cannot write a milestone.
+            if: "${{ !github.event.pull_request.head.repo.fork }}",
             checkout: false,
             // Writing a milestone goes through the issues API, and the PR itself is an issue.
             permissions: {
