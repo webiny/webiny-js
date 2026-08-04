@@ -167,6 +167,7 @@ jobs:
       actions: write
   vitest-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (No storage) - Constants
@@ -266,6 +267,7 @@ jobs:
       actions: write
   vitest-run:
     needs:
+      - baseBranch
       - constants
       - vitest-constants
     name: No storage / ${{ matrix.testCommand.title }}
@@ -322,6 +324,7 @@ jobs:
       actions: write
   vitest-ddb-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (DDB) - Constants
@@ -419,6 +422,7 @@ jobs:
       actions: write
   vitest-ddb-run:
     needs:
+      - baseBranch
       - constants
       - vitest-ddb-constants
     name: DDB / ${{ matrix.testCommand.title }}
@@ -478,6 +482,7 @@ jobs:
       actions: write
   vitest-ddb-os-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (DDB+OS) - Constants
@@ -575,6 +580,7 @@ jobs:
       actions: write
   vitest-ddb-os-run:
     needs:
+      - baseBranch
       - constants
       - vitest-ddb-os-constants
     name: DDB+OS / ${{ matrix.testCommand.title }}
@@ -646,6 +652,7 @@ jobs:
       id-token: write
   vitest-sql-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (SQL) - Constants
@@ -743,6 +750,7 @@ jobs:
       actions: write
   vitest-sql-run:
     needs:
+      - baseBranch
       - constants
       - vitest-sql-constants
     name: SQL / ${{ matrix.testCommand.title }}
@@ -802,6 +810,7 @@ jobs:
       actions: write
   vitest-pglite-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (PGlite) - Constants
@@ -899,6 +908,7 @@ jobs:
       actions: write
   vitest-pglite-run:
     needs:
+      - baseBranch
       - constants
       - vitest-pglite-constants
     name: PGlite / ${{ matrix.testCommand.title }}

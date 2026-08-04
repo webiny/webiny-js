@@ -208,7 +208,10 @@ const callClaude = async prompt => {
 
 // The model is asked for bare JSON, but strip accidental ```json fences just in case.
 const parseResult = text => {
-    const cleaned = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+    const cleaned = text
+        .trim()
+        .replace(/^```(?:json)?\s*/i, "")
+        .replace(/\s*```$/, "");
     const start = cleaned.indexOf("{");
     const end = cleaned.lastIndexOf("}");
     if (start === -1 || end === -1) {
@@ -247,7 +250,9 @@ const renderReport = result => {
     const lines = [MARKER, "## 🚓 Slop Cop", ""];
 
     if (result.verdict !== "warnings" || findings.length === 0) {
-        lines.push("✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules.");
+        lines.push(
+            "✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules."
+        );
         if (result.summary) {
             lines.push("", `_${result.summary}_`);
         }

@@ -146,7 +146,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     return {
         [jobNames.constants]: createJob({
-            needs: ["build", "checkComment"],
+            needs: ["baseBranch", "build", "checkComment"],
             name: `Vitest (${rowLabel}) - Constants`,
             checkout: { path: DIR_WEBINY_JS },
             outputs: {
@@ -173,7 +173,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             steps: [createReportResultStep(rowLabel, jobNames.tests)]
         }),
         [jobNames.tests]: createJob({
-            needs: ["constants", jobNames.constants],
+            needs: ["baseBranch", "constants", jobNames.constants],
             // The group prefix lets `vitest-*-result` / `vitestStatusSummary`
             // filter this group's matrix legs out of the run's jobs API.
             name: `${rowLabel} / \${{ matrix.testCommand.title }}`,
