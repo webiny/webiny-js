@@ -13,5 +13,6 @@ Read every rule in this folder before writing or editing code.
 | [no-backwards-compat.md](./no-backwards-compat.md)                                           | Refactors ignore backwards compatibility unless the prompt says otherwise. |
 | [no-console-in-backend.md](./no-console-in-backend.md)                                       | No `console.*` in `api-*` code; use the DI `Logger`.                       |
 | [no-inline-class-in-create-implementation.md](./no-inline-class-in-create-implementation.md) | Declare implementation classes separately with an `implements` clause.     |
+| [compose-css-class-names.md](./compose-css-class-names.md)                                   | Compose class names with a `cn` helper, never `+` or template literals.    |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.
