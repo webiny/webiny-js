@@ -1,25 +1,22 @@
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { ReactComponent as ScheduledIcon } from "@webiny/icons/access_time.svg";
-import { ScheduleActionType } from "~/types.js";
-import { scheduleDateFormatter } from "../scheduleDateFormatter.js";
+import type { IScheduleDialogRescheduling } from "../abstractions.js";
 
 interface IReschedulingAlertProps {
-    scheduleOn: Date | undefined;
-    actionType: ScheduleActionType | undefined;
+    rescheduling: IScheduleDialogRescheduling | null;
 }
 
-export const ReschedulingAlert = ({ scheduleOn, actionType }: IReschedulingAlertProps) => {
-    if (!scheduleOn || !actionType) {
+export const ReschedulingAlert = ({ rescheduling }: IReschedulingAlertProps) => {
+    if (!rescheduling) {
         return null;
     }
-    const actionName = actionType === ScheduleActionType.publish ? "publish" : "unpublish";
     return (
         <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
             <>
-                A {actionName} is already scheduled at
+                A {rescheduling.actionName} is already scheduled at
                 <br />
-                <strong>{scheduleDateFormatter.format(scheduleOn)}</strong>.
+                <strong>{rescheduling.scheduleOn}</strong>.
             </>
         </Alert>
     );

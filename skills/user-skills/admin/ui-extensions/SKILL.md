@@ -2,10 +2,11 @@
 name: webiny-admin-ui-extensions
 description: >
   Customizing the Webiny Admin UI -- white-labeling, custom data list columns, page-type forms,
-  and Lexical editor plugins. Use this skill when the developer wants to change branding (logo,
-  title, theme colors), add custom columns to content entry list views, create custom forms
-  for Website Builder page types, or extend the Lexical rich text editor. Covers AdminConfig,
-  ContentEntryListConfig, Browser.Table.Column, Bind, useForm, and form validation.
+  named dialogs, named drawers, and Lexical editor plugins. Use this skill when the developer
+  wants to change branding (logo, title, theme colors), add custom columns to content entry
+  list views, create custom forms for Website Builder page types, register named dialogs or
+  drawers that can be opened from anywhere with params, or extend the Lexical rich text editor.
+  Covers AdminConfig, ContentEntryListConfig, useDialog, useDrawer, useOpenDialog, useOpenDrawer.
 ---
 
 # Admin UI Extensions
@@ -214,6 +215,177 @@ export const RetailPageForm = () => {
 | `Input`          | `"webiny/admin/ui"`   | Text input field                                    |
 | `Select`         | `"webiny/admin/ui"`   | Dropdown select with options                        |
 | `FormApi`        | `"webiny/admin/form"` | Type for the form API object                        |
+
+## Named Dialogs
+
+Register a dialog by name, open it from anywhere with params, and consume params inside the dialog.
+
+### Register a Named Dialog
+
+```tsx
+// extensions/MyDialog.tsx
+import React from "react";
+import { AdminConfig } from "webiny/admin/configs";
+import { useDialog } from "webiny/admin";
+import { Dialog } from "webiny/admin/ui";
+
+const MyDialog = () => {
+  const { params, closeDialog } = useDialog();
+
+  return (
+    <Dialog open onClose={closeDialog} title="My Dialog">
+      <p>Received param: {params.itemId as string}</p>
+      <Dialog.CancelAction onClick={closeDialog} text="Close" />
+    </Dialog>
+  );
+};
+
+const MyDialogConfig = () => {
+  return (
+    <AdminConfig>
+      <AdminConfig.Dialog name="my-dialog" element={<MyDialog />} />
+    </AdminConfig>
+  );
+};
+
+export default MyDialogConfig;
+```
+
+### Open a Named Dialog
+
+```tsx
+import { useOpenDialog } from "webiny/admin";
+
+const MyButton = () => {
+  const { openDialog } = useOpenDialog();
+
+  return <button onClick={() => openDialog("my-dialog", { itemId: "abc" })}>Open Dialog</button>;
+};
+```
+
+### Typed Params with Zod
+
+```tsx
+import { z } from "zod";
+import { useDialog } from "webiny/admin";
+
+const paramsSchema = z.object({ itemId: z.string() });
+
+const MyDialog = () => {
+  const { params, closeDialog } = useDialog(paramsSchema);
+  // params.itemId is typed as string
+};
+```
+
+### Dialog API Reference
+
+| Hook / Component         | Import                   | Purpose                                                    |
+| ------------------------ | ------------------------ | ---------------------------------------------------------- |
+| `AdminConfig.Dialog`     | `"webiny/admin/configs"` | Register a named dialog                                    |
+| `useDialog(schema?)`     | `"webiny/admin"`         | Read params inside a named dialog                          |
+| `useOpenDialog(schema?)` | `"webiny/admin"`         | Open a named dialog with params                            |
+| `useDialogs()`           | `"webiny/admin"`         | Low-level access to `openNamedDialog` / `closeNamedDialog` |
+
+Only one named dialog can be open at a time. Opening a new one replaces the current one.
+
+## Named Drawers
+
+Register a drawer (slide-in panel) by name, open it from anywhere with params. Multiple drawers can be open simultaneously — they stack on top of each other.
+
+### Register a Named Drawer
+
+```tsx
+// extensions/MyDrawer.tsx
+import React from "react";
+import { AdminConfig } from "webiny/admin/configs";
+import { useDrawer } from "webiny/admin";
+import { Drawer } from "webiny/admin/ui";
+
+const MyDrawer = () => {
+  const { params, closeDrawer } = useDrawer();
+
+  return (
+    <Drawer open onOpenChange={open => !open && closeDrawer()} title="My Drawer" size="md">
+      <p>Item: {params.itemId as string}</p>
+    </Drawer>
+  );
+};
+
+const MyDrawerConfig = () => {
+  return (
+    <AdminConfig>
+      <AdminConfig.Drawer name="my-drawer" element={<MyDrawer />} />
+    </AdminConfig>
+  );
+};
+
+export default MyDrawerConfig;
+```
+
+### Open a Named Drawer
+
+```tsx
+import { useOpenDrawer } from "webiny/admin";
+
+const MyButton = () => {
+  const { openDrawer } = useOpenDrawer();
+
+  return <button onClick={() => openDrawer("my-drawer", { itemId: "abc" })}>Open Drawer</button>;
+};
+```
+
+### Stacking Drawers
+
+```tsx
+const { openDrawer } = useOpenDrawer();
+
+// Open first drawer
+openDrawer("settings-drawer", { tab: "general" });
+
+// Open second drawer on top
+openDrawer("detail-drawer", { id: "123" });
+```
+
+### Closing Drawers
+
+```tsx
+import { useDrawers } from "webiny/admin";
+
+const { closeNamedDrawer } = useDrawers();
+
+closeNamedDrawer(); // close the topmost drawer
+closeNamedDrawer("my-drawer"); // close a specific drawer by name
+```
+
+### Typed Params with Zod
+
+```tsx
+import { z } from "zod";
+import { useDrawer } from "webiny/admin";
+
+const paramsSchema = z.object({ itemId: z.string() });
+
+const MyDrawer = () => {
+  const { params, closeDrawer } = useDrawer(paramsSchema);
+  // params.itemId is typed as string
+};
+```
+
+### Drawer API Reference
+
+| Hook / Component         | Import                   | Purpose                                                    |
+| ------------------------ | ------------------------ | ---------------------------------------------------------- |
+| `AdminConfig.Drawer`     | `"webiny/admin/configs"` | Register a named drawer                                    |
+| `useDrawer(schema?)`     | `"webiny/admin"`         | Read params inside a named drawer                          |
+| `useOpenDrawer(schema?)` | `"webiny/admin"`         | Open a named drawer with params                            |
+| `useDrawers()`           | `"webiny/admin"`         | Low-level access to `openNamedDrawer` / `closeNamedDrawer` |
+
+Key differences from dialogs:
+
+- Multiple drawers can be open at the same time (they stack)
+- Opening the same drawer name again while open is a no-op (prevents duplicates)
+- `closeNamedDrawer()` without args closes the topmost; with a name closes that specific drawer
+- Drawer sizes: `"sm"` (384px), `"md"` (520px), `"lg"` (640px), `"xl"` (1024px)
 
 ## Lexical Editor Plugins
 

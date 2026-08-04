@@ -7,6 +7,7 @@ import { createUiStateProvider } from "./providers/UiStateProvider.js";
 import { createAdminUiStateProvider } from "./providers/AdminUiStateProvider.js";
 import { createUiProviders } from "./providers/UiProviders.js";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext.js";
+import { createDrawersProvider } from "~/components/Drawers/DrawersContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
 import { createRootContainer } from "~/base/createRootContainer.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
@@ -17,6 +18,7 @@ import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
 import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
+import { DateFormatterFeature } from "~/features/dateFormatter/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/index.js";
 import { SortableFeature } from "~/presentation/sortable/index.js";
 import { NotificationsRenderer } from "~/features/notifications/NotificationsRenderer.js";
@@ -38,6 +40,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     }
 
     SecurityFeature.register(container);
+    DateFormatterFeature.register(container);
     FormModelFeature.register(container);
     WebinySdkFeature.register(container);
     ListPresenterFeature.register(container);
@@ -51,6 +54,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     const UiStateProvider = createUiStateProvider();
     const AdminUiStateProvider = createAdminUiStateProvider();
     const DialogsProvider = createDialogsProvider();
+    const DrawersProvider = createDrawersProvider();
     const TenancyProvider = createTenancyProvider();
 
     return (
@@ -65,6 +69,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
                         UIProviders,
                         UiStateProvider,
                         DialogsProvider,
+                        DrawersProvider,
                         IconPickerConfigProvider,
                         AdminUiStateProvider,
                         TenancyProvider
