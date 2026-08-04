@@ -2,7 +2,7 @@ import { ApiKeyFactory } from "webiny/api/security";
 import { TenantContext } from "webiny/api/tenancy";
 import { GetApiKeyBySlugUseCase } from "webiny/api/security/api-key";
 
-class WebsiteBuilderApiKeyImpl implements ApiKeyFactory.Interface {
+class SharedRootTenantApiKeyImpl implements ApiKeyFactory.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
         private getApiKeyBySlug: GetApiKeyBySlugUseCase.Interface
@@ -10,7 +10,7 @@ class WebsiteBuilderApiKeyImpl implements ApiKeyFactory.Interface {
 
     async execute(): ApiKeyFactory.Return {
         const result = await this.tenantContext.withRootTenant(() => {
-            return this.getApiKeyBySlug.execute("website-builder");
+            return this.getApiKeyBySlug.execute("frontend-integration");
         });
 
         if (result.isFail()) {
@@ -31,6 +31,6 @@ class WebsiteBuilderApiKeyImpl implements ApiKeyFactory.Interface {
 }
 
 export default ApiKeyFactory.createImplementation({
-    implementation: WebsiteBuilderApiKeyImpl,
+    implementation: SharedRootTenantApiKeyImpl,
     dependencies: [TenantContext, GetApiKeyBySlugUseCase]
 });
