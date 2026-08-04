@@ -84,3 +84,12 @@ export type {
     GetPageWithExperimentOptions,
     ExperimentCookie
 } from "@webiny/website-builder-nextjs";
+export { GraphQLRemoteComponentLoader } from "./remote-components/GraphQLRemoteComponentLoader.js";
+export type { GraphQLRemoteComponentLoaderConfig } from "./remote-components/GraphQLRemoteComponentLoader.js";
+export type {
+    RemoteComponentManifest,
+    RemoteComponentManifestEntry,
+    RemoteArtifact,
+    RemoteComponentBundleModule,
+    RemoteRuntimeSdk
+} from "./remote-components/types.js";
