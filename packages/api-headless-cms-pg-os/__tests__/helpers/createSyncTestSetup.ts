@@ -12,7 +12,6 @@ import { SyncTableManagerFeature } from "../../src/features/syncTableManager/fea
 import { SyncTableManager } from "../../src/features/syncTableManager/abstractions.js";
 import { SyncEventHandlerFeature } from "../../src/features/syncEventHandler/feature.js";
 import { SyncEventHandler } from "../../src/features/syncEventHandler/abstractions.js";
-import { CmsModelOpenSearchIndexFeature } from "../../src/features/CmsModelOpenSearchIndex/feature.js";
 import { SyncWriterFeature } from "../../src/features/SyncWriter/feature.js";
 import { WriteEntry } from "../../src/features/SyncWriter/abstractions/WriteEntry.js";
 import { WriteLatest } from "../../src/features/SyncWriter/abstractions/WriteLatest.js";
@@ -36,8 +35,16 @@ export const createSyncTestSetup = async () => {
 
     const knex = knexLib({
         client: "pg",
-        connection: { host: "127.0.0.1", port: server.port, database: "postgres" },
-        pool: { min: 1, max: 2 }
+        connection: {
+            host: "127.0.0.1",
+            // @ts-expect-error
+            port: server.port,
+            database: "postgres"
+        },
+        pool: {
+            min: 1,
+            max: 2
+        }
     });
 
     const osClient: TestOpenSearchClient = createTestOpenSearchClient();
@@ -51,7 +58,10 @@ export const createSyncTestSetup = async () => {
         getAll: () => []
     });
     container.registerInstance(OpenSearchClient, { use: () => osClient });
-    container.registerInstance(Timer, { getRemainingSeconds: () => 300 });
+    container.registerInstance(Timer, {
+        getRemainingMilliseconds: () => 300000,
+        getRemainingSeconds: () => 300
+    });
     container.registerInstance(Env, {
         getString: (_key: string, fallback?: string) => fallback ?? "",
         getStringOrThrow: (key: string) => {
@@ -89,7 +99,6 @@ export const createSyncTestSetup = async () => {
     TableNameResolverFeature.register(container);
     CompressionFeature.register(container);
     CmsEntryOpenSearchFieldIndexFeature.register(container);
-    CmsModelOpenSearchIndexFeature.register(container);
     SyncTableManagerFeature.register(container);
     SyncWriterFeature.register(container);
     OperationsFactoryFeature.register(container);

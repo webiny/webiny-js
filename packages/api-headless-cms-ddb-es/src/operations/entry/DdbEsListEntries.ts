@@ -12,13 +12,13 @@ import type { Client } from "@webiny/api-opensearch";
 import { createLimit, decodeCursor, encodeCursor } from "@webiny/api-opensearch";
 import type { OpenSearchSearchResponse } from "@webiny/api-opensearch/types.js";
 import { getTotalCount } from "@webiny/api-opensearch/types.js";
-import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { extractEntriesFromIndex } from "@webiny/api-headless-cms-utils-os/helpers/index.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import {
     CmsEntryOpenSearchBodyBuilder,
-    CmsEntryOpenSearchFieldIndexRegistry
+    CmsEntryOpenSearchFieldIndexRegistry,
+    CmsModelOpenSearchIndexProvider
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";

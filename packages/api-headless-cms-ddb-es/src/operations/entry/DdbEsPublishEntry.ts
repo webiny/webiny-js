@@ -12,10 +12,10 @@ import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import {
     CmsEntryOpenSearchFieldIndexRegistry,
-    CmsEntryOpenSearchValuesModifier
+    CmsEntryOpenSearchValuesModifier,
+    CmsModelOpenSearchIndexProvider
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
 import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { createTransformer } from "./transformations/index.js";
 import {
