@@ -17,14 +17,14 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@rsbuild/core": "^2.1.8",
+    "@rsbuild/core": "^2.1.9",
     "@rsbuild/plugin-react": "^2.1.0",
     "@rsbuild/plugin-sass": "^2.0.1",
     "@rsbuild/plugin-svgr": "^2.0.5",
     "@rsbuild/plugin-type-check": "^1.6.0",
     "@rsdoctor/rspack-plugin": "^1.6.1",
     "@rslib/core": "^0.23.2",
-    "@rspack/core": "^2.1.6",
+    "@rspack/core": "^2.1.7",
     "@swc/plugin-emotion": "^14.15.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@webiny/stdlib": "^0.0.15",

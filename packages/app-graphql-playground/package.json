@@ -22,8 +22,8 @@
     "@webiny/stdlib": "^0.0.15",
     "graphql": "^16.14.2",
     "graphql-language-service": "^5.5.2",
-    "mobx": "^6.16.1",
-    "mobx-react-lite": "^4.1.1",
+    "mobx": "^7.0.0",
+    "mobx-react-lite": "^5.0.0",
     "monaco-editor": "0.53.0",
     "react": "18.3.1",
     "react-dom": "18.3.1"
