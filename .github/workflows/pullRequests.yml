@@ -21,6 +21,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
     if: github.base_ref == 'dev'
@@ -36,6 +39,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   constants:
     name: Create constants
     outputs:
@@ -89,6 +95,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs: constants
@@ -121,6 +130,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   buildProject:
     needs:
       - constants
@@ -165,6 +177,9 @@ jobs:
         run: yarn webiny build admin --no-deployment-checks
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysis:
     needs:
       - constants
@@ -209,6 +224,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisVerifyDependencies:
     needs:
       - constants
@@ -242,6 +260,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
@@ -265,6 +286,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
       - constants
@@ -296,6 +320,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
       - constants
@@ -340,6 +367,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
       - constants
@@ -371,6 +401,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
       - constants
@@ -424,9 +457,9 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
-      id-token: write
       contents: read
       actions: write
+      id-token: write
   vitest-ddb-os-constants:
     needs:
       - constants
@@ -458,6 +491,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
       - constants
@@ -519,9 +555,9 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
-      id-token: write
       contents: read
       actions: write
+      id-token: write
   vitest-sql-constants:
     needs:
       - constants
@@ -553,6 +589,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
       - constants
@@ -606,6 +645,6 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
-      id-token: write
       contents: read
       actions: write
+      id-token: write

@@ -13,6 +13,11 @@ jobs:
     if: >-
       ${{ github.event.issue.pull_request && (github.event.comment.body ==
       '/vitest' || startsWith(github.event.comment.body, '/vitest ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     outputs:
       comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
@@ -83,6 +88,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   constants:
     needs: baseBranch
     name: Create constants
@@ -108,6 +116,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
@@ -147,6 +158,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
       - build
@@ -188,6 +202,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-result:
     needs:
       - vitest-run
@@ -240,6 +257,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
       - constants
@@ -287,6 +307,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
       - build
@@ -327,6 +350,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-result:
     needs:
       - vitest-ddb-run
@@ -378,6 +404,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
       - constants
@@ -428,6 +457,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-constants:
     needs:
       - build
@@ -468,6 +500,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-result:
     needs:
       - vitest-ddb-os-run
@@ -519,6 +554,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
       - constants
@@ -581,9 +619,9 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     permissions:
-      id-token: write
       contents: read
       actions: write
+      id-token: write
   vitest-sql-constants:
     needs:
       - build
@@ -624,6 +662,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-result:
     needs:
       - vitest-sql-run
@@ -675,6 +716,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
       - constants
@@ -725,6 +769,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-constants:
     needs:
       - build
@@ -765,6 +812,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-result:
     needs:
       - vitest-pglite-run
@@ -816,6 +866,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-run:
     needs:
       - constants
@@ -868,6 +921,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitestStatusSummary:
     name: Vitest status summary
     needs:
@@ -1004,3 +1060,6 @@ jobs:
           gh pr edit "$PR_NUMBER" -R ${{ github.repository }} --body-file
           /tmp/pr-body.txt
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

@@ -13,6 +13,11 @@ jobs:
     if: >-
       ${{ github.event.issue.pull_request && (github.event.comment.body ==
       '/beta' || startsWith(github.event.comment.body, '/beta ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -78,6 +83,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   constants:
     needs:
       - checkComment
@@ -98,6 +106,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
@@ -129,6 +140,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   npmReleaseBeta:
     needs:
       - prBranch
@@ -207,6 +221,9 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   npmReleaseLatest:
     needs:
       - prBranch
@@ -284,3 +301,6 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

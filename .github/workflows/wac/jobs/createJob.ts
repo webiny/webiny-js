@@ -19,26 +19,45 @@ export const createJob = (params: CreateJobParams): NormalJob => {
         Object.assign(setupNodeStep.with, setupNode);
     }
 
+    // Set token permissions EXPLICITLY so caching works regardless of the repo/org default
+    // "Workflow permissions" setting (which can be flipped to read-only, e.g. during a
+    // security lockdown). Declaring a permissions block resets every unlisted scope to
+    // `none`, so we enumerate what jobs need:
+    //   - `contents: read`  -> actions/checkout
+    //   - `actions: write`  -> actions/cache SAVE (otherwise "cache write denied: token has
+    //                          no writable scopes")
+    // `awsAuth` adds `id-token: write` for AWS OIDC. A job can grant additional scopes via its
+    // own `permissions` (e.g. the /command comment job needs pull-requests/issues write);
+    // those are merged in last so callers can extend this baseline.
+    //
+    // Security: granting write here doesn't open anything to outsiders. The `checkCommandStep`
+    // write/admin gate + the universal `needs: checkComment` dependency mean non-collaborators'
+    // `/e2e` (etc.) skips all jobs - these scopes only apply when a real collaborator triggers a
+    // command. The pre-existing pwn-request risk on fork PRs (a maintainer running `/e2e` runs
+    // the PR's untrusted code with secrets) is unchanged by this; a same-repo/label safeguard
+    // could be added separately.
+    const permissions: Record<string, string> = {
+        contents: "read",
+        actions: "write"
+    };
+
+    if (awsAuth) {
+        permissions["id-token"] = "write";
+    }
+
+    if (jobParams.permissions) {
+        Object.assign(permissions, jobParams.permissions);
+    }
+
     const job: NormalJob = {
         ...jobParams,
         "runs-on": jobParams["runs-on"] || "ubuntu-latest",
         env: { NODE_OPTIONS, YARN_ENABLE_IMMUTABLE_INSTALLS: false },
-        steps: [setupNodeStep]
+        steps: [setupNodeStep],
+        permissions
     };
 
     if (awsAuth) {
-        job.permissions = {
-            // Required in order for the `aws-actions/configure-aws-credentials` to work.
-            // https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-permissions-settings
-            "id-token": "write",
-            // Declaring a `permissions` block resets every unlisted scope to `none`, which
-            // would leave the token with no writable scope - `actions/cache` then refuses to
-            // SAVE ("cache write denied: token has no writable scopes"). Re-grant the scopes
-            // these jobs still need: `contents: read` for checkout, `actions: write` for cache.
-            contents: "read",
-            actions: "write"
-        };
-
         job.steps!.push({
             name: "Configure AWS Credentials",
             uses: "aws-actions/configure-aws-credentials@v6.0.0",

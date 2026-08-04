@@ -13,6 +13,11 @@ jobs:
     if: >-
       ${{ github.event.issue.pull_request && (github.event.comment.body ==
       '/e2e' || startsWith(github.event.comment.body, '/e2e ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     outputs:
       comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
@@ -77,6 +82,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   constants:
     needs: baseBranch
     name: Create constants
@@ -102,6 +110,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
@@ -148,6 +159,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2e-wby-cms-ddb-constants:
     needs:
       - baseBranch
@@ -184,6 +198,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2e-wby-cms-ddb-project-setup:
     needs:
       - baseBranch
@@ -339,9 +356,9 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
       actions: write
+      id-token: write
   e2e-wby-cms-ddb-os-constants:
     needs:
       - baseBranch
@@ -378,6 +395,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2e-wby-cms-ddb-os-project-setup:
     needs:
       - baseBranch
@@ -554,6 +574,6 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
       actions: write
+      id-token: write
