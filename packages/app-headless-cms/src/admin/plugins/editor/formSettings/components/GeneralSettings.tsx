@@ -81,7 +81,7 @@ const GeneralSettings = ({ Bind }: GeneralSettingsProps) => {
                             label={"Preview Slug"}
                             placeholder={"{values.slug}"}
                             description={
-                                "Entry field pattern for the URL slug. Use {values.<fieldId>}."
+                                "Entry field pattern for the URL slug. Use {values.fieldId}."
                             }
                         />
                     </Bind>
