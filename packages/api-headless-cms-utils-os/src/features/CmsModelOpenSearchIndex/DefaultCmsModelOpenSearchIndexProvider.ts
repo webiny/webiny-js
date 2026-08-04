@@ -1,8 +1,8 @@
 import {
     CmsModelOpenSearchIndexProvider,
     type ICmsModelOpenSearchIndexProviderResult
-} from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
-import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/abstractions.js";
+} from "./CmsModelOpenSearchIndexProvider.js";
+import { CmsModelOpenSearchIndex } from "./abstractions.js";
 
 class CmsModelOpenSearchIndexProviderImpl implements CmsModelOpenSearchIndexProvider.Interface {
     private readonly cache = new Map<string, ICmsModelOpenSearchIndexProviderResult>();

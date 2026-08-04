@@ -1,7 +1,7 @@
 import type { CmsModelStorageOperationsCreateParams } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
-import { createConfigurations } from "~/configurations.js";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { CreateModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/CreateModelStorageOperation.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";

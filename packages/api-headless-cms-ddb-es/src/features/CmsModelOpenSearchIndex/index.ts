@@ -1,7 +1,7 @@
-export { CmsModelOpenSearchIndexFeature } from "./feature.js";
-export { CmsModelOpenSearchIndex } from "./abstractions.js";
 export {
+    CmsModelOpenSearchIndexFeature,
+    CmsModelOpenSearchIndex,
     CmsModelOpenSearchIndexProvider,
     DefaultCmsModelOpenSearchIndexProvider,
     type ICmsModelOpenSearchIndexProviderResult
-} from "./CmsModelOpenSearchIndexProvider.js";
+} from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/index.js";

@@ -1,7 +1,7 @@
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
-import { createConfigurations } from "~/configurations.js";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 
 class CreateElasticsearchIndexTaskImpl implements TenantIndexFactory.Interface {
     constructor(
