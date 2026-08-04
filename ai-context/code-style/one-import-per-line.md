@@ -4,11 +4,7 @@ Only import one named import per line.
 
 ```ts
 // Good
-import {
-    foo,
-    bar,
-    baz
-} from "./module";
+import { foo, bar, baz } from "./module";
 ```
 
 ```ts

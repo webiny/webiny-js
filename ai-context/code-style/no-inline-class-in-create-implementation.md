@@ -7,16 +7,16 @@ Both are enforced by the `webiny/no-inline-class-in-create-implementation` and `
 ```ts
 // Bad
 EventType.createImplementation({
-    implementation: class {
-        /* ... */
-    }
+  implementation: class {
+    /* ... */
+  }
 });
 ```
 
 ```ts
 // Good
 class HttpEventType implements EventType.Interface {
-    /* ... */
+  /* ... */
 }
 EventType.createImplementation({ implementation: HttpEventType });
 ```
