@@ -18,14 +18,9 @@ export class LiveSdk implements IContentSdk {
     private preview: boolean;
     private modelCache = new Map<string, CmsModelDefinition>();
 
-    constructor(config: CmsSdkConfig) {
+    constructor(config: CmsSdkConfig, webiny: Webiny) {
         this.preview = config.preview === true;
-        this.webiny = new Webiny({
-            endpoint: config.apiHost,
-            token: config.apiKey,
-            tenant: config.apiTenant || "root",
-            fetch: config.fetch
-        });
+        this.webiny = webiny;
     }
 
     async getModel(modelId: string): Promise<CmsModelDefinition | null> {
