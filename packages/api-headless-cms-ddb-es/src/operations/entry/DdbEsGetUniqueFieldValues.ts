@@ -10,7 +10,8 @@ import type {
     OpenSearchSearchResponse,
     SearchBody as OpenSearchSearchBody
 } from "@webiny/api-opensearch/types.js";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
+import { createConfigurations } from "~/configurations.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import { CmsEntryOpenSearchBodyBuilder } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
@@ -19,7 +20,8 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
 
     constructor(
         private bodyBuilder: CmsEntryOpenSearchBodyBuilder.Interface,
-        openSearchClient: OpenSearchClient.Interface
+        openSearchClient: OpenSearchClient.Interface,
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
@@ -27,7 +29,8 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
     async execute(model: CmsModel, params: CmsEntryStorageOperationsGetUniqueFieldValuesParams) {
         const { where, fieldId } = params;
 
-        const { index } = configurations.es({
+        const configurations = createConfigurations(this.indexProvider);
+        const { index } = await configurations.es({
             model
         });
 
@@ -104,5 +107,5 @@ class DdbEsGetUniqueFieldValuesImpl implements GetUniqueFieldValuesStorageOperat
 
 export const DdbEsGetUniqueFieldValues = GetUniqueFieldValuesStorageOperation.createImplementation({
     implementation: DdbEsGetUniqueFieldValuesImpl,
-    dependencies: [CmsEntryOpenSearchBodyBuilder, OpenSearchClient]
+    dependencies: [CmsEntryOpenSearchBodyBuilder, OpenSearchClient, CmsModelOpenSearchIndexProvider]
 });

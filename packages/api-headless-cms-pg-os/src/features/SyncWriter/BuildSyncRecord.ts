@@ -7,13 +7,15 @@ import {
     createLatestRecordType,
     createPublishedRecordType
 } from "@webiny/api-headless-cms-utils-os/operations/entry/recordType.js";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
 
 class BuildSyncRecordImpl implements Abstraction.Interface {
     public constructor(
         private readonly fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
-        private readonly compressionHandler: CompressionHandler.Interface
+        private readonly compressionHandler: CompressionHandler.Interface,
+        private readonly indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(params: Abstraction.Params<T>) {
@@ -37,7 +39,9 @@ class BuildSyncRecordImpl implements Abstraction.Interface {
         };
 
         const compressed = await this.compressionHandler.compress(document);
-        const { index } = configurations.es({ model });
+        const { index: rawIndex } = await this.indexProvider.execute({ model });
+        const prefix = getOpenSearchIndexPrefix();
+        const index = prefix ? prefix + rawIndex : rawIndex;
 
         return {
             id: `${entry.entryId}:${isLatest ? "L" : "P"}`,
@@ -52,5 +56,9 @@ class BuildSyncRecordImpl implements Abstraction.Interface {
 
 export const BuildSyncRecord = Abstraction.createImplementation({
     implementation: BuildSyncRecordImpl,
-    dependencies: [CmsEntryOpenSearchFieldIndexRegistry, CompressionHandler]
+    dependencies: [
+        CmsEntryOpenSearchFieldIndexRegistry,
+        CompressionHandler,
+        CmsModelOpenSearchIndexProvider
+    ]
 });

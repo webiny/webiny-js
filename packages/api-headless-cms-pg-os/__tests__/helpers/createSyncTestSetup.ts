@@ -12,6 +12,7 @@ import { SyncTableManagerFeature } from "../../src/features/syncTableManager/fea
 import { SyncTableManager } from "../../src/features/syncTableManager/abstractions.js";
 import { SyncEventHandlerFeature } from "../../src/features/syncEventHandler/feature.js";
 import { SyncEventHandler } from "../../src/features/syncEventHandler/abstractions.js";
+import { CmsModelOpenSearchIndexFeature } from "../../src/features/CmsModelOpenSearchIndex/feature.js";
 import { SyncWriterFeature } from "../../src/features/SyncWriter/feature.js";
 import { WriteEntry } from "../../src/features/SyncWriter/abstractions/WriteEntry.js";
 import { WriteLatest } from "../../src/features/SyncWriter/abstractions/WriteLatest.js";
@@ -88,6 +89,7 @@ export const createSyncTestSetup = async () => {
     TableNameResolverFeature.register(container);
     CompressionFeature.register(container);
     CmsEntryOpenSearchFieldIndexFeature.register(container);
+    CmsModelOpenSearchIndexFeature.register(container);
     SyncTableManagerFeature.register(container);
     SyncWriterFeature.register(container);
     OperationsFactoryFeature.register(container);

@@ -15,7 +15,8 @@ import {
     CmsEntryOpenSearchValuesModifier
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
+import { createConfigurations } from "~/configurations.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -37,6 +38,7 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
         private storageModelProvider: CmsStorageModelProvider.Interface,
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
         private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
     ) {}
 
@@ -125,7 +127,8 @@ class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
 
         const elasticsearchEntityWriter = this.esEntity.createEntityWriter();
 
-        const { index: esIndex } = configurations.es({
+        const configurations = createConfigurations(this.indexProvider);
+        const { index: esIndex } = await configurations.es({
             model
         });
 
@@ -351,6 +354,7 @@ export const DdbEsPublishEntry = PublishEntryStorageOperation.createImplementati
         CmsStorageModelProvider,
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
+        CmsModelOpenSearchIndexProvider,
         [CmsEntryOpenSearchValuesModifier, { multiple: true }]
     ]
 });

@@ -8,6 +8,7 @@ import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features
 import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/entryTableManager/feature.js";
 import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
 import { SyncWriterFeature } from "./SyncWriter/feature.js";
+import { CmsModelOpenSearchIndexFeature } from "./CmsModelOpenSearchIndex/feature.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { SqlGroupStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/group/feature.js";
 import { SqlModelStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/model/feature.js";
@@ -39,6 +40,7 @@ export const HeadlessCmsPgOsFeature = createFeature<IPgOsStorageOperationsConfig
         SyncTableManagerFeature.register(container);
         SyncWriterFeature.register(container);
 
+        CmsModelOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchUtilsFeature.register(container);
 
         SqlGroupStorageOpsFeature.register(container);

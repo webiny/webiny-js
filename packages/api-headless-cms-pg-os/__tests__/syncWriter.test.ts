@@ -12,6 +12,7 @@ import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-ut
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { SyncTableManagerFeature } from "../src/features/syncTableManager/feature.js";
 import { SyncTableManager } from "../src/features/syncTableManager/abstractions.js";
+import { CmsModelOpenSearchIndexFeature } from "../src/features/CmsModelOpenSearchIndex/feature.js";
 import { SyncWriterFeature } from "../src/features/SyncWriter/feature.js";
 import { WriteLatest } from "../src/features/SyncWriter/abstractions/WriteLatest.js";
 import { WritePublished } from "../src/features/SyncWriter/abstractions/WritePublished.js";
@@ -81,6 +82,7 @@ describe("SyncWriter", () => {
         TableNameResolverFeature.register(container);
         CompressionFeature.register(container);
         CmsEntryOpenSearchFieldIndexFeature.register(container);
+        CmsModelOpenSearchIndexFeature.register(container);
         SyncTableManagerFeature.register(container);
         SyncWriterFeature.register(container);
 

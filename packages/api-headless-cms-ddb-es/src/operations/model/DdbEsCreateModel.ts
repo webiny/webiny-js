@@ -1,6 +1,7 @@
 import type { CmsModelStorageOperationsCreateParams } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
+import { createConfigurations } from "~/configurations.js";
 import { CreateModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/model/CreateModelStorageOperation.js";
 import { CmsDdbEsModelEntity } from "~/abstractions/CmsDdbEsModelEntity.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
@@ -11,7 +12,8 @@ class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
 
     constructor(
         private entity: CmsDdbEsModelEntity.Interface,
-        openSearchClient: OpenSearchClient.Interface
+        openSearchClient: OpenSearchClient.Interface,
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
@@ -19,7 +21,8 @@ class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
     async execute(params: CmsModelStorageOperationsCreateParams) {
         const { model } = params;
 
-        const { index } = configurations.es({
+        const configurations = createConfigurations(this.indexProvider);
+        const { index } = await configurations.es({
             model
         });
 
@@ -57,5 +60,5 @@ class DdbEsCreateModelImpl implements CreateModelStorageOperation.Interface {
 
 export const DdbEsCreateModel = CreateModelStorageOperation.createImplementation({
     implementation: DdbEsCreateModelImpl,
-    dependencies: [CmsDdbEsModelEntity, OpenSearchClient]
+    dependencies: [CmsDdbEsModelEntity, OpenSearchClient, CmsModelOpenSearchIndexProvider]
 });
