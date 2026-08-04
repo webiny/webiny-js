@@ -294,17 +294,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheUploadSteps,
-                {
-                    name: "Upload build cache artifact",
-                    uses: "actions/upload-artifact@v6",
-                    with: {
-                        name: "build-cache",
-                        "retention-days": 1,
-                        "include-hidden-files": true,
-                        path: `${DIR_WEBINY_JS}/.webiny/cached-packages`
-                    }
-                }
+                ...runBuildCacheUploadSteps
             ]
         }),
         ...createCypressJobs("ddb"),
