@@ -50,11 +50,10 @@ const WebhookDeliveriesPageInner = observer(function WebhookDeliveriesPageInner(
         <div className="flex flex-col h-main-content">
             <div className="flex items-center justify-between py-sm px-md">
                 <Heading level={5}>Webhook Deliveries</Heading>
-                <WebhookDefinitionsButton />
-            </div>
-            <Separator />
-            <div className={"p-sm"}>
-                <DeliveryFilters presenter={presenter} />
+                <div className="flex items-center gap-sm">
+                    <DeliveryFilters presenter={presenter} />
+                    <WebhookDefinitionsButton />
+                </div>
             </div>
             <Separator />
             {vm.loading ? <Loader /> : <DeliveryList presenter={presenter} />}
