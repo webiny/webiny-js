@@ -46,7 +46,12 @@ const createCheckoutPrSteps = () =>
         {
             name: "Checkout Pull Request",
             "working-directory": DIR_WEBINY_JS,
-            run: "gh pr checkout ${{ github.event.issue.number }}",
+            // Detach onto the SHA `baseBranch` resolved, so every job in this run builds and
+            // tests the same commit even if the PR is pushed to mid-run.
+            run: [
+                "gh pr checkout ${{ github.event.issue.number }}",
+                "git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}"
+            ].join("\n"),
             env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
     ] as NonNullable<NormalJob["steps"]>;
@@ -218,7 +223,8 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             needs: "checkComment",
             name: "Get base branch",
             outputs: {
-                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
             },
             steps: [
                 {
@@ -226,6 +232,17 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                     id: "base-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE, here, and have every job check out exactly this
+                    // commit. Jobs in a single run can start tens of minutes apart, and each
+                    // `gh pr checkout` would otherwise resolve the PR head at its own start time -
+                    // so a push mid-run makes the build job produce output from one commit while
+                    // the test jobs run against another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]
         }),

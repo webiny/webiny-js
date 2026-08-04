@@ -72,6 +72,7 @@ jobs:
     name: Get base branch
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
+      pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -84,6 +85,13 @@ jobs:
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
+      - name: Get PR head SHA
+        id: pr-sha
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
+          headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -128,7 +136,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
@@ -293,7 +303,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
@@ -451,7 +463,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
@@ -620,7 +634,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
@@ -779,7 +795,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
@@ -939,7 +957,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
