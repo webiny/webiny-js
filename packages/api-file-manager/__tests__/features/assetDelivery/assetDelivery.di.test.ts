@@ -50,8 +50,7 @@ const createMockWcpContext = (privateFiles = false): WcpContext.Interface => ({
     canUseAiLexicalGeneration: () => false,
     canUseAiEntryGeneration: () => false,
     canUseAiEntryComparison: () => false,
-    canUseAiEntryTranslation: () => false,
-    canUseAbTesting: () => false
+    canUseAiEntryTranslation: () => false
 });
 
 describe("AssetDelivery DI integration", () => {

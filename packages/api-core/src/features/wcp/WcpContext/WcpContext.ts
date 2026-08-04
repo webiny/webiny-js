@@ -164,10 +164,6 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAiEntryTranslation();
     }
 
-    canUseAbTesting(): boolean {
-        return this.license.canUseAbTesting();
-    }
-
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {
         if (this.license.canUseFeature(wcpFeatureId)) {
             return;

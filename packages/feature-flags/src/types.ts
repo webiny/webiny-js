@@ -50,5 +50,4 @@ export interface IFeatureFlagsDto {
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
     aiPowerups?: IAiPowerupsFeatureFlags;
-    abTesting?: boolean;
 }

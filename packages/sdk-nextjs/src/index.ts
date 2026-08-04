@@ -38,16 +38,7 @@ export {
     IMAGE_RESIZE_WIDTHS,
     getImageSrcSet,
     getImageDimensions,
-    getPageWithExperiment,
-    resolveVisitorContext,
-    assignVariant,
-    forcedAssignment,
-    registerAnalyticsProvider,
-    getAnalyticsProvider,
-    ASPECT_RATIO_PRESETS,
-    FORCED_VARIANT_PARAM,
-    DEFAULT_VISITOR_COOKIE,
-    CONTROL_VARIANT_ID
+    ASPECT_RATIO_PRESETS
 } from "@webiny/website-builder-nextjs";
 export type { ComponentGroup } from "@webiny/sdk-frontend";
 export type {
@@ -69,18 +60,5 @@ export type {
     ImageSrcSetOptions,
     ImageDimensions,
     AspectRatioInput,
-    AspectRatioPreset,
-    ActiveExperiment,
-    ActiveExperimentVariant,
-    VariantContent,
-    VariantAssignment,
-    VisitorContext,
-    DeviceType,
-    ExperimentTrafficSplit,
-    ExperimentTargeting,
-    ExperimentAnalyticsConfig,
-    ExperimentSdk,
-    ExperimentRenderResult,
-    GetPageWithExperimentOptions,
-    ExperimentCookie
+    AspectRatioPreset
 } from "@webiny/website-builder-nextjs";

@@ -104,10 +104,6 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().canUseAiEntryTranslation();
     }
 
-    canUseAbTesting(): boolean {
-        return this.getWcpContext().canUseAbTesting();
-    }
-
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void {
         this.getWcpContext().ensureCanUseFeature(featureId);
     }

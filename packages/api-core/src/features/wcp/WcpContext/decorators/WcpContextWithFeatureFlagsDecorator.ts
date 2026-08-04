@@ -121,12 +121,6 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                                     : false
                             }
                         }
-                    },
-                    abTesting: {
-                        ...project.package.features.abTesting,
-                        enabled: flags.isAbTestingEnabled()
-                            ? project.package.features.abTesting?.enabled
-                            : false
                     }
                 }
             }
@@ -241,10 +235,6 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
             this.decoratee.canUseAiEntryTranslation() &&
             this.featureFlags.get().isAiEntryTranslationEnabled()
         );
-    }
-
-    canUseAbTesting() {
-        return this.decoratee.canUseAbTesting() && this.featureFlags.get().isAbTestingEnabled();
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {

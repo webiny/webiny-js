@@ -24,7 +24,7 @@ export * from "./createElement.js";
 export * from "./registerComponentGroup.js";
 export * from "./jsonPatch.js";
 export * from "./headersProvider.js";
-export * from "./experiments/index.js";
+
 export * from "./ComponentManifestToAstConverter.js";
 export * from "./findMatchingAstNode.js";
 export * from "./InheritanceProcessor.js";

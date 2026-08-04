@@ -58,8 +58,7 @@ export const FeatureFlags = defineExtension({
                         })
                         .optional()
                 })
-                .optional(),
-            abTesting: z.boolean().optional()
+                .optional()
         })
     }),
     render: ({ features = {} }) => {

@@ -58,7 +58,6 @@ export const Extension = () => {
             <RegisterFeature feature={DeletePageRevisionFeature} />
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
-            {/*<AbTesting />*/}
             <RegisterFeature feature={UnpublishPageFeature} />
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />

@@ -86,8 +86,4 @@ export class NullLicense implements ILicense {
     canUseAiEntryTranslation(): boolean {
         return false;
     }
-
-    canUseAbTesting(): boolean {
-        return false;
-    }
 }

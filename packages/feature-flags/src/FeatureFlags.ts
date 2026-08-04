@@ -106,8 +106,4 @@ export class FeatureFlags {
     isAiEntryTranslationEnabled(): boolean {
         return this.flags.aiPowerups?.options?.cms?.entryTranslation !== false;
     }
-
-    isAbTestingEnabled(): boolean {
-        return this.flags.abTesting !== false;
-    }
 }

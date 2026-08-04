@@ -84,10 +84,6 @@ export class ReactLicense implements ILicense {
         return this.license.canUseAiEntryTranslation();
     }
 
-    canUseAbTesting(): boolean {
-        return this.license.canUseAbTesting();
-    }
-
     toDto(): DecryptedWcpProjectLicense | null {
         return this.license.toDto();
     }

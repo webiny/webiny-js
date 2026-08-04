@@ -30,7 +30,6 @@ export interface ILicense {
     canUseAiEntryGeneration: () => boolean;
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
-    canUseAbTesting: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -60,8 +59,7 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     AUDIT_LOGS = "auditLogs",
     RECORD_LOCKING = "recordLocking",
     FILE_MANAGER = "fileManager",
-    AI_POWERUPS = "aiPowerups",
-    AB_TESTING = "abTesting"
+    AI_POWERUPS = "aiPowerups"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -121,9 +119,6 @@ export interface ProjectPackageFeatures {
                 entryTranslation?: boolean;
             };
         };
-    };
-    [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
-        enabled: boolean;
     };
 }
 

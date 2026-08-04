@@ -144,8 +144,4 @@ export class License implements ILicense {
     canUseAiEntryTranslation(): boolean {
         return this.license.package.features.aiPowerups?.options?.cms?.entryTranslation === true;
     }
-
-    canUseAbTesting(): boolean {
-        return this.canUseFeature("abTesting");
-    }
 }
