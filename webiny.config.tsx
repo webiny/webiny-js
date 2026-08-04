@@ -18,8 +18,6 @@ const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
 export const Extensions = () => {
     return (
         <>
-            <Api.Extension src={"@/extensions/tenantTheme/TenantThemeExtension.ts"} />
-            <Api.Extension src={"/extensions/WebsiteBuilderApiKey.ts"} />
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
