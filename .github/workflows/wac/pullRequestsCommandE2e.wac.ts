@@ -3,7 +3,8 @@ import {
     createDeployWebinySteps,
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createSetupVerdaccioSteps,
     createYarnCacheSteps,
     withCommonParams
@@ -18,7 +19,12 @@ const DIR_TEST_PROJECT = "new-webiny-project";
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 const createCheckoutPrSteps = () =>
     [
@@ -92,7 +98,7 @@ const createCypressJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
-            ...runBuildCacheSteps,
+            ...runBuildCacheDownloadSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
@@ -267,8 +273,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             needs: "baseBranch",
             name: "Create constants",
             outputs: {
-                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}"
             },
             checkout: false,
             steps: [
@@ -276,11 +281,6 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     name: "Create global cache key",
                     id: "global-cache-key",
                     run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
-                },
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -294,7 +294,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheUploadSteps,
                 {
                     name: "Upload build cache artifact",
                     uses: "actions/upload-artifact@v6",

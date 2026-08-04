@@ -18,7 +18,7 @@ export type {
 } from "@webiny/sdk";
 
 // Re-export useful values and types from both SDKs
-export { createComponent, resolveRefs } from "@webiny/cms-sdk";
+export { createComponent as createCmsComponent, resolveRefs } from "@webiny/cms-sdk";
 export type {
     CmsSdkConfig,
     CmsEntryValues,
@@ -49,4 +49,4 @@ export type {
     ComponentInput
 } from "@webiny/website-builder-sdk";
 
-export { createTheme } from "@webiny/website-builder-sdk";
+export { createTheme, createComponent as createWbComponent } from "@webiny/website-builder-sdk";
