@@ -46,7 +46,7 @@ const DatePickerTriggerInner = forwardRef<
                     data-disabled={disabled}
                     className={cn(
                         inputVariants({ size, variant, invalid }),
-                        "cursor-pointer justify-between select-none",
+                        "cursor-pointer justify-between select-none min-w-0 overflow-hidden",
                         disabled && "pointer-events-none opacity-50",
                         className
                     )}

@@ -19,4 +19,13 @@ export {
 export { ToolsFeature } from "@webiny/app-admin/features/tools/index.js";
 export { AdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 export { Routes } from "@webiny/app-admin/routes.js";
+export {
+    BulkActionButton,
+    useBulkActionDialog
+} from "@webiny/app-admin/components/BulkActions/index.js";
+export { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+export {
+    Command,
+    CommandPalettePresenter
+} from "@webiny/app-admin/presentation/commandPalette/index.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";

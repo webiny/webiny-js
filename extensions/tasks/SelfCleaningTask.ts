@@ -26,12 +26,10 @@ class SelfCleaningTaskImpl implements TaskDefinition.Interface {
 
         const modelsResult = await this.listCmsModels.execute();
         if (modelsResult.isFail()) {
-            // @ts-expect-error see TaskController augmentation note above
             return controller.response.error("Failed to list CMS models.");
         }
         const model = modelsResult.value[0];
         if (!model) {
-            // @ts-expect-error see TaskController augmentation note above
             return controller.response.error("No CMS models found.");
         }
         const titleFieldId = model.titleFieldId;
@@ -41,18 +39,15 @@ class SelfCleaningTaskImpl implements TaskDefinition.Interface {
         });
 
         if (entriesResult.isFail()) {
-            // @ts-expect-error see TaskController augmentation note above
             return controller.response.error(
                 `Failed to list latest CMS entries for model ${model.modelId}.`
             );
         }
         const entry = entriesResult.value.entries[0];
         if (!entry) {
-            // @ts-expect-error see TaskController augmentation note above
             return controller.response.error(`No CMS entries found for model ${model.modelId}.`);
         }
 
-        // @ts-expect-error see TaskController augmentation note above
         return controller.response.done(
             `Found entry with a title: ${entry.values[titleFieldId] || entry.id}`
         );

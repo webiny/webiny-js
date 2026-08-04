@@ -25,10 +25,10 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.24",
+    "@types/lodash": "^4.17.25",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
-    "execa": "^10.0.0",
+    "execa": "^10.0.1",
     "tsx": "4.23.1",
     "typescript": "^7.0.2"
   },

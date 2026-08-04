@@ -1,6 +1,6 @@
 import React from "react";
 import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
-import { ContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
+import { InternalContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { CmsGenerateContentButton } from "~/admin/presentation/CmsContentGeneration/CmsGenerateContentButton.js";
 import {
     CmsGenerateContentDialog,
@@ -9,7 +9,7 @@ import {
 import { CmsGenerateContentFeature } from "~/admin/presentation/CmsContentGeneration/feature.js";
 import { GenerateEntryContentFeature } from "~/admin/features/generateEntryContent/index.js";
 
-const { Actions } = ContentEntryEditorConfig;
+const { Actions } = InternalContentEntryEditorConfig;
 
 export const CmsContentGeneration = () => {
     return (
@@ -22,13 +22,13 @@ export const CmsContentGeneration = () => {
                     element={<CmsGenerateContentDialog />}
                 />
             </AdminConfig>
-            <ContentEntryEditorConfig>
+            <InternalContentEntryEditorConfig>
                 <Actions.ButtonAction
                     name={"generateEntryContent"}
                     before={"save"}
                     element={<CmsGenerateContentButton />}
                 />
-            </ContentEntryEditorConfig>
+            </InternalContentEntryEditorConfig>
         </>
     );
 };

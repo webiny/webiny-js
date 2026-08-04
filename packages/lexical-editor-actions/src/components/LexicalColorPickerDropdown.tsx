@@ -1,5 +1,5 @@
 import React from "react";
-import { useFontColorPicker, DropDown } from "@webiny/lexical-editor";
+import { useFontColorPicker, useRichTextEditor, DropDown } from "@webiny/lexical-editor";
 import { LexicalColorPicker } from "~/components/LexicalColorPicker/LexicalColorPicker.js";
 
 export interface LexicalColorPickerDropdownProps {
@@ -7,9 +7,10 @@ export interface LexicalColorPickerDropdownProps {
 }
 
 export const LexicalColorPickerDropdown = ({
-    allowCustomColor = false
+    allowCustomColor
 }: LexicalColorPickerDropdownProps) => {
     const { value, applyColor } = useFontColorPicker();
+    const { theme } = useRichTextEditor();
 
     // The current color is dynamic, so it's passed as a CSS custom property on a
     // `display: contents` wrapper (no layout box) and read by the icon's static class.
@@ -30,7 +31,7 @@ export const LexicalColorPickerDropdown = ({
                 <LexicalColorPicker
                     value={value}
                     onChangeComplete={applyColor}
-                    allowCustomColor={allowCustomColor}
+                    allowCustomColor={allowCustomColor ?? theme.allowCustomColors}
                 />
             </DropDown>
         </span>

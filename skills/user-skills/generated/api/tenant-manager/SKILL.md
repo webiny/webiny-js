@@ -1,6 +1,5 @@
 ---
 name: webiny-api-tenant-manager-catalog
-context: webiny-api
 description: >
   API — Tenant Manager — 9 abstractions.
   Tenant management event handlers and use cases.

@@ -19,9 +19,7 @@
   "dependencies": {
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
-    "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",

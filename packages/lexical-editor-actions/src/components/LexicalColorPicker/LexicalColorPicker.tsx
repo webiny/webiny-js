@@ -33,7 +33,7 @@ interface LexicalColorPickerProps {
     allowCustomColor?: boolean;
 }
 
-const showPickerStyle = { display: "block" };
+const showPickerStyle = { display: "block", width: "100%" };
 const hidePickerStyle = { display: "none" };
 
 export const LexicalColorPicker = ({

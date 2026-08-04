@@ -34,16 +34,15 @@
     ".webiny/**",
     "packages/admin-ui/scripts/importFromFigma/exports/Alias tokens.json",
     "packages/project-aws/_templates/appTemplates/",
-    "packages/project-server-template/template/appTemplates/",
     "coverage/**",
-    "packages/cli/files/**/*.json",
+    "packages/cli-core/files/**/*.json",
     "packages/create-webiny-project/utils/binaries/**",
     ".github/workflows/**/*.yml",
     "./nextjs/",
     "packages/admin-ui/storybook-static/**",
     "**/*.hbs",
-    "*.yaml",
-    "*.yml"
+    "*.yml",
+    "*.yaml"
   ],
   "overrides": [
     {

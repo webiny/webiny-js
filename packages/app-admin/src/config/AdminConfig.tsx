@@ -9,6 +9,7 @@ import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
+import { Breadcrumb, type BreadcrumbConfig } from "./AdminConfig/Breadcrumbs.js";
 import { Security } from "./AdminConfig/Security.js";
 import type { PermissionRendererConfig } from "../permissions/types.js";
 import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
@@ -38,6 +39,7 @@ interface AdminConfig {
     squareLogo: React.ReactNode;
     horizontalLogo: React.ReactNode;
     widgets: WidgetConfig[];
+    breadcrumbs: BreadcrumbConfig[];
     permissionRenderers: PermissionRendererConfig[];
     lexicalTheme: EditorTheme;
     dialogs: DialogConfig[];
@@ -68,7 +70,8 @@ export const useAdminConfig = () => {
         colors: baseConfig.lexicalTheme?.colors,
         typography: baseConfig.lexicalTheme?.typography || {},
         fontSizes: [],
-        tokens: lexicalTokens
+        tokens: lexicalTokens,
+        allowCustomColors: baseConfig.lexicalTheme?.allowCustomColors ?? false
     };
 
     return {
@@ -81,6 +84,7 @@ export const useAdminConfig = () => {
             horizontalLogo: baseConfig.horizontalLogo
         },
         widgets: baseConfig.widgets ?? [],
+        breadcrumbs: baseConfig.breadcrumbs ?? [],
         permissionRenderers: baseConfig.permissionRenderers ?? [],
         lexicalTheme,
         dialogs: baseConfig.dialogs ?? [],
@@ -114,6 +118,7 @@ export const AdminConfig = Object.assign(Private, {
     Title,
     Logo,
     Dashboard,
+    Breadcrumb,
     Security,
     LexicalTheme,
     Dialog,

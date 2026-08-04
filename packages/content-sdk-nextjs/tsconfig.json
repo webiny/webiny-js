@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../cms-nextjs" },
+    { "path": "../content-sdk" },
+    { "path": "../website-builder-nextjs" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/cms-nextjs/*": ["../cms-nextjs/src/*"],
+      "@webiny/cms-nextjs": ["../cms-nextjs/src"],
+      "@webiny/content-sdk/*": ["../content-sdk/src/*"],
+      "@webiny/content-sdk": ["../content-sdk/src"],
+      "@webiny/website-builder-nextjs/*": ["../website-builder-nextjs/src/*"],
+      "@webiny/website-builder-nextjs": ["../website-builder-nextjs/src"]
+    }
+  }
+}

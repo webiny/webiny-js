@@ -1,5 +1,5 @@
 import React from "react";
-import { LexicalEditor as BaseLexicalEditor } from "@webiny/app-admin";
+import { LexicalEditor as BaseLexicalEditor, AdminConfig } from "@webiny/app-admin";
 import { StaticToolbar } from "@webiny/lexical-editor";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
@@ -28,14 +28,18 @@ const lexicalTokens = createLexicalTokens("wb-lx-");
 
 export type LexicalEditorProps = Omit<React.ComponentProps<typeof BaseLexicalEditor>, "theme">;
 
+const { useAdminConfig } = AdminConfig;
+
 const LexicalEditorComponent = (props: LexicalEditorProps) => {
     const { theme } = useWebsiteBuilderTheme();
+    const { lexicalTheme } = useAdminConfig();
 
     const editorTheme: EditorTheme = {
         colors: theme?.colors ?? [],
         typography: theme?.typography ?? {},
         fontSizes: theme?.fontSizes ?? [],
-        tokens: lexicalTokens
+        tokens: lexicalTokens,
+        allowCustomColors: theme?.allowCustomColors ?? lexicalTheme.allowCustomColors
     };
 
     return (

@@ -1,44 +1,24 @@
 import WebinyError from "@webiny/error";
-import { configurations } from "~/configurations.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
+import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { CmsEntryOpenSearchIndexCreate as CmsEntryOpenSearchIndexCreateAbstraction } from "./abstractions.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-
-const getLastUsable = (
-    configs: CmsEntryOpenSearchIndex.Interface[],
-    model: CmsModel
-): CmsEntryOpenSearchIndex.Interface => {
-    const usable = configs.filter(c => c.canUse({ model }));
-    if (usable.length === 0) {
-        throw new WebinyError(
-            "Could not find a single usable CmsEntryOpenSearchIndex.",
-            "OPENSEARCH_INDEX_TEMPLATE_ERROR"
-        );
-    }
-    return usable[usable.length - 1];
-};
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 class CmsEntryOpenSearchIndexCreateImpl
     implements CmsEntryOpenSearchIndexCreateAbstraction.Interface
 {
     public constructor(
         private readonly openSearchClient: OpenSearchClient.Interface,
-        private readonly indexConfigs: CmsEntryOpenSearchIndex.Interface[]
+        private readonly indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {}
 
     public async execute(params: CmsEntryOpenSearchIndexCreateAbstraction.Params): Promise<void> {
         const { model } = params;
         const client = this.openSearchClient.use();
 
-        const { index } = configurations.es({ model });
-
-        const config = getLastUsable(this.indexConfigs, model);
-        if (!config) {
-            throw new Error(
-                `Could not find a usable CmsEntryOpenSearchIndex for the CMS model "${model.name}".`
-            );
-        }
+        const { index: rawIndex, settings } = await this.indexProvider.execute({ model });
+        const prefix = getOpenSearchIndexPrefix();
+        const index = prefix ? prefix + rawIndex : rawIndex;
 
         try {
             const response = await client.indices.exists({
@@ -63,7 +43,7 @@ class CmsEntryOpenSearchIndexCreateImpl
             await client.indices.create({
                 index,
                 body: {
-                    ...config.body
+                    ...settings
                 }
             });
         } catch (ex) {
@@ -83,7 +63,7 @@ class CmsEntryOpenSearchIndexCreateImpl
                     },
                     tenant: model.tenant,
                     index,
-                    body: config.body
+                    body: settings
                 }
             );
         }
@@ -93,5 +73,5 @@ class CmsEntryOpenSearchIndexCreateImpl
 export const CmsEntryOpenSearchIndexCreate =
     CmsEntryOpenSearchIndexCreateAbstraction.createImplementation({
         implementation: CmsEntryOpenSearchIndexCreateImpl,
-        dependencies: [OpenSearchClient, [CmsEntryOpenSearchIndex, { multiple: true }]]
+        dependencies: [OpenSearchClient, CmsModelOpenSearchIndexProvider]
     });

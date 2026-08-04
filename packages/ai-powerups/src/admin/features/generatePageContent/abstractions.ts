@@ -8,6 +8,7 @@ export interface GeneratePageContentParams {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 export interface IGeneratePageContentUseCase {

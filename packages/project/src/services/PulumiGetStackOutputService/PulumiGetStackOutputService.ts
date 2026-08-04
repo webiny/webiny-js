@@ -1,29 +1,21 @@
 import { createImplementation } from "@webiny/di";
 import {
     GetPulumiService,
-    GetProjectService,
     LoggerService,
     PulumiGetStackOutputService,
     PulumiSelectStackService,
-    ProjectSdkParamsService
+    StackOutputCacheService
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import { createEnvConfiguration, withPulumiConfigPassphrase } from "~/utils/env/index.js";
 import { mapStackOutput } from "./mapStackOutput.js";
-import fs from "fs/promises";
-import path from "path";
 
 export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputService.Interface {
-    private static readonly DEFAULT_ENV = "dev";
-    private static readonly DEFAULT_REGION = "default";
-    private static readonly DEFAULT_VARIANT = "default";
-
     constructor(
         private getPulumiService: GetPulumiService.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private loggerService: LoggerService.Interface,
-        private getProjectService: GetProjectService.Interface,
-        private projectSdkParamsService: ProjectSdkParamsService.Interface
+        private stackOutputCacheService: StackOutputCacheService.Interface
     ) {}
 
     async execute<TOutput extends Record<string, any> = Record<string, any>>(
@@ -32,12 +24,8 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
     ): Promise<TOutput | null> {
         // Try to read from cache if skipCache is not true
         if (!params?.skipCache) {
-            const cachedOutput = await this.readFromCache(app);
+            const cachedOutput = await this.stackOutputCacheService.read(app);
             if (cachedOutput !== null) {
-                this.loggerService.debug(
-                    { app: app.name, cacheKey: this.getCacheKey(app) },
-                    "Stack output read from cache"
-                );
                 return this.applyMapping(cachedOutput, params?.map) as TOutput;
             }
         }
@@ -64,12 +52,7 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
                 return null;
             }
 
-            // Write to cache
-            await this.writeToCache(app, stackOutputJson);
-            this.loggerService.debug("Stack output stored to cache", {
-                app: app.name,
-                cacheKey: this.getCacheKey(app)
-            });
+            await this.stackOutputCacheService.write(app, stackOutputJson);
 
             return this.applyMapping(stackOutputJson, params?.map) as TOutput;
         } catch {
@@ -93,46 +76,6 @@ export class DefaultPulumiGetStackOutputService implements PulumiGetStackOutputS
         // If a mapping is provided, we map the output to the specified structure.
         return mapStackOutput(data, map);
     }
-
-    private getCacheKey(app: AppModel): string {
-        const sdkParams = this.projectSdkParamsService.get();
-        const env = sdkParams.env || DefaultPulumiGetStackOutputService.DEFAULT_ENV;
-        const region = sdkParams.region || DefaultPulumiGetStackOutputService.DEFAULT_REGION;
-        const variant = sdkParams.variant || DefaultPulumiGetStackOutputService.DEFAULT_VARIANT;
-        return `${app.name}-${env}-${region}-${variant}.json`;
-    }
-
-    private getCachePath(app: AppModel): string {
-        const project = this.getProjectService.execute();
-        const cacheDir = project.paths.dotWebinyFolder.join("caches", "stack-output").toString();
-        const cacheKey = this.getCacheKey(app);
-        return path.join(cacheDir, cacheKey);
-    }
-
-    private async readFromCache(app: AppModel): Promise<Record<string, any> | null> {
-        const cachePath = this.getCachePath(app);
-
-        try {
-            const content = await fs.readFile(cachePath, "utf-8");
-            return JSON.parse(content);
-        } catch {
-            // File doesn't exist or couldn't be read/parsed - this is expected on first run
-            return null;
-        }
-    }
-
-    private async writeToCache(app: AppModel, data: Record<string, any>): Promise<void> {
-        const cachePath = this.getCachePath(app);
-        const cacheDir = path.dirname(cachePath);
-
-        try {
-            // Create cache directory if it doesn't exist
-            await fs.mkdir(cacheDir, { recursive: true });
-            await fs.writeFile(cachePath, JSON.stringify(data, null, 2), "utf-8");
-        } catch (error) {
-            this.loggerService.error("Could not write to cache file.", cachePath, error);
-        }
-    }
 }
 
 export const pulumiGetStackOutputService = createImplementation({
@@ -142,7 +85,6 @@ export const pulumiGetStackOutputService = createImplementation({
         GetPulumiService,
         PulumiSelectStackService,
         LoggerService,
-        GetProjectService,
-        ProjectSdkParamsService
+        StackOutputCacheService
     ]
 });

@@ -7,10 +7,12 @@ import { useEntry } from "@webiny/app-headless-cms";
 import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";
+import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
 
 export const MenuItem = observer(() => {
     const { model } = useModel();
     const { entry } = useEntry();
+    const scheduledActions = useScheduledActionsPresenter();
 
     const { canPublish, canUnpublish } = usePermissions();
 
@@ -20,7 +22,8 @@ export const MenuItem = observer(() => {
             id: entry.id,
             title: entry.meta.title,
             status: entry.meta.status
-        }
+        },
+        onCompleted: () => scheduledActions.reload()
     });
 
     const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
