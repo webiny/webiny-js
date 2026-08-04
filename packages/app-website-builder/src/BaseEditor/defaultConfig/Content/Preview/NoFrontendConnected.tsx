@@ -93,8 +93,10 @@ export const NoFrontendConnected = ({ origin, status, onRetry }: NoFrontendConne
                         "absolute bottom-0 left-0 right-0 px-lg py-md-plus text-center text-neutral-strong"
                     }
                 >
-                    The sample frontend runs on Webiny&apos;s servers. Your page structure and text
-                    render there, but locally uploaded images and content-bound data won&apos;t.
+                    The sample frontend lets you build pages and see them here in the editor.
+                    Viewing or previewing them outside the editor needs a frontend of your own, and
+                    locally uploaded images and content-bound data won&apos;t render in the sample
+                    either.
                 </Text>
             ) : null}
         </div>
