@@ -8,7 +8,7 @@ import {
     createPublishedRecordType
 } from "@webiny/api-headless-cms-utils-os/operations/entry/recordType.js";
 import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
-import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { OperationType } from "@webiny/api-sync-to-opensearch/features/Operations/Operations.js";
 
 class BuildSyncRecordImpl implements Abstraction.Interface {
@@ -39,9 +39,8 @@ class BuildSyncRecordImpl implements Abstraction.Interface {
         };
 
         const compressed = await this.compressionHandler.compress(document);
-        const { index: rawIndex } = await this.indexProvider.execute({ model });
-        const prefix = getOpenSearchIndexPrefix();
-        const index = prefix ? prefix + rawIndex : rawIndex;
+        const configurations = createConfigurations(this.indexProvider);
+        const { index } = await configurations.es({ model });
 
         return {
             id: `${entry.entryId}:${isLatest ? "L" : "P"}`,

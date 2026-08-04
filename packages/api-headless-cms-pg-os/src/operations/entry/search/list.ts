@@ -15,7 +15,7 @@ import {
 } from "@webiny/api-opensearch";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import { extractEntriesFromIndex } from "@webiny/api-headless-cms-utils-os/helpers/entryIndexHelpers.js";
-import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
 import type { SearchOperationDeps } from "./types.js";
 
@@ -27,9 +27,8 @@ export const createListOperation = (deps: SearchOperationDeps) => {
         const model = deps.getStorageOperationsModel<T>(initialModel);
         const limit = createLimit(listParams.limit);
 
-        const { index: rawIndex } = await deps.indexProvider.execute({ model });
-        const prefix = getOpenSearchIndexPrefix();
-        const index = prefix ? prefix + rawIndex : rawIndex;
+        const configurations = createConfigurations(deps.indexProvider);
+        const { index } = await configurations.es({ model });
 
         const body = deps.bodyBuilder.build({
             model,

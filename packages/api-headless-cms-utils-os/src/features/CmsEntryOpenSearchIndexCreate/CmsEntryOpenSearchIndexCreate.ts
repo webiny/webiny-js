@@ -2,7 +2,7 @@ import WebinyError from "@webiny/error";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { CmsEntryOpenSearchIndexCreate as CmsEntryOpenSearchIndexCreateAbstraction } from "./abstractions.js";
-import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { createConfigurations } from "~/configurations.js";
 
 class CmsEntryOpenSearchIndexCreateImpl
     implements CmsEntryOpenSearchIndexCreateAbstraction.Interface
@@ -16,9 +16,8 @@ class CmsEntryOpenSearchIndexCreateImpl
         const { model } = params;
         const client = this.openSearchClient.use();
 
-        const { index: rawIndex, settings } = await this.indexProvider.execute({ model });
-        const prefix = getOpenSearchIndexPrefix();
-        const index = prefix ? prefix + rawIndex : rawIndex;
+        const configurations = createConfigurations(this.indexProvider);
+        const { index, settings } = await configurations.es({ model });
 
         try {
             const response = await client.indices.exists({
