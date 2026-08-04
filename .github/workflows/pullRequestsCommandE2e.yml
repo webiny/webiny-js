@@ -141,8 +141,10 @@ jobs:
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Compress build cache
         run: >-
-          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
-          needs.baseBranch.outputs.base-branch }} .webiny/cached-packages
+          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}" .webiny/cached-packages
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Upload build cache
         uses: actions/upload-artifact@v7
         with:
@@ -248,8 +250,10 @@ jobs:
           name: run-build-cache-${{ github.run_attempt }}
       - name: Extract build cache
         run: >-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
-          needs.baseBranch.outputs.base-branch }}
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -454,8 +458,10 @@ jobs:
           name: run-build-cache-${{ github.run_attempt }}
       - name: Extract build cache
         run: >-
-          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C ${{
-          needs.baseBranch.outputs.base-branch }}
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
