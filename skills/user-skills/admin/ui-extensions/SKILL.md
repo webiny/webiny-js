@@ -259,11 +259,7 @@ import { useOpenDialog } from "webiny/admin";
 const MyButton = () => {
   const { openDialog } = useOpenDialog();
 
-  return (
-    <button onClick={() => openDialog("my-dialog", { itemId: "abc" })}>
-      Open Dialog
-    </button>
-  );
+  return <button onClick={() => openDialog("my-dialog", { itemId: "abc" })}>Open Dialog</button>;
 };
 ```
 
@@ -283,12 +279,12 @@ const MyDialog = () => {
 
 ### Dialog API Reference
 
-| Hook / Component | Import | Purpose |
-|---|---|---|
-| `AdminConfig.Dialog` | `"webiny/admin/configs"` | Register a named dialog |
-| `useDialog(schema?)` | `"webiny/admin"` | Read params inside a named dialog |
-| `useOpenDialog(schema?)` | `"webiny/admin"` | Open a named dialog with params |
-| `useDialogs()` | `"webiny/admin"` | Low-level access to `openNamedDialog` / `closeNamedDialog` |
+| Hook / Component         | Import                   | Purpose                                                    |
+| ------------------------ | ------------------------ | ---------------------------------------------------------- |
+| `AdminConfig.Dialog`     | `"webiny/admin/configs"` | Register a named dialog                                    |
+| `useDialog(schema?)`     | `"webiny/admin"`         | Read params inside a named dialog                          |
+| `useOpenDialog(schema?)` | `"webiny/admin"`         | Open a named dialog with params                            |
+| `useDialogs()`           | `"webiny/admin"`         | Low-level access to `openNamedDialog` / `closeNamedDialog` |
 
 Only one named dialog can be open at a time. Opening a new one replaces the current one.
 
@@ -334,11 +330,7 @@ import { useOpenDrawer } from "webiny/admin";
 const MyButton = () => {
   const { openDrawer } = useOpenDrawer();
 
-  return (
-    <button onClick={() => openDrawer("my-drawer", { itemId: "abc" })}>
-      Open Drawer
-    </button>
-  );
+  return <button onClick={() => openDrawer("my-drawer", { itemId: "abc" })}>Open Drawer</button>;
 };
 ```
 
@@ -361,8 +353,8 @@ import { useDrawers } from "webiny/admin";
 
 const { closeNamedDrawer } = useDrawers();
 
-closeNamedDrawer();              // close the topmost drawer
-closeNamedDrawer("my-drawer");   // close a specific drawer by name
+closeNamedDrawer(); // close the topmost drawer
+closeNamedDrawer("my-drawer"); // close a specific drawer by name
 ```
 
 ### Typed Params with Zod
@@ -381,14 +373,15 @@ const MyDrawer = () => {
 
 ### Drawer API Reference
 
-| Hook / Component | Import | Purpose |
-|---|---|---|
-| `AdminConfig.Drawer` | `"webiny/admin/configs"` | Register a named drawer |
-| `useDrawer(schema?)` | `"webiny/admin"` | Read params inside a named drawer |
-| `useOpenDrawer(schema?)` | `"webiny/admin"` | Open a named drawer with params |
-| `useDrawers()` | `"webiny/admin"` | Low-level access to `openNamedDrawer` / `closeNamedDrawer` |
+| Hook / Component         | Import                   | Purpose                                                    |
+| ------------------------ | ------------------------ | ---------------------------------------------------------- |
+| `AdminConfig.Drawer`     | `"webiny/admin/configs"` | Register a named drawer                                    |
+| `useDrawer(schema?)`     | `"webiny/admin"`         | Read params inside a named drawer                          |
+| `useOpenDrawer(schema?)` | `"webiny/admin"`         | Open a named drawer with params                            |
+| `useDrawers()`           | `"webiny/admin"`         | Low-level access to `openNamedDrawer` / `closeNamedDrawer` |
 
 Key differences from dialogs:
+
 - Multiple drawers can be open at the same time (they stack)
 - Opening the same drawer name again while open is a no-op (prevents duplicates)
 - `closeNamedDrawer()` without args closes the topmost; with a name closes that specific drawer
