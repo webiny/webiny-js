@@ -30,6 +30,7 @@ import {
 import {
     QueryCmsResolverImpl,
     MutationCmsResolverImpl,
+    GetModelResolverImpl,
     GetEntryResolverImpl,
     ListEntriesResolverImpl,
     CreateEntryResolverImpl,
@@ -99,6 +100,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         container.register(CmsMutationTypeDefsImpl);
         container.register(QueryCmsResolverImpl);
         container.register(MutationCmsResolverImpl);
+        container.register(GetModelResolverImpl);
         container.register(GetEntryResolverImpl);
         container.register(ListEntriesResolverImpl);
         container.register(CreateEntryResolverImpl);
