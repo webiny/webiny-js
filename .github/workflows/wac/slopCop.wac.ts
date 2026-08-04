@@ -50,8 +50,7 @@ export const slopCop = createWorkflow({
                 PR_NUMBER: "${{ github.event.pull_request.number }}",
                 ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}",
                 // Override here to try a different model without touching the script.
-                ANTHROPIC_MODEL: "claude-sonnet-5",
-                WORKDIR: "${{ runner.temp }}/slop-cop"
+                ANTHROPIC_MODEL: "claude-sonnet-5"
             },
             steps: [
                 {
@@ -59,6 +58,9 @@ export const slopCop = createWorkflow({
                     run: [
                         "set -euo pipefail",
                         "",
+                        // `runner.temp` is not available in job-level env, so derive the
+                        // workdir from the runner's built-in $RUNNER_TEMP inside the step.
+                        'WORKDIR="$RUNNER_TEMP/slop-cop"',
                         'mkdir -p "$WORKDIR"',
                         "",
                         "# Intent + footprint in one call. `files` carries per-file +/- (the",
@@ -92,6 +94,7 @@ export const slopCop = createWorkflow({
                     run: [
                         "set -euo pipefail",
                         "",
+                        'WORKDIR="$RUNNER_TEMP/slop-cop"',
                         'REPORT="$WORKDIR/report.md"',
                         "",
                         "# No report file means the analysis was skipped or failed (both",

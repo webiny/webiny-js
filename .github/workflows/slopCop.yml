@@ -28,7 +28,6 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       ANTHROPIC_MODEL: claude-sonnet-5
-      WORKDIR: ${{ runner.temp }}/slop-cop
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -38,6 +37,8 @@ jobs:
         run: >-
           set -euo pipefail
 
+
+          WORKDIR="$RUNNER_TEMP/slop-cop"
 
           mkdir -p "$WORKDIR"
 
@@ -69,6 +70,8 @@ jobs:
         run: >-
           set -euo pipefail
 
+
+          WORKDIR="$RUNNER_TEMP/slop-cop"
 
           REPORT="$WORKDIR/report.md"
 
