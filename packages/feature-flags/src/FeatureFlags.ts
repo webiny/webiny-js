@@ -30,13 +30,19 @@ export class FeatureFlags {
             },
             aiPowerups: this.isAiPowerupsEnabled()
                 ? {
-                      pageGeneration: this.isAiPageGenerationEnabled(),
-                      pageTranslation: this.isAiPageTranslationEnabled(),
-                      imageEnrichment: this.isAiImageEnrichmentEnabled(),
+                      websiteBuilder: {
+                          pageGeneration: this.isAiPageGenerationEnabled(),
+                          pageTranslation: this.isAiPageTranslationEnabled()
+                      },
+                      fileManager: {
+                          imageEnrichment: this.isAiImageEnrichmentEnabled()
+                      },
                       lexicalGeneration: this.isAiLexicalGenerationEnabled(),
-                      entryGeneration: this.isAiEntryGenerationEnabled(),
-                      entryComparison: this.isAiEntryComparisonEnabled(),
-                      entryTranslation: this.isAiEntryTranslationEnabled()
+                      cms: {
+                          entryGeneration: this.isAiEntryGenerationEnabled(),
+                          entryComparison: this.isAiEntryComparisonEnabled(),
+                          entryTranslation: this.isAiEntryTranslationEnabled()
+                      }
                   }
                 : false,
             abTesting: this.isAbTestingEnabled(),
