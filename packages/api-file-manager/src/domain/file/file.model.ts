@@ -1,17 +1,17 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 
 export const FILE_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "fmFile" : "wbyFmFile";
 
 class FilePrivateModelImpl implements ModelFactory.Interface {
-    public constructor(private wcp: WcpContext.Interface) {}
+    public constructor(private featureFlags: FeatureFlags.Interface) {}
 
     public async execute(builder: ModelFactory.Builder) {
         const model = builder.private({
             modelId: FILE_MODEL_ID,
             name: "FmFile"
         });
-        const privateFiles = this.wcp.canUsePrivateFiles();
+        const privateFiles = this.featureFlags.get().isPrivateFilesEnabled();
 
         model.fields(fields => ({
             name: fields.text().label("Name").required("Value is required."),
@@ -82,5 +82,5 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
 
 export const FileModel = ModelFactory.createImplementation({
     implementation: FilePrivateModelImpl,
-    dependencies: [WcpContext]
+    dependencies: [FeatureFlags]
 });

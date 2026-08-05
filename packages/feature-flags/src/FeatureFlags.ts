@@ -8,7 +8,7 @@ export class FeatureFlags {
     constructor(private readonly flags: IFeatureFlagsDto = {}) {}
 
     toDto(): IFeatureFlagsDto {
-        return structuredClone(this.flags);
+        return JSON.parse(JSON.stringify(this.flags));
     }
 
     isMultiTenancyEnabled(): boolean {

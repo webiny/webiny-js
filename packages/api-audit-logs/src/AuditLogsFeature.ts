@@ -2,7 +2,7 @@ import { createFeature, type Container } from "@webiny/feature/api";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AuditLogsContext, AuditLogsStorage } from "./abstractions.js";
 import type { GraphQLSchema } from "graphql";
 import { createAuditLogsContextValue } from "./context/AuditLogsContextValue.js";
@@ -36,8 +36,8 @@ export const AuditLogsFeature = createFeature({
                 }
                 initialized = true;
 
-                const wcpContext = container.resolve(WcpContext);
-                if (!wcpContext.canUseFeature("auditLogs")) {
+                const featureFlags = container.resolve(FeatureFlags);
+                if (!featureFlags.get().isAuditLogsEnabled()) {
                     return STUB_SCHEMA;
                 }
 

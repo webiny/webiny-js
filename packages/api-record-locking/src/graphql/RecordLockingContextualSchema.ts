@@ -4,7 +4,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
@@ -21,14 +21,14 @@ import { createGraphQLSchema } from "~/graphql/schema.js";
 
 class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
     constructor(
-        private wcp: WcpContext.Interface,
+        private featureFlags: FeatureFlags.Interface,
         private tenantCtx: TenantContext.Interface,
         private identityCtx: IdentityContext.Interface,
         private config: IRecordLockingAppConfig
     ) {}
 
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-        if (!this.wcp.canUseRecordLocking() || !this.tenantCtx.getTenant()) {
+        if (!this.featureFlags.get().isRecordLockingEnabled() || !this.tenantCtx.getTenant()) {
             return makeExecutableSchema({
                 typeDefs: "type Query\ntype Mutation",
                 assumeValidSDL: true
@@ -84,5 +84,5 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
 
 export const RecordLockingContextualSchema = GraphQLContextualSchema.createImplementation({
     implementation: RecordLockingContextualSchemaImpl,
-    dependencies: [WcpContext, TenantContext, IdentityContext, RecordLockingAppConfig]
+    dependencies: [FeatureFlags, TenantContext, IdentityContext, RecordLockingAppConfig]
 });
