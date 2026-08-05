@@ -14,7 +14,7 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import type { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
+import type { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
 export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDataManagerOutput> {
     constructor(

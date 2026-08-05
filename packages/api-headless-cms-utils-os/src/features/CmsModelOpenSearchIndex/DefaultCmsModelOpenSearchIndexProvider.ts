@@ -1,10 +1,7 @@
-export {
+import {
     CmsModelOpenSearchIndexProvider,
-    type ICmsModelOpenSearchIndexProvider,
     type ICmsModelOpenSearchIndexProviderResult
-} from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
-import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
-import type { ICmsModelOpenSearchIndexProviderResult } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
+} from "./CmsModelOpenSearchIndexProvider.js";
 import { CmsModelOpenSearchIndex } from "./abstractions.js";
 
 class CmsModelOpenSearchIndexProviderImpl implements CmsModelOpenSearchIndexProvider.Interface {

@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api/index.js";
 import { DefaultCmsModelOpenSearchIndex } from "./DefaultCmsModelOpenSearchIndex.js";
-import { DefaultCmsModelOpenSearchIndexProvider } from "./CmsModelOpenSearchIndexProvider.js";
+import { DefaultCmsModelOpenSearchIndexProvider } from "./DefaultCmsModelOpenSearchIndexProvider.js";
 
 export const CmsModelOpenSearchIndexFeature = createFeature({
     name: "Cms/Model/OpenSearch/IndexFeature",

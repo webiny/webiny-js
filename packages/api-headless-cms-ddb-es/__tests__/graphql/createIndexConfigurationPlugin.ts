@@ -1,5 +1,5 @@
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { CmsModelOpenSearchIndex } from "~/features/CmsModelOpenSearchIndex/index.js";
+import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
 class CustomOpenSearchIndex implements CmsModelOpenSearchIndex.Interface {
     constructor(private original: CmsModelOpenSearchIndex.Interface) {}
