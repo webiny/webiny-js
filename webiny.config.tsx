@@ -77,6 +77,9 @@ export const Extensions = () => {
             <Project.Telemetry enabled={false} />
             <Project.FeatureFlags
                 features={{
+                    aiPowerups: {
+                        enabled: false
+                    },
                     fileManager: {
                         threatDetection: false
                     },

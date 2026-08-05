@@ -40,6 +40,11 @@ function CanUseRemoteComponents({ children }: ChildrenProps) {
     return flags.isRemoteComponentsEnabled() ? <>{children}</> : null;
 }
 
+function CanUseAiPowerups({ children }: ChildrenProps) {
+    const flags = useProjectFeatureFlags();
+    return flags.isAiPowerupsEnabled() ? <>{children}</> : null;
+}
+
 export const FeatureFlag = {
     CanUseMultiTenancy,
     CanUseWorkflows,
@@ -47,5 +52,6 @@ export const FeatureFlag = {
     CanUsePrivateFiles,
     CanUseFileManagerThreatDetection,
     CanUseHcmsFieldPermissions,
-    CanUseRemoteComponents
+    CanUseRemoteComponents,
+    CanUseAiPowerups
 };
