@@ -1,6 +1,6 @@
 import React from "react";
 import { type LanguageDto } from "@webiny/languages/exports/admin/languages.js";
-import { useWcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { Grid } from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 import { LanguageSelector } from "~/presentation/components/LanguageSelector.js";
@@ -23,9 +23,9 @@ export interface WithLanguageSelectorProps {
 //    - append the language code to the page path
 
 export const WithLanguageSelector = ({ languages, children }: WithLanguageSelectorProps) => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
 
-    if (!wcp.canUseFeature("multiTenancy")) {
+    if (!featureFlags.isMultiTenancyEnabled()) {
         return <>{children}</>;
     }
 

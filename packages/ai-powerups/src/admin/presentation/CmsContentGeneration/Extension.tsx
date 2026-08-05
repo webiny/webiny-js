@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig, RegisterFeature, useWcp } from "@webiny/app-admin";
+import { AdminConfig, RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { InternalContentEntryEditorConfig } from "@webiny/app-headless-cms/admin/config/contentEntries/index.js";
 import { CmsGenerateContentButton } from "~/admin/presentation/CmsContentGeneration/CmsGenerateContentButton.js";
 import {
@@ -12,9 +12,9 @@ import { GenerateEntryContentFeature } from "~/admin/features/generateEntryConte
 const { Actions } = InternalContentEntryEditorConfig;
 
 export const CmsContentGeneration = () => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
 
-    if (!wcp.canUseAiEntryGeneration()) {
+    if (!featureFlags.isAiEntryGenerationEnabled()) {
         return null;
     }
 

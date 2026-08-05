@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { createObjectFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import type { IObjectFieldVM } from "@webiny/app-admin/features/formModel/abstractions.js";
-import { useWcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { Grid } from "@webiny/admin-ui";
 import { UsersTeamsMultiAutocomplete } from "@webiny/app-aco";
 import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
@@ -21,7 +21,7 @@ interface AccessControlRulesProps {
 }
 
 const AccessControlRules = observer(({ field }: AccessControlRulesProps) => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
     const { useCase } = useFeature(ListFolderPermissionsTargetsFeature);
     const rules: FieldRule[] = Array.isArray(field.value) ? (field.value as FieldRule[]) : [];
 
@@ -66,7 +66,7 @@ const AccessControlRules = observer(({ field }: AccessControlRulesProps) => {
         [rules, field]
     );
 
-    if (!wcp.canUseHcmsFieldPermissions()) {
+    if (!featureFlags.isHcmsFieldPermissionsEnabled()) {
         return (
             <Grid>
                 <Grid.Column span={12}>

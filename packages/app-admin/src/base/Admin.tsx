@@ -11,6 +11,7 @@ import { createDrawersProvider } from "~/components/Drawers/DrawersContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
 import { createRootContainer } from "~/base/createRootContainer.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
+import { FeatureFlagsProvider } from "~/presentation/featureFlags/FeatureFlagsProvider.js";
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
@@ -61,25 +62,27 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
         <DiContainerProvider container={container}>
             <TelemetryAdminAppStart />
             <WcpProvider>
-                <App
-                    plugins={[AdminConfigPlugin]}
-                    routes={[]}
-                    providers={[
-                        AdminConfigProvider,
-                        UIProviders,
-                        UiStateProvider,
-                        DialogsProvider,
-                        DrawersProvider,
-                        IconPickerConfigProvider,
-                        AdminUiStateProvider,
-                        TenancyProvider
-                    ]}
-                >
-                    <Base />
-                    <DefaultIcons />
-                    <NotificationsRenderer />
-                    {children}
-                </App>
+                <FeatureFlagsProvider>
+                    <App
+                        plugins={[AdminConfigPlugin]}
+                        routes={[]}
+                        providers={[
+                            AdminConfigProvider,
+                            UIProviders,
+                            UiStateProvider,
+                            DialogsProvider,
+                            DrawersProvider,
+                            IconPickerConfigProvider,
+                            AdminUiStateProvider,
+                            TenancyProvider
+                        ]}
+                    >
+                        <Base />
+                        <DefaultIcons />
+                        <NotificationsRenderer />
+                        {children}
+                    </App>
+                </FeatureFlagsProvider>
             </WcpProvider>
         </DiContainerProvider>
     );

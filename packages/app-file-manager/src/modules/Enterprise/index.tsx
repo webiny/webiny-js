@@ -1,4 +1,4 @@
-import { useWcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import React from "react";
 import { FileManagerViewConfig } from "~/index.js";
 import { THREAT_SCAN } from "~/modules/Enterprise/constants.js";
@@ -35,9 +35,9 @@ const DisableTableCellWhileThreatScanInProgress = Table.Column.createDecorator(O
 });
 
 export const EnterpriseModule = () => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
 
-    if (!wcp.canUseFileManagerThreatDetection()) {
+    if (!featureFlags.isFileManagerThreatDetectionEnabled()) {
         return null;
     }
 

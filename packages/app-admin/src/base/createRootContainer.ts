@@ -11,6 +11,7 @@ import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.j
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
 import { WcpFeature } from "~/features/wcp/feature.js";
+import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { TelemetryFeature } from "~/features/telemetry/feature.js";
@@ -63,6 +64,8 @@ export function createRootContainer() {
     TenancyFeature.register(container);
 
     WcpFeature.register(container);
+
+    FeatureFlagsFeature.register(container);
 
     SystemInstallerFeature.register(container);
 

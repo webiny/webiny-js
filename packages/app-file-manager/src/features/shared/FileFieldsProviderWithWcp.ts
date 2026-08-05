@@ -1,16 +1,16 @@
-import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 import { FileFieldsProvider as Abstraction } from "./abstractions.js";
 
-class FileFieldsProviderWithWcpImpl implements Abstraction.Interface {
+class FileFieldsProviderWithFeatureFlagsImpl implements Abstraction.Interface {
     constructor(
-        private wcp: WcpService.Interface,
+        private featureFlagsService: FeatureFlagsService.Interface,
         private decoratee: Abstraction.Interface
     ) {}
 
     async execute(): Promise<string[]> {
         const fields = await this.decoratee.execute();
 
-        if (this.wcp.getProject().canUsePrivateFiles()) {
+        if (this.featureFlagsService.getFlags().isPrivateFilesEnabled()) {
             return [...fields, "accessControl.type"];
         }
 
@@ -19,6 +19,6 @@ class FileFieldsProviderWithWcpImpl implements Abstraction.Interface {
 }
 
 export const FileFieldsProviderWithWcp = Abstraction.createDecorator({
-    decorator: FileFieldsProviderWithWcpImpl,
-    dependencies: [WcpService]
+    decorator: FileFieldsProviderWithFeatureFlagsImpl,
+    dependencies: [FeatureFlagsService]
 });

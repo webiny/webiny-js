@@ -1,9 +1,9 @@
-import { useWcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 
 export const useCanUseWorkflows = () => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
 
-    const canUseWorkflows = wcp.canUseWorkflows();
+    const canUseWorkflows = featureFlags.isWorkflowsEnabled();
 
     return {
         canUseWorkflows
