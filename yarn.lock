@@ -14217,6 +14217,7 @@ __metadata:
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-template-base": "npm:0.0.0"
     "@webiny/remote-components": "npm:0.0.0"

@@ -46,6 +46,7 @@ export {
 } from "./services/GetProjectConfigService/WcpProjectLicenseContext.js";
 export {
     FeatureFlagsProvider,
+    FeatureFlagsGate,
     useProjectFeatureFlags,
     setProjectFeatureFlags
 } from "./services/GetProjectConfigService/FeatureFlagsContext.js";
