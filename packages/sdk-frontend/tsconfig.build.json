@@ -4,6 +4,7 @@
   "references": [
     { "path": "../cms-sdk/tsconfig.build.json" },
     { "path": "../sdk/tsconfig.build.json" },
+    { "path": "../theme-sdk/tsconfig.build.json" },
     { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -17,6 +18,8 @@
       "@webiny/cms-sdk": ["../cms-sdk/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
+      "@webiny/theme-sdk/*": ["../theme-sdk/src/*"],
+      "@webiny/theme-sdk": ["../theme-sdk/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     }

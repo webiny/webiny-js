@@ -8,6 +8,7 @@ import type {
 } from "@webiny/sdk";
 import { contentSdk as cmsContentSdk, environment as cmsEnvironment } from "@webiny/cms-sdk";
 import { contentSdk as wbContentSdk } from "@webiny/website-builder-sdk";
+import { ThemeSdk } from "@webiny/theme-sdk";
 import { CmsSdk } from "./CmsSdk.js";
 import { WbSdk } from "./WbSdk.js";
 import type { ContentSdkConfig } from "./types.js";
@@ -16,6 +17,7 @@ interface InitializedSdk {
     webiny: Webiny;
     cms: CmsSdk;
     wb: WbSdk;
+    theme: ThemeSdk;
 }
 
 export class FrontendSdk {
@@ -34,6 +36,10 @@ export class FrontendSdk {
 
     get wb(): WbSdk {
         return this.initialized.wb;
+    }
+
+    get theme(): ThemeSdk {
+        return this.initialized.theme;
     }
 
     get languages(): LanguagesSdk {
@@ -67,7 +73,16 @@ export class FrontendSdk {
         this.sdk = {
             webiny,
             cms: new CmsSdk(webiny),
-            wb: new WbSdk()
+            wb: new WbSdk(),
+            // The theme client fetches artifacts over REST; it shares the same host/auth/fetch as every
+            // other domain, plus its own timeout so SSR never hangs on theme resolution.
+            theme: new ThemeSdk({
+                apiHost: config.endpoint,
+                apiKey: config.token,
+                apiTenant: config.tenant,
+                fetch: config.fetch,
+                timeoutMs: config.theme?.timeoutMs
+            })
         };
 
         cmsContentSdk.init(

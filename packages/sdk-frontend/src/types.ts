@@ -10,6 +10,14 @@ export interface CmsConfig {
     // Extension point for future CMS-specific settings.
 }
 
+export interface ThemeConfig {
+    /**
+     * Ceiling on the SSR active-theme request. A themeless render beats a stalled one. Everything else
+     * the theme client needs (host, key, tenant, fetch) is shared from the top-level config.
+     */
+    timeoutMs?: number;
+}
+
 export interface ContentSdkConfig {
     endpoint: string;
     token: string;
@@ -18,4 +26,5 @@ export interface ContentSdkConfig {
     fetch?: typeof fetch;
     cms?: CmsConfig;
     wb?: WbConfig;
+    theme?: ThemeConfig;
 }

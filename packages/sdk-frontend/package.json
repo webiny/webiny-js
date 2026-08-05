@@ -18,6 +18,7 @@
   "dependencies": {
     "@webiny/cms-sdk": "0.0.0",
     "@webiny/sdk": "0.0.0",
+    "@webiny/theme-sdk": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0"
   },
   "devDependencies": {

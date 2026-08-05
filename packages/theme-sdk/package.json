@@ -1,0 +1,28 @@
+{
+  "name": "@webiny/theme-sdk",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/theme-sdk"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Framework-agnostic frontend client for consuming a published Webiny theme.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

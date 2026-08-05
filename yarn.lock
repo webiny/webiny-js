@@ -13726,6 +13726,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
+    "@webiny/theme-sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.10"
@@ -13891,6 +13892,16 @@ __metadata:
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
     zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/theme-sdk@npm:0.0.0, @webiny/theme-sdk@workspace:packages/theme-sdk":
+  version: 0.0.0-use.local
+  resolution: "@webiny/theme-sdk@workspace:packages/theme-sdk"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.10"
   languageName: unknown
   linkType: soft
 
