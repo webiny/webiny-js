@@ -1,6 +1,6 @@
 # Theme App — Phase 5: Frontend Consumption
 
-Status: **in progress** — Slices 1–4 done; 5–7 pending. Written 2026-08-05, after merging `next`
+Status: **in progress** — Slices 1–5 done; 6–7 pending. Written 2026-08-05, after merging `next`
 (which brought the frontend SDK: `@webiny/sdk-frontend`, `website-builder-react/-nextjs/-vue/-nuxt`,
 `react-rich-text-lexical-renderer`).
 
@@ -176,11 +176,13 @@ handler is a documented recipe (below).
   the timeout can't be lost.
 
 Config so the fetch is cacheable + tagged:
+
 ```ts
 sdk.init({ …, theme: { requestInit: { next: { tags: [THEME_CACHE_TAG], revalidate: 3600 } } } });
 ```
 
 Next.js route handler (the customer writes this — it needs `standardwebhooks` + `next/cache`):
+
 ```ts
 // app/api/webiny/theme-webhook/route.ts
 import { Webhook } from "standardwebhooks";
@@ -188,29 +190,51 @@ import { revalidateTag } from "next/cache";
 import { shouldRevalidateTheme, THEME_CACHE_TAG } from "@webiny/sdk-frontend";
 
 export async function POST(req: Request) {
-    const body = await req.text();
-    const headers = Object.fromEntries(req.headers);
-    try {
-        new Webhook(process.env.WEBINY_THEME_WEBHOOK_SECRET!).verify(body, headers); // throws if invalid
-    } catch {
-        return new Response("invalid signature", { status: 401 });
-    }
-    const { event } = JSON.parse(body);
-    if (shouldRevalidateTheme(event)) {
-        revalidateTag(THEME_CACHE_TAG);
-    }
-    return new Response(null, { status: 204 });
+  const body = await req.text();
+  const headers = Object.fromEntries(req.headers);
+  try {
+    new Webhook(process.env.WEBINY_THEME_WEBHOOK_SECRET!).verify(body, headers); // throws if invalid
+  } catch {
+    return new Response("invalid signature", { status: 401 });
+  }
+  const { event } = JSON.parse(body);
+  if (shouldRevalidateTheme(event)) {
+    revalidateTag(THEME_CACHE_TAG);
+  }
+  return new Response(null, { status: 204 });
 }
 ```
+
 Then add a webhook in Admin for `theme.activated` + `theme.deactivated` pointing at that route.
 
 8 new tests (37 total). A turnkey handler could later live in a `theme-nextjs` package; kept as a recipe
 for now to avoid pulling `standardwebhooks` + `next` into the framework-agnostic client.
 
-### Slice 5 — Tailwind adapter `@webiny/theme-tailwind`
+### Slice 5 — Tailwind adapter `@webiny/theme-tailwind` ✅ DONE (2026-08-05)
 
-Map the **canonical** `--wby-*` tokens (the JSON artifact flags which) into a Tailwind theme config, so
-Tailwind users get the theme as utility classes. Consumes the JSON artifact.
+Key simplification found while building: the canonical token set is **fixed and known**
+(`CANONICAL_SLOTS`), so the preset is **static and needs no build-time JSON fetch** — Tailwind only
+needs the *names* mapped to `var(--wby-*)`, and the values arrive from `tokens.css` at runtime. So a
+theme swap re-colours every utility with no rebuild.
+
+New package `@webiny/theme-tailwind` (depends on `@webiny/theme-common`; build-time only, so **not**
+re-exported from the runtime `sdk-frontend` — that would pull zod into the app bundle):
+
+- `webinyThemeTokens()` → `{ colors, spacing, fontSize, borderRadius, boxShadow }`, each key mapped to
+  its `var(--wby-*)`. Routed by path prefix (`color`→colors, `space`→spacing, `text`→fontSize,
+  `radius`→borderRadius, `shadow`→boxShadow) — prefix, not `$type`, because `space`/`text`/`radius` are
+  all `dimension`-typed but three different scales. Composite `type.*` roles excluded (they are the
+  rich-text/structural typography, not a single Tailwind scale).
+- `webinyThemePreset()` → `{ theme: { extend: … } }` for `presets: [webinyThemePreset()]`.
+
+```js
+// tailwind.config.js
+const { webinyThemePreset } = require("@webiny/theme-tailwind");
+module.exports = { presets: [webinyThemePreset()], content: [...] };
+// → bg-surface-page, text-primary, p-md, rounded-sm, shadow-md all resolve to the active theme.
+```
+
+9 tests, derived from `CANONICAL_SLOTS` so they can't drift from the token set.
 
 ### Slice 6 — Vue/Nuxt parity
 

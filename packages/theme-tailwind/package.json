@@ -1,0 +1,31 @@
+{
+  "name": "@webiny/theme-tailwind",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/theme-tailwind"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Tailwind CSS preset that binds utility classes to a Webiny theme's design tokens.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/theme-common": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -13905,6 +13905,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/theme-tailwind@workspace:packages/theme-tailwind":
+  version: 0.0.0-use.local
+  resolution: "@webiny/theme-tailwind@workspace:packages/theme-tailwind"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/theme-common": "npm:0.0.0"
+    typescript: "npm:7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/utils@npm:0.0.0, @webiny/utils@workspace:packages/utils":
   version: 0.0.0-use.local
   resolution: "@webiny/utils@workspace:packages/utils"
