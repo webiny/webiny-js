@@ -35,21 +35,26 @@ export class FeatureFlags {
         const segments = name.split(".");
         let current: unknown = this.flags;
 
-        for (const segment of segments) {
-            if (current === false) {
+        for (let i = 0; i < segments.length; i++) {
+            if (current === false || current === undefined) {
                 return false;
             }
-            if (current === undefined || current === true) {
+            if (current === true) {
                 return true;
             }
             if (typeof current === "object" && current !== null) {
-                current = (current as Record<string, unknown>)[segment];
+                current = (current as Record<string, unknown>)[segments[i]];
                 continue;
             }
-            return true;
+            return false;
         }
 
-        return current !== false;
+        // After walking all segments: object = enabled (group with sub-options),
+        // true = enabled, false/undefined = disabled.
+        if (typeof current === "object" && current !== null) {
+            return true;
+        }
+        return current === true;
     }
 
     toDto() {

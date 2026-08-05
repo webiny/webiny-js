@@ -22,7 +22,13 @@ export class LicenseDecoratedFeatureFlags extends FeatureFlags {
     override isEnabled(name: FeatureFlagName): boolean {
         const check = LICENSE_CHECKS[name];
         if (check) {
-            return super.isEnabled(name) && check(this.license);
+            if (!check(this.license)) {
+                return false;
+            }
+            return super.isEnabled(name);
+        }
+        if (!this.license.hasLicense) {
+            return false;
         }
         return super.isEnabled(name);
     }

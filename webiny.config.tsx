@@ -18,9 +18,7 @@ const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
 export const FeatureFlags = () => (
     <Project.FeatureFlags
         features={{
-            auditLogs: false,
-            remoteComponents: true,
-            aiPowerups: false,
+            remoteComponents: false,
             fileManager: {
                 threatDetection: false
             },

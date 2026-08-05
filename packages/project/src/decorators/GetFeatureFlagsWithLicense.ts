@@ -30,7 +30,13 @@ class BuildLicenseDecoratedFeatureFlags extends FeatureFlags {
     override isEnabled(name: FeatureFlagName): boolean {
         const check = LICENSE_CHECKS[name];
         if (check) {
-            return this.base.isEnabled(name) && check(this.license);
+            if (!check(this.license)) {
+                return false;
+            }
+            return this.base.isEnabled(name);
+        }
+        if (!this.license.getRawLicense()) {
+            return false;
         }
         return this.base.isEnabled(name);
     }
