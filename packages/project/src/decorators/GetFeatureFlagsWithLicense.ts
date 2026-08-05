@@ -15,8 +15,7 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     auditLogs: l => l.canUseAuditLogs(),
     recordLocking: l => l.canUseRecordLocking(),
     "fileManager.threatDetection": l => l.canUseFileManagerThreatDetection(),
-    abTesting: l => l.canUseAbTesting(),
-    remoteComponents: l => l.canUseRemoteComponents()
+    abTesting: l => l.canUseAbTesting()
 };
 
 class BuildLicenseDecoratedFeatureFlags extends FeatureFlags {
