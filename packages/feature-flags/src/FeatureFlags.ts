@@ -110,4 +110,8 @@ export class FeatureFlags {
     isAbTestingEnabled(): boolean {
         return this.flags.abTesting !== false;
     }
+
+    isRemoteComponentsEnabled(): boolean {
+        return this.flags.remoteComponents !== false;
+    }
 }

@@ -3,11 +3,12 @@ import { z } from "zod";
 import { BuildParam } from "./ApiBuildParam.js";
 import { AdminBuildParam } from "./AdminBuildParam.js";
 import { defineExtension } from "~/defineExtension/index.js";
+import { setProjectFeatureFlags } from "~/services/GetProjectConfigService/FeatureFlagsContext.js";
 
 export const FeatureFlags = defineExtension({
     type: "FeatureFlags",
     tags: { runtimeContext: "project" },
-    description: "Enable or disable WCP features.",
+    description: "Enable or disable features.",
     paramsSchema: z.object({
         // Follows `IFeatureFlagsDto` from `packages/feature-flags/src/types.ts`.
         features: z.object({
@@ -59,10 +60,12 @@ export const FeatureFlags = defineExtension({
                         .optional()
                 })
                 .optional(),
-            abTesting: z.boolean().optional()
+            abTesting: z.boolean().optional(),
+            remoteComponents: z.boolean().optional()
         })
     }),
     render: ({ features = {} }) => {
+        setProjectFeatureFlags(features);
         return (
             <>
                 <BuildParam paramName="FeatureFlags" value={features} />

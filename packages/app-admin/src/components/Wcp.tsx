@@ -40,6 +40,11 @@ function CanUseAbTesting({ children }: ChildrenProps) {
     return wcp.canUseAbTesting() ? <>{children}</> : null;
 }
 
+function CanUseRemoteComponents({ children }: ChildrenProps) {
+    const wcp = useWcp();
+    return wcp.canUseRemoteComponents() ? <>{children}</> : null;
+}
+
 export const Wcp = {
     CanUseMultiTenancy,
     CanUseTeams,
@@ -47,5 +52,6 @@ export const Wcp = {
     CanUseFileManagerThreatDetection,
     CanUseWorkflows,
     CanUseHcmsFieldPermissions,
-    CanUseAbTesting
+    CanUseAbTesting,
+    CanUseRemoteComponents
 };

@@ -11,8 +11,8 @@ export const Extensions = () => {
             <Infra.ProductionEnvironments environments={["prod", "production"]} />
             <ProjectAws />
             <DefaultExtensions />
-            <RemoteComponents />
             <WebinyConfigTsx />
+            <RemoteComponents />
         </>
     );
 };

@@ -51,4 +51,5 @@ export interface IFeatureFlagsDto {
     fileManager?: IFileManagerFeatureFlags;
     aiPowerups?: IAiPowerupsFeatureFlags;
     abTesting?: boolean;
+    remoteComponents?: boolean;
 }

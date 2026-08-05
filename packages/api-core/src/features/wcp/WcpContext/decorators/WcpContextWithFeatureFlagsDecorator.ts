@@ -127,6 +127,12 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                         enabled: flags.isAbTestingEnabled()
                             ? project.package.features.abTesting?.enabled
                             : false
+                    },
+                    remoteComponents: {
+                        ...project.package.features.remoteComponents,
+                        enabled: flags.isRemoteComponentsEnabled()
+                            ? project.package.features.remoteComponents?.enabled
+                            : false
                     }
                 }
             }
@@ -245,6 +251,13 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
 
     canUseAbTesting() {
         return this.decoratee.canUseAbTesting() && this.featureFlags.get().isAbTestingEnabled();
+    }
+
+    canUseRemoteComponents() {
+        return (
+            this.decoratee.canUseRemoteComponents() &&
+            this.featureFlags.get().isRemoteComponentsEnabled()
+        );
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {

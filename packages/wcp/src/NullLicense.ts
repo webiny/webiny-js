@@ -90,4 +90,8 @@ export class NullLicense implements ILicense {
     canUseAbTesting(): boolean {
         return false;
     }
+
+    canUseRemoteComponents(): boolean {
+        return false;
+    }
 }

@@ -1,6 +1,10 @@
 import React from "react";
 import { useWcpProjectLicense } from "~/services/GetProjectConfigService/WcpProjectLicenseContext.js";
 
+/**
+ * @deprecated Use `FeatureFlag` from `@webiny/project` instead.
+ */
+
 interface ChildrenProps {
     children: React.ReactNode;
 }

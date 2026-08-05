@@ -1,6 +1,6 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
-import { Wcp } from "@webiny/project";
+import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
 import { ServerExtensions } from "./webiny.config.server.js";
@@ -33,9 +33,9 @@ export const Extensions = () => {
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             {/* IMPORTANT: commented out until we resolve bulk actions bootstrap! */}
-            <Wcp.CanUseMultiTenancy>
+            <FeatureFlag.CanUseMultiTenancy>
                 <AiContentExtension />
-            </Wcp.CanUseMultiTenancy>
+            </FeatureFlag.CanUseMultiTenancy>
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
