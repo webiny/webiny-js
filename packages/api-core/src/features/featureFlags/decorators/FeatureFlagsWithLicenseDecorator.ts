@@ -2,7 +2,7 @@ import { FeatureFlags } from "../abstractions.js";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
 import type { IFeatureFlagsDto, IAaclFeatureFlags } from "@webiny/feature-flags";
 import type { ILicense } from "@webiny/wcp/types.js";
-import { WcpContext } from "~/features/wcp/WcpContext/abstractions.js";
+import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 
 function applyLicenseFlag<T extends boolean | undefined>(
     userValue: T,
@@ -13,13 +13,13 @@ function applyLicenseFlag<T extends boolean | undefined>(
 
 class FeatureFlagsWithLicenseDecoratorImpl implements FeatureFlags.Interface {
     constructor(
-        private wcp: WcpContext.Interface,
+        private licenseProvider: WcpLicenseProvider.Interface,
         private decoratee: FeatureFlags.Interface
     ) {}
 
     get(): FeatureFlagsClass {
         const base = this.decoratee.get();
-        const license = this.wcp.getProjectLicense();
+        const license = this.licenseProvider.get();
         const dto = this.applyLicense(base.toDto(), license);
         return FeatureFlagsClass.fromDto(dto);
     }
@@ -70,5 +70,5 @@ class FeatureFlagsWithLicenseDecoratorImpl implements FeatureFlags.Interface {
 
 export const FeatureFlagsWithLicenseDecorator = FeatureFlags.createDecorator({
     decorator: FeatureFlagsWithLicenseDecoratorImpl,
-    dependencies: [WcpContext]
+    dependencies: [WcpLicenseProvider]
 });
