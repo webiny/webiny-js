@@ -63,6 +63,14 @@ describe("generateCssArtifact", () => {
         expect(css).toContain("--wby-color-surface-page: #F8FAFC;");
     });
 
+    it("folds in the rich-text structural rules so one <link> themes WB rich text too", () => {
+        // Targets WB's baked class names, reading the variables defined above — so the same artifact
+        // themes every saved page's rich text with no extra request and no content migration.
+        expect(css).toContain(".wb-lx-h1 {");
+        expect(css).toContain("font-size: var(--wby-type-heading-1-size);");
+        expect(css).toContain(".wb-lx-paragraph {");
+    });
+
     it("emits dark values under the mode attribute", () => {
         expect(css).toContain(`[${THEME_MODE_ATTRIBUTE}="dark"] {`);
         expect(css).toContain("--wby-color-surface-page: #0F172A;");

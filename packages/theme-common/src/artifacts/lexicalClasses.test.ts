@@ -45,6 +45,21 @@ describe("LEXICAL_TYPOGRAPHY_CLASSES", () => {
         const keys = LEXICAL_TYPOGRAPHY_CLASSES.map(entry => entry.themeKey);
         expect(new Set(keys).size).toBe(keys.length);
     });
+
+    it("uses exactly the class names Website Builder already bakes into saved pages", () => {
+        // The load-bearing property: these are WB's `wb-lx-*` names, not invented ones — that is what
+        // makes a theme style existing pages with no content migration. A drift here silently un-themes
+        // all rich text, so it is pinned to the concrete names.
+        const byKey = Object.fromEntries(
+            LEXICAL_TYPOGRAPHY_CLASSES.map(e => [e.themeKey, e.className])
+        );
+
+        expect(byKey["heading.h1"]).toBe("wb-lx-h1");
+        expect(byKey["heading.h6"]).toBe("wb-lx-h6");
+        expect(byKey["paragraph"]).toBe("wb-lx-paragraph");
+        expect(byKey["code"]).toBe("wb-lx-code");
+        expect(byKey["quote"]).toBe("wb-lx-quote");
+    });
 });
 
 describe("createLexicalThemeClasses", () => {
@@ -56,7 +71,7 @@ describe("createLexicalThemeClasses", () => {
 
         expect(classes.heading.h1).toBe(`${LEXICAL_CLASS_PREFIX}-h1`);
         expect(classes.heading.h6).toBe(`${LEXICAL_CLASS_PREFIX}-h6`);
-        expect(classes.paragraph).toBe(`${LEXICAL_CLASS_PREFIX}-p`);
+        expect(classes.paragraph).toBe(`${LEXICAL_CLASS_PREFIX}-paragraph`);
     });
 
     it("covers all six heading levels", () => {

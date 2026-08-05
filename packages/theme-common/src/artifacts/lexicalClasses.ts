@@ -10,31 +10,32 @@ import type { TypographySubProperty } from "~/dtcg/guards.js";
 /**
  * Structural rich-text styling — see the design brief, section 7.2.
  *
- * The spike this closes: Lexical's `EditorThemeClasses` maps each structural element to a **class name**,
- * not to a style object. There is no upstream hook for feeding it computed values, and its
- * `[key: string]: any` escape hatch does not change that. So the only way a heading in rich text can
- * follow the theme is: a stable class name per element, and a stylesheet that points those classes at the
- * theme's CSS variables.
+ * Lexical's `EditorThemeClasses` maps each structural element to a **class name**, not a style object, so
+ * a heading in rich text can only follow the theme via a stable class name plus a stylesheet that points
+ * that class at the theme's CSS variables.
  *
- * That split is a feature rather than a workaround. The class rules never change — only the variables
- * they read do — so this stylesheet is static and cacheable, emitted once, while the per-theme values keep
- * arriving through the existing CSS artifact. Nothing here has to be regenerated when a theme is
- * published.
+ * The decisive point for backwards compatibility: Website Builder **already** applies these class names.
+ * Its editor's `EditorThemeClasses` uses the `wb-lx-` prefix, and the resulting HTML — `<h1 class=
+ * "wb-lx-h1">`, `<p class="wb-lx-paragraph">` — is baked into every saved page and rendered verbatim. So
+ * this table does NOT invent names; it aligns to the ones WB has always emitted. A theme therefore styles
+ * every existing page as well as new ones, with no content migration, and an instance with no active
+ * theme is untouched (the base `lexical.css` still governs, and the `var(--wby-*)` below simply resolve
+ * to nothing).
  *
- * The mapping onto the eleven canonical typography roles is close to exact, which is the main reason this
- * is worth doing at all:
+ * The mapping onto the eleven canonical typography roles is close to exact:
  *
- *   type.heading.1 … 6  →  heading.h1 … h6
- *   type.body           →  paragraph
- *   type.code           →  code
- *   type.lead           →  quote
+ *   type.heading.1 … 6  →  wb-lx-h1 … h6
+ *   type.body           →  wb-lx-paragraph
+ *   type.code           →  wb-lx-code
+ *   type.lead           →  wb-lx-quote
  *
- * `type.bodySmall` and `type.caption` are deliberately unmapped: Lexical has no structural element that
- * means either, and inventing one would put a class in the document that no editor control can produce.
+ * `type.bodySmall` and `type.caption` are deliberately unmapped: WB has no structural class for either.
+ * `wb-lx-paragraph` is a single class, NOT WB's numbered `wb-paragraph-N` typography presets — those are a
+ * separate mechanism and their reconciliation with the semantic roles is out of scope here.
  */
 
-/** Prefixed so a customer's own stylesheet cannot collide with these. */
-export const LEXICAL_CLASS_PREFIX = "wby-rt";
+/** The prefix Website Builder's editor uses for structural rich-text classes. We align to it, not invent. */
+export const LEXICAL_CLASS_PREFIX = "wb-lx";
 
 /**
  * Class name per themed element, and the typography role it reads.
@@ -54,7 +55,7 @@ export const LEXICAL_TYPOGRAPHY_CLASSES: ReadonlyArray<{
     { themeKey: "heading.h4", className: `${LEXICAL_CLASS_PREFIX}-h4`, role: "type.heading.4" },
     { themeKey: "heading.h5", className: `${LEXICAL_CLASS_PREFIX}-h5`, role: "type.heading.5" },
     { themeKey: "heading.h6", className: `${LEXICAL_CLASS_PREFIX}-h6`, role: "type.heading.6" },
-    { themeKey: "paragraph", className: `${LEXICAL_CLASS_PREFIX}-p`, role: "type.body" },
+    { themeKey: "paragraph", className: `${LEXICAL_CLASS_PREFIX}-paragraph`, role: "type.body" },
     { themeKey: "code", className: `${LEXICAL_CLASS_PREFIX}-code`, role: "type.code" },
     { themeKey: "quote", className: `${LEXICAL_CLASS_PREFIX}-quote`, role: "type.lead" }
 ];
@@ -109,10 +110,12 @@ export interface LexicalCssOptions {
 }
 
 /**
- * The static stylesheet.
+ * The rich-text stylesheet, folded into the theme's CSS artifact by `generateCssArtifact`.
  *
- * Emitted from the same table as the class map, so the two cannot disagree — a class that exists in one
- * and not the other would silently render unthemed.
+ * It emits only typography properties on the `wb-lx-*` structural classes, each reading a `var(--wby-*)`
+ * defined in the same artifact — so it is additive over the base `lexical.css` (whose heading/paragraph
+ * rules are empty) and, loaded after it, wins on the properties it sets. When no theme is active the
+ * artifact is not loaded at all, so the base stylesheet governs unchanged.
  */
 export const generateLexicalCss = ({ scope }: LexicalCssOptions = {}): string => {
     const prefix = scope ? `${scope} ` : "";

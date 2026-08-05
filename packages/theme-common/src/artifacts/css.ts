@@ -2,6 +2,7 @@ import { generateFluidValue, toCssDeclarations } from "~/fluid/clamp.js";
 import { toCssVariableName } from "~/naming/cssVariable.js";
 import type { ResolvedThemeSnapshot, SnapshotToken } from "~/snapshot.js";
 import { tokenToDeclarations, type CssDeclaration } from "./values.js";
+import { generateLexicalCss } from "./lexicalClasses.js";
 
 /**
  * The CSS artifact — see the design brief, section 6.2.
@@ -118,6 +119,11 @@ export const generateCssArtifact = (
             sections.push(block(SYSTEM_DARK_SELECTOR, darkDeclarations, indent));
         }
     }
+
+    // The rich-text structural rules ride in the same artifact as the variables they read, so the single
+    // theme `<link>` the frontend already loads themes Website Builder's `wb-lx-*` rich text too — with no
+    // extra request and no content migration (the classes are already baked into every saved page).
+    sections.push(generateLexicalCss());
 
     return `${sections.filter(Boolean).join("\n\n")}\n`;
 };

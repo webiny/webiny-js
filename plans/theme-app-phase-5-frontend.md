@@ -1,7 +1,7 @@
 # Theme App — Phase 5: Frontend Consumption
 
-Status: **in progress** — Slices 1–6 done; only Slice 7 (Lexical, needs a decision) remains. Written
-2026-08-05, after merging `next`
+Status: **COMPLETE** — Slices 1–7 done (Slice 7 = structural classes; `wb-paragraph-N` preset↔role
+reconciliation left as a follow-up). Written 2026-08-05, after merging `next`
 (which brought the frontend SDK: `@webiny/sdk-frontend`, `website-builder-react/-nextjs/-vue/-nuxt`,
 `react-rich-text-lexical-renderer`).
 
@@ -296,22 +296,32 @@ export default defineEventHandler(async event => {
 Note the one casing difference the recipe handles: the tag helpers use React's `crossOrigin`; `useHead`
 takes the HTML attribute `crossorigin`. 3 new tests (40 total).
 
-### Slice 7 — Lexical structural class alignment (needs a decision first)
+### Slice 7 — Lexical structural class alignment ✅ DONE (2026-08-05, approach (a), structural-only)
 
-**Blocked on a decision, not on code.** `generateLexicalCss`/`createLexicalThemeClasses` (built + tested
-in `theme-common`) emit `wby-rt-*` classes, but WB renders stored rich-text as pre-baked HTML carrying
-`wb-lx-*` / `wb-paragraph-*` classes, and the shipped `lexical.css` still references the _old_
-`--wb-theme-*` variables. So the class-map as-built targets nothing on the frontend.
+**Backwards-compatibility drove the choice.** Verified: WB stores rich text as a pre-baked `html` string
+and renders it via `dangerouslySetInnerHTML` (`website-builder-react/src/editorComponents/Lexical.tsx`),
+so the class names are frozen into **every existing page's content**. Approach (b) (emit new `wby-rt-*`
+classes) would strand every existing page until re-saved — a content migration. Approach (a) targets the
+`wb-lx-*` names WB **already** bakes, so old and new pages are themed with **no migration**, and an
+instance with no active theme is byte-identical to today.
 
-Options:
+Done:
 
-- **(a)** Re-point the theme class-map + `generateLexicalCss` at the `wb-lx-*` / `wb-paragraph-*` names
-  WB already emits, and migrate `lexical.css` to `--wby-*`. Cheap; no WB-runtime change.
-- **(b)** Change WB's rich-text HTML generation to emit `wby-rt-*` via `EditorThemeClasses`. Bigger;
-  needs coordination with the WB team; cleaner long-term namespace.
+- Re-pointed `LEXICAL_TYPOGRAPHY_CLASSES` / `createLexicalThemeClasses` / `generateLexicalCss` from the
+  invented `wby-rt-*` to WB's real `wb-lx-*` names (`wb-lx-h1…h6`, `wb-lx-paragraph`, `wb-lx-code`,
+  `wb-lx-quote`) — read from the shipped `lexical.css`. A test pins the concrete names, since a drift
+  silently un-themes all rich text.
+- **Delivery by folding into `tokens.css`**: `generateCssArtifact` now appends `generateLexicalCss()`,
+  so the single theme `<link>` the frontend already loads themes WB rich text too — no new artifact
+  file, no route/SDK change, no second request. The rules set only typography properties on the
+  structural classes, so they layer additively over the base `lexical.css` (whose heading/paragraph
+  rules are empty) and win by load order; with no theme, `tokens.css` is not loaded and the base
+  stylesheet governs unchanged. The base `lexical.css` is **untouched** (its `--wb-theme-*` variables
+  stay), so non-theme instances are unaffected.
 
-Recommendation: **(a)** for now — it aligns with what already ships and unblocks rich-text theming
-without a cross-team change. Revisit (b) if the `wb-*`→`wby-*` namespace migration happens wholesale.
+Scoped to **structural classes only**. `wb-paragraph-N` (WB's numbered typography *presets*) is a
+separate mechanism, not a 1:1 match to the semantic `type.*` roles; reconciling presets ↔ roles is left
+as a follow-up product decision. 2 new tests (190 in theme-common).
 
 ---
 
