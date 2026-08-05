@@ -14,7 +14,7 @@ import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import type { Context } from "~/types.js";
 import { MOCK_DATA_MANAGER_TASK_ID } from "~/tasks/MockDataManagerTask.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/index.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
 vi.setConfig({
     testTimeout: 120_000
