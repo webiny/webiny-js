@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { ACTIVE_THEME_PATH, getThemeLinkTags, ThemeSdk } from "./ThemeSdk.js";
+import {
+    ACTIVE_THEME_PATH,
+    createThemeRewrite,
+    getThemeLinkTags,
+    THEME_ROUTE_PREFIX,
+    ThemeSdk
+} from "./ThemeSdk.js";
 import type { ActiveTheme } from "./types.js";
 
 const API = "https://d123.cloudfront.net";
@@ -135,6 +141,45 @@ describe("ThemeSdk.getActiveTheme", () => {
 
         const active = await sdk.getActiveTheme();
         expect(active?.artifacts.css).toBe("https://cdn.example.com/theme.css");
+    });
+
+    it("keeps artifact URLs relative in same-origin mode", async () => {
+        // With the /_webiny/theme/* proxy in place, the browser should fetch same-origin, so the URL
+        // stays relative and resolves against the site's own origin.
+        const sdk = sdkWith(() => Promise.resolve(jsonResponse(activeBody)), { sameOrigin: true });
+
+        const active = await sdk.getActiveTheme();
+        expect(active?.artifacts.css).toBe("/_webiny/theme/wbyTheme-abc/3/tokens.css");
+        expect(active?.artifacts.json).toBe("/_webiny/theme/wbyTheme-abc/3/tokens.json");
+    });
+
+    it("still fetches the active pointer from the API host in same-origin mode", async () => {
+        // Only the artifact <link> goes same-origin; the SSR pointer call is a direct API request.
+        const fetchImpl = vi.fn(() => Promise.resolve(jsonResponse(activeBody)));
+        await sdkWith(fetchImpl as unknown as typeof fetch, { sameOrigin: true }).getActiveTheme();
+
+        expect(fetchImpl).toHaveBeenCalledWith(`${API}${ACTIVE_THEME_PATH}`, expect.anything());
+    });
+});
+
+describe("createThemeRewrite", () => {
+    it("builds a same-origin proxy rule for the theme routes", () => {
+        expect(createThemeRewrite(API)).toEqual({
+            source: `${THEME_ROUTE_PREFIX}/:path*`,
+            destination: `${API}${THEME_ROUTE_PREFIX}/:path*`
+        });
+    });
+
+    it("tolerates a trailing slash on the API host", () => {
+        expect(createThemeRewrite(`${API}/`).destination).toBe(
+            `${API}${THEME_ROUTE_PREFIX}/:path*`
+        );
+    });
+
+    it("covers both the active pointer and the artifacts under one prefix", () => {
+        // The wildcard must sit above /active and /<id>/<v>/tokens.css alike.
+        expect(ACTIVE_THEME_PATH.startsWith(`${THEME_ROUTE_PREFIX}/`)).toBe(true);
+        expect(createThemeRewrite(API).source).toBe(`${THEME_ROUTE_PREFIX}/:path*`);
     });
 });
 

@@ -1,4 +1,4 @@
-import type { ActiveTheme, ThemeLinkTag, ThemeSdkConfig } from "./types.js";
+import type { ActiveTheme, ThemeLinkTag, ThemeRewriteRule, ThemeSdkConfig } from "./types.js";
 
 /**
  * The frontend client for a published Webiny theme — see the Theme design brief, section 8.
@@ -24,6 +24,14 @@ import type { ActiveTheme, ThemeLinkTag, ThemeSdkConfig } from "./types.js";
 export const ACTIVE_THEME_PATH = "/_webiny/theme/active";
 
 /**
+ * The public path prefix every theme route lives under (active pointer + artifacts).
+ *
+ * The one place this prefix is named on the consumer side. `createThemeRewrite` builds a same-origin
+ * proxy for it, and the artifact URLs the backend returns all sit beneath it.
+ */
+export const THEME_ROUTE_PREFIX = "/_webiny/theme";
+
+/**
  * Ceiling on the active-theme request.
  *
  * SSR must never hang on theme resolution — a page that renders unthemed is a far better failure than
@@ -45,6 +53,7 @@ export class ThemeSdk {
     private readonly apiTenant?: string;
     private readonly fetchImpl: typeof fetch;
     private readonly timeoutMs: number;
+    private readonly sameOrigin: boolean;
 
     constructor(config: ThemeSdkConfig) {
         // Trailing slash stripped once, so every URL join below is a clean concatenation.
@@ -53,6 +62,7 @@ export class ThemeSdk {
         this.apiTenant = config.apiTenant;
         this.fetchImpl = config.fetch ?? globalThis.fetch;
         this.timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+        this.sameOrigin = config.sameOrigin ?? false;
     }
 
     /**
@@ -95,8 +105,8 @@ export class ThemeSdk {
                 version: body.version,
                 activatedOn: body.activatedOn ?? "",
                 artifacts: {
-                    css: this.toAbsolute(body.artifacts.css),
-                    json: this.toAbsolute(body.artifacts.json)
+                    css: this.resolveArtifactUrl(body.artifacts.css),
+                    json: this.resolveArtifactUrl(body.artifacts.json)
                 }
             };
         } catch {
@@ -119,20 +129,41 @@ export class ThemeSdk {
     }
 
     /**
-     * Resolves the route's relative artifact path to an absolute URL on the API host.
+     * Resolves the route's relative artifact path to the URL the browser should fetch.
      *
-     * The route returns relative paths (`/_webiny/theme/<id>/<v>/tokens.css`) on the assumption of a
-     * same-origin `/_webiny/theme/*` rewrite. That rewrite is a later optimisation; until it exists, an
-     * absolute URL on the API host makes the browser `<link>` resolve immediately. An already-absolute
-     * URL is passed through, so a future rewrite that emits absolute URLs is unaffected.
+     * The route returns relative paths (`/_webiny/theme/<id>/<v>/tokens.css`). When `sameOrigin` is set,
+     * the frontend proxies `/_webiny/theme/*` to the API, so the relative path is exactly what the
+     * browser should use — it resolves against the site origin and the proxy forwards it. Otherwise the
+     * path is made absolute on the API host so the `<link>` resolves with no proxy in place. An
+     * already-absolute URL is passed through in both modes.
      */
-    private toAbsolute(path: string): string {
-        if (/^https?:\/\//i.test(path)) {
+    private resolveArtifactUrl(path: string): string {
+        if (/^https?:\/\//i.test(path) || this.sameOrigin) {
             return path;
         }
         return `${this.apiHost}${path.startsWith("/") ? "" : "/"}${path}`;
     }
 }
+
+/**
+ * Builds the same-origin proxy rule for the theme routes.
+ *
+ * Spread into a Next.js `next.config` `rewrites()` so the browser fetches immutable artifacts from the
+ * site's own origin (CDN-cached under the site domain) rather than cross-origin. Pair it with
+ * `sameOrigin: true` on the SDK, so the emitted `<link>` uses the relative path this rule proxies.
+ *
+ *   // next.config.js
+ *   async rewrites() {
+ *     return [createThemeRewrite(process.env.WEBINY_API_URL)];
+ *   }
+ */
+export const createThemeRewrite = (apiHost: string): ThemeRewriteRule => {
+    const host = apiHost.replace(/\/+$/, "");
+    return {
+        source: `${THEME_ROUTE_PREFIX}/:path*`,
+        destination: `${host}${THEME_ROUTE_PREFIX}/:path*`
+    };
+};
 
 /**
  * The `<head>` tags a layout renders to apply the theme.

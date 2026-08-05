@@ -9,6 +9,27 @@ export interface ThemeSdkConfig {
     fetch?: typeof fetch;
     /** Ceiling on the active-theme request. A themeless render beats a stalled one. */
     timeoutMs?: number;
+    /**
+     * Emit artifact URLs as same-origin relative paths instead of absolute API URLs.
+     *
+     * Set this only when the frontend proxies `/_webiny/theme/*` to the API (see `createThemeRewrite`).
+     * With the proxy in place, the browser fetches the immutable artifact from the site's own origin —
+     * one fewer cross-origin hop, and the CDN caches it under the site domain. Without the proxy, leave
+     * it off (the default): absolute URLs work with no extra infrastructure.
+     */
+    sameOrigin?: boolean;
+}
+
+/**
+ * A path-rewrite rule, in the Next.js `rewrites()` / path-to-regexp shape.
+ *
+ * Framework-neutral data — the fields are plain strings — but the `:path*` wildcard is Next.js syntax
+ * because Next is the primary target. Nuxt/other hosts use the same `source`/`destination` with their
+ * own wildcard (`**`); that parity lands in a later slice.
+ */
+export interface ThemeRewriteRule {
+    source: string;
+    destination: string;
 }
 
 /** Absolute URLs to a published theme's artifacts. */

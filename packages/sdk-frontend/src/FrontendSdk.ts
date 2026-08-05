@@ -81,7 +81,8 @@ export class FrontendSdk {
                 apiKey: config.token,
                 apiTenant: config.tenant,
                 fetch: config.fetch,
-                timeoutMs: config.theme?.timeoutMs
+                timeoutMs: config.theme?.timeoutMs,
+                sameOrigin: config.theme?.sameOrigin
             })
         };
 

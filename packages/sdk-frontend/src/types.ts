@@ -16,6 +16,11 @@ export interface ThemeConfig {
      * the theme client needs (host, key, tenant, fetch) is shared from the top-level config.
      */
     timeoutMs?: number;
+    /**
+     * Emit artifact URLs as same-origin relative paths. Set only when the frontend proxies
+     * `/_webiny/theme/*` to the API (see `createThemeRewrite`).
+     */
+    sameOrigin?: boolean;
 }
 
 export interface ContentSdkConfig {

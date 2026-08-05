@@ -63,17 +63,17 @@ preflight green. Layout usage:
 import { sdk, getThemeLinkTags } from "@webiny/sdk-frontend";
 
 export default async function RootLayout({ children }) {
-    const active = await sdk.theme.getActiveTheme();          // null when no theme is active
-    return (
-        <html>
-            <head>
-                {getThemeLinkTags(active).map(tag => (
-                    <link key={tag.href} rel={tag.rel} href={tag.href} />
-                ))}
-            </head>
-            <body>{children}</body>
-        </html>
-    );
+  const active = await sdk.theme.getActiveTheme(); // null when no theme is active
+  return (
+    <html>
+      <head>
+        {getThemeLinkTags(active).map(tag => (
+          <link key={tag.href} rel={tag.rel} href={tag.href} />
+        ))}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }
 ```
 
@@ -100,11 +100,27 @@ WB element renders themed colours/spacing/type/shadows. End-to-end vertical slic
 **Acceptance:** `theme-sdk` unit tests green; `sdk-frontend` builds and typechecks with the new getter;
 a documented 3-line layout snippet that, given an active theme, emits the correct absolute `<link>`.
 
-### Slice 2 — same-origin rewrite + caching
+### Slice 2 — same-origin rewrite + caching ✅ DONE (2026-08-05)
 
-Add the `/_webiny/theme/*` frontend rewrite (Next middleware / `next.config` rewrite, Nuxt route rule)
-so the browser fetches artifacts from the site origin (CDN-cached, immutable) instead of cross-origin.
-Then `getActiveTheme` can emit the relative URL. Optional but matches the original delivery design.
+Kept entirely in `@webiny/theme-sdk` (no change to the WB-owned `-nextjs` package):
+
+- `ThemeSdkConfig.sameOrigin?: boolean` — when set, `getActiveTheme` emits the artifact URLs **relative**
+  instead of absolute, so the browser fetches same-origin (CDN-cached under the site domain). Off by
+  default; absolute URLs keep working with no proxy. Threaded through `sdk-frontend`'s `ThemeConfig`.
+- `createThemeRewrite(apiHost): ThemeRewriteRule` — a ready `{ source, destination }` proxy rule for
+  `next.config` `rewrites()`, plus the `THEME_ROUTE_PREFIX` constant. Covers the active pointer and the
+  artifacts under one wildcard.
+
+Usage:
+```js
+// next.config.js
+const { createThemeRewrite } = require("@webiny/sdk-frontend");
+module.exports = { async rewrites() { return [createThemeRewrite(process.env.WEBINY_API_URL)]; } };
+// + sdk.init({ …, theme: { sameOrigin: true } })
+```
+
+5 new tests (18 total). Nuxt's equivalent route rule (same `source`/`destination`, `**` wildcard) lands
+in Slice 6.
 
 ### Slice 3 — font emission
 
