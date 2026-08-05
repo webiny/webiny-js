@@ -25,12 +25,12 @@
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/theme-common": "0.0.0",
-    "mobx": "^6.16.1",
-    "mobx-react-lite": "^4.1.1",
-    "react": "^19.2.4"
+    "mobx": "^7.0.0",
+    "mobx-react-lite": "^5.0.0",
+    "react": "18.3.1"
   },
   "devDependencies": {
-    "@types/react": "^19.2.7",
+    "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
