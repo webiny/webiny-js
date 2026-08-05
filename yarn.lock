@@ -14496,8 +14496,8 @@ __metadata:
     css-tree: "npm:^3.2.1"
     esbuild-wasm: "npm:^0.28.1"
     front-matter: "npm:^4.0.2"
-    mobx: "npm:^6.16.1"
-    mobx-react-lite: "npm:^4.1.1"
+    mobx: "npm:^7.0.0"
+    mobx-react-lite: "npm:^5.0.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     typescript: "npm:7.0.2"
@@ -22432,23 +22432,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "mobx-react-lite@npm:4.1.1"
-  dependencies:
-    use-sync-external-store: "npm:^1.4.0"
-  peerDependencies:
-    mobx: ^6.9.0
-    react: ^16.8.0 || ^17 || ^18 || ^19
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 10/ce2c848129c052e1901f530329ec440e4b7f7264073e0f91bda240b2c37826f964d1fcab8cf43c4a1fa0d596074364e9ce52094e3db0bd5ca1d59147b92200f7
-  languageName: node
-  linkType: hard
-
 "mobx-react-lite@npm:^5.0.0":
   version: 5.0.0
   resolution: "mobx-react-lite@npm:5.0.0"
@@ -22456,13 +22439,6 @@ __metadata:
     mobx: ^7.0.0
     react: ^18 || ^19
   checksum: 10/4088cf64ac47a83acd64fe95bc7a46d323e2871f4458e7aac7f4b44ee4c2a0e1e2ec6e5da7d85473ab8dc4c41544cd73ffcee655f53047e5e805315a371faad7
-  languageName: node
-  linkType: hard
-
-"mobx@npm:^6.16.1":
-  version: 6.16.1
-  resolution: "mobx@npm:6.16.1"
-  checksum: 10/01753230a35d2f8a376d4f0e5b0096848141a6c1567f09f4a5e6f7a983814e971141eccb58288e737a7b259618312e4c963523100ccc13f5505881ead7066c80
   languageName: node
   linkType: hard
 
@@ -28651,7 +28627,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.5.0":
+"use-sync-external-store@npm:^1.5.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
   peerDependencies:

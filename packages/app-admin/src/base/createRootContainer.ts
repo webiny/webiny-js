@@ -10,7 +10,6 @@ import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
-import { WcpFeature } from "~/features/wcp/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
@@ -62,8 +61,6 @@ export function createRootContainer() {
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
 
     TenancyFeature.register(container);
-
-    WcpFeature.register(container);
 
     FeatureFlagsFeature.register(container);
 

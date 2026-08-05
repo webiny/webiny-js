@@ -68,7 +68,6 @@ export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
 
 // Hooks
 export * from "./hooks/index.js";
-export { useWcp } from "./presentation/wcp/useWcp.js";
 export { useFeatureFlags } from "./presentation/featureFlags/useFeatureFlags.js";
 export { useTenantContext } from "./presentation/tenancy/useTenantContext.js";
 export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
