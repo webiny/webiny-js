@@ -31,6 +31,27 @@ export class FeatureFlags {
 
     constructor(private readonly flags: IFeatureFlagsDto = {}) {}
 
+    isExplicitlyDisabled(name: FeatureFlagName): boolean {
+        const segments = name.split(".");
+        let current: unknown = this.flags;
+
+        for (let i = 0; i < segments.length; i++) {
+            if (current === false) {
+                return true;
+            }
+            if (current === undefined || current === true) {
+                return false;
+            }
+            if (typeof current === "object" && current !== null) {
+                current = (current as Record<string, unknown>)[segments[i]];
+                continue;
+            }
+            return false;
+        }
+
+        return current === false;
+    }
+
     isEnabled(name: FeatureFlagName): boolean {
         const segments = name.split(".");
         let current: unknown = this.flags;

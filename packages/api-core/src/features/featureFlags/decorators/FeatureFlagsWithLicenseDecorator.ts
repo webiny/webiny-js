@@ -33,12 +33,14 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
             if (!check(this.license)) {
                 return false;
             }
-            return this.base.isEnabled(name);
+            // License allows — config can only disable, not re-enable blocked features.
+            return !this.base.isExplicitlyDisabled(name);
         }
+        // Not license-governed: requires a license to exist.
         if (!this.license.getRawLicense()) {
             return false;
         }
-        return this.base.isEnabled(name);
+        return !this.base.isExplicitlyDisabled(name);
     }
 }
 

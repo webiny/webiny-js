@@ -33,12 +33,12 @@ class BuildLicenseDecoratedFeatureFlags extends FeatureFlags {
             if (!check(this.license)) {
                 return false;
             }
-            return this.base.isEnabled(name);
+            return !this.base.isExplicitlyDisabled(name);
         }
         if (!this.license.getRawLicense()) {
             return false;
         }
-        return this.base.isEnabled(name);
+        return !this.base.isExplicitlyDisabled(name);
     }
 }
 

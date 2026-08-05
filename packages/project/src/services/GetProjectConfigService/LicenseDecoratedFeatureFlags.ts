@@ -25,11 +25,11 @@ export class LicenseDecoratedFeatureFlags extends FeatureFlags {
             if (!check(this.license)) {
                 return false;
             }
-            return super.isEnabled(name);
+            return !super.isExplicitlyDisabled(name);
         }
         if (!this.license.hasLicense) {
             return false;
         }
-        return super.isEnabled(name);
+        return !super.isExplicitlyDisabled(name);
     }
 }
