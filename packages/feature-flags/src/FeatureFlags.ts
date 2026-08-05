@@ -7,11 +7,7 @@ export class FeatureFlags {
 
     constructor(private readonly flags: IFeatureFlagsDto = {}) {}
 
-    toDto(): IFeatureFlagsDto {
-        return JSON.parse(JSON.stringify(this.flags));
-    }
-
-    toResolvedDto() {
+    toDto() {
         return {
             multiTenancy: this.isMultiTenancyEnabled(),
             advancedPublishingWorkflow: this.isWorkflowsEnabled(),

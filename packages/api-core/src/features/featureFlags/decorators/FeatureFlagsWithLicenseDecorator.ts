@@ -1,14 +1,57 @@
 import { FeatureFlags } from "../abstractions.js";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
-import type { IFeatureFlagsDto, IAaclFeatureFlags } from "@webiny/feature-flags";
 import type { ILicense } from "@webiny/wcp/types.js";
 import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 
-function applyLicenseFlag<T extends boolean | undefined>(
-    userValue: T,
-    licenseAllows: boolean
-): T | false {
-    return licenseAllows ? userValue : false;
+class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
+    constructor(
+        private base: FeatureFlagsClass,
+        private license: ILicense
+    ) {
+        super(base.toDto());
+    }
+
+    override isMultiTenancyEnabled() {
+        return this.base.isMultiTenancyEnabled() && this.license.canUseFeature("multiTenancy");
+    }
+    override isWorkflowsEnabled() {
+        return this.base.isWorkflowsEnabled() && this.license.canUseWorkflows();
+    }
+    override isAaclEnabled() {
+        return this.base.isAaclEnabled() && this.license.canUseAacl();
+    }
+    override isTeamsEnabled() {
+        return this.base.isTeamsEnabled() && this.license.canUseTeams();
+    }
+    override isPrivateFilesEnabled() {
+        return this.base.isPrivateFilesEnabled() && this.license.canUsePrivateFiles();
+    }
+    override isFolderLevelPermissionsEnabled() {
+        return (
+            this.base.isFolderLevelPermissionsEnabled() &&
+            this.license.canUseFolderLevelPermissions()
+        );
+    }
+    override isHcmsFieldPermissionsEnabled() {
+        return (
+            this.base.isHcmsFieldPermissionsEnabled() && this.license.canUseHcmsFieldPermissions()
+        );
+    }
+    override isAuditLogsEnabled() {
+        return this.base.isAuditLogsEnabled() && this.license.canUseAuditLogs();
+    }
+    override isRecordLockingEnabled() {
+        return this.base.isRecordLockingEnabled() && this.license.canUseRecordLocking();
+    }
+    override isFileManagerThreatDetectionEnabled() {
+        return (
+            this.base.isFileManagerThreatDetectionEnabled() &&
+            this.license.canUseFileManagerThreatDetection()
+        );
+    }
+    override isAbTestingEnabled() {
+        return this.base.isAbTestingEnabled() && this.license.canUseAbTesting();
+    }
 }
 
 class FeatureFlagsWithLicenseDecoratorImpl implements FeatureFlags.Interface {
@@ -19,52 +62,7 @@ class FeatureFlagsWithLicenseDecoratorImpl implements FeatureFlags.Interface {
 
     get(): FeatureFlagsClass {
         const base = this.decoratee.get();
-        const license = this.licenseProvider.get();
-        const dto = this.applyLicense(base.toDto(), license);
-        return FeatureFlagsClass.fromDto(dto);
-    }
-
-    private applyLicense(dto: IFeatureFlagsDto, license: ILicense): IFeatureFlagsDto {
-        dto.multiTenancy = applyLicenseFlag(
-            dto.multiTenancy,
-            license.canUseFeature("multiTenancy")
-        );
-
-        dto.advancedPublishingWorkflow = applyLicenseFlag(
-            dto.advancedPublishingWorkflow,
-            license.canUseWorkflows()
-        );
-
-        if (dto.advancedAccessControlLayer !== false) {
-            if (!license.canUseAacl()) {
-                dto.advancedAccessControlLayer = false;
-            } else if (typeof dto.advancedAccessControlLayer === "object") {
-                const aacl = dto.advancedAccessControlLayer as IAaclFeatureFlags;
-                aacl.teams = applyLicenseFlag(aacl.teams, license.canUseTeams());
-                aacl.privateFiles = applyLicenseFlag(
-                    aacl.privateFiles,
-                    license.canUsePrivateFiles()
-                );
-                aacl.folderLevelPermissions = applyLicenseFlag(
-                    aacl.folderLevelPermissions,
-                    license.canUseFolderLevelPermissions()
-                );
-            }
-        }
-
-        dto.auditLogs = applyLicenseFlag(dto.auditLogs, license.canUseAuditLogs());
-        dto.recordLocking = applyLicenseFlag(dto.recordLocking, license.canUseRecordLocking());
-        dto.abTesting = applyLicenseFlag(dto.abTesting, license.canUseAbTesting());
-
-        if (!dto.fileManager) {
-            dto.fileManager = {};
-        }
-        dto.fileManager.threatDetection = applyLicenseFlag(
-            dto.fileManager.threatDetection,
-            license.canUseFileManagerThreatDetection()
-        );
-
-        return dto;
+        return new LicenseDecoratedFeatureFlags(base, this.licenseProvider.get());
     }
 }
 
