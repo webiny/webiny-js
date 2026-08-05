@@ -4,6 +4,18 @@ import type { FeatureFlagName } from "@webiny/feature-flags";
 import type { ILicense } from "@webiny/wcp/types.js";
 import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 
+/*
+ * Feature flag resolution (license decorator):
+ *
+ * 1. No license at all            → false (everything off, config ignored)
+ * 2. License blocks the flag      → false (config ignored)
+ * 3. License allows + config=false → false (config can disable what license allows)
+ * 4. License allows + config=true  → true
+ * 5. License allows + config unset → true  (license is the authority for unset flags)
+ * 6. Not in LICENSE_CHECKS + license exists + config unset → true
+ * 7. Not in LICENSE_CHECKS + license exists + config=false → false
+ */
+
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     multiTenancy: l => l.canUseFeature("multiTenancy"),
     advancedPublishingWorkflow: l => l.canUseWorkflows(),
