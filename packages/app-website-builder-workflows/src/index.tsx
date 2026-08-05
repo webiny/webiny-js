@@ -8,7 +8,7 @@ import { PageGetWorkflowsFeature } from "~/presentation/page/PageGet/feature.js"
 export const WebsiteBuilderWorkflows = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isWorkflowsEnabled()) {
+    if (!featureFlags.isEnabled("advancedPublishingWorkflow")) {
         return null;
     }
 

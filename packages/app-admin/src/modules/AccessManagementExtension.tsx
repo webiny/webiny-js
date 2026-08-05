@@ -43,7 +43,7 @@ const AccessManagementBreadcrumbsRoot = () => (
 
 const TeamsRoute = () => {
     const featureFlags = useFeatureFlags();
-    if (!featureFlags.isTeamsEnabled()) {
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.teams")) {
         return null;
     }
     return (
@@ -65,7 +65,7 @@ const TeamsRoute = () => {
 const TeamsMenuItem = () => {
     const featureFlags = useFeatureFlags();
     const router = useRouter();
-    if (!featureFlags.isTeamsEnabled()) {
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.teams")) {
         return null;
     }
     return (

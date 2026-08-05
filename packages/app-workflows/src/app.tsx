@@ -12,7 +12,7 @@ import { ContentReviews } from "~/presentation/ContentReviews.js";
 export const WorkflowsAdminApp = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isWorkflowsEnabled()) {
+    if (!featureFlags.isEnabled("advancedPublishingWorkflow")) {
         return null;
     }
 

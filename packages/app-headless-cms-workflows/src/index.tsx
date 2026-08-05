@@ -16,7 +16,7 @@ import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsE
 export const CmsWorkflows = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isWorkflowsEnabled()) {
+    if (!featureFlags.isEnabled("advancedPublishingWorkflow")) {
         return null;
     }
 

@@ -17,7 +17,7 @@ class AiImageEnrichmentAfterCreateHandlerImpl implements FileAfterCreateEventHan
             return;
         }
 
-        if (!this.featureFlags.get().isAiImageEnrichmentEnabled()) {
+        if (!this.featureFlags.get().isEnabled("aiPowerups.fileManager.imageEnrichment")) {
             return;
         }
 

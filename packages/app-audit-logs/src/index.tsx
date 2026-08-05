@@ -19,7 +19,7 @@ export const AuditLogs = () => {
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
-    if (!featureFlags.isAuditLogsEnabled()) {
+    if (!featureFlags.isEnabled("auditLogs")) {
         return null;
     }
 

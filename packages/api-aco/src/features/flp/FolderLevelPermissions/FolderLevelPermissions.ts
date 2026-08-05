@@ -46,11 +46,13 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
             return false;
         }
 
-        return this.featureFlags.get().isFolderLevelPermissionsEnabled();
+        return this.featureFlags
+            .get()
+            .isEnabled("advancedAccessControlLayer.folderLevelPermissions");
     }
 
     public canUseTeams(): boolean {
-        return this.featureFlags.get().isTeamsEnabled();
+        return this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams");
     }
 
     public canCreateFolderInRoot(): boolean {

@@ -8,7 +8,7 @@ const { Security } = AdminConfig;
 
 export const SecurityPermissions = () => {
     const featureFlags = useFeatureFlags();
-    const teams = featureFlags.isTeamsEnabled();
+    const teams = featureFlags.isEnabled("advancedAccessControlLayer.teams");
 
     const schema = useMemo(() => {
         const entities: EntityDefinition[] = [

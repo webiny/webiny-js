@@ -33,7 +33,7 @@ const { Browser, FileDetails } = FileManagerConfig;
 
 const PrivateFilesBulkEditField = () => {
     const featureFlags = useFeatureFlags();
-    if (!featureFlags.isPrivateFilesEnabled()) {
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.privateFiles")) {
         return null;
     }
     return (

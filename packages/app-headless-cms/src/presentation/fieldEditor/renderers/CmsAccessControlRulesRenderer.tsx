@@ -66,7 +66,7 @@ const AccessControlRules = observer(({ field }: AccessControlRulesProps) => {
         [rules, field]
     );
 
-    if (!featureFlags.isHcmsFieldPermissionsEnabled()) {
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.hcmsFieldPermissions")) {
         return (
             <Grid>
                 <Grid.Column span={12}>

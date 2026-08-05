@@ -14,7 +14,7 @@ const { Actions } = InternalContentEntryEditorConfig;
 export const CmsContentGeneration = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isAiEntryGenerationEnabled()) {
+    if (!featureFlags.isEnabled("aiPowerups.cms.entryGeneration")) {
         return null;
     }
 

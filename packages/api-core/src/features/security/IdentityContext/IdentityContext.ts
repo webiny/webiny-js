@@ -118,8 +118,8 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     private applyAaclLogic(permissions: SecurityPermission[]): SecurityPermission[] {
-        const aaclEnabled = this.featureFlags.get().isAaclEnabled();
-        const teamsEnabled = this.featureFlags.get().isTeamsEnabled();
+        const aaclEnabled = this.featureFlags.get().isEnabled("advancedAccessControlLayer");
+        const teamsEnabled = this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams");
 
         if (aaclEnabled) {
             // Add AACL metadata permission

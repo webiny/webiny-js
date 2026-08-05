@@ -47,7 +47,7 @@ class GetPermissionsFromGroupsAndTeamsImpl implements PermissionsProcessor.Inter
             loadedRoles.push(...loadedRolesByIds);
         }
 
-        if (this.featureFlags.get().isTeamsEnabled()) {
+        if (this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams")) {
             teamIds.push(...(user.teams ?? []));
 
             const filteredTeamIds = teamIds.filter(Boolean) as string[];

@@ -12,7 +12,7 @@ class WebsiteBuilderPageSchemaFactoryImpl implements IGraphQLSchemaFactory {
     async execute(
         builder: GQLSchemaFactory.SchemaBuilder
     ): Promise<GQLSchemaFactory.SchemaBuilder> {
-        if (!this.featureFlags.get().isWorkflowsEnabled()) {
+        if (!this.featureFlags.get().isEnabled("advancedPublishingWorkflow")) {
             return builder;
         }
 

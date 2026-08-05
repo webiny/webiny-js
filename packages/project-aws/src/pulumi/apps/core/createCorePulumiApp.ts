@@ -95,7 +95,7 @@ export function createCorePulumiApp() {
                     vpcExtensionsConfig && typeof vpcExtensionsConfig !== "boolean";
 
                 const featureFlags = await sdk.getFeatureFlags();
-                if (featureFlags.isFileManagerThreatDetectionEnabled()) {
+                if (featureFlags.isEnabled("fileManager.threatDetection")) {
                     configureS3BucketMalwareProtection(app as CorePulumiApp);
                 }
 

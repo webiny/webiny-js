@@ -37,7 +37,7 @@ const DisableTableCellWhileThreatScanInProgress = Table.Column.createDecorator(O
 export const EnterpriseModule = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isFileManagerThreatDetectionEnabled()) {
+    if (!featureFlags.isEnabled("fileManager.threatDetection")) {
         return null;
     }
 

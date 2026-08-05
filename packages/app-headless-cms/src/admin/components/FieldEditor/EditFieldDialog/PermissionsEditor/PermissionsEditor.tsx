@@ -52,7 +52,7 @@ export const PermissionsEditor = () => {
         bind.onChange([...otherRules, ...updatedAccessRules]);
     };
 
-    if (!featureFlags.isHcmsFieldPermissionsEnabled()) {
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.hcmsFieldPermissions")) {
         return (
             <Grid>
                 <Grid.Column span={12}>

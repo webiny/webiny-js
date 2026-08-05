@@ -1,17 +1,39 @@
 import { License } from "@webiny/wcp";
 import type { ILicense, DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import { FeatureFlags } from "@webiny/feature-flags";
-import type { IFeatureFlagsDto, IAaclFeatureFlags } from "@webiny/feature-flags";
+import type { FeatureFlagName } from "@webiny/feature-flags";
 import { GetFeatureFlags } from "~/abstractions/index.js";
 
-/* Returns the user's value when the license permits it, otherwise false.
- * This preserves an explicit user false (opt-out), while blocking features
- * the license doesn't cover. */
-function applyLicenseFlag<T extends boolean | undefined>(
-    userValue: T,
-    licenseAllows: boolean
-): T | false {
-    return licenseAllows ? userValue : false;
+const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
+    multiTenancy: l => l.canUseFeature("multiTenancy"),
+    advancedPublishingWorkflow: l => l.canUseWorkflows(),
+    advancedAccessControlLayer: l => l.canUseAacl(),
+    "advancedAccessControlLayer.teams": l => l.canUseTeams(),
+    "advancedAccessControlLayer.privateFiles": l => l.canUsePrivateFiles(),
+    "advancedAccessControlLayer.folderLevelPermissions": l => l.canUseFolderLevelPermissions(),
+    "advancedAccessControlLayer.hcmsFieldPermissions": l => l.canUseHcmsFieldPermissions(),
+    auditLogs: l => l.canUseAuditLogs(),
+    recordLocking: l => l.canUseRecordLocking(),
+    "fileManager.threatDetection": l => l.canUseFileManagerThreatDetection(),
+    abTesting: l => l.canUseAbTesting(),
+    remoteComponents: l => l.canUseRemoteComponents()
+};
+
+class BuildLicenseDecoratedFeatureFlags extends FeatureFlags {
+    constructor(
+        private base: FeatureFlags,
+        private license: ILicense
+    ) {
+        super(base.toDto());
+    }
+
+    override isEnabled(name: FeatureFlagName): boolean {
+        const check = LICENSE_CHECKS[name];
+        if (check) {
+            return this.base.isEnabled(name) && check(this.license);
+        }
+        return this.base.isEnabled(name);
+    }
 }
 
 class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
@@ -20,8 +42,7 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
     async execute(): Promise<FeatureFlags> {
         const userFlags = await this.decoratee.execute();
         const license = this.getLicenseFromEnv();
-        // toDto() returns a structuredClone, so we can safely mutate it in applyLicense.
-        return FeatureFlags.fromDto(this.applyLicense(userFlags.toDto(), license));
+        return new BuildLicenseDecoratedFeatureFlags(userFlags, license);
     }
 
     private getLicenseFromEnv(): ILicense {
@@ -36,66 +57,6 @@ class GetFeatureFlagsWithLicenseDecorator implements GetFeatureFlags.Interface {
         } catch {
             return License.fromLicenseDto(null);
         }
-    }
-
-    /* For each licensable flag: final = user_value && license_allows.
-     * If the user disables a feature they have access to, we respect false.
-     * If the user enables a feature the license doesn't allow, we force false.
-     * fileManager (base) is always allowed; only threatDetection is restricted. */
-    private applyLicense(featureFlagsDto: IFeatureFlagsDto, license: ILicense): IFeatureFlagsDto {
-        featureFlagsDto.multiTenancy = applyLicenseFlag(
-            featureFlagsDto.multiTenancy,
-            license.canUseFeature("multiTenancy")
-        );
-
-        featureFlagsDto.advancedPublishingWorkflow = applyLicenseFlag(
-            featureFlagsDto.advancedPublishingWorkflow,
-            license.canUseWorkflows()
-        );
-
-        // advancedAccessControlLayer.
-        if (featureFlagsDto.advancedAccessControlLayer !== false) {
-            if (!license.canUseAacl()) {
-                // License doesn't allow AACL at all.
-                featureFlagsDto.advancedAccessControlLayer = false;
-            } else if (typeof featureFlagsDto.advancedAccessControlLayer === "object") {
-                // License allows AACL; constrain sub-options.
-                const aacl = featureFlagsDto.advancedAccessControlLayer as IAaclFeatureFlags;
-                aacl.teams = applyLicenseFlag(aacl.teams, license.canUseTeams());
-                aacl.privateFiles = applyLicenseFlag(
-                    aacl.privateFiles,
-                    license.canUsePrivateFiles()
-                );
-                aacl.folderLevelPermissions = applyLicenseFlag(
-                    aacl.folderLevelPermissions,
-                    license.canUseFolderLevelPermissions()
-                );
-            }
-        }
-
-        featureFlagsDto.auditLogs = applyLicenseFlag(
-            featureFlagsDto.auditLogs,
-            license.canUseAuditLogs()
-        );
-        featureFlagsDto.recordLocking = applyLicenseFlag(
-            featureFlagsDto.recordLocking,
-            license.canUseRecordLocking()
-        );
-        featureFlagsDto.abTesting = applyLicenseFlag(
-            featureFlagsDto.abTesting,
-            license.canUseAbTesting()
-        );
-
-        // fileManager is always enabled; only restrict threatDetection via license.
-        if (!featureFlagsDto.fileManager) {
-            featureFlagsDto.fileManager = {};
-        }
-        featureFlagsDto.fileManager.threatDetection = applyLicenseFlag(
-            featureFlagsDto.fileManager.threatDetection,
-            license.canUseFileManagerThreatDetection()
-        );
-
-        return featureFlagsDto;
     }
 }
 

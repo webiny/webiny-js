@@ -11,7 +11,7 @@ import { RecordLockingModule } from "~/RecordLockingModule.js";
 export const RecordLocking = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isRecordLockingEnabled()) {
+    if (!featureFlags.isEnabled("recordLocking")) {
         return null;
     }
 

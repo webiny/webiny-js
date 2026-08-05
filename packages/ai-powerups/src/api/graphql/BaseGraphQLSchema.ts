@@ -148,7 +148,7 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 featureFlags: FeatureFlags.Interface
             ) => {
                 return async ({ args }) => {
-                    if (!featureFlags.get().isAiEntryGenerationEnabled()) {
+                    if (!featureFlags.get().isEnabled("aiPowerups.cms.entryGeneration")) {
                         throw new Error(
                             "AI entry generation cannot be used because your project license does not permit it."
                         );

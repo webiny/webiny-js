@@ -1,7 +1,23 @@
 import { FeatureFlags } from "../abstractions.js";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
+import type { FeatureFlagName } from "@webiny/feature-flags";
 import type { ILicense } from "@webiny/wcp/types.js";
 import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
+
+const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
+    multiTenancy: l => l.canUseFeature("multiTenancy"),
+    advancedPublishingWorkflow: l => l.canUseWorkflows(),
+    advancedAccessControlLayer: l => l.canUseAacl(),
+    "advancedAccessControlLayer.teams": l => l.canUseTeams(),
+    "advancedAccessControlLayer.privateFiles": l => l.canUsePrivateFiles(),
+    "advancedAccessControlLayer.folderLevelPermissions": l => l.canUseFolderLevelPermissions(),
+    "advancedAccessControlLayer.hcmsFieldPermissions": l => l.canUseHcmsFieldPermissions(),
+    auditLogs: l => l.canUseAuditLogs(),
+    recordLocking: l => l.canUseRecordLocking(),
+    "fileManager.threatDetection": l => l.canUseFileManagerThreatDetection(),
+    abTesting: l => l.canUseAbTesting(),
+    remoteComponents: l => l.canUseRemoteComponents()
+};
 
 class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
     constructor(
@@ -11,46 +27,12 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
         super(base.toDto());
     }
 
-    override isMultiTenancyEnabled() {
-        return this.base.isMultiTenancyEnabled() && this.license.canUseFeature("multiTenancy");
-    }
-    override isWorkflowsEnabled() {
-        return this.base.isWorkflowsEnabled() && this.license.canUseWorkflows();
-    }
-    override isAaclEnabled() {
-        return this.base.isAaclEnabled() && this.license.canUseAacl();
-    }
-    override isTeamsEnabled() {
-        return this.base.isTeamsEnabled() && this.license.canUseTeams();
-    }
-    override isPrivateFilesEnabled() {
-        return this.base.isPrivateFilesEnabled() && this.license.canUsePrivateFiles();
-    }
-    override isFolderLevelPermissionsEnabled() {
-        return (
-            this.base.isFolderLevelPermissionsEnabled() &&
-            this.license.canUseFolderLevelPermissions()
-        );
-    }
-    override isHcmsFieldPermissionsEnabled() {
-        return (
-            this.base.isHcmsFieldPermissionsEnabled() && this.license.canUseHcmsFieldPermissions()
-        );
-    }
-    override isAuditLogsEnabled() {
-        return this.base.isAuditLogsEnabled() && this.license.canUseAuditLogs();
-    }
-    override isRecordLockingEnabled() {
-        return this.base.isRecordLockingEnabled() && this.license.canUseRecordLocking();
-    }
-    override isFileManagerThreatDetectionEnabled() {
-        return (
-            this.base.isFileManagerThreatDetectionEnabled() &&
-            this.license.canUseFileManagerThreatDetection()
-        );
-    }
-    override isAbTestingEnabled() {
-        return this.base.isAbTestingEnabled() && this.license.canUseAbTesting();
+    override isEnabled(name: FeatureFlagName): boolean {
+        const check = LICENSE_CHECKS[name];
+        if (check) {
+            return this.base.isEnabled(name) && check(this.license);
+        }
+        return this.base.isEnabled(name);
     }
 }
 

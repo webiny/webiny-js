@@ -10,7 +10,7 @@ const { Browser } = PageListConfig;
 export const TranslatePageConfig = () => {
     const featureFlags = useFeatureFlags();
 
-    if (!featureFlags.isAiPageTranslationEnabled()) {
+    if (!featureFlags.isEnabled("aiPowerups.websiteBuilder.pageTranslation")) {
         return null;
     }
 

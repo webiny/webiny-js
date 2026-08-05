@@ -1,6 +1,15 @@
 import { FeatureFlags } from "@webiny/feature-flags";
-import type { IFeatureFlagsDto } from "@webiny/feature-flags";
+import type { IFeatureFlagsDto, FeatureFlagName } from "@webiny/feature-flags";
 import type { WcpProjectLicenseContextValue } from "./WcpProjectLicenseContext.js";
+
+const LICENSE_CHECKS: Record<string, (license: WcpProjectLicenseContextValue) => boolean> = {
+    multiTenancy: l => l.canUseMultiTenancy(),
+    advancedPublishingWorkflow: l => l.canUseWorkflows(),
+    "advancedAccessControlLayer.teams": l => l.canUseTeams(),
+    "advancedAccessControlLayer.privateFiles": l => l.canUsePrivateFiles(),
+    "fileManager.threatDetection": l => l.canUseFileManagerThreatDetection(),
+    "advancedAccessControlLayer.hcmsFieldPermissions": l => l.canUseHcmsFieldPermissions()
+};
 
 export class LicenseDecoratedFeatureFlags extends FeatureFlags {
     private readonly license: WcpProjectLicenseContextValue;
@@ -10,30 +19,11 @@ export class LicenseDecoratedFeatureFlags extends FeatureFlags {
         this.license = license;
     }
 
-    override isMultiTenancyEnabled(): boolean {
-        return super.isMultiTenancyEnabled() && this.license.canUseMultiTenancy();
-    }
-
-    override isWorkflowsEnabled(): boolean {
-        return super.isWorkflowsEnabled() && this.license.canUseWorkflows();
-    }
-
-    override isTeamsEnabled(): boolean {
-        return super.isTeamsEnabled() && this.license.canUseTeams();
-    }
-
-    override isPrivateFilesEnabled(): boolean {
-        return super.isPrivateFilesEnabled() && this.license.canUsePrivateFiles();
-    }
-
-    override isFileManagerThreatDetectionEnabled(): boolean {
-        return (
-            super.isFileManagerThreatDetectionEnabled() &&
-            this.license.canUseFileManagerThreatDetection()
-        );
-    }
-
-    override isHcmsFieldPermissionsEnabled(): boolean {
-        return super.isHcmsFieldPermissionsEnabled() && this.license.canUseHcmsFieldPermissions();
+    override isEnabled(name: FeatureFlagName): boolean {
+        const check = LICENSE_CHECKS[name];
+        if (check) {
+            return super.isEnabled(name) && check(this.license);
+        }
+        return super.isEnabled(name);
     }
 }

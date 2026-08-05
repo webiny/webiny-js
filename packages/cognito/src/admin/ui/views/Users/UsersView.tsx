@@ -7,7 +7,7 @@ import { UserForm } from "./UsersForm.js";
 export const UsersView = () => {
     const featureFlags = useFeatureFlags();
 
-    const teams = featureFlags.isTeamsEnabled();
+    const teams = featureFlags.isEnabled("advancedAccessControlLayer.teams");
 
     return (
         <SplitView>

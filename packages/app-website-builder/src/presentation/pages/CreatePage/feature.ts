@@ -15,7 +15,7 @@ export const CreatePageFeature = createFeature({
 
         // Languages are behind a feature flag
         const featureFlagsService = container.resolve(FeatureFlagsService);
-        if (featureFlagsService.getFlags().isMultiTenancyEnabled()) {
+        if (featureFlagsService.getFlags().isEnabled("multiTenancy")) {
             container.register(AddLanguageModifier);
         }
     },

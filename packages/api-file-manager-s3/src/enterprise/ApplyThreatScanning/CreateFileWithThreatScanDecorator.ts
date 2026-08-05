@@ -12,7 +12,7 @@ class CreateFileWithThreatScanDecoratorImpl implements CreateFileUseCase.Interfa
         input: CreateFileInput,
         meta?: Record<string, any>
     ): ReturnType<CreateFileUseCase.Interface["execute"]> {
-        if (!this.featureFlags.get().isFileManagerThreatDetectionEnabled()) {
+        if (!this.featureFlags.get().isEnabled("fileManager.threatDetection")) {
             return this.decoratee.execute(input, meta);
         }
 

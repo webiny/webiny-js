@@ -11,7 +11,11 @@ class GetFolderLevelPermissionWithFlpDecoratorImpl implements UseCaseAbstraction
     ) {}
 
     execute(id: string, permissionName: FolderPermissionName) {
-        if (!this.featureFlagsService.getFlags().isFolderLevelPermissionsEnabled()) {
+        if (
+            !this.featureFlagsService
+                .getFlags()
+                .isEnabled("advancedAccessControlLayer.folderLevelPermissions")
+        ) {
             return this.decoratee.execute(id, permissionName);
         }
 

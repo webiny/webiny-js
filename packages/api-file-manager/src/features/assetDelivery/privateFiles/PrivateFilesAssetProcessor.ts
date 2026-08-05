@@ -45,7 +45,7 @@ export class PrivateFilesAssetProcessor implements IAssetProcessor {
         // WCP-gated at request time (the license is only known post-auth). When private files aren't
         // licensed, pass through unchanged — behaviourally identical to this decorator not being
         // registered (public delivery only).
-        if (!this.featureFlags.get().isPrivateFilesEnabled()) {
+        if (!this.featureFlags.get().isEnabled("advancedAccessControlLayer.privateFiles")) {
             return this.assetProcessor.process(assetRequest, asset);
         }
 

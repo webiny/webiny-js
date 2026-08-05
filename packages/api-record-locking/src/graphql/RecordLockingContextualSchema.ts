@@ -28,7 +28,7 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
     ) {}
 
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-        if (!this.featureFlags.get().isRecordLockingEnabled() || !this.tenantCtx.getTenant()) {
+        if (!this.featureFlags.get().isEnabled("recordLocking") || !this.tenantCtx.getTenant()) {
             return makeExecutableSchema({
                 typeDefs: "type Query\ntype Mutation",
                 assumeValidSDL: true

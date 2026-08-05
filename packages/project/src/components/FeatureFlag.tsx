@@ -1,51 +1,51 @@
 import React from "react";
+import type { FeatureFlagName } from "@webiny/feature-flags";
 import { useProjectFeatureFlags } from "~/services/GetProjectConfigService/FeatureFlagsContext.js";
 
-interface ChildrenProps {
+interface CanUseProps {
+    name: FeatureFlagName;
     children: React.ReactNode;
 }
 
-function CanUseMultiTenancy({ children }: ChildrenProps) {
+function CanUse({ name, children }: CanUseProps) {
     const flags = useProjectFeatureFlags();
-    return flags.isMultiTenancyEnabled() ? <>{children}</> : null;
+    return flags.isEnabled(name) ? <>{children}</> : null;
 }
 
-function CanUseWorkflows({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isWorkflowsEnabled() ? <>{children}</> : null;
+function CanUseMultiTenancy({ children }: { children: React.ReactNode }) {
+    return <CanUse name="multiTenancy">{children}</CanUse>;
 }
 
-function CanUseTeams({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isTeamsEnabled() ? <>{children}</> : null;
+function CanUseWorkflows({ children }: { children: React.ReactNode }) {
+    return <CanUse name="advancedPublishingWorkflow">{children}</CanUse>;
 }
 
-function CanUsePrivateFiles({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isPrivateFilesEnabled() ? <>{children}</> : null;
+function CanUseTeams({ children }: { children: React.ReactNode }) {
+    return <CanUse name="advancedAccessControlLayer.teams">{children}</CanUse>;
 }
 
-function CanUseFileManagerThreatDetection({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isFileManagerThreatDetectionEnabled() ? <>{children}</> : null;
+function CanUsePrivateFiles({ children }: { children: React.ReactNode }) {
+    return <CanUse name="advancedAccessControlLayer.privateFiles">{children}</CanUse>;
 }
 
-function CanUseHcmsFieldPermissions({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isHcmsFieldPermissionsEnabled() ? <>{children}</> : null;
+function CanUseFileManagerThreatDetection({ children }: { children: React.ReactNode }) {
+    return <CanUse name="fileManager.threatDetection">{children}</CanUse>;
 }
 
-function CanUseRemoteComponents({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isRemoteComponentsEnabled() ? <>{children}</> : null;
+function CanUseHcmsFieldPermissions({ children }: { children: React.ReactNode }) {
+    return <CanUse name="advancedAccessControlLayer.hcmsFieldPermissions">{children}</CanUse>;
 }
 
-function CanUseAiPowerups({ children }: ChildrenProps) {
-    const flags = useProjectFeatureFlags();
-    return flags.isAiPowerupsEnabled() ? <>{children}</> : null;
+function CanUseRemoteComponents({ children }: { children: React.ReactNode }) {
+    return <CanUse name="remoteComponents">{children}</CanUse>;
+}
+
+function CanUseAiPowerups({ children }: { children: React.ReactNode }) {
+    return <CanUse name="aiPowerups">{children}</CanUse>;
 }
 
 export const FeatureFlag = {
+    CanUse,
     CanUseMultiTenancy,
     CanUseWorkflows,
     CanUseTeams,

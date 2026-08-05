@@ -10,7 +10,9 @@ class FileFieldsProviderWithFeatureFlagsImpl implements Abstraction.Interface {
     async execute(): Promise<string[]> {
         const fields = await this.decoratee.execute();
 
-        if (this.featureFlagsService.getFlags().isPrivateFilesEnabled()) {
+        if (
+            this.featureFlagsService.getFlags().isEnabled("advancedAccessControlLayer.privateFiles")
+        ) {
             return [...fields, "accessControl.type"];
         }
 

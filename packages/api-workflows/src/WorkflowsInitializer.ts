@@ -53,7 +53,10 @@ class WorkflowsInitializerImpl implements IRequestContextInitializer {
         if (!this.initialized) {
             this.initialized = true;
 
-            if (this.tenantCtx.getTenant() && this.featureFlags.get().isWorkflowsEnabled()) {
+            if (
+                this.tenantCtx.getTenant() &&
+                this.featureFlags.get().isEnabled("advancedPublishingWorkflow")
+            ) {
                 await this.registerWorkflowFeatures();
             }
         }

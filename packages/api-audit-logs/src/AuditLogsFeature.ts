@@ -37,7 +37,7 @@ export const AuditLogsFeature = createFeature({
                 initialized = true;
 
                 const featureFlags = container.resolve(FeatureFlags);
-                if (!featureFlags.get().isAuditLogsEnabled()) {
+                if (!featureFlags.get().isEnabled("auditLogs")) {
                     return STUB_SCHEMA;
                 }
 

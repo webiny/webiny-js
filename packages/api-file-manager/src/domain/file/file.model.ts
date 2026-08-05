@@ -11,7 +11,9 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
             modelId: FILE_MODEL_ID,
             name: "FmFile"
         });
-        const privateFiles = this.featureFlags.get().isPrivateFilesEnabled();
+        const privateFiles = this.featureFlags
+            .get()
+            .isEnabled("advancedAccessControlLayer.privateFiles");
 
         model.fields(fields => ({
             name: fields.text().label("Name").required("Value is required."),

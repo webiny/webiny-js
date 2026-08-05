@@ -35,7 +35,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
             return { success: true };
         }
 
-        if (!this.container.resolve(FeatureFlags).get().isFileManagerThreatDetectionEnabled()) {
+        if (!this.container.resolve(FeatureFlags).get().isEnabled("fileManager.threatDetection")) {
             return { success: true };
         }
 
