@@ -15,6 +15,18 @@ import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContent
  */
 const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
 
+export const FeatureFlags = () => (
+    <Project.FeatureFlags
+        features={{
+            aiPowerups: false,
+            fileManager: {
+                threatDetection: false
+            },
+            recordLocking: false
+        }}
+    />
+);
+
 export const Extensions = () => {
     return (
         <>
