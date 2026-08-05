@@ -248,14 +248,15 @@ const SEVERITY = {
 
 const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 };
 
-// Render one "### severity — title / detail" block per finding, sorted high -> low.
+// One block per finding, sorted high -> low. Uses bold text rather than
+// markdown headings (`###`), which GitHub renders as oversized section titles.
 const renderFindings = (lines, findings) => {
     findings
         .slice()
         .sort((a, b) => (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3))
         .forEach(f => {
             const sev = SEVERITY[f.severity] || { emoji: "⚪", label: f.severity || "Note" };
-            lines.push(`### ${sev.emoji} ${sev.label} — ${f.title || "Finding"}`);
+            lines.push(`${sev.emoji} **${sev.label} — ${f.title || "Finding"}**`);
             lines.push("");
             lines.push(f.detail || "");
             lines.push("");
@@ -267,7 +268,8 @@ const renderReport = result => {
     // Anything not explicitly tagged "style" is treated as an integrity finding.
     const style = findings.filter(f => f.category === "style");
     const integrity = findings.filter(f => f.category !== "style");
-    const lines = [MARKER, "## 🚓 Slop Cop", ""];
+    // Bold text instead of `#`/`##` headings, so the comment stays compact.
+    const lines = [MARKER, "🚓 **Slop Cop**", ""];
 
     if (result.verdict !== "warnings" || findings.length === 0) {
         lines.push("✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules.");
@@ -282,11 +284,11 @@ const renderReport = result => {
         lines.push("");
 
         if (integrity.length > 0) {
-            lines.push("## 🚨 Should this be in the PR?", "");
+            lines.push("🚨 **Should this be in the PR?**", "");
             renderFindings(lines, integrity);
         }
         if (style.length > 0) {
-            lines.push("## 📏 Code-style rule checks", "");
+            lines.push("📏 **Code-style rule checks**", "");
             renderFindings(lines, style);
         }
     }
