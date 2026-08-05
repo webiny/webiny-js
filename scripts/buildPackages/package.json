@@ -9,9 +9,9 @@
   "dependencies": {
     "@webiny/stdlib": "^0.0.15",
     "chalk": "^6.0.0",
-    "execa": "^10.0.0",
+    "execa": "^10.0.1",
     "fs-extra": "^11.4.0",
-    "js-yaml": "^5.2.2",
+    "js-yaml": "^5.2.3",
     "listr2": "^11.0.0",
     "load-json-file": "^7.0.1",
     "node-notifier": "^10.0.1",

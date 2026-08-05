@@ -1,8 +1,7 @@
 ---
 name: webiny-api-website-builder-catalog
-context: webiny-api
 description: >
-  API — Website Builder — 57 abstractions.
+  API — Website Builder — 58 abstractions.
   Page and redirect event handlers and use cases.
 ---
 
@@ -149,6 +148,13 @@ Page and redirect event handlers and use cases.
 **Import:** `import { NextjsConfig } from "webiny/api/website-builder/nextjs"`
 **Source:** `@webiny/api-website-builder/features/nextjs/abstractions.ts`
 **Description:** Configuration for Next.js website rendering.
+
+---
+
+**Name:** `NuxtConfig`
+**Import:** `import { NuxtConfig } from "webiny/api/website-builder/nuxt"`
+**Source:** `@webiny/api-website-builder/features/nuxt/abstractions.ts`
+**Description:** Configuration for Nuxt website rendering.
 
 ---
 

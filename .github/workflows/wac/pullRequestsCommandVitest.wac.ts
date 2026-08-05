@@ -2,7 +2,8 @@ import { NormalJob } from "github-actions-wac";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
@@ -33,14 +34,24 @@ const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 const createCheckoutPrSteps = () =>
     [
         {
             name: "Checkout Pull Request",
             "working-directory": DIR_WEBINY_JS,
-            run: "gh pr checkout ${{ github.event.issue.number }}",
+            // Detach onto the SHA `baseBranch` resolved, so every job in this run builds and
+            // tests the same commit even if the PR is pushed to mid-run.
+            run: [
+                "gh pr checkout ${{ github.event.issue.number }}",
+                "git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}"
+            ].join("\n"),
             env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
     ] as NonNullable<NormalJob["steps"]>;
@@ -140,7 +151,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     return {
         [jobNames.constants]: createJob({
-            needs: ["build", "checkComment"],
+            needs: ["baseBranch", "build", "checkComment"],
             name: `Vitest (${rowLabel}) - Constants`,
             checkout: { path: DIR_WEBINY_JS },
             outputs: {
@@ -167,7 +178,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             steps: [createReportResultStep(rowLabel, jobNames.tests)]
         }),
         [jobNames.tests]: createJob({
-            needs: ["constants", jobNames.constants],
+            needs: ["baseBranch", "constants", jobNames.constants],
             // The group prefix lets `vitest-*-result` / `vitestStatusSummary`
             // filter this group's matrix legs out of the run's jobs API.
             name: `${rowLabel} / \${{ matrix.testCommand.title }}`,
@@ -186,7 +197,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             steps: [
                 ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
                 ...withCommonParams([{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }], {
                     "working-directory": DIR_WEBINY_JS
@@ -212,7 +223,8 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             needs: "checkComment",
             name: "Get base branch",
             outputs: {
-                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
             },
             steps: [
                 {
@@ -220,6 +232,17 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                     id: "base-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE, here, and have every job check out exactly this
+                    // commit. Jobs in a single run can start tens of minutes apart, and each
+                    // `gh pr checkout` would otherwise resolve the PR head at its own start time -
+                    // so a push mid-run makes the build job produce output from one commit while
+                    // the test jobs run against another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -227,8 +250,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             needs: "baseBranch",
             name: "Create constants",
             outputs: {
-                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}"
             },
             checkout: false,
             steps: [
@@ -236,11 +258,6 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                     name: "Create global cache key",
                     id: "global-cache-key",
                     run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
-                },
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -254,7 +271,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps
+                ...runBuildCacheUploadSteps
             ]
         }),
         ...createVitestTestsJobs(),

@@ -8,29 +8,9 @@ When new backend features are discovered, update `ai-context/core-features-refer
 
 ## Code
 
-- When writing comments, use `//` for single-line comments and `/* ... */` for multi-line comments. Always end comments with a period
-- Use ES modules (import/export) syntax, not CommonJS (require)
-- When generating code, once done, run `git add .` to stage all changes
-- Only import one named import per line
-- when generating code, one file MUST only contain one class
-- When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
-- Never use `console.log` / `console.warn` / `console.error` in backend (`api-*`) code. Use the DI logger: inject `Logger` (from `@webiny/api-core/features/logger`) as a dependency and call `logger.info/warn/error(...)`. It is pino-backed and takes `(objOrMsg, ...args)` — pass structured context as the first arg, e.g. `logger.warn({ error }, "message")`.
-- Never pass an inline `class` expression to `createImplementation()`. Declare the class separately and pass it by reference. The implementation class must also declare an `implements` clause for the abstraction's interface (e.g. `class Foo implements EventType.Interface { ... }`, or the raw interface such as `IEventType<T>`). Both are enforced by the `webiny/no-inline-class-in-create-implementation` and `webiny/require-implements-on-create-implementation` oxlint rules.
+Code-style rules live in `ai-context/code-style/`, one rule per file (ESLint-style `do this / don't do this`). Read every rule in that folder before writing or editing code; see `ai-context/code-style/README.md` for the index. When adding a new rule, create a new `*.md` file there and add it to the index.
 
-  ```ts
-  // Bad
-  EventType.createImplementation({
-    implementation: class {
-      /* ... */
-    }
-  });
-
-  // Good
-  class HttpEventType implements EventType.Interface {
-    /* ... */
-  }
-  EventType.createImplementation({ implementation: HttpEventType });
-  ```
+- When generating code, once done, run `git add .` to stage all changes.
 
 ## Building
 

@@ -9,7 +9,6 @@ import type {
 
 type InternalProps = {
     $colors: EditorTheme["colors"];
-    $allowCustomColor: EditorTheme["allowCustomColor"];
     $fontSizes: EditorTheme["fontSizes"];
     $typography: EditorTheme["typography"];
     $cacheKey: string;
@@ -25,29 +24,35 @@ export class Theme {
     private readonly _fontSizes: FontSizes;
     private readonly _typography: Record<string, TypographyValue[]>;
     private readonly _typographyMap: TypographyMap;
-    private readonly _allowCustomColor: EditorTheme["allowCustomColor"];
+    private readonly _allowCustomColors: boolean;
 
     constructor(params: {
         colors: EditorTheme["colors"];
         typography: EditorTheme["typography"];
         fontSizes: EditorTheme["fontSizes"];
         tokens: EditorThemeClasses;
-        allowCustomColor?: boolean;
+        allowCustomColors?: boolean;
     }) {
         this._colors = params.colors;
-        this._allowCustomColor = params.allowCustomColor;
         this._typography = params.typography;
         this._fontSizes = params.fontSizes;
         this._typographyMap = this.toTypographyMap(params.typography);
         this.tokens = params.tokens;
+        this._allowCustomColors = params.allowCustomColors ?? false;
     }
 
     static empty() {
-        return new Theme({ colors: [], typography: {}, fontSizes: [], tokens: {} });
+        return new Theme({
+            colors: [],
+            typography: {},
+            fontSizes: [],
+            tokens: {},
+            allowCustomColors: false
+        });
     }
 
     static from(lexicalTheme: EditorThemeClasses) {
-        const { $colors, $typography, $fontSizes, $allowCustomColor, $cacheKey, ...tokens } =
+        const { $colors, $typography, $fontSizes, $cacheKey, ...tokens } =
             lexicalTheme as InternalTheme;
 
         if (!$colors) {
@@ -59,8 +64,7 @@ export class Theme {
                 colors: $colors,
                 typography: $typography,
                 fontSizes: $fontSizes,
-                tokens,
-                allowCustomColor: $allowCustomColor
+                tokens
             });
         }
 
@@ -73,20 +77,16 @@ export class Theme {
         return this._colors;
     }
 
-    /**
-     * Whether the colour picker may offer a free value. `undefined` means the active theme has no
-     * opinion, so the caller's own default stands.
-     */
-    get allowCustomColor() {
-        return this._allowCustomColor;
-    }
-
     get typography() {
         return this._typography;
     }
 
     get fontSizes() {
         return this._fontSizes;
+    }
+
+    get allowCustomColors() {
+        return this._allowCustomColors;
     }
 
     getTypographyById(id: string) {

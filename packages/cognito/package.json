@@ -6,7 +6,9 @@
   "sideEffects": false,
   "exports": {
     ".": "./index.js",
-    "./*": "./*"
+    "./*": "./*",
+    "./api": "./api/index.js",
+    "./admin": "./admin/index.js"
   },
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
@@ -22,13 +24,14 @@
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
+    "@webiny/react-properties": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "aws-amplify": "^6.19.0",
+    "aws-amplify": "^6.20.0",
     "graphql": "^16.14.2",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^6.16.1",
-    "mobx-react-lite": "^4.1.1",
+    "mobx": "^7.0.0",
+    "mobx-react-lite": "^5.0.0",
     "react": "18.3.1",
     "zod": "4.4.3"
   },

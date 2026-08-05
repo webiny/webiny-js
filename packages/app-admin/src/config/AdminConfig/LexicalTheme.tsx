@@ -1,10 +1,10 @@
-import { AllowCustomColor } from "./LexicalTheme/AllowCustomColor.js";
+import { AllowCustomColors } from "./LexicalTheme/AllowCustomColors.js";
 import { Color } from "./LexicalTheme/Color.js";
 import { FontSize } from "./LexicalTheme/FontSize.js";
 import { Typography } from "./LexicalTheme/Typography.js";
 
 export const LexicalTheme = {
-    AllowCustomColor,
+    AllowCustomColors,
     Color,
     FontSize,
     Typography

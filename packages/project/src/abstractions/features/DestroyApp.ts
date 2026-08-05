@@ -4,11 +4,11 @@ import { type PulumiProcess } from "@webiny/pulumi-sdk";
 
 type IPulumiProcess = PulumiProcess;
 
-interface IDestroyAppParams {
+export interface IDestroyAppParams {
     app: AppName;
 }
 
-interface IDestroyApp {
+export interface IDestroyApp {
     execute(params: IDestroyAppParams): Promise<{ pulumiProcess: IPulumiProcess }>;
 }
 

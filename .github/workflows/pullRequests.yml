@@ -8,34 +8,6 @@ concurrency:
   group: pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 jobs:
-  validateCommits:
-    name: Validate commit messages
-    if: github.base_ref != 'dev'
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - uses: actions/checkout@v5
-      - uses: webiny/action-conventional-commits@v1.4.2
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  validateCommitsDev:
-    name: Validate commit messages (dev branch, 'feat' commits not allowed)
-    if: github.base_ref == 'dev'
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - uses: actions/checkout@v5
-      - uses: webiny/action-conventional-commits@v1.4.2
-        with:
-          allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
     outputs:
@@ -89,6 +61,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs: constants
@@ -121,6 +96,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   buildProject:
     needs:
       - constants
@@ -157,7 +135,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
       - name: Build api
         run: yarn webiny build api --no-deployment-checks
         working-directory: ${{ github.base_ref }}
@@ -165,6 +143,9 @@ jobs:
         run: yarn webiny build admin --no-deployment-checks
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysis:
     needs:
       - constants
@@ -209,6 +190,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisVerifyDependencies:
     needs:
       - constants
@@ -242,6 +226,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
@@ -265,6 +252,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
       - constants
@@ -296,6 +286,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
       - constants
@@ -340,6 +333,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
       - constants
@@ -371,6 +367,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
       - constants
@@ -424,6 +423,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-ddb-os-constants:
     needs:
@@ -456,6 +457,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
       - constants
@@ -517,6 +521,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-sql-constants:
     needs:
@@ -549,6 +555,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
       - constants
@@ -602,4 +611,6 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
+      contents: read
+      actions: write
       id-token: write

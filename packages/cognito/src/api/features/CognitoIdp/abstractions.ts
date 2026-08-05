@@ -3,7 +3,7 @@ import type jwt from "jsonwebtoken";
 import type { IdentityData } from "@webiny/api-core/idp";
 
 export type CognitoIdentity = Omit<IdentityData, "type"> & {
-    profile: Omit<IdentityData["profile"], "external">;
+    profile?: Omit<IdentityData["profile"], "external">;
 };
 
 export interface ICognitoIdpConfig {

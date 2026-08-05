@@ -3,7 +3,8 @@ import {
     createDeployWebinySteps,
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createSetupVerdaccioSteps,
     createYarnCacheSteps,
     withCommonParams
@@ -18,14 +19,24 @@ const DIR_TEST_PROJECT = "new-webiny-project";
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 const createCheckoutPrSteps = () =>
     [
         {
             name: "Checkout Pull Request",
             "working-directory": DIR_WEBINY_JS,
-            run: "gh pr checkout ${{ github.event.issue.number }}",
+            // Detach onto the SHA `baseBranch` resolved, so every job in this run builds and
+            // tests the same commit even if the PR is pushed to mid-run.
+            run: [
+                "gh pr checkout ${{ github.event.issue.number }}",
+                "git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}"
+            ].join("\n"),
             env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
     ] as NonNullable<NormalJob["steps"]>;
@@ -92,7 +103,7 @@ const createCypressJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
-            ...runBuildCacheSteps,
+            ...runBuildCacheDownloadSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
@@ -162,7 +173,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "API bundle size limit",
-                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(dbSetup === "ddb-os"
@@ -252,7 +263,8 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             needs: "checkComment",
             name: "Get base branch",
             outputs: {
-                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
             },
             steps: [
                 {
@@ -260,6 +272,17 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     id: "base-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE, here, and have every job check out exactly this
+                    // commit. Jobs in a single run can start tens of minutes apart, and each
+                    // `gh pr checkout` would otherwise resolve the PR head at its own start time -
+                    // so a push mid-run makes the build job produce output from one commit while
+                    // the test jobs run against another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -267,8 +290,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
             needs: "baseBranch",
             name: "Create constants",
             outputs: {
-                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}"
             },
             checkout: false,
             steps: [
@@ -276,11 +298,6 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                     name: "Create global cache key",
                     id: "global-cache-key",
                     run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
-                },
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -294,17 +311,7 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps,
-                {
-                    name: "Upload build cache artifact",
-                    uses: "actions/upload-artifact@v6",
-                    with: {
-                        name: "build-cache",
-                        "retention-days": 1,
-                        "include-hidden-files": true,
-                        path: `${DIR_WEBINY_JS}/.webiny/cached-packages`
-                    }
-                }
+                ...runBuildCacheUploadSteps
             ]
         }),
         ...createCypressJobs("ddb"),

@@ -1,10 +1,10 @@
 import { makeAutoObservable, computed, runInAction } from "mobx";
-import { FormModelFactory, ToolPipelineRunner } from "@webiny/app-admin";
+import { ToolPipelineRunner } from "@webiny/app-admin";
 import type { FormModel } from "@webiny/app-admin";
+import type { FileValue } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { CmsGenerateContentPresenter as Abstraction } from "./abstractions.js";
 import { GenerateEntryContentUseCase } from "~/admin/features/generateEntryContent/index.js";
-import { GetSettingsUseCase } from "~/admin/features/settings/getSettings/abstractions.js";
-import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
+import { AiPromptFormFactory } from "~/admin/presentation/AiPromptFormFactory/abstractions.js";
 
 const SUBMIT_TIMEOUT_MS = 300_000;
 
@@ -13,7 +13,6 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
     private _submitting = false;
     private _timedOut = false;
     private _form: FormModel.Interface | null = null;
-    private _settings: IAiPowerUpsSettings | null = null;
     private _timeoutId: ReturnType<typeof setTimeout> | null = null;
     private _intervalId: ReturnType<typeof setInterval> | null = null;
     private _elapsedSeconds = 0;
@@ -21,8 +20,7 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
     constructor(
         private pipelineRunner: ToolPipelineRunner.Interface,
         private generateEntryContent: GenerateEntryContentUseCase.Interface,
-        private formModelFactory: FormModelFactory.Interface,
-        private getSettings: GetSettingsUseCase.Interface
+        private formFactory: AiPromptFormFactory.Interface
     ) {
         makeAutoObservable(this, { vm: computed }, { autoBind: true });
     }
@@ -38,19 +36,9 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
     }
 
     async init(): Promise<void> {
-        this._loading = true;
-
-        try {
-            const settings = await this.getSettings.execute();
-            runInAction(() => {
-                this._settings = settings;
-                this._form = this.buildForm();
-            });
-        } finally {
-            runInAction(() => {
-                this._loading = false;
-            });
-        }
+        this._form = this.formFactory.createForm({
+            promptDescription: "Describe the content you want to generate for this entry."
+        });
     }
 
     async submit(modelId: string): Promise<void> {
@@ -64,6 +52,7 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
             includedFiles?: string[];
             readerPersona?: string;
             writerPersona?: string;
+            additionalFiles?: FileValue[];
         }>();
 
         if (!data) {
@@ -78,7 +67,8 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
         this.startTimeout();
 
         try {
-            const excludedFileIds = this.computeExcludedFileIds(data.project, data.includedFiles);
+            const excludedFileIds = this.formFactory.computeExcludedFileIds(this._form);
+            const additionalFileIds = data.additionalFiles?.map(f => f.id) ?? null;
 
             await this.generateEntryContent.execute({
                 prompt: data.prompt,
@@ -86,7 +76,8 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
                 projectId: data.project || null,
                 excludedFileIds,
                 readerPersonaId: data.readerPersona || null,
-                writerPersonaId: data.writerPersona || null
+                writerPersonaId: data.writerPersona || null,
+                additionalFileIds
             });
         } catch {
             this.clearTimeout();
@@ -143,149 +134,9 @@ class CmsGenerateContentPresenterImpl implements Abstraction.Interface {
             this._intervalId = null;
         }
     }
-
-    private buildForm() {
-        return this.formModelFactory.create({
-            fields: fields => ({
-                project: fields
-                    .text()
-                    .label("Project")
-                    .description("Select a predefined context to attach.")
-                    .options(() => this.getProjectOptions())
-                    .afterChange((value, { form }) => {
-                        const projectId = value as string | undefined;
-                        const project = projectId
-                            ? this._settings?.projects?.presets?.find(p => p.id === projectId)
-                            : undefined;
-
-                        if (project?.defaultReaderPersonaId) {
-                            form.field("readerPersona").setValue(project.defaultReaderPersonaId);
-                        }
-                        if (project?.defaultWriterPersonaId) {
-                            form.field("writerPersona").setValue(project.defaultWriterPersonaId);
-                        }
-
-                        const fileIds = (project?.files ?? []).map((f: { id: string }) => f.id);
-                        form.field("includedFiles").setValue(fileIds);
-                    }),
-                includedFiles: fields
-                    .text()
-                    .label("Files included")
-                    .description("Uncheck files to exclude them from this generation only.")
-                    .options(() => this.getProjectFileOptions())
-                    .renderer("checkboxes")
-                    .list()
-                    .hiddenWhen(({ form }) => {
-                        const projectId = form.field("project").as("text").getValue();
-                        if (!projectId) {
-                            return true;
-                        }
-                        const project = this._settings?.projects?.presets?.find(
-                            p => p.id === projectId
-                        );
-                        return !project?.files || project.files.length === 0;
-                    }),
-                readerPersona: fields
-                    .text()
-                    .label("Reader Persona")
-                    .description("Select the target audience for the generated content.")
-                    .options(() => this.getPersonaOptions("reader")),
-                writerPersona: fields
-                    .text()
-                    .label("Writer Persona")
-                    .description("Select the writing style for the generated content.")
-                    .options(() => this.getPersonaOptions("writer")),
-                prompt: fields
-                    .text()
-                    .label("Prompt")
-                    .description("Describe the content you want to generate for this entry.")
-                    .required("Prompt is required")
-                    .renderer("textarea", { rows: 6 })
-                    .defaultValue(
-                        "Write an evaluation guide for enterprise, self-hosted CMS platform. Use at least 3 content blocks."
-                    )
-            }),
-            layout: layout => [
-                layout.row("project"),
-                layout.row("includedFiles"),
-                layout.row("readerPersona"),
-                layout.row("writerPersona"),
-                layout.row("prompt")
-            ]
-        });
-    }
-
-    private getSelectedProject() {
-        if (!this._form || !this._settings) {
-            return undefined;
-        }
-        const projectId = this._form.field("project").getValue<string>();
-        if (!projectId) {
-            return undefined;
-        }
-        return this._settings.projects?.presets?.find(p => p.id === projectId);
-    }
-
-    private getProjectFileOptions() {
-        const project = this.getSelectedProject();
-        const files = project?.files;
-        if (!files || files.length === 0) {
-            return [];
-        }
-        return files.map((f: { id: string; name: string }) => ({
-            label: f.name,
-            value: f.id
-        }));
-    }
-
-    private computeExcludedFileIds(projectId?: string, includedFiles?: string[]): string[] | null {
-        if (!projectId) {
-            return null;
-        }
-        const project = this._settings?.projects?.presets?.find(p => p.id === projectId);
-        const allFileIds = (project?.files ?? []).map((f: { id: string }) => f.id);
-        if (allFileIds.length === 0) {
-            return null;
-        }
-        const included = new Set(includedFiles ?? []);
-        const excluded = allFileIds.filter((id: string) => !included.has(id));
-        return excluded.length > 0 ? excluded : null;
-    }
-
-    private getProjectOptions() {
-        const presets = this._settings?.projects?.presets;
-        if (!presets || presets.length === 0) {
-            return [];
-        }
-        return presets.map(preset => ({
-            label: preset.name,
-            value: preset.id
-        }));
-    }
-
-    private getPersonaOptions(type: "reader" | "writer") {
-        const presets =
-            type === "reader"
-                ? this._settings?.readerPersonas?.presets
-                : this._settings?.writerPersonas?.presets;
-
-        if (!presets || presets.length === 0) {
-            return [];
-        }
-
-        return presets.map(preset => ({
-            label: preset.name,
-            value: preset.id
-        }));
-    }
 }
 
 export const CmsGenerateContentPresenter = Abstraction.createImplementation({
     implementation: CmsGenerateContentPresenterImpl,
-    dependencies: [
-        ToolPipelineRunner,
-        GenerateEntryContentUseCase,
-        FormModelFactory,
-        GetSettingsUseCase
-    ]
+    dependencies: [ToolPipelineRunner, GenerateEntryContentUseCase, AiPromptFormFactory]
 });

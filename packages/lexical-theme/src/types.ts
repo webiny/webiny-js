@@ -32,14 +32,14 @@ export type TypographyValue = {
 
 export type EditorTheme = {
     colors: ColorValue[];
-    /**
-     * When false the colour picker offers only `colors` and hides the free colour wheel. Driven by
-     * the active theme's policy; undefined means "leave it to the caller".
-     */
-    allowCustomColor?: boolean;
     typography: Record<string, TypographyValue[]>;
     tokens: EditorThemeClasses;
     fontSizes: FontSizes;
+    /**
+     * When false the colour picker offers only `colors` and hides the free colour wheel. The Theme app
+     * drives this from the active theme's colour policy; undefined means "leave it to the caller".
+     */
+    allowCustomColors?: boolean;
 };
 
 export type TypographyMap = Record<string, TypographyValue>;

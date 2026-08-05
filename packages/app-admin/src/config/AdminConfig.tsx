@@ -9,6 +9,7 @@ import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
+import { Breadcrumb, type BreadcrumbConfig } from "./AdminConfig/Breadcrumbs.js";
 import { Security } from "./AdminConfig/Security.js";
 import type { PermissionRendererConfig } from "../permissions/types.js";
 import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
@@ -16,6 +17,8 @@ import { Title } from "./AdminConfig/Title.js";
 import { Logo } from "./AdminConfig/Logo.js";
 import { Dialog } from "./AdminConfig/Dialog.js";
 import type { DialogConfig } from "./AdminConfig/Dialog.js";
+import { Drawer } from "./AdminConfig/Drawer.js";
+import type { DrawerConfig } from "./AdminConfig/Drawer.js";
 import { Form } from "./AdminConfig/Form.js";
 import type { FieldRendererConfig } from "./AdminConfig/FieldRenderer.js";
 import type { LayoutRendererConfig } from "./AdminConfig/LayoutRenderer.js";
@@ -38,9 +41,11 @@ interface AdminConfig {
     squareLogo: React.ReactNode;
     horizontalLogo: React.ReactNode;
     widgets: WidgetConfig[];
+    breadcrumbs: BreadcrumbConfig[];
     permissionRenderers: PermissionRendererConfig[];
     lexicalTheme: EditorTheme;
     dialogs: DialogConfig[];
+    drawers: DrawerConfig[];
     fieldRenderers: FieldRendererConfig[];
     layoutRenderers: LayoutRendererConfig[];
 }
@@ -66,10 +71,10 @@ export const useAdminConfig = () => {
 
     const lexicalTheme: EditorTheme = {
         colors: baseConfig.lexicalTheme?.colors,
-        allowCustomColor: baseConfig.lexicalTheme?.allowCustomColor,
         typography: baseConfig.lexicalTheme?.typography || {},
         fontSizes: baseConfig.lexicalTheme?.fontSizes ?? [],
-        tokens: lexicalTokens
+        tokens: lexicalTokens,
+        allowCustomColors: baseConfig.lexicalTheme?.allowCustomColors ?? false
     };
 
     return {
@@ -82,9 +87,11 @@ export const useAdminConfig = () => {
             horizontalLogo: baseConfig.horizontalLogo
         },
         widgets: baseConfig.widgets ?? [],
+        breadcrumbs: baseConfig.breadcrumbs ?? [],
         permissionRenderers: baseConfig.permissionRenderers ?? [],
         lexicalTheme,
         dialogs: baseConfig.dialogs ?? [],
+        drawers: baseConfig.drawers ?? [],
         fieldRenderers: baseConfig.fieldRenderers ?? [],
         layoutRenderers: baseConfig.layoutRenderers ?? []
     };
@@ -115,9 +122,11 @@ export const AdminConfig = Object.assign(Private, {
     Title,
     Logo,
     Dashboard,
+    Breadcrumb,
     Security,
     LexicalTheme,
     Dialog,
+    Drawer,
     Form,
     useAdminConfig
 });

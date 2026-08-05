@@ -1,8 +1,7 @@
 ---
 name: webiny-api-catalog
-context: webiny-api
 description: >
-  api — 21 abstractions.
+  api — 34 abstractions.
 ---
 
 # api
@@ -45,6 +44,13 @@ description: >
 
 ---
 
+**Name:** `AiSdkTool`
+**Import:** `import { AiSdkTool } from "webiny/api"`
+**Source:** `@webiny/api-core/features/ai/index.ts`
+**Description:** A single tool that can be provided to AI generateText/streamText calls.
+
+---
+
 **Name:** `BaseError`
 **Import:** `import { BaseError } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
@@ -77,6 +83,12 @@ description: >
 
 ---
 
+**Name:** `ConnectionRegistry`
+**Import:** `import { ConnectionRegistry } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/ConnectionRegistry/abstractions.ts`
+
+---
+
 **Name:** `createAbstraction`
 **Import:** `import { createAbstraction } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
@@ -86,6 +98,18 @@ description: >
 **Name:** `createFeature`
 **Import:** `import { createFeature } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
+
+---
+
+**Name:** `createWebsocketsRoutePlugin`
+**Import:** `import { createWebsocketsRoutePlugin } from "webiny/api"`
+**Source:** `@webiny/api-websockets/plugins/WebsocketsRoutePlugin.ts`
+
+---
+
+**Name:** `createWebsocketsRoutePlugins`
+**Import:** `import { createWebsocketsRoutePlugins } from "webiny/api"`
+**Source:** `@webiny/api-websockets/runner/routes/index.ts`
 
 ---
 
@@ -156,5 +180,60 @@ Inspired by functional programming constructs like `Either` or `Result` in other
 **Name:** `Route`
 **Import:** `import { Route } from "webiny/api"`
 **Source:** `@webiny/handler/abstractions/Route.ts`
+
+---
+
+**Name:** `WebsocketsDisconnectUseCase`
+**Import:** `import { WebsocketsDisconnectUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/Disconnect/abstractions.ts`
+
+---
+
+**Name:** `WebsocketsError`
+**Kind:** type
+**Import:** `import type { WebsocketsError } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/shared/errors.ts`
+
+---
+
+**Name:** `WebsocketsEventValidator`
+**Import:** `import { WebsocketsEventValidator } from "webiny/api"`
+**Source:** `@webiny/api-websockets/validator/index.ts`
+
+---
+
+**Name:** `WebsocketsListConnectionsUseCase`
+**Import:** `import { WebsocketsListConnectionsUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/ListConnections/abstractions.ts`
+
+---
+
+**Name:** `WebsocketsResponse`
+**Import:** `import { WebsocketsResponse } from "webiny/api"`
+**Source:** `@webiny/api-websockets/response/index.ts`
+
+---
+
+**Name:** `WebsocketsRunner`
+**Import:** `import { WebsocketsRunner } from "webiny/api"`
+**Source:** `@webiny/api-websockets/runner/WebsocketsRunner.ts`
+
+---
+
+**Name:** `WebsocketsSendToConnectionsUseCase`
+**Import:** `import { WebsocketsSendToConnectionsUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/SendToConnections/abstractions.ts`
+
+---
+
+**Name:** `WebsocketsSendToIdentityUseCase`
+**Import:** `import { WebsocketsSendToIdentityUseCase } from "webiny/api"`
+**Source:** `@webiny/api-websockets/features/SendToIdentity/abstractions.ts`
+
+---
+
+**Name:** `WebsocketsTransport`
+**Import:** `import { WebsocketsTransport } from "webiny/api"`
+**Source:** `@webiny/api-websockets/transport/index.ts`
 
 ---

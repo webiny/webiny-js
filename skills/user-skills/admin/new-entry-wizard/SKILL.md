@@ -1,6 +1,5 @@
 ---
 name: webiny-new-entry-wizard
-context: webiny-admin
 description: >
   Building a New Entry Wizard for the Headless CMS. Use this skill when the developer wants to
   show a custom wizard UI before the entry form when creating new CMS entries -- collecting

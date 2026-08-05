@@ -98,8 +98,8 @@ export class CreateTasksByModel {
                 }
 
                 if (ids.length > 0) {
-                    // Cache the task with the entry IDs
                     this.taskCache.cacheTask({
+                        actionName: input.actionName,
                         modelId: input.modelId,
                         identity: input.identity,
                         data: input.data,

@@ -28,7 +28,7 @@ export const ThemeLexicalColors = () => {
 
     return (
         <>
-            <LexicalTheme.AllowCustomColor value={policy.color.entry !== "theme-only"} />
+            <LexicalTheme.AllowCustomColors value={policy.color.entry !== "theme-only"} />
 
             {colorSwatches("light").map(swatch => (
                 <LexicalTheme.Color

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [{ "path": "../theme-common" }],
+  "references": [{ "path": "../sdk" }, { "path": "../theme-common" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -9,6 +9,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"],
       "@webiny/theme-common/*": ["../theme-common/src/*"],
       "@webiny/theme-common": ["../theme-common/src"]
     }

@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../theme-common/tsconfig.build.json" }],
+  "references": [
+    { "path": "../sdk/tsconfig.build.json" },
+    { "path": "../theme-common/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,6 +12,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"],
       "@webiny/theme-common/*": ["../theme-common/src/*"],
       "@webiny/theme-common": ["../theme-common/src"]
     }

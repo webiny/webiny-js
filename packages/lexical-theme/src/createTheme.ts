@@ -6,7 +6,7 @@ export interface CreateThemeParams {
     typography: Record<string, TypographyValue[]>;
     lexicalTokenPrefix: string;
     fontSizes: FontSizes | null;
-    allowCustomColor?: boolean;
+    allowCustomColors?: boolean;
 }
 
 export const createTheme = (params: CreateThemeParams): EditorTheme => {
@@ -15,6 +15,6 @@ export const createTheme = (params: CreateThemeParams): EditorTheme => {
         typography: params.typography,
         tokens: createLexicalTokens(params.lexicalTokenPrefix),
         fontSizes: params.fontSizes ?? [],
-        allowCustomColor: params.allowCustomColor
+        allowCustomColors: params.allowCustomColors
     };
 };
