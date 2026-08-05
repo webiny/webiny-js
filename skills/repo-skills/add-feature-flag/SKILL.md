@@ -10,15 +10,34 @@ description: >
 
 # Adding a New Feature Flag
 
-Feature flags are the primary authority for feature availability. A WCP license can restrict flags it governs, but flags work standalone without a license.
+A WCP license is required for feature flags to work. The license is the gate; the config is the switch within the gate.
+
+## Decision Flow
+
+```
+1. No license at all             → false (everything off, config ignored)
+2. License blocks the flag       → false (config ignored)
+3. License allows + config=false → false (config can disable what license allows)
+4. License allows + config=true  → true
+5. License allows + config unset → true  (license is the authority for unset flags)
+6. Not in LICENSE_CHECKS + license exists + config unset → true
+7. Not in LICENSE_CHECKS + license exists + config=false → false
+```
+
+Key points:
+
+- Config can **disable** what the license allows, but cannot **enable** what the license blocks.
+- Flags not governed by a license (`LICENSE_CHECKS`) still require a license to exist — then config decides.
+- Without any license, all flags are off regardless of config.
 
 ## Architecture
 
-- **`FeatureFlags` class** (`packages/feature-flags/src/FeatureFlags.ts`) — single `isEnabled(name)` method resolves dot-path strings against the DTO. All flags default to enabled (`!== false`).
+- **`FeatureFlags` class** (`packages/feature-flags/src/FeatureFlags.ts`) — single `isEnabled(name)` method resolves dot-path strings against the DTO. Flags are disabled by default (`undefined → false`). Also provides `isExplicitlyDisabled(name)` to distinguish "not set" from "set to false".
 - **`IFeatureFlagsDto`** (`packages/feature-flags/src/types.ts`) — the typed DTO interface.
 - **`KnownFeatureFlag`** (`packages/feature-flags/src/FeatureFlags.ts`) — string literal union for autocomplete.
 - **Zod schema** (`packages/project/src/extensions/FeatureFlags.tsx`) — validates the config input.
 - **`toDto()`** returns the fully resolved state (all flags explicitly set), used by the `featureFlags` GraphQL query.
+- **License decorators** intercept `isEnabled()` and apply the decision flow above via a `LICENSE_CHECKS` map.
 
 ## Steps to Add a Simple Boolean Flag
 
@@ -136,7 +155,8 @@ export const FeatureFlags = () => (
 );
 ```
 
-Omitting a flag means it's enabled by default.
+Omitting a flag means the license decides (enabled if licensed, disabled if not).
+Setting a flag to `false` disables it even if the license allows it.
 
 ## Adding a Nested Flag Group
 
@@ -194,13 +214,19 @@ myFeature: z.union([
 <Project.FeatureFlags features={{ myFeature: { subFeatureA: false } }} />
 ```
 
-## Optional: WCP License Gating
+## WCP License Gating
 
-If the flag should be restricted by a WCP license, add it to the `LICENSE_CHECKS` map in the decorators:
+A WCP license is required for any feature flag to work. Without a license, all flags return `false`.
 
-**API level:** `packages/api-core/src/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.ts`
-**Build level:** `packages/project/src/decorators/GetFeatureFlagsWithLicense.ts`
-**Config level:** `packages/project/src/services/GetProjectConfigService/LicenseDecoratedFeatureFlags.ts`
+**Flags NOT in `LICENSE_CHECKS`** (like `remoteComponents`): a license must exist, but the license doesn't explicitly govern this flag. Config decides. Do NOT add a flag to `LICENSE_CHECKS` until the WCP backend supports it.
+
+**Flags IN `LICENSE_CHECKS`**: the license explicitly gates the feature. If the license blocks it, the flag is `false` regardless of config. If the license allows it, config can still disable it.
+
+To make a flag license-governed, add it to the `LICENSE_CHECKS` map in **all three** decorators:
+
+- **API level:** `packages/api-core/src/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.ts`
+- **Build level:** `packages/project/src/decorators/GetFeatureFlagsWithLicense.ts`
+- **Config level:** `packages/project/src/services/GetProjectConfigService/LicenseDecoratedFeatureFlags.ts`
 
 ```ts
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
@@ -209,7 +235,7 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
 };
 ```
 
-This also requires adding `canUseMyNewFeature()` to the `ILicense` interface and its implementations in `@webiny/wcp`. Skip this if the flag is not license-gated.
+This also requires adding `canUseMyNewFeature()` to the `ILicense` interface and its implementations in `@webiny/wcp` (`License.ts`, `NullLicense.ts`). Only do this when the WCP backend supports the flag.
 
 ## Files Reference
 
