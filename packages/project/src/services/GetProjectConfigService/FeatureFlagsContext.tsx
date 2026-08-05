@@ -1,48 +1,51 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext } from "react";
+import { makeAutoObservable } from "mobx";
+import { observer } from "mobx-react-lite";
 import { FeatureFlags } from "@webiny/feature-flags";
 import type { IFeatureFlagsDto } from "@webiny/feature-flags";
 import { useWcpProjectLicense } from "./WcpProjectLicenseContext.js";
 import { LicenseDecoratedFeatureFlags } from "./LicenseDecoratedFeatureFlags.js";
 
-type NotifyFn = () => void;
-let notifyFlagsReady: NotifyFn | null = null;
-let featureFlagsDto: IFeatureFlagsDto = {};
-let flagsReady = false;
+class FeatureFlagsStore {
+    dto: IFeatureFlagsDto = {};
+    ready = false;
+
+    constructor() {
+        makeAutoObservable(this);
+    }
+
+    set(dto: IFeatureFlagsDto) {
+        this.dto = dto;
+        this.ready = true;
+    }
+}
+
+const store = new FeatureFlagsStore();
 
 export function setProjectFeatureFlags(dto: IFeatureFlagsDto) {
-    featureFlagsDto = dto;
-    flagsReady = true;
-    if (notifyFlagsReady) {
-        notifyFlagsReady();
-    }
+    store.set(dto);
 }
 
 const FeatureFlagsContext = createContext<FeatureFlags | null>(null);
 
-export const FeatureFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const FeatureFlagsProvider = observer(({ children }: { children: React.ReactNode }) => {
     const license = useWcpProjectLicense();
     const flags = license.hasLicense
-        ? new LicenseDecoratedFeatureFlags(featureFlagsDto, license)
-        : new FeatureFlags(featureFlagsDto);
+        ? new LicenseDecoratedFeatureFlags(store.dto, license)
+        : new FeatureFlags(store.dto);
 
     return <FeatureFlagsContext.Provider value={flags}>{children}</FeatureFlagsContext.Provider>;
-};
+});
 
-export const FeatureFlagsGate: React.FC<{ children: React.ReactNode; skip?: boolean }> = ({
-    children,
-    skip
-}) => {
-    const [ready, setReady] = useState(flagsReady || skip);
+export const FeatureFlagsGate = observer(
+    ({ children, skip }: { children: React.ReactNode; skip?: boolean }) => {
+        if (!store.ready && !skip) {
+            return null;
+        }
 
-    const notify = useCallback(() => setReady(true), []);
-    notifyFlagsReady = notify;
-
-    if (!ready) {
-        return null;
+        return <>{children}</>;
     }
-
-    return <>{children}</>;
-};
+);
 
 export function useProjectFeatureFlags(): FeatureFlags {
     const context = useContext(FeatureFlagsContext);

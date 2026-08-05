@@ -14367,6 +14367,8 @@ __metadata:
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.18.1"
     minimatch: "npm:^10.2.6"
+    mobx: "npm:^7.0.0"
+    mobx-react-lite: "npm:^4.1.1"
     mqtt: "npm:^5.15.2"
     neverthrow: "npm:^8.2.0"
     pino: "npm:^10.3.1"
@@ -22433,6 +22435,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mobx-react-lite@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "mobx-react-lite@npm:4.1.1"
+  dependencies:
+    use-sync-external-store: "npm:^1.4.0"
+  peerDependencies:
+    mobx: ^6.9.0
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10/ce2c848129c052e1901f530329ec440e4b7f7264073e0f91bda240b2c37826f964d1fcab8cf43c4a1fa0d596074364e9ce52094e3db0bd5ca1d59147b92200f7
+  languageName: node
+  linkType: hard
+
 "mobx-react-lite@npm:^5.0.0":
   version: 5.0.0
   resolution: "mobx-react-lite@npm:5.0.0"
@@ -28628,7 +28647,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.5.0":
+"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.5.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
   peerDependencies:
