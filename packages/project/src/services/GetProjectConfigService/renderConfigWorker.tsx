@@ -1,4 +1,6 @@
 import "tsx/esm";
+import fs from "fs";
+import path from "path";
 import { AsyncProperties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
@@ -11,6 +13,7 @@ import { toImportSpecifier } from "~/utils/index.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
 import { FeatureFlagsProvider } from "./FeatureFlagsContext.js";
+import { setProjectFeatureFlags } from "./FeatureFlagsContext.js";
 import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
 
 const sendError = (err: Error) => {
@@ -54,6 +57,18 @@ process.on("unhandledRejection", reason => {
 
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
+
+const projectRoot = project.paths.rootFolder.toString();
+const featureFlagsFile = ["webiny.features.tsx", "webiny.features.ts"]
+    .map(name => path.join(projectRoot, name))
+    .find(p => fs.existsSync(p));
+
+if (featureFlagsFile) {
+    const featureFlagsModule = await import(toImportSpecifier(featureFlagsFile));
+    if (featureFlagsModule.default) {
+        setProjectFeatureFlags(featureFlagsModule.default);
+    }
+}
 
 const { Extensions } = await import(
     toImportSpecifier(project.paths.webinyConfigBaseFile.toString())

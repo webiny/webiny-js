@@ -4,14 +4,12 @@ import { FeatureFlag } from "@webiny/project";
 
 export const AiPowerups = () => {
     return (
-        <FeatureFlag.CanUseMultiTenancy>
-            <FeatureFlag.CanUseAiPowerups>
-                {/* Api extensions */}
-                <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
+        <FeatureFlag.CanUseAiPowerups>
+            {/* Api extensions */}
+            <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
 
-                {/* Admin extensions */}
-                <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
-            </FeatureFlag.CanUseAiPowerups>
-        </FeatureFlag.CanUseMultiTenancy>
+            {/* Admin extensions */}
+            <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
+        </FeatureFlag.CanUseAiPowerups>
     );
 };

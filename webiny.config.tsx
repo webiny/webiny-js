@@ -75,17 +75,6 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
-            <Project.FeatureFlags
-                features={{
-                    aiPowerups: {
-                        enabled: false
-                    },
-                    fileManager: {
-                        threatDetection: false
-                    },
-                    recordLocking: false
-                }}
-            />
             {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
                     adminUser={{
