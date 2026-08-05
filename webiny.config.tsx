@@ -48,7 +48,9 @@ export const Extensions = () => {
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             {/* IMPORTANT: commented out until we resolve bulk actions bootstrap! */}
             <FeatureFlag.CanUseMultiTenancy>
-                <AiContentExtension />
+                <FeatureFlag.CanUse name="aiPowerups">
+                    <AiContentExtension />
+                </FeatureFlag.CanUse>
             </FeatureFlag.CanUseMultiTenancy>
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
