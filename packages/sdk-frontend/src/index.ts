@@ -3,14 +3,15 @@ export type { ContentSdkConfig, WbConfig, CmsConfig, ThemeConfig } from "./types
 
 // Theme consumption. `sdk.theme.getActiveTheme()` at SSR + `getThemeLinkTags()` in the layout `<head>`;
 // `sdk.theme.getFonts(active)` + `getFontLinkTags()` for web-font preconnect/stylesheet tags.
-// `createThemeRewrite()` proxies `/_webiny/theme/*` for same-origin artifact fetching.
-// `shouldRevalidateTheme()` + `THEME_CACHE_TAG` drive the webhook revalidation handler.
+// `createThemeRewrite()` (Next.js) / `createNuxtThemeRouteRules()` (Nuxt) proxy `/_webiny/theme/*` for
+// same-origin artifact fetching. `shouldRevalidateTheme()` + `THEME_CACHE_TAG` drive webhook revalidation.
 export {
     ThemeSdk,
     getThemeLinkTags,
     getFontLinkTags,
     buildGoogleFontsUrl,
     createThemeRewrite,
+    createNuxtThemeRouteRules,
     shouldRevalidateTheme,
     THEME_CACHE_TAG,
     THEME_REVALIDATE_EVENTS
@@ -20,6 +21,7 @@ export type {
     ThemeArtifactUrls,
     ThemeLinkTag,
     ThemeRewriteRule,
+    ThemeNuxtRouteRules,
     ThemeFont,
     ThemeWebhookPayload,
     ThemeActivationWebhookPayload

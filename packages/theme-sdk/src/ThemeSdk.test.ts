@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
     ACTIVE_THEME_PATH,
     buildGoogleFontsUrl,
+    createNuxtThemeRouteRules,
     createThemeRewrite,
     getFontLinkTags,
     getThemeLinkTags,
@@ -260,6 +261,29 @@ describe("createThemeRewrite", () => {
         // The wildcard must sit above /active and /<id>/<v>/tokens.css alike.
         expect(ACTIVE_THEME_PATH.startsWith(`${THEME_ROUTE_PREFIX}/`)).toBe(true);
         expect(createThemeRewrite(API).source).toBe(`${THEME_ROUTE_PREFIX}/:path*`);
+    });
+});
+
+describe("createNuxtThemeRouteRules (Nuxt parity)", () => {
+    it("builds a Nitro route-rules proxy with ** wildcards", () => {
+        expect(createNuxtThemeRouteRules(API)).toEqual({
+            [`${THEME_ROUTE_PREFIX}/**`]: { proxy: `${API}${THEME_ROUTE_PREFIX}/**` }
+        });
+    });
+
+    it("tolerates a trailing slash on the API host", () => {
+        const rules = createNuxtThemeRouteRules(`${API}/`);
+        expect(rules[`${THEME_ROUTE_PREFIX}/**`].proxy).toBe(`${API}${THEME_ROUTE_PREFIX}/**`);
+    });
+
+    it("proxies the same prefix as the Next.js rewrite, differing only in wildcard syntax", () => {
+        // Parity check: both target the same routes; Next uses :path*, Nitro uses **.
+        const next = createThemeRewrite(API);
+        const nuxt = createNuxtThemeRouteRules(API);
+        expect(Object.keys(nuxt)[0]).toBe(next.source.replace(":path*", "**"));
+        expect(nuxt[`${THEME_ROUTE_PREFIX}/**`].proxy).toBe(
+            next.destination.replace(":path*", "**")
+        );
     });
 });
 

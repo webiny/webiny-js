@@ -11,6 +11,7 @@ export {
     getFontLinkTags,
     buildGoogleFontsUrl,
     createThemeRewrite,
+    createNuxtThemeRouteRules,
     shouldRevalidateTheme,
     ACTIVE_THEME_PATH,
     THEME_ROUTE_PREFIX,
@@ -26,6 +27,7 @@ export type {
     ThemeArtifactUrls,
     ThemeLinkTag,
     ThemeRewriteRule,
+    ThemeNuxtRouteRules,
     ThemeFont,
     ThemeWebhookPayload,
     ThemeActivationWebhookPayload

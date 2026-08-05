@@ -60,6 +60,12 @@ export interface ThemeRewriteRule {
     destination: string;
 }
 
+/**
+ * A Nuxt (Nitro) `routeRules` fragment proxying the theme routes — the Nuxt equivalent of a
+ * `ThemeRewriteRule`. Keyed on the route pattern (`/_webiny/theme/**`), the value a proxy target.
+ */
+export type ThemeNuxtRouteRules = Record<string, { proxy: string }>;
+
 /** Absolute URLs to a published theme's artifacts. */
 export interface ThemeArtifactUrls {
     css: string;

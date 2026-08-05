@@ -2,6 +2,7 @@ import type {
     ActiveTheme,
     ThemeFont,
     ThemeLinkTag,
+    ThemeNuxtRouteRules,
     ThemeRewriteRule,
     ThemeSdkConfig
 } from "./types.js";
@@ -347,6 +348,25 @@ export const createThemeRewrite = (apiHost: string): ThemeRewriteRule => {
     return {
         source: `${THEME_ROUTE_PREFIX}/:path*`,
         destination: `${host}${THEME_ROUTE_PREFIX}/:path*`
+    };
+};
+
+/**
+ * The same-origin proxy as a Nuxt `routeRules` fragment — the Nitro equivalent of `createThemeRewrite`.
+ *
+ * Nuxt keeps feature parity with Next.js; the only difference is the shape. Nitro route rules key on the
+ * matched path and proxy with a `**` wildcard, where Next uses a `{ source, destination }` pair with
+ * `:path*`. Spread into `routeRules` in `nuxt.config`, and pair with `sameOrigin: true` on the SDK.
+ *
+ *   // nuxt.config.ts
+ *   export default defineNuxtConfig({
+ *     routeRules: { ...createNuxtThemeRouteRules(process.env.WEBINY_API_URL) }
+ *   });
+ */
+export const createNuxtThemeRouteRules = (apiHost: string): ThemeNuxtRouteRules => {
+    const host = apiHost.replace(/\/+$/, "");
+    return {
+        [`${THEME_ROUTE_PREFIX}/**`]: { proxy: `${host}${THEME_ROUTE_PREFIX}/**` }
     };
 };
 

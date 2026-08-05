@@ -1,6 +1,7 @@
 # Theme App — Phase 5: Frontend Consumption
 
-Status: **in progress** — Slices 1–5 done; 6–7 pending. Written 2026-08-05, after merging `next`
+Status: **in progress** — Slices 1–6 done; only Slice 7 (Lexical, needs a decision) remains. Written
+2026-08-05, after merging `next`
 (which brought the frontend SDK: `@webiny/sdk-frontend`, `website-builder-react/-nextjs/-vue/-nuxt`,
 `react-rich-text-lexical-renderer`).
 
@@ -214,7 +215,7 @@ for now to avoid pulling `standardwebhooks` + `next` into the framework-agnostic
 
 Key simplification found while building: the canonical token set is **fixed and known**
 (`CANONICAL_SLOTS`), so the preset is **static and needs no build-time JSON fetch** — Tailwind only
-needs the *names* mapped to `var(--wby-*)`, and the values arrive from `tokens.css` at runtime. So a
+needs the _names_ mapped to `var(--wby-*)`, and the values arrive from `tokens.css` at runtime. So a
 theme swap re-colours every utility with no rebuild.
 
 New package `@webiny/theme-tailwind` (depends on `@webiny/theme-common`; build-time only, so **not**
@@ -236,10 +237,64 @@ module.exports = { presets: [webinyThemePreset()], content: [...] };
 
 9 tests, derived from `CANONICAL_SLOTS` so they can't drift from the token set.
 
-### Slice 6 — Vue/Nuxt parity
+### Slice 6 — Vue/Nuxt parity ✅ DONE (2026-08-05)
 
-Mirror Slice 1/2 for `website-builder-nuxt` (Vite `__THEME_CSS__` twin, same `<head>` story). The client
-`@webiny/theme-sdk` is framework-agnostic, so only the injection host differs.
+Because the whole client is framework-agnostic, most of the parity was already there — Nuxt gets
+`getActiveTheme`/`getFonts`/`getThemeLinkTags`/`getFontLinkTags`, `sameOrigin`, `requestInit`,
+`shouldRevalidateTheme`/`THEME_CACHE_TAG` and the Tailwind preset (Slice 5) unchanged. The only shape
+that differed was the proxy, so:
+
+- `createNuxtThemeRouteRules(apiHost): ThemeNuxtRouteRules` — the Nitro `routeRules` equivalent of
+  `createThemeRewrite`. Same routes, `**` wildcard instead of `:path*`. A parity test asserts the two
+  target identically, differing only in wildcard syntax.
+
+Nuxt recipes (mirroring the Next ones above):
+
+```ts
+// nuxt.config.ts — same-origin proxy
+import { createNuxtThemeRouteRules } from "@webiny/sdk-frontend";
+export default defineNuxtConfig({
+  routeRules: { ...createNuxtThemeRouteRules(process.env.WEBINY_API_URL!) }
+});
+// + sdk.init({ …, theme: { sameOrigin: true } })
+```
+
+```ts
+// app.vue / layouts/default.vue — <head> injection via useHead
+const active = await sdk.theme.getActiveTheme();
+const fonts = active ? await sdk.theme.getFonts(active) : [];
+useHead({
+  link: [...getThemeLinkTags(active), ...getFontLinkTags(fonts)].map(tag => ({
+    rel: tag.rel,
+    href: tag.href,
+    crossorigin: tag.crossOrigin,
+    as: tag.as,
+    type: tag.type
+  }))
+});
+```
+
+```ts
+// server/api/webiny/theme-webhook.post.ts — revalidation (needs standardwebhooks)
+import { Webhook } from "standardwebhooks";
+import { shouldRevalidateTheme, THEME_CACHE_TAG } from "@webiny/sdk-frontend";
+export default defineEventHandler(async event => {
+  const body = await readRawBody(event);
+  try {
+    new Webhook(process.env.WEBINY_THEME_WEBHOOK_SECRET!).verify(body!, getHeaders(event));
+  } catch {
+    throw createError({ statusCode: 401 });
+  }
+  if (shouldRevalidateTheme(JSON.parse(body!).event)) {
+    // Nitro has no revalidateTag; purge the cached theme response from cache storage.
+    await useStorage("cache").removeItem(`nitro:handlers:${THEME_CACHE_TAG}`);
+  }
+  return null;
+});
+```
+
+Note the one casing difference the recipe handles: the tag helpers use React's `crossOrigin`; `useHead`
+takes the HTML attribute `crossorigin`. 3 new tests (40 total).
 
 ### Slice 7 — Lexical structural class alignment (needs a decision first)
 
