@@ -1,6 +1,6 @@
 # Theme App — Phase 5: Frontend Consumption
 
-Status: **in progress** (Slice 1 = tracer bullet). Written 2026-08-05, after merging `next`
+Status: **in progress** — Slices 1–3 done; 4–7 pending. Written 2026-08-05, after merging `next`
 (which brought the frontend SDK: `@webiny/sdk-frontend`, `website-builder-react/-nextjs/-vue/-nuxt`,
 `react-rich-text-lexical-renderer`).
 
@@ -112,20 +112,45 @@ Kept entirely in `@webiny/theme-sdk` (no change to the WB-owned `-nextjs` packag
   artifacts under one wildcard.
 
 Usage:
+
 ```js
 // next.config.js
 const { createThemeRewrite } = require("@webiny/sdk-frontend");
-module.exports = { async rewrites() { return [createThemeRewrite(process.env.WEBINY_API_URL)]; } };
+module.exports = {
+  async rewrites() {
+    return [createThemeRewrite(process.env.WEBINY_API_URL)];
+  }
+};
 // + sdk.init({ …, theme: { sameOrigin: true } })
 ```
 
 5 new tests (18 total). Nuxt's equivalent route rule (same `source`/`destination`, `**` wildcard) lands
 in Slice 6.
 
-### Slice 3 — font emission
+### Slice 3 — font emission ✅ DONE (2026-08-05)
 
-The JSON artifact carries `fonts` "so the SDK can emit preload hints". Add `getFontLinkTags(active)` and
-fetch the JSON artifact when fonts are needed. Preconnect/preload in `<head>`.
+Fonts live in the JSON artifact body (not the pointer) and are Google-Fonts-only in v1, so:
+
+- `ThemeSdk.getFonts(active)` — a second fetch of the theme's `tokens.json`, extracting `fonts[]` into a
+  minimal `ThemeFont[]` (family/weights/styles/display). Always fetched at an absolute URL even in
+  same-origin mode (SSR fetch needs an origin). Defensive parse — malformed font entries dropped;
+  never throws (any failure → `[]`, so the page falls back to system fonts).
+- `buildGoogleFontsUrl(fonts)` — one `css2` URL for all families/weights, sorted `ital,wght` tuples when
+  italic is used, `display=swap`.
+- `getFontLinkTags(fonts)` — `preconnect` to both Google origins (`gstatic` with `crossorigin`, or the
+  preconnect is wasted) + the stylesheet `<link>`. `ThemeLinkTag` broadened to carry
+  `crossOrigin`/`as`/`type`.
+
+Layout adds the fonts alongside the token CSS:
+```tsx
+const active = await sdk.theme.getActiveTheme();
+const fonts = active ? await sdk.theme.getFonts(active) : [];
+// in <head>:
+{[...getThemeLinkTags(active), ...getFontLinkTags(fonts)].map(tag => <link key={tag.href} {...tag} />)}
+```
+
+14 new tests (32 total). Kept in `@webiny/theme-sdk`, dependency-free (minimal structural `ThemeFont`
+rather than importing `@webiny/theme-common`).
 
 ### Slice 4 — revalidation on publish/activate
 

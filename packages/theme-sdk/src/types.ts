@@ -46,8 +46,31 @@ export interface ActiveTheme {
     artifacts: ThemeArtifactUrls;
 }
 
-/** Head-tag data a framework layout renders to apply the theme. Framework-agnostic (no JSX). */
+/**
+ * Head-tag data a framework layout renders to apply the theme. Framework-agnostic (no JSX).
+ *
+ * `rel` is a plain string because the set spans `stylesheet` (the token CSS and the fonts CSS) and
+ * `preconnect` (the font origins). The optional attributes carry what a `<link rel="preconnect">` and a
+ * future `preload` need; a layout spreads the whole object onto its `<link>`.
+ */
 export interface ThemeLinkTag {
-    rel: "stylesheet";
+    rel: string;
     href: string;
+    crossOrigin?: "anonymous" | "";
+    as?: string;
+    type?: string;
+}
+
+/**
+ * A web font the theme uses, as read from the JSON artifact's `fonts`.
+ *
+ * A minimal structural view of the backend's `FontDefinition` — only the fields needed to build the
+ * font request — so this client stays dependency-free rather than importing `@webiny/theme-common`.
+ * Google Fonts only in v1, matching the producer.
+ */
+export interface ThemeFont {
+    family: string;
+    weights: number[];
+    styles: string[];
+    display?: string;
 }

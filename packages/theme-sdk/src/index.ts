@@ -8,15 +8,20 @@
 export {
     ThemeSdk,
     getThemeLinkTags,
+    getFontLinkTags,
+    buildGoogleFontsUrl,
     createThemeRewrite,
     ACTIVE_THEME_PATH,
     THEME_ROUTE_PREFIX,
-    DEFAULT_TIMEOUT_MS
+    DEFAULT_TIMEOUT_MS,
+    GOOGLE_FONTS_ORIGIN,
+    GOOGLE_FONTS_STATIC_ORIGIN
 } from "./ThemeSdk.js";
 export type {
     ThemeSdkConfig,
     ActiveTheme,
     ThemeArtifactUrls,
     ThemeLinkTag,
-    ThemeRewriteRule
+    ThemeRewriteRule,
+    ThemeFont
 } from "./types.js";

@@ -1,14 +1,22 @@
 export { sdk, FrontendSdk } from "./FrontendSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig, ThemeConfig } from "./types.js";
 
-// Theme consumption. `sdk.theme.getActiveTheme()` at SSR + `getThemeLinkTags()` in the layout `<head>`.
+// Theme consumption. `sdk.theme.getActiveTheme()` at SSR + `getThemeLinkTags()` in the layout `<head>`;
+// `sdk.theme.getFonts(active)` + `getFontLinkTags()` for web-font preconnect/stylesheet tags.
 // `createThemeRewrite()` proxies `/_webiny/theme/*` for same-origin artifact fetching.
-export { ThemeSdk, getThemeLinkTags, createThemeRewrite } from "@webiny/theme-sdk";
+export {
+    ThemeSdk,
+    getThemeLinkTags,
+    getFontLinkTags,
+    buildGoogleFontsUrl,
+    createThemeRewrite
+} from "@webiny/theme-sdk";
 export type {
     ActiveTheme,
     ThemeArtifactUrls,
     ThemeLinkTag,
-    ThemeRewriteRule
+    ThemeRewriteRule,
+    ThemeFont
 } from "@webiny/theme-sdk";
 
 // Re-export Result and error types from @webiny/sdk.

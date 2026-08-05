@@ -1,12 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import {
     ACTIVE_THEME_PATH,
+    buildGoogleFontsUrl,
     createThemeRewrite,
+    getFontLinkTags,
     getThemeLinkTags,
+    GOOGLE_FONTS_STATIC_ORIGIN,
     THEME_ROUTE_PREFIX,
     ThemeSdk
 } from "./ThemeSdk.js";
-import type { ActiveTheme } from "./types.js";
+import type { ActiveTheme, ThemeFont } from "./types.js";
 
 const API = "https://d123.cloudfront.net";
 
@@ -180,6 +183,159 @@ describe("createThemeRewrite", () => {
         // The wildcard must sit above /active and /<id>/<v>/tokens.css alike.
         expect(ACTIVE_THEME_PATH.startsWith(`${THEME_ROUTE_PREFIX}/`)).toBe(true);
         expect(createThemeRewrite(API).source).toBe(`${THEME_ROUTE_PREFIX}/:path*`);
+    });
+});
+
+describe("ThemeSdk.getFonts", () => {
+    const active: ActiveTheme = {
+        themeId: "t",
+        version: 1,
+        activatedOn: "",
+        artifacts: {
+            css: `${API}/_webiny/theme/t/1/tokens.css`,
+            json: `${API}/_webiny/theme/t/1/tokens.json`
+        }
+    };
+
+    const jsonArtifact = {
+        fonts: [
+            {
+                key: "sans",
+                family: "Inter",
+                weights: [400, 600],
+                styles: ["normal"],
+                display: "swap"
+            }
+        ]
+    };
+
+    it("reads fonts from the JSON artifact", async () => {
+        const sdk = sdkWith(() => Promise.resolve(jsonResponse(jsonArtifact)));
+
+        const fonts = await sdk.getFonts(active);
+        expect(fonts).toEqual<ThemeFont[]>([
+            { family: "Inter", weights: [400, 600], styles: ["normal"], display: "swap" }
+        ]);
+    });
+
+    it("fetches the JSON artifact URL", async () => {
+        const fetchImpl = vi.fn(() => Promise.resolve(jsonResponse(jsonArtifact)));
+        await sdkWith(fetchImpl as unknown as typeof fetch).getFonts(active);
+
+        expect(fetchImpl).toHaveBeenCalledWith(active.artifacts.json, expect.anything());
+    });
+
+    it("resolves a same-origin relative artifact URL to absolute before fetching", async () => {
+        // SSR fetch needs an origin; a relative path (same-origin mode) has none.
+        const fetchImpl = vi.fn(() => Promise.resolve(jsonResponse(jsonArtifact)));
+        const relativeActive: ActiveTheme = {
+            ...active,
+            artifacts: {
+                css: "/_webiny/theme/t/1/tokens.css",
+                json: "/_webiny/theme/t/1/tokens.json"
+            }
+        };
+
+        await sdkWith(fetchImpl as unknown as typeof fetch, { sameOrigin: true }).getFonts(
+            relativeActive
+        );
+
+        expect(fetchImpl).toHaveBeenCalledWith(
+            `${API}/_webiny/theme/t/1/tokens.json`,
+            expect.anything()
+        );
+    });
+
+    it("returns [] rather than throwing on any failure", async () => {
+        expect(await sdkWith(() => Promise.reject(new Error("boom"))).getFonts(active)).toEqual([]);
+        expect(
+            await sdkWith(() => Promise.resolve(jsonResponse({}, false, 500))).getFonts(active)
+        ).toEqual([]);
+    });
+
+    it("drops malformed font entries rather than trusting them", async () => {
+        const sdk = sdkWith(() =>
+            Promise.resolve(
+                jsonResponse({
+                    fonts: [
+                        { family: "Inter", weights: [400], styles: ["normal"] },
+                        { weights: [700] }, // no family — dropped
+                        null,
+                        "nonsense"
+                    ]
+                })
+            )
+        );
+
+        const fonts = await sdk.getFonts(active);
+        expect(fonts).toHaveLength(1);
+        expect(fonts[0].family).toBe("Inter");
+    });
+
+    it("treats a JSON artifact with no fonts as empty", async () => {
+        const sdk = sdkWith(() => Promise.resolve(jsonResponse({ tokens: [] })));
+        expect(await sdk.getFonts(active)).toEqual([]);
+    });
+});
+
+describe("buildGoogleFontsUrl", () => {
+    it("requests a family with its weights", () => {
+        const url = buildGoogleFontsUrl([
+            { family: "Inter", weights: [400, 600], styles: ["normal"] }
+        ]);
+        expect(url).toBe(
+            "https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+        );
+    });
+
+    it("encodes a multi-word family name", () => {
+        const url = buildGoogleFontsUrl([
+            { family: "Open Sans", weights: [400], styles: ["normal"] }
+        ]);
+        expect(url).toContain("family=Open+Sans:wght@400");
+    });
+
+    it("emits sorted ital,wght tuples when italic is used", () => {
+        const url = buildGoogleFontsUrl([
+            { family: "Inter", weights: [600, 400], styles: ["normal", "italic"] }
+        ]);
+        // Weights de-duplicated + sorted; normal (0) tuples before italic (1).
+        expect(url).toContain("family=Inter:ital,wght@0,400;0,600;1,400;1,600");
+    });
+
+    it("combines multiple families with &family=", () => {
+        const url = buildGoogleFontsUrl([
+            { family: "Inter", weights: [400], styles: ["normal"] },
+            { family: "Lora", weights: [500], styles: ["normal"] }
+        ]);
+        expect(url).toBe(
+            "https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Lora:wght@500&display=swap"
+        );
+    });
+
+    it("falls back to the family default when no weights are given", () => {
+        const url = buildGoogleFontsUrl([{ family: "Inter", weights: [], styles: [] }]);
+        expect(url).toBe("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+    });
+
+    it("is null for no fonts", () => {
+        expect(buildGoogleFontsUrl([])).toBeNull();
+    });
+});
+
+describe("getFontLinkTags", () => {
+    it("preconnects to both Google origins, then loads the stylesheet", () => {
+        const tags = getFontLinkTags([{ family: "Inter", weights: [400], styles: ["normal"] }]);
+
+        expect(tags.map(t => t.rel)).toEqual(["preconnect", "preconnect", "stylesheet"]);
+        // The gstatic preconnect must carry crossorigin, or the connection is not reused.
+        const gstatic = tags.find(t => t.href === GOOGLE_FONTS_STATIC_ORIGIN);
+        expect(gstatic?.crossOrigin).toBe("anonymous");
+        expect(tags.at(-1)?.href).toContain("css2?family=Inter");
+    });
+
+    it("emits nothing for a theme with no web fonts", () => {
+        expect(getFontLinkTags([])).toEqual([]);
     });
 });
 

@@ -1,4 +1,10 @@
-import type { ActiveTheme, ThemeLinkTag, ThemeRewriteRule, ThemeSdkConfig } from "./types.js";
+import type {
+    ActiveTheme,
+    ThemeFont,
+    ThemeLinkTag,
+    ThemeRewriteRule,
+    ThemeSdkConfig
+} from "./types.js";
 
 /**
  * The frontend client for a published Webiny theme — see the Theme design brief, section 8.
@@ -117,6 +123,63 @@ export class ThemeSdk {
         }
     }
 
+    /**
+     * The web fonts the active theme uses, read from its JSON artifact.
+     *
+     * A second fetch: fonts live in the JSON artifact body, not the active pointer (the pointer is kept
+     * tiny and short-cached; the artifact is immutable and CDN-cached). Always fetched at an absolute
+     * URL even in same-origin mode — a relative path has no origin to resolve against during SSR.
+     *
+     * Like `getActiveTheme`, never throws: any failure yields `[]`, so a font hiccup costs the page its
+     * web fonts (it falls back to system fonts) but not its render.
+     */
+    async getFonts(active: ActiveTheme): Promise<ThemeFont[]> {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+
+        try {
+            const response = await this.fetchImpl(this.toFetchableUrl(active.artifacts.json), {
+                signal: controller.signal
+            });
+            if (!response.ok) {
+                return [];
+            }
+
+            const body = (await response.json()) as { fonts?: unknown };
+            if (!Array.isArray(body.fonts)) {
+                return [];
+            }
+
+            // Parsed defensively: the artifact is public and its shape is the producer's, not ours. A
+            // font missing a family or weights is dropped rather than trusted into a malformed request.
+            return body.fonts
+                .map((font): ThemeFont | null => {
+                    if (!font || typeof font !== "object") {
+                        return null;
+                    }
+                    const f = font as Record<string, unknown>;
+                    if (typeof f.family !== "string" || !f.family.trim()) {
+                        return null;
+                    }
+                    return {
+                        family: f.family,
+                        weights: Array.isArray(f.weights)
+                            ? f.weights.filter((w): w is number => typeof w === "number")
+                            : [],
+                        styles: Array.isArray(f.styles)
+                            ? f.styles.filter((s): s is string => typeof s === "string")
+                            : [],
+                        display: typeof f.display === "string" ? f.display : undefined
+                    };
+                })
+                .filter((font): font is ThemeFont => font !== null);
+        } catch {
+            return [];
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+
     private authHeaders(): Record<string, string> {
         const headers: Record<string, string> = {};
         if (this.apiKey) {
@@ -141,9 +204,88 @@ export class ThemeSdk {
         if (/^https?:\/\//i.test(path) || this.sameOrigin) {
             return path;
         }
+        return this.toFetchableUrl(path);
+    }
+
+    /**
+     * Always-absolute URL for a server-side fetch, regardless of `sameOrigin`.
+     *
+     * `sameOrigin` makes the browser `<link>` relative, but SSR `fetch` needs an origin — so a
+     * same-origin relative artifact path must still be resolved onto the API host before this client
+     * fetches it itself.
+     */
+    private toFetchableUrl(path: string): string {
+        if (/^https?:\/\//i.test(path)) {
+            return path;
+        }
         return `${this.apiHost}${path.startsWith("/") ? "" : "/"}${path}`;
     }
 }
+
+export const GOOGLE_FONTS_ORIGIN = "https://fonts.googleapis.com";
+export const GOOGLE_FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";
+
+const toFamilyParam = (font: ThemeFont): string | null => {
+    const family = font.family.trim().replace(/\s+/g, "+");
+    if (!family) {
+        return null;
+    }
+
+    const weights = [...new Set(font.weights)].sort((a, b) => a - b);
+    if (weights.length === 0) {
+        // No explicit weights → let Google Fonts serve the family's default (400).
+        return family;
+    }
+
+    const hasItalic = font.styles.some(style => style.toLowerCase() === "italic");
+    if (!hasItalic) {
+        return `${family}:wght@${weights.join(";")}`;
+    }
+
+    // css2 requires `ital,wght` tuples sorted ital-then-weight: 0,400;0,600;1,400;1,600.
+    const tuples = [
+        ...weights.map(weight => `0,${weight}`),
+        ...weights.map(weight => `1,${weight}`)
+    ];
+    return `${family}:ital,wght@${tuples.join(";")}`;
+};
+
+/**
+ * Builds a single Google Fonts `css2` stylesheet URL for the theme's fonts, or `null` if there are none.
+ *
+ * One request for every family/weight/style the theme uses — matching the producer, which records only
+ * the weights actually referenced. `display=swap` so text paints immediately in a fallback and swaps
+ * when the web font arrives.
+ */
+export const buildGoogleFontsUrl = (fonts: ThemeFont[], display = "swap"): string | null => {
+    const families = fonts.map(toFamilyParam).filter((param): param is string => param !== null);
+    if (families.length === 0) {
+        return null;
+    }
+
+    const params = families.map(family => `family=${family}`).join("&");
+    return `${GOOGLE_FONTS_ORIGIN}/css2?${params}&display=${display}`;
+};
+
+/**
+ * The `<head>` tags that load the theme's fonts: preconnect to both Google origins, then the stylesheet.
+ *
+ * The `gstatic` preconnect carries `crossorigin` because the font files it serves are fetched
+ * anonymously — without it the connection is not reused and the preconnect is wasted. Empty for a theme
+ * with no web fonts.
+ */
+export const getFontLinkTags = (fonts: ThemeFont[]): ThemeLinkTag[] => {
+    const url = buildGoogleFontsUrl(fonts);
+    if (!url) {
+        return [];
+    }
+
+    return [
+        { rel: "preconnect", href: GOOGLE_FONTS_ORIGIN },
+        { rel: "preconnect", href: GOOGLE_FONTS_STATIC_ORIGIN, crossOrigin: "anonymous" },
+        { rel: "stylesheet", href: url }
+    ];
+};
 
 /**
  * Builds the same-origin proxy rule for the theme routes.
