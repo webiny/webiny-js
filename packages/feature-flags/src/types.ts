@@ -31,11 +31,6 @@ export interface IAiPowerupsOptions {
     cms?: IAiPowerupsCmsOptions;
 }
 
-export interface IAiPowerupsFeatureFlags {
-    enabled?: boolean;
-    options?: IAiPowerupsOptions;
-}
-
 /**
  * Top-level feature flags interface. Add new flags here as needed.
  * A boolean value controls whether the feature is enabled.
@@ -49,7 +44,7 @@ export interface IFeatureFlagsDto {
     auditLogs?: boolean;
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
-    aiPowerups?: IAiPowerupsFeatureFlags;
+    aiPowerups?: boolean | IAiPowerupsOptions;
     abTesting?: boolean;
     remoteComponents?: boolean;
 }

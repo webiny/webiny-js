@@ -115,35 +115,77 @@ export class FeatureFlags {
     }
 
     isAiPowerupsEnabled(): boolean {
-        return this.flags.aiPowerups?.enabled !== false;
+        return this.flags.aiPowerups !== false;
     }
 
     isAiPageGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.websiteBuilder?.pageGeneration !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.websiteBuilder?.pageGeneration !== false;
+        }
+        return true;
     }
 
     isAiImageEnrichmentEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.fileManager?.imageEnrichment !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.fileManager?.imageEnrichment !== false;
+        }
+        return true;
     }
 
     isAiPageTranslationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.websiteBuilder?.pageTranslation !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.websiteBuilder?.pageTranslation !== false;
+        }
+        return true;
     }
 
     isAiLexicalGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.lexicalGeneration !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.lexicalGeneration !== false;
+        }
+        return true;
     }
 
     isAiEntryGenerationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryGeneration !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.cms?.entryGeneration !== false;
+        }
+        return true;
     }
 
     isAiEntryComparisonEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryComparison !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.cms?.entryComparison !== false;
+        }
+        return true;
     }
 
     isAiEntryTranslationEnabled(): boolean {
-        return this.flags.aiPowerups?.options?.cms?.entryTranslation !== false;
+        if (this.flags.aiPowerups === false) {
+            return false;
+        }
+        if (typeof this.flags.aiPowerups === "object") {
+            return this.flags.aiPowerups.cms?.entryTranslation !== false;
+        }
+        return true;
     }
 
     isAbTestingEnabled(): boolean {

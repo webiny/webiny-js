@@ -33,32 +33,30 @@ export const FeatureFlags = defineExtension({
                 })
                 .optional(),
             aiPowerups: z
-                .object({
-                    enabled: z.boolean().optional(),
-                    options: z
-                        .object({
-                            websiteBuilder: z
-                                .object({
-                                    pageGeneration: z.boolean().optional(),
-                                    pageTranslation: z.boolean().optional()
-                                })
-                                .optional(),
-                            fileManager: z
-                                .object({
-                                    imageEnrichment: z.boolean().optional()
-                                })
-                                .optional(),
-                            lexicalGeneration: z.boolean().optional(),
-                            cms: z
-                                .object({
-                                    entryGeneration: z.boolean().optional(),
-                                    entryComparison: z.boolean().optional(),
-                                    entryTranslation: z.boolean().optional()
-                                })
-                                .optional()
-                        })
-                        .optional()
-                })
+                .union([
+                    z.boolean(),
+                    z.object({
+                        websiteBuilder: z
+                            .object({
+                                pageGeneration: z.boolean().optional(),
+                                pageTranslation: z.boolean().optional()
+                            })
+                            .optional(),
+                        fileManager: z
+                            .object({
+                                imageEnrichment: z.boolean().optional()
+                            })
+                            .optional(),
+                        lexicalGeneration: z.boolean().optional(),
+                        cms: z
+                            .object({
+                                entryGeneration: z.boolean().optional(),
+                                entryComparison: z.boolean().optional(),
+                                entryTranslation: z.boolean().optional()
+                            })
+                            .optional()
+                    })
+                ])
                 .optional(),
             abTesting: z.boolean().optional(),
             remoteComponents: z.boolean().optional()
