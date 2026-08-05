@@ -30,8 +30,8 @@ Add the new flag to `IFeatureFlagsDto`:
 
 ```ts
 export interface IFeatureFlagsDto {
-    // ... existing flags
-    myNewFeature?: boolean;
+  // ... existing flags
+  myNewFeature?: boolean;
 }
 ```
 
@@ -43,8 +43,8 @@ Add the string to the `KnownFeatureFlag` type:
 
 ```ts
 export type KnownFeatureFlag =
-    // ... existing flags
-    | "myNewFeature";
+  // ... existing flags
+  "myNewFeature";
 ```
 
 ### 3. Add to toDto()
@@ -69,7 +69,7 @@ toDto() {
 Add to the `paramsSchema` so users get validation in `webiny.config.tsx`:
 
 ```ts
-myNewFeature: z.boolean().optional()
+myNewFeature: z.boolean().optional();
 ```
 
 ### 5. Gate the feature
@@ -92,7 +92,7 @@ Or add a named convenience component in `packages/project/src/components/Feature
 
 ```tsx
 function CanUseMyNewFeature({ children }: { children: React.ReactNode }) {
-    return <CanUse name="myNewFeature">{children}</CanUse>;
+  return <CanUse name="myNewFeature">{children}</CanUse>;
 }
 ```
 
@@ -103,7 +103,7 @@ import { useFeatureFlags } from "@webiny/app-admin";
 
 const featureFlags = useFeatureFlags();
 if (!featureFlags.isEnabled("myNewFeature")) {
-    return null;
+  return null;
 }
 ```
 
@@ -128,11 +128,11 @@ Users configure flags in `webiny.config.tsx`:
 
 ```tsx
 export const FeatureFlags = () => (
-    <Project.FeatureFlags
-        features={{
-            myNewFeature: false  // disabled
-        }}
-    />
+  <Project.FeatureFlags
+    features={{
+      myNewFeature: false // disabled
+    }}
+  />
 );
 ```
 
@@ -146,47 +146,42 @@ For flags with sub-options (like `aiPowerups` or `advancedAccessControlLayer`):
 
 ```ts
 export interface IMyFeatureOptions {
-    subFeatureA?: boolean;
-    subFeatureB?: boolean;
+  subFeatureA?: boolean;
+  subFeatureB?: boolean;
 }
 
 export interface IFeatureFlagsDto {
-    myFeature?: boolean | IMyFeatureOptions;
+  myFeature?: boolean | IMyFeatureOptions;
 }
 ```
 
 ### KnownFeatureFlag — add parent and children:
 
 ```ts
-export type KnownFeatureFlag =
-    | "myFeature"
-    | "myFeature.subFeatureA"
-    | "myFeature.subFeatureB";
+export type KnownFeatureFlag = "myFeature" | "myFeature.subFeatureA" | "myFeature.subFeatureB";
 ```
 
 ### toDto() — collapse parent when disabled:
 
 ```ts
 myFeature: this.isEnabled("myFeature")
-    ? {
-          subFeatureA: this.isEnabled("myFeature.subFeatureA"),
-          subFeatureB: this.isEnabled("myFeature.subFeatureB")
-      }
-    : false
+  ? {
+      subFeatureA: this.isEnabled("myFeature.subFeatureA"),
+      subFeatureB: this.isEnabled("myFeature.subFeatureB")
+    }
+  : false;
 ```
 
 ### Zod schema — union type:
 
 ```ts
-myFeature: z
-    .union([
-        z.boolean(),
-        z.object({
-            subFeatureA: z.boolean().optional(),
-            subFeatureB: z.boolean().optional()
-        })
-    ])
-    .optional()
+myFeature: z.union([
+  z.boolean(),
+  z.object({
+    subFeatureA: z.boolean().optional(),
+    subFeatureB: z.boolean().optional()
+  })
+]).optional();
 ```
 
 ### User config:
@@ -209,8 +204,8 @@ If the flag should be restricted by a WCP license, add it to the `LICENSE_CHECKS
 
 ```ts
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
-    // ... existing checks
-    myNewFeature: l => l.canUseMyNewFeature()
+  // ... existing checks
+  myNewFeature: l => l.canUseMyNewFeature()
 };
 ```
 
@@ -218,15 +213,15 @@ This also requires adding `canUseMyNewFeature()` to the `ILicense` interface and
 
 ## Files Reference
 
-| Purpose | File |
-|---------|------|
-| DTO type | `packages/feature-flags/src/types.ts` |
-| FeatureFlags class + KnownFeatureFlag | `packages/feature-flags/src/FeatureFlags.ts` |
-| Zod schema | `packages/project/src/extensions/FeatureFlags.tsx` |
-| Config-level CanUse components | `packages/project/src/components/FeatureFlag.tsx` |
-| Admin hook | `packages/app-admin/src/presentation/featureFlags/useFeatureFlags.ts` |
-| API abstraction | `packages/api-core/src/features/featureFlags/abstractions.ts` |
-| API license decorator | `packages/api-core/src/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.ts` |
-| Build license decorator | `packages/project/src/decorators/GetFeatureFlagsWithLicense.ts` |
-| Config license decorator | `packages/project/src/services/GetProjectConfigService/LicenseDecoratedFeatureFlags.ts` |
-| GraphQL query | `packages/api-core/src/graphql/featureFlags/FeatureFlagsSchemaFactory.ts` |
+| Purpose                               | File                                                                                         |
+| ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| DTO type                              | `packages/feature-flags/src/types.ts`                                                        |
+| FeatureFlags class + KnownFeatureFlag | `packages/feature-flags/src/FeatureFlags.ts`                                                 |
+| Zod schema                            | `packages/project/src/extensions/FeatureFlags.tsx`                                           |
+| Config-level CanUse components        | `packages/project/src/components/FeatureFlag.tsx`                                            |
+| Admin hook                            | `packages/app-admin/src/presentation/featureFlags/useFeatureFlags.ts`                        |
+| API abstraction                       | `packages/api-core/src/features/featureFlags/abstractions.ts`                                |
+| API license decorator                 | `packages/api-core/src/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.ts` |
+| Build license decorator               | `packages/project/src/decorators/GetFeatureFlagsWithLicense.ts`                              |
+| Config license decorator              | `packages/project/src/services/GetProjectConfigService/LicenseDecoratedFeatureFlags.ts`      |
+| GraphQL query                         | `packages/api-core/src/graphql/featureFlags/FeatureFlagsSchemaFactory.ts`                    |
