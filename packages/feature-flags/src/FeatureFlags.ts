@@ -11,6 +11,46 @@ export class FeatureFlags {
         return JSON.parse(JSON.stringify(this.flags));
     }
 
+    toResolvedDto(): IFeatureFlagsDto {
+        return {
+            multiTenancy: this.isMultiTenancyEnabled(),
+            advancedPublishingWorkflow: this.isWorkflowsEnabled(),
+            advancedAccessControlLayer: this.isAaclEnabled()
+                ? {
+                      teams: this.isTeamsEnabled(),
+                      privateFiles: this.isPrivateFilesEnabled(),
+                      folderLevelPermissions: this.isFolderLevelPermissionsEnabled(),
+                      hcmsFieldPermissions: this.isHcmsFieldPermissionsEnabled()
+                  }
+                : false,
+            auditLogs: this.isAuditLogsEnabled(),
+            recordLocking: this.isRecordLockingEnabled(),
+            fileManager: {
+                threatDetection: this.isFileManagerThreatDetectionEnabled()
+            },
+            aiPowerups: {
+                enabled: this.isAiPowerupsEnabled(),
+                options: {
+                    websiteBuilder: {
+                        pageGeneration: this.isAiPageGenerationEnabled(),
+                        pageTranslation: this.isAiPageTranslationEnabled()
+                    },
+                    fileManager: {
+                        imageEnrichment: this.isAiImageEnrichmentEnabled()
+                    },
+                    lexicalGeneration: this.isAiLexicalGenerationEnabled(),
+                    cms: {
+                        entryGeneration: this.isAiEntryGenerationEnabled(),
+                        entryComparison: this.isAiEntryComparisonEnabled(),
+                        entryTranslation: this.isAiEntryTranslationEnabled()
+                    }
+                }
+            },
+            abTesting: this.isAbTestingEnabled(),
+            remoteComponents: this.isRemoteComponentsEnabled()
+        };
+    }
+
     isMultiTenancyEnabled(): boolean {
         return this.flags.multiTenancy !== false;
     }

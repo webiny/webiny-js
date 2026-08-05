@@ -27,7 +27,7 @@ class FeatureFlagsSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interfac
             dependencies: [FeatureFlags],
             resolver: (featureFlags: FeatureFlags.Interface) => async () => {
                 try {
-                    return new Response(featureFlags.get().toDto());
+                    return new Response(featureFlags.get().toResolvedDto());
                 } catch (e) {
                     return new ErrorResponse({
                         code: "COULD_NOT_GET_FEATURE_FLAGS",
