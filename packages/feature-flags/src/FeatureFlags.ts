@@ -11,41 +11,26 @@ export class FeatureFlags {
         return JSON.parse(JSON.stringify(this.flags));
     }
 
-    toResolvedDto(): IFeatureFlagsDto {
+    toResolvedDto(): Record<string, boolean> {
         return {
             multiTenancy: this.isMultiTenancyEnabled(),
             advancedPublishingWorkflow: this.isWorkflowsEnabled(),
-            advancedAccessControlLayer: this.isAaclEnabled()
-                ? {
-                      teams: this.isTeamsEnabled(),
-                      privateFiles: this.isPrivateFilesEnabled(),
-                      folderLevelPermissions: this.isFolderLevelPermissionsEnabled(),
-                      hcmsFieldPermissions: this.isHcmsFieldPermissionsEnabled()
-                  }
-                : false,
+            advancedAccessControlLayer: this.isAaclEnabled(),
+            teams: this.isTeamsEnabled(),
+            privateFiles: this.isPrivateFilesEnabled(),
+            folderLevelPermissions: this.isFolderLevelPermissionsEnabled(),
+            hcmsFieldPermissions: this.isHcmsFieldPermissionsEnabled(),
             auditLogs: this.isAuditLogsEnabled(),
             recordLocking: this.isRecordLockingEnabled(),
-            fileManager: {
-                threatDetection: this.isFileManagerThreatDetectionEnabled()
-            },
-            aiPowerups: {
-                enabled: this.isAiPowerupsEnabled(),
-                options: {
-                    websiteBuilder: {
-                        pageGeneration: this.isAiPageGenerationEnabled(),
-                        pageTranslation: this.isAiPageTranslationEnabled()
-                    },
-                    fileManager: {
-                        imageEnrichment: this.isAiImageEnrichmentEnabled()
-                    },
-                    lexicalGeneration: this.isAiLexicalGenerationEnabled(),
-                    cms: {
-                        entryGeneration: this.isAiEntryGenerationEnabled(),
-                        entryComparison: this.isAiEntryComparisonEnabled(),
-                        entryTranslation: this.isAiEntryTranslationEnabled()
-                    }
-                }
-            },
+            fileManagerThreatDetection: this.isFileManagerThreatDetectionEnabled(),
+            aiPowerups: this.isAiPowerupsEnabled(),
+            aiPageGeneration: this.isAiPageGenerationEnabled(),
+            aiPageTranslation: this.isAiPageTranslationEnabled(),
+            aiImageEnrichment: this.isAiImageEnrichmentEnabled(),
+            aiLexicalGeneration: this.isAiLexicalGenerationEnabled(),
+            aiEntryGeneration: this.isAiEntryGenerationEnabled(),
+            aiEntryComparison: this.isAiEntryComparisonEnabled(),
+            aiEntryTranslation: this.isAiEntryTranslationEnabled(),
             abTesting: this.isAbTestingEnabled(),
             remoteComponents: this.isRemoteComponentsEnabled()
         };
