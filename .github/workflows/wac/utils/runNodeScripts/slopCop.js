@@ -272,7 +272,9 @@ const renderReport = result => {
     const lines = [MARKER, "🚓 **Slop Cop**", ""];
 
     if (result.verdict !== "warnings" || findings.length === 0) {
-        lines.push("✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules.");
+        lines.push(
+            "✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules."
+        );
         if (result.summary) {
             lines.push("", `_${result.summary}_`);
         }
