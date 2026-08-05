@@ -6,6 +6,8 @@ import {
     getFontLinkTags,
     getThemeLinkTags,
     GOOGLE_FONTS_STATIC_ORIGIN,
+    shouldRevalidateTheme,
+    THEME_CACHE_TAG,
     THEME_ROUTE_PREFIX,
     ThemeSdk
 } from "./ThemeSdk.js";
@@ -162,6 +164,81 @@ describe("ThemeSdk.getActiveTheme", () => {
         await sdkWith(fetchImpl as unknown as typeof fetch, { sameOrigin: true }).getActiveTheme();
 
         expect(fetchImpl).toHaveBeenCalledWith(`${API}${ACTIVE_THEME_PATH}`, expect.anything());
+    });
+});
+
+describe("shouldRevalidateTheme", () => {
+    it("revalidates on activation and deactivation — the events that change what is live", () => {
+        expect(shouldRevalidateTheme("theme.activated")).toBe(true);
+        expect(shouldRevalidateTheme("theme.deactivated")).toBe(true);
+    });
+
+    it("ignores events that do not move the active pointer", () => {
+        // Publishing mints an immutable version but does not change what is active; drafts never do.
+        for (const event of [
+            "theme.created",
+            "theme.updated",
+            "theme.deleted",
+            "theme.published",
+            "something.else"
+        ]) {
+            expect(shouldRevalidateTheme(event), event).toBe(false);
+        }
+    });
+});
+
+describe("requestInit passthrough", () => {
+    it("merges caller requestInit into the active-theme fetch (for cache tagging)", async () => {
+        let init: RequestInit | undefined;
+        const capture: typeof fetch = (_url, i) => {
+            init = i;
+            return Promise.resolve(jsonResponse(activeBody));
+        };
+
+        await new ThemeSdk({
+            apiHost: API,
+            fetch: capture,
+            // What a Next.js app passes so `revalidateTag(THEME_CACHE_TAG)` works.
+            requestInit: { next: { tags: [THEME_CACHE_TAG] } } as RequestInit
+        }).getActiveTheme();
+
+        expect((init as { next?: { tags: string[] } }).next?.tags).toEqual([THEME_CACHE_TAG]);
+    });
+
+    it("does not let requestInit clobber the timeout signal", async () => {
+        // A caller-provided signal must not replace the client's abort signal, or the timeout is lost.
+        let init: RequestInit | undefined;
+        const capture: typeof fetch = (_url, i) => {
+            init = i;
+            return Promise.resolve(jsonResponse(activeBody));
+        };
+
+        await new ThemeSdk({
+            apiHost: API,
+            fetch: capture,
+            requestInit: { signal: undefined, cache: "no-store" }
+        }).getActiveTheme();
+
+        expect(init?.signal).toBeInstanceOf(AbortSignal);
+        expect((init as RequestInit).cache).toBe("no-store");
+    });
+
+    it("still sends auth headers alongside requestInit", async () => {
+        let sent: Record<string, string> | undefined;
+        const capture: typeof fetch = (_url, i) => {
+            sent = i?.headers as Record<string, string>;
+            return Promise.resolve(jsonResponse(activeBody));
+        };
+
+        await new ThemeSdk({
+            apiHost: API,
+            apiKey: "k",
+            fetch: capture,
+            requestInit: { headers: { "x-custom": "1" } }
+        }).getActiveTheme();
+
+        expect(sent?.["authorization"]).toBe("Bearer k");
+        expect(sent?.["x-custom"]).toBe("1");
     });
 });
 

@@ -21,6 +21,11 @@ export interface ThemeConfig {
      * `/_webiny/theme/*` to the API (see `createThemeRewrite`).
      */
     sameOrigin?: boolean;
+    /**
+     * Extra `RequestInit` merged into theme fetches — e.g. `{ next: { tags: [THEME_CACHE_TAG] } }` so
+     * the webhook revalidation handler can drop the cached active pointer.
+     */
+    requestInit?: RequestInit;
 }
 
 export interface ContentSdkConfig {

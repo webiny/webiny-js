@@ -18,6 +18,34 @@ export interface ThemeSdkConfig {
      * it off (the default): absolute URLs work with no extra infrastructure.
      */
     sameOrigin?: boolean;
+    /**
+     * Extra `RequestInit` merged into every theme fetch.
+     *
+     * The framework-agnostic way to attach cache metadata. A Next.js app sets
+     * `{ next: { tags: [THEME_CACHE_TAG], revalidate: 3600 } }` so the webhook handler's
+     * `revalidateTag(THEME_CACHE_TAG)` drops the cached active pointer. The client's own abort signal
+     * always wins, so this cannot disable the timeout.
+     */
+    requestInit?: RequestInit;
+}
+
+/**
+ * A theme webhook payload — a summary, matching the backend's `ThemeWebhookPayload`.
+ *
+ * Structural, so this client stays free of `@webiny/api-theme`. The receiver gets which theme and
+ * version changed; it fetches the artifacts itself if it wants the values.
+ */
+export interface ThemeWebhookPayload {
+    themeId: string;
+    version: number;
+    name: string;
+    status: string;
+}
+
+/** The `theme.activated` payload, which additionally carries the now-live version's artifact paths. */
+export interface ThemeActivationWebhookPayload extends ThemeWebhookPayload {
+    artifacts: { css: string; json: string };
+    previous: { themeId: string; version: number } | null;
 }
 
 /**

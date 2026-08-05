@@ -1,6 +1,6 @@
 # Theme App — Phase 5: Frontend Consumption
 
-Status: **in progress** — Slices 1–3 done; 4–7 pending. Written 2026-08-05, after merging `next`
+Status: **in progress** — Slices 1–4 done; 5–7 pending. Written 2026-08-05, after merging `next`
 (which brought the frontend SDK: `@webiny/sdk-frontend`, `website-builder-react/-nextjs/-vue/-nuxt`,
 `react-rich-text-lexical-renderer`).
 
@@ -142,21 +142,70 @@ Fonts live in the JSON artifact body (not the pointer) and are Google-Fonts-only
   `crossOrigin`/`as`/`type`.
 
 Layout adds the fonts alongside the token CSS:
+
 ```tsx
 const active = await sdk.theme.getActiveTheme();
 const fonts = active ? await sdk.theme.getFonts(active) : [];
 // in <head>:
-{[...getThemeLinkTags(active), ...getFontLinkTags(fonts)].map(tag => <link key={tag.href} {...tag} />)}
+{
+  [...getThemeLinkTags(active), ...getFontLinkTags(fonts)].map(tag => (
+    <link key={tag.href} {...tag} />
+  ));
+}
 ```
 
 14 new tests (32 total). Kept in `@webiny/theme-sdk`, dependency-free (minimal structural `ThemeFont`
 rather than importing `@webiny/theme-common`).
 
-### Slice 4 — revalidation on publish/activate
+### Slice 4 — revalidation on publish/activate ✅ DONE (2026-08-05)
 
-Server webhook handlers already fire (`OnThemePublished/Activated/Deactivated`). Add a frontend
-subscriber/endpoint that invalidates the 60s active pointer (ISR `revalidateTag` / cache purge) so a
-newly-activated theme reaches the live site promptly rather than after TTL.
+Investigation: theme webhooks use the **Standard Webhooks** spec (`standardwebhooks` lib, headers
+`webhook-id` / `webhook-timestamp` / `webhook-signature`; the constants comment even says the customer
+wires `theme.activated` "to the SDK's revalidation handler"). Only `theme.activated` /
+`theme.deactivated` change what is live — published versions are immutable, drafts never touch delivery.
+
+Signature verification needs a crypto lib and cache purge is framework-specific, so neither belongs in
+the zero-dep isomorphic client. The **reusable, testable core** is in `@webiny/theme-sdk`; the verifying
+handler is a documented recipe (below).
+
+- `THEME_CACHE_TAG = "webiny-theme"` — tag the theme fetches with it, revalidate it from the handler.
+- `shouldRevalidateTheme(eventName)` — pure decision: true only for activate/deactivate.
+- `THEME_REVALIDATE_EVENTS`, and the `ThemeWebhookPayload` / `ThemeActivationWebhookPayload` types.
+- `ThemeSdkConfig.requestInit` — extra `RequestInit` merged into every theme fetch (framework-agnostic),
+  so a Next app tags the fetch for `revalidateTag`. The client's abort signal always wins over it, so
+  the timeout can't be lost.
+
+Config so the fetch is cacheable + tagged:
+```ts
+sdk.init({ …, theme: { requestInit: { next: { tags: [THEME_CACHE_TAG], revalidate: 3600 } } } });
+```
+
+Next.js route handler (the customer writes this — it needs `standardwebhooks` + `next/cache`):
+```ts
+// app/api/webiny/theme-webhook/route.ts
+import { Webhook } from "standardwebhooks";
+import { revalidateTag } from "next/cache";
+import { shouldRevalidateTheme, THEME_CACHE_TAG } from "@webiny/sdk-frontend";
+
+export async function POST(req: Request) {
+    const body = await req.text();
+    const headers = Object.fromEntries(req.headers);
+    try {
+        new Webhook(process.env.WEBINY_THEME_WEBHOOK_SECRET!).verify(body, headers); // throws if invalid
+    } catch {
+        return new Response("invalid signature", { status: 401 });
+    }
+    const { event } = JSON.parse(body);
+    if (shouldRevalidateTheme(event)) {
+        revalidateTag(THEME_CACHE_TAG);
+    }
+    return new Response(null, { status: 204 });
+}
+```
+Then add a webhook in Admin for `theme.activated` + `theme.deactivated` pointing at that route.
+
+8 new tests (37 total). A turnkey handler could later live in a `theme-nextjs` package; kept as a recipe
+for now to avoid pulling `standardwebhooks` + `next` into the framework-agnostic client.
 
 ### Slice 5 — Tailwind adapter `@webiny/theme-tailwind`
 

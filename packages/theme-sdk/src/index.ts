@@ -11,8 +11,11 @@ export {
     getFontLinkTags,
     buildGoogleFontsUrl,
     createThemeRewrite,
+    shouldRevalidateTheme,
     ACTIVE_THEME_PATH,
     THEME_ROUTE_PREFIX,
+    THEME_CACHE_TAG,
+    THEME_REVALIDATE_EVENTS,
     DEFAULT_TIMEOUT_MS,
     GOOGLE_FONTS_ORIGIN,
     GOOGLE_FONTS_STATIC_ORIGIN
@@ -23,5 +26,7 @@ export type {
     ThemeArtifactUrls,
     ThemeLinkTag,
     ThemeRewriteRule,
-    ThemeFont
+    ThemeFont,
+    ThemeWebhookPayload,
+    ThemeActivationWebhookPayload
 } from "./types.js";

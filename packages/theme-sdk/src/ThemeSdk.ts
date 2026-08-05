@@ -60,6 +60,7 @@ export class ThemeSdk {
     private readonly fetchImpl: typeof fetch;
     private readonly timeoutMs: number;
     private readonly sameOrigin: boolean;
+    private readonly requestInit?: RequestInit;
 
     constructor(config: ThemeSdkConfig) {
         // Trailing slash stripped once, so every URL join below is a clean concatenation.
@@ -69,6 +70,23 @@ export class ThemeSdk {
         this.fetchImpl = config.fetch ?? globalThis.fetch;
         this.timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
         this.sameOrigin = config.sameOrigin ?? false;
+        this.requestInit = config.requestInit;
+    }
+
+    /**
+     * Merges the caller's `requestInit` into a fetch, without letting it clobber the abort signal.
+     *
+     * This is how a framework passes cache metadata into the theme fetches — a Next.js app sets
+     * `requestInit: { next: { tags: [THEME_CACHE_TAG], revalidate: … } }`, so a `revalidateTag` from the
+     * webhook handler purges the cached pointer. Kept framework-agnostic: it is just `RequestInit`, and
+     * the timeout signal always wins so a stalled request can still be aborted.
+     */
+    private buildInit(extraHeaders?: Record<string, string>): RequestInit {
+        const headers = {
+            ...(this.requestInit?.headers as Record<string, string>),
+            ...extraHeaders
+        };
+        return { ...this.requestInit, headers };
     }
 
     /**
@@ -84,7 +102,7 @@ export class ThemeSdk {
 
         try {
             const response = await this.fetchImpl(`${this.apiHost}${ACTIVE_THEME_PATH}`, {
-                headers: this.authHeaders(),
+                ...this.buildInit(this.authHeaders()),
                 signal: controller.signal
             });
 
@@ -139,6 +157,7 @@ export class ThemeSdk {
 
         try {
             const response = await this.fetchImpl(this.toFetchableUrl(active.artifacts.json), {
+                ...this.buildInit(),
                 signal: controller.signal
             });
             if (!response.ok) {
@@ -221,6 +240,30 @@ export class ThemeSdk {
         return `${this.apiHost}${path.startsWith("/") ? "" : "/"}${path}`;
     }
 }
+
+/**
+ * Cache tag for the theme fetches.
+ *
+ * Pass it into the framework's fetch cache (Next.js: `requestInit: { next: { tags: [THEME_CACHE_TAG] } }`)
+ * and revalidate it from the webhook handler (`revalidateTag(THEME_CACHE_TAG)`) so a newly activated
+ * theme reaches the live site at once instead of after the active pointer's 60s TTL.
+ */
+export const THEME_CACHE_TAG = "webiny-theme";
+
+/**
+ * The webhook events that change what is live, and so warrant dropping the cached active pointer.
+ *
+ * Only activation and deactivation move the active pointer. Publishing mints a new immutable version but
+ * does not change what is active until it is activated; created/updated/deleted never touch delivery. So
+ * a handler should ignore everything else — revalidating on a draft save would purge the cache for
+ * nothing.
+ */
+export const THEME_REVALIDATE_EVENTS = ["theme.activated", "theme.deactivated"] as const;
+
+/** Whether a theme webhook event should trigger frontend revalidation. */
+export const shouldRevalidateTheme = (eventName: string): boolean => {
+    return (THEME_REVALIDATE_EVENTS as readonly string[]).includes(eventName);
+};
 
 export const GOOGLE_FONTS_ORIGIN = "https://fonts.googleapis.com";
 export const GOOGLE_FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";

@@ -82,7 +82,8 @@ export class FrontendSdk {
                 apiTenant: config.tenant,
                 fetch: config.fetch,
                 timeoutMs: config.theme?.timeoutMs,
-                sameOrigin: config.theme?.sameOrigin
+                sameOrigin: config.theme?.sameOrigin,
+                requestInit: config.theme?.requestInit
             })
         };
 

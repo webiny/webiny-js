@@ -4,19 +4,25 @@ export type { ContentSdkConfig, WbConfig, CmsConfig, ThemeConfig } from "./types
 // Theme consumption. `sdk.theme.getActiveTheme()` at SSR + `getThemeLinkTags()` in the layout `<head>`;
 // `sdk.theme.getFonts(active)` + `getFontLinkTags()` for web-font preconnect/stylesheet tags.
 // `createThemeRewrite()` proxies `/_webiny/theme/*` for same-origin artifact fetching.
+// `shouldRevalidateTheme()` + `THEME_CACHE_TAG` drive the webhook revalidation handler.
 export {
     ThemeSdk,
     getThemeLinkTags,
     getFontLinkTags,
     buildGoogleFontsUrl,
-    createThemeRewrite
+    createThemeRewrite,
+    shouldRevalidateTheme,
+    THEME_CACHE_TAG,
+    THEME_REVALIDATE_EVENTS
 } from "@webiny/theme-sdk";
 export type {
     ActiveTheme,
     ThemeArtifactUrls,
     ThemeLinkTag,
     ThemeRewriteRule,
-    ThemeFont
+    ThemeFont,
+    ThemeWebhookPayload,
+    ThemeActivationWebhookPayload
 } from "@webiny/theme-sdk";
 
 // Re-export Result and error types from @webiny/sdk.
