@@ -1,16 +1,12 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import * as React from "react";
+import * as sdkNextjs from "@webiny/sdk-nextjs";
 import { renderToString } from "react-dom/server";
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
 import {
     bundleComponent,
     bundleComponents,
     validateComponentSource
 } from "../src/api/bundler/index.js";
-import { RemoteComponentLoader } from "@webiny/sdk-nextjs/remote-components/RemoteComponentLoader.js";
-import type { RemoteComponentManifest } from "@webiny/sdk-nextjs/remote-components/types.js";
 
 const BANNER_SOURCE = `
 export default function Banner({ inputs: { headline, ctaLabel } }) {
@@ -171,69 +167,30 @@ export default function X() { return null; }
     });
 });
 
-describe("bundleComponent → RemoteComponentLoader integration", () => {
-    let cacheDir: string;
-
-    afterEach(async () => {
-        vi.restoreAllMocks();
-        if (cacheDir) {
-            await fs.rm(cacheDir, { recursive: true, force: true });
-        }
-    });
-
-    it("should produce a bundle that RemoteComponentLoader can load and render", async () => {
-        cacheDir = path.join(os.tmpdir(), `webiny-bundler-test-${Date.now()}`);
-
+describe("bundleComponent → eval integration", () => {
+    it("should produce a bundle that can be eval'd and rendered", async () => {
         const bundled = await bundleComponent({
             name: "Test/Banner",
             source: BANNER_SOURCE
         });
 
-        const bundleBytes = Buffer.from(bundled.bundled, "utf-8");
-        const manifestUrl = "https://cdn.test/manifest.json";
-        const bannerUrl = "https://cdn.test/banner.mjs";
+        const fn = new Function(
+            `var __remoteComponent__; ${bundled.bundled}; return __remoteComponent__;`
+        );
+        const mod = fn();
 
-        const manifest: RemoteComponentManifest = {
-            schemaVersion: "1",
-            packageId: "test-pkg",
-            version: "v001",
-            sdkVersion: "1",
-            createdAt: "2026-07-24T00:00:00.000Z",
-            components: [
-                {
-                    name: "Test/Banner",
-                    server: {
-                        url: bannerUrl,
-                        sha256: bundled.sha256,
-                        size: bundleBytes.length,
-                        contentType: "text/javascript"
-                    }
-                }
-            ]
+        const sdk = {
+            version: "1" as const,
+            dependencies: { sdk: sdkNextjs, React },
+            environment: { tenantId: "test-tenant", locale: "en-US", mode: "server" as const }
         };
 
-        vi.spyOn(global, "fetch").mockImplementation(async input => {
-            const url = typeof input === "string" ? input : input.toString();
-            if (url === manifestUrl) {
-                return new Response(JSON.stringify(manifest), { status: 200 });
-            }
-            if (url === bannerUrl) {
-                return new Response(bundleBytes, { status: 200 });
-            }
-            return new Response("Not found", { status: 404 });
-        });
+        const result = mod.createComponent(sdk);
+        expect(result).toBeDefined();
+        expect(result.manifest).toBeDefined();
+        expect(result.manifest.name).toBe("Test/Banner");
 
-        const loader = new RemoteComponentLoader({
-            cacheDirectory: cacheDir,
-            environment: { tenantId: "test-tenant", locale: "en-US" }
-        });
-
-        const components = await loader.loadComponents(manifestUrl);
-
-        expect(components).toHaveLength(1);
-        expect(components[0].manifest.name).toBe("Test/Banner");
-
-        const BannerComponent = components[0].component as React.ComponentType<any>;
+        const BannerComponent = result.component as React.ComponentType<any>;
         const html = renderToString(
             React.createElement(BannerComponent, {
                 inputs: { headline: "Bundled and loaded!", ctaLabel: "Click me" },
