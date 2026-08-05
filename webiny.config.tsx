@@ -1,6 +1,6 @@
 import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
-import { Wcp } from "@webiny/project";
+import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
 import { ServerExtensions } from "./webiny.config.server.js";
@@ -14,6 +14,18 @@ import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContent
  * extensions so neither leaks into the other hosting type.
  */
 const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
+
+export const FeatureFlags = () => (
+    <Project.FeatureFlags
+        features={{
+            remoteComponents: true,
+            fileManager: {
+                threatDetection: false
+            },
+            recordLocking: false
+        }}
+    />
+);
 
 export const Extensions = () => {
     return (
@@ -33,9 +45,11 @@ export const Extensions = () => {
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             {/* IMPORTANT: commented out until we resolve bulk actions bootstrap! */}
-            <Wcp.CanUseMultiTenancy>
-                <AiContentExtension />
-            </Wcp.CanUseMultiTenancy>
+            <FeatureFlag.CanUseMultiTenancy>
+                <FeatureFlag.CanUse name="aiPowerups">
+                    <AiContentExtension />
+                </FeatureFlag.CanUse>
+            </FeatureFlag.CanUseMultiTenancy>
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -75,14 +89,6 @@ export const Extensions = () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
-            <Project.FeatureFlags
-                features={{
-                    fileManager: {
-                        threatDetection: false
-                    },
-                    recordLocking: false
-                }}
-            />
             {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
                     adminUser={{

@@ -148,4 +148,8 @@ export class License implements ILicense {
     canUseAbTesting(): boolean {
         return this.canUseFeature("abTesting");
     }
+
+    canUseRemoteComponents(): boolean {
+        return this.canUseFeature("remoteComponents");
+    }
 }

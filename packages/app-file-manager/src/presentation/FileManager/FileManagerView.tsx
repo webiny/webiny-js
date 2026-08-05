@@ -98,6 +98,44 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         toast.showSuccessToast({ title: "File upload complete." });
     };
 
+    useEffect(() => {
+        const handlePaste = (e: ClipboardEvent) => {
+            const items = e.clipboardData?.items;
+            if (!items) {
+                return;
+            }
+
+            const files: SelectedFile[] = [];
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].kind === "file") {
+                    const file = items[i].getAsFile();
+                    if (file) {
+                        const name =
+                            file.name && file.name !== "image.png"
+                                ? file.name
+                                : `pasted-${Date.now()}.${file.type.split("/")[1] || "png"}`;
+
+                        files.push({
+                            id: String(Date.now()) + "-" + i,
+                            name,
+                            type: file.type,
+                            size: file.size,
+                            src: { file, base64: null }
+                        });
+                    }
+                }
+            }
+
+            if (files.length > 0) {
+                e.preventDefault();
+                void uploadFiles(files);
+            }
+        };
+
+        document.addEventListener("paste", handlePaste);
+        return () => document.removeEventListener("paste", handlePaste);
+    }, [actions]);
+
     const onError = useCallback((errors: FileError[]) => {
         const message = outputFileSelectionError(errors);
         if (message) {

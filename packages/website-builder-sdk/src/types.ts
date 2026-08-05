@@ -246,6 +246,7 @@ export type ComponentManifest = {
     hideFromToolbar?: boolean;
     hideStyleSettings?: string[];
     autoApplyStyles?: boolean;
+    applyDefaultStyles?: boolean;
     tags: string[];
     constraints?: ComponentConstraint[];
     descendantConstraints?: ComponentConstraint[];

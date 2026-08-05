@@ -31,6 +31,7 @@ export interface ILicense {
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
     canUseAbTesting: () => boolean;
+    canUseRemoteComponents: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -61,7 +62,8 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     RECORD_LOCKING = "recordLocking",
     FILE_MANAGER = "fileManager",
     AI_POWERUPS = "aiPowerups",
-    AB_TESTING = "abTesting"
+    AB_TESTING = "abTesting",
+    REMOTE_COMPONENTS = "remoteComponents"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -123,6 +125,9 @@ export interface ProjectPackageFeatures {
         };
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
+        enabled: boolean;
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.REMOTE_COMPONENTS]: {
         enabled: boolean;
     };
 }

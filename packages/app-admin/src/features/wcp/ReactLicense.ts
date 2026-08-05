@@ -88,6 +88,10 @@ export class ReactLicense implements ILicense {
         return this.license.canUseAbTesting();
     }
 
+    canUseRemoteComponents(): boolean {
+        return this.license.canUseRemoteComponents();
+    }
+
     toDto(): DecryptedWcpProjectLicense | null {
         return this.license.toDto();
     }

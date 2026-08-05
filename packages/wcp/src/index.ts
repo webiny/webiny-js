@@ -13,5 +13,6 @@ export const WCP_FEATURE_LABEL = {
     auditLogs: "Audit Logs",
     recordLocking: "Record Locking",
     fileManager: "File Manager",
-    abTesting: "A/B Testing"
+    abTesting: "A/B Testing",
+    remoteComponents: "Remote Components"
 };
