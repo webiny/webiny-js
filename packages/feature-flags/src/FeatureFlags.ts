@@ -15,26 +15,30 @@ export class FeatureFlags {
         return {
             multiTenancy: this.isMultiTenancyEnabled(),
             advancedPublishingWorkflow: this.isWorkflowsEnabled(),
-            advancedAccessControlLayer: {
-                teams: this.isTeamsEnabled(),
-                privateFiles: this.isPrivateFilesEnabled(),
-                folderLevelPermissions: this.isFolderLevelPermissionsEnabled(),
-                hcmsFieldPermissions: this.isHcmsFieldPermissionsEnabled()
-            },
+            advancedAccessControlLayer: this.isAaclEnabled()
+                ? {
+                      teams: this.isTeamsEnabled(),
+                      privateFiles: this.isPrivateFilesEnabled(),
+                      folderLevelPermissions: this.isFolderLevelPermissionsEnabled(),
+                      hcmsFieldPermissions: this.isHcmsFieldPermissionsEnabled()
+                  }
+                : false,
             auditLogs: this.isAuditLogsEnabled(),
             recordLocking: this.isRecordLockingEnabled(),
             fileManager: {
                 threatDetection: this.isFileManagerThreatDetectionEnabled()
             },
-            aiPowerups: {
-                pageGeneration: this.isAiPageGenerationEnabled(),
-                pageTranslation: this.isAiPageTranslationEnabled(),
-                imageEnrichment: this.isAiImageEnrichmentEnabled(),
-                lexicalGeneration: this.isAiLexicalGenerationEnabled(),
-                entryGeneration: this.isAiEntryGenerationEnabled(),
-                entryComparison: this.isAiEntryComparisonEnabled(),
-                entryTranslation: this.isAiEntryTranslationEnabled()
-            },
+            aiPowerups: this.isAiPowerupsEnabled()
+                ? {
+                      pageGeneration: this.isAiPageGenerationEnabled(),
+                      pageTranslation: this.isAiPageTranslationEnabled(),
+                      imageEnrichment: this.isAiImageEnrichmentEnabled(),
+                      lexicalGeneration: this.isAiLexicalGenerationEnabled(),
+                      entryGeneration: this.isAiEntryGenerationEnabled(),
+                      entryComparison: this.isAiEntryComparisonEnabled(),
+                      entryTranslation: this.isAiEntryTranslationEnabled()
+                  }
+                : false,
             abTesting: this.isAbTestingEnabled(),
             remoteComponents: this.isRemoteComponentsEnabled()
         };
