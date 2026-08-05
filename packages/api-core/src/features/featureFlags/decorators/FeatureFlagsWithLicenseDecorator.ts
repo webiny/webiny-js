@@ -25,10 +25,6 @@ class FeatureFlagsWithLicenseDecoratorImpl implements FeatureFlags.Interface {
     }
 
     private applyLicense(dto: IFeatureFlagsDto, license: ILicense): IFeatureFlagsDto {
-        if (!license.getRawLicense()) {
-            return dto;
-        }
-
         dto.multiTenancy = applyLicenseFlag(
             dto.multiTenancy,
             license.canUseFeature("multiTenancy")
