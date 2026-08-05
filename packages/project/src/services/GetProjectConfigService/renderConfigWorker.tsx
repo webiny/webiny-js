@@ -13,7 +13,6 @@ import { toImportSpecifier } from "~/utils/index.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
 import { FeatureFlagsProvider } from "./FeatureFlagsContext.js";
-import { setProjectFeatureFlags } from "./FeatureFlagsContext.js";
 import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
 
 const sendError = (err: Error) => {
@@ -63,10 +62,11 @@ const featureFlagsFile = ["webiny.features.tsx", "webiny.features.ts"]
     .map(name => path.join(projectRoot, name))
     .find(p => fs.existsSync(p));
 
+let FeatureFlagsComponent: React.ComponentType | null = null;
 if (featureFlagsFile) {
     const featureFlagsModule = await import(toImportSpecifier(featureFlagsFile));
     if (featureFlagsModule.default) {
-        setProjectFeatureFlags(featureFlagsModule.default);
+        FeatureFlagsComponent = featureFlagsModule.default;
     }
 }
 
@@ -108,6 +108,7 @@ reactRoot.render(
             <EnvProvider>
                 <ProductionEnvironmentsCollector>
                     <AsyncProperties onChange={onChange}>
+                        {FeatureFlagsComponent ? <FeatureFlagsComponent /> : null}
                         <Extensions />
                     </AsyncProperties>
                 </ProductionEnvironmentsCollector>
