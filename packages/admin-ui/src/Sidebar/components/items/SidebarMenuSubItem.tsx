@@ -161,7 +161,7 @@ const SidebarMenuSubItem = ({
 
         if (!collapsible) {
             return (
-                <div className={"flex items-center"}>
+                <div className={"flex items-center min-w-0"}>
                     <SidebarMenuSubItemIndentation
                         lvl={currentLevel}
                         variant={buttonProps.variant}
@@ -177,7 +177,7 @@ const SidebarMenuSubItem = ({
                 open={isSectionExpanded}
                 onOpenChange={toggleSectionExpanded}
             >
-                <div className={"flex items-center"}>
+                <div className={"flex items-center min-w-0"}>
                     <SidebarMenuSubItemIndentation
                         lvl={currentLevel}
                         variant={buttonProps.variant}
@@ -213,7 +213,7 @@ const SidebarMenuSubItem = ({
         <>
             <li
                 data-sidebar="menu-sub-item"
-                className={cn("group/menu-sub-item relative flex", className)}
+                className={cn("group/menu-sub-item relative flex min-w-0", className)}
             >
                 {sidebarMenuSubButton}
             </li>
