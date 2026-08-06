@@ -10,6 +10,7 @@ export const SidebarContent = () => {
         <div className={"flex-1 overflow-y-scroll"}>
             <FolderTree
                 folderActions={browser.folder.actions}
+                dropConfirmation={browser.folder.dropConfirmation}
                 focusedFolderId={currentFolderId}
                 onFolderClick={data => navigateToFolder(data.id)}
                 enableActions={true}
