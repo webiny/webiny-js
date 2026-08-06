@@ -9,7 +9,8 @@ import {
     DeleteScheduleCommand,
     GetScheduleCommand,
     type SchedulerClient,
-    UpdateScheduleCommand
+    UpdateScheduleCommand,
+    ResourceNotFoundException
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import type { IScheduledActionEventPayload } from "~/createEventHandler.js";
@@ -34,6 +35,66 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     ) {}
 
     public async create(params: SchedulerService.CreateParams): Promise<void> {
+        // Check if schedule already exists (for auto-update logic)
+        const exists = await this.exists(params);
+        if (exists) {
+            return this.updateInternal(params);
+        }
+
+        return await this.createInternal(params);
+    }
+
+    public async update(params: SchedulerService.UpdateParams): Promise<void> {
+        const exists = await this.exists(params);
+        if (exists) {
+            return await this.updateInternal(params);
+        }
+        return await this.create(params);
+    }
+
+    public async delete(params: SchedulerService.DeleteParams): Promise<void> {
+        const client = this.getClient();
+
+        const exists = await this.exists(params);
+        if (!exists) {
+            throw new WebinyError(
+                `Cannot delete schedule "${params.id}", tenant "${params.tenant}", because it does not exist.`
+            );
+        }
+
+        const name = this.createScheduleName(params);
+
+        try {
+            await client.send(new DeleteScheduleCommand({ Name: name }));
+        } catch (ex) {
+            if (ex instanceof ResourceNotFoundException) {
+                return;
+            } else if (ex.name === "ResourceNotFoundException") {
+                return;
+            }
+            throw WebinyError.from(ex);
+        }
+    }
+
+    public async exists(params: SchedulerService.ExistsParams): Promise<boolean> {
+        const client = this.getClient();
+
+        const name = this.createScheduleName(params);
+
+        try {
+            await client.send(new GetScheduleCommand({ Name: name }));
+            return true;
+        } catch (ex) {
+            if (ex instanceof ResourceNotFoundException) {
+                return false;
+            } else if (ex.name === "ResourceNotFoundException") {
+                return false;
+            }
+            throw ex;
+        }
+    }
+
+    private async createInternal(params: SchedulerService.CreateParams): Promise<void> {
         const { id, scheduleFor, tenant } = params;
 
         // Validate date is in future
@@ -50,12 +111,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         }
 
         const client = this.getClient();
-
-        // Check if schedule already exists (for auto-update logic)
-        const exists = await this.exists(params);
-        if (exists) {
-            return this.update(params);
-        }
 
         await client.send(
             new CreateScheduleCommand({
@@ -74,7 +129,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         );
     }
 
-    public async update(params: SchedulerService.UpdateParams): Promise<void> {
+    private async updateInternal(params: SchedulerService.UpdateParams): Promise<void> {
         const { id, scheduleFor } = params;
 
         // Validate date is in future
@@ -106,44 +161,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
                 ActionAfterCompletion: "DELETE"
             })
         );
-    }
-
-    public async delete(params: SchedulerService.DeleteParams): Promise<void> {
-        const client = this.getClient();
-
-        const exists = await this.exists(params);
-        if (!exists) {
-            throw new WebinyError(
-                `Cannot delete schedule "${params.id}", tenant "${params.tenant}", because it does not exist.`
-            );
-        }
-
-        const name = this.createScheduleName(params);
-
-        try {
-            await client.send(new DeleteScheduleCommand({ Name: name }));
-        } catch (ex) {
-            if (ex.name === "ResourceNotFoundException") {
-                return;
-            }
-            throw WebinyError.from(ex);
-        }
-    }
-
-    public async exists(params: SchedulerService.ExistsParams): Promise<boolean> {
-        const client = this.getClient();
-
-        const name = this.createScheduleName(params);
-
-        try {
-            await client.send(new GetScheduleCommand({ Name: name }));
-            return true;
-        } catch (ex) {
-            if (ex.name === "ResourceNotFoundException") {
-                return false;
-            }
-            throw ex;
-        }
     }
 
     private createScheduleExpression(scheduleFor: Date): string {
