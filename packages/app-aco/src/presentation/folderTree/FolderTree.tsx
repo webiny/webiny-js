@@ -211,13 +211,21 @@ export const FolderTree = ({
                 const targetFolder = localFolders.find(f => f.id === dropTargetId);
 
                 if (!folder || !targetFolder) {
-                    return;
+                    throw new Error("Folder not found");
                 }
 
-                showConfirmMoveFolderDialog({
-                    folder,
-                    targetFolder,
-                    onAccept: runDrop
+                await new Promise<void>((resolve, reject) => {
+                    showConfirmMoveFolderDialog({
+                        folder,
+                        targetFolder,
+                        onAccept: async () => {
+                            await runDrop();
+                            resolve();
+                        },
+                        onClose: () => {
+                            reject(new Error("cancelled"));
+                        }
+                    });
                 });
             } else {
                 await runDrop();
