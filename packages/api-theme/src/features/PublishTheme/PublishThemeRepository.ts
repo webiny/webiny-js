@@ -19,7 +19,11 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
         private themeModel: ThemeModel.Interface
     ) {}
 
-    async execute({ id, resolved }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+    async execute({
+        id,
+        resolved,
+        comment
+    }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
         const existing = await this.getEntryById.execute(this.themeModel, id);
 
         if (existing.isFail()) {
@@ -29,10 +33,11 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new ThemePersistenceError(existing.error));
         }
 
-        // Write the snapshot BEFORE publishing: publishing locks the revision, so the frozen values
-        // have to be on it by then. Nothing else in the document changes.
+        // Write the snapshot and the publish note BEFORE publishing: publishing locks the revision,
+        // so the frozen values have to be on it by then. The comment is always overwritten (with the
+        // empty string when omitted) so a value carried over from a branched draft never lingers.
         const stored = await this.updateEntry.execute(this.themeModel, id, {
-            values: { ...existing.value.values, resolved }
+            values: { ...existing.value.values, resolved, publishComment: comment ?? "" }
         });
 
         if (stored.isFail()) {

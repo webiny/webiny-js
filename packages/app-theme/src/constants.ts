@@ -28,7 +28,7 @@ export type ThemeStatusValue = (typeof ThemeStatus)[keyof typeof ThemeStatus];
 
 /** Token groups shown in the editor's left rail, in order. */
 export const EDITOR_GROUPS = [
-    { id: "colors", label: "Colours", icon: "palette" },
+    { id: "colors", label: "Colors", icon: "palette" },
     { id: "typography", label: "Typography", icon: "text_fields" },
     { id: "spacing", label: "Spacing", icon: "width_normal" },
     { id: "radius", label: "Radius", icon: "rounded_corner" },

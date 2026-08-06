@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { TokenDocument } from "~/dtcg/types.js";
 import { MODES_EXTENSION } from "~/dtcg/types.js";
+import { getTokenAtPath } from "~/dtcg/traverse.js";
 import {
     collectReferences,
     findReferrers,
     MAX_ALIAS_DEPTH,
+    removeTokenFreezingReferrers,
     resolveDocument,
     resolveDocumentModes,
     valueForMode
@@ -319,5 +321,103 @@ describe("reference discovery", () => {
         ]);
         expect(findReferrers(document, "color.brand.ink")).toEqual(["color.focus"]);
         expect(findReferrers(document, "color.brand.unused")).toEqual([]);
+    });
+});
+
+describe("removeTokenFreezingReferrers", () => {
+    it("removes the token and freezes a light-linked referrer to its literal", () => {
+        const document = doc({
+            color: {
+                $type: "color",
+                brand: { primary: { $value: "#1F6FEB" } },
+                surface: { raised: { $value: "{color.brand.primary}" } },
+                text: { body: { $value: "#111111" } }
+            }
+        });
+
+        const result = removeTokenFreezingReferrers(document, "color.brand.primary");
+
+        expect(getTokenAtPath(result, "color.brand.primary")).toBeUndefined();
+        expect(getTokenAtPath(result, "color.surface.raised")?.$value).toBe("#1F6FEB");
+        // An unrelated literal is left exactly as it was.
+        expect(getTokenAtPath(result, "color.text.body")?.$value).toBe("#111111");
+    });
+
+    it("leaves a referrer's other-mode link intact when only that mode points elsewhere", () => {
+        const document = doc({
+            color: {
+                $type: "color",
+                brand: {
+                    primary: { $value: "#1F6FEB" },
+                    dark900: { $value: "#0F172A" }
+                },
+                surface: {
+                    page: {
+                        $value: "{color.brand.primary}",
+                        $extensions: { [MODES_EXTENSION]: { dark: "{color.brand.dark900}" } }
+                    }
+                }
+            }
+        });
+
+        const result = removeTokenFreezingReferrers(document, "color.brand.primary");
+        const page = getTokenAtPath(result, "color.surface.page");
+
+        expect(page?.$value).toBe("#1F6FEB");
+        // The dark link pointed at a different primitive, so it survives untouched.
+        expect(page?.$extensions?.[MODES_EXTENSION]?.dark).toBe("{color.brand.dark900}");
+        expect(getTokenAtPath(result, "color.brand.dark900")).toBeDefined();
+    });
+
+    it("preserves a per-mode colour when a single light link resolved differently in dark", () => {
+        const document = doc({
+            color: {
+                $type: "color",
+                brand: {
+                    accent: {
+                        $value: "#1F6FEB",
+                        $extensions: { [MODES_EXTENSION]: { dark: "#93C5FD" } }
+                    }
+                },
+                // One light alias, no dark override — resolves the accent per mode.
+                text: { link: { $value: "{color.brand.accent}" } }
+            }
+        });
+
+        const result = removeTokenFreezingReferrers(document, "color.brand.accent");
+        const link = getTokenAtPath(result, "color.text.link");
+
+        // Freezing must pin both modes, or the dark value would be lost.
+        expect(link?.$value).toBe("#1F6FEB");
+        expect(link?.$extensions?.[MODES_EXTENSION]?.dark).toBe("#93C5FD");
+    });
+
+    it("freezes a dark-only referrer without touching its light value", () => {
+        const document = doc({
+            color: {
+                $type: "color",
+                brand: { primary: { $value: "#1F6FEB" } },
+                surface: {
+                    sunken: {
+                        $value: "#EEEEEE",
+                        $extensions: { [MODES_EXTENSION]: { dark: "{color.brand.primary}" } }
+                    }
+                }
+            }
+        });
+
+        const result = removeTokenFreezingReferrers(document, "color.brand.primary");
+        const sunken = getTokenAtPath(result, "color.surface.sunken");
+
+        expect(sunken?.$value).toBe("#EEEEEE");
+        expect(sunken?.$extensions?.[MODES_EXTENSION]?.dark).toBe("#1F6FEB");
+    });
+
+    it("is a no-op when the path does not exist", () => {
+        const document = doc({
+            color: { $type: "color", brand: { primary: { $value: "#1F6FEB" } } }
+        });
+
+        expect(removeTokenFreezingReferrers(document, "color.brand.nope")).toBe(document);
     });
 });

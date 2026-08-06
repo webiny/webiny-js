@@ -53,6 +53,7 @@ export const themeTypeDefs = /* GraphQL */ `
         createdOn: DateTime
         createdBy: ThemeIdentity
         lastPublishedOn: DateTime
+        publishComment: String
     }
 
     type ActiveThemePointer {
@@ -191,7 +192,7 @@ export const themeTypeDefs = /* GraphQL */ `
         updateTheme(id: ID!, data: ThemeUpdateInput!): ThemeResponse
         deleteTheme(id: ID!): ThemeBooleanResponse
         createThemeRevisionFrom(id: ID!): ThemeResponse
-        publishTheme(id: ID!): PublishThemeResponse
+        publishTheme(id: ID!, comment: String): PublishThemeResponse
         activateTheme(id: ID!): ActivateThemeResponse
         deactivateTheme: DeactivateThemeResponse
     }

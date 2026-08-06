@@ -1,10 +1,13 @@
 import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { ColorPicker, Text } from "@webiny/admin-ui";
+import { IconButton, Text, TokenColorPicker, Tooltip } from "@webiny/admin-ui";
+import type { TokenSwatch } from "@webiny/admin-ui";
+import { ReactComponent as UnlinkIcon } from "@webiny/icons/link_off.svg";
 import {
     CANONICAL_COLOR_SLOTS,
-    META_EXTENSION,
     collectTokens,
+    META_EXTENSION,
+    toCssVariableName,
     type ThemeMode,
     type TokenPath
 } from "@webiny/theme-common";
@@ -14,7 +17,9 @@ import { WarningMarker, WarningNote } from "~/presentation/components/InlineWarn
 import type { ResolvedThemeView } from "~/presentation/useResolvedTheme.js";
 import { useThemes } from "~/presentation/useThemes.js";
 import { BrandPalette } from "./BrandPalette.js";
+import { sortByColor } from "./colorSort.js";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
+import { InfoCard } from "./_shared.js";
 
 interface ColorsGroupProps {
     theme: ThemeDto;
@@ -26,9 +31,22 @@ interface ColorsGroupProps {
 interface SlotRowProps extends ColorsGroupProps {
     path: TokenPath;
     label: string;
+    brandSwatches: TokenSwatch[];
 }
 
-const SlotRow = observer(function SlotRow({ resolved, mode, readOnly, path, label }: SlotRowProps) {
+/**
+ * One semantic slot. Its picker offers the brand palette as swatches, so choosing one *links* the
+ * slot to that brand color; choosing "Any color" sets a one-off literal. The row states plainly
+ * which of the two it is, and offers to break a link.
+ */
+const SlotRow = observer(function SlotRow({
+    resolved,
+    mode,
+    readOnly,
+    path,
+    label,
+    brandSwatches
+}: SlotRowProps) {
     const themes = useThemes();
 
     const value = resolved.value(path, mode);
@@ -42,28 +60,63 @@ const SlotRow = observer(function SlotRow({ resolved, mode, readOnly, path, labe
                 {readOnly ? (
                     <Swatch color={literal} />
                 ) : (
-                    <ColorPicker
+                    <TokenColorPicker
+                        groups={[{ label: "Brand palette", swatches: brandSwatches }]}
                         value={literal ?? "#000000"}
-                        size="md"
-                        onChangeComplete={next => themes.setTokenValue(path, mode, next)}
+                        selectedId={reference?.path ?? null}
+                        disabled={readOnly}
+                        onSelectSwatch={swatch => themes.setTokenReference(path, mode, swatch.id)}
+                        onSelectValue={next => themes.setTokenValue(path, mode, next)}
                     />
                 )}
-                <div className="flex flex-1 min-w-0 items-center gap-xs">
-                    <Text size="md" className="truncate">
-                        {label}
+
+                <div className="flex flex-1 min-w-0 flex-col gap-0">
+                    <div className="flex items-center gap-xs">
+                        <Text size="md" className="truncate leading-tight">
+                            {label}
+                        </Text>
+                        {warnings.length > 0 ? <WarningMarker /> : null}
+                    </div>
+                    <Text
+                        as="span"
+                        size="sm"
+                        className="truncate font-mono text-neutral-dimmed leading-tight"
+                    >
+                        {toCssVariableName(path)}
                     </Text>
-                    {warnings.length > 0 ? <WarningMarker /> : null}
                 </div>
+
                 <TokenValueBadge
                     reference={reference?.name ?? null}
                     referencePath={reference?.path}
                     literal={literal}
                 />
+
+                {reference && !readOnly ? (
+                    // Breaking the link freezes the color it currently resolves to as a literal.
+                    <Tooltip
+                        content="Unlink from the brand palette"
+                        rawTrigger={true}
+                        trigger={
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                icon={<UnlinkIcon />}
+                                aria-label="Unlink from the brand palette"
+                                onClick={() =>
+                                    themes.setTokenValue(path, mode, literal ?? "#000000")
+                                }
+                            />
+                        }
+                    />
+                ) : null}
             </div>
+
             {warnings.map(warning => (
                 <WarningNote
                     key={`${warning.pair.background}-${warning.mode}`}
                     message={warning.message}
+                    className="mt-xs mb-xs"
                 />
             ))}
         </div>
@@ -71,16 +124,18 @@ const SlotRow = observer(function SlotRow({ resolved, mode, readOnly, path, labe
 });
 
 /**
- * The core screen. Semantic slots grouped under the headings the schema declares, with the brand
- * palette collapsed underneath — two levels of depth in one interface, with the second
- * de-emphasised, as the design brief requires.
+ * Colors — the core screen.
+ *
+ * Two ideas, made explicit: the **brand palette** is your raw brand colors (the source of truth),
+ * and the **slots** are where color is used. A slot links to a brand color — so rebranding is
+ * editing one palette entry — or holds a one-off custom value. The old screen showed both but never
+ * the relationship; now every slot's picker offers the palette inline, and the link is stated per row.
  */
 export const ColorsGroup = observer(function ColorsGroup(props: ColorsGroupProps) {
-    const { theme } = props;
+    const { theme, resolved, mode } = props;
 
     const groups = useMemo(() => {
         const byGroup = new Map<string, { label: string; slots: typeof CANONICAL_COLOR_SLOTS }>();
-
         for (const slot of CANONICAL_COLOR_SLOTS) {
             const existing = byGroup.get(slot.group);
             if (existing) {
@@ -89,7 +144,6 @@ export const ColorsGroup = observer(function ColorsGroup(props: ColorsGroupProps
                 byGroup.set(slot.group, { label: slot.groupLabel, slots: [slot] as never });
             }
         }
-
         return [...byGroup.values()];
     }, []);
 
@@ -104,29 +158,41 @@ export const ColorsGroup = observer(function ColorsGroup(props: ColorsGroupProps
             }));
     }, [theme.tokens]);
 
+    // The palette as swatches every slot's picker can link to — ordered by color (greys, then by
+    // hue) so the popover reads the same way the brand palette does. Per mode, since a token can
+    // resolve to a different color in dark.
+    const brandSwatches: TokenSwatch[] = useMemo(() => {
+        return sortByColor(primitives, primitive => resolved.value(primitive.path, mode)).map(
+            primitive => {
+                const value = resolved.value(primitive.path, mode);
+                return {
+                    id: primitive.path,
+                    label: primitive.name,
+                    value: typeof value === "string" ? value : "#000000"
+                };
+            }
+        );
+    }, [primitives, resolved, mode]);
+
     return (
-        <>
-            <div className="flex-1 min-h-0 overflow-y-auto px-md py-sm flex flex-col gap-md">
-                {groups.map(group => (
-                    <div key={group.label}>
-                        <Text
-                            size="sm"
-                            className="block uppercase tracking-wide font-semibold text-neutral-strong mb-xs"
-                        >
-                            {group.label}
-                        </Text>
+        <div className="flex-1 min-h-0 overflow-y-auto px-md py-sm flex flex-col gap-md">
+            <BrandPalette primitives={primitives} {...props} />
+
+            {groups.map(group => (
+                <InfoCard key={group.label} title={group.label}>
+                    <div className="flex flex-col">
                         {group.slots.map(slot => (
                             <SlotRow
                                 key={slot.path}
                                 {...props}
                                 path={slot.path}
                                 label={slot.label}
+                                brandSwatches={brandSwatches}
                             />
                         ))}
                     </div>
-                ))}
-            </div>
-            <BrandPalette primitives={primitives} {...props} />
-        </>
+                </InfoCard>
+            ))}
+        </div>
     );
 });

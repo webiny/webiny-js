@@ -1,6 +1,6 @@
 import React from "react";
 import { Provider } from "@webiny/app";
-import { AdminConfig, RegisterFeature, useRouter } from "@webiny/app-admin";
+import { AdminConfig, AdminLayout, RegisterFeature, useRouter } from "@webiny/app-admin";
 import { ActiveThemeProvider, ThemeLexicalColors } from "~/consumers/index.js";
 import { ReactComponent as PaletteIcon } from "@webiny/icons/palette.svg";
 import { THEME_PERMISSIONS_SCHEMA } from "~/constants.js";
@@ -40,7 +40,7 @@ export const Extension = () => {
             <Provider hoc={withActiveTheme} />
 
             <AdminConfig>
-                {/* Publishes theme colours + policy to the rich-text toolbar. */}
+                {/* Publishes theme colors + policy to the rich-text toolbar. */}
                 <ThemeLexicalColors />
 
                 <Security.Permissions
@@ -52,7 +52,16 @@ export const Extension = () => {
                 />
 
                 <HasPermission entity="theme">
-                    <Route route={Routes.List} element={<ThemeListView />} />
+                    {/* The list carries the standard admin chrome (top bar + main menu); the editor
+                        is deliberately full-screen, like the CMS and page editors. */}
+                    <Route
+                        route={Routes.List}
+                        element={
+                            <AdminLayout title="Themes">
+                                <ThemeListView />
+                            </AdminLayout>
+                        }
+                    />
                     <Route route={Routes.Editor} element={<ThemeEditorView />} />
                     <Menu
                         name="theme"

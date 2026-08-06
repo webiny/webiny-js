@@ -24,7 +24,10 @@ class ThemeModelFactory implements ModelFactory.Interface {
             settings: fields.json().label("Settings"),
             resolved: fields.json().label("Resolved snapshot"),
             metadata: fields.searchableJson().label("Metadata"),
-            extensions: fields.searchableJson().label("Extensions")
+            extensions: fields.searchableJson().label("Extensions"),
+            // Free-text notes the author writes when publishing a version — "what changed", shown in
+            // the version history. Per-revision: written onto the revision as it is frozen.
+            publishComment: fields.longText().label("Publish comment")
         }));
 
         return [model];

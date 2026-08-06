@@ -3,6 +3,10 @@ import {
     applyRamp,
     generateRamp,
     getRamp,
+    getTokenAtPath,
+    META_EXTENSION,
+    removeTokenFreezingReferrers,
+    setNodeAtPath,
     setTokenFluid,
     setTokenReference,
     setTokenValue,
@@ -24,7 +28,7 @@ import {
 } from "~/features/themeGateway/index.js";
 
 /**
- * Debounce window for token edits. Long enough that dragging a colour picker produces one save
+ * Debounce window for token edits. Long enough that dragging a color picker produces one save
  * rather than fifty; short enough that "Saved" appears while the user is still looking at the row.
  */
 const SAVE_DEBOUNCE_MS = 600;
@@ -167,6 +171,93 @@ class ThemesRepositoryImpl implements RepositoryAbstraction.Interface {
         this.patchTokens(tokens => setTokenReference(tokens, path, mode, target));
     }
 
+    addBrandColor(name?: string, value?: string) {
+        this.patchTokens(tokens => {
+            const isFree = (key: string) => !getTokenAtPath(tokens, `color.brand.${key}`);
+            const uniqueKey = (base: string) => {
+                if (isFree(base)) {
+                    return base;
+                }
+                let suffix = 2;
+                while (!isFree(`${base}-${suffix}`)) {
+                    suffix++;
+                }
+                return `${base}-${suffix}`;
+            };
+
+            // The name is both the label and the source of the token key: a slug keeps the emitted
+            // CSS variable (`--wby-color-brand-<slug>`) readable in code. With no usable name we fall
+            // back to a generated `custom-N`.
+            const trimmed = (name ?? "").trim();
+            const slug = trimmed
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+
+            let key: string;
+            let displayName: string;
+            if (slug) {
+                key = uniqueKey(slug);
+                displayName = trimmed;
+            } else {
+                let index = 1;
+                while (!isFree(`custom-${index}`)) {
+                    index++;
+                }
+                key = `custom-${index}`;
+                displayName = `Custom ${index}`;
+            }
+
+            return setNodeAtPath(tokens, `color.brand.${key}`, {
+                $type: "color",
+                $value: value ?? "#808080",
+                $extensions: { [META_EXTENSION]: { displayName } }
+            });
+        });
+    }
+
+    removeBrandColor(path: TokenPath) {
+        // Freeze & remove — the whole transform lives in theme-common so it can be unit-tested apart
+        // from the gateway and MobX plumbing.
+        this.patchTokens(tokens => removeTokenFreezingReferrers(tokens, path));
+    }
+
+    setFont(key: string, patch: { family?: string; weights?: number[] }) {
+        if (!this.current) {
+            return;
+        }
+
+        const settings = {
+            ...this.current.settings,
+            fonts: this.current.settings.fonts.map(font =>
+                font.key === key
+                    ? {
+                          ...font,
+                          family: patch.family ?? font.family,
+                          weights: patch.weights ?? font.weights
+                      }
+                    : font
+            )
+        };
+
+        // The family also lives in the `font.<key>` token — that is the value the artifacts resolve —
+        // so the two are kept in step. Weights are load metadata only, so they touch settings alone.
+        const tokens =
+            patch.family !== undefined
+                ? setTokenValue(this.current.tokens, `font.${key}`, "light", patch.family)
+                : this.current.tokens;
+
+        runInAction(() => {
+            this.current = { ...this.current!, tokens, settings };
+            this.pending.settings = settings;
+            if (patch.family !== undefined) {
+                this.pending.tokens = tokens;
+            }
+        });
+
+        this.schedule();
+    }
+
     setFluid(path: TokenPath, fluid: FluidStepMeta) {
         this.patchTokens(tokens => setTokenFluid(tokens, path, fluid));
     }
@@ -246,12 +337,12 @@ class ThemesRepositoryImpl implements RepositoryAbstraction.Interface {
         return theme;
     }
 
-    async publish(id: string) {
+    async publish(id: string, comment?: string) {
         // A pending edit must reach the server before the version is frozen, or it silently would
         // not be part of what got published.
         await this.flush();
 
-        const result = await this.gateway.publish(id);
+        const result = await this.gateway.publish(id, comment);
 
         runInAction(() => {
             this.current = result.theme;

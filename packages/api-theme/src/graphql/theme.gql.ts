@@ -186,7 +186,10 @@ export const addThemeSchema = (builder: IGraphQLSchemaBuilder): void => {
                 resolve(async () => {
                     ensureAuthentication(context);
 
-                    const result = await publishTheme.execute({ id: args.id });
+                    const result = await publishTheme.execute({
+                        id: args.id,
+                        comment: args.comment
+                    });
                     if (result.isFail()) {
                         // A ThemeNotPublishableError carries the full blocker list in `error.data`,
                         // which the envelope preserves — the UI renders it as a checklist.

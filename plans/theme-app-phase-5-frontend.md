@@ -319,7 +319,7 @@ Done:
   stylesheet governs unchanged. The base `lexical.css` is **untouched** (its `--wb-theme-*` variables
   stay), so non-theme instances are unaffected.
 
-Scoped to **structural classes only**. `wb-paragraph-N` (WB's numbered typography *presets*) is a
+Scoped to **structural classes only**. `wb-paragraph-N` (WB's numbered typography _presets_) is a
 separate mechanism, not a 1:1 match to the semantic `type.*` roles; reconciling presets ↔ roles is left
 as a follow-up product decision. 2 new tests (190 in theme-common).
 

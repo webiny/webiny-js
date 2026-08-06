@@ -44,6 +44,26 @@ export interface IThemesRepository {
      */
     setTokenValue(path: TokenPath, mode: ThemeMode, value: TokenValue | undefined): void;
     setTokenReference(path: TokenPath, mode: ThemeMode, target: TokenPath): void;
+    /**
+     * Appends a new brand-color primitive to the palette and schedules a save. A given name becomes
+     * the primitive's label and, slugified, its token key (`color.brand.<slug>`) — which drives the
+     * emitted CSS variable. Without a name a generated `custom-N` key is used. Keys are always made
+     * unique, so an existing primitive is never overwritten. The color is set at creation so the new
+     * swatch sorts into its final place already colored, rather than as a grey placeholder to hunt for.
+     */
+    addBrandColor(name?: string, value?: string): void;
+    /**
+     * Removes a brand-color primitive. Every slot linked to it is first frozen to the color it
+     * currently resolves to — in each mode independently — so the page does not change; the links
+     * simply become literal values. See "freeze & remove".
+     */
+    removeBrandColor(path: TokenPath): void;
+    /**
+     * Edits one of the theme's fonts. The family is mirrored into the `font.<key>` token — the value
+     * the artifacts resolve — and into the settings entry; the weights (which Google Fonts loads) live
+     * in settings alone. Google Fonts only in v1.
+     */
+    setFont(key: string, patch: { family?: string; weights?: number[] }): void;
     /** Turns scaling on or off for a ramp step, or changes either end of its range. */
     setFluid(path: TokenPath, fluid: FluidStepMeta): void;
     /** Changes one sub-property of a composite typography role. */
@@ -60,7 +80,7 @@ export interface IThemesRepository {
     flush(): Promise<void>;
 
     branch(id: string): Promise<ThemeDto>;
-    publish(id: string): Promise<PublishThemeResultDto>;
+    publish(id: string, comment?: string): Promise<PublishThemeResultDto>;
     activate(id: string): Promise<void>;
     deactivate(): Promise<void>;
     getRevisions(entryId: string): Promise<ThemeRevisionDto[]>;

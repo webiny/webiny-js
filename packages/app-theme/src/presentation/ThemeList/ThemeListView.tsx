@@ -126,17 +126,23 @@ export const ThemeListView = observer(function ThemeListView() {
             header: "",
             cell: (theme: ThemeDto) => (
                 <DropdownMenu
-                    trigger={<IconButton icon={<MoreVerticalIcon />} aria-label="Theme actions" />}
+                    trigger={
+                        <IconButton
+                            variant="ghost"
+                            icon={<MoreVerticalIcon />}
+                            aria-label="Theme actions"
+                        />
+                    }
                 >
                     <DropdownMenu.Item
                         icon={<EditIcon />}
-                        content="Edit"
+                        text="Edit"
                         onClick={() => goToRoute(Routes.Editor, { id: theme.id })}
                     />
                     <HasPermission entity="theme" action="publish">
                         <DropdownMenu.Item
                             icon={<BoltIcon />}
-                            content="Activate"
+                            text="Activate"
                             disabled={theme.entryId === activeEntryId || !theme.resolved}
                             onClick={() => activate(theme)}
                         />
@@ -145,7 +151,8 @@ export const ThemeListView = observer(function ThemeListView() {
                     <HasPermission entity="theme" action="delete">
                         <DropdownMenu.Item
                             icon={<DeleteIcon />}
-                            content="Delete"
+                            text="Delete"
+                            variant="destructive"
                             disabled={theme.entryId === activeEntryId}
                             onClick={() => remove(theme)}
                         />

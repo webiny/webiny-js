@@ -12,11 +12,11 @@ interface TokenValueBadgeProps {
 }
 
 /**
- * A slot pointing at a brand colour and a slot holding a raw hex have to be distinguishable
+ * A slot pointing at a brand color and a slot holding a raw hex have to be distinguishable
  * without reading closely — see the design brief, "Things worth getting right".
  *
  * A reference is a bordered pill with a link icon and the primitive's display name; a literal is
- * bare monospace text. The difference is shape, not just colour, so it survives at a glance and in
+ * bare monospace text. The difference is shape, not just color, so it survives at a glance and in
  * greyscale.
  */
 export const TokenValueBadge = ({ reference, literal, referencePath }: TokenValueBadgeProps) => {

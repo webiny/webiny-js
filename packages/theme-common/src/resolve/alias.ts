@@ -7,7 +7,8 @@ import {
     TYPOGRAPHY_SUB_PROPERTIES,
     type TypographySubProperty
 } from "~/dtcg/guards.js";
-import { getEffectiveType, getNodeAtPath, walkTokens } from "~/dtcg/traverse.js";
+import { getEffectiveType, getNodeAtPath, getTokenAtPath, walkTokens } from "~/dtcg/traverse.js";
+import { removeNodeAtPath, setTokenValue } from "~/dtcg/edit.js";
 import {
     MODES_EXTENSION,
     type DesignToken,
@@ -426,4 +427,52 @@ export const findReferrers = (document: TokenDocument, path: TokenPath): TokenPa
     }
 
     return [...new Set(referrers)];
+};
+
+/**
+ * Removes `path` and rewrites every direct referrer to the literal value the removed token resolves
+ * to, in each mode independently, so the rendered result is unchanged — the "freeze & remove"
+ * alternative to hard-blocking deletion of a referenced token (design brief, section 8). A token
+ * reached only through an intermediate alias is left alone: the intermediate is what it points at,
+ * and the intermediate is not removed.
+ *
+ * Booleans and freeze values are read from the original document; edits accumulate onto a copy.
+ */
+export const removeTokenFreezingReferrers = (
+    document: TokenDocument,
+    path: TokenPath
+): TokenDocument => {
+    const target = getTokenAtPath(document, path);
+    if (!target) {
+        return document;
+    }
+
+    const light = valueForMode(target, "light");
+    const dark = valueForMode(target, "dark");
+    const darkDiffers = JSON.stringify(dark) !== JSON.stringify(light);
+
+    let next = document;
+    for (const referrerPath of findReferrers(document, path)) {
+        const referrer = getTokenAtPath(document, referrerPath);
+        if (!referrer) {
+            continue;
+        }
+
+        const refLight = collectReferences(referrer, "light").includes(path);
+        const refDark = collectReferences(referrer, "dark").includes(path);
+
+        if (refLight) {
+            next = setTokenValue(next, referrerPath, "light", light);
+        }
+
+        if (refDark) {
+            // The dark override can be dropped only when the frozen light literal already carries
+            // the right dark value — i.e. light was frozen too and the two modes match. Otherwise a
+            // dark reference (or an alias that resolved differently in dark) must be pinned outright.
+            const coveredByLight = refLight && !darkDiffers;
+            next = setTokenValue(next, referrerPath, "dark", coveredByLight ? undefined : dark);
+        }
+    }
+
+    return removeNodeAtPath(next, path);
 };

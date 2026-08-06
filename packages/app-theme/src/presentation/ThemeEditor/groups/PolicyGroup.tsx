@@ -4,6 +4,7 @@ import { SegmentedControl, Separator, Text } from "@webiny/admin-ui";
 import type { DefaultModeBehaviour, ThemePolicy } from "@webiny/theme-common";
 import { useThemes } from "~/presentation/useThemes.js";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
+import { GroupIntro, MutedNote } from "./_shared.js";
 
 interface PolicyGroupProps {
     theme: ThemeDto;
@@ -50,12 +51,20 @@ export const PolicyGroup = observer(function PolicyGroup({ theme, readOnly }: Po
 
     return (
         <div className="flex-1 min-h-0 overflow-y-auto px-md py-sm flex flex-col">
+            <div className="pb-sm">
+                <GroupIntro>
+                    Policy governs what editors can do with this theme in the page editor. Defaults
+                    are permissive — tightening anything here only takes effect when this version is
+                    published and activated.
+                </GroupIntro>
+            </div>
+
             <Setting
-                title="Colours in the page editor"
+                title="Colors in the page editor"
                 description={
                     policy.color.entry === "theme-only"
-                        ? "Editors pick from this theme's palette. The free colour input is hidden, so nothing off-brand can be typed in."
-                        : "Editors can pick from this theme's palette or type any colour they like."
+                        ? "Editors pick from this theme's palette. The free color input is hidden, so nothing off-brand can be typed in."
+                        : "Editors can pick from this theme's palette or type any color they like."
                 }
             >
                 <SegmentedControl
@@ -70,7 +79,7 @@ export const PolicyGroup = observer(function PolicyGroup({ theme, readOnly }: Po
                         })
                     }
                     items={[
-                        { label: "Any colour", value: "open" },
+                        { label: "Any color", value: "open" },
                         { label: "Theme only", value: "theme-only" }
                     ]}
                 />
@@ -138,8 +147,8 @@ export const PolicyGroup = observer(function PolicyGroup({ theme, readOnly }: Po
             >
                 <Text size="sm" className="block font-mono text-neutral-strong">
                     {policy.color.allowedSlots === null
-                        ? "All colour slots"
-                        : `${policy.color.allowedSlots.length} colour slots`}
+                        ? "All color slots"
+                        : `${policy.color.allowedSlots.length} color slots`}
                     {" · "}
                     {policy.fontSize.allowedSteps === null
                         ? "All ramp steps"
@@ -149,10 +158,12 @@ export const PolicyGroup = observer(function PolicyGroup({ theme, readOnly }: Po
 
             <Separator />
 
-            <Text size="sm" className="block text-neutral-strong pt-sm">
-                Policy is published and activated with the tokens, so tightening it here takes
-                effect when this version goes live — not before.
-            </Text>
+            <div className="pt-sm">
+                <MutedNote>
+                    Policy is published and activated with the tokens, so tightening it here takes
+                    effect when this version goes live — not before.
+                </MutedNote>
+            </div>
         </div>
     );
 });

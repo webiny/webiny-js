@@ -45,10 +45,10 @@ const ActiveThemeContext = createContext<ActiveThemeContextValue>(NO_THEME);
 
 /**
  * Reads the tenant's active theme once and shares it with every consumer that needs to offer or
- * constrain a value: the colour picker, the Website Builder style sidebar, the rich-text toolbar.
+ * constrain a value: the color picker, the Website Builder style sidebar, the rich-text toolbar.
  *
  * It reads the *published* snapshot rather than the draft, because that is what the live site
- * renders — offering an editor a colour that has not been published yet would let them apply a
+ * renders — offering an editor a color that has not been published yet would let them apply a
  * variable the frontend cannot resolve.
  */
 export const ActiveThemeProvider = ({ children }: { children: React.ReactNode }) => {

@@ -34,7 +34,7 @@ const displayNameFor = (theme: ThemeDto, path: TokenPath): string => {
 };
 
 /**
- * Resolves the open draft client-side so the editor can show real colours and real warnings while
+ * Resolves the open draft client-side so the editor can show real colors and real warnings while
  * the user types. The same pure functions run on the API at publish, so what you see here is what
  * gets frozen — there is no second implementation to drift.
  */

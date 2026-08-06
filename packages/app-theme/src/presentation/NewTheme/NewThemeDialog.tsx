@@ -220,7 +220,7 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
 /** Shown in the list's empty state. */
 export const NewThemeCopy = () => (
     <Text size="md" className="block text-neutral-strong">
-        Themes hold the colours, type, spacing and shadows your site renders with. Create one from
+        Themes hold the colors, type, spacing and shadows your site renders with. Create one from
         scratch or generate one from an existing website — nothing changes on your site until you
         activate it.
     </Text>

@@ -57,10 +57,10 @@ const Swatch = ({
                 aria-label={swatch.label}
                 aria-pressed={selected}
                 className={cn(
-                    "size-6 rounded-sm border border-neutral-dimmed-darker",
+                    "size-6 rounded-sm border border-neutral-dark/15 cursor-pointer",
                     // A selected swatch gets a ring, not just a border: the swatch itself is a
                     // colour the theme chose, so it cannot be relied on to carry selection state.
-                    selected && "ring-2 ring-accent-default ring-offset-1"
+                    selected && "ring-2 ring-primary ring-offset-1"
                 )}
                 style={{ background: swatch.value }}
             />
@@ -110,10 +110,13 @@ const DecoratableTokenColorPicker = ({
                 <button
                     type="button"
                     disabled={disabled}
-                    aria-label="Choose a colour"
+                    aria-label="Choose a color"
                     className={cn(
-                        "size-8 rounded-sm border border-neutral-dimmed-darker",
-                        selectedId && "ring-2 ring-accent-default ring-offset-1",
+                        // A translucent hairline: a crisp edge on light swatches, invisible on dark
+                        // ones — so it delineates a white swatch without ever reading as a heavy box.
+                        // No selection ring here: the row's link badge already states the linked
+                        // state, and a ring on every linked trigger only clutters the list.
+                        "size-8 rounded-sm border border-neutral-dark/15 cursor-pointer",
                         disabled && "pointer-events-none opacity-50"
                     )}
                     style={{ background: value ?? "transparent" }}
@@ -155,12 +158,12 @@ const DecoratableTokenColorPicker = ({
                                 onChangeComplete={onSelectValue}
                             />
                             <Text size="sm" className="text-neutral-strong">
-                                Any colour
+                                Any color
                             </Text>
                         </div>
                     ) : (
                         <Text size="sm" className="block text-neutral-strong">
-                            {constrainedNote ?? "Colours are set by the active theme."}
+                            {constrainedNote ?? "Colors are set by the active theme."}
                         </Text>
                     )}
                 </div>

@@ -12,12 +12,16 @@ import {
 
 export interface IPublishThemeParams {
     id: string;
+    /** The author's note about this version — "what changed". Stored on the revision. */
+    comment?: string;
 }
 
 export interface IPublishThemeRepositoryParams {
     id: string;
     /** Written onto the revision before it is locked, so the frozen values ship with the version. */
     resolved: ResolvedThemeSnapshot;
+    /** The author's publish note, frozen onto the revision alongside `resolved`. */
+    comment?: string;
 }
 
 export interface IPublishThemeRepository {

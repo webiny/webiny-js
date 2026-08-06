@@ -6,7 +6,7 @@ import { useActiveTheme } from "./ActiveThemeProvider.js";
 export interface ThemeColorSelection {
     /** Set when the user picked a theme swatch. */
     path: TokenPath | null;
-    /** The resolved colour. Always set — for a token this is what it resolves to right now. */
+    /** The resolved color. Always set — for a token this is what it resolves to right now. */
     value: string;
 }
 
@@ -21,10 +21,10 @@ export interface ThemeColorPickerProps {
 }
 
 /**
- * The colour picker every consumer should use.
+ * The color picker every consumer should use.
  *
  * It turns the active theme into swatches, applies the theme's policy to decide whether a free
- * value is offered, and reports back either a token path or a plain colour. With no active theme it
+ * value is offered, and reports back either a token path or a plain color. With no active theme it
  * falls back to today's open behaviour — that is the guarantee section 9 makes to projects that
  * never adopt a theme.
  */
@@ -54,7 +54,7 @@ export const ThemeColorPicker = ({
     }, [colorSwatches, mode]);
 
     // Until the theme has loaded, and on projects with none, behave exactly as before: a plain
-    // colour input. Rendering a constrained picker first and relaxing it a moment later would be
+    // color input. Rendering a constrained picker first and relaxing it a moment later would be
     // worse than never constraining at all.
     if (!loaded || !snapshot) {
         return (
@@ -76,7 +76,7 @@ export const ThemeColorPicker = ({
             disabled={disabled}
             onSelectSwatch={swatch => onChange({ path: swatch.id, value: swatch.value })}
             onSelectValue={next => onChange({ path: null, value: next })}
-            constrainedNote="Colours are set by the active theme."
+            constrainedNote="Colors are set by the active theme."
         />
     );
 };

@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Button, Dialog, Separator, Text, useToast } from "@webiny/admin-ui";
+import { Alert, Button, Dialog, Separator, Text, Textarea, useToast } from "@webiny/admin-ui";
 import { canPublish, validateForPublish } from "@webiny/theme-common";
 import { useThemes } from "~/presentation/useThemes.js";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
+import { GroupChip } from "./groupMeta.js";
 
 interface PublishDialogProps {
     theme: ThemeDto;
@@ -21,6 +22,7 @@ export const PublishDialog = ({ theme, open, onClose }: PublishDialogProps) => {
     const themes = useThemes();
     const toast = useToast();
     const [busy, setBusy] = useState(false);
+    const [comment, setComment] = useState("");
 
     const validation = useMemo(
         () => validateForPublish(theme.tokens, theme.settings),
@@ -33,7 +35,8 @@ export const PublishDialog = ({ theme, open, onClose }: PublishDialogProps) => {
         setBusy(true);
 
         try {
-            const result = await themes.publish(theme.id);
+            const result = await themes.publish(theme.id, comment.trim() || undefined);
+            setComment("");
             onClose();
             toast.showSuccessToast({
                 title:
@@ -70,6 +73,20 @@ export const PublishDialog = ({ theme, open, onClose }: PublishDialogProps) => {
             }
         >
             <div className="flex flex-col gap-md max-h-[420px] overflow-y-auto">
+                <div className="flex flex-col gap-xs">
+                    <Text size="md" className="block font-semibold">
+                        Version notes
+                    </Text>
+                    <Textarea
+                        placeholder="What changed in this version? These notes show up in the version history. (optional)"
+                        value={comment}
+                        onChange={setComment}
+                        rows={3}
+                    />
+                </div>
+
+                <Separator />
+
                 {validation.blockers.length > 0 ? (
                     <div className="flex flex-col gap-xs">
                         <Text size="md" className="block font-semibold">
@@ -80,12 +97,18 @@ export const PublishDialog = ({ theme, open, onClose }: PublishDialogProps) => {
                         {validation.blockers.map((blocker, index) => (
                             <div
                                 key={`${blocker.path ?? "document"}-${index}`}
-                                className="flex flex-col rounded-sm border border-destructive-subtle bg-destructive-subtle px-sm py-xs"
+                                className="flex flex-col gap-xs rounded-sm border border-destructive-subtle bg-destructive-subtle px-sm py-xs"
                             >
                                 {blocker.path ? (
-                                    <Text size="sm" className="font-mono text-neutral-strong">
-                                        {blocker.path}
-                                    </Text>
+                                    <div className="flex items-center gap-sm">
+                                        <GroupChip path={blocker.path} />
+                                        <Text
+                                            size="sm"
+                                            className="truncate font-mono text-neutral-strong"
+                                        >
+                                            {blocker.path}
+                                        </Text>
+                                    </div>
                                 ) : null}
                                 <Text size="md">{blocker.message}</Text>
                             </div>
@@ -107,11 +130,17 @@ export const PublishDialog = ({ theme, open, onClose }: PublishDialogProps) => {
                         {validation.warnings.map((warning, index) => (
                             <div
                                 key={`${warning.path}-${index}`}
-                                className="flex flex-col px-sm py-xs"
+                                className="flex flex-col gap-xs px-sm py-xs"
                             >
-                                <Text size="sm" className="font-mono text-neutral-strong">
-                                    {warning.path}
-                                </Text>
+                                <div className="flex items-center gap-sm">
+                                    <GroupChip path={warning.path} />
+                                    <Text
+                                        size="sm"
+                                        className="truncate font-mono text-neutral-strong"
+                                    >
+                                        {warning.path}
+                                    </Text>
+                                </div>
                                 <Text size="md">{warning.message}</Text>
                             </div>
                         ))}

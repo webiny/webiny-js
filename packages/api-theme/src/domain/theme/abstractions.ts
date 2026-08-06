@@ -66,6 +66,8 @@ export interface ThemeRevision {
     createdOn: string;
     createdBy: ThemeIdentity;
     lastPublishedOn: string | null;
+    /** The author's note about this version, written at publish. Empty on an unpublished draft. */
+    publishComment: string | null;
 }
 
 /** The tenant's active theme pointer. Written by activation, read by delivery. */

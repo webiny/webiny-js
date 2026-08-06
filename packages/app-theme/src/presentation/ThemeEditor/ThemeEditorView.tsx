@@ -1,14 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { Button, Loader, Separator, Text, useToast } from "@webiny/admin-ui";
+import {
+    Breadcrumbs,
+    Button,
+    createHomeBreadcrumbItem,
+    Loader,
+    Separator,
+    Text,
+    useToast
+} from "@webiny/admin-ui";
+import { useContainer } from "@webiny/app";
+import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
+import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/index.js";
-import type { ThemeMode } from "@webiny/theme-common";
+import { validateForPublish, type ThemeMode } from "@webiny/theme-common";
 import { EDITOR_GROUPS, type EditorGroupId } from "~/constants.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { useThemes } from "~/presentation/useThemes.js";
 import { useResolvedTheme } from "~/presentation/useResolvedTheme.js";
 import { EditorRail } from "./EditorRail.js";
+import { groupForTokenPath } from "./groupMeta.js";
 import { PreviewPlaceholder } from "./PreviewPlaceholder.js";
 import { ExtractionReviewBanner } from "./ExtractionReviewBanner.js";
 import { PublishDialog } from "./PublishDialog.js";
@@ -31,6 +43,7 @@ const GROUP_TITLES = Object.fromEntries(EDITOR_GROUPS.map(group => [group.id, gr
 export const ThemeEditorView = observer(function ThemeEditorView() {
     const themes = useThemes();
     const toast = useToast();
+    const container = useContainer();
     const { goToRoute } = useRouter();
     const { route, setRouteParams } = useRoute(Routes.Editor);
 
@@ -54,6 +67,24 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
     // handles an absent theme.
     const resolved = useResolvedTheme(theme);
 
+    // Which groups deserve an attention dot in the rail. It mirrors the publish gate exactly: every
+    // blocker and warning maps (by token path) to the group that can fix it, so a dot means "there
+    // is something to address on this screen" — the same list the Publish dialog shows.
+    const attention = useMemo(() => {
+        const flagged = new Set<EditorGroupId>();
+        if (!theme) {
+            return flagged;
+        }
+        const { blockers, warnings } = validateForPublish(theme.tokens, theme.settings);
+        for (const item of [...blockers, ...warnings]) {
+            const groupId = groupForTokenPath(item.path);
+            if (groupId) {
+                flagged.add(groupId);
+            }
+        }
+        return flagged;
+    }, [theme]);
+
     const { showConfirmation: confirmActivate } = useConfirmationDialog({
         title: "Activate this theme",
         message:
@@ -70,13 +101,20 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
 
     if (!theme || themes.isCurrentLoading()) {
         return (
-            <div className="h-main-content grid place-items-center">
+            <div className="h-screen grid place-items-center">
                 <Loader />
             </div>
         );
     }
 
-    const isActive = themes.getActivePointer()?.entryId === theme.entryId;
+    const activePointer = themes.getActivePointer();
+    // This exact revision being live is a different question from the theme having *some* live
+    // version. The status indicator and the Activate button both need the per-revision answer —
+    // otherwise every version reads as "Active" and you cannot activate a different one.
+    const isActive = activePointer?.id === theme.id;
+    // The live version of this theme, if any — so we can point at it while viewing a different one.
+    const activeForTheme =
+        activePointer && activePointer.entryId === theme.entryId ? activePointer : null;
     // A published revision is locked by the CMS, so editing it means branching a new draft first.
     const readOnly = theme.locked;
 
@@ -171,21 +209,39 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
     };
 
     return (
-        <div className="flex flex-col h-main-content">
+        <div className="flex flex-col h-screen">
             <div className="flex items-center gap-sm py-sm px-md">
-                <Text size="lg" className="font-semibold">
-                    {theme.properties.name}
-                </Text>
-                <Text size="sm" className="text-neutral-strong">
-                    {SAVE_LABELS[themes.getSaveState()] ?? ""}
-                </Text>
+                {/* Home icon → dashboard, "Themes" → the list, theme name = current item, matching
+                    the standard admin breadcrumb trail. */}
+                <Breadcrumbs
+                    items={[
+                        createHomeBreadcrumbItem(() =>
+                            container.resolve(RouterGateway).pushState("/")
+                        ),
+                        { label: "Themes", onClick: () => goToRoute(Routes.List) },
+                        { label: theme.properties.name, current: true }
+                    ]}
+                />
 
                 <div className="ml-auto flex items-center gap-sm">
+                    {/* 1. Saving indicator. */}
+                    {SAVE_LABELS[themes.getSaveState()] ? (
+                        <Text size="sm" className="text-neutral-muted">
+                            {SAVE_LABELS[themes.getSaveState()]}
+                        </Text>
+                    ) : null}
+
+                    {/* 2. Versions — opens the drawer; the current version + status live in the left
+                        rail, as in the Website Builder and CMS editors. */}
                     <Button
-                        variant="tertiary"
+                        variant="ghost"
                         onClick={() => setVersionsOpen(true)}
+                        iconPosition="start"
+                        icon={<HistoryIcon />}
                         text="Versions"
                     />
+
+                    {/* 3. Publish a draft, or branch a locked revision back into an editable draft. */}
                     {readOnly ? (
                         <HasPermission entity="theme" action="edit">
                             <Button variant="secondary" onClick={branch} text="Edit as new draft" />
@@ -193,17 +249,22 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
                     ) : (
                         <HasPermission entity="theme" action="publish">
                             <Button
-                                variant="primary"
+                                variant="secondary"
                                 onClick={() => setPublishOpen(true)}
                                 text="Publish"
                             />
                         </HasPermission>
                     )}
-                    {theme.resolved && !isActive ? (
-                        <HasPermission entity="theme" action="publish">
-                            <Button variant="secondary" onClick={activate} text="Activate" />
-                        </HasPermission>
-                    ) : null}
+
+                    {/* 4. Activate — make this version the one served live. */}
+                    <HasPermission entity="theme" action="publish">
+                        <Button
+                            variant="primary"
+                            onClick={activate}
+                            disabled={!theme.resolved || isActive}
+                            text="Activate"
+                        />
+                    </HasPermission>
                 </div>
             </div>
             <Separator />
@@ -217,12 +278,22 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
                 <EditorRail
                     theme={theme}
                     isActive={isActive}
+                    activeVersion={activeForTheme?.version ?? null}
+                    onOpenActiveVersion={
+                        activeForTheme
+                            ? () => goToRoute(Routes.Editor, { id: activeForTheme.id })
+                            : undefined
+                    }
                     group={group}
+                    warnings={attention}
+                    readOnly={readOnly}
+                    onRename={name => themes.rename(name)}
                     onGroupChange={next => setRouteParams(params => ({ ...params, group: next }))}
                 />
 
                 <div className="w-[400px] flex-none border-r border-neutral-dimmed flex flex-col bg-neutral-base min-h-0">
-                    <div className="px-md py-sm border-b border-neutral-dimmed flex items-center">
+                    {/* h-12 matches the preview header so the two bottom borders align across panels. */}
+                    <div className="h-12 flex-none px-md border-b border-neutral-dimmed flex items-center">
                         <Text size="md" className="font-semibold">
                             {GROUP_TITLES[group] ?? group}
                         </Text>
@@ -235,7 +306,12 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
                     {renderGroup()}
                 </div>
 
-                <PreviewPlaceholder mode={mode} onModeChange={setMode} />
+                <PreviewPlaceholder
+                    theme={theme}
+                    group={group}
+                    mode={mode}
+                    onModeChange={setMode}
+                />
             </div>
 
             <PublishDialog theme={theme} open={publishOpen} onClose={() => setPublishOpen(false)} />

@@ -44,9 +44,9 @@ export const ExtractThemeForm = ({ url, name, onUrlChange, onNameChange, onSubmi
 
         {/* Set expectations before the wait, not during it. */}
         <Alert variant="subtle" type="info">
-            This takes a few minutes. We read the site with a browser, work out its colours, type
-            and spacing, and create a draft theme for you to review. Nothing goes live until you
-            publish and activate it.
+            This takes a few minutes. We read the site with a browser, work out its colors, type and
+            spacing, and create a draft theme for you to review. Nothing goes live until you publish
+            and activate it.
         </Alert>
     </div>
 );

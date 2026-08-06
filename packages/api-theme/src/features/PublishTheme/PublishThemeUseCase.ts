@@ -47,7 +47,11 @@ class PublishThemeUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(new ThemeBeforePublishEvent({ theme, resolved }));
 
-        const result = await this.repository.execute({ id: params.id, resolved });
+        const result = await this.repository.execute({
+            id: params.id,
+            resolved,
+            comment: params.comment
+        });
         if (result.isFail()) {
             return Result.fail(result.error);
         }

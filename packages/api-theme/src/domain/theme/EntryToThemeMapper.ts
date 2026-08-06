@@ -40,7 +40,8 @@ export class EntryToThemeMapper {
             savedOn: entry.savedOn,
             createdOn: entry.createdOn,
             createdBy: entry.createdBy,
-            lastPublishedOn: entry.lastPublishedOn ?? null
+            lastPublishedOn: entry.lastPublishedOn ?? null,
+            publishComment: entry.values.publishComment ?? null
         };
     }
 }

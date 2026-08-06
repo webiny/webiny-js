@@ -16,7 +16,7 @@ export const Routes = {
         params: zod => {
             return {
                 id: zod.string(),
-                /** Selected token group in the left rail. Defaults to colours. */
+                /** Selected token group in the left rail. Defaults to colors. */
                 group: zod.string().optional()
             };
         }

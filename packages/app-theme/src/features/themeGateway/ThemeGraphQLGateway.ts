@@ -77,6 +77,7 @@ const GET_REVISIONS = /* GraphQL */ `
             getThemeRevisions(entryId: $entryId) {
                 data {
                     id entryId version name status locked savedOn createdOn lastPublishedOn
+                    publishComment
                     createdBy { ${IDENTITY_FIELDS} }
                 }
                 error { ${ERROR_FIELDS} }
@@ -121,9 +122,9 @@ const CREATE_REVISION_FROM = /* GraphQL */ `
 `;
 
 const PUBLISH_THEME = /* GraphQL */ `
-    mutation PublishTheme($id: ID!) {
+    mutation PublishTheme($id: ID!, $comment: String) {
         theme {
-            publishTheme(id: $id) {
+            publishTheme(id: $id, comment: $comment) {
                 data { theme { ${THEME_FIELDS} } warnings { code path message } }
                 error { ${ERROR_FIELDS} }
             }
@@ -236,10 +237,10 @@ class ThemeGraphQLGateway implements GatewayAbstraction.Interface {
         );
     }
 
-    async publish(id: string) {
+    async publish(id: string, comment?: string) {
         return this.run<PublishThemeResultDto>(
             PUBLISH_THEME,
-            { id },
+            { id, comment },
             response => response.theme.publishTheme
         );
     }

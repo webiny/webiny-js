@@ -6,12 +6,12 @@ import { useActiveTheme } from "./ActiveThemeProvider.js";
 const { LexicalTheme } = AdminConfig;
 
 /**
- * Publishes the active theme's canonical colour slots to the rich-text toolbar, and tells it whether
- * a free colour is allowed.
+ * Publishes the active theme's canonical color slots to the rich-text toolbar, and tells it whether
+ * a free color is allowed.
  *
  * This is the per-selection half of the rich-text story from the Theme design brief, section 7.3.
  * Structural styling (paragraphs, headings, quotes, code, lists) is handled by Lexical's class-name
- * map and needs no per-node data; only an author colouring a phrase stores anything, and what it
+ * map and needs no per-node data; only an author coloring a phrase stores anything, and what it
  * stores is a token path.
  *
  * With no active theme nothing is registered, so the toolbar keeps offering whatever the project

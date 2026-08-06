@@ -44,6 +44,8 @@ export interface ThemeRevisionDto {
     createdOn: string;
     createdBy: ThemeIdentityDto | null;
     lastPublishedOn: string | null;
+    /** The author's note about this version, written at publish. Empty on an unpublished draft. */
+    publishComment: string | null;
 }
 
 export interface ActiveThemePointerDto {
@@ -117,7 +119,7 @@ export interface IThemeGateway {
     update(id: string, data: UpdateThemeInputDto): Promise<ThemeDto>;
     remove(id: string): Promise<void>;
     createRevisionFrom(id: string): Promise<ThemeDto>;
-    publish(id: string): Promise<PublishThemeResultDto>;
+    publish(id: string, comment?: string): Promise<PublishThemeResultDto>;
     activate(id: string): Promise<ActivateThemeResultDto>;
     deactivate(): Promise<void>;
     extract(data: ExtractThemeInputDto): Promise<ExtractionStartedDto>;
