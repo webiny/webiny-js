@@ -1,11 +1,13 @@
 import { createFeature } from "@webiny/feature/api";
 import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
+import { WebSocketLambdaHandler } from "~/WebSocketLambdaHandler.js";
 
 export { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
 
 export const WebsocketsAwsFeature = createFeature({
     name: "WebsocketsAws",
     register(container) {
+        container.register(WebSocketLambdaHandler);
         container.register(AwsWebsocketsTransport);
     }
 });
