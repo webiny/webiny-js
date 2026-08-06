@@ -1,8 +1,9 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import type { CmsDynamicZoneTemplate } from "~/types.js";
 import { AddTemplateIcon, AddTemplateButton } from "./AddTemplate.js";
 import { DynamicZoneTemplate } from "./DynamicZoneTemplate.js";
+import { TemplateDialog } from "./TemplateDialog.js";
 import { useModelField, useModelFieldEditor } from "~/admin/hooks/index.js";
 
 function updateOrCreateTemplate(
@@ -26,6 +27,9 @@ export const DynamicZone = () => {
     const { field } = useModelField();
     const { updateField } = useModelFieldEditor();
     const newTemplateId = useRef<string | undefined>(undefined);
+    const [templateToEdit, setTemplateToEdit] = useState<CmsDynamicZoneTemplate | undefined>(
+        undefined
+    );
 
     const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
 
@@ -43,13 +47,23 @@ export const DynamicZone = () => {
         });
     };
 
+    const onDialogClose = useCallback(() => {
+        setTemplateToEdit(undefined);
+    }, []);
+
     useEffect(() => {
-        // We only want to open the accordion item on first mount of a new template.
         newTemplateId.current = undefined;
     }, []);
 
     return (
         <>
+            {templateToEdit ? (
+                <TemplateDialog
+                    template={templateToEdit}
+                    onTemplate={onTemplate}
+                    onClose={onDialogClose}
+                />
+            ) : null}
             {templates.length ? (
                 <Accordion>
                     {templates.map((template, index) => (
@@ -60,6 +74,7 @@ export const DynamicZone = () => {
                             field={field}
                             template={template}
                             onChange={updateField}
+                            onEditTemplate={setTemplateToEdit}
                         />
                     ))}
                 </Accordion>
