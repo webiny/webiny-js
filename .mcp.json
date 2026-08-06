@@ -3,6 +3,15 @@
     "webiny": {
       "command": "npx",
       "args": ["webiny-mcp", "serve", "--skills=./skills"]
+    },
+    "stdlib": {
+      "command": "npx",
+      "args": ["-y", "@webiny/stdlib", "serve"]
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": ["serve", "--mcp"]
     }
   }
 }
