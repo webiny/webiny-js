@@ -50,6 +50,7 @@ export const Extensions = () => {
                     <AiContentExtension />
                 </FeatureFlag.CanUse>
             </FeatureFlag.CanUseMultiTenancy>
+            <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
