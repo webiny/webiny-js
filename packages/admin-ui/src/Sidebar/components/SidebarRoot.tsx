@@ -85,7 +85,7 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
                 )}
                 {...props}
             >
-                <div data-sidebar="sidebar" className="flex h-full w-full py-xs flex-col">
+                <div data-sidebar="sidebar" className="flex h-full w-full py-xs flex-col overflow-hidden">
                     {children}
                 </div>
             </div>
