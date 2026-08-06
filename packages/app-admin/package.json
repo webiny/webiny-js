@@ -21,7 +21,7 @@
     "@emotion/styled": "11.14.1",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/react-fontawesome": "^3.5.0",
-    "@iconify/json": "^2.2.508",
+    "@iconify/json": "^2.2.509",
     "@lexical/utils": "^0.49.0",
     "@types/react": "18.3.31",
     "@webiny/admin-ui": "0.0.0",
