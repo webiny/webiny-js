@@ -83,7 +83,7 @@ export function buildDocumentFromManifest(manifest: ISandboxVm["manifest"]): Doc
         state: {},
         properties: {
             id: "sandbox-doc",
-            path: "/component-sandbox",
+            path: "/sandbox/component",
             title: "Component Sandbox"
         },
         extensions: {},

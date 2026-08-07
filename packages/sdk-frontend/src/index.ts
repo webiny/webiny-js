@@ -1,4 +1,12 @@
 export { sdk, FrontendSdk } from "./FrontendSdk.js";
+export { ComponentsSdk } from "./ComponentsSdk.js";
+export type {
+    RemoteComponentEntry,
+    LoadComponentsOptions,
+    HydrateComponentDependencies,
+    HydrateComponentOptions,
+    HydratedComponent
+} from "./ComponentsSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig } from "./types.js";
 
 // Re-export Result and error types from @webiny/sdk.

@@ -13640,6 +13640,7 @@ __metadata:
     "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
+    css-tree: "npm:^3.2.1"
     typescript: "npm:7.0.2"
     vitest: "npm:^4.1.10"
   languageName: unknown

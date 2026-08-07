@@ -18,7 +18,7 @@ export const SandboxIframe = ({ reloadKey, backgroundClass }: SandboxIframeProps
 
     const iframeUrl =
         previewDomain && previewDomain.length > 0
-            ? `${previewDomain}/component-sandbox?wb.editing=true&wb.referrer=${encodeURIComponent(window.location.origin)}&wb.type=page&wb.id=sandbox&wb.path=/component-sandbox`
+            ? `${previewDomain}/sandbox/component?wb.editing=true&wb.referrer=${encodeURIComponent(window.location.origin)}&wb.type=page&wb.id=sandbox&wb.path=/sandbox/component`
             : null;
 
     const previewOrigin =

@@ -304,6 +304,7 @@ The input value is rendered as children. Use for: layout containers, card bodies
 16. Group related inputs into \`createObjectInput\` — e.g., \`primaryButton: { label, url }\`, \`author: { name, role, avatarUrl }\`
 17. For repeatable lists, use \`list: true\` inside params — NEVER use \`multiple: true\`
 18. File inputs (\`createFileInput\`) return an object — always access \`.url\` for the URL (e.g., \`image.url\`, NOT \`image\` directly)
+19. The first input in the manifest \`inputs\` array MUST be a text input (createTextInput or createLongTextInput) — never start with icons, images, files, booleans, or other non-text inputs. The first input is shown as the element label in the editor sidebar, so it should be the most descriptive text field (e.g., title, heading, name). For object inputs with \`list: true\`, the first field inside \`fields\` must also be text.
 
 ## CSS Guidelines
 
@@ -431,8 +432,8 @@ export const manifest = {
     applyDefaultStyles: false,
     aiContext: "A feature highlight card with an icon, title, description, and optional link. Use in feature grids or benefit sections.",
     inputs: [
-        { name: "icon", factory: "createTextInput", params: { label: "Icon Emoji", defaultValue: "🚀", description: "Use an emoji or symbol" } },
         { name: "title", factory: "createTextInput", params: { label: "Title", defaultValue: "Fast Performance" } },
+        { name: "icon", factory: "createTextInput", params: { label: "Icon Emoji", defaultValue: "🚀", description: "Use an emoji or symbol" } },
         { name: "description", factory: "createLongTextInput", params: { label: "Description", defaultValue: "Lightning-fast load times with optimized delivery." } },
         { name: "link", factory: "createObjectInput", params: { label: "Link", fields: [
             { name: "label", factory: "createTextInput", params: { label: "Label" } },
