@@ -17,7 +17,6 @@
     { "path": "../sdk" },
     { "path": "../utils" },
     { "path": "../api-core-testing" },
-    { "path": "../aws-sdk" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -57,8 +56,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

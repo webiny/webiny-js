@@ -28,7 +28,7 @@ import {
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
-import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch";
+import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch-aws";
 
 class DdbEsPublishEntryImpl implements PublishEntryStorageOperation.Interface {
     constructor(

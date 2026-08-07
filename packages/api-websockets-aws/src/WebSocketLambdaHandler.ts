@@ -12,12 +12,29 @@ import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantCon
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { APIGatewayProxyResult } from "@webiny/aws-sdk/types/index.js";
-import { WebsocketsRunner } from "~/runner/index.js";
-import { WebsocketsResponse } from "~/response/index.js";
-import type { Context, IWebsocketsEvent, WebsocketsEventType, WebsocketsRoute } from "~/types.js";
-import { getEventValues } from "~/handler/headers.js";
-import type { IWebsocketsIncomingEvent } from "~/handler/types.js";
+import { WebsocketsRunner } from "@webiny/api-websockets/runner/index.js";
+import { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
+import type {
+    Context,
+    IWebsocketsEvent,
+    WebsocketsEventType,
+    WebsocketsRoute
+} from "@webiny/api-websockets/types.js";
+import { getEventValues } from "@webiny/api-websockets/handler/headers.js";
+import type { IWebsocketsIncomingEvent } from "@webiny/api-websockets/handler/types.js";
 import { WebsocketsEventRequestContextEventType, WebsocketsEventRoute } from "~/handler/types.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+
+const getBody = (body: GenericRecord | string | undefined) => {
+    if (typeof body === "string") {
+        try {
+            return JSON.parse(body) as GenericRecord;
+        } catch {
+            return {};
+        }
+    }
+    return body;
+};
 
 const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWebsocketsEvent => {
     const rc = raw.requestContext ?? {};
@@ -36,6 +53,7 @@ const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWe
     };
     const routeKey = rc.routeKey as string | undefined;
     const route = routeMap[routeKey ?? ""] ?? "default";
+
     return {
         headers: raw.headers as Record<string, string> | undefined,
         context: {
@@ -46,16 +64,7 @@ const toWebsocketsEvent = (raw: IWebsocketsIncomingEvent, endpoint: string): IWe
             route,
             endpoint
         },
-        body:
-            typeof raw.body === "string"
-                ? (() => {
-                      try {
-                          return JSON.parse(raw.body as string);
-                      } catch {
-                          return {};
-                      }
-                  })()
-                : (raw.body as any)
+        body: getBody(raw.body)
     };
 };
 
@@ -94,7 +103,9 @@ class WebSocketLambdaHandlerImpl implements WebSocketEventHandler.Interface {
 
         return {
             statusCode: result.statusCode,
-            headers: { "sec-websocket-protocol": "webiny-ws-v1" },
+            headers: {
+                "sec-websocket-protocol": "webiny-ws-v1"
+            },
             body: ""
         };
     }
