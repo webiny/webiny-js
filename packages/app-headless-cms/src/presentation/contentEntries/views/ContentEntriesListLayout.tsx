@@ -58,6 +58,7 @@ const DocumentList = observer(() => {
                             vm={presenter.folders.vm}
                             actions={presenter.folders}
                             folderActions={browser.folder.actions}
+                            dropConfirmation={browser.folder.dropConfirmation}
                             enableActions={true}
                             enableCreate={true}
                         />

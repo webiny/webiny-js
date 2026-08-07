@@ -28,6 +28,7 @@ export const Extensions = () => {
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             <AiContentExtension />
+            <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
