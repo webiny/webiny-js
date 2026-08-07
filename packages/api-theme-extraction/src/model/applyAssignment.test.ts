@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
     createDefaultThemeDocument,
     getTokenAtPath,
+    parseAlias,
+    type ThemeMode,
     type TokenDocument,
     type TypographyValue
 } from "@webiny/theme-common";
@@ -38,11 +40,26 @@ const apply = (overrides: AssignmentOverrides = {}) =>
 const typographyAt = (document: TokenDocument, path: string): TypographyValue =>
     getTokenAtPath(document, path)?.$value as TypographyValue;
 
+/** Follows a colour slot's brand reference to the primitive value it resolves to, per mode. */
+const brandValue = (document: TokenDocument, path: string, mode: ThemeMode = "light"): unknown => {
+    const token = getTokenAtPath(document, path);
+    const raw =
+        mode === "dark"
+            ? (token?.$extensions?.["com.webiny.modes"] as { dark?: unknown } | undefined)?.dark
+            : token?.$value;
+    const target = parseAlias(raw);
+    return target ? getTokenAtPath(document, target)?.$value : raw;
+};
+
 describe("applyAssignment", () => {
-    it("writes a scalar value onto its slot", () => {
+    it("links a colour slot to a brand primitive rather than writing a literal", () => {
+        // A hand-made theme points every slot at the brand palette so editing a primitive cascades.
+        // Extraction must produce the same shape, not a one-off literal on the slot.
         const result = apply({ tokens: { "color.surface.page": "#fafafa" } });
 
-        expect(getTokenAtPath(result.document, "color.surface.page")?.$value).toBe("#fafafa");
+        const slot = getTokenAtPath(result.document, "color.surface.page");
+        expect(parseAlias(slot?.$value)).toMatch(/^color\.brand\./);
+        expect(brandValue(result.document, "color.surface.page")).toBe("#fafafa");
         expect(result.applied).toEqual(["color.surface.page"]);
         expect(result.failed).toEqual([]);
     });
@@ -112,26 +129,70 @@ describe("applyAssignment", () => {
         expect(typographyAt(result.document, "type.lead").fontSize).toBe("{text.lg}");
     });
 
-    it("stores a dark value as a mode override, keeping the light value", () => {
+    it("links light and dark to brand primitives, reusing a shipped one on an exact match", () => {
         const result = apply({
             tokens: { "color.surface.page": "#ffffff" },
-            darkTokens: { "color.surface.page": "#0f172a" }
+            darkTokens: { "color.surface.page": "#123456" }
         });
 
         const token = getTokenAtPath(result.document, "color.surface.page");
-
-        expect(token?.$value).toBe("#ffffff");
-        expect(token?.$extensions?.["com.webiny.modes"]).toMatchObject({ dark: "#0f172a" });
+        const darkRef = (token?.$extensions?.["com.webiny.modes"] as { dark?: unknown } | undefined)
+            ?.dark;
+        // #ffffff equals the shipped `white` primitive, so the slot reuses it rather than duplicating.
+        expect(parseAlias(token?.$value)).toBe("color.brand.white");
+        // The dark colour is not a shipped primitive, so it becomes a new one the dark mode references.
+        expect(parseAlias(darkRef)).toMatch(/^color\.brand\./);
+        expect(brandValue(result.document, "color.surface.page", "dark")).toBe("#123456");
         expect(result.applied).toContain("color.surface.page (dark)");
     });
 
     it("applies a dark value even when the light value came from defaults", () => {
         // Light is applied before dark, so the token always holds a light value before the override.
+        // #0f172a matches the shipped `neutral-900`, so the dark override reuses that primitive.
         const result = apply({ darkTokens: { "color.surface.page": "#0f172a" } });
 
         const token = getTokenAtPath(result.document, "color.surface.page");
         expect(token?.$value).toBeTruthy();
-        expect(token?.$extensions?.["com.webiny.modes"]).toMatchObject({ dark: "#0f172a" });
+        expect(
+            String(brandValue(result.document, "color.surface.page", "dark")).toLowerCase()
+        ).toBe("#0f172a");
+    });
+
+    it("builds the palette from the extracted colours and prunes what nothing uses", () => {
+        const result = apply({
+            tokens: {
+                "color.action.primary.background": "#2563EB",
+                // Same colour, different case — must collapse onto one brand primitive.
+                "color.action.primary.hover": "#2563eb",
+                "color.surface.page": "#111827",
+                "color.text.primary": "#f9fafb"
+            }
+        });
+
+        const bg = parseAlias(
+            getTokenAtPath(result.document, "color.action.primary.background")?.$value
+        );
+        const hover = parseAlias(
+            getTokenAtPath(result.document, "color.action.primary.hover")?.$value
+        );
+        expect(bg).toBeTruthy();
+        expect(hover).toBe(bg);
+
+        // Every assigned slot references the palette; none holds a literal.
+        for (const path of [
+            "color.action.primary.background",
+            "color.surface.page",
+            "color.text.primary"
+        ]) {
+            expect(parseAlias(getTokenAtPath(result.document, path)?.$value)).toMatch(
+                /^color\.brand\./
+            );
+        }
+
+        // Pruned to colours in use: an unused shipped primitive is gone, one a default slot still
+        // references stays.
+        expect(getTokenAtPath(result.document, "color.brand.black")).toBeUndefined();
+        expect(getTokenAtPath(result.document, "color.brand.green-50")).toBeDefined();
     });
 
     it("applies every slot the model filled", () => {

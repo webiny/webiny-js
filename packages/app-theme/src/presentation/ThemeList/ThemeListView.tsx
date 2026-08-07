@@ -38,7 +38,12 @@ export const ThemeListView = observer(function ThemeListView() {
         void themes.loadList();
     }, [themes]);
 
-    const activeEntryId = themes.getActivePointer()?.entryId ?? null;
+    // The active pointer names both the theme *and* the exact version that is live. The list shows the
+    // latest version per theme, which is often a newer draft than the live one — so "active" has to be
+    // answered per version, not per entry, or a v2 draft on an active theme reads as live.
+    const activePointer = themes.getActivePointer();
+    const activeEntryId = activePointer?.entryId ?? null;
+    const activeVersion = activePointer?.version ?? null;
     const rows = themes.getThemes();
 
     const { showConfirmation: confirmDelete } = useConfirmationDialog({
@@ -86,15 +91,18 @@ export const ThemeListView = observer(function ThemeListView() {
         properties: {
             header: "Theme",
             cell: (theme: ThemeDto) => (
-                <div className="flex flex-col">
-                    <Text
-                        size="md"
-                        className={theme.entryId === activeEntryId ? "font-semibold" : undefined}
+                <div className="flex flex-col items-start">
+                    <button
+                        type="button"
+                        onClick={() => goToRoute(Routes.Editor, { id: theme.id })}
+                        className={`cursor-pointer text-left hover:underline ${
+                            theme.entryId === activeEntryId ? "font-semibold" : ""
+                        }`}
                     >
-                        {theme.properties.name}
-                    </Text>
+                        <Text size="md">{theme.properties.name}</Text>
+                    </button>
                     <Text size="sm" className="text-neutral-strong">
-                        {theme.entryId === activeEntryId
+                        {theme.entryId === activeEntryId && theme.version === activeVersion
                             ? `v${theme.version} · live`
                             : `v${theme.version}`}
                     </Text>
@@ -107,9 +115,23 @@ export const ThemeListView = observer(function ThemeListView() {
         },
         status: {
             header: "Status",
-            cell: (theme: ThemeDto) => (
-                <ThemeStatusTag status={theme.status} isActive={theme.entryId === activeEntryId} />
-            )
+            cell: (theme: ThemeDto) => {
+                const isActiveEntry = theme.entryId === activeEntryId;
+                return (
+                    <div className="flex flex-col items-start gap-xxs">
+                        <ThemeStatusTag status={theme.status} isActive={isActiveEntry} />
+                        {/* When the live version isn't the one shown on this row, name it — otherwise
+                            "Active" reads as if this (possibly draft) version were the one served. */}
+                        {isActiveEntry &&
+                        activeVersion !== null &&
+                        activeVersion !== theme.version ? (
+                            <Text size="sm" className="text-neutral-strong">
+                                {`v${activeVersion} live`}
+                            </Text>
+                        ) : null}
+                    </div>
+                );
+            }
         },
         savedOn: {
             header: "Last updated",
