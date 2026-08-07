@@ -6,6 +6,7 @@
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-core-ddb/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
   ],
@@ -24,6 +25,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],

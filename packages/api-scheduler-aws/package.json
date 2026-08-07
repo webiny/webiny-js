@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/api-core-testing": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",

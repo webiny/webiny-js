@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DeleteCommandHandler } from "~/resolver/app/commandHandler/DeleteCommandHandler.js";
 import { createMockStorer } from "~tests/mocks/storer.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
 import { createRegularMockTable } from "~tests/mocks/table.js";
 import {
     createMockSourceDeployment,

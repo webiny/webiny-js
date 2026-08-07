@@ -32,6 +32,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^6.1.3",

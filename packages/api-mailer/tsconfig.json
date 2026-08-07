@@ -6,6 +6,7 @@
     { "path": "../feature" },
     { "path": "../plugins" },
     { "path": "../api-core" },
+    { "path": "../api-core-ddb" },
     { "path": "../event-handler-core" },
     { "path": "../handler" }
   ],
@@ -24,6 +25,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],

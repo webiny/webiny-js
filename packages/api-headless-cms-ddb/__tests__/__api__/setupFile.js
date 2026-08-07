@@ -3,7 +3,7 @@ import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { HeadlessCmsDdbFeature } from "../../src";
 import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 setStorageOps("cms", () => {

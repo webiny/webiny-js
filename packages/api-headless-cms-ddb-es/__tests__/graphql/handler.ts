@@ -11,7 +11,7 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import type { PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
 import { createTable } from "@webiny/db-dynamodb";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createEntryEntity } from "~/definitions/entry";
