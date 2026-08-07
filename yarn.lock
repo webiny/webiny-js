@@ -11098,6 +11098,7 @@ __metadata:
     "@webiny/api-headless-cms-storage": "npm:0.0.0"
     "@webiny/api-headless-cms-utils-os": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-opensearch-aws": "npm:0.0.0"
     "@webiny/api-search-index-tasks": "npm:0.0.0"
     "@webiny/api-search-index-tasks-ddb-os": "npm:0.0.0"
     "@webiny/api-sync-ddb-to-opensearch": "npm:0.0.0"
