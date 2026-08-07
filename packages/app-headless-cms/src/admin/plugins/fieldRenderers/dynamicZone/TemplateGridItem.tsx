@@ -36,7 +36,7 @@ export const TemplateGridItem = makeDecoratable(
                         <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
                             {template.name}
                         </Text>
-                        <Text size={"sm"} as={"div"} className={"text-neutral-muted"}>
+                        <Text size={"sm"} as={"div"} className={"text-neutral-muted line-clamp-2"}>
                             {template.description}
                         </Text>
                     </div>

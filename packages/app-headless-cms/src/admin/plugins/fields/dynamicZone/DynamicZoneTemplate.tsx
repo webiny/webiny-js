@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { set } from "dot-prop-immutable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -13,7 +13,6 @@ import {
     removeValueAtIndex
 } from "~/admin/plugins/arrayUtils.js";
 import type { CmsDynamicZoneTemplate, CmsEditorFieldsLayout, CmsModelField } from "~/types.js";
-import { TemplateDialog } from "./TemplateDialog.js";
 import { FieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
@@ -23,6 +22,7 @@ interface DynamicZoneTemplateProps {
     template: CmsDynamicZoneTemplate;
     onChange: (field: CmsModelField) => void;
     open: boolean;
+    onEditTemplate: (template: CmsDynamicZoneTemplate) => void;
 }
 
 interface UpdateTemplate {
@@ -40,7 +40,8 @@ export const DynamicZoneTemplate = ({
     field,
     template,
     onChange,
-    open
+    open,
+    onEditTemplate
 }: DynamicZoneTemplateProps) => {
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete content template",
@@ -48,23 +49,15 @@ export const DynamicZoneTemplate = ({
         acceptLabel: "Yes, I'm sure!"
     });
 
-    const [templateToEdit, setTemplateToEdit] = useState<CmsDynamicZoneTemplate | undefined>(
-        undefined
-    );
-
     const templates = field.settings?.templates || [];
     const isFirst = index === 0;
     const isLast = index === templates.length - 1;
 
     const callbackDeps = [onChange, field, index, template.id];
 
-    const onDialogClose = useCallback(() => {
-        setTemplateToEdit(undefined);
-    }, []);
-
     const editTemplate = useCallback(() => {
-        setTemplateToEdit(template);
-    }, [template]);
+        onEditTemplate(template);
+    }, [template, onEditTemplate]);
 
     const updateTemplate = useCallback<UpdateTemplate>(params => {
         onChange(
@@ -102,7 +95,7 @@ export const DynamicZoneTemplate = ({
             title={template.name}
             description={template.description}
             icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
-            open={open}
+            defaultOpen={open}
             actions={
                 <>
                     <Accordion.Item.Action
@@ -121,14 +114,6 @@ export const DynamicZoneTemplate = ({
                 </>
             }
         >
-            {templateToEdit ? (
-                <TemplateDialog
-                    template={templateToEdit}
-                    onTemplate={updateTemplate}
-                    onClose={onDialogClose}
-                />
-            ) : null}
-
             <FieldEditor
                 parent={field}
                 fields={template.fields}
