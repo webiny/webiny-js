@@ -177,7 +177,6 @@ export class ComponentsSdk {
             }
 
             const scopeClass = toScopeClassName(entry.name);
-            const rawCss = entry.bundledCss ?? "";
             const R = dependencies.React as typeof import("react");
             const OriginalComponent = component.component;
 
@@ -192,7 +191,7 @@ export class ComponentsSdk {
             return {
                 component: ScopedComponent,
                 manifest: component.manifest,
-                css: rawCss ? scopeCss(rawCss, scopeClass) : "",
+                css: entry.bundledCss ?? "",
                 scopeClassName: scopeClass
             };
         } catch (error) {
