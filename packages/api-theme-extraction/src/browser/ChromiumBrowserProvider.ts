@@ -19,6 +19,7 @@ import {
     DEFAULT_TIMEOUTS,
     isResolved,
     LAYER_EXECUTABLE_CANDIDATES,
+    LAYER_PACK_CANDIDATES,
     mergeLaunchArgs,
     resolveExecutablePath,
     resolvePackPath,
@@ -65,7 +66,39 @@ export interface ExecutableDiagnostics {
     unpackError?: string;
 }
 
+/**
+ * Reconciles `chromium-min@123` with the Lambda runtime Webiny actually uses.
+ *
+ * `chromium-min@123` recognises only the literal `nodejs20.x` runtime as Amazon Linux 2023; every
+ * other runtime it maps to AL2, extracting the AL2 system libraries and pointing `LD_LIBRARY_PATH` at
+ * `/tmp/al2/lib`. Webiny runs a newer AL2023 runtime (nodejs24.x), so left alone it links the wrong
+ * libs and Chromium dies with "libnspr4.so: cannot open shared object file".
+ *
+ * On any AL2023 runtime (node >= 20) inside Lambda we therefore signal `nodejs20.x` — the only lever
+ * this version exposes — so the AL2023 packs are inflated, and we prepend their directory to the
+ * loader path (the module-load default may already have set `/tmp/al2/lib`). Runtimes < 20 are left
+ * alone: node18 genuinely is AL2. Remove once the chromium layer + `chromium-min` are bumped to a
+ * version that recognises the newer runtimes directly.
+ */
+const alignChromiumRuntimeLibraries = (): void => {
+    const inLambda = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
+    const nodeMajor = Number.parseInt(process.versions.node.split(".")[0], 10);
+    if (!inLambda || !Number.isFinite(nodeMajor) || nodeMajor < 20) {
+        return;
+    }
+
+    process.env.AWS_LAMBDA_JS_RUNTIME = "nodejs20.x";
+
+    const al2023Lib = "/tmp/al2023/lib";
+    const current = process.env.LD_LIBRARY_PATH ?? "";
+    if (!current.split(":").includes(al2023Lib)) {
+        process.env.LD_LIBRARY_PATH = current ? `${al2023Lib}:${current}` : al2023Lib;
+    }
+};
+
 const findExecutable = async (config?: ChromiumConfig): Promise<ExecutableDiagnostics> => {
+    alignChromiumRuntimeLibraries();
+
     const resolution = resolveExecutablePath({
         config,
         exists: existsSync,
@@ -80,7 +113,10 @@ const findExecutable = async (config?: ChromiumConfig): Promise<ExecutableDiagno
         };
     }
 
-    const packPath = resolvePackPath(config);
+    // No ready binary, so inflate the layer's compressed pack. Prefer an explicit override
+    // (config/env), then the first pack directory that exists — the @sparticuz/chromium layer's
+    // `bin/`. `chromium-min` wants that directory, not a file, and unpacks it into /tmp.
+    const packPath = resolvePackPath(config) ?? LAYER_PACK_CANDIDATES.find(dir => existsSync(dir));
     let unpackError: string | undefined;
 
     try {

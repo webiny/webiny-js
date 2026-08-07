@@ -6,17 +6,33 @@ import {
     type TypographyValue
 } from "@webiny/theme-common";
 import { applyAssignment } from "./applyAssignment.js";
-import { validateAssignment, type ModelAssignment } from "./tokenAssignment.js";
+import {
+    validateAssignment,
+    type ModelAssignment,
+    type ModelTypographyValue
+} from "./tokenAssignment.js";
 
-const assignment = (overrides: Partial<ModelAssignment> = {}): ModelAssignment => ({
-    tokens: {},
-    uncertain: [],
-    summary: "Extracted.",
-    confidence: "medium",
-    ...overrides
+// Tests express tokens as a convenient record; the schema is a list of { path, value }, so convert.
+type AssignmentOverrides = {
+    tokens?: Record<string, string | ModelTypographyValue>;
+    darkTokens?: Record<string, string>;
+    uncertain?: ModelAssignment["uncertain"];
+    summary?: string;
+    confidence?: ModelAssignment["confidence"];
+};
+
+const toEntries = <V>(record: Record<string, V>): Array<{ path: string; value: V }> =>
+    Object.entries(record).map(([path, value]) => ({ path, value }));
+
+const assignment = (overrides: AssignmentOverrides = {}): ModelAssignment => ({
+    tokens: toEntries(overrides.tokens ?? {}),
+    darkTokens: overrides.darkTokens ? toEntries(overrides.darkTokens) : undefined,
+    uncertain: overrides.uncertain ?? [],
+    summary: overrides.summary ?? "Extracted.",
+    confidence: overrides.confidence ?? "medium"
 });
 
-const apply = (overrides: Partial<ModelAssignment> = {}) =>
+const apply = (overrides: AssignmentOverrides = {}) =>
     applyAssignment(validateAssignment(assignment(overrides)));
 
 const typographyAt = (document: TokenDocument, path: string): TypographyValue =>
@@ -42,7 +58,9 @@ describe("applyAssignment", () => {
         );
     });
 
-    it("writes typography sub-properties without disturbing the others", () => {
+    it("keeps a role referencing the font set and the scale, not a literal", () => {
+        // A role must alias `font.*` and `text.*` so the editor can show its Font and Step and editing
+        // either cascades. The model's literal family and size are normalised back onto those refs.
         const defaults = createDefaultThemeDocument();
         const result = apply({
             tokens: { "type.body": { fontFamily: "Inter", fontSize: "17px" } }
@@ -51,8 +69,11 @@ describe("applyAssignment", () => {
         const applied = typographyAt(result.document, "type.body");
         const original = typographyAt(defaults, "type.body");
 
-        expect(applied.fontFamily).toBe("Inter");
-        expect(applied.fontSize).toBe("17px");
+        // Family stays the default alias; the site's family is captured against the font instead.
+        expect(applied.fontFamily).toBe(original.fontFamily);
+        expect(result.fonts).toContainEqual({ key: "sans", family: "Inter", weights: [] });
+        // Size becomes a reference to the nearest ramp step rather than a one-off length.
+        expect(applied.fontSize).toMatch(/^\{text\.[\da-z]+\}$/);
         expect(applied.letterSpacing).toEqual(original.letterSpacing);
     });
 
@@ -62,6 +83,33 @@ describe("applyAssignment", () => {
         const applied = typographyAt(result.document, "type.body");
         expect(applied.fontWeight).toBe(600);
         expect(applied.lineHeight).toBe(1.6);
+    });
+
+    it("resolves the site's family onto the theme's font set, ignoring generic stacks", () => {
+        const result = apply({
+            tokens: {
+                "type.body": { fontFamily: "Inter, sans-serif", fontWeight: 400 },
+                "type.heading.1": { fontFamily: "'Inter'", fontWeight: 700 },
+                "type.code": { fontFamily: "system-ui" }
+            }
+        });
+
+        // Body + heading agree on Inter for the sans font, with the weights those roles used.
+        expect(result.fonts).toContainEqual({ key: "sans", family: "Inter", weights: [400, 700] });
+        // The generic stack on the mono role names no real family, so nothing is recorded for it.
+        expect(result.fonts.some(font => font.key === "mono")).toBe(false);
+    });
+
+    it("snaps a role's size to the ramp step the model set, not the default", () => {
+        const result = apply({
+            tokens: {
+                "text.lg": "2rem",
+                "type.lead": { fontSize: "2rem" }
+            }
+        });
+
+        // `type.lead` defaults to the `lg` step; with `lg` reassigned to 2rem, a 2rem role lands on it.
+        expect(typographyAt(result.document, "type.lead").fontSize).toBe("{text.lg}");
     });
 
     it("stores a dark value as a mode override, keeping the light value", () => {

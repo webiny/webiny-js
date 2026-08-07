@@ -1,4 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { IAiConnectionInline } from "@webiny/api-core/features/ai/index.js";
 import type { ModelPayload } from "~/model/payload.js";
 import type { ExtractionError } from "./errors.js";
 
@@ -144,14 +145,16 @@ export namespace ExtractionLock {
 /**
  * Which model to use, and over which connection.
  *
- * `connection` is a name resolved by api-core's `AiConnectionFactory` registry — the seam that
- * already exists for this. Extraction therefore never holds an API key, and never has to know
- * whether the credentials came from AI Power-Ups or from the project itself.
+ * `connection` is either a name resolved by api-core's `AiConnectionFactory` registry, or an inline
+ * `{ sdkName, apiKey }` — the two forms `Ai.generateText` accepts. The inline form is what lets a
+ * project hand extraction the provider it has already configured elsewhere (typically AI Power-Ups
+ * settings), decrypting the key inside its own `ExtractionSettings` implementation — so this package
+ * still never stores a key of its own, and still never has to know where the credential came from.
  */
 export interface IExtractionModelSettings {
     /** Must be `"<provider>/<model>"`; `Ai` rejects anything else. */
     model: string;
-    connection?: string;
+    connection?: string | IAiConnectionInline;
 }
 
 export interface IExtractionSettings {

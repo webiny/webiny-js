@@ -37,9 +37,11 @@ ${slotList()}
 
 ## Rules
 
-1. Use ONLY the paths listed above, spelled exactly. Any other path is discarded.
-2. Slots under \`type.\` take an object of font properties (fontFamily, fontSize, fontWeight,
-   lineHeight, letterSpacing) — not a string. Every other slot takes a single string value.
+1. Return \`tokens\` as a LIST of \`{ path, value }\` objects. Use ONLY the paths listed above as the
+   \`path\`, spelled exactly. Any other path is discarded. Assign as many as you confidently can.
+2. For a slot under \`type.\`, \`value\` is an object of font properties (fontFamily, fontSize,
+   fontWeight, lineHeight, letterSpacing) — not a string. For every other slot, \`value\` is a single
+   string.
 3. Prefer values that actually appear in the inventory. Round or regularise them where the site is
    clearly approximating a scale (e.g. 15.008px is 15px; 23px, 24px and 25px are probably one step),
    but do not invent a palette the site does not have.
@@ -52,8 +54,9 @@ ${slotList()}
 6. Record every judgement you were not confident about in \`uncertain\`, with a reason a designer would
    understand. This is not optional and it is not a formality — someone will review this theme, and
    what you were unsure of is the most useful thing you can tell them.
-7. Put dark-mode values in \`darkTokens\`, and only for colour and shadow slots. If the inventory says
-   the site has no real dark variant, leave \`darkTokens\` empty rather than inventing one.
+7. Put dark-mode values in \`darkTokens\` — also a LIST of \`{ path, value }\`, and only for colour and
+   shadow slots. If the inventory says the site has no real dark variant, leave \`darkTokens\` empty
+   rather than inventing one.
 8. \`summary\` is one or two sentences describing the design you found, for a human reading the result.
 
 Be conservative. A theme with twelve confident assignments and an honest list of what you could not

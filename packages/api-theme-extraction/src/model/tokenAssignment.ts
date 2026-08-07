@@ -40,10 +40,28 @@ const uncertaintySchema = z.object({
  * greys". The user reviewing a generated theme needs that difference, and it is the only honest input
  * to the review banner.
  */
+/**
+ * One assigned slot: a canonical `path` and the `value` for it.
+ *
+ * A LIST of these, not a `record`/map. Structured-output tool-forcing reliably fills arrays, but for
+ * an open `record` (dynamic string keys → JSON `additionalProperties` with no named properties) the
+ * model has no keys to emit from the schema and routinely returns `{}` — even when it clearly knows
+ * the answer (it will describe it in `summary`). The prompt lists the allowed `path` values.
+ */
+const tokenEntrySchema = z.object({
+    path: z.string(),
+    value: z.union([z.string(), typographyValueSchema])
+});
+
+const darkTokenEntrySchema = z.object({
+    path: z.string(),
+    value: z.string()
+});
+
 export const modelAssignmentSchema = z.object({
-    tokens: z.record(z.string(), z.union([z.string(), typographyValueSchema])),
+    tokens: z.array(tokenEntrySchema),
     /** Dark-mode colour values, for the slots that differ. */
-    darkTokens: z.record(z.string(), z.string()).optional(),
+    darkTokens: z.array(darkTokenEntrySchema).optional(),
     uncertain: z.array(uncertaintySchema),
     /** One or two sentences for the review banner. */
     summary: z.string(),
@@ -141,7 +159,7 @@ export const validateAssignment = (assignment: ModelAssignment): ValidatedAssign
     const darkAccepted: AcceptedAssignment[] = [];
     const darkRejected: RejectedAssignment[] = [];
 
-    for (const [path, value] of Object.entries(assignment.tokens)) {
+    for (const { path, value } of assignment.tokens) {
         const entry = checkEntry(path, value);
         if (isRejected(entry)) {
             rejected.push(entry);
@@ -150,7 +168,7 @@ export const validateAssignment = (assignment: ModelAssignment): ValidatedAssign
         }
     }
 
-    for (const [path, value] of Object.entries(assignment.darkTokens ?? {})) {
+    for (const { path, value } of assignment.darkTokens ?? []) {
         const entry = checkEntry(path, value);
         if (isRejected(entry)) {
             darkRejected.push(entry);

@@ -5,25 +5,38 @@ import {
     MIN_ACCEPTED_ASSIGNMENTS,
     modelAssignmentSchema,
     validateAssignment,
-    type ModelAssignment
+    type ModelAssignment,
+    type ModelTypographyValue
 } from "./tokenAssignment.js";
 
-const assignment = (overrides: Partial<ModelAssignment> = {}): ModelAssignment => ({
-    tokens: {},
-    uncertain: [],
-    summary: "Extracted from northbeam.io.",
-    confidence: "medium",
-    ...overrides
+// Tests express tokens as a convenient record; the schema is a list of { path, value }, so convert.
+type AssignmentOverrides = {
+    tokens?: Record<string, string | ModelTypographyValue>;
+    darkTokens?: Record<string, string>;
+    uncertain?: ModelAssignment["uncertain"];
+    summary?: string;
+    confidence?: ModelAssignment["confidence"];
+};
+
+const toEntries = <V>(record: Record<string, V>): Array<{ path: string; value: V }> =>
+    Object.entries(record).map(([path, value]) => ({ path, value }));
+
+const assignment = (overrides: AssignmentOverrides = {}): ModelAssignment => ({
+    tokens: toEntries(overrides.tokens ?? {}),
+    darkTokens: overrides.darkTokens ? toEntries(overrides.darkTokens) : undefined,
+    uncertain: overrides.uncertain ?? [],
+    summary: overrides.summary ?? "Extracted from northbeam.io.",
+    confidence: overrides.confidence ?? "medium"
 });
 
 describe("modelAssignmentSchema", () => {
     it("accepts a well-formed answer", () => {
         const result = modelAssignmentSchema.safeParse({
-            tokens: {
-                "color.surface.page": "#ffffff",
-                "type.body": { fontFamily: "Inter", fontSize: "16px" }
-            },
-            darkTokens: { "color.surface.page": "#0f172a" },
+            tokens: [
+                { path: "color.surface.page", value: "#ffffff" },
+                { path: "type.body", value: { fontFamily: "Inter", fontSize: "16px" } }
+            ],
+            darkTokens: [{ path: "color.surface.page", value: "#0f172a" }],
             uncertain: [{ path: "color.action.primary.background", reason: "Two blues competed." }],
             summary: "A blue-on-white SaaS palette.",
             confidence: "high"
@@ -35,9 +48,9 @@ describe("modelAssignmentSchema", () => {
     it("requires the honesty fields", () => {
         // A model asked only for tokens always produces tokens; asked what it was unsure of, it
         // distinguishes a confident read from the least-bad of four greys.
-        expect(modelAssignmentSchema.safeParse({ tokens: {} }).success).toBe(false);
+        expect(modelAssignmentSchema.safeParse({ tokens: [] }).success).toBe(false);
         expect(
-            modelAssignmentSchema.safeParse({ tokens: {}, uncertain: [], summary: "x" }).success
+            modelAssignmentSchema.safeParse({ tokens: [], uncertain: [], summary: "x" }).success
         ).toBe(false);
     });
 
@@ -173,7 +186,7 @@ describe("validateAssignment", () => {
 
     it("accepts every canonical slot when the model fills them all", () => {
         // Guards against the validator disagreeing with the canonical list it validates against.
-        const tokens: ModelAssignment["tokens"] = {};
+        const tokens: Record<string, string | ModelTypographyValue> = {};
         for (const slot of CANONICAL_SLOTS) {
             tokens[slot.path] = slot.type === "typography" ? { fontFamily: "Inter" } : "value";
         }
@@ -198,7 +211,7 @@ describe("validateAssignment", () => {
 
 describe("isUsableAssignment", () => {
     const withAccepted = (count: number) => {
-        const tokens: ModelAssignment["tokens"] = {};
+        const tokens: Record<string, string | ModelTypographyValue> = {};
         for (const slot of CANONICAL_SLOTS.slice(0, count)) {
             tokens[slot.path] = slot.type === "typography" ? { fontFamily: "Inter" } : "value";
         }
@@ -215,7 +228,7 @@ describe("isUsableAssignment", () => {
     });
 
     it("does not count rejected entries towards the threshold", () => {
-        const tokens: ModelAssignment["tokens"] = {};
+        const tokens: Record<string, string | ModelTypographyValue> = {};
         for (let i = 0; i < 40; i++) {
             tokens[`color.invented.${i}`] = "#000000";
         }

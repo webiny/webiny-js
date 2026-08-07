@@ -36,10 +36,21 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
     const { goToRoute } = useRouter();
     const toast = useToast();
 
-    // An extraction started earlier may still be running: reopening the dialog should show it rather
-    // than offer to start a second one, which the server would refuse anyway.
+    // Whether the (opt-in) extraction backend is installed. Until it resolves, and whenever it is
+    // absent, the "from a website" route is not offered at all.
+    const websiteAvailable = extraction.available === true;
+
     useEffect(() => {
-        if (open && extraction.phase === "running") {
+        if (!open) {
+            return;
+        }
+
+        // Resolves once per session; decides whether the "from a website" option is offered.
+        void extraction.checkAvailability();
+
+        // An extraction started earlier may still be running: reopening the dialog should show it
+        // rather than offer to start a second one, which the server would refuse anyway.
+        if (extraction.phase === "running") {
             setMode("website");
             void extraction.refresh();
         }
@@ -100,7 +111,16 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
 
     const actions = (() => {
         if (hasFinished) {
-            return <Button variant="tertiary" onClick={close} text="Close" />;
+            return (
+                <>
+                    <Button variant="tertiary" onClick={close} text="Close" />
+                    <Button
+                        variant="primary"
+                        onClick={() => extraction.themeId && openTheme(extraction.themeId)}
+                        text="Open theme"
+                    />
+                </>
+            );
         }
 
         if (isExtracting) {
@@ -165,8 +185,10 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
             actions={actions}
         >
             <div className="flex flex-col gap-md">
-                {/* Hidden once a run is under way: switching route mid-extraction has no meaning. */}
-                {!isBusyState && (
+                {/* The route switch appears only when there is a real choice: extraction must be
+                    installed, and no run may be under way (switching route mid-extraction has no
+                    meaning). Without extraction, the dialog is just "name your new theme". */}
+                {!isBusyState && websiteAvailable && (
                     <SegmentedControl
                         value={mode}
                         onChange={value => setMode(value as Mode)}
@@ -196,12 +218,7 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
 
                 {hasFailed && <ExtractThemeFailure extraction={extraction} />}
 
-                {hasFinished && (
-                    <ExtractThemeDone
-                        extraction={extraction}
-                        onOpen={() => extraction.themeId && openTheme(extraction.themeId)}
-                    />
-                )}
+                {hasFinished && <ExtractThemeDone extraction={extraction} />}
 
                 {mode === "website" && !isBusyState && (
                     <ExtractThemeForm

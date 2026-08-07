@@ -269,10 +269,9 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
             </div>
             <Separator />
 
-            {/* Only renders for generated themes; reads the metadata the extraction task wrote. */}
-            <div className="px-md">
-                <ExtractionReviewBanner metadata={theme.metadata} />
-            </div>
+            {/* Only renders for generated themes; reads the metadata the extraction task wrote. It
+                carries its own margins, so a hand-made theme leaves no empty strip here. */}
+            <ExtractionReviewBanner metadata={theme.metadata} />
 
             <div className="flex-1 flex min-h-0">
                 <EditorRail

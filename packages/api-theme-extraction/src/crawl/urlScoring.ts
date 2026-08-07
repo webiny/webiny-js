@@ -85,6 +85,28 @@ export interface SelectCrawlUrlsParams {
 
 export const DEFAULT_CRAWL_LIMIT = 5;
 
+/**
+ * The hard ceiling on pages per run.
+ *
+ * The model sees one screenshot per sampled page in a single call, so page count is the main driver of
+ * a run's token cost. Capping it bounds worst-case spend and keeps a run comfortably inside the
+ * fifteen-minute task budget — the API clamps the caller's `crawlLimit` to this before triggering.
+ */
+export const MAX_CRAWL_LIMIT = 10;
+
+/**
+ * Clamp a caller-supplied crawl limit to `[1, MAX_CRAWL_LIMIT]`.
+ *
+ * `undefined`/`null`/non-finite falls through to `undefined` so the crawl applies `DEFAULT_CRAWL_LIMIT`
+ * — "omitted" and "asked for zero" are different, and only the latter should be corrected up to one.
+ */
+export const clampCrawlLimit = (value?: number | null): number | undefined => {
+    if (value === undefined || value === null || !Number.isFinite(value)) {
+        return undefined;
+    }
+    return Math.min(Math.max(1, Math.floor(value)), MAX_CRAWL_LIMIT);
+};
+
 /** Strips the query and fragment, and normalises the trailing slash. */
 export const normaliseUrl = (raw: string, base: string): string | null => {
     let url: URL;

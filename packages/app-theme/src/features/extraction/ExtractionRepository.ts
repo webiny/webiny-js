@@ -35,7 +35,11 @@ export interface IExtractionRepository {
     readonly summary: string | null;
     readonly confidence: string | null;
     readonly uncertain: ExtractionUncertainty[];
+    /** Whether the extraction backend is installed. `null` until first checked. */
+    readonly available: boolean | null;
 
+    /** Resolves whether extraction is available, once per session, and caches the answer. */
+    checkAvailability(): Promise<void>;
     start(data: ExtractThemeInputDto): Promise<void>;
     /** Called from the websocket subscription. */
     applyProgress(extractionId: string, percent: number, message: string): void;
@@ -66,9 +70,22 @@ class ExtractionRepositoryImpl implements IExtractionRepository {
     summary: string | null = null;
     confidence: string | null = null;
     uncertain: ExtractionUncertainty[] = [];
+    available: boolean | null = null;
 
     constructor(private gateway: ThemeGateway.Interface) {
         makeAutoObservable(this);
+    }
+
+    async checkAvailability() {
+        // Session-stable: the backend is either installed or not, so resolve it once.
+        if (this.available !== null) {
+            return;
+        }
+
+        const available = await this.gateway.isExtractionAvailable();
+        runInAction(() => {
+            this.available = available;
+        });
     }
 
     async start(data: ExtractThemeInputDto) {

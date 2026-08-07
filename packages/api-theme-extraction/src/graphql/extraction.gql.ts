@@ -10,7 +10,7 @@ import {
     type IThemeExtractionTaskOutput
 } from "~/features/extract/ThemeExtractionTask.js";
 import { ExtractionInvalidUrlError } from "~/features/shared/errors.js";
-import { normaliseUrl } from "~/crawl/urlScoring.js";
+import { clampCrawlLimit, normaliseUrl } from "~/crawl/urlScoring.js";
 
 /**
  * Resolvers are thin: authorize, delegate, map onto the `{ data, error }` envelope — the same shape as
@@ -48,6 +48,17 @@ const resolve = async (fn: () => Promise<unknown>) => {
 export const addExtractionSchema = (builder: IGraphQLSchemaBuilder): void => {
     builder.addTypeDefs(extractionTypeDefs);
 
+    // A capability probe. Ungated on purpose: it exposes only whether the feature exists (not any
+    // data), and the Admin needs the answer to decide whether to *offer* extraction at all. Its
+    // presence is the whole signal — when this feature is not registered, the field is absent and the
+    // query fails validation, which the Admin treats as "unavailable".
+    builder.addResolver({
+        path: "ThemeQuery.themeExtractionAvailable",
+        resolver() {
+            return () => true;
+        }
+    });
+
     builder.addResolver({
         path: "ThemeMutation.extractTheme",
         dependencies: [TaskService, ThemePermissions],
@@ -84,7 +95,9 @@ export const addExtractionSchema = (builder: IGraphQLSchemaBuilder): void => {
                             extractionId,
                             entryUrl: url,
                             themeName: name,
-                            crawlLimit: args.data.crawlLimit,
+                            // Clamped to a hard ceiling: page count drives the model call's token
+                            // cost, so an over-large request is capped rather than honoured.
+                            crawlLimit: clampCrawlLimit(args.data.crawlLimit),
                             force: args.data.force
                         }
                     });

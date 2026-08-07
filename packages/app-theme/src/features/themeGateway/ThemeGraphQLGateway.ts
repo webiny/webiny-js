@@ -186,6 +186,16 @@ const ABORT_EXTRACTION = /* GraphQL */ `
     }
 `;
 
+// No envelope: this is a bare capability flag, and its very presence on the schema is the signal —
+// when the extraction feature is not registered the field is absent and the query fails validation.
+const IS_EXTRACTION_AVAILABLE = /* GraphQL */ `
+    query IsThemeExtractionAvailable {
+        theme {
+            themeExtractionAvailable
+        }
+    }
+`;
+
 class ThemeGraphQLGateway implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
@@ -255,6 +265,20 @@ class ThemeGraphQLGateway implements GatewayAbstraction.Interface {
 
     async deactivate() {
         await this.run(DEACTIVATE_THEME, {}, response => response.theme.deactivateTheme);
+    }
+
+    async isExtractionAvailable() {
+        // Presence check, not a data read: the field only exists when the extraction feature is
+        // registered. If it isn't, the query fails validation (or returns no data) — either way we
+        // read that as "unavailable" rather than surfacing an error.
+        try {
+            const response = await this.client.execute<{
+                theme?: { themeExtractionAvailable?: boolean };
+            }>({ query: IS_EXTRACTION_AVAILABLE });
+            return response?.theme?.themeExtractionAvailable === true;
+        } catch {
+            return false;
+        }
     }
 
     async extract(data: ExtractThemeInputDto) {

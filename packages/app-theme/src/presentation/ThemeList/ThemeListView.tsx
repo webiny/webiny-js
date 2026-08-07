@@ -124,40 +124,45 @@ export const ThemeListView = observer(function ThemeListView() {
         },
         id: {
             header: "",
+            // A narrow, right-aligned actions column so the ⋮ sits flush to the row's edge (matching
+            // the Website Builder / CMS listings) rather than floating in a wide auto-sized column.
+            size: 72,
             cell: (theme: ThemeDto) => (
-                <DropdownMenu
-                    trigger={
-                        <IconButton
-                            variant="ghost"
-                            icon={<MoreVerticalIcon />}
-                            aria-label="Theme actions"
-                        />
-                    }
-                >
-                    <DropdownMenu.Item
-                        icon={<EditIcon />}
-                        text="Edit"
-                        onClick={() => goToRoute(Routes.Editor, { id: theme.id })}
-                    />
-                    <HasPermission entity="theme" action="publish">
+                <div className="flex justify-end">
+                    <DropdownMenu
+                        trigger={
+                            <IconButton
+                                variant="ghost"
+                                icon={<MoreVerticalIcon />}
+                                aria-label="Theme actions"
+                            />
+                        }
+                    >
                         <DropdownMenu.Item
-                            icon={<BoltIcon />}
-                            text="Activate"
-                            disabled={theme.entryId === activeEntryId || !theme.resolved}
-                            onClick={() => activate(theme)}
+                            icon={<EditIcon />}
+                            text="Edit"
+                            onClick={() => goToRoute(Routes.Editor, { id: theme.id })}
                         />
-                    </HasPermission>
-                    <DropdownMenu.Separator />
-                    <HasPermission entity="theme" action="delete">
-                        <DropdownMenu.Item
-                            icon={<DeleteIcon />}
-                            text="Delete"
-                            variant="destructive"
-                            disabled={theme.entryId === activeEntryId}
-                            onClick={() => remove(theme)}
-                        />
-                    </HasPermission>
-                </DropdownMenu>
+                        <HasPermission entity="theme" action="publish">
+                            <DropdownMenu.Item
+                                icon={<BoltIcon />}
+                                text="Activate"
+                                disabled={theme.entryId === activeEntryId || !theme.resolved}
+                                onClick={() => activate(theme)}
+                            />
+                        </HasPermission>
+                        <DropdownMenu.Separator />
+                        <HasPermission entity="theme" action="delete">
+                            <DropdownMenu.Item
+                                icon={<DeleteIcon />}
+                                text="Delete"
+                                variant="destructive"
+                                disabled={theme.entryId === activeEntryId}
+                                onClick={() => remove(theme)}
+                            />
+                        </HasPermission>
+                    </DropdownMenu>
+                </div>
             )
         }
     };

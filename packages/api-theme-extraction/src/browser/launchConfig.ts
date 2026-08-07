@@ -21,10 +21,12 @@ export const WEBINY_USER_AGENT_TOKEN = "WebinyThemeExtractor";
 export const WEBINY_USER_AGENT = `Mozilla/5.0 (compatible; ${WEBINY_USER_AGENT_TOKEN}/1.0; +https://www.webiny.com)`;
 
 /**
- * Candidate executable locations inside the layer, in order.
+ * Candidate ready-to-run executable locations inside the layer, in order.
  *
- * These cover the layouts the sparticuz-family layers have shipped. UNVERIFIED against Webiny's own
- * zip — the first deploy settles it, and until then the diagnostic below is what makes that cheap.
+ * Webiny's own "chromium" layer ships a @sparticuz pack rather than an inflated binary (see
+ * LAYER_PACK_CANDIDATES below), so in practice none of these match and discovery falls through to the
+ * pack path. They stay as a cheap fallback for a layer that does lay a ready binary at one of these
+ * spots, which the sparticuz-family layouts have historically done.
  */
 export const LAYER_EXECUTABLE_CANDIDATES = [
     "/opt/chromium",
@@ -34,12 +36,15 @@ export const LAYER_EXECUTABLE_CANDIDATES = [
     "/opt/chrome-linux/chrome"
 ] as const;
 
-/** Candidate locations for a compressed pack, which `chromium-min` unpacks into /tmp. */
-export const LAYER_PACK_CANDIDATES = [
-    "/opt/chromium.br",
-    "/opt/chromium-pack.tar",
-    "/opt"
-] as const;
+/**
+ * Where the compressed Chromium pack lives, for `chromium-min` to inflate into /tmp.
+ *
+ * The Webiny "chromium" layer is a @sparticuz/chromium layer: it installs that package under
+ * `/opt/nodejs/node_modules`, and its `bin/` holds the brotli packs (chromium.br plus the
+ * al2/al2023/fonts/swiftshader archives). `chromium-min.executablePath(dir)` expects that `bin`
+ * directory and inflates the `.br` files from it. Confirmed against the deployed layer's contents.
+ */
+export const LAYER_PACK_CANDIDATES = ["/opt/nodejs/node_modules/@sparticuz/chromium/bin"] as const;
 
 export const ENV_EXECUTABLE_PATH = "WEBINY_CHROMIUM_EXECUTABLE_PATH";
 export const ENV_PACK_PATH = "WEBINY_CHROMIUM_PACK_PATH";

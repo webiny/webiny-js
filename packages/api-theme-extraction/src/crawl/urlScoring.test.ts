@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_CRAWL_LIMIT, normaliseUrl, selectCrawlUrls } from "./urlScoring.js";
+import {
+    clampCrawlLimit,
+    DEFAULT_CRAWL_LIMIT,
+    MAX_CRAWL_LIMIT,
+    normaliseUrl,
+    selectCrawlUrls
+} from "./urlScoring.js";
 
 const nav = (...paths: string[]) => paths.map(href => ({ href, source: "nav" as const }));
 
@@ -141,5 +147,33 @@ describe("selectCrawlUrls", () => {
 
     it("returns nothing for an unusable entry URL", () => {
         expect(selectCrawlUrls({ entryUrl: "not a url", links: [] })).toEqual([]);
+    });
+});
+
+describe("clampCrawlLimit", () => {
+    it("passes a value inside the range through unchanged", () => {
+        expect(clampCrawlLimit(3)).toBe(3);
+        expect(clampCrawlLimit(MAX_CRAWL_LIMIT)).toBe(MAX_CRAWL_LIMIT);
+    });
+
+    it("caps an over-large request at the ceiling", () => {
+        expect(clampCrawlLimit(500)).toBe(MAX_CRAWL_LIMIT);
+        expect(clampCrawlLimit(MAX_CRAWL_LIMIT + 1)).toBe(MAX_CRAWL_LIMIT);
+    });
+
+    it("raises a below-one request to one", () => {
+        expect(clampCrawlLimit(0)).toBe(1);
+        expect(clampCrawlLimit(-5)).toBe(1);
+    });
+
+    it("floors a fractional request", () => {
+        expect(clampCrawlLimit(4.9)).toBe(4);
+    });
+
+    it("leaves an omitted or non-finite value undefined, so the default applies", () => {
+        expect(clampCrawlLimit(undefined)).toBeUndefined();
+        expect(clampCrawlLimit(null)).toBeUndefined();
+        expect(clampCrawlLimit(Number.NaN)).toBeUndefined();
+        expect(clampCrawlLimit(Number.POSITIVE_INFINITY)).toBeUndefined();
     });
 });

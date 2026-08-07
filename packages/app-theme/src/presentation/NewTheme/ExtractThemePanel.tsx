@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Alert, Button, Input, ProgressBar, Text } from "@webiny/admin-ui";
+import { Alert, Input, ProgressBar, Text } from "@webiny/admin-ui";
 import type { ExtractionRepository } from "~/features/extraction/index.js";
 
 /**
@@ -90,10 +90,9 @@ export const ExtractThemeFailure = observer(({ extraction }: ProgressProps) => (
 
 interface DoneProps {
     extraction: ExtractionRepository.Interface;
-    onOpen: () => void;
 }
 
-export const ExtractThemeDone = observer(({ extraction, onOpen }: DoneProps) => (
+export const ExtractThemeDone = observer(({ extraction }: DoneProps) => (
     <div className="flex flex-col gap-md">
         <Alert variant="subtle" type="success" title="Your theme is ready">
             {extraction.summary ?? "A draft theme has been created from the site."}
@@ -102,28 +101,35 @@ export const ExtractThemeDone = observer(({ extraction, onOpen }: DoneProps) => 
         {/*
           The model's own uncertainty, surfaced before the user opens the editor. This is the difference
           between "here is your theme" and "here is your theme, and these are the parts I guessed at" —
-          and it is the whole reason `uncertain` is a required field in the model's answer.
+          and it is the whole reason `uncertain` is a required field in the model's answer. Each item
+          is a titled block (path over reason) so the list reads rather than runs together.
         */}
         {extraction.uncertain.length > 0 && (
-            <div className="flex flex-col gap-xs">
-                <Text size="md" className="block font-semibold">
-                    Worth checking ({extraction.uncertain.length})
+            <div className="flex flex-col gap-sm">
+                <Text
+                    size="sm"
+                    className="block uppercase tracking-wide font-semibold text-neutral-strong"
+                >
+                    {`Worth checking · ${extraction.uncertain.length}`}
                 </Text>
-                {extraction.uncertain.slice(0, 4).map(entry => (
-                    <Text key={entry.path} size="sm" className="block text-neutral-strong">
-                        <span className="font-mono">{entry.path}</span> — {entry.reason}
-                    </Text>
-                ))}
+                <div className="flex flex-col divide-y divide-neutral-dimmed rounded-md border border-neutral-dimmed">
+                    {extraction.uncertain.slice(0, 4).map(entry => (
+                        <div key={entry.path} className="flex flex-col gap-xxs px-sm py-sm">
+                            <Text size="sm" className="block font-mono text-neutral-strong">
+                                {entry.path}
+                            </Text>
+                            <Text size="sm" className="block text-neutral-dimmed leading-snug">
+                                {entry.reason}
+                            </Text>
+                        </div>
+                    ))}
+                </div>
                 {extraction.uncertain.length > 4 && (
                     <Text size="sm" className="block text-neutral-dimmed">
-                        …and {extraction.uncertain.length - 4} more, listed in the editor.
+                        {`…and ${extraction.uncertain.length - 4} more, listed in the editor.`}
                     </Text>
                 )}
             </div>
         )}
-
-        <div>
-            <Button variant="primary" onClick={onOpen} text="Open the theme" />
-        </div>
     </div>
 ));

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Alert, Button, Text } from "@webiny/admin-ui";
+import { Button, cn, Text } from "@webiny/admin-ui";
+import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 
 /**
  * The review banner on a generated theme — see the design brief, screen 5.
@@ -53,7 +54,9 @@ interface ExtractionReviewBannerProps {
 
 export const ExtractionReviewBanner = ({ metadata }: ExtractionReviewBannerProps) => {
     const [dismissed, setDismissed] = useState(false);
-    const [showAll, setShowAll] = useState(false);
+    // Collapsed by default: this sits above the whole editor, so it stays a slim one-liner until the
+    // user asks for the detail — the summary and the (potentially long) review list live behind it.
+    const [expanded, setExpanded] = useState(false);
 
     const view = (metadata ?? {}) as ExtractionMetadataView;
 
@@ -68,68 +71,121 @@ export const ExtractionReviewBanner = ({ metadata }: ExtractionReviewBannerProps
     const uncertain = asUncertainties(view.uncertain);
     const discarded = asUncertainties(view.discarded);
 
-    const visible = showAll ? uncertain : uncertain.slice(0, 3);
+    // Low confidence takes a warning accent; otherwise the theme's own accent — the banner reads as
+    // "generated, review me", not as an error.
+    const attention = confidence === "low";
+    const hasDetails = Boolean(summary) || uncertain.length > 0;
 
-    // Low confidence deserves a stronger visual than a routine notice; high confidence should not shout.
-    const type = confidence === "low" ? "warning" : "info";
+    const reviewLine =
+        uncertain.length > 0
+            ? `Review the values before publishing — ${uncertain.length} worth checking${
+                  confidence ? `, ${confidence} confidence` : ""
+              }.`
+            : `Review the values before publishing${
+                  confidence ? `, ${confidence} confidence` : ""
+              }.`;
 
     return (
-        <Alert
-            variant="subtle"
-            type={type}
-            title={entryUrl ? `Generated from ${entryUrl}` : "Generated from a website"}
+        <div
+            className={cn(
+                "mx-md mt-sm flex items-start gap-sm rounded-md border border-neutral-dimmed border-l-4 bg-neutral-light px-md py-sm",
+                attention ? "border-l-warning-xstrong" : "border-l-primary"
+            )}
         >
-            <div className="flex flex-col gap-sm">
-                {summary && (
-                    <Text size="md" className="block text-neutral-strong">
-                        {summary}
-                    </Text>
+            <InfoIcon
+                aria-hidden={true}
+                className={cn(
+                    "size-5 flex-none mt-[2px]",
+                    attention ? "fill-warning-xstrong" : "fill-primary"
                 )}
+            />
 
-                <Text size="sm" className="block text-neutral-dimmed">
-                    {confidence
-                        ? `The model reported ${confidence} confidence. Review before publishing.`
-                        : "Review before publishing."}
-                </Text>
-
-                {uncertain.length > 0 && (
-                    <div className="flex flex-col gap-xs">
-                        <Text size="sm" className="block font-semibold">
-                            Worth checking ({uncertain.length})
+            <div className="flex flex-1 min-w-0 flex-col gap-sm">
+                <div className="flex items-start gap-sm">
+                    <div className="flex flex-1 min-w-0 flex-col gap-xxs">
+                        <Text size="sm" className="block font-semibold text-neutral-primary">
+                            {entryUrl ? `AI-generated from ${entryUrl}` : "AI-generated theme"}
                         </Text>
-                        {visible.map(entry => (
-                            <Text key={entry.path} size="sm" className="block text-neutral-strong">
-                                <span className="font-mono">{entry.path}</span> — {entry.reason}
-                            </Text>
-                        ))}
-                        {uncertain.length > visible.length && (
-                            <div>
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => setShowAll(true)}
-                                    text={`Show ${uncertain.length - visible.length} more`}
-                                />
-                            </div>
-                        )}
+                        <Text size="sm" className="block text-neutral-strong leading-snug">
+                            {reviewLine}
+                        </Text>
                     </div>
-                )}
-
-                {/*
-                  What we threw away, kept visible rather than buried in the task log. If a slot looks
-                  wrong, the most likely explanation is that the model named something we rejected — and
-                  a user who can see that will ask a much better question than "the theme is wrong".
-                */}
-                {discarded.length > 0 && (
-                    <Text size="sm" className="block text-neutral-dimmed">
-                        {discarded.length} value{discarded.length === 1 ? "" : "s"} the model
-                        suggested could not be used and fell back to defaults.
-                    </Text>
-                )}
-
-                <div>
-                    <Button variant="ghost" onClick={() => setDismissed(true)} text="Dismiss" />
+                    <div className="flex flex-none items-center gap-xs">
+                        {hasDetails ? (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setExpanded(value => !value)}
+                                text={expanded ? "Hide" : "Details"}
+                            />
+                        ) : null}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setDismissed(true)}
+                            text="Dismiss"
+                        />
+                    </div>
                 </div>
+
+                {expanded ? (
+                    <div className="flex flex-col gap-sm">
+                        {summary ? (
+                            <Text size="sm" className="block text-neutral-strong leading-snug">
+                                {summary}
+                            </Text>
+                        ) : null}
+
+                        {uncertain.length > 0 ? (
+                            <div className="flex flex-col gap-xs">
+                                <Text
+                                    size="sm"
+                                    className="block uppercase tracking-wide font-semibold text-neutral-strong"
+                                >
+                                    {`Worth checking · ${uncertain.length}`}
+                                </Text>
+                                {/* Capped + scrollable, and each item is a titled block (path over
+                                    reason) so a long list neither pushes the editor down nor runs
+                                    together into a wall. */}
+                                <div className="flex max-h-[220px] flex-col divide-y divide-neutral-dimmed overflow-y-auto rounded-md border border-neutral-dimmed bg-neutral-base">
+                                    {uncertain.map(entry => (
+                                        <div
+                                            key={entry.path}
+                                            className="flex flex-col gap-xxs px-sm py-xs"
+                                        >
+                                            <Text
+                                                size="sm"
+                                                className="block font-mono text-neutral-strong"
+                                            >
+                                                {entry.path}
+                                            </Text>
+                                            <Text
+                                                size="sm"
+                                                className="block text-neutral-dimmed leading-snug"
+                                            >
+                                                {entry.reason}
+                                            </Text>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : null}
+
+                        {/*
+                          What we threw away, kept visible rather than buried in the task log. If a slot
+                          looks wrong, the likeliest reason is the model named something we rejected — and
+                          a user who can see that asks a far better question than "the theme is wrong".
+                        */}
+                        {discarded.length > 0 ? (
+                            <Text size="sm" className="block text-neutral-dimmed">
+                                {`${discarded.length} value${
+                                    discarded.length === 1 ? "" : "s"
+                                } the model suggested could not be used and fell back to defaults.`}
+                            </Text>
+                        ) : null}
+                    </div>
+                ) : null}
             </div>
-        </Alert>
+        </div>
     );
 };

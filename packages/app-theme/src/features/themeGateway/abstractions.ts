@@ -122,6 +122,11 @@ export interface IThemeGateway {
     publish(id: string, comment?: string): Promise<PublishThemeResultDto>;
     activate(id: string): Promise<ActivateThemeResultDto>;
     deactivate(): Promise<void>;
+    /**
+     * Whether the (opt-in) extraction backend is registered on this deployment. Lets the Admin hide
+     * the "generate from a website" option when the feature is not installed.
+     */
+    isExtractionAvailable(): Promise<boolean>;
     extract(data: ExtractThemeInputDto): Promise<ExtractionStartedDto>;
     /** Recovers state after a page reload, when the websocket stream was missed. */
     getExtraction(taskId: string): Promise<ExtractionStatusDto>;

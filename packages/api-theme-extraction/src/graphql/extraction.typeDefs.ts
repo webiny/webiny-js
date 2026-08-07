@@ -11,7 +11,7 @@ export const extractionTypeDefs = /* GraphQL */ `
         url: String!
         "Name for the draft theme this produces."
         name: String!
-        "Total pages to read, including the entry page. Defaults to 5."
+        "Total pages to read, including the entry page. Defaults to 5, and is capped at 10."
         crawlLimit: Int
         "Read the site again instead of reusing a recent crawl."
         force: Boolean
@@ -60,6 +60,15 @@ export const extractionTypeDefs = /* GraphQL */ `
     }
 
     extend type ThemeQuery {
+        """
+        Whether theme extraction is available on this deployment.
+
+        Its mere presence is the signal: extraction is an opt-in backend, so when the feature is not
+        registered this field does not exist on the schema at all — and the Admin reads that absence as
+        "unavailable" and hides the "generate from a website" option. When registered it returns true.
+        """
+        themeExtractionAvailable: Boolean!
+
         """
         Status of an extraction run.
 

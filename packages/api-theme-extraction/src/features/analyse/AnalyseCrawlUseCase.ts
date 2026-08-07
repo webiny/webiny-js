@@ -17,7 +17,12 @@ import {
     validateAssignment,
     MIN_ACCEPTED_ASSIGNMENTS
 } from "~/model/tokenAssignment.js";
-import { applyAssignment, type ExtractionMetadata } from "~/model/applyAssignment.js";
+import { createDefaultSettings } from "@webiny/theme-common";
+import {
+    applyAssignment,
+    applyDerivedFonts,
+    type ExtractionMetadata
+} from "~/model/applyAssignment.js";
 import { withTimeout } from "~/browser/withTimeout.js";
 
 /**
@@ -69,8 +74,12 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
             message: `Asking ${model} to build a theme`,
             data: {
                 model,
-                // Named, not resolved: the connection holds a credential and must never be logged.
-                connection: connection ?? "(default)",
+                // Only a safe descriptor: an inline connection carries the API key, which must never
+                // reach a log. A named connection is just an id; an inline one, only its provider.
+                connection:
+                    typeof connection === "string"
+                        ? connection
+                        : (connection?.sdkName ?? "(default)"),
                 screenshotsSent: images.length,
                 screenshotsUnavailable: crawl.screenshots.length - images.length,
                 colorsOffered: crawl.payload.colors.length,
@@ -113,11 +122,12 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
 
         if (!isUsableAssignment(validated)) {
             // A theme that is almost entirely defaults looks like a result while being none, so this is
-            // reported rather than saved.
+            // reported rather than saved. The specifics — what was accepted, rejected and why — are on
+            // the task's log record; this message stays a plain summary for the person who started it.
             return Result.fail(
                 new ExtractionModelFailedError(
-                    `only ${validated.accepted.length} of the values it returned could be used, ` +
-                        `and at least ${MIN_ACCEPTED_ASSIGNMENTS} are needed for a meaningful theme`
+                    `only ${validated.accepted.length} of the values the model returned could be ` +
+                        `used, and at least ${MIN_ACCEPTED_ASSIGNMENTS} are needed for a meaningful theme`
                 )
             );
         }
@@ -146,12 +156,17 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
             appliedCount: applied.applied.length
         };
 
+        // The site's fonts (when the model named real ones) become the theme's font set, so the roles
+        // that reference them load and render the site's typography rather than the Webiny defaults.
+        const themeSettings = applyDerivedFonts(createDefaultSettings(), applied.fonts);
+
         const created = await this.createTheme.execute({
             properties: {
                 name: themeName,
                 description: `Generated from ${crawl.payload.source.entryUrl}. ${assignment.value.summary}`
             },
             tokens: applied.document,
+            settings: themeSettings,
             metadata: metadata as unknown as Record<string, unknown>
         });
 
@@ -218,7 +233,7 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
         images
     }: {
         model: string;
-        connection?: string;
+        connection?: ExtractionSettings.Model["connection"];
         crawl: UseCaseAbstraction.Params["crawl"];
         images: Array<{ label: string; base64: string }>;
     }) {

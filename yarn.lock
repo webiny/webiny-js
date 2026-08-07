@@ -11716,7 +11716,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-theme-extraction@workspace:packages/api-theme-extraction":
+"@webiny/api-theme-extraction@npm:0.0.0, @webiny/api-theme-extraction@workspace:packages/api-theme-extraction":
   version: 0.0.0-use.local
   resolution: "@webiny/api-theme-extraction@workspace:packages/api-theme-extraction"
   dependencies:
@@ -28422,6 +28422,7 @@ __metadata:
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-theme": "npm:0.0.0"
+    "@webiny/api-theme-extraction": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-website-builder-scheduler": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"

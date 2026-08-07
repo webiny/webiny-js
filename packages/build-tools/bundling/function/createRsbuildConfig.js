@@ -64,6 +64,15 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                         maxAssetSize: maxBundleSize
                     }
                 }),
+                // Output is ESM (`output.module`), where `__dirname`/`__filename` don't exist. Some
+                // bundled deps reference them at module load — e.g. puppeteer-core (theme extraction)
+                // pulls in @puppeteer/browsers → yargs, which reads `__dirname` and throws
+                // "__dirname is not defined in ES module scope", crashing the whole handler on init.
+                // "node-module" makes rspack derive both from `import.meta.url` instead.
+                node: {
+                    __dirname: "node-module",
+                    __filename: "node-module"
+                },
                 // Both hosting types bundle; externalize only what genuinely can't be bundled.
                 // sharp is a native .node binary; knex statically require()s a driver for every SQL
                 // dialect (bundling pulls in uninstalled ones) and lazily loads only the configured
@@ -79,15 +88,16 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     new rspack.IgnorePlugin({
                         resourceRegExp: /^canvas$/,
                         contextRegExp: /jsdom/
-                    })
-                ],
-                resolve: {
-                    fallback: {
-                        // Disable optional native dependency used by 'ws' package for performance optimizations.
-                        // Not needed in Lambda environment and can cause bundling/deployment issues.
-                        bufferutil: false
-                    }
-                }
+                    }),
+                    // `ws`'s optional native accelerators (bufferutil = frame masking, utf-8-validate =
+                    // text-frame validation). They must be IGNORED — so `require` throws and `ws` uses
+                    // its pure-JS fallbacks — NOT resolved to an empty module. A stubbed `bufferutil`
+                    // makes `ws` believe the native masker is present and call `bufferUtil.mask(...)`
+                    // on `{}` ("i.mask is not a function") the moment a WebSocket *client* masks a
+                    // frame — which is exactly what puppeteer-core does talking to Chrome.
+                    new rspack.IgnorePlugin({ resourceRegExp: /^bufferutil$/ }),
+                    new rspack.IgnorePlugin({ resourceRegExp: /^utf-8-validate$/ })
+                ]
             }
         },
         mode,
