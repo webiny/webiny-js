@@ -115,8 +115,8 @@ export const List = ({
                     });
                 });
             } else {
-                // Otherwise, perform the drop immediately
-                await runDrop();
+                // Fire API call without awaiting — optimistic UI
+                runDrop();
             }
         },
         [folders, dropConfirmation, showConfirmMoveFolderDialog]
