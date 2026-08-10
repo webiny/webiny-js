@@ -2,8 +2,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import * as sdkNextjs from "./index.js";
-import { sdk, type HydratedComponent } from "@webiny/sdk-frontend";
+import { sdk, type HydratedComponent, type ThemePreview } from "@webiny/sdk-frontend";
 import { contentSdk, type Component, type Document } from "@webiny/website-builder-sdk";
+import { ensureThemeTokenLink } from "./themeTokenLink.js";
 
 const DocumentRenderer = dynamic(
     () => import("@webiny/website-builder-nextjs").then(m => ({ default: m.DocumentRenderer })),
@@ -34,6 +35,35 @@ function getParentOrigin(): string {
     } catch {
         return "";
     }
+}
+
+/**
+ * The theme to preview against, read from the sandbox URL. The admin preview passes `wb.theme` +
+ * `wb.themeVersion` to preview a specific (possibly draft) theme; absent, the active theme is used.
+ */
+function getThemeSelection(): ThemePreview | undefined {
+    try {
+        const params = new URLSearchParams(window.location.search);
+        const themeId = params.get("wb.theme");
+        const version = Number(params.get("wb.themeVersion"));
+        return themeId && Number.isInteger(version) && version > 0
+            ? { themeId, version }
+            : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+/** Keeps the previewed theme's `--wby-*` token layer in the document as the selection changes. */
+function useThemeTokenLayer(selection?: ThemePreview): void {
+    const href = selection ? sdk.theme.artifactUrl("css", selection) : sdk.theme.artifactUrl("css");
+
+    useEffect(() => {
+        if (typeof document === "undefined") {
+            return;
+        }
+        return ensureThemeTokenLink(document, href);
+    }, [href]);
 }
 
 interface BundlePayload {
@@ -86,6 +116,10 @@ export const ComponentSandbox = ({ components = [] }: ComponentSandboxProps) => 
     const [active, setActive] = useState<ActiveComponent | null>(null);
     const activeRef = useRef<ActiveComponent | null>(null);
     const [liveCss, setLiveCss] = useState("");
+
+    // The previewed component's CSS references the theme's `--wby-*` tokens; make sure they are defined
+    // in this document even if the host layout didn't emit them, and honour a specific previewed theme.
+    useThemeTokenLayer(useMemo(() => getThemeSelection(), []));
 
     const processBundle = useCallback((payload: BundlePayload) => {
         const entry = {

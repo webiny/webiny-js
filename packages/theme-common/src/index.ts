@@ -33,6 +33,7 @@ export * from "./theme/settings.js";
 export * from "./validate/publish.js";
 export * from "./snapshot.js";
 export * from "./artifacts/index.js";
+export * from "./catalog.js";
 
 export * from "./defaults/palette.js";
 export * from "./defaults/defaultTheme.js";

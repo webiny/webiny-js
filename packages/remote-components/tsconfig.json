@@ -16,6 +16,7 @@
     { "path": "../feature" },
     { "path": "../project" },
     { "path": "../project-aws" },
+    { "path": "../theme-common" },
     { "path": "../website-builder-sdk" },
     { "path": "../sdk-nextjs" },
     { "path": "../website-builder-nextjs" }
@@ -55,6 +56,8 @@
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/theme-common/*": ["../theme-common/src/*"],
+      "@webiny/theme-common": ["../theme-common/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
       "@webiny/sdk-nextjs/*": ["../sdk-nextjs/src/*"],

@@ -1,3 +1,5 @@
+import { buildTokenCatalogSection } from "./tokenCatalogSection.js";
+
 export function buildComponentPrompt(): string {
     return `You are a React component generator for the Webiny Website Builder.
 
@@ -313,9 +315,15 @@ The input value is rendered as children. Use for: layout containers, card bodies
 3. Use relative units (rem, em, %) over fixed pixels where appropriate
 4. Include hover/focus states for interactive elements
 5. Design with good defaults — the component should look great immediately without customization
-6. Use CSS custom properties for easy theming: \`var(--wb-color-text-primary)\`, \`var(--wb-color-surface-primary)\`, etc.
+6. Theme first: style with the active theme's design tokens via \`var(--wby-…, <fallback>)\`. ALWAYS include the fallback (the default value) so the component still renders when no theme is active. Use a token for every colour, and for corner radius, shadow and spacing wherever one fits; only hardcode a value when no token matches (e.g. a decorative gradient). The complete catalogue is in the "Theme Tokens" section below — use ONLY those variable names, and never reference \`--wby-color-brand-*\` (those are theme-specific).
 7. Do NOT use Tailwind or utility classes in CSS — write standard CSS rules
 8. The CSS will be automatically scoped to the component — no need for manual namespacing
+
+## Theme Tokens
+
+The active theme defines these CSS custom properties on \`:root\`. Reference them with \`var(--wby-…, <fallback>)\` so a component follows the site's theme and updates when the theme changes, while the fallback keeps it rendering on its own. Do not invent other \`--wby-\` names.
+
+${buildTokenCatalogSection()}
 
 ## Examples
 
@@ -360,7 +368,8 @@ export const manifest = {
 
 \`\`\`css
 .hero {
-    padding: 80px 24px;
+    padding: var(--wby-space-3xl, 80px) var(--wby-space-lg, 24px);
+    /* Decorative gradient — no theme token represents this, so it stays a literal. */
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
 }
@@ -372,36 +381,37 @@ export const manifest = {
 .hero--left { text-align: left; }
 .hero--right { text-align: right; }
 .hero-title {
-    font-size: 3rem;
+    font-size: 3rem; /* display size, larger than any type role — a literal is fine here */
     font-weight: 800;
     line-height: 1.1;
-    margin: 0 0 16px;
+    margin: 0 0 var(--wby-space-md, 16px);
 }
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: var(--wby-type-lead-size, 1.25rem);
+    line-height: var(--wby-type-lead-line-height, 1.6);
     opacity: 0.9;
-    margin: 0 0 32px;
-    line-height: 1.6;
+    margin: 0 0 var(--wby-space-xl, 32px);
 }
 .hero-cta {
     display: inline-block;
-    padding: 14px 32px;
-    background: #fff;
-    color: #764ba2;
+    padding: var(--wby-space-sm, 14px) var(--wby-space-xl, 32px);
+    background: var(--wby-color-action-primary-background, #2563eb);
+    color: var(--wby-color-action-primary-foreground, #fff);
     text-decoration: none;
-    border-radius: 8px;
+    border-radius: var(--wby-radius-control, 8px);
     font-weight: 600;
     font-size: 1rem;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .hero-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: var(--wby-color-action-primary-hover, #1d4ed8);
+    box-shadow: var(--wby-shadow-raised, 0 4px 12px rgba(0,0,0,0.15));
 }
 @media (max-width: 768px) {
-    .hero { padding: 48px 16px; }
+    .hero { padding: var(--wby-space-2xl, 48px) var(--wby-space-md, 16px); }
     .hero-title { font-size: 2rem; }
-    .hero-subtitle { font-size: 1rem; }
+    .hero-subtitle { font-size: var(--wby-type-body-size, 1rem); }
 }
 \`\`\`
 
@@ -445,39 +455,39 @@ export const manifest = {
 
 \`\`\`css
 .feature-card {
-    padding: 32px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    border: 1px solid #e5e7eb;
+    padding: var(--wby-space-xl, 32px);
+    background: var(--wby-color-surface-raised, #fff);
+    border-radius: var(--wby-radius-container, 12px);
+    box-shadow: var(--wby-shadow-raised, 0 1px 3px rgba(0,0,0,0.08));
+    border: var(--wby-border-control, 1px) solid var(--wby-color-border-default, #e5e7eb);
     transition: box-shadow 0.2s, transform 0.2s;
 }
 .feature-card:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    box-shadow: var(--wby-shadow-overlay, 0 8px 24px rgba(0,0,0,0.08));
     transform: translateY(-2px);
 }
 .feature-card-icon {
     font-size: 2.5rem;
-    margin-bottom: 16px;
+    margin-bottom: var(--wby-space-md, 16px);
 }
 .feature-card-title {
-    font-size: 1.25rem;
+    font-size: var(--wby-type-lead-size, 1.25rem);
     font-weight: 700;
-    margin: 0 0 8px;
-    color: #111827;
+    margin: 0 0 var(--wby-space-xs, 8px);
+    color: var(--wby-color-text-primary, #111827);
 }
 .feature-card-description {
-    font-size: 0.95rem;
-    color: #6b7280;
-    line-height: 1.6;
-    margin: 0 0 16px;
+    font-size: var(--wby-type-body-size, 0.95rem);
+    color: var(--wby-color-text-muted, #6b7280);
+    line-height: var(--wby-type-body-line-height, 1.6);
+    margin: 0 0 var(--wby-space-md, 16px);
 }
 .feature-card-link {
     display: inline-block;
-    color: #667eea;
+    color: var(--wby-color-text-link, #667eea);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: var(--wby-type-body-small-size, 0.9rem);
 }
 .feature-card-link:hover {
     text-decoration: underline;
@@ -530,17 +540,17 @@ export const manifest = {
 .testimonial {
     max-width: 600px;
     margin: 0 auto;
-    padding: 40px;
-    background: #f9fafb;
-    border-radius: 16px;
+    padding: var(--wby-space-2xl, 40px);
+    background: var(--wby-color-surface-sunken, #f9fafb);
+    border-radius: var(--wby-radius-container, 16px);
     text-align: center;
 }
 .testimonial-quote {
-    font-size: 1.2rem;
+    font-size: var(--wby-type-lead-size, 1.2rem);
     font-style: italic;
-    color: #374151;
-    line-height: 1.7;
-    margin: 0 0 24px;
+    color: var(--wby-color-text-secondary, #374151);
+    line-height: var(--wby-type-lead-line-height, 1.7);
+    margin: 0 0 var(--wby-space-lg, 24px);
     border: none;
     padding: 0;
 }
@@ -548,21 +558,21 @@ export const manifest = {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--wby-space-gap, 12px);
 }
 .testimonial-avatar {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: 50%; /* circular avatar — not a theme radius */
     object-fit: cover;
 }
 .testimonial-name {
     font-weight: 700;
-    color: #111827;
+    color: var(--wby-color-text-primary, #111827);
 }
 .testimonial-role {
-    font-size: 0.85rem;
-    color: #6b7280;
+    font-size: var(--wby-type-body-small-size, 0.85rem);
+    color: var(--wby-color-text-muted, #6b7280);
 }
 \`\`\`
 
