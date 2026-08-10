@@ -4,9 +4,12 @@ import { OnThemeCreatedHandler } from "./handlers/OnThemeCreatedHandler.js";
 import { OnThemeUpdatedHandler } from "./handlers/OnThemeUpdatedHandler.js";
 import { OnThemeDeletedHandler } from "./handlers/OnThemeDeletedHandler.js";
 import { OnThemePublishedHandler } from "./handlers/OnThemePublishedHandler.js";
-import { OnThemeActivatedHandler } from "./handlers/OnThemeActivatedHandler.js";
-import { OnThemeDeactivatedHandler } from "./handlers/OnThemeDeactivatedHandler.js";
 
+/**
+ * General theme lifecycle webhooks. The activation/deactivation webhooks were removed with the
+ * delivery rework (C8): stable URLs make an activation webhook unnecessary, so activation now just
+ * writes the active version and emits its domain event — nothing dispatches a webhook for it.
+ */
 export const ThemeWebhooksFeature = createFeature({
     name: "Theme/Webhooks",
     register(container) {
@@ -15,7 +18,5 @@ export const ThemeWebhooksFeature = createFeature({
         container.register(OnThemeUpdatedHandler);
         container.register(OnThemeDeletedHandler);
         container.register(OnThemePublishedHandler);
-        container.register(OnThemeActivatedHandler);
-        container.register(OnThemeDeactivatedHandler);
     }
 });

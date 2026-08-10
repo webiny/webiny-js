@@ -1,6 +1,9 @@
-import { RADIUS_STEPS, SHADOW_STEPS } from "~/canonical/ramps.js";
+import { BORDER_WIDTH_STEPS, RADIUS_STEPS, SHADOW_STEPS } from "~/canonical/ramps.js";
 import { CANONICAL_TYPOGRAPHY_ROLES } from "~/canonical/typographyRoles.js";
+import { CANONICAL_DESCRIPTIONS, CANONICAL_SEMANTIC_SLOTS } from "~/canonical/index.js";
 import { toAlias } from "~/dtcg/guards.js";
+import { setNodeAtPath } from "~/dtcg/edit.js";
+import { getTokenAtPath } from "~/dtcg/traverse.js";
 import {
     META_EXTENSION,
     MODES_EXTENSION,
@@ -11,6 +14,7 @@ import {
     type TokenValue
 } from "~/dtcg/types.js";
 import { DEFAULT_RAMP_CONFIG, generateRamp } from "~/fluid/ramp.js";
+import { shiftForState, withAlpha } from "./derive.js";
 import { DEFAULT_FONTS, DEFAULT_PALETTE } from "./palette.js";
 
 /**
@@ -55,7 +59,10 @@ const colorGroup = (): TokenGroup => ({
         page: slot("neutral-50", "neutral-900"),
         raised: slot("white", "neutral-800"),
         sunken: slot("neutral-100", "neutral-950"),
-        overlay: slot("white", "neutral-800")
+        overlay: slot("white", "neutral-800"),
+        // Scrim is inherently a translucent wash, so it holds an rgba literal rather than aliasing an
+        // opaque primitive — derived from the darkest surface (C4).
+        scrim: token(withAlpha(DEFAULT_PALETTE["neutral-950"], 0.5), withAlpha("#000000", 0.6))
     },
 
     text: {
@@ -85,6 +92,40 @@ const colorGroup = (): TokenGroup => ({
             foreground: slot("neutral-900", "neutral-50"),
             hover: slot("neutral-200", "neutral-700"),
             active: slot("neutral-300", "neutral-600")
+        },
+        // Ghost is accent text on a transparent fill, with a faint brand tint on interaction (C4). The
+        // text uses the link accent (blue-700 / blue-400) rather than the mid-tone action blue, so it
+        // stays legible on the dark page in dark mode as well as the light one.
+        ghost: {
+            background: token("transparent"),
+            foreground: slot("blue-700", "blue-400"),
+            hover: token(
+                withAlpha(DEFAULT_PALETTE["blue-600"], 0.08),
+                withAlpha(DEFAULT_PALETTE["blue-600"], 0.16)
+            ),
+            active: token(
+                withAlpha(DEFAULT_PALETTE["blue-600"], 0.14),
+                withAlpha(DEFAULT_PALETTE["blue-600"], 0.24)
+            )
+        },
+        // Destructive derives from feedback danger: the danger colour as a solid button, white text,
+        // hover/active a fixed lightness step away (C4).
+        destructive: {
+            background: slot("red-700", "red-700"),
+            foreground: slot("white", "white"),
+            hover: token(
+                shiftForState(DEFAULT_PALETTE["red-700"], "light", 0.12),
+                shiftForState(DEFAULT_PALETTE["red-700"], "dark", 0.12)
+            ),
+            active: token(
+                shiftForState(DEFAULT_PALETTE["red-700"], "light", 0.18),
+                shiftForState(DEFAULT_PALETTE["red-700"], "dark", 0.18)
+            )
+        },
+        // Disabled derives from sunken surface and muted text (C4).
+        disabled: {
+            background: slot("neutral-100", "neutral-950"),
+            foreground: slot("neutral-500", "neutral-400")
         }
     },
 
@@ -189,6 +230,21 @@ const shadowGroup = (): TokenGroup => {
     return group;
 };
 
+/** Border widths as a single-valued `dimension` ramp: hairline 1px, default 2px, strong 4px. */
+const BORDER_WIDTH_VALUES: Readonly<Record<(typeof BORDER_WIDTH_STEPS)[number], string>> = {
+    hairline: "0.0625rem",
+    default: "0.125rem",
+    strong: "0.25rem"
+};
+
+const borderRampGroup = (): TokenGroup => {
+    const group: TokenGroup = { $type: "dimension" };
+    for (const step of BORDER_WIDTH_STEPS) {
+        group[step] = { $value: BORDER_WIDTH_VALUES[step] } satisfies DesignToken;
+    }
+    return group;
+};
+
 interface RoleDefaults {
     size: string;
     weight: number;
@@ -250,13 +306,40 @@ const typographyGroup = (): TokenGroup => {
 /**
  * Returns a fresh copy of the default token document. Callers mutate the result, so this must not
  * hand out a shared object.
+ *
+ * Built in three passes: the ramps and colour/typography groups, then the non-colour semantic slots
+ * that alias a ramp step, then a usage-guidance `$description` on every canonical semantic slot. The
+ * theme therefore arrives with every one of the 67 semantic slots seeded and described (C4, C5).
  */
-export const createDefaultThemeDocument = (): TokenDocument => ({
-    color: colorGroup(),
-    font: fontGroup(),
-    text: fluidRampGroup("text"),
-    space: fluidRampGroup("space"),
-    radius: radiusGroup(),
-    shadow: shadowGroup(),
-    type: typographyGroup()
-});
+export const createDefaultThemeDocument = (): TokenDocument => {
+    let document: TokenDocument = {
+        color: colorGroup(),
+        font: fontGroup(),
+        text: fluidRampGroup("text"),
+        space: fluidRampGroup("space"),
+        radius: radiusGroup(),
+        shadow: shadowGroup(),
+        border: borderRampGroup(),
+        type: typographyGroup()
+    };
+
+    // Radius/shadow/spacing/border semantic slots point at a ramp step, exactly as colour slots point
+    // at brand primitives. A single alias covers both modes: the step it targets carries any dark value.
+    for (const slot of CANONICAL_SEMANTIC_SLOTS) {
+        document = setNodeAtPath(document, slot.path, {
+            $value: toAlias(slot.defaultAlias),
+            $description: slot.description
+        });
+    }
+
+    // Every canonical semantic slot ships described. Ramp steps and primitives carry none — nothing
+    // binds to them, so they need no guidance (C5).
+    for (const [path, description] of CANONICAL_DESCRIPTIONS) {
+        const existing = getTokenAtPath(document, path);
+        if (existing && existing.$description === undefined) {
+            document = setNodeAtPath(document, path, { ...existing, $description: description });
+        }
+    }
+
+    return document;
+};

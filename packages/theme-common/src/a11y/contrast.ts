@@ -40,6 +40,17 @@ export const CONTRAST_PAIRS: readonly ContrastPair[] = [
         "color.action.secondary.background",
         "Secondary action label"
     ),
+    textPair(
+        "color.action.destructive.foreground",
+        "color.action.destructive.background",
+        "Destructive action label"
+    ),
+    // Ghost buttons have a transparent fill, so their label sits on the page — that is the pair worth
+    // checking, since the ghost foreground is the brand accent and accents on white often fall short.
+    textPair("color.action.ghost.foreground", "color.surface.page", "Ghost action label on page"),
+    // `color.action.disabled.*` is deliberately absent. WCAG 1.4.3 exempts disabled controls from the
+    // contrast minimum (they are not "active user interface components"), and disabled styling is
+    // low-contrast by design — so a warning there would be noise, not a finding.
     // `color.text.inverse` is deliberately absent. Its intended background is whatever surface the
     // theme inverts onto, which is not a canonical slot, so any pairing we picked here would be a
     // guess. The case that matters — a label on a filled button — is covered by the

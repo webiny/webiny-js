@@ -5,6 +5,7 @@ import { ReactComponent as TypographyIcon } from "@webiny/icons/text_fields.svg"
 import { ReactComponent as SpacingIcon } from "@webiny/icons/width_normal.svg";
 import { ReactComponent as RadiusIcon } from "@webiny/icons/rounded_corner.svg";
 import { ReactComponent as ShadowsIcon } from "@webiny/icons/layers.svg";
+import { ReactComponent as BordersIcon } from "@webiny/icons/border_all.svg";
 import { ReactComponent as PolicyIcon } from "@webiny/icons/shield.svg";
 import { EDITOR_GROUPS, type EditorGroupId } from "~/constants.js";
 
@@ -17,6 +18,7 @@ export const GROUP_ICONS: Record<string, IconComponent> = {
     width_normal: SpacingIcon,
     rounded_corner: RadiusIcon,
     layers: ShadowsIcon,
+    border_all: BordersIcon,
     shield: PolicyIcon
 };
 
@@ -31,6 +33,7 @@ const PREFIX_TO_GROUP: Record<string, EditorGroupId> = {
     space: "spacing",
     radius: "radius",
     shadow: "shadows",
+    border: "borders",
     text: "typography",
     type: "typography",
     font: "typography"

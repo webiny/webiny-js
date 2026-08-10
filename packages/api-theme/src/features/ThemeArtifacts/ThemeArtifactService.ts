@@ -3,12 +3,15 @@ import {
     createResolvedSnapshot,
     generateCssArtifact,
     generateJsonArtifact,
+    generateManifestArtifact,
     validateForPublish,
     type ResolvedThemeSnapshot
 } from "@webiny/theme-common";
 import { ThemeArtifactService as ServiceAbstraction, type ArtifactFile } from "./abstractions.js";
 import type { Theme } from "~/domain/theme/abstractions.js";
 import { ThemeNotPublishableError } from "~/domain/theme/errors.js";
+
+const JSON_CONTENT_TYPE = "application/json; charset=utf-8";
 
 /**
  * Artifacts are generated from the snapshot on request rather than stored.
@@ -27,29 +30,40 @@ class ThemeArtifactServiceImpl implements ServiceAbstraction.Interface {
             return Result.fail(snapshot.error);
         }
 
-        const body =
-            file === "tokens.css"
-                ? generateCssArtifact(snapshot.value, {
-                      themeId: theme.entryId,
-                      version: theme.version
-                  })
-                : JSON.stringify(
-                      generateJsonArtifact(snapshot.value, {
-                          themeId: theme.entryId,
-                          version: theme.version
-                      }),
-                      null,
-                      2
-                  );
+        const options = { themeId: theme.entryId, version: theme.version };
+        const projected = this.project(snapshot.value, file, options);
 
         return Result.ok({
-            contentType:
-                file === "tokens.css"
-                    ? "text/css; charset=utf-8"
-                    : "application/json; charset=utf-8",
-            body,
+            contentType: projected.contentType,
+            body: projected.body,
             immutable: theme.resolved !== null
         });
+    }
+
+    /** Each artifact is a deterministic projection of the same snapshot. */
+    private project(
+        snapshot: ResolvedThemeSnapshot,
+        file: ArtifactFile,
+        options: { themeId: string; version: number }
+    ): { body: string; contentType: string } {
+        switch (file) {
+            case "tokens.css":
+                return {
+                    body: generateCssArtifact(snapshot, options),
+                    contentType: "text/css; charset=utf-8"
+                };
+            case "tokens.json":
+                return {
+                    body: JSON.stringify(generateJsonArtifact(snapshot, options), null, 2),
+                    contentType: JSON_CONTENT_TYPE
+                };
+            case "manifest.json":
+                // The generation manifest — a filtered projection for the component module (C6).
+                return {
+                    body: JSON.stringify(generateManifestArtifact(snapshot, options), null, 2),
+                    contentType: JSON_CONTENT_TYPE
+                };
+        }
     }
 
     private snapshotFor(theme: Theme): Result<ResolvedThemeSnapshot, ThemeNotPublishableError> {

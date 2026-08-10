@@ -5,7 +5,8 @@ import { getRamp, rampStepPaths, type ThemeMode } from "@webiny/theme-common";
 import { useThemes } from "~/presentation/useThemes.js";
 import type { ResolvedThemeView } from "~/presentation/useResolvedTheme.js";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
-import { EditableLength, InfoCard } from "./_shared.js";
+import { Collapsible, EditableLength } from "./_shared.js";
+import { SemanticSlotList } from "./SemanticSlotList.js";
 
 const P = ({ children }: { children: React.ReactNode }) => (
     <Text size="md" as="div" className="block text-neutral-primary leading-snug">
@@ -84,12 +85,27 @@ export const RadiusEditor = observer(function RadiusEditor(props: RadiusEditorPr
     const steps = getRamp("radius").steps;
 
     return (
-        <InfoCard title="Corner radius" hint={`${steps.length} steps`} info={RADIUS_INFO}>
-            <div className="flex flex-col divide-y divide-neutral-dimmed">
-                {paths.map((path, index) => (
-                    <RadiusStepRow key={path} {...props} path={path} step={steps[index]} />
-                ))}
-            </div>
-        </InfoCard>
+        <>
+            {/* Semantic roles first — what components bind to; the raw scale sits below. */}
+            <SemanticSlotList
+                group="radius"
+                title="Radius"
+                renderPreview={value => (
+                    <div
+                        className="size-8 border-2 border-neutral-strong bg-neutral-light"
+                        style={{ borderRadius: typeof value === "string" ? value : undefined }}
+                    />
+                )}
+                {...props}
+            />
+
+            <Collapsible title="Radius scale" hint={`${steps.length} steps`} info={RADIUS_INFO}>
+                <div className="flex flex-col divide-y divide-neutral-dimmed">
+                    {paths.map((path, index) => (
+                        <RadiusStepRow key={path} {...props} path={path} step={steps[index]} />
+                    ))}
+                </div>
+            </Collapsible>
+        </>
     );
 });

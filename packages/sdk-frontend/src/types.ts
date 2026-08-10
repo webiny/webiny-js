@@ -12,8 +12,8 @@ export interface CmsConfig {
 
 export interface ThemeConfig {
     /**
-     * Ceiling on the SSR active-theme request. A themeless render beats a stalled one. Everything else
-     * the theme client needs (host, key, tenant, fetch) is shared from the top-level config.
+     * Ceiling on the theme JSON fetch. A themeless render beats a stalled one. Everything else the
+     * theme client needs (host, key, tenant, fetch) is shared from the top-level config.
      */
     timeoutMs?: number;
     /**
@@ -22,8 +22,9 @@ export interface ThemeConfig {
      */
     sameOrigin?: boolean;
     /**
-     * Extra `RequestInit` merged into theme fetches — e.g. `{ next: { tags: [THEME_CACHE_TAG] } }` so
-     * the webhook revalidation handler can drop the cached active pointer.
+     * Extra `RequestInit` merged into theme fetches — e.g. Next.js `{ next: { revalidate: 60 } }`, which
+     * re-reads the theme JSON on a short timer. Stable URLs mean activation propagates within the CDN
+     * TTL on their own, so no cache tag or webhook is involved.
      */
     requestInit?: RequestInit;
 }

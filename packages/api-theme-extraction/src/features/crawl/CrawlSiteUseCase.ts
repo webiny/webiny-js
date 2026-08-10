@@ -21,6 +21,8 @@ import { fetchRobotsPolicy } from "~/http/fetchRobots.js";
 import type { RobotsPolicy } from "~/browser/robots.js";
 import { DEFAULT_CRAWL_LIMIT, normaliseUrl, selectCrawlUrls } from "~/crawl/urlScoring.js";
 import { mergeObservations, toObservations, type Observations } from "~/crawl/toObservations.js";
+import { extractRoleSignals } from "~/crawl/roleSignals.js";
+import type { SampledElement } from "~/crawl/samplePage.js";
 import { buildModelPayload, PAYLOAD_CAPS } from "~/model/payload.js";
 import { DEFAULT_TIMEOUTS } from "~/browser/launchConfig.js";
 import type { CandidateLink } from "~/crawl/urlScoring.js";
@@ -180,6 +182,10 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const stored: StoredScreenshot[] = [];
         const pages: Observations[] = [];
+        // The raw sampled elements from every page, kept alongside the flattened observations so the
+        // deterministic per-role pass (control/container radius, border width) can see the element
+        // context — interactive vs card, padding, shadow — that `toObservations` discards.
+        const sampledElements: SampledElement[] = [];
         const fonts = new Map<string, FontResource>();
         const sampledUrls: string[] = [];
 
@@ -210,6 +216,7 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         pages.push(toObservations(entry.value.elements));
+        sampledElements.push(...entry.value.elements);
         sampledUrls.push(entryUrl);
         for (const font of entry.value.fontResources) {
             fonts.set(font.url, font);
@@ -261,6 +268,7 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
             if (page.isOk()) {
                 await this.logPage(log, candidate.url, page.value);
                 pages.push(toObservations(page.value.elements));
+                sampledElements.push(...page.value.elements);
                 sampledUrls.push(candidate.url);
                 for (const font of page.value.fontResources) {
                     fonts.set(font.url, font);
@@ -297,7 +305,8 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
             payload,
             screenshots: stored.slice(0, PAYLOAD_CAPS.screenshots),
             extractionId,
-            crawledOn: new Date().toISOString()
+            crawledOn: new Date().toISOString(),
+            roleSignals: extractRoleSignals(sampledElements)
         };
 
         // The inventory the model will actually judge. Counts rather than values: enough to see that

@@ -132,7 +132,7 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
             );
         }
 
-        const applied = applyAssignment(validated);
+        const applied = applyAssignment(validated, crawl.roleSignals);
 
         const metadata: ExtractionMetadata = {
             source: "extraction",
@@ -142,7 +142,9 @@ class AnalyseCrawlUseCaseImpl implements UseCaseAbstraction.Interface {
             model,
             confidence: assignment.value.confidence,
             summary: assignment.value.summary,
-            uncertain: assignment.value.uncertain,
+            // The model's own uncertainties, plus any low-confidence per-role snaps the deterministic
+            // pass flagged (a radius/border it inferred from very few elements, or fitted loosely).
+            uncertain: [...assignment.value.uncertain, ...applied.uncertain],
             // Everything discarded is recorded on the theme. A generated theme that looks odd should be
             // explainable from what it stores, not from a log nobody kept.
             discarded: [

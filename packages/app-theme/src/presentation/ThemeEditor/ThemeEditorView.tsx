@@ -185,6 +185,16 @@ export const ThemeEditorView = observer(function ThemeEditorView() {
                         readOnly={readOnly}
                     />
                 );
+            case "borders":
+                return (
+                    <RampGroup
+                        rampId="border"
+                        theme={theme}
+                        resolved={resolved}
+                        mode={mode}
+                        readOnly={readOnly}
+                    />
+                );
             case "typography":
                 return (
                     <TypographyGroup

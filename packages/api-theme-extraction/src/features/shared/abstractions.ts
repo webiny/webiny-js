@@ -1,6 +1,7 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IAiConnectionInline } from "@webiny/api-core/features/ai/index.js";
 import type { ModelPayload } from "~/model/payload.js";
+import type { RoleSignals } from "~/crawl/roleSignals.js";
 import type { ExtractionError } from "./errors.js";
 
 /**
@@ -106,6 +107,12 @@ export interface CachedCrawl {
     extractionId: string;
     /** ISO timestamp, so a caller can decide the crawl is too old to reuse. */
     crawledOn: string;
+    /**
+     * Deterministic per-role measurements (control/container radius, control border width). Consumed
+     * after the model runs to snap those roles to the right ramp step. Optional so crawls cached
+     * before this existed still analyse — they simply leave the roles at their defaults.
+     */
+    roleSignals?: RoleSignals;
 }
 
 export interface IExtractionArtifactCache {

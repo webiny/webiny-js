@@ -6,6 +6,7 @@ import {
     applyRamp,
     removeNodeAtPath,
     setNodeAtPath,
+    setTokenDescription,
     setTokenFluid,
     setTokenReference,
     setTokenValue,
@@ -24,6 +25,32 @@ const document: TokenDocument = {
         }
     }
 };
+
+describe("setTokenDescription", () => {
+    it("sets a token's usage guidance", () => {
+        const next = setTokenDescription(document, "color.surface.page", "The page background");
+        expect(getTokenAtPath(next, "color.surface.page")?.$description).toBe(
+            "The page background"
+        );
+    });
+
+    it("clears the description when given an empty or whitespace value", () => {
+        const described = setTokenDescription(document, "color.surface.page", "Something");
+        const cleared = setTokenDescription(described, "color.surface.page", "   ");
+        expect(getTokenAtPath(cleared, "color.surface.page")?.$description).toBeUndefined();
+    });
+
+    it("throws for a path with no token", () => {
+        expect(() => setTokenDescription(document, "color.nope", "x")).toThrow();
+    });
+
+    it("leaves the value and mode overrides untouched", () => {
+        const next = setTokenDescription(document, "color.surface.page", "Guidance");
+        const token = getTokenAtPath(next, "color.surface.page");
+        expect(token?.$value).toBe("#FFFFFF");
+        expect(token?.$extensions?.[MODES_EXTENSION]?.dark).toBe("#0F172A");
+    });
+});
 
 describe("setTokenValue", () => {
     it("sets the light value without touching the dark override", () => {

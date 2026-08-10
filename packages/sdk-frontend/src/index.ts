@@ -1,30 +1,27 @@
 export { sdk, FrontendSdk } from "./FrontendSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig, ThemeConfig } from "./types.js";
 
-// Theme consumption. `sdk.theme.getActiveTheme()` at SSR + `getThemeLinkTags()` in the layout `<head>`;
-// `sdk.theme.getFonts(active)` + `getFontLinkTags()` for web-font preconnect/stylesheet tags.
-// `createThemeRewrite()` (Next.js) / `createNuxtThemeRouteRules()` (Nuxt) proxy `/_webiny/theme/*` for
-// same-origin artifact fetching. `shouldRevalidateTheme()` + `THEME_CACHE_TAG` drive webhook revalidation.
+// Theme consumption. `sdk.theme.getHeadTags()` returns the `<head>` tags — a stylesheet link to the
+// stable `tokens.css` and a static `preconnect` — with no theme resolution needed. Delivery serves the
+// active version at that stable URL with a short TTL, so there is no active-pointer fetch, no font
+// links (fonts ship in the stylesheet's `@import`) and no revalidation to wire. `createThemeRewrite()`
+// (Next.js) / `createNuxtThemeRouteRules()` (Nuxt) proxy `/_webiny/theme/*` for same-origin serving.
 export {
     ThemeSdk,
-    getThemeLinkTags,
-    getFontLinkTags,
-    buildGoogleFontsUrl,
     createThemeRewrite,
     createNuxtThemeRouteRules,
-    shouldRevalidateTheme,
-    THEME_CACHE_TAG,
-    THEME_REVALIDATE_EVENTS
+    THEME_ROUTE_PREFIX,
+    THEME_ARTIFACT_PATHS,
+    GOOGLE_FONTS_STATIC_ORIGIN
 } from "@webiny/theme-sdk";
 export type {
-    ActiveTheme,
-    ThemeArtifactUrls,
+    ThemeArtifactName,
+    ThemePreview,
+    ThemeJson,
     ThemeLinkTag,
     ThemeRewriteRule,
     ThemeNuxtRouteRules,
-    ThemeFont,
-    ThemeWebhookPayload,
-    ThemeActivationWebhookPayload
+    ThemeWebhookPayload
 } from "@webiny/theme-sdk";
 
 // Re-export Result and error types from @webiny/sdk.

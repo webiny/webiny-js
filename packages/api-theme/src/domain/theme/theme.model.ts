@@ -18,6 +18,9 @@ class ThemeModelFactory implements ModelFactory.Interface {
         });
 
         model.fields(fields => ({
+            // The document's shape version (see THEME_SCHEMA_VERSION). Searchable so a future
+            // migration can find documents to upgrade by version.
+            schemaVersion: fields.number().label("Schema version"),
             properties: fields.searchableJson().label("Properties"),
             tokens: fields.json().label("Tokens"),
             policy: fields.json().label("Policy"),

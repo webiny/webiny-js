@@ -30,6 +30,7 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
     const [mode, setMode] = useState<Mode>("blank");
     const [name, setName] = useState("");
     const [url, setUrl] = useState("");
+    const [force, setForce] = useState(false);
     const [busy, setBusy] = useState(false);
     const themes = useThemes();
     const extraction = useExtraction();
@@ -59,6 +60,7 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
     const close = () => {
         setName("");
         setUrl("");
+        setForce(false);
         setBusy(false);
         // A finished or failed run is cleared so the next open starts fresh. A running one is
         // deliberately left alone — closing the dialog must not cancel minutes of work.
@@ -101,7 +103,7 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
             return;
         }
 
-        await extraction.start({ url: trimmedUrl, name: trimmedName });
+        await extraction.start({ url: trimmedUrl, name: trimmedName, force });
     };
 
     const isExtracting = mode === "website" && extraction.phase === "running";
@@ -224,8 +226,10 @@ export const NewThemeDialog = observer(({ open, onClose }: NewThemeDialogProps) 
                     <ExtractThemeForm
                         url={url}
                         name={name}
+                        force={force}
                         onUrlChange={setUrl}
                         onNameChange={setName}
+                        onForceChange={setForce}
                         onSubmit={() => void startExtraction()}
                     />
                 )}

@@ -2,7 +2,15 @@ import { generateFluidValue, toCssDeclarations } from "~/fluid/clamp.js";
 import { toCssVariableName } from "~/naming/cssVariable.js";
 import type { ResolvedThemeSnapshot, SnapshotToken } from "~/snapshot.js";
 import { tokenToDeclarations, type CssDeclaration } from "./values.js";
+import { buildFontImport } from "./fonts.js";
 import { generateLexicalCss } from "./lexicalClasses.js";
+
+/**
+ * Declared once at the top of every stylesheet, above the font import, so precedence between the
+ * component registry and theme overrides never depends on which file the browser parses first (C10).
+ * Nothing populates `wby-registry` yet — the component module will — but the contract is established now.
+ */
+export const CASCADE_LAYER_STATEMENT = "@layer wby-registry, wby-overrides;";
 
 /**
  * The CSS artifact — see the design brief, section 6.2.
@@ -125,5 +133,11 @@ export const generateCssArtifact = (
     // extra request and no content migration (the classes are already baked into every saved page).
     sections.push(generateLexicalCss());
 
-    return `${sections.filter(Boolean).join("\n\n")}\n`;
+    // Prelude, in the order CSS requires: the layer statement, then the font `@import` (which may only
+    // be preceded by `@charset` and `@layer`), then everything else. See C9 and C10.
+    const prelude = [CASCADE_LAYER_STATEMENT, buildFontImport(snapshot.settings.fonts)].filter(
+        Boolean
+    );
+
+    return `${[...prelude, ...sections].filter(Boolean).join("\n\n")}\n`;
 };

@@ -6,6 +6,7 @@ import type { ThemeDto } from "~/features/themeGateway/index.js";
 import { RadiusEditor } from "./RadiusEditor.js";
 import { RampEditor } from "./RampEditor.js";
 import { ShadowEditor } from "./ShadowEditor.js";
+import { BorderEditor } from "./BorderEditor.js";
 
 /**
  * Router for the three non-typography scale screens. Each is a fixed, named set of steps — the set is
@@ -25,20 +26,18 @@ export const RampGroup = observer(function RampGroup(props: {
 }) {
     const { rampId, theme, resolved, mode, readOnly } = props;
 
+    const shared = { theme, resolved, mode, readOnly };
+
     return (
         <div className="flex-1 min-h-0 overflow-y-auto px-md py-sm flex flex-col gap-md">
             {rampId === "space" ? (
-                <RampEditor
-                    rampId="space"
-                    theme={theme}
-                    resolved={resolved}
-                    mode={mode}
-                    readOnly={readOnly}
-                />
+                <RampEditor rampId="space" {...shared} />
             ) : rampId === "radius" ? (
-                <RadiusEditor theme={theme} resolved={resolved} mode={mode} readOnly={readOnly} />
+                <RadiusEditor {...shared} />
+            ) : rampId === "border" ? (
+                <BorderEditor {...shared} />
             ) : (
-                <ShadowEditor theme={theme} resolved={resolved} mode={mode} readOnly={readOnly} />
+                <ShadowEditor {...shared} />
             )}
         </div>
     );

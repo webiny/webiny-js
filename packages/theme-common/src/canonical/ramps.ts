@@ -14,12 +14,19 @@ export const RADIUS_STEPS = ["none", "sm", "md", "lg", "full"] as const;
 
 export const SHADOW_STEPS = ["none", "sm", "md", "lg", "xl"] as const;
 
+/**
+ * Border widths are lengths, so this is a `dimension` ramp like radius rather than a new token type —
+ * see the change brief, C3. Only widths live here; border *colours* stay under `color.border.*`.
+ */
+export const BORDER_WIDTH_STEPS = ["hairline", "default", "strong"] as const;
+
 export type SpacingStep = (typeof SPACING_STEPS)[number];
 export type TextStep = (typeof TEXT_STEPS)[number];
 export type RadiusStep = (typeof RADIUS_STEPS)[number];
 export type ShadowStep = (typeof SHADOW_STEPS)[number];
+export type BorderWidthStep = (typeof BORDER_WIDTH_STEPS)[number];
 
-export type RampId = "space" | "text" | "radius" | "shadow";
+export type RampId = "space" | "text" | "radius" | "shadow" | "border";
 
 export interface RampDefinition {
     id: RampId;
@@ -77,6 +84,15 @@ export const RAMPS: readonly RampDefinition[] = [
         pathPrefix: "shadow",
         steps: SHADOW_STEPS,
         type: "shadow",
+        fluidCapable: false,
+        baseStepIndex: null
+    },
+    {
+        id: "border",
+        label: "Border width",
+        pathPrefix: "border",
+        steps: BORDER_WIDTH_STEPS,
+        type: "dimension",
         fluidCapable: false,
         baseStepIndex: null
     }

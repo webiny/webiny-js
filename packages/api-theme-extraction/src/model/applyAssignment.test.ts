@@ -13,6 +13,7 @@ import {
     type ModelAssignment,
     type ModelTypographyValue
 } from "./tokenAssignment.js";
+import type { RoleSignals } from "~/crawl/roleSignals.js";
 
 // Tests express tokens as a convenient record; the schema is a list of { path, value }, so convert.
 type AssignmentOverrides = {
@@ -163,7 +164,7 @@ describe("applyAssignment", () => {
             tokens: {
                 "color.action.primary.background": "#2563EB",
                 // Same colour, different case — must collapse onto one brand primitive.
-                "color.action.primary.hover": "#2563eb",
+                "color.border.focus": "#2563eb",
                 "color.surface.page": "#111827",
                 "color.text.primary": "#f9fafb"
             }
@@ -172,13 +173,11 @@ describe("applyAssignment", () => {
         const bg = parseAlias(
             getTokenAtPath(result.document, "color.action.primary.background")?.$value
         );
-        const hover = parseAlias(
-            getTokenAtPath(result.document, "color.action.primary.hover")?.$value
-        );
+        const focus = parseAlias(getTokenAtPath(result.document, "color.border.focus")?.$value);
         expect(bg).toBeTruthy();
-        expect(hover).toBe(bg);
+        expect(focus).toBe(bg);
 
-        // Every assigned slot references the palette; none holds a literal.
+        // Every assigned base slot references the palette; none holds a literal.
         for (const path of [
             "color.action.primary.background",
             "color.surface.page",
@@ -193,6 +192,62 @@ describe("applyAssignment", () => {
         // references stays.
         expect(getTokenAtPath(result.document, "color.brand.black")).toBeUndefined();
         expect(getTokenAtPath(result.document, "color.brand.green-50")).toBeDefined();
+    });
+
+    it("derives the action states from the extracted colours, linking those that map to a brand colour (C13)", () => {
+        const result = apply({
+            tokens: {
+                "color.action.primary.background": "#2563EB",
+                "color.action.primary.foreground": "#FFFFFF",
+                "color.feedback.danger.foreground": "#B00020",
+                "color.text.muted": "#777777",
+                "color.text.primary": "#111111",
+                "color.surface.sunken": "#EEEEEE"
+            }
+        });
+
+        const value = (path: string) => getTokenAtPath(result.document, path)?.$value;
+
+        // States that map onto a real colour link to the palette (so editing that brand colour
+        // cascades, like the hand-built default theme) and resolve to the colour they came from — the
+        // "copy" states de-dup onto the primitive their base already uses rather than duplicating it.
+        for (const [path, resolved] of [
+            ["color.action.disabled.background", "#EEEEEE"], // extracted sunken
+            ["color.action.disabled.foreground", "#777777"], // extracted muted
+            ["color.action.destructive.background", "#B00020"], // extracted danger
+            ["color.action.destructive.foreground", "#FFFFFF"] // danger is dark → white label
+        ] as const) {
+            expect(parseAlias(value(path))).toMatch(/^color\.brand\./);
+            expect(brandValue(result.document, path)).toBe(resolved);
+        }
+
+        // A hover shade has no base twin, so it becomes its own named brand primitive, still linked.
+        expect(parseAlias(value("color.action.primary.hover"))).toMatch(/^color\.brand\./);
+
+        // The transparent fill, the alpha tints and the scrim have no brand equivalent, so they stay
+        // literal — exactly the slots the default theme leaves as literals too.
+        expect(value("color.action.ghost.background")).toBe("transparent");
+        expect(String(value("color.action.destructive.hover"))).toMatch(/^#/); // lightness shift
+        expect(String(value("color.surface.scrim"))).toMatch(/^rgba\(17, 17, 17,/);
+    });
+
+    it("points a copy state at the very same brand primitive as the base it mirrors", () => {
+        // ghost.foreground is the link accent; destructive.background is the danger colour. Each must
+        // alias the *same* brand entry as its base, so editing that one colour moves both together —
+        // rather than holding a literal, which is what these extra action slots used to do.
+        const result = apply({
+            tokens: {
+                "color.text.link": "#0055FF",
+                "color.feedback.danger.foreground": "#CC0000"
+            }
+        });
+
+        const ref = (path: string) => parseAlias(getTokenAtPath(result.document, path)?.$value);
+
+        expect(ref("color.action.ghost.foreground")).toBe(ref("color.text.link"));
+        expect(ref("color.action.destructive.background")).toBe(
+            ref("color.feedback.danger.foreground")
+        );
     });
 
     it("applies every slot the model filled", () => {
@@ -232,5 +287,72 @@ describe("applyAssignment", () => {
 
         expect(result.applied).toEqual(["type.body"]);
         expect(result.failed).toEqual([]);
+    });
+});
+
+describe("applyAssignment role detection", () => {
+    const applyWith = (roleSignals: RoleSignals, overrides: AssignmentOverrides = {}) =>
+        applyAssignment(validateAssignment(assignment(overrides)), roleSignals);
+
+    it("snaps control and container radius to the ramp step the site uses", () => {
+        // 9999px and 0px sit unambiguously on `full` and `none`, neither a plausible default for these
+        // roles — so a match proves the measurement overrode the seeded alias.
+        const result = applyWith({
+            radiusControl: { value: "9999px", samples: 10 },
+            radiusContainer: { value: "0px", samples: 6 }
+        });
+
+        expect(parseAlias(getTokenAtPath(result.document, "radius.control")?.$value)).toBe(
+            "radius.full"
+        );
+        expect(parseAlias(getTokenAtPath(result.document, "radius.container")?.$value)).toBe(
+            "radius.none"
+        );
+        expect(result.applied).toEqual(
+            expect.arrayContaining(["radius.control", "radius.container"])
+        );
+        expect(result.uncertain).toEqual([]);
+    });
+
+    it("snaps control border width to the border ramp", () => {
+        // 1px is the hairline step exactly.
+        const result = applyWith({ borderControl: { value: "1px", samples: 8 } });
+
+        expect(parseAlias(getTokenAtPath(result.document, "border.control")?.$value)).toBe(
+            "border.hairline"
+        );
+    });
+
+    it("leaves a role at its default when there is no measurement", () => {
+        const defaults = createDefaultThemeDocument();
+        const result = applyWith({ radiusControl: { value: "6px", samples: 5 } });
+
+        // radius.container had no signal, so it must be byte-for-byte the default.
+        expect(getTokenAtPath(result.document, "radius.container")?.$value).toEqual(
+            getTokenAtPath(defaults, "radius.container")?.$value
+        );
+    });
+
+    it("applies but flags a snap drawn from too few elements", () => {
+        const result = applyWith({ radiusControl: { value: "9999px", samples: 1 } });
+
+        // Still applied — a low-confidence guess beats the generic default …
+        expect(parseAlias(getTokenAtPath(result.document, "radius.control")?.$value)).toBe(
+            "radius.full"
+        );
+        // … but surfaced for review rather than presented as settled.
+        expect(result.uncertain).toContainEqual(
+            expect.objectContaining({ path: "radius.control" })
+        );
+    });
+
+    it("does no role detection when no signals are supplied", () => {
+        const defaults = createDefaultThemeDocument();
+        const result = apply();
+
+        expect(getTokenAtPath(result.document, "radius.control")?.$value).toEqual(
+            getTokenAtPath(defaults, "radius.control")?.$value
+        );
+        expect(result.uncertain).toEqual([]);
     });
 });

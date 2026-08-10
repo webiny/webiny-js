@@ -19,6 +19,8 @@ export class EntryToThemeMapper {
             firstPublishedOn: entry.firstPublishedOn ?? null,
             lastPublishedOn: entry.lastPublishedOn ?? null,
             tenant: entry.tenant,
+            // 0 for a document created before schema versioning existed.
+            schemaVersion: entry.values.schemaVersion ?? 0,
             properties: entry.values.properties,
             tokens: entry.values.tokens,
             policy: entry.values.policy,

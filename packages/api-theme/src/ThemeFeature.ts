@@ -19,8 +19,8 @@ import { ActivateThemeFeature } from "~/features/ActivateTheme/feature.js";
 import { GetActiveThemeFeature } from "~/features/GetActiveTheme/feature.js";
 import { ThemeArtifactsFeature } from "~/features/ThemeArtifacts/feature.js";
 import { ThemeWebhooksFeature } from "~/features/webhooks/feature.js";
-import { ThemeArtifactRoute } from "~/rest/ThemeArtifactRoute.js";
-import { ActiveThemeRoute } from "~/rest/ActiveThemeRoute.js";
+import { StableThemeRoute } from "~/rest/StableThemeRoute.js";
+import { ThemePreviewRoute } from "~/rest/ThemePreviewRoute.js";
 
 export const ThemeFeature = createFeature({
     name: "Theme",
@@ -44,10 +44,10 @@ export const ThemeFeature = createFeature({
         ThemeArtifactsFeature.register(container);
         ThemeWebhooksFeature.register(container);
 
-        // Delivery endpoints. Published artifacts are public and immutable; drafts are gated and
-        // uncacheable. See the routes for the reasoning.
-        container.register(ThemeArtifactRoute);
-        container.register(ActiveThemeRoute);
+        // Delivery endpoints. The stable URL serves the active version publicly at a short TTL;
+        // preview addresses a specific draft, gated and uncacheable. See C7 and the routes.
+        container.register(StableThemeRoute);
+        container.register(ThemePreviewRoute);
 
         registerThemeGraphQL(container);
 

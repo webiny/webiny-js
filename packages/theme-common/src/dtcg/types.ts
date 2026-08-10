@@ -120,6 +120,12 @@ export interface MetaExtension {
     lastResolvedValue?: TokenValue;
     /** Fluid sizing state for a spacing or type-size ramp step. */
     fluid?: FluidStepMeta;
+    /**
+     * Opts a *custom* semantic token into the generation manifest (C6). Defaults to off, so an
+     * enterprise's private vocabulary reaches generation only when they choose. Canonical slots are
+     * always in the manifest and ignore this flag.
+     */
+    includeInManifest?: boolean;
 }
 
 export interface FluidStepMeta {

@@ -21,6 +21,8 @@ export interface JsonArtifactToken {
     /** Last path segment. */
     name: string;
     displayName?: string;
+    /** Usage guidance seeded on canonical slots; read by Admin and the generation manifest. */
+    description?: string;
     /** Dot-path of the parent group, empty for a top-level token. */
     group: string;
     type?: TokenType;
@@ -62,7 +64,10 @@ export interface ThemeJsonArtifact {
     groups: JsonArtifactGroup[];
     policy: ThemePolicy;
     viewport: ThemeSettings["viewport"];
-    /** Font metadata the SDK needs to emit links and preload hints in the server-rendered head. */
+    /**
+     * Font metadata for consumers that want it (Admin, tooling). Delivery itself no longer reads this
+     * — fonts ship as an `@import` inside `tokens.css` (C9) rather than head links.
+     */
     fonts: FontDefinition[];
     /** Advisory issues recorded when this version was published. */
     warnings: PublishWarning[];
@@ -123,6 +128,7 @@ export const generateJsonArtifact = (
             path: token.path,
             name: segments[segments.length - 1],
             ...(token.displayName ? { displayName: token.displayName } : {}),
+            ...(token.description ? { description: token.description } : {}),
             group: joinPath(segments.slice(0, -1)),
             type: token.type,
             canonical: isCanonicalPath(token.path),

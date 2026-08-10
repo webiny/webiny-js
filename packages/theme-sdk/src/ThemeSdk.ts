@@ -1,58 +1,49 @@
 import type {
-    ActiveTheme,
-    ThemeFont,
+    ThemeArtifactName,
+    ThemeJson,
     ThemeLinkTag,
     ThemeNuxtRouteRules,
+    ThemePreview,
     ThemeRewriteRule,
     ThemeSdkConfig
 } from "./types.js";
 
 /**
- * The frontend client for a published Webiny theme — see the Theme design brief, section 8.
+ * The frontend client for a published Webiny theme — see the design brief, section 6, and the change
+ * brief, C7–C10.
  *
- * Its single job is to close the one missing link between producer and consumer: a published page
- * already emits `var(--wby-*, fallback)` inline on every element, so all a theme has to do is get its
- * `tokens.css` (which defines those variables on `:root`) onto the page. This client resolves the
- * active theme at SSR and hands a layout the `<link>` it should render in `<head>`.
+ * Delivery now serves whichever version is active at a stable, version-less URL with a short TTL, so
+ * the client's job shrinks to almost nothing: emit a `<link>` to that fixed URL and a static
+ * `preconnect` for the fonts the stylesheet's `@import` will load. No active-pointer fetch, no version
+ * resolution, no revalidation wiring — the CDN's TTL is the whole activation mechanism.
  *
- * Deliberately framework-agnostic and dependency-free: the same client serves Next.js, Nuxt, a plain
- * React app, and the Tailwind adapter. Injection into `<head>` is the framework host's job, because the
- * document renderer owns no `<head>`.
+ * Framework-agnostic and dependency-free: the same client serves Next.js, Nuxt, a plain React app and
+ * the Tailwind adapter. Injecting the tags into `<head>` is the framework host's job.
  */
 
-/**
- * Public path of the active-theme resolution route.
- *
- * This is the stable HTTP contract with the backend. It MUST match `ACTIVE_THEME_ROUTE` in
- * `@webiny/api-theme`'s constants; it is duplicated rather than imported so this client stays free of
- * the API package's dependency graph. A public URL path changes far less often than an internal
- * constant, but if that route ever moves, both ends change together.
- */
-export const ACTIVE_THEME_PATH = "/_webiny/theme/active";
-
-/**
- * The public path prefix every theme route lives under (active pointer + artifacts).
- *
- * The one place this prefix is named on the consumer side. `createThemeRewrite` builds a same-origin
- * proxy for it, and the artifact URLs the backend returns all sit beneath it.
- */
+/** The public path prefix every theme route lives under. The one place it is named on the consumer side. */
 export const THEME_ROUTE_PREFIX = "/_webiny/theme";
 
+/** Stable, version-less delivery paths. Delivery always serves the active version at these URLs (C7). */
+export const THEME_ARTIFACT_PATHS: Readonly<Record<ThemeArtifactName, string>> = {
+    css: `${THEME_ROUTE_PREFIX}/tokens.css`,
+    json: `${THEME_ROUTE_PREFIX}/tokens.json`,
+    manifest: `${THEME_ROUTE_PREFIX}/manifest.json`
+};
+
+const ARTIFACT_FILE: Readonly<Record<ThemeArtifactName, string>> = {
+    css: "tokens.css",
+    json: "tokens.json",
+    manifest: "manifest.json"
+};
+
+export const GOOGLE_FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";
+
 /**
- * Ceiling on the active-theme request.
- *
- * SSR must never hang on theme resolution — a page that renders unthemed is a far better failure than
- * a page that never renders. The active pointer is a tiny, CDN-cached JSON, so this is generous.
+ * Ceiling on the JSON fetch. SSR must never hang on theme resolution — a page that renders unthemed is
+ * a far better failure than one that never renders.
  */
 export const DEFAULT_TIMEOUT_MS = 5000;
-
-interface ActiveThemeResponse {
-    active: boolean;
-    themeId?: string;
-    version?: number;
-    activatedOn?: string;
-    artifacts?: { css?: string; json?: string };
-}
 
 export class ThemeSdk {
     private readonly apiHost: string;
@@ -74,68 +65,65 @@ export class ThemeSdk {
         this.requestInit = config.requestInit;
     }
 
-    /**
-     * Merges the caller's `requestInit` into a fetch, without letting it clobber the abort signal.
-     *
-     * This is how a framework passes cache metadata into the theme fetches — a Next.js app sets
-     * `requestInit: { next: { tags: [THEME_CACHE_TAG], revalidate: … } }`, so a `revalidateTag` from the
-     * webhook handler purges the cached pointer. Kept framework-agnostic: it is just `RequestInit`, and
-     * the timeout signal always wins so a stalled request can still be aborted.
-     */
-    private buildInit(extraHeaders?: Record<string, string>): RequestInit {
-        const headers = {
-            ...(this.requestInit?.headers as Record<string, string>),
-            ...extraHeaders
-        };
-        return { ...this.requestInit, headers };
+    /** The route path for an artifact — the stable active-version path, or a specific draft for preview. */
+    private path(artifact: ThemeArtifactName, preview?: ThemePreview): string {
+        if (preview) {
+            return `${THEME_ROUTE_PREFIX}/preview/${preview.themeId}/${preview.version}/${ARTIFACT_FILE[artifact]}`;
+        }
+        return THEME_ARTIFACT_PATHS[artifact];
     }
 
     /**
-     * Resolves the tenant's active, published theme, or `null` when there is none.
-     *
-     * `null` is a first-class, expected result — a project that has not opted into themes, a fetch that
-     * timed out, a transient 5xx. None of these may throw: a themeless site must render normally. The
-     * caller renders no theme `<link>` and every `var(--wby-*)` falls back to its captured value.
+     * The URL a browser `<link>` or `<img>` should use. Relative in same-origin mode, so the frontend's
+     * `/_webiny/theme/*` proxy serves it from the site's own origin; absolute otherwise.
      */
-    async getActiveTheme(): Promise<ActiveTheme | null> {
+    artifactUrl(artifact: ThemeArtifactName, preview?: ThemePreview): string {
+        const path = this.path(artifact, preview);
+        return this.sameOrigin ? path : `${this.apiHost}${path}`;
+    }
+
+    /** Always-absolute URL for a server-side fetch, which needs an origin even in same-origin mode. */
+    private fetchUrl(artifact: ThemeArtifactName, preview?: ThemePreview): string {
+        return `${this.apiHost}${this.path(artifact, preview)}`;
+    }
+
+    /**
+     * The `<head>` tags that apply the theme: a static preconnect to the Google Fonts file origin, then
+     * the stylesheet link. Neither requires knowing which theme is active — the stylesheet is a stable
+     * URL and the fonts load from its `@import`. A themeless site serves a 204 at that URL, so the link
+     * is harmless. Preconnect carries `crossorigin` because font files are fetched anonymously; without
+     * it the connection is not reused.
+     */
+    getHeadTags(preview?: ThemePreview): ThemeLinkTag[] {
+        return [
+            { rel: "preconnect", href: GOOGLE_FONTS_STATIC_ORIGIN, crossOrigin: "anonymous" },
+            { rel: "stylesheet", href: this.artifactUrl("css", preview) }
+        ];
+    }
+
+    /**
+     * Fetches the JSON artifact — the resolved tokens and the policy — or null on any failure.
+     *
+     * Never throws: a themeless site, a timeout or a transient 5xx all yield null, so a page always
+     * renders. Consumers that only need to apply the theme use `getHeadTags` and never call this.
+     */
+    async getTheme(preview?: ThemePreview): Promise<ThemeJson | null> {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 
         try {
-            const response = await this.fetchImpl(`${this.apiHost}${ACTIVE_THEME_PATH}`, {
+            const response = await this.fetchImpl(this.fetchUrl("json", preview), {
                 ...this.buildInit(this.authHeaders()),
                 signal: controller.signal
             });
 
-            if (!response.ok) {
+            // 204 is the backend's "no active theme" — a normal, expected state, not an error.
+            if (response.status === 204 || !response.ok) {
                 return null;
             }
 
-            const body = (await response.json()) as ActiveThemeResponse;
-
-            // `{ active: false }` is the backend's explicit "no theme" answer (a 200, not a 404). A
-            // malformed body missing the pieces we need is treated the same way rather than trusted.
-            if (
-                !body.active ||
-                !body.themeId ||
-                typeof body.version !== "number" ||
-                !body.artifacts?.css ||
-                !body.artifacts?.json
-            ) {
-                return null;
-            }
-
-            return {
-                themeId: body.themeId,
-                version: body.version,
-                activatedOn: body.activatedOn ?? "",
-                artifacts: {
-                    css: this.resolveArtifactUrl(body.artifacts.css),
-                    json: this.resolveArtifactUrl(body.artifacts.json)
-                }
-            };
+            return (await response.json()) as ThemeJson;
         } catch {
-            // Network error, abort/timeout, or non-JSON body. Themeless, never thrown.
             return null;
         } finally {
             clearTimeout(timer);
@@ -143,61 +131,15 @@ export class ThemeSdk {
     }
 
     /**
-     * The web fonts the active theme uses, read from its JSON artifact.
-     *
-     * A second fetch: fonts live in the JSON artifact body, not the active pointer (the pointer is kept
-     * tiny and short-cached; the artifact is immutable and CDN-cached). Always fetched at an absolute
-     * URL even in same-origin mode — a relative path has no origin to resolve against during SSR.
-     *
-     * Like `getActiveTheme`, never throws: any failure yields `[]`, so a font hiccup costs the page its
-     * web fonts (it falls back to system fonts) but not its render.
+     * Merges the caller's `requestInit` into a fetch without letting it clobber the abort signal — the
+     * timeout signal always wins, so a stalled request can still be aborted.
      */
-    async getFonts(active: ActiveTheme): Promise<ThemeFont[]> {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-
-        try {
-            const response = await this.fetchImpl(this.toFetchableUrl(active.artifacts.json), {
-                ...this.buildInit(),
-                signal: controller.signal
-            });
-            if (!response.ok) {
-                return [];
-            }
-
-            const body = (await response.json()) as { fonts?: unknown };
-            if (!Array.isArray(body.fonts)) {
-                return [];
-            }
-
-            // Parsed defensively: the artifact is public and its shape is the producer's, not ours. A
-            // font missing a family or weights is dropped rather than trusted into a malformed request.
-            return body.fonts
-                .map((font): ThemeFont | null => {
-                    if (!font || typeof font !== "object") {
-                        return null;
-                    }
-                    const f = font as Record<string, unknown>;
-                    if (typeof f.family !== "string" || !f.family.trim()) {
-                        return null;
-                    }
-                    return {
-                        family: f.family,
-                        weights: Array.isArray(f.weights)
-                            ? f.weights.filter((w): w is number => typeof w === "number")
-                            : [],
-                        styles: Array.isArray(f.styles)
-                            ? f.styles.filter((s): s is string => typeof s === "string")
-                            : [],
-                        display: typeof f.display === "string" ? f.display : undefined
-                    };
-                })
-                .filter((font): font is ThemeFont => font !== null);
-        } catch {
-            return [];
-        } finally {
-            clearTimeout(timer);
-        }
+    private buildInit(extraHeaders?: Record<string, string>): RequestInit {
+        const headers = {
+            ...(this.requestInit?.headers as Record<string, string>),
+            ...extraHeaders
+        };
+        return { ...this.requestInit, headers };
     }
 
     private authHeaders(): Record<string, string> {
@@ -210,138 +152,14 @@ export class ThemeSdk {
         }
         return headers;
     }
-
-    /**
-     * Resolves the route's relative artifact path to the URL the browser should fetch.
-     *
-     * The route returns relative paths (`/_webiny/theme/<id>/<v>/tokens.css`). When `sameOrigin` is set,
-     * the frontend proxies `/_webiny/theme/*` to the API, so the relative path is exactly what the
-     * browser should use — it resolves against the site origin and the proxy forwards it. Otherwise the
-     * path is made absolute on the API host so the `<link>` resolves with no proxy in place. An
-     * already-absolute URL is passed through in both modes.
-     */
-    private resolveArtifactUrl(path: string): string {
-        if (/^https?:\/\//i.test(path) || this.sameOrigin) {
-            return path;
-        }
-        return this.toFetchableUrl(path);
-    }
-
-    /**
-     * Always-absolute URL for a server-side fetch, regardless of `sameOrigin`.
-     *
-     * `sameOrigin` makes the browser `<link>` relative, but SSR `fetch` needs an origin — so a
-     * same-origin relative artifact path must still be resolved onto the API host before this client
-     * fetches it itself.
-     */
-    private toFetchableUrl(path: string): string {
-        if (/^https?:\/\//i.test(path)) {
-            return path;
-        }
-        return `${this.apiHost}${path.startsWith("/") ? "" : "/"}${path}`;
-    }
 }
 
 /**
- * Cache tag for the theme fetches.
- *
- * Pass it into the framework's fetch cache (Next.js: `requestInit: { next: { tags: [THEME_CACHE_TAG] } }`)
- * and revalidate it from the webhook handler (`revalidateTag(THEME_CACHE_TAG)`) so a newly activated
- * theme reaches the live site at once instead of after the active pointer's 60s TTL.
- */
-export const THEME_CACHE_TAG = "webiny-theme";
-
-/**
- * The webhook events that change what is live, and so warrant dropping the cached active pointer.
- *
- * Only activation and deactivation move the active pointer. Publishing mints a new immutable version but
- * does not change what is active until it is activated; created/updated/deleted never touch delivery. So
- * a handler should ignore everything else — revalidating on a draft save would purge the cache for
- * nothing.
- */
-export const THEME_REVALIDATE_EVENTS = ["theme.activated", "theme.deactivated"] as const;
-
-/** Whether a theme webhook event should trigger frontend revalidation. */
-export const shouldRevalidateTheme = (eventName: string): boolean => {
-    return (THEME_REVALIDATE_EVENTS as readonly string[]).includes(eventName);
-};
-
-export const GOOGLE_FONTS_ORIGIN = "https://fonts.googleapis.com";
-export const GOOGLE_FONTS_STATIC_ORIGIN = "https://fonts.gstatic.com";
-
-const toFamilyParam = (font: ThemeFont): string | null => {
-    const family = font.family.trim().replace(/\s+/g, "+");
-    if (!family) {
-        return null;
-    }
-
-    const weights = [...new Set(font.weights)].sort((a, b) => a - b);
-    if (weights.length === 0) {
-        // No explicit weights → let Google Fonts serve the family's default (400).
-        return family;
-    }
-
-    const hasItalic = font.styles.some(style => style.toLowerCase() === "italic");
-    if (!hasItalic) {
-        return `${family}:wght@${weights.join(";")}`;
-    }
-
-    // css2 requires `ital,wght` tuples sorted ital-then-weight: 0,400;0,600;1,400;1,600.
-    const tuples = [
-        ...weights.map(weight => `0,${weight}`),
-        ...weights.map(weight => `1,${weight}`)
-    ];
-    return `${family}:ital,wght@${tuples.join(";")}`;
-};
-
-/**
- * Builds a single Google Fonts `css2` stylesheet URL for the theme's fonts, or `null` if there are none.
- *
- * One request for every family/weight/style the theme uses — matching the producer, which records only
- * the weights actually referenced. `display=swap` so text paints immediately in a fallback and swaps
- * when the web font arrives.
- */
-export const buildGoogleFontsUrl = (fonts: ThemeFont[], display = "swap"): string | null => {
-    const families = fonts.map(toFamilyParam).filter((param): param is string => param !== null);
-    if (families.length === 0) {
-        return null;
-    }
-
-    const params = families.map(family => `family=${family}`).join("&");
-    return `${GOOGLE_FONTS_ORIGIN}/css2?${params}&display=${display}`;
-};
-
-/**
- * The `<head>` tags that load the theme's fonts: preconnect to both Google origins, then the stylesheet.
- *
- * The `gstatic` preconnect carries `crossorigin` because the font files it serves are fetched
- * anonymously — without it the connection is not reused and the preconnect is wasted. Empty for a theme
- * with no web fonts.
- */
-export const getFontLinkTags = (fonts: ThemeFont[]): ThemeLinkTag[] => {
-    const url = buildGoogleFontsUrl(fonts);
-    if (!url) {
-        return [];
-    }
-
-    return [
-        { rel: "preconnect", href: GOOGLE_FONTS_ORIGIN },
-        { rel: "preconnect", href: GOOGLE_FONTS_STATIC_ORIGIN, crossOrigin: "anonymous" },
-        { rel: "stylesheet", href: url }
-    ];
-};
-
-/**
- * Builds the same-origin proxy rule for the theme routes.
- *
- * Spread into a Next.js `next.config` `rewrites()` so the browser fetches immutable artifacts from the
- * site's own origin (CDN-cached under the site domain) rather than cross-origin. Pair it with
- * `sameOrigin: true` on the SDK, so the emitted `<link>` uses the relative path this rule proxies.
+ * The same-origin proxy rule for the theme routes, spread into a Next.js `rewrites()`. Pair it with
+ * `sameOrigin: true` on the SDK so the emitted `<link>` uses the relative path this rule proxies.
  *
  *   // next.config.js
- *   async rewrites() {
- *     return [createThemeRewrite(process.env.WEBINY_API_URL)];
- *   }
+ *   async rewrites() { return [createThemeRewrite(process.env.WEBINY_API_URL)]; }
  */
 export const createThemeRewrite = (apiHost: string): ThemeRewriteRule => {
     const host = apiHost.replace(/\/+$/, "");
@@ -352,34 +170,12 @@ export const createThemeRewrite = (apiHost: string): ThemeRewriteRule => {
 };
 
 /**
- * The same-origin proxy as a Nuxt `routeRules` fragment — the Nitro equivalent of `createThemeRewrite`.
- *
- * Nuxt keeps feature parity with Next.js; the only difference is the shape. Nitro route rules key on the
- * matched path and proxy with a `**` wildcard, where Next uses a `{ source, destination }` pair with
- * `:path*`. Spread into `routeRules` in `nuxt.config`, and pair with `sameOrigin: true` on the SDK.
- *
- *   // nuxt.config.ts
- *   export default defineNuxtConfig({
- *     routeRules: { ...createNuxtThemeRouteRules(process.env.WEBINY_API_URL) }
- *   });
+ * The same-origin proxy as a Nuxt (Nitro) `routeRules` fragment — the Nuxt equivalent of
+ * `createThemeRewrite`. Spread into `routeRules` in `nuxt.config`, and pair with `sameOrigin: true`.
  */
 export const createNuxtThemeRouteRules = (apiHost: string): ThemeNuxtRouteRules => {
     const host = apiHost.replace(/\/+$/, "");
     return {
         [`${THEME_ROUTE_PREFIX}/**`]: { proxy: `${host}${THEME_ROUTE_PREFIX}/**` }
     };
-};
-
-/**
- * The `<head>` tags a layout renders to apply the theme.
- *
- * Pure and framework-agnostic: Next.js, Nuxt and plain React all map this to their own head mechanism.
- * Returns an empty array for a themeless site, so a layout renders nothing extra.
- */
-export const getThemeLinkTags = (active: ActiveTheme | null): ThemeLinkTag[] => {
-    if (!active) {
-        return [];
-    }
-
-    return [{ rel: "stylesheet", href: active.artifacts.css }];
 };

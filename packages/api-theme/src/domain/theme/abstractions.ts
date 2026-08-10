@@ -20,6 +20,8 @@ export interface ThemeProperties {
 
 /** The values stored on the CMS entry. */
 export interface CmsEntryTheme {
+    /** The document's shape version (see `THEME_SCHEMA_VERSION`); 0 for a pre-versioning document. */
+    schemaVersion: number;
     properties: ThemeProperties;
     /** The DTCG draft document. Aliases are still unresolved here. */
     tokens: TokenDocument;

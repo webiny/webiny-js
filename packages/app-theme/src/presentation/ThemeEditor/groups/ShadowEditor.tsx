@@ -13,7 +13,8 @@ import {
 import { useThemes } from "~/presentation/useThemes.js";
 import type { ResolvedThemeView } from "~/presentation/useResolvedTheme.js";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
-import { EditableLength, Field, InfoCard, MutedNote, Toggle } from "./_shared.js";
+import { Collapsible, EditableLength, Field, MutedNote, Toggle } from "./_shared.js";
+import { SemanticSlotList } from "./SemanticSlotList.js";
 
 const P = ({ children }: { children: React.ReactNode }) => (
     <Text size="md" as="div" className="block text-neutral-primary leading-snug">
@@ -174,23 +175,40 @@ export const ShadowEditor = observer(function ShadowEditor(props: ShadowEditorPr
     const steps = getRamp("shadow").steps;
 
     return (
-        <InfoCard title="Shadows" hint={`${steps.length} steps`} info={SHADOW_INFO}>
-            {/* The underline variant border-b's every item; drop the last one so it doesn't double
-                up with the InfoCard's own bottom border. */}
-            <div className="[&_.group-item:last-child]:border-b-0">
-                <Accordion variant="underline">
-                    {paths.map((path, index) => (
-                        <ShadowStep
-                            key={path}
-                            theme={theme}
-                            path={path}
-                            step={steps[index]}
-                            mode={mode}
-                            readOnly={readOnly}
-                        />
-                    ))}
-                </Accordion>
-            </div>
-        </InfoCard>
+        <>
+            {/* Semantic elevation roles first — what components bind to; the raw steps sit below. */}
+            <SemanticSlotList
+                group="shadow"
+                title="Shadows"
+                renderPreview={value => (
+                    <div
+                        className="size-8 rounded-sm bg-neutral-base"
+                        style={{
+                            boxShadow: isShadowValue(value) ? formatShadow(value) : undefined
+                        }}
+                    />
+                )}
+                {...props}
+            />
+
+            <Collapsible title="Shadow scale" hint={`${steps.length} steps`} info={SHADOW_INFO}>
+                {/* The underline variant border-b's every item; drop the last one so it doesn't double
+                    up with the section's own bottom border. */}
+                <div className="[&_.group-item:last-child]:border-b-0">
+                    <Accordion variant="underline">
+                        {paths.map((path, index) => (
+                            <ShadowStep
+                                key={path}
+                                theme={theme}
+                                path={path}
+                                step={steps[index]}
+                                mode={mode}
+                                readOnly={readOnly}
+                            />
+                        ))}
+                    </Accordion>
+                </div>
+            </Collapsible>
+        </>
     );
 });

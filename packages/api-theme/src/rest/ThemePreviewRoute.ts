@@ -1,12 +1,7 @@
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
-import {
-    IMMUTABLE_CACHE_CONTROL,
-    NO_CACHE_CONTROL,
-    THEME_ARTIFACT_ROUTE,
-    toRevisionId
-} from "~/constants.js";
+import { NO_CACHE_CONTROL, THEME_PREVIEW_ROUTE, toRevisionId } from "~/constants.js";
 import { GetThemeByIdRepository } from "~/features/GetThemeById/index.js";
 import { ThemeArtifactService, isArtifactFile } from "~/features/ThemeArtifacts/index.js";
 import { ThemePermissions } from "~/features/permissions/abstractions.js";
@@ -18,19 +13,18 @@ const json = (statusCode: number, body: unknown): IHttpResponse => ({
 });
 
 /**
- * `GET /_webiny/theme/{themeId}/{version}/{tokens.css|tokens.json}`
+ * `GET /_webiny/theme/preview/{themeId}/{version}/{file}` — see the change brief, C7 and section 6.5.
  *
- * Access follows what the version is, not who is asking:
+ * Preview is the only place a specific version stays addressable now that public delivery serves the
+ * active version at a stable URL. It targets a draft (or any version) explicitly, is gated behind the
+ * theme permission, and is never cached — a draft is rendered on demand and changes constantly.
  *
- * - A version that has been published carries a frozen snapshot and is served **publicly** with an
- *   immutable TTL. It has to be: the stylesheet is fetched by the visitor's browser through the
- *   frontend's rewrite, and a browser has no API key.
- * - A draft has no snapshot, is rendered on demand, and is gated behind the theme permission. This
- *   is the addressability the preview contract in section 6.5 asks for.
+ * A draft that is not yet valid returns its blocker list, which is what lets the editor show why a
+ * preview cannot render.
  */
-class ThemeArtifactRouteImpl implements HttpRoute.Interface {
+class ThemePreviewRouteImpl implements HttpRoute.Interface {
     readonly method = "GET";
-    readonly path = THEME_ARTIFACT_ROUTE;
+    readonly path = THEME_PREVIEW_ROUTE;
 
     constructor(private container: Container) {}
 
@@ -46,11 +40,14 @@ class ThemeArtifactRouteImpl implements HttpRoute.Interface {
             return json(400, { message: `"${version}" is not a valid theme version.` });
         }
 
-        // Resolved lazily: the router constructs every route on each request just to path-match, and
-        // these dependencies are only registered once the request container is set up.
-        const repository = this.container.resolve(GetThemeByIdRepository);
-        const artifacts = this.container.resolve(ThemeArtifactService);
+        // Preview is never public: a specific version is only addressable to someone who can read
+        // themes. A 404 rather than 403 so an unauthenticated caller cannot probe which versions exist.
+        const permissions = this.container.resolve(ThemePermissions);
+        if (!(await permissions.canRead("theme"))) {
+            return json(404, { message: `Theme version ${themeId} v${versionNumber} not found.` });
+        }
 
+        const repository = this.container.resolve(GetThemeByIdRepository);
         const found = await repository.execute(toRevisionId(themeId, versionNumber));
 
         if (found.isFail()) {
@@ -62,20 +59,8 @@ class ThemeArtifactRouteImpl implements HttpRoute.Interface {
             return json(500, { message: found.error.message });
         }
 
-        const theme = found.value;
-
-        if (!theme.resolved) {
-            const permissions = this.container.resolve(ThemePermissions);
-            if (!(await permissions.canRead("theme"))) {
-                // Deliberately 404, not 403: an unauthenticated caller should not be able to probe
-                // which draft versions exist.
-                return json(404, {
-                    message: `Theme version ${themeId} v${versionNumber} not found.`
-                });
-            }
-        }
-
-        const rendered = artifacts.render(theme, file);
+        const artifacts = this.container.resolve(ThemeArtifactService);
+        const rendered = artifacts.render(found.value, file);
 
         if (rendered.isFail()) {
             return json(422, {
@@ -88,16 +73,14 @@ class ThemeArtifactRouteImpl implements HttpRoute.Interface {
             statusCode: 200,
             headers: {
                 "content-type": rendered.value.contentType,
-                "cache-control": rendered.value.immutable
-                    ? IMMUTABLE_CACHE_CONTROL
-                    : NO_CACHE_CONTROL
+                "cache-control": NO_CACHE_CONTROL
             },
             body: rendered.value.body
         };
     }
 }
 
-export const ThemeArtifactRoute = HttpRoute.createImplementation({
-    implementation: ThemeArtifactRouteImpl,
+export const ThemePreviewRoute = HttpRoute.createImplementation({
+    implementation: ThemePreviewRouteImpl,
     dependencies: [RequestContainer]
 });

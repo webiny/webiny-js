@@ -2,8 +2,8 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { Theme } from "~/domain/theme/abstractions.js";
 import type { ThemeNotPublishableError } from "~/domain/theme/errors.js";
 
-/** The two artifacts a published version exposes — see the design brief, section 6.2. */
-export const ARTIFACT_FILES = ["tokens.css", "tokens.json"] as const;
+/** The three artifacts a published version exposes — see the design brief, section 6.2, and C6. */
+export const ARTIFACT_FILES = ["tokens.css", "tokens.json", "manifest.json"] as const;
 
 export type ArtifactFile = (typeof ARTIFACT_FILES)[number];
 

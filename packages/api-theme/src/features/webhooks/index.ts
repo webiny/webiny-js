@@ -1,2 +1,2 @@
 export { ThemeWebhookEvent } from "./constants.js";
-export type { ThemeActivationWebhookPayload, ThemeWebhookPayload } from "./payload.js";
+export type { ThemeWebhookPayload } from "./payload.js";

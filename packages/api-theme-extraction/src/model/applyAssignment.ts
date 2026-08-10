@@ -2,7 +2,9 @@ import {
     CANONICAL_COLOR_SLOTS,
     childNames,
     createDefaultThemeDocument,
+    deriveActionAndSurfaceStates,
     getNodeAtPath,
+    getRamp,
     getTokenAtPath,
     isDesignToken,
     isTokenGroup,
@@ -11,7 +13,9 @@ import {
     MODES_EXTENSION,
     parseAlias,
     parseLength,
+    rampStepPath,
     removeNodeAtPath,
+    resolveDocumentModes,
     setNodeAtPath,
     setTokenReference,
     setTokenValue,
@@ -21,14 +25,18 @@ import {
     toAlias,
     toRem,
     walkTokens,
+    type DerivationBases,
+    type RampId,
     type ThemeSettings,
-    type TokenDocument
+    type TokenDocument,
+    type TokenValue
 } from "@webiny/theme-common";
 import type {
     AcceptedAssignment,
     ModelTypographyValue,
     ValidatedAssignment
 } from "./tokenAssignment.js";
+import type { RoleSignals } from "~/crawl/roleSignals.js";
 
 /**
  * Turning the model's answer into a token document.
@@ -75,6 +83,13 @@ export interface AppliedAssignment {
      * swallowing.
      */
     failed: Array<{ path: string; reason: string }>;
+    /**
+     * Roles the deterministic per-role pass set but is not fully sure about (measured from very few
+     * elements, or snapped a long way to the nearest step). Surfaced on the theme's metadata so the
+     * review screen can flag "we guessed this from the site — confirm it" rather than presenting it as
+     * settled. A confident snap is applied silently and never appears here.
+     */
+    uncertain: Array<{ path: string; reason: string }>;
 }
 
 /** CSS generic family keywords and system stacks — real, but not a Google font we can load by name. */
@@ -153,6 +168,127 @@ const nearestTextStep = (document: TokenDocument, size: string): string | undefi
     }
 
     return bestStep;
+};
+
+/**
+ * The step on a single-valued ramp (radius, border) whose value is closest to a measured length.
+ * Returns the step name plus how far it had to move (in rem), so the caller can judge confidence.
+ * Undefined for a non-length measurement or a ramp with no numeric steps, in which case the role
+ * keeps its default.
+ */
+const nearestRampStep = (
+    document: TokenDocument,
+    ramp: RampId,
+    measured: string
+): { step: string; distanceRem: number } | undefined => {
+    const parsed = parseLength(measured);
+    if (!parsed) {
+        return undefined;
+    }
+
+    const target = toRem(parsed);
+    let bestStep: string | undefined;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (const step of getRamp(ramp).steps) {
+        const token = getTokenAtPath(document, rampStepPath(ramp, step));
+        const stepValue = typeof token?.$value === "string" ? parseLength(token.$value) : null;
+        if (!stepValue) {
+            continue;
+        }
+        const distance = Math.abs(toRem(stepValue) - target);
+        if (distance < bestDistance) {
+            bestDistance = distance;
+            bestStep = step;
+        }
+    }
+
+    return bestStep === undefined ? undefined : { step: bestStep, distanceRem: bestDistance };
+};
+
+/** Which semantic role each role-signal feeds, and the ramp it snaps against. */
+const ROLE_SIGNAL_TARGETS: Array<{
+    signal: keyof RoleSignals;
+    role: string;
+    ramp: RampId;
+    label: string;
+}> = [
+    {
+        signal: "radiusControl",
+        role: "radius.control",
+        ramp: "radius",
+        label: "corner radius on buttons and inputs"
+    },
+    {
+        signal: "radiusContainer",
+        role: "radius.container",
+        ramp: "radius",
+        label: "corner radius on cards"
+    },
+    {
+        signal: "borderControl",
+        role: "border.control",
+        ramp: "border",
+        label: "border width on controls"
+    }
+];
+
+/** Fewer than this many elements behind a measurement makes it a guess worth flagging for review. */
+const MIN_CONFIDENT_SAMPLES = 3;
+/** A snap that moves the measurement further than this (2px) is a poor fit worth flagging. */
+const MAX_CONFIDENT_SNAP_REM = 0.125;
+
+/**
+ * Points the detectable semantic roles at the ramp step the site actually uses, from the crawl's
+ * deterministic measurements. Runs after the model has set the scales, so it snaps against the
+ * extracted step values rather than the seeded ones. A role with no measurement is left untouched
+ * (keeping its default alias); a low-confidence snap is still applied but flagged for review.
+ */
+const deriveRoleAliases = (
+    document: TokenDocument,
+    signals: RoleSignals
+): {
+    document: TokenDocument;
+    applied: string[];
+    uncertain: Array<{ path: string; reason: string }>;
+} => {
+    let next = document;
+    const applied: string[] = [];
+    const uncertain: Array<{ path: string; reason: string }> = [];
+
+    for (const target of ROLE_SIGNAL_TARGETS) {
+        const measured = signals[target.signal];
+        if (!measured) {
+            continue;
+        }
+        const snapped = nearestRampStep(next, target.ramp, measured.value);
+        if (!snapped) {
+            continue;
+        }
+
+        next = setTokenReference(
+            next,
+            target.role,
+            "light",
+            rampStepPath(target.ramp, snapped.step)
+        );
+        applied.push(target.role);
+
+        if (
+            measured.samples < MIN_CONFIDENT_SAMPLES ||
+            snapped.distanceRem > MAX_CONFIDENT_SNAP_REM
+        ) {
+            uncertain.push({
+                path: target.role,
+                reason:
+                    `Detected the ${target.label} as ${measured.value} from ` +
+                    `${measured.samples} element(s) and mapped it to ${target.ramp}.${snapped.step}; ` +
+                    `confirm it matches the design.`
+            });
+        }
+    }
+
+    return { document: next, applied, uncertain };
 };
 
 interface FontTally {
@@ -278,6 +414,8 @@ const applyScalar = (
     return setTokenValue(document, entry.path, mode, entry.value as string);
 };
 
+const asColor = (value: TokenValue | undefined): string => (typeof value === "string" ? value : "");
+
 /** One extracted colour bound for a slot, kept with its mode so light and dark are linked separately. */
 interface ColorLink {
     path: string;
@@ -353,7 +491,13 @@ const slugify = (name: string): string =>
  */
 const linkColorsToBrand = (
     document: TokenDocument,
-    colors: ColorLink[]
+    colors: ColorLink[],
+    /**
+     * Base names to treat as already taken, so the first colour in a group is qualified by its slot
+     * label rather than claiming the bare group name. Used when linking derived states after the base
+     * colours, so a linked `action.primary.hover` reads as "Primary Hover", not a second "Primary".
+     */
+    reservedBaseNames?: ReadonlySet<string>
 ): {
     document: TokenDocument;
     applied: string[];
@@ -378,7 +522,7 @@ const linkColorsToBrand = (
         }
     }
 
-    const usedBaseNames = new Set<string>();
+    const usedBaseNames = new Set<string>(reservedBaseNames);
 
     // Introduce colours light-first, then in canonical slot order, so the palette's names come from the
     // light theme and are stable run to run rather than dependent on the model's ordering.
@@ -463,6 +607,84 @@ const pruneUnreferencedBrandColors = (document: TokenDocument): TokenDocument =>
 };
 
 /**
+ * The derived action states that link to the brand palette rather than sit as literals — the same
+ * set the hand-built default theme wires with `slot(...)`. The "copy" states (`ghost.foreground` is
+ * the link accent, `destructive.background` the danger colour, `disabled.*` the sunken/muted colours)
+ * de-dup onto the primitive their base already uses, so editing that one brand colour cascades. The
+ * hover/active shades become their own named primitives. Everything else the derivation produces —
+ * the transparent fill, the alpha tints, the lightness shifts, the scrim — has no brand equivalent
+ * and stays a literal, exactly as the default theme leaves them (`token(...)`).
+ */
+const BRAND_LINKED_DERIVED_SLOTS = new Set<string>([
+    "color.action.primary.hover",
+    "color.action.primary.active",
+    "color.action.secondary.hover",
+    "color.action.secondary.active",
+    "color.action.ghost.foreground",
+    "color.action.destructive.background",
+    "color.action.destructive.foreground",
+    "color.action.disabled.background",
+    "color.action.disabled.foreground"
+]);
+
+/**
+ * Extraction completion — see the change brief, C13 and C4.
+ *
+ * The prompt asks the model for a small determined set (palette, type scale, spacing, primary and
+ * secondary actions), never the 67 slots. This fills in the rest by rule: it resolves the colours the
+ * model actually determined and re-derives the action states and scrim from them, so a generated
+ * theme's ghost, destructive, disabled, hover/active and scrim follow the site. The states that map
+ * onto a real colour are linked into the brand palette (so they read as linked and editing a brand
+ * colour cascades, like the default theme); the alpha/shift states stay plain literals.
+ */
+const applyDerivedStates = (document: TokenDocument): TokenDocument => {
+    const resolved = resolveDocumentModes(document);
+    const base = (path: string) => ({
+        light: asColor(resolved.light.tokens.get(path)?.value),
+        dark: asColor(resolved.dark.tokens.get(path)?.value)
+    });
+
+    const bases: DerivationBases = {
+        primary: base("color.action.primary.background"),
+        secondary: base("color.action.secondary.background"),
+        danger: base("color.feedback.danger.foreground"),
+        onAction: base("color.action.primary.foreground"),
+        link: base("color.text.link"),
+        ink: base("color.text.primary"),
+        mutedText: base("color.text.muted"),
+        sunkenSurface: base("color.surface.sunken")
+    };
+
+    let next = document;
+    const brandLinks: ColorLink[] = [];
+    for (const [path, value] of Object.entries(deriveActionAndSurfaceStates(bases))) {
+        // A base colour that didn't resolve yields an empty derived value; skip it and keep the seed.
+        if (!value.light) {
+            continue;
+        }
+        if (BRAND_LINKED_DERIVED_SLOTS.has(path)) {
+            brandLinks.push({ path, mode: "light", value: value.light });
+            if (value.dark && value.dark !== value.light) {
+                brandLinks.push({ path, mode: "dark", value: value.dark });
+            }
+        } else {
+            next = setTokenValue(next, path, "light", value.light);
+            next = setTokenValue(
+                next,
+                path,
+                "dark",
+                value.dark && value.dark !== value.light ? value.dark : undefined
+            );
+        }
+    }
+
+    // Reserve the group base names so a linked state reads as "Primary Hover" rather than claiming a
+    // second bare "Primary" alongside the base colour it was shifted from.
+    return linkColorsToBrand(next, brandLinks, new Set(Object.values(BRAND_BASE_BY_GROUP)))
+        .document;
+};
+
+/**
  * Applies a validated assignment, starting from the default theme.
  *
  * Non-colour scalars (ramps, shadows) first, then roles — a role's size snaps to the text ramp, so the
@@ -472,7 +694,10 @@ const pruneUnreferencedBrandColors = (document: TokenDocument): TokenDocument =>
  * palette a hand-made one does. Light precedes dark throughout: a dark value is a mode override, so the
  * token has to hold its light value before the override means anything.
  */
-export const applyAssignment = (validated: ValidatedAssignment): AppliedAssignment => {
+export const applyAssignment = (
+    validated: ValidatedAssignment,
+    roleSignals?: RoleSignals
+): AppliedAssignment => {
     let document = createDefaultThemeDocument();
     const applied: string[] = [];
     const failed: Array<{ path: string; reason: string }> = [];
@@ -537,10 +762,25 @@ export const applyAssignment = (validated: ValidatedAssignment): AppliedAssignme
     failed.push(...linked.failed);
     // Only reshape the palette when colours were actually extracted; a colour-free extraction leaves
     // the shipped primitives untouched rather than stripping the ones its default slots do not use.
+    // When colours were extracted: derive the action states + scrim from them (C13), then prune the
+    // brand primitives left orphaned once the derived slots stopped pointing at the default palette.
     document =
-        colorLinks.length > 0 ? pruneUnreferencedBrandColors(linked.document) : linked.document;
+        colorLinks.length > 0
+            ? pruneUnreferencedBrandColors(applyDerivedStates(linked.document))
+            : linked.document;
 
-    return { document, applied, failed, fonts: resolveFonts(tallies) };
+    // Deterministic per-role detection, last: it snaps the detectable semantic roles (control/
+    // container radius, control border width) onto the scales the model just set. Absent role
+    // signals (an older cached crawl, or a site that yielded none) leave every role at its default.
+    let uncertain: Array<{ path: string; reason: string }> = [];
+    if (roleSignals) {
+        const roles = deriveRoleAliases(document, roleSignals);
+        document = roles.document;
+        applied.push(...roles.applied);
+        uncertain = roles.uncertain;
+    }
+
+    return { document, applied, failed, uncertain, fonts: resolveFonts(tallies) };
 };
 
 export interface ExtractionMetadata {

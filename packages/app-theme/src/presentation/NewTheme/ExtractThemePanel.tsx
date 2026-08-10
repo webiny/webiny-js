@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Alert, Input, ProgressBar, Text } from "@webiny/admin-ui";
+import { Alert, Checkbox, Input, ProgressBar, Text } from "@webiny/admin-ui";
 import type { ExtractionRepository } from "~/features/extraction/index.js";
 
 /**
@@ -14,12 +14,22 @@ import type { ExtractionRepository } from "~/features/extraction/index.js";
 interface FormProps {
     url: string;
     name: string;
+    force: boolean;
     onUrlChange: (value: string) => void;
     onNameChange: (value: string) => void;
+    onForceChange: (value: boolean) => void;
     onSubmit: () => void;
 }
 
-export const ExtractThemeForm = ({ url, name, onUrlChange, onNameChange, onSubmit }: FormProps) => (
+export const ExtractThemeForm = ({
+    url,
+    name,
+    force,
+    onUrlChange,
+    onNameChange,
+    onForceChange,
+    onSubmit
+}: FormProps) => (
     <div className="flex flex-col gap-md">
         <Input
             label="Website address"
@@ -40,6 +50,14 @@ export const ExtractThemeForm = ({ url, name, onUrlChange, onNameChange, onSubmi
             value={name}
             placeholder="e.g. Northbeam 2026"
             onChange={onNameChange}
+        />
+
+        {/* A recent crawl of the same site is reused for up to a week to save a full re-read. Tick this
+            to read it again instead — to pick up a redesign, or improvements to extraction itself. */}
+        <Checkbox
+            label="Read the site again (ignore any recent crawl)"
+            checked={force}
+            onChange={onForceChange}
         />
 
         {/* Set expectations before the wait, not during it. */}

@@ -21,6 +21,7 @@ export interface WebinyThemeScales {
     fontSize: Record<string, string>;
     borderRadius: Record<string, string>;
     boxShadow: Record<string, string>;
+    borderWidth: Record<string, string>;
 }
 
 /**
@@ -35,7 +36,8 @@ const SCALE_BY_PREFIX: Readonly<Record<string, keyof WebinyThemeScales>> = {
     space: "spacing",
     text: "fontSize",
     radius: "borderRadius",
-    shadow: "boxShadow"
+    shadow: "boxShadow",
+    border: "borderWidth"
 };
 
 /**
@@ -59,7 +61,8 @@ export const webinyThemeTokens = (): WebinyThemeScales => {
         spacing: {},
         fontSize: {},
         borderRadius: {},
-        boxShadow: {}
+        boxShadow: {},
+        borderWidth: {}
     };
 
     for (const slot of CANONICAL_SLOTS) {

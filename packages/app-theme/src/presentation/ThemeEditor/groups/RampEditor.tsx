@@ -21,7 +21,8 @@ import {
 import { useThemes } from "~/presentation/useThemes.js";
 import type { ResolvedThemeView } from "~/presentation/useResolvedTheme.js";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
-import { InfoCard, MutedNote, Toggle } from "./_shared.js";
+import { Collapsible, InfoCard, MutedNote, Toggle } from "./_shared.js";
+import { SemanticSlotList } from "./SemanticSlotList.js";
 
 /** The fluid-capable, generated ramps that share this editor: the type sizes and the spacing scale. */
 type RampKind = "text" | "space";
@@ -344,23 +345,63 @@ export const RampEditor = observer(function RampEditor(props: RampEditorProps) {
     const steps = getRamp(rampId).steps;
     const copy = RAMP_COPY[rampId];
 
+    const generator = (
+        <GeneratorControls
+            rampId={rampId}
+            note={copy.scaleNote}
+            theme={props.theme}
+            readOnly={props.readOnly}
+        />
+    );
+
+    const stepRows = (
+        <div className="flex flex-col divide-y divide-neutral-dimmed">
+            {paths.map((path, index) => (
+                <RampStepRow key={path} {...props} path={path} step={steps[index]} />
+            ))}
+        </div>
+    );
+
+    // Spacing gains a semantic layer above the ramp (control padding, gaps, section rhythm), the same
+    // shape colour and typography already have — so it leads with the roles table and tucks the
+    // generator and per-step values into a collapsed "scale" section. Type sizes keep the flat layout:
+    // their semantic layer is the typography roles, edited on the Typography screen, which this leaves
+    // untouched.
+    if (rampId === "space") {
+        return (
+            <>
+                <SemanticSlotList
+                    group="space"
+                    title="Spacing roles"
+                    theme={props.theme}
+                    resolved={props.resolved}
+                    mode={props.mode}
+                    readOnly={props.readOnly}
+                />
+
+                <Collapsible
+                    title={copy.scaleTitle}
+                    hint={`${steps.length} steps`}
+                    info={copy.scaleInfo}
+                    infoTitle={copy.scaleInfoTitle}
+                >
+                    <div className="flex flex-col gap-md">
+                        {generator}
+                        {stepRows}
+                    </div>
+                </Collapsible>
+            </>
+        );
+    }
+
     return (
         <>
             <InfoCard title={copy.scaleTitle} info={copy.scaleInfo} infoTitle={copy.scaleInfoTitle}>
-                <GeneratorControls
-                    rampId={rampId}
-                    note={copy.scaleNote}
-                    theme={props.theme}
-                    readOnly={props.readOnly}
-                />
+                {generator}
             </InfoCard>
 
             <InfoCard title="Scaling" hint={`${steps.length} steps`} info={copy.scalingInfo}>
-                <div className="flex flex-col divide-y divide-neutral-dimmed">
-                    {paths.map((path, index) => (
-                        <RampStepRow key={path} {...props} path={path} step={steps[index]} />
-                    ))}
-                </div>
+                {stepRows}
             </InfoCard>
         </>
     );

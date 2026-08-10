@@ -5,6 +5,7 @@ import {
     createDefaultSettings,
     createDefaultThemeDocument
 } from "@webiny/theme-common";
+import { THEME_SCHEMA_VERSION } from "~/constants.js";
 import { CreateThemeRepository, CreateThemeUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ThemeAfterCreateEvent, ThemeBeforeCreateEvent } from "./events.js";
 import { ThemePermissions } from "~/features/permissions/abstractions.js";
@@ -30,8 +31,10 @@ class CreateThemeUseCaseImpl implements UseCaseAbstraction.Interface {
         await this.eventPublisher.publish(new ThemeBeforeCreateEvent({ input }));
 
         // Anything the caller did not supply is seeded from the default theme, so every canonical
-        // slot is filled from the moment the theme exists.
+        // slot is filled from the moment the theme exists. The document is stamped with the current
+        // schema version, so a future shape change can tell it apart from an older one.
         const result = await this.repository.execute({
+            schemaVersion: THEME_SCHEMA_VERSION,
             properties: { ...input.properties, name },
             tokens: input.tokens ?? createDefaultThemeDocument(),
             policy: input.policy ?? createDefaultPolicy(),

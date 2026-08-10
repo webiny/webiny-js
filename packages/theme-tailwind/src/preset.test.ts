@@ -15,11 +15,13 @@ describe("webinyThemeTokens", () => {
         );
     });
 
-    it("binds spacing, font size, radius and shadow to their variables", () => {
+    it("binds spacing, font size, radius, shadow and border width to their variables", () => {
         expect(tokens.spacing["md"]).toBe("var(--wby-space-md)");
         expect(tokens.fontSize["lg"]).toBe("var(--wby-text-lg)");
         expect(tokens.borderRadius["sm"]).toBe("var(--wby-radius-sm)");
         expect(tokens.boxShadow["md"]).toBe("var(--wby-shadow-md)");
+        expect(tokens.borderWidth["default"]).toBe("var(--wby-border-default)");
+        expect(tokens.borderWidth["control"]).toBe("var(--wby-border-control)");
     });
 
     it("routes text ramp to fontSize and space ramp to spacing (both are dimension-typed)", () => {
@@ -47,7 +49,8 @@ describe("webinyThemeTokens", () => {
             Object.keys(tokens.spacing).length +
             Object.keys(tokens.fontSize).length +
             Object.keys(tokens.borderRadius).length +
-            Object.keys(tokens.boxShadow).length;
+            Object.keys(tokens.boxShadow).length +
+            Object.keys(tokens.borderWidth).length;
 
         const expected = CANONICAL_SLOTS.filter(slot => !slot.path.startsWith("type.")).length;
         expect(bound).toBe(expected);
@@ -78,7 +81,8 @@ describe("webinyThemePreset", () => {
             "spacing",
             "fontSize",
             "borderRadius",
-            "boxShadow"
+            "boxShadow",
+            "borderWidth"
         ]);
     });
 });

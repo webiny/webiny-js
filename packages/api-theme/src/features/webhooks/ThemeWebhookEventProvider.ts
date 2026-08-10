@@ -16,9 +16,7 @@ class ThemeWebhookFactoryImpl implements WebhookFactoryAbstraction.Interface {
             themeEvent(ThemeWebhookEvent.ThemeCreated, "Created"),
             themeEvent(ThemeWebhookEvent.ThemeUpdated, "Updated"),
             themeEvent(ThemeWebhookEvent.ThemeDeleted, "Deleted"),
-            themeEvent(ThemeWebhookEvent.ThemePublished, "Published"),
-            themeEvent(ThemeWebhookEvent.ThemeActivated, "Activated"),
-            themeEvent(ThemeWebhookEvent.ThemeDeactivated, "Deactivated")
+            themeEvent(ThemeWebhookEvent.ThemePublished, "Published")
         ];
     }
 }

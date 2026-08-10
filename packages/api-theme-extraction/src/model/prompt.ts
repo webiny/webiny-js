@@ -1,18 +1,57 @@
-import { CANONICAL_SLOTS } from "@webiny/theme-common";
+import { CANONICAL_SLOTS, type CanonicalSlot } from "@webiny/theme-common";
 import type { ModelPayload } from "./payload.js";
 
 /**
- * The instructions sent with the crawl — see the design brief, section 10.5.
+ * The instructions sent with the crawl — see the design brief, section 10.5, and the change brief, C13.
  *
- * The slot list is generated from `CANONICAL_SLOTS`, the same source the validator checks against.
- * Hand-writing it into the prompt would let the two drift, and the failure mode of that drift is
- * quiet: the model dutifully fills slots that no longer exist and every one of them is rejected.
+ * The slot list is generated from `CANONICAL_SLOTS`, the same source the validator checks against, so
+ * the two cannot drift. But the model is asked only for the *determined* set — the palette, the type
+ * scale, the spacing rhythm and the primary/secondary actions — never the full 67 slots. Everything
+ * else (ghost, destructive, disabled, scrim, hover/active, and the non-colour roles) is derived at
+ * completion from what the model returns, so asking for it would only invite guesses.
  */
+
+/** Colour states the model must not be asked for — `applyDerivedStates` derives these (C13/C4). */
+const DERIVED_SLOTS: ReadonlySet<string> = new Set([
+    "color.surface.scrim",
+    "color.action.primary.hover",
+    "color.action.primary.active",
+    "color.action.secondary.hover",
+    "color.action.secondary.active",
+    "color.action.ghost.background",
+    "color.action.ghost.foreground",
+    "color.action.ghost.hover",
+    "color.action.ghost.active",
+    "color.action.destructive.background",
+    "color.action.destructive.foreground",
+    "color.action.destructive.hover",
+    "color.action.destructive.active",
+    "color.action.disabled.background",
+    "color.action.disabled.foreground"
+]);
+
+/** Whether the model should be asked to determine this slot. */
+const isExtractionTarget = (slot: CanonicalSlot): boolean => {
+    if (DERIVED_SLOTS.has(slot.path)) {
+        return false;
+    }
+    const group = slot.path.split(".")[0];
+    // Non-colour semantic roles (radius.control, shadow.overlay, space.gap, …) keep their default
+    // aliases; the model determines the ramp *values*, not which step each role points at.
+    if (slot.kind === "semantic" && group !== "color" && group !== "type") {
+        return false;
+    }
+    // Border widths aren't reliably measurable from a site; the defaults stand.
+    if (group === "border") {
+        return false;
+    }
+    return true;
+};
 
 const slotList = (): string => {
     const byType = new Map<string, string[]>();
 
-    for (const slot of CANONICAL_SLOTS) {
+    for (const slot of CANONICAL_SLOTS.filter(isExtractionTarget)) {
         const paths = byType.get(slot.type) ?? [];
         paths.push(slot.path);
         byType.set(slot.type, paths);

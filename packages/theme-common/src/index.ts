@@ -36,3 +36,4 @@ export * from "./artifacts/index.js";
 
 export * from "./defaults/palette.js";
 export * from "./defaults/defaultTheme.js";
+export * from "./defaults/derive.js";

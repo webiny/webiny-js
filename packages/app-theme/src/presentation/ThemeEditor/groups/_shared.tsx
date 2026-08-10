@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, cn, Dialog, IconButton, Input, Text } from "@webiny/admin-ui";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
+import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
 
 /**
  * Shared layout + control primitives for the theme editor groups.
@@ -117,6 +118,66 @@ export const InfoButton = ({
                 <div className="flex flex-col gap-sm">{children}</div>
             </Dialog>
         </span>
+    );
+};
+
+/**
+ * A titled section that collapses. Used to tuck the raw ramp (radius, shadow, spacing and border-width
+ * steps) below the semantic roles, so a screen leads with what most people touch and the advanced
+ * scale is one click away rather than always on screen. Collapsed by default.
+ */
+export const Collapsible = ({
+    title,
+    hint,
+    info,
+    infoTitle,
+    defaultOpen = false,
+    children
+}: {
+    title: string;
+    hint?: React.ReactNode;
+    info?: React.ReactNode;
+    infoTitle?: string;
+    defaultOpen?: boolean;
+    children: React.ReactNode;
+}) => {
+    const [open, setOpen] = useState(defaultOpen);
+
+    return (
+        <div className="rounded-md border border-neutral-dimmed">
+            <div className="flex items-center gap-sm">
+                <button
+                    type="button"
+                    onClick={() => setOpen(value => !value)}
+                    aria-expanded={open}
+                    className="flex flex-1 min-w-0 items-baseline gap-sm px-sm py-sm text-left cursor-pointer"
+                >
+                    <ExpandMoreIcon
+                        className={cn(
+                            "size-5 flex-none self-center fill-neutral-strong transition-transform",
+                            open ? "rotate-0" : "-rotate-90"
+                        )}
+                    />
+                    <Text
+                        size="sm"
+                        className="block uppercase tracking-wide font-semibold text-neutral-strong"
+                    >
+                        {title}
+                    </Text>
+                    {hint ? (
+                        <Text size="sm" className="text-neutral-dimmed">
+                            {hint}
+                        </Text>
+                    ) : null}
+                </button>
+                {info ? (
+                    <span className="pr-sm">
+                        <InfoButton title={infoTitle ?? title}>{info}</InfoButton>
+                    </span>
+                ) : null}
+            </div>
+            {open ? <div className="px-sm pb-sm">{children}</div> : null}
+        </div>
     );
 };
 

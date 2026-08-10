@@ -44,6 +44,7 @@ export interface IThemesRepository {
      */
     setTokenValue(path: TokenPath, mode: ThemeMode, value: TokenValue | undefined): void;
     setTokenReference(path: TokenPath, mode: ThemeMode, target: TokenPath): void;
+    setTokenDescription(path: TokenPath, description: string): void;
     /**
      * Appends a new brand-color primitive to the palette and schedules a save. A given name becomes
      * the primitive's label and, slugified, its token key (`color.brand.<slug>`) — which drives the

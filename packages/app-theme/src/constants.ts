@@ -33,6 +33,7 @@ export const EDITOR_GROUPS = [
     { id: "spacing", label: "Spacing", icon: "width_normal" },
     { id: "radius", label: "Radius", icon: "rounded_corner" },
     { id: "shadows", label: "Shadows", icon: "layers" },
+    { id: "borders", label: "Borders", icon: "border_all" },
     { id: "policy", label: "Policy", icon: "shield" }
 ] as const;
 

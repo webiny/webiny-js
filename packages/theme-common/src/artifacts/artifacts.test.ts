@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { CANONICAL_SEMANTIC_PATHS } from "~/canonical/index.js";
 import { createDefaultThemeDocument } from "~/defaults/defaultTheme.js";
+import { toAlias } from "~/dtcg/guards.js";
 import { META_EXTENSION, type TokenGroup } from "~/dtcg/types.js";
 import { createDefaultPolicy, type ThemePolicy } from "~/policy/types.js";
 import { createResolvedSnapshot } from "~/snapshot.js";
 import { createDefaultSettings } from "~/theme/settings.js";
 import { generateCssArtifact, THEME_MODE_ATTRIBUTE } from "./css.js";
 import { generateJsonArtifact } from "./json.js";
+import { generateManifestArtifact } from "./manifest.js";
 import { formatFontFamily, formatShadow } from "./values.js";
 
 const settings = createDefaultSettings();
@@ -56,6 +59,22 @@ describe("generateCssArtifact", () => {
     it("names the theme and the snapshot it came from", () => {
         expect(css).toContain("Webiny theme abc123 v3");
         expect(css).toContain("2026-08-01T10:00:00.000Z");
+    });
+
+    it("opens with the cascade layer statement, then the font @import, before any rule", () => {
+        const lines = css.split("\n").filter(line => line.trim().length > 0);
+
+        expect(lines[0]).toBe("@layer wby-registry, wby-overrides;");
+
+        const importIndex = lines.findIndex(line => line.startsWith("@import "));
+        const firstRuleIndex = lines.findIndex(line => line.includes("{"));
+
+        // The import loads the theme's fonts, must carry display=swap, and must precede every rule.
+        expect(importIndex).toBe(1);
+        expect(lines[importIndex]).toContain("fonts.googleapis.com/css2");
+        expect(lines[importIndex]).toContain("family=Inter");
+        expect(lines[importIndex]).toContain("display=swap");
+        expect(importIndex).toBeLessThan(firstRuleIndex);
     });
 
     it("emits light values under :root", () => {
@@ -224,6 +243,13 @@ describe("generateJsonArtifact", () => {
         expect(primitive?.displayName).toBe("neutral-50");
     });
 
+    it("carries descriptions on canonical slots and none on ramp steps", () => {
+        expect(json.tokens.find(token => token.path === "color.surface.page")?.description).toBe(
+            "The page background, sitting behind all other content"
+        );
+        expect(json.tokens.find(token => token.path === "space.md")?.description).toBeUndefined();
+    });
+
     it("carries fluid state on ramp steps", () => {
         expect(json.tokens.find(token => token.path === "text.3xl")?.fluid?.enabled).toBe(true);
         expect(json.tokens.find(token => token.path === "text.md")?.fluid?.enabled).toBe(false);
@@ -233,5 +259,78 @@ describe("generateJsonArtifact", () => {
         expect(json.policy).toEqual(createDefaultPolicy());
         expect(json.fonts.map(font => font.family)).toEqual(["Inter", "IBM Plex Mono"]);
         expect(json.viewport).toEqual(settings.viewport);
+    });
+});
+
+describe("generateManifestArtifact", () => {
+    const manifest = generateManifestArtifact(snapshotOf(), { themeId: "abc123", version: 3 });
+
+    it("carries its own contract version alongside the source version", () => {
+        expect(manifest.manifestVersion).toBe(1);
+        expect(manifest).toMatchObject({
+            themeId: "abc123",
+            version: 3,
+            resolvedAt: "2026-08-01T10:00:00.000Z",
+            cssVariablePrefix: "--wby-"
+        });
+    });
+
+    it("is exactly the canonical semantic slots on a default theme", () => {
+        expect(manifest.slots).toHaveLength(CANONICAL_SEMANTIC_PATHS.length);
+        const paths = new Set(manifest.slots.map(slot => slot.path));
+        for (const path of CANONICAL_SEMANTIC_PATHS) {
+            expect(paths.has(path)).toBe(true);
+        }
+    });
+
+    it("gives a slot its guidance, a group-qualified name, its variables and both values", () => {
+        const slot = manifest.slots.find(entry => entry.path === "color.action.primary.background");
+        expect(slot?.description).toBe("Buttons, links and other primary actions");
+        expect(slot?.displayName).toBe("Primary action Background");
+        expect(slot?.cssVariables).toEqual(["--wby-color-action-primary-background"]);
+        expect(typeof slot?.values.light).toBe("string");
+        expect(typeof slot?.values.dark).toBe("string");
+    });
+
+    it("includes the non-colour semantic slots but excludes ramp steps and primitives", () => {
+        expect(manifest.slots.some(slot => slot.path === "radius.control")).toBe(true);
+        expect(manifest.slots.some(slot => slot.path === "border.control")).toBe(true);
+        // A model that saw these would bind to a ramp step or a primitive — the whole point of excluding.
+        expect(manifest.slots.some(slot => slot.path === "radius.md")).toBe(false);
+        expect(manifest.slots.some(slot => slot.path === "space.md")).toBe(false);
+        expect(manifest.slots.some(slot => slot.path.startsWith("color.brand."))).toBe(false);
+    });
+
+    it("exposes only the generation-relevant policy keys", () => {
+        expect(manifest.policy).toEqual({
+            allowArbitraryColor: true,
+            allowArbitraryFontSize: true,
+            defaultMode: "system"
+        });
+    });
+
+    it("includes an opted-in custom semantic token and omits one that did not opt in", () => {
+        const document = createDefaultThemeDocument();
+        (document.color as TokenGroup).custom = {
+            in: {
+                $value: toAlias("color.brand.blue-600"),
+                $description: "An opted-in brand accent",
+                $extensions: {
+                    [META_EXTENSION]: { key: "in", displayName: "In", includeInManifest: true }
+                }
+            },
+            out: {
+                $value: toAlias("color.brand.blue-600"),
+                $extensions: { [META_EXTENSION]: { key: "out", displayName: "Out" } }
+            }
+        };
+
+        const withCustom = generateManifestArtifact(snapshotOf(createDefaultPolicy(), document), {
+            themeId: "abc123",
+            version: 3
+        });
+
+        expect(withCustom.slots.some(slot => slot.path === "color.custom.in")).toBe(true);
+        expect(withCustom.slots.some(slot => slot.path === "color.custom.out")).toBe(false);
     });
 });

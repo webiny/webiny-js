@@ -7,6 +7,7 @@ import {
     META_EXTENSION,
     removeTokenFreezingReferrers,
     setNodeAtPath,
+    setTokenDescription,
     setTokenFluid,
     setTokenReference,
     setTokenValue,
@@ -169,6 +170,10 @@ class ThemesRepositoryImpl implements RepositoryAbstraction.Interface {
 
     setTokenReference(path: TokenPath, mode: ThemeMode, target: TokenPath) {
         this.patchTokens(tokens => setTokenReference(tokens, path, mode, target));
+    }
+
+    setTokenDescription(path: TokenPath, description: string) {
+        this.patchTokens(tokens => setTokenDescription(tokens, path, description));
     }
 
     addBrandColor(name?: string, value?: string) {

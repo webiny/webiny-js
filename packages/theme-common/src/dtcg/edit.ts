@@ -233,3 +233,31 @@ export const setTokenReference = (
 ): TokenDocument => {
     return setTokenValue(document, path, mode, toAlias(target));
 };
+
+/**
+ * Sets or clears a token's usage-guidance `$description`.
+ *
+ * Functional content, not decoration: it is what the generation model reads to decide which token to
+ * bind (see the change brief, C5). An empty string clears it, so a canonical slot can be reset to no
+ * override rather than being stuck with a blank one.
+ */
+export const setTokenDescription = (
+    document: TokenDocument,
+    path: TokenPath,
+    description: string
+): TokenDocument => {
+    const existing = readToken(document, path);
+    if (!existing) {
+        throw new Error(`Cannot describe "${path}" — no such token.`);
+    }
+
+    const next: DesignToken = { ...existing };
+    const trimmed = description.trim();
+    if (trimmed) {
+        next.$description = trimmed;
+    } else {
+        delete next.$description;
+    }
+
+    return setNodeAtPath(document, path, next);
+};

@@ -29,10 +29,17 @@ export interface SnapshotToken {
     /** Free-text label. Carried so the JSON artifact can show what the editor showed. */
     displayName?: string;
     /**
+     * Usage guidance. Carried so the JSON and manifest artifacts are derivable from the snapshot
+     * alone — the generation model reads this to decide which token to bind. See the change brief, C5.
+     */
+    description?: string;
+    /**
      * Deprecated tokens are absent from every selection surface but stay in the snapshot, so
      * published output keeps emitting their variables and existing content renders unchanged.
      */
     deprecated?: boolean;
+    /** A custom semantic token that opted into the generation manifest. See the change brief, C6. */
+    includeInManifest?: boolean;
     /**
      * Fluid state for a ramp step. Carried because the CSS artifact needs both ends to emit
      * `clamp()`, and the artifact must be derivable from the snapshot alone.
@@ -96,14 +103,17 @@ export const createResolvedSnapshot = ({
 
     const toTokens = (mode: ThemeMode): SnapshotToken[] => {
         return [...resolved[mode].tokens.values()].map(token => {
-            const extensions = meta.get(token.path)?.token.$extensions?.[META_EXTENSION];
+            const node = meta.get(token.path)?.token;
+            const extensions = node?.$extensions?.[META_EXTENSION];
 
             return {
                 path: token.path,
                 type: token.type,
                 value: token.value,
                 ...(extensions?.displayName ? { displayName: extensions.displayName } : {}),
+                ...(node?.$description ? { description: node.$description } : {}),
                 ...(extensions?.deprecated ? { deprecated: true } : {}),
+                ...(extensions?.includeInManifest ? { includeInManifest: true } : {}),
                 ...(extensions?.fluid ? { fluid: extensions.fluid } : {})
             };
         });
