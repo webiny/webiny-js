@@ -19,7 +19,8 @@
     "@webiny/cms-sdk": "0.0.0",
     "@webiny/sdk": "0.0.0",
     "@webiny/theme-sdk": "0.0.0",
-    "@webiny/website-builder-sdk": "0.0.0"
+    "@webiny/website-builder-sdk": "0.0.0",
+    "css-tree": "^3.2.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

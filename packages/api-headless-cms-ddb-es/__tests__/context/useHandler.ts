@@ -26,7 +26,6 @@ import type { CmsContext } from "~/types";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
-import { CmsModelOpenSearchIndexFeature } from "~/features/CmsModelOpenSearchIndex/feature.js";
 import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
 
 export interface CreateHandlerCoreParams {
@@ -76,7 +75,6 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const wcpLicense = await loadWcpLicense(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
-        CmsModelOpenSearchIndexFeature.register(container);
         processLegacyPlugins(container, cmsStorage.plugins);
         processLegacyPlugins(container, legacyPlugins);
 

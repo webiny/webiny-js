@@ -7,7 +7,7 @@ import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Context } from "~/types";
 import { HeadlessCmsEsTasksFeature } from "~/index.js";
-import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/feature.js";
+import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/feature.js";
 
 type Params = Omit<CmsTestHandlerParams, "setup"> & { plugins?: any };
 

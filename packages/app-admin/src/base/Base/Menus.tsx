@@ -4,11 +4,11 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as UpgradeIcon } from "@webiny/icons/electric_bolt.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
-import { useWcp } from "~/presentation/wcp/useWcp.js";
+import { useFeatureFlags } from "~/presentation/featureFlags/useFeatureFlags.js";
 
 export const Menus = React.memo(() => {
-    const wcp = useWcp();
-    const hasWcpLicense = Boolean(wcp.getProject());
+    const featureFlags = useFeatureFlags();
+    const showUpgrade = !featureFlags.isEnabled("multiTenancy");
 
     return (
         <AdminConfig>
@@ -41,7 +41,7 @@ export const Menus = React.memo(() => {
                 element={<Menu.Group text="System" collapsible={false} />}
             />
 
-            {!hasWcpLicense && (
+            {showUpgrade && (
                 <Menu.Footer
                     name={"upgrade"}
                     element={

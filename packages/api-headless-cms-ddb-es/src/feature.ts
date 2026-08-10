@@ -2,11 +2,10 @@ import { createTable, DynamoDBClient } from "@webiny/db-dynamodb";
 import { ENTITIES } from "~/types.js";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
-import { CmsModelOpenSearchIndexFeature } from "~/features/CmsModelOpenSearchIndex/index.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
+import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch-aws";
 import { CreateElasticsearchIndexTask } from "~/tasks/CreateElasticsearchIndexTask.js";
 import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { FilterUtilFeature } from "@webiny/db-dynamodb/feature/FilterUtil/feature.js";
@@ -25,7 +24,6 @@ export const HeadlessCmsDdbEsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         CmsEntryOpenSearchUtilsFeature.register(container);
-        CmsModelOpenSearchIndexFeature.register(container);
         FilterRegistriesFeature.register(container);
         FilterUtilFeature.register(container);
 

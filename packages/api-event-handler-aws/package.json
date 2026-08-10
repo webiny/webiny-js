@@ -23,7 +23,6 @@
     "@webiny/api-file-manager-s3": "0.0.0",
     "@webiny/api-headless-cms-bulk-actions-aws": "0.0.0",
     "@webiny/api-scheduler-aws": "0.0.0",
-    "@webiny/api-websockets": "0.0.0",
     "@webiny/api-websockets-aws": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/background-tasks-aws": "0.0.0",

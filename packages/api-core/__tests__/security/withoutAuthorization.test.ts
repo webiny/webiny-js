@@ -7,6 +7,8 @@ import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.j
 import { License } from "@webiny/wcp";
 import { WcpContextFeature } from "~/features/wcp/WcpContext/index.js";
 import { WcpLicenseProviderImpl } from "~/features/wcp/WcpLicenseProvider.js";
+import { BuildParamsFeature } from "~/features/buildParams/feature.js";
+import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 
 const fullPermissions = {
     name: "*"
@@ -22,6 +24,8 @@ describe("without authorization", function () {
 
         const testLicense = License.fromLicenseDto(createTestWcpLicense());
 
+        BuildParamsFeature.register(container);
+        FeatureFlagsFeature.register(container);
         WcpContextFeature.register(container, new WcpLicenseProviderImpl(testLicense));
         AuthorizationContextFeature.register(container);
         IdentityContextFeature.register(container);

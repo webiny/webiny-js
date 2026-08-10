@@ -169,6 +169,10 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAbTesting();
     }
 
+    canUseRemoteComponents(): boolean {
+        return this.license.canUseRemoteComponents();
+    }
+
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {
         if (this.license.canUseFeature(wcpFeatureId)) {
             return;

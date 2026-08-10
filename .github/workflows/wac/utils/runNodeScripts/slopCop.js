@@ -147,12 +147,8 @@ const buildPrompt = pr => {
         "confident. A large but coherent PR (its diff matches its intent) with no rule",
         "violations is FINE - say so. Do NOT invent problems to look useful.",
         "",
-        "Respond with ONLY a JSON object, no prose, no markdown fences:",
-        '{ "verdict": "ok" | "warnings",',
-        '  "summary": "<one short sentence>",',
-        '  "findings": [ { "category": "integrity"|"style", "severity": "high"|"medium"|"low",',
-        '                  "title": "<short>", "detail": "<1-3 sentences; cite files/lines/rule>" } ] }',
-        'If nothing is worth flagging, return verdict "ok" with an empty findings array.',
+        "Report your result by calling the `report` tool. If nothing is worth",
+        'flagging, call it with verdict "ok" and an empty findings array.',
         "",
         ...(rules ? ["=== CODE-STYLE RULES ===", rules, ""] : []),
         "=== PR TITLE ===",
@@ -178,6 +174,42 @@ const buildPrompt = pr => {
     ].join("\n");
 };
 
+// Forcing a tool call makes the API return the result as an already-parsed
+// object in `input`, so a stray quote or newline in the model's prose can never
+// produce malformed JSON for us to choke on (the earlier failure mode).
+const REPORT_TOOL = {
+    name: "report",
+    description: "Report the PR analysis result.",
+    input_schema: {
+        type: "object",
+        properties: {
+            verdict: {
+                type: "string",
+                enum: ["ok", "warnings"],
+                description: '"warnings" if there is at least one finding, else "ok".'
+            },
+            summary: { type: "string", description: "One short sentence." },
+            findings: {
+                type: "array",
+                items: {
+                    type: "object",
+                    properties: {
+                        category: { type: "string", enum: ["integrity", "style"] },
+                        severity: { type: "string", enum: ["high", "medium", "low"] },
+                        title: { type: "string", description: "Short label." },
+                        detail: {
+                            type: "string",
+                            description: "1-3 sentences; cite files/lines/rule."
+                        }
+                    },
+                    required: ["category", "severity", "title", "detail"]
+                }
+            }
+        },
+        required: ["verdict", "summary", "findings"]
+    }
+};
+
 const callClaude = async prompt => {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
@@ -189,6 +221,8 @@ const callClaude = async prompt => {
         body: JSON.stringify({
             model: MODEL,
             max_tokens: 4000,
+            tools: [REPORT_TOOL],
+            tool_choice: { type: "tool", name: "report" },
             messages: [{ role: "user", content: prompt }]
         })
     });
@@ -198,23 +232,12 @@ const callClaude = async prompt => {
     }
 
     const data = await res.json();
-    const text = (data.content || [])
-        .filter(block => block.type === "text")
-        .map(block => block.text)
-        .join("");
-
-    return text;
-};
-
-// The model is asked for bare JSON, but strip accidental ```json fences just in case.
-const parseResult = text => {
-    const cleaned = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}");
-    if (start === -1 || end === -1) {
-        throw new Error("No JSON object in model response.");
+    const toolUse = (data.content || []).find(block => block.type === "tool_use");
+    if (!toolUse) {
+        throw new Error("Model did not return a report tool call.");
     }
-    return JSON.parse(cleaned.slice(start, end + 1));
+
+    return toolUse.input;
 };
 
 const SEVERITY = {
@@ -225,14 +248,15 @@ const SEVERITY = {
 
 const SEVERITY_ORDER = { high: 0, medium: 1, low: 2 };
 
-// Render one "### severity — title / detail" block per finding, sorted high -> low.
+// One block per finding, sorted high -> low. Uses bold text rather than
+// markdown headings (`###`), which GitHub renders as oversized section titles.
 const renderFindings = (lines, findings) => {
     findings
         .slice()
         .sort((a, b) => (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3))
         .forEach(f => {
             const sev = SEVERITY[f.severity] || { emoji: "⚪", label: f.severity || "Note" };
-            lines.push(`### ${sev.emoji} ${sev.label} — ${f.title || "Finding"}`);
+            lines.push(`${sev.emoji} **${sev.label} — ${f.title || "Finding"}**`);
             lines.push("");
             lines.push(f.detail || "");
             lines.push("");
@@ -244,10 +268,13 @@ const renderReport = result => {
     // Anything not explicitly tagged "style" is treated as an integrity finding.
     const style = findings.filter(f => f.category === "style");
     const integrity = findings.filter(f => f.category !== "style");
-    const lines = [MARKER, "## 🚓 Slop Cop", ""];
+    // Bold text instead of `#`/`##` headings, so the comment stays compact.
+    const lines = [MARKER, "🚓 **Slop Cop**", ""];
 
     if (result.verdict !== "warnings" || findings.length === 0) {
-        lines.push("✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules.");
+        lines.push(
+            "✅ Nothing worth flagging. The diff looks consistent with the PR's stated intent and the code-style rules."
+        );
         if (result.summary) {
             lines.push("", `_${result.summary}_`);
         }
@@ -259,11 +286,11 @@ const renderReport = result => {
         lines.push("");
 
         if (integrity.length > 0) {
-            lines.push("## 🚨 Should this be in the PR?", "");
+            lines.push("🚨 **Should this be in the PR?**", "");
             renderFindings(lines, integrity);
         }
         if (style.length > 0) {
-            lines.push("## 📏 Code-style rule checks", "");
+            lines.push("📏 **Code-style rule checks**", "");
             renderFindings(lines, style);
         }
     }
@@ -288,8 +315,7 @@ const main = async () => {
         return;
     }
 
-    const text = await callClaude(buildPrompt(loadPr()));
-    const result = parseResult(text);
+    const result = await callClaude(buildPrompt(loadPr()));
     fs.writeFileSync(outputPath, renderReport(result), "utf8");
     console.log(`Slop cop report written (verdict: ${result.verdict}).`);
 };

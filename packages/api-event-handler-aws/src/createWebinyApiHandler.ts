@@ -25,7 +25,6 @@ import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
@@ -101,7 +100,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
             // matched") so $connect fails and no connection is ever registered → no server→client push.
             container.register(WebSocketEventType);
-            container.register(WebSocketLambdaHandler);
 
             // ── Database ───────────────────────────────────────────────
             DynamoDBCoreFeature.register(container, {

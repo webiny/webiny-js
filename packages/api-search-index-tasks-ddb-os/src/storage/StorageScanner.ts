@@ -1,6 +1,6 @@
 import { StorageScanner as Abstraction } from "@webiny/api-search-index-tasks/abstractions/StorageScanner.js";
 import { scan } from "@webiny/db-dynamodb";
-import { createOpenSearchTable } from "@webiny/api-opensearch";
+import { createOpenSearchTable } from "@webiny/api-opensearch-aws";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface IDynamoDbElasticsearchRecord {

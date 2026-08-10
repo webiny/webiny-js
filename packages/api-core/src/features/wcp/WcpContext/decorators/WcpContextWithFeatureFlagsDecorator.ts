@@ -33,28 +33,32 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                     multiTenancy: project.package.features.multiTenancy,
                     advancedPublishingWorkflow: {
                         ...project.package.features.advancedPublishingWorkflow,
-                        enabled: flags.isWorkflowsEnabled()
+                        enabled: flags.isEnabled("advancedPublishingWorkflow")
                             ? project.package.features.advancedPublishingWorkflow.enabled
                             : false
                     },
                     advancedAccessControlLayer: {
                         ...project.package.features.advancedAccessControlLayer,
-                        enabled: flags.isAaclEnabled()
+                        enabled: flags.isEnabled("advancedAccessControlLayer")
                             ? project.package.features.advancedAccessControlLayer.enabled
                             : false,
                         options: {
-                            teams: flags.isTeamsEnabled()
+                            teams: flags.isEnabled("advancedAccessControlLayer.teams")
                                 ? project.package.features.advancedAccessControlLayer.options.teams
                                 : false,
-                            privateFiles: flags.isPrivateFilesEnabled()
+                            privateFiles: flags.isEnabled("advancedAccessControlLayer.privateFiles")
                                 ? project.package.features.advancedAccessControlLayer.options
                                       .privateFiles
                                 : false,
-                            folderLevelPermissions: flags.isFolderLevelPermissionsEnabled()
+                            folderLevelPermissions: flags.isEnabled(
+                                "advancedAccessControlLayer.folderLevelPermissions"
+                            )
                                 ? project.package.features.advancedAccessControlLayer.options
                                       .folderLevelPermissions
                                 : false,
-                            hcmsFieldPermissions: flags.isHcmsFieldPermissionsEnabled()
+                            hcmsFieldPermissions: flags.isEnabled(
+                                "advancedAccessControlLayer.hcmsFieldPermissions"
+                            )
                                 ? project.package.features.advancedAccessControlLayer.options
                                       .hcmsFieldPermissions
                                 : false
@@ -62,13 +66,13 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                     },
                     auditLogs: {
                         ...project.package.features.auditLogs,
-                        enabled: flags.isAuditLogsEnabled()
+                        enabled: flags.isEnabled("auditLogs")
                             ? project.package.features.auditLogs.enabled
                             : false
                     },
                     recordLocking: {
                         ...project.package.features.recordLocking,
-                        enabled: flags.isRecordLockingEnabled()
+                        enabled: flags.isEnabled("recordLocking")
                             ? project.package.features.recordLocking.enabled
                             : false
                     },
@@ -76,46 +80,52 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                         ...project.package.features.fileManager,
                         enabled: project.package.features.fileManager.enabled,
                         options: {
-                            threatDetection: flags.isFileManagerThreatDetectionEnabled()
+                            threatDetection: flags.isEnabled("fileManager.threatDetection")
                                 ? project.package.features.fileManager.options.threatDetection
                                 : false
                         }
                     },
                     aiPowerups: {
                         ...project.package.features.aiPowerups,
-                        enabled: flags.isAiPowerupsEnabled()
+                        enabled: flags.isEnabled("aiPowerups")
                             ? project.package.features.aiPowerups?.enabled
                             : false,
                         options: {
                             websiteBuilder: {
-                                pageGeneration: flags.isAiPageGenerationEnabled()
+                                pageGeneration: flags.isEnabled(
+                                    "aiPowerups.websiteBuilder.pageGeneration"
+                                )
                                     ? project.package.features.aiPowerups?.options?.websiteBuilder
                                           ?.pageGeneration
                                     : false,
-                                pageTranslation: flags.isAiPageTranslationEnabled()
+                                pageTranslation: flags.isEnabled(
+                                    "aiPowerups.websiteBuilder.pageTranslation"
+                                )
                                     ? project.package.features.aiPowerups?.options?.websiteBuilder
                                           ?.pageTranslation
                                     : false
                             },
                             fileManager: {
-                                imageEnrichment: flags.isAiImageEnrichmentEnabled()
+                                imageEnrichment: flags.isEnabled(
+                                    "aiPowerups.fileManager.imageEnrichment"
+                                )
                                     ? project.package.features.aiPowerups?.options?.fileManager
                                           ?.imageEnrichment
                                     : false
                             },
-                            lexicalGeneration: flags.isAiLexicalGenerationEnabled()
+                            lexicalGeneration: flags.isEnabled("aiPowerups.lexicalGeneration")
                                 ? project.package.features.aiPowerups?.options?.lexicalGeneration
                                 : false,
                             cms: {
-                                entryGeneration: flags.isAiEntryGenerationEnabled()
+                                entryGeneration: flags.isEnabled("aiPowerups.cms.entryGeneration")
                                     ? project.package.features.aiPowerups?.options?.cms
                                           ?.entryGeneration
                                     : false,
-                                entryComparison: flags.isAiEntryComparisonEnabled()
+                                entryComparison: flags.isEnabled("aiPowerups.cms.entryComparison")
                                     ? project.package.features.aiPowerups?.options?.cms
                                           ?.entryComparison
                                     : false,
-                                entryTranslation: flags.isAiEntryTranslationEnabled()
+                                entryTranslation: flags.isEnabled("aiPowerups.cms.entryTranslation")
                                     ? project.package.features.aiPowerups?.options?.cms
                                           ?.entryTranslation
                                     : false
@@ -124,8 +134,14 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                     },
                     abTesting: {
                         ...project.package.features.abTesting,
-                        enabled: flags.isAbTestingEnabled()
+                        enabled: flags.isEnabled("abTesting")
                             ? project.package.features.abTesting?.enabled
+                            : false
+                    },
+                    remoteComponents: {
+                        ...project.package.features.remoteComponents,
+                        enabled: flags.isEnabled("remoteComponents")
+                            ? project.package.features.remoteComponents?.enabled
                             : false
                     }
                 }
@@ -146,105 +162,123 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
     }
 
     canUseAacl() {
-        return this.decoratee.canUseAacl() && this.featureFlags.get().isAaclEnabled();
+        return (
+            this.decoratee.canUseAacl() &&
+            this.featureFlags.get().isEnabled("advancedAccessControlLayer")
+        );
     }
 
     canUseTeams() {
-        return this.decoratee.canUseTeams() && this.featureFlags.get().isTeamsEnabled();
+        return (
+            this.decoratee.canUseTeams() &&
+            this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams")
+        );
     }
 
     canUseFolderLevelPermissions() {
         return (
             this.decoratee.canUseFolderLevelPermissions() &&
-            this.featureFlags.get().isFolderLevelPermissionsEnabled()
+            this.featureFlags.get().isEnabled("advancedAccessControlLayer.folderLevelPermissions")
         );
     }
 
     canUsePrivateFiles() {
         return (
-            this.decoratee.canUsePrivateFiles() && this.featureFlags.get().isPrivateFilesEnabled()
+            this.decoratee.canUsePrivateFiles() &&
+            this.featureFlags.get().isEnabled("advancedAccessControlLayer.privateFiles")
         );
     }
 
     canUseAuditLogs() {
-        return this.decoratee.canUseAuditLogs() && this.featureFlags.get().isAuditLogsEnabled();
+        return this.decoratee.canUseAuditLogs() && this.featureFlags.get().isEnabled("auditLogs");
     }
 
     canUseRecordLocking() {
         return (
-            this.decoratee.canUseRecordLocking() && this.featureFlags.get().isRecordLockingEnabled()
+            this.decoratee.canUseRecordLocking() &&
+            this.featureFlags.get().isEnabled("recordLocking")
         );
     }
 
     canUseFileManagerThreatDetection() {
         return (
             this.decoratee.canUseFileManagerThreatDetection() &&
-            this.featureFlags.get().isFileManagerThreatDetectionEnabled()
+            this.featureFlags.get().isEnabled("fileManager.threatDetection")
         );
     }
 
     canUseWorkflows() {
-        return this.decoratee.canUseWorkflows() && this.featureFlags.get().isWorkflowsEnabled();
+        return (
+            this.decoratee.canUseWorkflows() &&
+            this.featureFlags.get().isEnabled("advancedPublishingWorkflow")
+        );
     }
 
     canUseHcmsFieldPermissions() {
         return (
             this.decoratee.canUseHcmsFieldPermissions() &&
-            this.featureFlags.get().isHcmsFieldPermissionsEnabled()
+            this.featureFlags.get().isEnabled("advancedAccessControlLayer.hcmsFieldPermissions")
         );
     }
 
     canUseAiImageEnrichment() {
         return (
             this.decoratee.canUseAiImageEnrichment() &&
-            this.featureFlags.get().isAiImageEnrichmentEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.fileManager.imageEnrichment")
         );
     }
 
     canUseAiPageGeneration() {
         return (
             this.decoratee.canUseAiPageGeneration() &&
-            this.featureFlags.get().isAiPageGenerationEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.websiteBuilder.pageGeneration")
         );
     }
 
     canUseAiPageTranslation() {
         return (
             this.decoratee.canUseAiPageTranslation() &&
-            this.featureFlags.get().isAiPageTranslationEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.websiteBuilder.pageTranslation")
         );
     }
 
     canUseAiLexicalGeneration() {
         return (
             this.decoratee.canUseAiLexicalGeneration() &&
-            this.featureFlags.get().isAiLexicalGenerationEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.lexicalGeneration")
         );
     }
 
     canUseAiEntryGeneration() {
         return (
             this.decoratee.canUseAiEntryGeneration() &&
-            this.featureFlags.get().isAiEntryGenerationEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.cms.entryGeneration")
         );
     }
 
     canUseAiEntryComparison() {
         return (
             this.decoratee.canUseAiEntryComparison() &&
-            this.featureFlags.get().isAiEntryComparisonEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.cms.entryComparison")
         );
     }
 
     canUseAiEntryTranslation() {
         return (
             this.decoratee.canUseAiEntryTranslation() &&
-            this.featureFlags.get().isAiEntryTranslationEnabled()
+            this.featureFlags.get().isEnabled("aiPowerups.cms.entryTranslation")
         );
     }
 
     canUseAbTesting() {
-        return this.decoratee.canUseAbTesting() && this.featureFlags.get().isAbTestingEnabled();
+        return this.decoratee.canUseAbTesting() && this.featureFlags.get().isEnabled("abTesting");
+    }
+
+    canUseRemoteComponents() {
+        return (
+            this.decoratee.canUseRemoteComponents() &&
+            this.featureFlags.get().isEnabled("remoteComponents")
+        );
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {

@@ -37,7 +37,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ai": "^7.0.47",
+    "ai": "^7.0.48",
     "front-matter": "^4.0.2",
     "happy-dom": "^20.11.1",
     "lodash": "^4.18.1",

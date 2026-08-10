@@ -21,6 +21,7 @@ class WcpSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
                 fileManager: WcpProjectPackageFeaturesFeature
                 aiPowerups: WcpProjectPackageFeaturesFeature
                 abTesting: WcpProjectPackageFeaturesFeature
+                remoteComponents: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {

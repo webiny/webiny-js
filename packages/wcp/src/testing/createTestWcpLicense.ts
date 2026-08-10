@@ -57,6 +57,9 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
                     enabled: false
+                },
+                [PROJECT_PACKAGE_FEATURE_NAME.REMOTE_COMPONENTS]: {
+                    enabled: false
                 }
             }
         }

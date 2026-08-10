@@ -1,4 +1,12 @@
 export { sdk, FrontendSdk } from "./FrontendSdk.js";
+export { ComponentsSdk } from "./ComponentsSdk.js";
+export type {
+    RemoteComponentEntry,
+    LoadComponentsOptions,
+    HydrateComponentDependencies,
+    HydrateComponentOptions,
+    HydratedComponent
+} from "./ComponentsSdk.js";
 export type { ContentSdkConfig, WbConfig, CmsConfig, ThemeConfig } from "./types.js";
 
 // Theme consumption. `sdk.theme.getHeadTags()` returns the `<head>` tags — a stylesheet link to the

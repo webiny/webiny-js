@@ -94,7 +94,7 @@ export const createApiPulumiApp = () => {
                 const usingAdvancedVpcParams =
                     vpcExtensionsConfig && typeof vpcExtensionsConfig !== "boolean";
 
-                if (featureFlags.isFileManagerThreatDetectionEnabled()) {
+                if (featureFlags.isEnabled("fileManager.threatDetection")) {
                     handleGuardDutyEvents(app as ApiPulumiApp);
                 }
 

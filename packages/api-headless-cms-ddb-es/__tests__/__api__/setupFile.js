@@ -5,7 +5,6 @@ import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing
 import { HeadlessCmsDdbEsFeature } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import {
     getTestOpenSearchClient,
@@ -15,6 +14,7 @@ import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
+import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 
 const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
@@ -27,25 +27,12 @@ const opensearchClient = getTestOpenSearchClient();
 simulateStream(documentClient, createDdbToOpenSearchStreamHandler(opensearchClient));
 
 setStorageOps("cms", () => {
-    const createIndexName = model => {
-        const { index } = configurations.es({
-            model
-        });
-        return index;
-    };
-
-    /**
-     * We need to create model index before entry create because of the direct storage operations tests.
-     * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
-     *
-     * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
-     */
     const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {
         container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 const client = container.resolve(OpenSearchClient);
                 const { model } = event.payload;
-                const index = createIndexName(model);
+                const index = await createTestModelIndexName(container, { model });
                 try {
                     const response = await client.use().indices.exists({
                         index

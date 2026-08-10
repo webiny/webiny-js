@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
 import type { OpenSearchSearchResponse } from "@webiny/api-opensearch";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import type { SearchOperationDeps } from "./types.js";
 import type { GetUniqueFieldValuesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 
@@ -10,7 +10,8 @@ export const createGetUniqueFieldValuesOperation = (
 ): GetUniqueFieldValuesStorageOperation.Interface["execute"] => {
     return async (model, uniqueFieldValuesParams) => {
         const { where, fieldId } = uniqueFieldValuesParams;
-        const { index } = configurations.es({ model });
+        const configurations = createConfigurations(deps.indexProvider);
+        const { index } = await configurations.es({ model });
 
         const field = model.fields.find(f => f.fieldId === fieldId);
         if (!field) {
