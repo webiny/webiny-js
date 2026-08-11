@@ -65,6 +65,20 @@ class SandboxPreviewEventsImpl implements SandboxPreviewEventsAbstraction.Interf
         });
     }
 
+    sendThemeCss(params: { css: string }) {
+        if (!this.messenger) {
+            return;
+        }
+        this.messenger.send("sandbox.theme.css", { css: params.css });
+    }
+
+    sendThemeMode(params: { mode: string }) {
+        if (!this.messenger) {
+            return;
+        }
+        this.messenger.send("sandbox.theme.mode", { mode: params.mode });
+    }
+
     sendDocument() {
         const editor = this.getEditorOrNull();
         if (!this.messenger || !editor) {

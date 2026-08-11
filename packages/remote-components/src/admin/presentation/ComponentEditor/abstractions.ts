@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IFormVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { RemoteComponentDto } from "~/shared/types.js";
+import type { ThemeSummary } from "~/admin/features/shared/abstractions.js";
 
 export interface IComponentEditorVm {
     loading: boolean;
@@ -8,6 +9,12 @@ export interface IComponentEditorVm {
     bundling: boolean;
     refining: boolean;
     component: RemoteComponentDto | null;
+    /** Published themes the preview can be rendered under. */
+    themeOptions: ThemeSummary[];
+    /** The revision id of the theme being previewed, or null for the site's active theme. */
+    selectedThemeId: string | null;
+    /** The forced preview mode: "light", "dark", or "" for the theme's system default. */
+    themeMode: string;
     source: string;
     css: string;
     error: string | null;
@@ -47,6 +54,10 @@ export interface ISandboxPreviewEvents {
     onConnected(messenger: any): void;
     sendBundle(params: { componentName: string; bundledJs: string; bundledCss: string }): void;
     sendLiveCss(params: { css: string; componentName: string }): void;
+    /** Pushes the previewed theme's token CSS to the sandbox; "" clears it back to the active theme. */
+    sendThemeCss(params: { css: string }): void;
+    /** Forces the sandbox's light/dark mode; "" follows the theme's system default. */
+    sendThemeMode(params: { mode: string }): void;
     sendDocument(): void;
     destroy(): void;
 }
@@ -71,6 +82,10 @@ export interface IComponentEditorPresenter {
     refine(): Promise<void>;
     onRefineResult(data: { source: string; css: string }): void;
     onRefineError(message: string): void;
+    /** Preview the component under a specific theme version (revision id), or null for the active theme. */
+    selectTheme(id: string | null): Promise<void>;
+    /** Force the preview's light/dark mode ("light" | "dark" | "" for the theme's default). */
+    setThemeMode(mode: string): void;
 }
 
 export const ComponentEditorPresenter = createAbstraction<IComponentEditorPresenter>(

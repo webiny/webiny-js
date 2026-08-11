@@ -11,6 +11,7 @@ import {
     OverlayLoader,
     ScrollArea,
     SegmentedControl,
+    Select,
     Separator,
     Tag,
     Text,
@@ -18,6 +19,7 @@ import {
     TimeAgo
 } from "@webiny/admin-ui";
 import { useToast } from "@webiny/admin-ui";
+import { observer } from "mobx-react-lite";
 import { useDocumentEditor } from "@webiny/app-website-builder/DocumentEditor/DocumentEditor.js";
 import MonacoEditor from "@monaco-editor/react";
 import { ReactComponent as ArrowBackIcon } from "@webiny/icons/arrow_back.svg";
@@ -118,7 +120,13 @@ const BACKGROUNDS = [
     }
 ];
 
-function SandboxPreview() {
+const ACTIVE_THEME_VALUE = "active";
+
+const SandboxPreview = observer(function SandboxPreview({
+    presenter
+}: {
+    presenter: IComponentEditorPresenter;
+}) {
     const [reloadKey, setReloadKey] = useState(0);
     const [background, setBackground] = useState("dots");
 
@@ -129,10 +137,34 @@ function SandboxPreview() {
     const bgEntry = BACKGROUNDS.find(b => b.value === background);
     const bgClass = bgEntry ? bgEntry.className : "bg-white";
 
+    // A non-empty sentinel for "active": the Select rejects an empty-string option value.
+    const themeOptions = [
+        { value: ACTIVE_THEME_VALUE, label: "Active theme" },
+        ...presenter.vm.themeOptions.map(theme => ({
+            value: theme.id,
+            label: `${theme.name} · v${theme.version}`
+        }))
+    ];
+
     return (
         <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center gap-sm py-xs px-md border-b border-neutral-dimmed flex-shrink-0">
                 <BreakpointSelector />
+                <Select
+                    value={presenter.vm.selectedThemeId ?? ACTIVE_THEME_VALUE}
+                    onChange={value =>
+                        void presenter.selectTheme(value === ACTIVE_THEME_VALUE ? null : value)
+                    }
+                    options={themeOptions}
+                />
+                <SegmentedControl
+                    value={presenter.vm.themeMode || "light"}
+                    onChange={value => presenter.setThemeMode(value)}
+                    items={[
+                        { value: "light", label: "Light" },
+                        { value: "dark", label: "Dark" }
+                    ]}
+                />
                 <div className="flex items-center gap-xs">
                     {BACKGROUNDS.map(bg => (
                         <button
@@ -158,7 +190,7 @@ function SandboxPreview() {
             </div>
         </div>
     );
-}
+});
 
 const CompactInputRenderer = createFieldRenderer(({ field }) => {
     return (
@@ -361,7 +393,7 @@ const ComponentEditorInner = createReactiveComponent(function ComponentEditorInn
                             <div
                                 className={`flex flex-col flex-1 min-w-0 ${cssResizing ? "[&_iframe]:pointer-events-none" : ""}`}
                             >
-                                <SandboxPreview />
+                                <SandboxPreview presenter={presenter} />
                                 <div className="flex-shrink-0">
                                     {cssExpanded ? (
                                         <div

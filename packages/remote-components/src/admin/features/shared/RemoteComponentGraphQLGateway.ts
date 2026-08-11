@@ -1,5 +1,9 @@
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
-import { RemoteComponentGateway } from "./abstractions.js";
+import {
+    RemoteComponentGateway,
+    type ThemeSummary,
+    type ThemePreviewData
+} from "./abstractions.js";
 import type { RemoteComponentDto } from "~/shared/types.js";
 import {
     LIST_REMOTE_COMPONENTS,
@@ -8,7 +12,9 @@ import {
     UPDATE_REMOTE_COMPONENT,
     DELETE_REMOTE_COMPONENT,
     GENERATE_REMOTE_COMPONENT,
-    REFINE_REMOTE_COMPONENT
+    REFINE_REMOTE_COMPONENT,
+    LIST_THEMES,
+    GET_THEME_RESOLVED
 } from "./graphql.js";
 
 interface GqlEnvelope<T> {
@@ -154,6 +160,61 @@ class RemoteComponentGraphQLGatewayImpl implements RemoteComponentGateway.Interf
         if (envelope.error) {
             throw new Error(envelope.error.message);
         }
+    }
+
+    async listThemes(): Promise<ThemeSummary[]> {
+        const response = await this.client.execute<{
+            theme: {
+                listThemes: GqlEnvelope<
+                    Array<{
+                        id: string;
+                        version: number;
+                        status: string;
+                        properties: { name?: string } | null;
+                    }>
+                >;
+            };
+        }>({ query: LIST_THEMES });
+
+        const envelope = response.theme.listThemes;
+        if (envelope.error) {
+            throw new Error(envelope.error.message);
+        }
+
+        return (envelope.data ?? []).map(theme => ({
+            id: theme.id,
+            version: theme.version,
+            name: theme.properties?.name || "Untitled theme",
+            status: theme.status
+        }));
+    }
+
+    async getThemePreviewData(id: string): Promise<ThemePreviewData> {
+        const response = await this.client.execute<{
+            theme: {
+                getTheme: GqlEnvelope<{
+                    id: string;
+                    version: number;
+                    resolved: unknown;
+                    tokens: unknown;
+                    policy: unknown;
+                    settings: unknown;
+                }>;
+            };
+        }>({ query: GET_THEME_RESOLVED, variables: { id } });
+
+        const envelope = response.theme.getTheme;
+        if (envelope.error) {
+            throw new Error(envelope.error.message);
+        }
+
+        const data = envelope.data;
+        return {
+            resolved: data?.resolved ?? null,
+            tokens: data?.tokens ?? null,
+            policy: data?.policy ?? null,
+            settings: data?.settings ?? null
+        };
     }
 }
 

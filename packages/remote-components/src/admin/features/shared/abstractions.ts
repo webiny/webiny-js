@@ -1,6 +1,25 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { RemoteComponentDto } from "~/shared/types.js";
 
+/** A published theme the author can preview a component under. */
+export interface ThemeSummary {
+    /** Revision id (`entryId#version`), the handle for fetching that version's snapshot. */
+    id: string;
+    version: number;
+    name: string;
+    status: string;
+}
+
+/** The source a theme version's preview CSS is rendered from. */
+export interface ThemePreviewData {
+    /** The published snapshot, or null on a draft that was never published. */
+    resolved: unknown;
+    /** The draft document, used to resolve a snapshot for an unpublished draft. */
+    tokens: unknown;
+    policy: unknown;
+    settings: unknown;
+}
+
 export interface IRemoteComponentGateway {
     list(): Promise<{ items: RemoteComponentDto[]; meta: { totalCount: number } }>;
     get(id: string): Promise<RemoteComponentDto>;
@@ -46,6 +65,10 @@ export interface IRemoteComponentGateway {
         feedback: string;
         additionalFileIds?: string[];
     }): Promise<void>;
+    /** Published themes available to preview a component under. */
+    listThemes(): Promise<ThemeSummary[]>;
+    /** The CSS source (published snapshot, or the draft document) of a theme version. */
+    getThemePreviewData(id: string): Promise<ThemePreviewData>;
 }
 
 export const RemoteComponentGateway = createAbstraction<IRemoteComponentGateway>(

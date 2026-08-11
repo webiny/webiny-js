@@ -180,3 +180,47 @@ export const REFINE_REMOTE_COMPONENT = /* GraphQL */ `
         }
     }
 `;
+
+// Themes the author can preview a component under. Only versions with a resolved snapshot can
+// actually render; selecting one without a snapshot falls back to the active theme.
+export const LIST_THEMES = /* GraphQL */ `
+    query ListThemesForComponentPreview {
+        theme {
+            listThemes(limit: 100) {
+                data {
+                    id
+                    version
+                    status
+                    properties
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+// A theme version's token CSS source: the published snapshot when it exists, otherwise the draft
+// document (+ policy/settings) so an unpublished draft can be resolved and previewed too.
+export const GET_THEME_RESOLVED = /* GraphQL */ `
+    query GetThemeResolvedForComponentPreview($id: ID!) {
+        theme {
+            getTheme(id: $id) {
+                data {
+                    id
+                    version
+                    resolved
+                    tokens
+                    policy
+                    settings
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;

@@ -8,7 +8,15 @@ import {
     SandboxPreviewEvents
 } from "./abstractions.js";
 import type { ISandboxVm } from "./abstractions.js";
-import { RemoteComponentGateway } from "~/admin/features/shared/abstractions.js";
+import { RemoteComponentGateway, type ThemeSummary } from "~/admin/features/shared/abstractions.js";
+import {
+    generateCssArtifact,
+    createResolvedSnapshot,
+    type ResolvedThemeSnapshot,
+    type TokenDocument,
+    type ThemePolicy,
+    type ThemeSettings
+} from "@webiny/theme-common";
 import { bundleComponentInBrowser } from "~/admin/bundler/browserBundler.js";
 import type { RemoteComponentDto } from "~/shared/types.js";
 import { ComponentSourceEditor } from "./ComponentSourceEditor.js";
@@ -98,6 +106,10 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
     private _lastBundledSource = "";
     private _lastBundledCss = "";
     private _reactionDisposers: Array<() => void> = [];
+    private _themeOptions: ThemeSummary[] = [];
+    private _selectedThemeId: string | null = null;
+    private _selectedThemeCss = "";
+    private _themeMode = "light";
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -120,6 +132,9 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
             source: this._source,
             css: this._css,
             error: this._error,
+            themeOptions: this._themeOptions,
+            selectedThemeId: this._selectedThemeId,
+            themeMode: this._themeMode,
             form: this._form.vm,
             refineForm: this._refineForm.vm,
             bundleStale:
@@ -190,6 +205,10 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
             this._loading = true;
         });
 
+        // Best-effort, in parallel: the theme picker is an enhancement, so a failure to list themes
+        // must not block opening the editor — the preview simply falls back to the active theme.
+        void this.loadThemeOptions();
+
         try {
             const component = await this.gateway.get(id);
             runInAction(() => {
@@ -224,6 +243,56 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
                 this._loading = false;
             });
         }
+    }
+
+    private async loadThemeOptions() {
+        try {
+            const themes = await this.gateway.listThemes();
+            runInAction(() => {
+                this._themeOptions = themes;
+            });
+        } catch (error) {
+            // The active theme still previews; surface why the picker has no other options.
+            console.error("[ComponentEditor] Could not load themes for preview:", error);
+        }
+    }
+
+    async selectTheme(id: string | null) {
+        runInAction(() => {
+            this._selectedThemeId = id;
+        });
+
+        // Null id clears the override, falling back to the active theme.
+        let css = "";
+        if (id) {
+            try {
+                const data = await this.gateway.getThemePreviewData(id);
+                const snapshot = data.resolved
+                    ? (data.resolved as ResolvedThemeSnapshot)
+                    : // An unpublished draft has no snapshot — resolve one from its document. Throws if
+                      // the draft has publish blockers, which the catch below reports.
+                      createResolvedSnapshot({
+                          document: data.tokens as TokenDocument,
+                          policy: data.policy as ThemePolicy,
+                          settings: data.settings as ThemeSettings
+                      });
+                css = generateCssArtifact(snapshot);
+            } catch (error) {
+                console.error("[ComponentEditor] Could not render theme CSS for preview:", error);
+            }
+        }
+
+        runInAction(() => {
+            this._selectedThemeCss = css;
+        });
+        this.previewEvents.sendThemeCss({ css });
+    }
+
+    setThemeMode(mode: string) {
+        runInAction(() => {
+            this._themeMode = mode;
+        });
+        this.previewEvents.sendThemeMode({ mode });
     }
 
     setSource(value: string) {
@@ -394,6 +463,10 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
 
         this._reactionDisposers.push(
             events.onConnect(() => {
+                // Re-apply the previewed theme + mode first, so a reloaded iframe keeps them.
+                events.sendThemeCss({ css: this._selectedThemeCss });
+                events.sendThemeMode({ mode: this._themeMode });
+
                 const sandbox = this.sandbox;
                 if (!sandbox) {
                     return;
