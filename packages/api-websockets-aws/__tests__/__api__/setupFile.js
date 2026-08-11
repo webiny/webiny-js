@@ -1,4 +1,4 @@
-import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import { WebsocketsConnectionRegistry } from "../../src/index.js";
 

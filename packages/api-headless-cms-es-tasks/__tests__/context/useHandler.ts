@@ -1,6 +1,6 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
 import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";

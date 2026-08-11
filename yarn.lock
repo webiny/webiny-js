@@ -11885,7 +11885,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api@workspace:packages/api"
   dependencies:
-    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"

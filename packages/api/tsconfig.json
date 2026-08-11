@@ -1,12 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [
-    { "path": "../feature" },
-    { "path": "../plugins" },
-    { "path": "../utils" },
-    { "path": "../api-core-ddb" }
-  ],
+  "references": [{ "path": "../feature" }, { "path": "../plugins" }, { "path": "../utils" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -19,9 +14,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

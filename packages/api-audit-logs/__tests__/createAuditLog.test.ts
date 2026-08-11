@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getAuditConfig } from "~/utils/getAuditConfig";
 import { useHandler } from "./helpers/useHandler";
 import { ActionType } from "@webiny/common-audit-logs";
-import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { auditAction } from "~tests/mocks/auditAction.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";

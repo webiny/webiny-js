@@ -40,7 +40,6 @@
   },
   "devDependencies": {
     "@types/jsonpack": "^1.1.6",
-    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
     "@webiny/project-utils": "0.0.0",

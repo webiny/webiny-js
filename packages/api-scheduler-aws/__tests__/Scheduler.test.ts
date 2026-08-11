@@ -16,7 +16,7 @@ import {
 } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "@webiny/api-scheduler/features/CancelScheduledAction/index.js";
 import { useHandler } from "./__mocks/handler/useHandler.js";
-import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { mockClient } from "aws-sdk-client-mock";
 import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";

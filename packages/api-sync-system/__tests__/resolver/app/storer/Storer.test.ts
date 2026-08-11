@@ -1,4 +1,4 @@
-import { getDocumentClient } from "@webiny/api-core-ddb/testing/getDocumentClient.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createStorer, Storer } from "~/resolver/app/storer/Storer.js";
 import { createRegularMockTable } from "~tests/mocks/table.js";
 import {
