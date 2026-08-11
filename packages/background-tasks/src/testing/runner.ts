@@ -1,9 +1,4 @@
-import type {
-    Context,
-    IResponseContinueResult,
-    IResponseResult,
-    ITaskEvent
-} from "~/api/types.js";
+import type { Context, IResponseContinueResult, IResponseResult, ITaskEvent } from "~/api/types.js";
 import { TaskRunner } from "~/api/runner/index.js";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation.js";

@@ -1,10 +1,8 @@
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import {
-    PutCommand,
-    UpdateCommand,
-    DeleteCommand,
-    BatchWriteCommand
-} from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { PutCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { UpdateCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { DeleteCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { BatchWriteCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 const streamTableName = process.env.DB_TABLE_OPENSEARCH;
 
