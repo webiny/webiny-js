@@ -1,3 +1,4 @@
+import { parseColor, relativeLuminance } from "@webiny/theme-common";
 import type { FontResource } from "~/domain/abstractions.js";
 import {
     quantiseColors,
@@ -60,17 +61,17 @@ export type DarkModeOutcome =
     | { probed: false }
     | {
           probed: true;
-          /** Fraction of the top light colours that changed under emulated dark mode. */
-          changedShare: number;
+          /** How much lighter the normal crawl's dominant background is than the dark pass's (0–1). */
+          backgroundDrop: number;
           /** The site ships a real dark variant, so both were extracted. */
           hasDarkVariant: true;
       }
     | {
           probed: true;
-          changedShare: number;
+          backgroundDrop: number;
           hasDarkVariant: false;
-          /** Dark will be generated from light and marked as derived rather than observed. */
-          derived: true;
+          /** The site has a single scheme; no dark palette is generated. */
+          singleScheme: true;
       };
 
 export interface ModelPayload {
@@ -112,53 +113,59 @@ export const toPayloadValues = (values: WeightedValue[], cap: number): ModelPayl
     }));
 };
 
-/**
- * What fraction of the top colours changed under emulated dark mode.
- *
- * Compared over the top slice rather than the whole tally: a page's long tail of one-off colours is
- * noisy and would dilute a genuine dark variant into looking like no change at all.
- */
-export const darkModeChangedShare = (
-    light: WeightedValue[],
-    dark: WeightedValue[],
-    sampleSize = 20
-): number => {
-    const lightTop = topN(light, sampleSize);
-    if (lightTop.length === 0) {
-        return 0;
+/** The relative luminance (0–1) of the most-covering background colour, or undefined if none parses. */
+export const dominantBackgroundLuminance = (values: WeightedValue[]): number | undefined => {
+    let best: WeightedValue | undefined;
+    for (const value of values) {
+        if (!value.properties.includes("background")) {
+            continue;
+        }
+        if (!best || value.weight > best.weight) {
+            best = value;
+        }
     }
 
-    const darkValues = new Set(topN(dark, sampleSize).map(entry => entry.value));
-    const changed = lightTop.filter(entry => !darkValues.has(entry.value)).length;
-
-    return round4(changed / lightTop.length);
+    if (!best) {
+        return undefined;
+    }
+    const rgba = parseColor(best.value);
+    return rgba ? relativeLuminance(rgba) : undefined;
 };
 
 /**
- * How much of the palette has to change before we believe the site really ships a dark variant.
- *
- * UNVALIDATED. Picked as a starting point: below this, what changed is more likely a media-query
- * tweak to one or two colours than a designed dark theme. Needs checking against real sites, and
- * the brief expects us to report what we find.
+ * How much lighter the normal page background must be than the dark-emulated one before we call it a
+ * real dark variant. A genuine light↔dark theme swaps a near-white page for a near-black one, a drop
+ * approaching 1; content churn on a single-scheme page leaves the background where it was.
  */
-export const DARK_MODE_CHANGE_THRESHOLD = 0.3;
+export const DARK_BACKGROUND_DROP_THRESHOLD = 0.25;
 
+/**
+ * Whether the site ships a real dark variant — decided by whether its dominant page background flips
+ * from light to dark between the normal crawl and the dark-emulated one, NOT by how much the colour
+ * set churned. A dark-only (or light-only) site keeps its background lightness, so it reads as a
+ * single scheme; only a site that actually presents a light page and a dark page counts as dual.
+ */
 export const assessDarkMode = (
     light: WeightedValue[],
     dark: WeightedValue[] | undefined,
-    threshold = DARK_MODE_CHANGE_THRESHOLD
+    threshold = DARK_BACKGROUND_DROP_THRESHOLD
 ): DarkModeOutcome => {
     if (!dark) {
         return { probed: false };
     }
 
-    const changedShare = darkModeChangedShare(light, dark);
+    const lightLuminance = dominantBackgroundLuminance(light);
+    const darkLuminance = dominantBackgroundLuminance(dark);
+    const backgroundDrop =
+        lightLuminance !== undefined && darkLuminance !== undefined
+            ? round4(lightLuminance - darkLuminance)
+            : 0;
 
-    if (changedShare >= threshold) {
-        return { probed: true, changedShare, hasDarkVariant: true };
+    if (backgroundDrop >= threshold) {
+        return { probed: true, backgroundDrop, hasDarkVariant: true };
     }
 
-    return { probed: true, changedShare, hasDarkVariant: false, derived: true };
+    return { probed: true, backgroundDrop, hasDarkVariant: false, singleScheme: true };
 };
 
 export interface PlanScreenshotsParams {

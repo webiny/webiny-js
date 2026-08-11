@@ -69,6 +69,8 @@ export interface IRemoteComponentGateway {
     listThemes(): Promise<ThemeSummary[]>;
     /** The CSS source (published snapshot, or the draft document) of a theme version. */
     getThemePreviewData(id: string): Promise<ThemePreviewData>;
+    /** The active theme's colour scheme ("single" | "light-dark"), for the default preview. */
+    getActiveThemeColorScheme(): Promise<string>;
 }
 
 export const RemoteComponentGateway = createAbstraction<IRemoteComponentGateway>(

@@ -157,14 +157,16 @@ const SandboxPreview = observer(function SandboxPreview({
                     }
                     options={themeOptions}
                 />
-                <SegmentedControl
-                    value={presenter.vm.themeMode || "light"}
-                    onChange={value => presenter.setThemeMode(value)}
-                    items={[
-                        { value: "light", label: "Light" },
-                        { value: "dark", label: "Dark" }
-                    ]}
-                />
+                {presenter.vm.previewSupportsDarkMode ? (
+                    <SegmentedControl
+                        value={presenter.vm.themeMode || "light"}
+                        onChange={value => presenter.setThemeMode(value)}
+                        items={[
+                            { value: "light", label: "Light" },
+                            { value: "dark", label: "Dark" }
+                        ]}
+                    />
+                ) : null}
                 <div className="flex items-center gap-xs">
                     {BACKGROUNDS.map(bg => (
                         <button

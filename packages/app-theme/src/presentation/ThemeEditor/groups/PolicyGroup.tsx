@@ -116,28 +116,55 @@ export const PolicyGroup = observer(function PolicyGroup({ theme, readOnly }: Po
             <Separator />
 
             <Setting
-                title="Light or dark by default"
+                title="Color scheme"
                 description={
-                    policy.defaultMode === "system"
-                        ? "Visitors see whichever their device prefers. They can still be switched explicitly."
-                        : policy.defaultMode === "light"
-                          ? "Every visitor sees the light theme, whatever their device prefers."
-                          : "Every visitor sees the dark theme, whatever their device prefers."
+                    (policy.colorScheme ?? "light-dark") === "single"
+                        ? "A single, light-only palette — no dark mode is generated or offered, and the light/dark switch is hidden."
+                        : "Separate light and dark palettes that visitors can switch between."
                 }
             >
                 <SegmentedControl
-                    value={policy.defaultMode}
+                    value={policy.colorScheme ?? "light-dark"}
                     disabled={readOnly}
                     onChange={(value: string) =>
-                        update({ defaultMode: value as DefaultModeBehaviour })
+                        update({ colorScheme: value as ThemePolicy["colorScheme"] })
                     }
                     items={[
-                        { label: "Follow device", value: "system" },
-                        { label: "Always light", value: "light" },
-                        { label: "Always dark", value: "dark" }
+                        { label: "Single", value: "single" },
+                        { label: "Light & dark", value: "light-dark" }
                     ]}
                 />
             </Setting>
+
+            {(policy.colorScheme ?? "light-dark") !== "single" ? (
+                <>
+                    <Separator />
+
+                    <Setting
+                        title="Light or dark by default"
+                        description={
+                            policy.defaultMode === "system"
+                                ? "Visitors see whichever their device prefers. They can still be switched explicitly."
+                                : policy.defaultMode === "light"
+                                  ? "Every visitor sees the light theme, whatever their device prefers."
+                                  : "Every visitor sees the dark theme, whatever their device prefers."
+                        }
+                    >
+                        <SegmentedControl
+                            value={policy.defaultMode}
+                            disabled={readOnly}
+                            onChange={(value: string) =>
+                                update({ defaultMode: value as DefaultModeBehaviour })
+                            }
+                            items={[
+                                { label: "Follow device", value: "system" },
+                                { label: "Always light", value: "light" },
+                                { label: "Always dark", value: "dark" }
+                            ]}
+                        />
+                    </Setting>
+                </>
+            ) : null}
 
             <Separator />
 

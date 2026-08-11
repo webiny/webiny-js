@@ -110,6 +110,8 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
     private _selectedThemeId: string | null = null;
     private _selectedThemeCss = "";
     private _themeMode = "light";
+    private _previewSupportsDark = true;
+    private _activeSupportsDark = true;
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -135,6 +137,7 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
             themeOptions: this._themeOptions,
             selectedThemeId: this._selectedThemeId,
             themeMode: this._themeMode,
+            previewSupportsDarkMode: this._previewSupportsDark,
             form: this._form.vm,
             refineForm: this._refineForm.vm,
             bundleStale:
@@ -247,9 +250,17 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
 
     private async loadThemeOptions() {
         try {
-            const themes = await this.gateway.listThemes();
+            const [themes, activeScheme] = await Promise.all([
+                this.gateway.listThemes(),
+                this.gateway.getActiveThemeColorScheme().catch(() => "light-dark")
+            ]);
             runInAction(() => {
                 this._themeOptions = themes;
+                this._activeSupportsDark = activeScheme !== "single";
+                // No theme picked yet: the preview reflects the active theme.
+                if (this._selectedThemeId === null) {
+                    this._previewSupportsDark = this._activeSupportsDark;
+                }
             });
         } catch (error) {
             // The active theme still previews; surface why the picker has no other options.
@@ -264,9 +275,12 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
 
         // Null id clears the override, falling back to the active theme.
         let css = "";
+        let supportsDark = this._activeSupportsDark;
         if (id) {
             try {
                 const data = await this.gateway.getThemePreviewData(id);
+                supportsDark =
+                    (data.policy as { colorScheme?: string } | null)?.colorScheme !== "single";
                 const snapshot = data.resolved
                     ? (data.resolved as ResolvedThemeSnapshot)
                     : // An unpublished draft has no snapshot — resolve one from its document. Throws if
@@ -284,8 +298,15 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
 
         runInAction(() => {
             this._selectedThemeCss = css;
+            this._previewSupportsDark = supportsDark;
         });
         this.previewEvents.sendThemeCss({ css });
+
+        // A single-scheme theme has no dark — snap the preview back to light so we never sit on a
+        // dark view the theme won't render.
+        if (!supportsDark && this._themeMode !== "light") {
+            this.setThemeMode("light");
+        }
     }
 
     setThemeMode(mode: string) {

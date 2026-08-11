@@ -15,6 +15,8 @@ export interface IComponentEditorVm {
     selectedThemeId: string | null;
     /** The forced preview mode: "light", "dark", or "" for the theme's system default. */
     themeMode: string;
+    /** Whether the previewed theme has a dark scheme — the light/dark toggle is hidden when it doesn't. */
+    previewSupportsDarkMode: boolean;
     source: string;
     css: string;
     error: string | null;

@@ -202,6 +202,26 @@ export const LIST_THEMES = /* GraphQL */ `
     }
 `;
 
+// The active theme's colour-scheme policy, so the preview knows whether to offer light/dark for the
+// default "Active theme" selection.
+export const GET_ACTIVE_THEME_POLICY = /* GraphQL */ `
+    query GetActiveThemePolicyForComponentPreview {
+        theme {
+            getActiveTheme {
+                data {
+                    theme {
+                        policy
+                    }
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
 // A theme version's token CSS source: the published snapshot when it exists, otherwise the draft
 // document (+ policy/settings) so an unpublished draft can be resolved and previewed too.
 export const GET_THEME_RESOLVED = /* GraphQL */ `

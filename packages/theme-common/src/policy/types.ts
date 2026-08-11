@@ -15,6 +15,13 @@ export type ColorEntryMode = "theme-only" | "open";
 export type FontSizeEntryMode = "ramp-only" | "open";
 export type DefaultModeBehaviour = "system" | "light" | "dark";
 
+/**
+ * Whether the theme ships a dark palette. `single` is a light-only theme: no dark values are emitted
+ * and the light/dark switch is hidden everywhere it appears. `light-dark` ships both, and
+ * `defaultMode` then decides which the visitor sees first.
+ */
+export type ColorScheme = "single" | "light-dark";
+
 export interface ColorPolicy {
     /** `theme-only` hides the free value input; `open` offers it alongside the theme swatches. */
     entry: ColorEntryMode;
@@ -34,6 +41,8 @@ export interface FontSizePolicy {
 export interface ThemePolicy {
     color: ColorPolicy;
     fontSize: FontSizePolicy;
+    /** Whether the theme has a dark palette at all, or is a single (light-only) scheme. */
+    colorScheme: ColorScheme;
     /** How the site decides between light and dark before the visitor expresses a preference. */
     defaultMode: DefaultModeBehaviour;
     /**
@@ -50,9 +59,16 @@ export interface ThemePolicy {
 export const createDefaultPolicy = (): ThemePolicy => ({
     color: { entry: "open", allowedSlots: null },
     fontSize: { entry: "open", allowedSteps: null },
+    colorScheme: "light-dark",
     defaultMode: "system",
     extensions: {}
 });
+
+/**
+ * Whether the theme has a dark palette. A policy stored before `colorScheme` existed has no field,
+ * which reads as `light-dark` — the prior behaviour, where every theme carried both modes.
+ */
+export const hasDarkMode = (policy: ThemePolicy): boolean => policy.colorScheme !== "single";
 
 /** True when the picker should hide its free-value input. */
 export const isColorConstrained = (policy: ThemePolicy): boolean => {

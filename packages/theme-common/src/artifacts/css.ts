@@ -1,4 +1,5 @@
 import { generateFluidValue, toCssDeclarations } from "~/fluid/clamp.js";
+import { hasDarkMode } from "~/policy/types.js";
 import { toCssVariableName } from "~/naming/cssVariable.js";
 import type { ResolvedThemeSnapshot, SnapshotToken } from "~/snapshot.js";
 import { tokenToDeclarations, type CssDeclaration } from "./values.js";
@@ -86,15 +87,19 @@ export const generateCssArtifact = (
         declarationsFor(token, viewport)
     );
 
-    // Only tokens whose dark value actually differs are re-declared. Spacing, radii and type sizes
-    // are mode-invariant, so emitting them twice would double the file for nothing.
-    const darkDeclarations = snapshot.modes.dark.flatMap(token => {
-        const light = lightByPath.get(token.path);
-        if (light && JSON.stringify(light.value) === JSON.stringify(token.value)) {
-            return [];
-        }
-        return declarationsFor(token, viewport);
-    });
+    // A single-scheme (light-only) theme emits no dark values at all — there is no dark palette to
+    // fall back to, and a stale/seeded dark block would render colours the theme never intends.
+    // Otherwise, only tokens whose dark value actually differs are re-declared (spacing, radii and
+    // type sizes are mode-invariant, so emitting them twice would double the file for nothing).
+    const darkDeclarations = hasDarkMode(snapshot.policy)
+        ? snapshot.modes.dark.flatMap(token => {
+              const light = lightByPath.get(token.path);
+              if (light && JSON.stringify(light.value) === JSON.stringify(token.value)) {
+                  return [];
+              }
+              return declarationsFor(token, viewport);
+          })
+        : [];
 
     const header = [
         "/*",

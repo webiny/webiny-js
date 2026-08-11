@@ -14,7 +14,8 @@ import {
     GENERATE_REMOTE_COMPONENT,
     REFINE_REMOTE_COMPONENT,
     LIST_THEMES,
-    GET_THEME_RESOLVED
+    GET_THEME_RESOLVED,
+    GET_ACTIVE_THEME_POLICY
 } from "./graphql.js";
 
 interface GqlEnvelope<T> {
@@ -215,6 +216,23 @@ class RemoteComponentGraphQLGatewayImpl implements RemoteComponentGateway.Interf
             policy: data?.policy ?? null,
             settings: data?.settings ?? null
         };
+    }
+
+    async getActiveThemeColorScheme(): Promise<string> {
+        const response = await this.client.execute<{
+            theme: {
+                getActiveTheme: GqlEnvelope<{
+                    theme: { policy: { colorScheme?: string } | null } | null;
+                }>;
+            };
+        }>({ query: GET_ACTIVE_THEME_POLICY });
+
+        const envelope = response.theme.getActiveTheme;
+        if (envelope.error) {
+            throw new Error(envelope.error.message);
+        }
+
+        return envelope.data?.theme?.policy?.colorScheme ?? "light-dark";
     }
 }
 

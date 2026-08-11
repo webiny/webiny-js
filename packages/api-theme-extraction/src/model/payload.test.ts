@@ -5,8 +5,6 @@ import type { SampledElement } from "~/crawl/samplePage.js";
 import {
     assessDarkMode,
     buildModelPayload,
-    DARK_MODE_CHANGE_THRESHOLD,
-    darkModeChangedShare,
     PAYLOAD_CAPS,
     planScreenshots,
     toPayloadValues
@@ -77,82 +75,66 @@ describe("toPayloadValues", () => {
     });
 });
 
-describe("darkModeChangedShare", () => {
-    it("is zero when nothing changed", () => {
-        const light = tallyColors([colorObservation("#ffffff", 100)]);
-        expect(darkModeChangedShare(light, light)).toBe(0);
-    });
-
-    it("is one when everything changed", () => {
-        const light = tallyColors([colorObservation("#ffffff", 100)]);
-        const dark = tallyColors([colorObservation("#000000", 100)]);
-
-        expect(darkModeChangedShare(light, dark)).toBe(1);
-    });
-
-    it("measures the proportion that changed", () => {
-        const light = tallyColors([
-            colorObservation("#ffffff", 100),
-            colorObservation("#eeeeee", 90),
-            colorObservation("#dddddd", 80),
-            colorObservation("#cccccc", 70)
-        ]);
-        const dark = tallyColors([
-            colorObservation("#ffffff", 100),
-            colorObservation("#eeeeee", 90),
-            colorObservation("#111111", 80),
-            colorObservation("#222222", 70)
-        ]);
-
-        expect(darkModeChangedShare(light, dark)).toBe(0.5);
-    });
-
-    it("is zero when there was nothing to compare", () => {
-        expect(darkModeChangedShare([], [])).toBe(0);
-    });
-});
-
 describe("assessDarkMode", () => {
-    const light = tallyColors([colorObservation("#ffffff", 100), colorObservation("#000000", 90)]);
+    // Dominant (highest-area) background is the near-white first entry.
+    const lightPage = tallyColors([
+        colorObservation("#ffffff", 100),
+        colorObservation("#000000", 90)
+    ]);
 
     it("reports not probed when the dark pass did not run", () => {
-        expect(assessDarkMode(light, undefined)).toEqual({ probed: false });
+        expect(assessDarkMode(lightPage, undefined)).toEqual({ probed: false });
     });
 
-    it("treats a wholesale change as a real dark variant", () => {
-        const dark = tallyColors([
+    it("is a real dark variant when the page background flips light to dark", () => {
+        const darkPage = tallyColors([
             colorObservation("#0f172a", 100),
             colorObservation("#f8fafc", 90)
         ]);
 
-        const result = assessDarkMode(light, dark);
-
-        expect(result).toMatchObject({ probed: true, hasDarkVariant: true });
-    });
-
-    it("derives dark from light when barely anything moved", () => {
-        const result = assessDarkMode(light, light);
-
-        expect(result).toMatchObject({
+        expect(assessDarkMode(lightPage, darkPage)).toMatchObject({
             probed: true,
-            changedShare: 0,
-            hasDarkVariant: false,
-            derived: true
-        });
-    });
-
-    it("honours a custom threshold", () => {
-        const dark = tallyColors([
-            colorObservation("#ffffff", 100),
-            colorObservation("#111111", 90)
-        ]);
-
-        // Half the palette moved: a real variant at the default, derived if we demand more.
-        expect(darkModeChangedShare(light, dark)).toBe(0.5);
-        expect(assessDarkMode(light, dark, DARK_MODE_CHANGE_THRESHOLD)).toMatchObject({
             hasDarkVariant: true
         });
-        expect(assessDarkMode(light, dark, 0.8)).toMatchObject({ derived: true });
+    });
+
+    it("is a single scheme for a dark-only site whose colours churn but background stays dark", () => {
+        // The normal crawl and the dark pass both have a near-black dominant background — no flip,
+        // even though the colour set moved around. This is the questdb.com case.
+        const darkPage = tallyColors([
+            colorObservation("#0f172a", 100),
+            colorObservation("#1e293b", 90)
+        ]);
+        const darkPageChurned = tallyColors([
+            colorObservation("#111827", 100),
+            colorObservation("#334155", 90)
+        ]);
+
+        expect(assessDarkMode(darkPage, darkPageChurned)).toMatchObject({
+            probed: true,
+            hasDarkVariant: false,
+            singleScheme: true
+        });
+    });
+
+    it("is a single scheme for a light-only site (background stays light)", () => {
+        const lightPageChurned = tallyColors([
+            colorObservation("#f8fafc", 100),
+            colorObservation("#e2e8f0", 90)
+        ]);
+
+        expect(assessDarkMode(lightPage, lightPageChurned)).toMatchObject({
+            hasDarkVariant: false,
+            singleScheme: true
+        });
+    });
+
+    it("honours a custom threshold on the background drop", () => {
+        const darkPage = tallyColors([colorObservation("#0f172a", 100)]);
+
+        // A full light->dark flip clears the default threshold but not an impossibly strict one.
+        expect(assessDarkMode(lightPage, darkPage)).toMatchObject({ hasDarkVariant: true });
+        expect(assessDarkMode(lightPage, darkPage, 1.5)).toMatchObject({ singleScheme: true });
     });
 });
 

@@ -100,6 +100,16 @@ describe("generateCssArtifact", () => {
         expect(css).toContain(`:root:not([${THEME_MODE_ATTRIBUTE}="light"])`);
     });
 
+    it("emits no dark block for a single (light-only) colour scheme", () => {
+        const single = generateCssArtifact(
+            snapshotOf({ ...createDefaultPolicy(), colorScheme: "single" })
+        );
+        expect(single).not.toContain(`[${THEME_MODE_ATTRIBUTE}="dark"] {`);
+        expect(single).not.toContain("@media (prefers-color-scheme: dark)");
+        // The light palette is still fully present.
+        expect(single).toContain("--wby-color-surface-page: #F8FAFC;");
+    });
+
     it("does not re-declare mode-invariant tokens in the dark block", () => {
         const darkBlock = css.split(`[${THEME_MODE_ATTRIBUTE}="dark"] {`)[1].split("}")[0];
 

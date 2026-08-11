@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { IconButton, SegmentedControl, Text, Tooltip, useToast } from "@webiny/admin-ui";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import {
     createResolvedSnapshot,
     generateCssArtifact,
     generateJsonArtifact,
+    hasDarkMode,
     type ThemeMode
 } from "@webiny/theme-common";
 import type { ThemeDto } from "~/features/themeGateway/index.js";
@@ -38,6 +39,15 @@ export const PreviewPlaceholder = ({
     const toast = useToast();
     const [surface, setSurface] = useState<Surface>("components");
     const [viewport, setViewport] = useState("desktop");
+
+    // A single (light-only) theme has no dark values to preview — hide the mode switch and never sit
+    // on a dark preview the theme won't ship.
+    const dualScheme = hasDarkMode(theme.policy);
+    useEffect(() => {
+        if (!dualScheme && mode !== "light") {
+            onModeChange("light");
+        }
+    }, [dualScheme, mode, onModeChange]);
 
     // Generated only when a code surface is selected. A mid-edit draft can be momentarily invalid,
     // in which case generation throws and we show a note rather than a stale or partial artifact.
@@ -97,14 +107,16 @@ export const PreviewPlaceholder = ({
                         { label: "JSON", value: "json" }
                     ]}
                 />
-                <SegmentedControl
-                    value={mode}
-                    onChange={(value: string) => onModeChange(value as ThemeMode)}
-                    items={[
-                        { label: "Light", value: "light" },
-                        { label: "Dark", value: "dark" }
-                    ]}
-                />
+                {dualScheme ? (
+                    <SegmentedControl
+                        value={mode}
+                        onChange={(value: string) => onModeChange(value as ThemeMode)}
+                        items={[
+                            { label: "Light", value: "light" },
+                            { label: "Dark", value: "dark" }
+                        ]}
+                    />
+                ) : null}
                 <div className="ml-auto flex items-center gap-sm">
                     {showCode ? (
                         <Tooltip
