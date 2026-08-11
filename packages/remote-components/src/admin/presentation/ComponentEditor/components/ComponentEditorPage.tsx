@@ -139,7 +139,12 @@ const SandboxPreview = observer(function SandboxPreview({
 
     // A non-empty sentinel for "active": the Select rejects an empty-string option value.
     const themeOptions = [
-        { value: ACTIVE_THEME_VALUE, label: "Active theme" },
+        {
+            value: ACTIVE_THEME_VALUE,
+            label: presenter.vm.activeThemeLabel
+                ? `Active: ${presenter.vm.activeThemeLabel}`
+                : "Active theme"
+        },
         ...presenter.vm.themeOptions.map(theme => ({
             value: theme.id,
             label: `${theme.name} · v${theme.version}`
@@ -150,13 +155,15 @@ const SandboxPreview = observer(function SandboxPreview({
         <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center gap-sm py-xs px-md border-b border-neutral-dimmed flex-shrink-0">
                 <BreakpointSelector />
-                <Select
-                    value={presenter.vm.selectedThemeId ?? ACTIVE_THEME_VALUE}
-                    onChange={value =>
-                        void presenter.selectTheme(value === ACTIVE_THEME_VALUE ? null : value)
-                    }
-                    options={themeOptions}
-                />
+                <div className="w-56 flex-shrink-0">
+                    <Select
+                        value={presenter.vm.selectedThemeId ?? ACTIVE_THEME_VALUE}
+                        onChange={value =>
+                            void presenter.selectTheme(value === ACTIVE_THEME_VALUE ? null : value)
+                        }
+                        options={themeOptions}
+                    />
+                </div>
                 {presenter.vm.previewSupportsDarkMode ? (
                     <SegmentedControl
                         value={presenter.vm.themeMode || "light"}
@@ -167,6 +174,7 @@ const SandboxPreview = observer(function SandboxPreview({
                         ]}
                     />
                 ) : null}
+                <div className="flex-1" />
                 <div className="flex items-center gap-xs">
                     {BACKGROUNDS.map(bg => (
                         <button
@@ -178,7 +186,6 @@ const SandboxPreview = observer(function SandboxPreview({
                         />
                     ))}
                 </div>
-                <div className="flex-1" />
                 <IconButton
                     icon={<RefreshIcon />}
                     variant="ghost"

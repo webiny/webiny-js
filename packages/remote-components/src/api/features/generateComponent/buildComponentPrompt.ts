@@ -323,6 +323,8 @@ The input value is rendered as children. Use for: layout containers, card bodies
 
 The active theme defines these CSS custom properties on \`:root\`. Reference them with \`var(--wby-…, <fallback>)\` so a component follows the site's theme and updates when the theme changes, while the fallback keeps it rendering on its own. Do not invent other \`--wby-\` names.
 
+**Keep a foreground and its background on the same footing.** These colour tokens flip between light and dark mode, so a \`--wby-color-text-*\` token (or any theme colour) used as text MUST sit on a theme *background* token — then they flip together and stay legible. When you hardcode a background (a decorative gradient or a fixed colour/image), hardcode the text colour on it too, picked to contrast with that specific background (e.g. \`color: #fff\` on a dark gradient). NEVER put a theme text token on a hardcoded background: the text flips with the mode while the background does not, so it becomes unreadable in one mode. In particular \`--wby-color-text-inverse\` is the theme's *inverse-surface* text (white in light mode, dark in dark mode) — only use it over a theme surface, never over a fixed dark background.
+
 ${buildTokenCatalogSection()}
 
 ## Examples

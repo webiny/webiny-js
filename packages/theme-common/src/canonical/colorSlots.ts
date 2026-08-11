@@ -58,7 +58,7 @@ export const CANONICAL_COLOR_SLOTS: readonly CanonicalColorSlot[] = [
         [
             "inverse",
             "Inverse",
-            "Text on a dark or coloured surface where primary text is unreadable"
+            "Text for the theme's inverse surface; flips with the mode (light in light mode, dark in dark), so use it only over a theme surface, not a fixed background"
         ],
         ["link", "Link", "Hyperlinks and other inline navigational text"]
     ]),

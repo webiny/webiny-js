@@ -106,6 +106,17 @@ export class EditingSdk implements IContentSdk {
         this.messenger.on("document.patch", patch => {
             this.documentStore.applyPatch(patch);
         });
+
+        // Light/dark preview: the theme's dark values are declared under this attribute on the page's
+        // own `:root`, so the editor's mode toggle drives it here, inside the iframe document.
+        this.messenger.on("theme.mode", ({ mode }: { mode?: string }) => {
+            const root = document.documentElement;
+            if (mode === "light" || mode === "dark") {
+                root.setAttribute("data-wby-theme-mode", mode);
+            } else {
+                root.removeAttribute("data-wby-theme-mode");
+            }
+        });
     }
 
     private initPositionReporting(): void {

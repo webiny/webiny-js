@@ -61,9 +61,16 @@ export const Extensions = () => {
             <Infra.Crypto.Encryption passphrase={"my-passphrase"} />
             {/* Optional server-side pepper folded into every hash (e.g. self-hosted auth passwords). */}
             <Infra.Crypto.Hashing pepper={"my-hashing-pepper"} />
-            <Infra.Api.MaxBundleSize size={6291456} />
+            {/* 8 MiB (up from the 6 MiB default). Enabling theme extraction bundles puppeteer-core
+                into the API handler — every TaskDefinition runs on the shared API Lambda — which
+                pushes it just past 6 MiB. Only projects that opt into extraction pay this. */}
+            <Infra.Api.MaxBundleSize size={8388608} />
 
             {/* Api 👇 */}
+            {/* Opt-in theme extraction backend (generate a theme from a website). Registering it
+                adds the extraction GraphQL schema + background task, and makes the "From a website"
+                option appear in the New Theme dialog. */}
+            <Api.Extension src={"@/extensions/themeExtraction/ThemeExtractionExtension.ts"} />
             {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}

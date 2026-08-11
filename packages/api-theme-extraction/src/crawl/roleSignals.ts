@@ -66,6 +66,31 @@ const isContainerLike = (element: SampledElement): boolean =>
         isPositiveLength(element.borderWidth)) &&
     (isPositiveLength(element.paddingTop) || isPositiveLength(element.paddingLeft));
 
+/** Real form controls, which always count regardless of styling. */
+const CONTROL_TAGS = new Set(["button", "input", "select", "textarea"]);
+
+/**
+ * A button-like control: a real form control, or an interactive element rendered as a button — one
+ * that paints a background, draws a border, or pads its content. Bare text links are deliberately
+ * excluded: an `<a>` (or `<label>`/`<summary>`) that is just coloured text is "interactive" but has
+ * no button radius or border to learn from, and on a content-heavy site those links would otherwise
+ * outvote the actual buttons and drag `radius.control` to zero.
+ */
+const isButtonLikeControl = (element: SampledElement): boolean => {
+    if (!element.interactive) {
+        return false;
+    }
+    if (CONTROL_TAGS.has(element.tag)) {
+        return true;
+    }
+    return (
+        paints(element.backgroundColor) ||
+        isPositiveLength(element.borderWidth) ||
+        isPositiveLength(element.paddingTop) ||
+        isPositiveLength(element.paddingLeft)
+    );
+};
+
 /**
  * Occurrence-weighted vote over a single measurement. A design applies one radius across many
  * controls and one across many cards, so "the value most elements share" is a far more robust
@@ -110,7 +135,7 @@ export const extractRoleSignals = (elements: SampledElement[]): RoleSignals => {
     const borderControl = new ValueTally();
 
     for (const element of elements) {
-        if (element.interactive) {
+        if (isButtonLikeControl(element)) {
             if (isLength(element.borderRadius)) {
                 radiusControl.add(element.borderRadius, element.area);
             }

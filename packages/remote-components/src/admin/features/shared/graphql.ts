@@ -202,14 +202,16 @@ export const LIST_THEMES = /* GraphQL */ `
     }
 `;
 
-// The active theme's colour-scheme policy, so the preview knows whether to offer light/dark for the
-// default "Active theme" selection.
+// The active theme — its name/version to label the default option, and its colour-scheme policy so
+// the preview knows whether to offer the light/dark toggle for it.
 export const GET_ACTIVE_THEME_POLICY = /* GraphQL */ `
-    query GetActiveThemePolicyForComponentPreview {
+    query GetActiveThemeForComponentPreview {
         theme {
             getActiveTheme {
                 data {
                     theme {
+                        version
+                        properties
                         policy
                     }
                 }

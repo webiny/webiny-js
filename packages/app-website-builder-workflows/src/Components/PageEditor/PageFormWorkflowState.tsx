@@ -10,6 +10,13 @@ const {
 export const PageFormWorkflowState = observer(() => {
     const { presenter } = useWorkflowState();
 
+    // Nothing to show — no workflow assigned and no state note. `WorkflowStateBar` already renders
+    // null without a workflow, so keeping the wrapper would draw an empty strip whose `border-b`
+    // stacks a second full-width hairline right under the top bar's own separator.
+    if (!presenter.vm.hasWorkflow && !presenter.vm.hasState) {
+        return null;
+    }
+
     return (
         <div
             className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}

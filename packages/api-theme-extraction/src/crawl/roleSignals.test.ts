@@ -35,33 +35,63 @@ const card = (overrides: Partial<SampledElement> = {}): SampledElement =>
         ...overrides
     });
 
+/** A real button control — counts as a control whatever its styling. */
+const button = (overrides: Partial<SampledElement> = {}): SampledElement =>
+    el({ tag: "button", interactive: true, ...overrides });
+
+/** A bare inline text link — interactive, but not a button (no background, border or padding). */
+const textLink = (overrides: Partial<SampledElement> = {}): SampledElement =>
+    el({ tag: "a", interactive: true, ...overrides });
+
 describe("extractRoleSignals", () => {
-    it("measures control radius from interactive elements", () => {
+    it("measures control radius from button-like controls", () => {
         const signals = extractRoleSignals([
-            el({ interactive: true, borderRadius: "8px" }),
-            el({ interactive: true, borderRadius: "8px" }),
-            el({ interactive: true, borderRadius: "8px" })
+            button({ borderRadius: "8px" }),
+            button({ borderRadius: "8px" }),
+            button({ borderRadius: "8px" })
         ]);
 
         expect(signals.radiusControl).toEqual({ value: "8px", samples: 3 });
     });
 
+    it("ignores bare text links so they don't outvote the real buttons", () => {
+        // The questdb.com case: a handful of 5px buttons, but the page is full of inline text links
+        // with no radius. Those links are interactive yet not buttons, so they must not count.
+        const signals = extractRoleSignals([
+            button({ borderRadius: "5px" }),
+            button({ borderRadius: "5px" }),
+            ...Array.from({ length: 12 }, () => textLink({ borderRadius: "0px" }))
+        ]);
+
+        expect(signals.radiusControl).toEqual({ value: "5px", samples: 2 });
+    });
+
+    it("counts a link styled as a button (background + padding), not just <button>", () => {
+        const signals = extractRoleSignals([
+            textLink({
+                borderRadius: "6px",
+                backgroundColor: "rgb(37, 99, 235)",
+                paddingTop: "10px"
+            })
+        ]);
+
+        expect(signals.radiusControl).toEqual({ value: "6px", samples: 1 });
+    });
+
     it("lets the most common value win rather than the largest element (occurrence-weighted)", () => {
         // A single oddly-rounded control (even a big one) must not outvote the design's real radius.
         const signals = extractRoleSignals([
-            el({ interactive: true, borderRadius: "8px", area: 100 }),
-            el({ interactive: true, borderRadius: "8px", area: 100 }),
-            el({ interactive: true, borderRadius: "8px", area: 100 }),
-            el({ interactive: true, borderRadius: "20px", area: 100000 })
+            button({ borderRadius: "8px", area: 100 }),
+            button({ borderRadius: "8px", area: 100 }),
+            button({ borderRadius: "8px", area: 100 }),
+            button({ borderRadius: "20px", area: 100000 })
         ]);
 
         expect(signals.radiusControl?.value).toBe("8px");
     });
 
     it("counts a square control (0px) as a real radius, not a missing measurement", () => {
-        expect(
-            extractRoleSignals([el({ interactive: true, borderRadius: "0px" })]).radiusControl
-        ).toEqual({
+        expect(extractRoleSignals([button({ borderRadius: "0px" })]).radiusControl).toEqual({
             value: "0px",
             samples: 1
         });
@@ -91,10 +121,10 @@ describe("extractRoleSignals", () => {
 
     it("measures control border width only from controls that actually have a border", () => {
         const signals = extractRoleSignals([
-            el({ interactive: true, borderWidth: "1px" }),
-            el({ interactive: true, borderWidth: "1px" }),
+            button({ borderWidth: "1px" }),
+            button({ borderWidth: "1px" }),
             // A borderless button says nothing about the control border width.
-            el({ interactive: true, borderWidth: "0px" })
+            button({ borderWidth: "0px" })
         ]);
 
         expect(signals.borderControl).toEqual({ value: "1px", samples: 2 });

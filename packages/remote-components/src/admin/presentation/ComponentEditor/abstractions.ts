@@ -17,6 +17,8 @@ export interface IComponentEditorVm {
     themeMode: string;
     /** Whether the previewed theme has a dark scheme — the light/dark toggle is hidden when it doesn't. */
     previewSupportsDarkMode: boolean;
+    /** The active theme's "name · vN", for labelling the default option. Empty when none is active. */
+    activeThemeLabel: string;
     source: string;
     css: string;
     error: string | null;

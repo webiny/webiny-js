@@ -110,6 +110,12 @@ export class PreviewEvents {
         // When `onConnected` is executed, we need to send new data to the live preview.
         messenger.send("document.set", this.editor.getDocumentState().toJson());
 
+        // Re-apply the previewed light/dark mode, so a reloaded/reconnected iframe keeps it.
+        const themeMode = this.editor.getEditorState().read().themeMode;
+        if (themeMode) {
+            messenger.send("theme.mode", { mode: themeMode });
+        }
+
         messenger.on("preview.theme", ({ theme }) => {
             this.editor.executeCommand(Commands.SetTheme, { theme });
         });

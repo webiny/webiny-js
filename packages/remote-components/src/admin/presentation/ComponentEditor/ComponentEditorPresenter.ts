@@ -112,6 +112,7 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
     private _themeMode = "light";
     private _previewSupportsDark = true;
     private _activeSupportsDark = true;
+    private _activeThemeLabel = "";
 
     constructor(
         private formModelFactory: FormModelFactory.Interface,
@@ -138,6 +139,7 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
             selectedThemeId: this._selectedThemeId,
             themeMode: this._themeMode,
             previewSupportsDarkMode: this._previewSupportsDark,
+            activeThemeLabel: this._activeThemeLabel,
             form: this._form.vm,
             refineForm: this._refineForm.vm,
             bundleStale:
@@ -250,13 +252,16 @@ class ComponentEditorPresenterImpl implements PresenterAbstraction.Interface {
 
     private async loadThemeOptions() {
         try {
-            const [themes, activeScheme] = await Promise.all([
+            const [themes, active] = await Promise.all([
                 this.gateway.listThemes(),
-                this.gateway.getActiveThemeColorScheme().catch(() => "light-dark")
+                this.gateway.getActiveTheme().catch(() => null)
             ]);
             runInAction(() => {
                 this._themeOptions = themes;
-                this._activeSupportsDark = activeScheme !== "single";
+                // No active theme → no dark palette to preview and no `data-wby-theme-mode` styling to
+                // drive; the component renders on its `var(--wby-*, fallback)` values. Hide the toggle.
+                this._activeSupportsDark = active ? active.colorScheme !== "single" : false;
+                this._activeThemeLabel = active ? `${active.name} · v${active.version}` : "";
                 // No theme picked yet: the preview reflects the active theme.
                 if (this._selectedThemeId === null) {
                     this._previewSupportsDark = this._activeSupportsDark;

@@ -27,6 +27,8 @@ export type EditorState = {
     isReadOnly: boolean;
     showOverlays: boolean;
     breakpoint?: string;
+    /** The light/dark mode the canvas is previewed in. Undefined follows the theme's own default. */
+    themeMode?: string;
     [key: string]: any;
 };
 

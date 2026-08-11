@@ -2,7 +2,8 @@ import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.
 import {
     RemoteComponentGateway,
     type ThemeSummary,
-    type ThemePreviewData
+    type ThemePreviewData,
+    type ActiveThemeSummary
 } from "./abstractions.js";
 import type { RemoteComponentDto } from "~/shared/types.js";
 import {
@@ -218,11 +219,15 @@ class RemoteComponentGraphQLGatewayImpl implements RemoteComponentGateway.Interf
         };
     }
 
-    async getActiveThemeColorScheme(): Promise<string> {
+    async getActiveTheme(): Promise<ActiveThemeSummary | null> {
         const response = await this.client.execute<{
             theme: {
                 getActiveTheme: GqlEnvelope<{
-                    theme: { policy: { colorScheme?: string } | null } | null;
+                    theme: {
+                        version: number;
+                        properties: { name?: string } | null;
+                        policy: { colorScheme?: string } | null;
+                    } | null;
                 }>;
             };
         }>({ query: GET_ACTIVE_THEME_POLICY });
@@ -232,7 +237,16 @@ class RemoteComponentGraphQLGatewayImpl implements RemoteComponentGateway.Interf
             throw new Error(envelope.error.message);
         }
 
-        return envelope.data?.theme?.policy?.colorScheme ?? "light-dark";
+        const theme = envelope.data?.theme;
+        if (!theme) {
+            return null;
+        }
+
+        return {
+            name: theme.properties?.name || "Untitled theme",
+            version: theme.version,
+            colorScheme: theme.policy?.colorScheme ?? "light-dark"
+        };
     }
 }
 

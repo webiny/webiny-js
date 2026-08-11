@@ -13769,6 +13769,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/sdk-nextjs": "npm:0.0.0"
+    "@webiny/theme-common": "npm:0.0.0"
     "@webiny/website-builder-nextjs": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     acorn: "npm:^8.18.0"

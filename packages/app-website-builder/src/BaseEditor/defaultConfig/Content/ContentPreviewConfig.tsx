@@ -4,6 +4,7 @@ import { Breadcrumbs } from "./Breadcrumbs/index.js";
 import { DocumentPreview } from "./Preview/DocumentPreview.js";
 import { AddressBar } from "./AddressBar/AddressBar.js";
 import { BreakpointSelector } from "./AddressBar/BreakpointSelector.js";
+import { ThemeModeSwitcher } from "./AddressBar/ThemeModeSwitcher.js";
 
 export const ContentPreviewConfig = () => {
     const { Ui } = EditorConfig;
@@ -14,6 +15,12 @@ export const ContentPreviewConfig = () => {
                 name={"breakpointSelector"}
                 group={"center"}
                 element={<BreakpointSelector />}
+            />
+            <Ui.TopBar.Element
+                name={"themeModeSwitcher"}
+                group={"center"}
+                after={"breakpointSelector"}
+                element={<ThemeModeSwitcher />}
             />
             <Ui.Content.Element name="addressBar" element={<AddressBar />} />
             <Ui.Content.Element name="iframe" element={<DocumentPreview />} />
