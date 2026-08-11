@@ -38,7 +38,7 @@
     "acorn": "^8.18.0",
     "acorn-jsx": "^5.3.2",
     "css-tree": "^3.2.1",
-    "esbuild-wasm": "^0.28.1",
+    "esbuild-wasm": "^0.28.2",
     "front-matter": "^4.0.2",
     "mobx": "^7.0.0",
     "mobx-react-lite": "^5.0.0",

@@ -9,7 +9,7 @@ import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { until } from "@webiny/api/testing/until.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";

@@ -21,7 +21,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ws": "^8.21.1",
+    "ws": "^8.21.3",
     "zod": "4.4.3"
   },
   "devDependencies": {

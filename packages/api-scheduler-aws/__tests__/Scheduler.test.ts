@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/api/testing/until.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/abstractions.js";
