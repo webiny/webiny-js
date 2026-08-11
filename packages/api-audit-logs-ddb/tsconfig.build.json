@@ -9,8 +9,7 @@
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-core-ddb/tsconfig.build.json" }
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -34,9 +33,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }

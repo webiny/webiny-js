@@ -9,8 +9,7 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../utils" },
-    { "path": "../api-core-ddb" }
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -34,9 +33,7 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
-      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"]
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }
