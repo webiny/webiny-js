@@ -10699,7 +10699,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-component-extraction@workspace:packages/api-component-extraction":
+"@webiny/api-component-extraction@npm:0.0.0, @webiny/api-component-extraction@workspace:packages/api-component-extraction":
   version: 0.0.0-use.local
   resolution: "@webiny/api-component-extraction@workspace:packages/api-component-extraction"
   dependencies:
@@ -28482,6 +28482,7 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-component-extraction": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"

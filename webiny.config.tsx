@@ -71,6 +71,12 @@ export const Extensions = () => {
                 adds the extraction GraphQL schema + background task, and makes the "From a website"
                 option appear in the New Theme dialog. */}
             <Api.Extension src={"@/extensions/themeExtraction/ThemeExtractionExtension.ts"} />
+            {/* Opt-in component-extraction backend (crawl a site and generate components). Registering
+                it adds the extraction GraphQL schema, the nine background-task stages and the private
+                CMS models. The Admin app is registered separately (app-serverless-cms). */}
+            <Api.Extension
+                src={"@/extensions/componentExtraction/ComponentExtractionExtension.ts"}
+            />
             {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
