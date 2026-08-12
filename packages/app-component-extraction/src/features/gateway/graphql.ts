@@ -31,25 +31,17 @@ const RUN_FIELDS = /* GraphQL */ `
     createdOn
 `;
 
-// A stage's log trail, read straight from the Background Tasks store by the stage's task id — so the
-// full per-item log is visible in the run view without leaving for CloudWatch. Logs come grouped by
-// iteration; the gateway flattens their items. The `where` is passed as a whole typed variable (as the
-// Background Tasks admin does) so no per-field variable type can mismatch the filter input.
-export const LIST_STAGE_LOGS = /* GraphQL */ `
-    query ListComponentExtractionStageLogs(
-        $where: WebinyBackgroundTaskLogListWhereInput
-        $sort: [WebinyBackgroundTaskLogListSorter!]
-        $limit: Int
-    ) {
+// A stage's activity trail. It lives in the task OUTPUT (a JSON field), not the background-task LOG:
+// the log record replaces its items on every write (only the last survives), so it can't hold a trail.
+// The runner accumulates the trail in output.activity, and this reads it back by the stage's task id —
+// so the full per-item activity is visible in the run view without leaving for CloudWatch.
+export const GET_STAGE_TASK = /* GraphQL */ `
+    query GetComponentExtractionStageTask($id: ID!) {
         backgroundTasks {
-            listLogs(where: $where, sort: $sort, limit: $limit) {
+            getTask(id: $id) {
                 data {
-                    iteration
-                    items {
-                        message
-                        type
-                        createdOn
-                    }
+                    id
+                    output
                 }
                 error {
                     code

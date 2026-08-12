@@ -27,6 +27,20 @@ export interface StageLogItem {
     createdOn: string;
 }
 
+/** One line of the activity trail the runner accumulates in the stage task's output. */
+export interface StageActivityEntry {
+    message: string;
+    current?: number;
+    total?: number;
+    at: string;
+}
+
+/** The stage task's output JSON, as read back from `backgroundTasks.getTask`. */
+export interface StageTaskOutput {
+    activity?: StageActivityEntry[];
+    progress?: { stage: string; current: number; total: number; message: string };
+}
+
 /** Live progress for the running stage, delivered over the websocket. */
 export interface StageProgress {
     current: number;

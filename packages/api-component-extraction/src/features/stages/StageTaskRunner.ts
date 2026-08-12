@@ -32,7 +32,7 @@ export interface StageTaskInput {
     [key: string]: string | undefined;
 }
 
-/** The live progress snapshot the runner writes to the task output, shown in the Background Tasks viewer. */
+/** The live progress snapshot the runner writes to the task output — the latest counter + message. */
 export interface StageProgressOutput {
     stage: string;
     current: number;
@@ -40,13 +40,31 @@ export interface StageProgressOutput {
     message: string;
 }
 
+/** One line of the stage's activity trail, accumulated in the task output. */
+export interface StageActivityEntry {
+    message: string;
+    current?: number;
+    total?: number;
+    at: string;
+}
+
+/**
+ * The task output. `activity` is the running trail the admin reads back — kept here rather than in the
+ * background-task LOG because that log replaces its items on every write (only the last survives), so it
+ * can't hold a trail. The output is a JSON field that round-trips whole, and we always write the full
+ * (bounded) array, so it accumulates correctly.
+ */
 export interface StageTaskOutput {
     stage?: string;
     status?: string;
     error?: IResponseError;
     progress?: StageProgressOutput;
+    activity?: StageActivityEntry[];
     [key: string]: unknown;
 }
+
+/** How many trailing activity lines to keep in the output (bounds the task record's size). */
+const ACTIVITY_LIMIT = 60;
 
 type RunParams = TaskDefinition.RunParams<StageTaskInput, StageTaskOutput>;
 type RunResult = Promise<TaskDefinition.Result<StageTaskInput, StageTaskOutput>>;
@@ -101,6 +119,49 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         }
         const job = jobResult.value;
 
+        // Append one line to the task-output activity trail (the admin reads this back), refresh the
+        // latest-progress snapshot, and push it live over the websocket. Best-effort — it reads the
+        // current output and writes the full bounded array, so the trail accumulates across items and
+        // across continuation iterations (same task) without the log's replace-on-write loss.
+        const appendActivity = async (
+            message: string,
+            opts: { current?: number; total?: number } = {}
+        ): Promise<void> => {
+            try {
+                const existingActivity =
+                    (controller.state.getOutput()?.activity as StageActivityEntry[] | undefined) ??
+                    [];
+                const activity = [
+                    ...existingActivity,
+                    { message, current: opts.current, total: opts.total, at: now() }
+                ].slice(-ACTIVITY_LIMIT);
+                await controller.state.updateOutput({
+                    activity,
+                    progress: {
+                        stage,
+                        current: opts.current ?? 0,
+                        total: opts.total ?? 0,
+                        message
+                    }
+                });
+            } catch (error) {
+                console.log(
+                    `[component-extraction] Could not persist activity: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`
+                );
+            }
+            await this.report(STAGE_PROGRESS_ACTION, {
+                runId: run.id,
+                jobId: job.id,
+                stage,
+                status: "running",
+                message,
+                current: opts.current,
+                total: opts.total
+            });
+        };
+
         // A stage already "running" means this invocation is a continuation of it (a `response.continue`
         // re-invoke), not a fresh start — so the start bookkeeping runs only on the first invocation.
         const existing = stageEntry(run.stages, stage);
@@ -129,15 +190,9 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 stage,
                 status: "running"
             });
-            await log.info({
-                message: `Stage "${stage}" started.`,
-                data: { runId: run.id, stage }
-            });
+            await appendActivity(`Stage "${stage}" started.`);
         } else {
-            await log.info({
-                message: `Stage "${stage}" resuming.`,
-                data: { runId: run.id, stage }
-            });
+            await appendActivity(`Stage "${stage}" resuming.`);
         }
 
         const handler = this.handlers.find(candidate => candidate.stage === stage);
@@ -158,50 +213,14 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         const previous = previousStage(stage);
         const upstream = previous ? (stageEntry(ledger, previous)?.artifacts ?? {}) : {};
 
-        // Progress reporter passed to the handler: a database log (viewer trail) + task output (live
-        // counter) + websocket (run view). Best-effort — a hot-loop progress call must never fail a stage.
-        const progress = async (update: {
+        // The reporter the handler calls per item — one line on the activity trail + a live websocket.
+        const progress = (update: {
             message: string;
             current?: number;
             total?: number;
             data?: Record<string, unknown>;
-        }): Promise<void> => {
-            try {
-                await log.info({
-                    message: update.message,
-                    data: {
-                        runId: run.id,
-                        stage,
-                        current: update.current,
-                        total: update.total,
-                        ...update.data
-                    }
-                });
-                await controller.state.updateOutput({
-                    progress: {
-                        stage,
-                        current: update.current ?? 0,
-                        total: update.total ?? 0,
-                        message: update.message
-                    }
-                });
-                await this.report(STAGE_PROGRESS_ACTION, {
-                    runId: run.id,
-                    jobId: job.id,
-                    stage,
-                    status: "running",
-                    message: update.message,
-                    current: update.current,
-                    total: update.total
-                });
-            } catch (error) {
-                console.log(
-                    `[component-extraction] Could not report progress: ${
-                        error instanceof Error ? error.message : String(error)
-                    }`
-                );
-            }
-        };
+        }): Promise<void> =>
+            appendActivity(update.message, { current: update.current, total: update.total });
 
         let outcome;
         try {
@@ -218,34 +237,27 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                     controller.runtime.isCloseToTimeout(safetyMarginSeconds)
             });
         } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
             await log.error({ message: `Stage "${stage}" threw.`, error });
-            return this.fail(
-                controller,
-                run.id,
-                job.id,
-                stage,
-                ledger,
-                error instanceof Error ? error.message : String(error),
-                now
-            );
+            await appendActivity(`Stage "${stage}" failed: ${message}`);
+            return this.fail(controller, run.id, job.id, stage, ledger, message, now);
         }
 
         if (outcome.isFail()) {
+            await appendActivity(`Stage "${stage}" failed: ${outcome.error.message}`);
             return this.fail(controller, run.id, job.id, stage, ledger, outcome.error.message, now);
         }
 
         // Continuation: the stage checkpointed and has more work. Persist any partial counts so the run
-        // reflects progress between iterations, then re-invoke via the task framework.
+        // reflects progress between iterations, then re-invoke via the task framework. `continue` leaves
+        // the task output untouched, so the activity trail carries over to the next iteration.
         if (outcome.value.more) {
             if (outcome.value.counts) {
                 await this.runRepository.update(run.id, {
                     counts: { ...run.counts, ...outcome.value.counts }
                 });
             }
-            await log.info({
-                message: `Stage "${stage}" checkpointed; continuing in a new iteration.`,
-                data: { runId: run.id, stage }
-            });
+            await appendActivity(`Stage "${stage}" checkpointed; continuing in a new run…`);
             return controller.response.continue(input, { seconds: 1 });
         }
 
@@ -268,6 +280,7 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             await this.runLock.release(job.id, run.id);
         }
 
+        await appendActivity(`Stage "${stage}" done.`);
         await this.report(STAGE_DONE_ACTION, {
             runId: run.id,
             jobId: job.id,
@@ -275,11 +288,9 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             status: "done",
             degraded: outcome.value.degraded
         });
-        await log.info({
-            message: `Stage "${stage}" done.`,
-            data: { runId: run.id, stage, artifacts: Object.keys(outcome.value.artifacts) }
-        });
-        return controller.response.done();
+        // Hand the accumulated output (with the activity trail) to `done` so the framework's completion
+        // write re-persists it rather than blanking the output.
+        return controller.response.done(controller.state.getOutput());
     }
 
     private async fail(

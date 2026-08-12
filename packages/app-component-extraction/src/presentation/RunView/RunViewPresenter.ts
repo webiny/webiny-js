@@ -112,6 +112,14 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     applyProgress(stage: string, progress: StageProgress) {
         runInAction(() => {
             this.vm.progressByStage[stage] = progress;
+            // Live-append to the visible trail when this is the open stage; the poll's fetch from the
+            // task output later replaces it with the authoritative list, healing any gaps.
+            if (this.vm.logsStage === stage) {
+                this.vm.logs = [
+                    ...this.vm.logs,
+                    { message: progress.message, type: "info", createdOn: new Date().toISOString() }
+                ].slice(-100);
+            }
         });
     }
 

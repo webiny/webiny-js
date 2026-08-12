@@ -6,6 +6,7 @@ import type {
     JobListItemDto,
     RunDto,
     StageLogItem,
+    StageTaskOutput,
     ThemeOptionDto
 } from "~/shared/types.js";
 import {
@@ -13,9 +14,9 @@ import {
     CREATE_RUN,
     GET_JOB,
     GET_RUN,
+    GET_STAGE_TASK,
     LIST_JOBS,
     LIST_RUNS,
-    LIST_STAGE_LOGS,
     LIST_THEMES,
     RUN_STAGE
 } from "./graphql.js";
@@ -111,16 +112,17 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
     async listStageLogs(taskId: string): Promise<StageLogItem[]> {
         const response = await this.client.execute<{
             backgroundTasks: {
-                listLogs: GqlEnvelope<Array<{ items: StageLogItem[] | null }>>;
+                getTask: GqlEnvelope<{ id: string; output: StageTaskOutput | null }>;
             };
-        }>({
-            query: LIST_STAGE_LOGS,
-            variables: { where: { task: taskId }, sort: ["createdOn_ASC"], limit: 100 }
-        });
+        }>({ query: GET_STAGE_TASK, variables: { id: taskId } });
 
-        // Logs come grouped by iteration; flatten to a single oldest-first item list.
-        const groups = unwrap(response.backgroundTasks.listLogs) ?? [];
-        return groups.flatMap(group => group.items ?? []);
+        const task = unwrap(response.backgroundTasks.getTask);
+        const activity = task?.output?.activity ?? [];
+        return activity.map(entry => ({
+            message: entry.message,
+            type: "info",
+            createdOn: entry.at
+        }));
     }
 }
 
