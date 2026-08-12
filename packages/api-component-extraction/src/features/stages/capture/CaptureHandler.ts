@@ -87,6 +87,14 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             failed: []
         };
 
+        // An immediate line so the run view shows activity during the (slow) headless-browser launch,
+        // before the first page completes.
+        await context.progress({
+            message: `Launching browser to capture ${total} page(s)…`,
+            current: checkpoint.nextIndex,
+            total
+        });
+
         const session = await this.browserProvider.open();
         try {
             while (checkpoint.nextIndex < total) {
