@@ -11,4 +11,6 @@ export * from "./domain/types.js";
 export * from "./domain/errors.js";
 export * from "./domain/ledger.js";
 export * from "./domain/abstractions.js";
+export * from "./domain/stage.js";
+export * from "./features/permissions.js";
 export * from "./feature.js";

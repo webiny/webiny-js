@@ -19,7 +19,10 @@
   },
   "dependencies": {
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0"
   },

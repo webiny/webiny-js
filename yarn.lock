@@ -10704,7 +10704,10 @@ __metadata:
   resolution: "@webiny/api-component-extraction@workspace:packages/api-component-extraction"
   dependencies:
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"

@@ -7,6 +7,11 @@ import { JobModelPlugin, OverrideModelPlugin, RunModelPlugin } from "~/domain/mo
 import { JobModel, OverrideModel, RunModel } from "~/domain/abstractions.js";
 import { JobRepository, OverrideRepository, RunRepository } from "~/features/repositories.js";
 import { RunLock } from "~/storage/RunLock.js";
+import { ComponentExtractionPermissionsFeature } from "~/features/permissions.js";
+import { KeyValueStageArtifactStore } from "~/storage/StageArtifactStore.js";
+import { StageTaskRunnerService } from "~/features/stages/StageTaskRunner.js";
+import { STAGE_TASKS } from "~/features/stages/stageTasks.js";
+import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 
 /**
  * Component Extraction — the backend entities (phase 1, W2).
@@ -23,10 +28,20 @@ export const ComponentExtractionFeature = createFeature({
         container.register(RunModelPlugin);
         container.register(OverrideModelPlugin);
 
+        ComponentExtractionPermissionsFeature.register(container);
+
         container.register(JobRepository);
         container.register(RunRepository);
         container.register(OverrideRepository);
         container.register(RunLock);
+        container.register(KeyValueStageArtifactStore);
+
+        // Stage topology: the shared runner and one thin task per stage. The nine `StageHandler`s that
+        // do the actual work are registered by W4; until then the runner fails a stage cleanly.
+        container.register(StageTaskRunnerService);
+        STAGE_TASKS.forEach(task => container.register(task));
+
+        registerComponentExtractionGraphQL(container);
 
         // Per-request resolution of the three CmsModels. Runs without authorization because reading a
         // model definition is not the same act as reading an entry — entry-level authorization still

@@ -45,3 +45,23 @@ export const runLockKey = (jobId: string): string => `${RUN_LOCK_KEY_PREFIX}${jo
 // Phase-1 page-cap bounds (decision 3): configurable per job, default 40, hard maximum 150.
 export const DEFAULT_PAGE_CAP = 40;
 export const MAX_PAGE_CAP = 150;
+
+const capitalize = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1);
+
+/**
+ * The background-task id for a stage — one TaskDefinition per stage. camelCase, as the task framework
+ * requires (e.g. `componentExtractionDiscover`).
+ */
+export const stageTaskId = (stage: Stage): string => `componentExtraction${capitalize(stage)}`;
+
+/**
+ * Deterministic artifact key. Includes the run, the stage and the stage version, so re-running a stage
+ * writes to a fresh key (its version bumped) and a stale downstream artifact never collides with a new
+ * one. `name` distinguishes a stage's multiple artifacts (e.g. a page's pruned tree vs its raw DOM).
+ */
+export const stageArtifactKey = (
+    runId: string,
+    stage: Stage,
+    stageVersion: number,
+    name: string
+): string => `componentExtraction:artifact:${runId}:${stage}:v${stageVersion}:${name}`;
