@@ -61,6 +61,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             pages.push({
                 url: page.url,
                 screenshotRef: page.screenshotRef,
+                treeRef: page.treeRef,
                 documentHeight: page.documentHeight,
                 sections
             });

@@ -15,6 +15,8 @@ import { STAGE_TASKS } from "~/features/stages/stageTasks.js";
 import { DiscoverHandler } from "~/features/stages/discover/DiscoverHandler.js";
 import { CaptureHandler } from "~/features/stages/capture/CaptureHandler.js";
 import { SegmentHandler } from "~/features/stages/segment/SegmentHandler.js";
+import { ClusterHandler } from "~/features/stages/cluster/ClusterHandler.js";
+import { ThemeManifestResolverService } from "~/features/shared/themeManifest.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 
@@ -48,10 +50,14 @@ export const ComponentExtractionFeature = createFeature({
         container.register(StageTaskRunnerService);
         STAGE_TASKS.forEach(task => container.register(task));
 
+        // Resolves the pinned theme's manifest, shared by Cluster (token binding) and Plan.
+        container.register(ThemeManifestResolverService);
+
         // Stage handlers (W4). Registered as they land — a stage with no handler fails cleanly.
         container.register(DiscoverHandler);
         container.register(CaptureHandler);
         container.register(SegmentHandler);
+        container.register(ClusterHandler);
 
         registerComponentExtractionGraphQL(container);
 

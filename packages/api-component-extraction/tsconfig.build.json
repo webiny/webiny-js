@@ -5,12 +5,14 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-theme/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
-    { "path": "../site-capture/tsconfig.build.json" }
+    { "path": "../site-capture/tsconfig.build.json" },
+    { "path": "../theme-common/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -25,6 +27,8 @@
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-theme/*": ["../api-theme/src/*"],
+      "@webiny/api-theme": ["../api-theme/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
@@ -36,7 +40,9 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/site-capture/*": ["../site-capture/src/*"],
-      "@webiny/site-capture": ["../site-capture/src"]
+      "@webiny/site-capture": ["../site-capture/src"],
+      "@webiny/theme-common/*": ["../theme-common/src/*"],
+      "@webiny/theme-common": ["../theme-common/src"]
     }
   }
 }

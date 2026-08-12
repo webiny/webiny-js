@@ -77,12 +77,34 @@ export interface SegmentedPage {
     url: string;
     /** The page's screenshot, so section crops come from it rather than a second visit. */
     screenshotRef: string;
+    /** Forwarded from Capture so Cluster can read the section subtrees without reaching back. */
+    treeRef: string;
     documentHeight: number;
     sections: SectionBox[];
 }
 
 export interface SegmentArtifact {
     pages: SegmentedPage[];
+}
+
+// ----- Cluster (output) --------------------------------------------------------------------------
+
+export interface ClusterMember {
+    url: string;
+    /** Index of the section on its page (into the content root's children). */
+    sectionIndex: number;
+    signature: string;
+}
+
+export interface Cluster {
+    signature: string;
+    members: ClusterMember[];
+    /** The first-seen member, used as the cluster's exemplar by Classify, Plan and Generate. */
+    representative: ClusterMember;
+}
+
+export interface ClusterArtifact {
+    clusters: Cluster[];
 }
 
 // ----- Cluster (structural signature inputs) -----------------------------------------------------

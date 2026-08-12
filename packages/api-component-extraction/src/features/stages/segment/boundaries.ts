@@ -12,7 +12,7 @@ export interface SegmentOptions {
  * Descend through single-dominant-child wrapper nodes (`<div id="root"><div class="app">…`) to the real
  * content root, so sections are the page's actual top-level blocks rather than one giant wrapper.
  */
-const findContentRoot = (node: CapturedNode): CapturedNode => {
+export const findContentRoot = (node: CapturedNode): CapturedNode => {
     let current = node;
     while (
         current.children.length === 1 &&
