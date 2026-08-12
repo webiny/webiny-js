@@ -11,6 +11,7 @@ import { ComponentExtractionPermissionsFeature } from "~/features/permissions.js
 import { KeyValueStageArtifactStore } from "~/storage/StageArtifactStore.js";
 import { StageTaskRunnerService } from "~/features/stages/StageTaskRunner.js";
 import { STAGE_TASKS } from "~/features/stages/stageTasks.js";
+import { DiscoverHandler } from "~/features/stages/discover/DiscoverHandler.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 
 /**
@@ -36,10 +37,12 @@ export const ComponentExtractionFeature = createFeature({
         container.register(RunLock);
         container.register(KeyValueStageArtifactStore);
 
-        // Stage topology: the shared runner and one thin task per stage. The nine `StageHandler`s that
-        // do the actual work are registered by W4; until then the runner fails a stage cleanly.
+        // Stage topology: the shared runner and one thin task per stage.
         container.register(StageTaskRunnerService);
         STAGE_TASKS.forEach(task => container.register(task));
+
+        // Stage handlers (W4). Registered as they land — a stage with no handler fails cleanly.
+        container.register(DiscoverHandler);
 
         registerComponentExtractionGraphQL(container);
 
