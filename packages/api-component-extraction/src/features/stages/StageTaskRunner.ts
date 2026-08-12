@@ -10,6 +10,7 @@ import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
 import {
+    BlobStore,
     StageArtifactStore,
     StageHandler,
     STAGE_DONE_ACTION,
@@ -59,6 +60,7 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         private jobRepository: JobRepository.Interface,
         private runLock: RunLock.Interface,
         private artifactStore: StageArtifactStore.Interface,
+        private blobStore: BlobStore.Interface,
         private handlers: StageHandler.Interface[],
         private identityContext: IdentityContext.Interface,
         private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
@@ -130,6 +132,7 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 upstream,
                 artifactKey: name => stageArtifactKey(run.id, stage, targetVersion, name),
                 store: this.artifactStore,
+                blobs: this.blobStore,
                 log
             });
         } catch (error) {
@@ -228,6 +231,7 @@ export const StageTaskRunnerService = createImplementation({
         JobRepository,
         RunLock,
         StageArtifactStore,
+        BlobStore,
         [StageHandler, { multiple: true }],
         IdentityContext,
         WebsocketsSendToIdentityUseCase

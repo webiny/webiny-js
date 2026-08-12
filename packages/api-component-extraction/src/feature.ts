@@ -9,9 +9,13 @@ import { JobRepository, OverrideRepository, RunRepository } from "~/features/rep
 import { RunLock } from "~/storage/RunLock.js";
 import { ComponentExtractionPermissionsFeature } from "~/features/permissions.js";
 import { KeyValueStageArtifactStore } from "~/storage/StageArtifactStore.js";
+import { S3BlobStore } from "~/storage/S3BlobStore.js";
 import { StageTaskRunnerService } from "~/features/stages/StageTaskRunner.js";
 import { STAGE_TASKS } from "~/features/stages/stageTasks.js";
 import { DiscoverHandler } from "~/features/stages/discover/DiscoverHandler.js";
+import { CaptureHandler } from "~/features/stages/capture/CaptureHandler.js";
+import { SegmentHandler } from "~/features/stages/segment/SegmentHandler.js";
+import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 
 /**
@@ -36,6 +40,9 @@ export const ComponentExtractionFeature = createFeature({
         container.register(OverrideRepository);
         container.register(RunLock);
         container.register(KeyValueStageArtifactStore);
+        container.register(S3BlobStore);
+        // The headless browser used by Capture. Stateless — safe to register alongside theme extraction's.
+        container.register(ChromiumBrowserProvider);
 
         // Stage topology: the shared runner and one thin task per stage.
         container.register(StageTaskRunnerService);
@@ -43,6 +50,8 @@ export const ComponentExtractionFeature = createFeature({
 
         // Stage handlers (W4). Registered as they land — a stage with no handler fails cleanly.
         container.register(DiscoverHandler);
+        container.register(CaptureHandler);
+        container.register(SegmentHandler);
 
         registerComponentExtractionGraphQL(container);
 

@@ -39,6 +39,27 @@ export namespace StageArtifactStore {
     export type Interface = IStageArtifactStore;
 }
 
+/**
+ * Large binary artifacts — full-page screenshots, compressed raw DOM — in raw S3 under the feature
+ * prefix, following the `S3ScreenshotStore` pattern. Keys are relative to the prefix; `put` returns the
+ * full key to reference the blob by.
+ */
+export interface IBlobStore {
+    put(
+        key: string,
+        bytes: Uint8Array,
+        contentType: string
+    ): Promise<Result<string, ExtractionError>>;
+    get(ref: string): Promise<Result<Uint8Array, ExtractionError>>;
+    /** Remove every blob written under a run's prefix, when the run's working data is no longer needed. */
+    deleteAll(runId: string): Promise<Result<void, ExtractionError>>;
+}
+
+export const BlobStore = createAbstraction<IBlobStore>("ComponentExtraction/BlobStore");
+export namespace BlobStore {
+    export type Interface = IBlobStore;
+}
+
 export interface StageOutcome {
     /** Artifact references this stage produced (name -> key), recorded on the ledger for handoff. */
     artifacts: Record<string, string>;
@@ -55,7 +76,10 @@ export interface StageContext {
     upstream: Record<string, string>;
     /** Deterministic key for one of this stage's artifacts — includes run, stage and target version. */
     artifactKey(name: string): string;
+    /** Small JSON stage artifacts (KV). */
     store: IStageArtifactStore;
+    /** Large binary artifacts (S3) — screenshots, compressed DOM. */
+    blobs: IBlobStore;
     log: StageLog;
 }
 

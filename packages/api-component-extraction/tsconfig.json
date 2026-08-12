@@ -6,9 +6,11 @@
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
     { "path": "../api-websockets" },
+    { "path": "../aws-sdk" },
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../site-capture" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -25,12 +27,16 @@
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/site-capture/*": ["../site-capture/src/*"],
+      "@webiny/site-capture": ["../site-capture/src"]
     }
   }
 }

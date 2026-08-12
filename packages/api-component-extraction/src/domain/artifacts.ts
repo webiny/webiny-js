@@ -50,16 +50,39 @@ export interface CapturedPage {
     finalUrl: string;
     viewport: Box;
     documentHeight: number;
-    /** Artifact keys (S3/KV) for this page's pruned tree, full-page screenshot and compressed raw DOM. */
+    /** Blob keys for this page's pruned tree, full-page desktop screenshot and compressed raw DOM. */
     treeRef: string;
     screenshotRef: string;
     rawDomRef: string;
+    /** Full-page screenshot at the narrow width, for responsive inspection. */
+    narrowScreenshotRef: string;
 }
 
 export interface CaptureArtifact {
     pages: CapturedPage[];
     /** URLs that could not be captured — degraded, not fatal. */
     failed: string[];
+}
+
+// ----- Segment -----------------------------------------------------------------------------------
+
+/** A candidate section on a page: a bounding box into the full-page screenshot, plus where in the tree. */
+export interface SectionBox {
+    box: Box;
+    /** Index of the section among the content root's children — a stable handle within the page. */
+    index: number;
+}
+
+export interface SegmentedPage {
+    url: string;
+    /** The page's screenshot, so section crops come from it rather than a second visit. */
+    screenshotRef: string;
+    documentHeight: number;
+    sections: SectionBox[];
+}
+
+export interface SegmentArtifact {
+    pages: SegmentedPage[];
 }
 
 // ----- Cluster (structural signature inputs) -----------------------------------------------------
