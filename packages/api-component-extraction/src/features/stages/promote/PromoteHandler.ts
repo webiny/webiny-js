@@ -75,18 +75,26 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
         for (let index = 0; index < total; index++) {
             const component = generate.components[index];
+            // Gate promotion on the editability-critical checks only: text preservation (content is
+            // intact) and contract conformance (every prop is exposed). Token binding is advisory — a
+            // component that references a token outside the theme still renders and is editable, so it
+            // should reach the Library flagged, not be silently dropped.
             const passed =
                 component.validation.textPreservation.passed &&
-                component.validation.contractConformance.passed &&
-                component.validation.tokenBinding.passed;
+                component.validation.contractConformance.passed;
             if (!passed) {
                 skipped.push(component.signature);
                 await context.progress({
-                    message: `Skipped ${component.name} (failed validation) — ${index + 1}/${total}`,
+                    message: `Skipped ${component.name} (content or props did not validate) — ${index + 1}/${total}`,
                     current: index + 1,
                     total
                 });
                 continue;
+            }
+            if (!component.validation.tokenBinding.passed) {
+                await context.log.info({
+                    message: `Promoting "${component.name}" with token-binding warnings: ${component.validation.tokenBinding.failures.join(", ")}`
+                });
             }
 
             const name = uniqueName(component.name, taken);

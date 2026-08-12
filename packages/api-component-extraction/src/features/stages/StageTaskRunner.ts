@@ -26,6 +26,7 @@ import {
     withStageTaskId
 } from "~/domain/ledger.js";
 import { previousStage, stageArtifactKey, type Stage } from "~/constants.js";
+import type { Run } from "~/domain/types.js";
 
 export interface StageTaskInput {
     runId: string;
@@ -119,6 +120,16 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         }
         const job = jobResult.value;
 
+        // Re-read the run right before a mutating ledger write. The ledger is one shared array and a
+        // write replaces it whole, so applying a transition to the snapshot from execute start — stale
+        // after a minutes-long handler run, or racing a duplicate/concurrent invocation — would clobber
+        // another stage's status (e.g. reverting a done stage). Re-reading applies the change to the
+        // latest ledger; `fallback` covers a failed re-read.
+        const latestRun = async (fallback: Run): Promise<Run> => {
+            const latest = await this.runRepository.get(run.id);
+            return latest.isOk() ? latest.value : fallback;
+        };
+
         // Append one line to the task-output activity trail (the admin reads this back), refresh the
         // latest-progress snapshot, and push it live over the websocket. Best-effort — it reads the
         // current output and writes the full bounded array, so the trail accumulates across items and
@@ -174,9 +185,14 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
 
         let ledger = run.stages;
         if (!resuming) {
-            // First invocation: mark running, stamp the task id (for log deep-linking), announce the start.
+            // First invocation: mark running, stamp the task id (for log deep-linking), announce the
+            // start — applied to the latest ledger so we don't revert another stage that just advanced.
             const taskId = controller.state.getTask().id;
-            ledger = withStageTaskId(markStageRunning(run.stages, stage, now()), stage, taskId);
+            ledger = withStageTaskId(
+                markStageRunning((await latestRun(run)).stages, stage, now()),
+                stage,
+                taskId
+            );
             const persistedRunning = await this.runRepository.update(run.id, {
                 stages: ledger,
                 status: "running"
@@ -253,16 +269,20 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         // the task output untouched, so the activity trail carries over to the next iteration.
         if (outcome.value.more) {
             if (outcome.value.counts) {
+                const latest = await latestRun(run);
                 await this.runRepository.update(run.id, {
-                    counts: { ...run.counts, ...outcome.value.counts }
+                    counts: { ...latest.counts, ...outcome.value.counts }
                 });
             }
             await appendActivity(`Stage "${stage}" checkpointed; continuing in a new run…`);
             return controller.response.continue(input, { seconds: 1 });
         }
 
-        const done = markStageDone(ledger, stage, outcome.value.artifacts, now());
-        const counts = { ...run.counts, ...outcome.value.counts };
+        // Apply the done transition to the latest ledger, not the snapshot from execute start (stale
+        // after a long handler run), so completing this stage never reverts another stage's status.
+        const latest = await latestRun(run);
+        const done = markStageDone(latest.stages, stage, outcome.value.artifacts, now());
+        const counts = { ...latest.counts, ...outcome.value.counts };
         // The pipeline's terminal stage completing means the run is done; anything earlier leaves it
         // running (the gate awaits the next `runStage`).
         const runStatus = stage === "promote" ? "done" : "running";
@@ -307,7 +327,10 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         message: string,
         now: () => string
     ): RunResult {
-        const failed = markStageFailed(ledger, stage, message, now());
+        // Apply the failure to the latest ledger so it doesn't clobber another stage that has advanced.
+        const latest = await this.runRepository.get(runId);
+        const baseStages = latest.isOk() ? latest.value.stages : ledger;
+        const failed = markStageFailed(baseStages, stage, message, now());
         await this.runRepository.update(runId, { stages: failed, status: "failed" });
         await this.report(STAGE_FAILED_ACTION, { runId, jobId, stage, status: "failed", message });
         return controller.response.error(message);

@@ -97,18 +97,26 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             return Result.fail(new ExtractionValidationError("the plan artifact is empty"));
         }
 
-        // Valid css variables for the token validator — degrade to no token check if the theme is gone.
+        // Valid css variables for the token validator. If the theme manifest can't be resolved (e.g. an
+        // unpublished theme), token binding is NOT checked — otherwise every `var(--wby-*)` the model
+        // emits counts as unknown and every component fails validation, and Promote skips them all.
         let validVariables = new Set<string>();
+        let manifestAvailable = false;
         const manifestResult = await this.manifestResolver.resolve(
             context.job.themeEntryId,
             context.job.themeVersion
         );
         if (manifestResult.isOk()) {
+            manifestAvailable = true;
             validVariables = new Set(
                 manifestResult.value.slots.flatMap(slot =>
                     slot.cssVariables.map(variable => variable.toLowerCase())
                 )
             );
+        } else {
+            await context.log.info({
+                message: `Generating without token-binding validation: ${manifestResult.error.message}`
+            });
         }
 
         const total = plan.components.length;
@@ -127,7 +135,12 @@ class GenerateHandlerImpl implements StageHandler.Interface {
 
         while (checkpoint.nextIndex < total) {
             const planned = plan.components[checkpoint.nextIndex];
-            const best = await this.generateOne(context, planned, validVariables);
+            const best = await this.generateOne(
+                context,
+                planned,
+                validVariables,
+                manifestAvailable
+            );
 
             if (!best) {
                 checkpoint.failed.push(planned.signature);
@@ -192,7 +205,8 @@ class GenerateHandlerImpl implements StageHandler.Interface {
     private async generateOne(
         context: StageContext,
         planned: PlannedComponent,
-        validVariables: Set<string>
+        validVariables: Set<string>,
+        manifestAvailable: boolean
     ): Promise<GeneratedComponent | null> {
         const fileId = await this.createReferenceImage(context, planned);
         const additionalFileIds = fileId ? [fileId] : [];
@@ -220,7 +234,12 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                     planned.props.map(prop => prop.name),
                     output.source
                 ),
-                tokenBinding: validateTokenBinding(output.css, validVariables)
+                tokenBinding: manifestAvailable
+                    ? validateTokenBinding(output.css, validVariables)
+                    : {
+                          passed: true,
+                          failures: ["theme manifest unavailable; token binding not checked"]
+                      }
             };
 
             best = {
