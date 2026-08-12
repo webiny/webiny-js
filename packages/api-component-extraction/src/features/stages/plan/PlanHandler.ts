@@ -157,7 +157,9 @@ class PlanHandlerImpl implements StageHandler.Interface {
                 props: contract.props,
                 tokenBindings: contract.tokenBindings,
                 representative: cluster.cluster.representative,
-                members: cluster.cluster.members
+                members: cluster.cluster.members,
+                representativeCrop: cluster.cluster.representativeCrop,
+                sourceTexts: cluster.cluster.observedTexts
             });
         }
 

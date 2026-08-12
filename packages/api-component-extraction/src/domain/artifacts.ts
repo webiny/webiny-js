@@ -110,6 +110,13 @@ export interface SectionDigest {
     headingCount: number;
 }
 
+/** Where to crop the representative section's reference image from — a box into a page's screenshot. */
+export interface RepresentativeCrop {
+    screenshotRef: string;
+    /** The section box in document coordinates; Generate scales it to the (downscaled) screenshot. */
+    box: Box;
+}
+
 export interface Cluster {
     signature: string;
     members: ClusterMember[];
@@ -119,6 +126,8 @@ export interface Cluster {
     digest: SectionDigest;
     /** Text observed across all members (deduped, capped) — the raw material for Plan's prop values. */
     observedTexts: string[];
+    /** Where Generate crops the reference image for this cluster. */
+    representativeCrop: RepresentativeCrop;
 }
 
 export interface ClusterArtifact {
@@ -169,6 +178,10 @@ export interface PlannedComponent {
     representative: ClusterMember;
     /** Every section this component covers, so Assemble can place its instances per page. */
     members: ClusterMember[];
+    /** Where Generate crops the reference image. */
+    representativeCrop: RepresentativeCrop;
+    /** The section's text, for Generate's text-preservation validator. */
+    sourceTexts: string[];
 }
 
 export interface PlanArtifact {

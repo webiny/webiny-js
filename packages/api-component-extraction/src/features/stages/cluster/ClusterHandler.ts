@@ -5,6 +5,7 @@ import type {
     Cluster,
     ClusterArtifact,
     ClusterMember,
+    RepresentativeCrop,
     SectionDigest,
     SegmentArtifact
 } from "~/domain/artifacts.js";
@@ -19,7 +20,7 @@ const DESKTOP_WIDTH = 1440;
 const EMPTY_LOOKUP: TokenLookup = { colorHexToPath: new Map() };
 const MAX_OBSERVED_TEXTS = 60;
 
-type MemberEntry = { member: ClusterMember; digest: SectionDigest };
+type MemberEntry = { member: ClusterMember; digest: SectionDigest; crop: RepresentativeCrop };
 
 /**
  * Cluster — deterministic. Fingerprints each section (structural signature over its type tree, geometry
@@ -90,7 +91,11 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     signature
                 };
                 const list = bySignature.get(signature) ?? [];
-                list.push({ member, digest: sectionDigest(node) });
+                list.push({
+                    member,
+                    digest: sectionDigest(node),
+                    crop: { screenshotRef: page.screenshotRef, box: section.box }
+                });
                 bySignature.set(signature, list);
                 sectionCount++;
             }
@@ -104,7 +109,8 @@ class ClusterHandlerImpl implements StageHandler.Interface {
             observedTexts: [...new Set(entries.flatMap(entry => entry.digest.texts))].slice(
                 0,
                 MAX_OBSERVED_TEXTS
-            )
+            ),
+            representativeCrop: entries[0].crop
         }));
 
         const artifact: ClusterArtifact = { clusters };

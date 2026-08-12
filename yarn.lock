@@ -10705,6 +10705,7 @@ __metadata:
   dependencies:
     "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-theme": "npm:0.0.0"
@@ -10714,6 +10715,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/remote-components": "npm:0.0.0"
     "@webiny/site-capture": "npm:0.0.0"
     "@webiny/theme-common": "npm:0.0.0"
     sharp: "npm:^0.35.3"

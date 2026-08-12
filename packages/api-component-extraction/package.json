@@ -20,6 +20,7 @@
   "dependencies": {
     "@webiny/ai-powerups": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-theme": "0.0.0",
@@ -28,6 +29,7 @@
     "@webiny/background-tasks": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
+    "@webiny/remote-components": "0.0.0",
     "@webiny/site-capture": "0.0.0",
     "@webiny/theme-common": "0.0.0",
     "sharp": "^0.35.3"

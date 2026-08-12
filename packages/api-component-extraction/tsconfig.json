@@ -4,6 +4,7 @@
   "references": [
     { "path": "../ai-powerups" },
     { "path": "../api-core" },
+    { "path": "../api-file-manager" },
     { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
     { "path": "../api-theme" },
@@ -12,6 +13,7 @@
     { "path": "../background-tasks" },
     { "path": "../event-handler-core" },
     { "path": "../feature" },
+    { "path": "../remote-components" },
     { "path": "../site-capture" },
     { "path": "../theme-common" }
   ],
@@ -26,6 +28,8 @@
       "@webiny/ai-powerups": ["../ai-powerups/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -42,6 +46,8 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/remote-components/*": ["../remote-components/src/*"],
+      "@webiny/remote-components": ["../remote-components/src"],
       "@webiny/site-capture/*": ["../site-capture/src/*"],
       "@webiny/site-capture": ["../site-capture/src"],
       "@webiny/theme-common/*": ["../theme-common/src/*"],
