@@ -113,7 +113,10 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
             backgroundTasks: {
                 listLogs: GqlEnvelope<Array<{ items: StageLogItem[] | null }>>;
             };
-        }>({ query: LIST_STAGE_LOGS, variables: { task: taskId } });
+        }>({
+            query: LIST_STAGE_LOGS,
+            variables: { where: { task: taskId }, sort: ["createdOn_ASC"], limit: 100 }
+        });
 
         // Logs come grouped by iteration; flatten to a single oldest-first item list.
         const groups = unwrap(response.backgroundTasks.listLogs) ?? [];

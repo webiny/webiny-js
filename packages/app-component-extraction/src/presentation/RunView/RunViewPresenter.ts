@@ -135,8 +135,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.logsStage = stage;
                 this.vm.logsLoading = false;
             });
-        } catch {
-            // A log-fetch failure must not disrupt the run view; leave whatever was there.
+        } catch (error) {
+            // A log-fetch failure must not disrupt the run view; leave whatever was there, but surface
+            // it to the console so a broken query isn't silently invisible.
+            console.warn("[component-extraction] Could not load stage logs:", error);
             runInAction(() => {
                 this.vm.logsLoading = false;
             });
