@@ -58,9 +58,18 @@ export class ExtractionStorageError extends BaseError<{ operation: string; detai
     }
 }
 
+export class ExtractionModelError extends BaseError<{ detail: string }> {
+    override readonly code = "ComponentExtraction/ModelError" as const;
+
+    constructor(detail: string) {
+        super({ message: `The AI model call failed: ${detail}.`, data: { detail } });
+    }
+}
+
 export type ExtractionError =
     | ExtractionPersistenceError
     | ExtractionNotFoundError
     | ExtractionValidationError
     | ExtractionRunInProgressError
-    | ExtractionStorageError;
+    | ExtractionStorageError
+    | ExtractionModelError;

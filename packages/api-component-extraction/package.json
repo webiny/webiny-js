@@ -18,6 +18,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@webiny/ai-powerups": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",

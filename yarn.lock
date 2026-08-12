@@ -10703,6 +10703,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-component-extraction@workspace:packages/api-component-extraction"
   dependencies:
+    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"

@@ -96,15 +96,81 @@ export interface ClusterMember {
     signature: string;
 }
 
+/**
+ * A compact, model-friendly summary of a section — carried forward from Cluster so Classify and Plan
+ * work off it without re-loading the page trees.
+ */
+export interface SectionDigest {
+    /** A shallow tag-structure summary, e.g. "section>h2,p,a". */
+    structure: string;
+    /** Direct/descendant text snippets, deduped and capped. */
+    texts: string[];
+    imageCount: number;
+    linkCount: number;
+    headingCount: number;
+}
+
 export interface Cluster {
     signature: string;
     members: ClusterMember[];
     /** The first-seen member, used as the cluster's exemplar by Classify, Plan and Generate. */
     representative: ClusterMember;
+    /** The representative section's digest. */
+    digest: SectionDigest;
+    /** Text observed across all members (deduped, capped) — the raw material for Plan's prop values. */
+    observedTexts: string[];
 }
 
 export interface ClusterArtifact {
     clusters: Cluster[];
+}
+
+// ----- Classify (output) -------------------------------------------------------------------------
+
+export interface ClassifiedCluster {
+    /** The full cluster, carried forward so Plan has the digest and members without re-reading. */
+    cluster: Cluster;
+    /** A type from the taxonomy (e.g. "hero", "features", "cta"), or "unknown" when unclassified. */
+    type: string;
+    name: string;
+    confidence: number;
+    /** True when the model's confidence was below threshold — proceeds with a descriptive name. */
+    unclassified: boolean;
+}
+
+export interface ClassifyArtifact {
+    clusters: ClassifiedCluster[];
+}
+
+// ----- Plan (output) -----------------------------------------------------------------------------
+
+export interface ComponentProp {
+    name: string;
+    /** "text" | "richText" | "image" | "url" | "boolean" | … — the model proposes it. */
+    type: string;
+    /** Sample values observed across the cluster's members. */
+    observedValues: string[];
+}
+
+export interface TokenBinding {
+    /** Which prop or element the binding applies to (free-form; the model proposes it). */
+    target: string;
+    /** A manifest slot path / css variable name. */
+    token: string;
+}
+
+export interface PlannedComponent {
+    signature: string;
+    name: string;
+    type: string;
+    props: ComponentProp[];
+    tokenBindings: TokenBinding[];
+    /** The representative member, so Generate can crop its reference image. */
+    representative: ClusterMember;
+}
+
+export interface PlanArtifact {
+    components: PlannedComponent[];
 }
 
 // ----- Cluster (structural signature inputs) -----------------------------------------------------

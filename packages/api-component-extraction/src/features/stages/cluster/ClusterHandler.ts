@@ -5,16 +5,21 @@ import type {
     Cluster,
     ClusterArtifact,
     ClusterMember,
+    SectionDigest,
     SegmentArtifact
 } from "~/domain/artifacts.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { findContentRoot } from "~/features/stages/segment/boundaries.js";
 import { structuralSignature } from "./signature.js";
 import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape.js";
+import { sectionDigest } from "./digest.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const DESKTOP_WIDTH = 1440;
 const EMPTY_LOOKUP: TokenLookup = { colorHexToPath: new Map() };
+const MAX_OBSERVED_TEXTS = 60;
+
+type MemberEntry = { member: ClusterMember; digest: SectionDigest };
 
 /**
  * Cluster — deterministic. Fingerprints each section (structural signature over its type tree, geometry
@@ -55,7 +60,7 @@ class ClusterHandlerImpl implements StageHandler.Interface {
             });
         }
 
-        const bySignature = new Map<string, ClusterMember[]>();
+        const bySignature = new Map<string, MemberEntry[]>();
         let sectionCount = 0;
 
         for (const page of segment.pages) {
@@ -85,16 +90,21 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     signature
                 };
                 const list = bySignature.get(signature) ?? [];
-                list.push(member);
+                list.push({ member, digest: sectionDigest(node) });
                 bySignature.set(signature, list);
                 sectionCount++;
             }
         }
 
-        const clusters: Cluster[] = [...bySignature.values()].map(members => ({
-            signature: members[0].signature,
-            members,
-            representative: members[0]
+        const clusters: Cluster[] = [...bySignature.values()].map(entries => ({
+            signature: entries[0].member.signature,
+            members: entries.map(entry => entry.member),
+            representative: entries[0].member,
+            digest: entries[0].digest,
+            observedTexts: [...new Set(entries.flatMap(entry => entry.digest.texts))].slice(
+                0,
+                MAX_OBSERVED_TEXTS
+            )
         }));
 
         const artifact: ClusterArtifact = { clusters };
