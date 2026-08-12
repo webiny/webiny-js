@@ -5,7 +5,14 @@ import { componentExtractionTypeDefs } from "./typeDefs.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
 import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
 import { initLedger, stageEntry } from "~/domain/ledger.js";
-import { previousStage, STAGES, stageTaskId, type Stage } from "~/constants.js";
+import {
+    DEFAULT_PAGE_CAP,
+    MAX_PAGE_CAP,
+    previousStage,
+    STAGES,
+    stageTaskId,
+    type Stage
+} from "~/constants.js";
 import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
 
@@ -156,6 +163,138 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw runResult.error;
                     }
                     return runResult.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionCreateJob",
+        dependencies: [ComponentExtractionPermissions, JobRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: {
+                    data: {
+                        name: string;
+                        siteUrl: string;
+                        themeEntryId: string;
+                        themeVersion: number;
+                        pageCap?: number;
+                        stopAfter?: string[];
+                        note?: string;
+                    };
+                };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const data = args.data;
+                    const pageCap = Math.min(
+                        Math.max(1, data.pageCap ?? DEFAULT_PAGE_CAP),
+                        MAX_PAGE_CAP
+                    );
+                    const stopAfter =
+                        data.stopAfter && data.stopAfter.length
+                            ? data.stopAfter.filter(isStage)
+                            : [...STAGES];
+
+                    const created = await jobRepository.create({
+                        name: data.name,
+                        siteUrl: data.siteUrl,
+                        themeEntryId: data.themeEntryId,
+                        themeVersion: data.themeVersion,
+                        pageCap,
+                        gateConfig: { stopAfter },
+                        pinned: false,
+                        note: data.note ?? ""
+                    });
+                    if (created.isFail()) {
+                        throw created.error;
+                    }
+                    return created.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionListJobs",
+        dependencies: [ComponentExtractionPermissions, JobRepository, RunRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface,
+            runRepository: RunRepository.Interface
+        ) {
+            return () =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const jobsResult = await jobRepository.list();
+                    if (jobsResult.isFail()) {
+                        throw jobsResult.error;
+                    }
+                    // One run lookup per job — fine at Phase-1 job counts.
+                    const items = [];
+                    for (const job of jobsResult.value.jobs) {
+                        const runs = await runRepository.listByJob(job.id, {
+                            limit: 1,
+                            sort: ["runNumber_DESC"]
+                        });
+                        items.push({
+                            job,
+                            latestRun: runs.isOk() && runs.value.runs[0] ? runs.value.runs[0] : null
+                        });
+                    }
+                    return items;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetJob",
+        dependencies: [ComponentExtractionPermissions, JobRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            jobRepository: JobRepository.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const jobResult = await jobRepository.get(args.jobId);
+                    if (jobResult.isFail()) {
+                        throw jobResult.error;
+                    }
+                    return jobResult.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionListRuns",
+        dependencies: [ComponentExtractionPermissions, RunRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runsResult = await runRepository.listByJob(args.jobId, {
+                        sort: ["runNumber_DESC"]
+                    });
+                    if (runsResult.isFail()) {
+                        throw runsResult.error;
+                    }
+                    return runsResult.value.runs;
                 });
         }
     });

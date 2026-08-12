@@ -50,12 +50,66 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         error: ComponentExtractionError
     }
 
+    type ComponentExtractionJob {
+        id: ID!
+        name: String!
+        siteUrl: String!
+        themeEntryId: String!
+        themeVersion: Int!
+        pageCap: Int!
+        gateConfig: JSON!
+        pinned: Boolean!
+        note: String
+        createdOn: String!
+    }
+
+    "A job plus its latest run, for the extractions list (status, current stage, counts)."
+    type ComponentExtractionJobListItem {
+        job: ComponentExtractionJob!
+        latestRun: ComponentExtractionRun
+    }
+
+    type ComponentExtractionJobResponse {
+        data: ComponentExtractionJob
+        error: ComponentExtractionError
+    }
+
+    type ComponentExtractionJobListResponse {
+        data: [ComponentExtractionJobListItem!]
+        error: ComponentExtractionError
+    }
+
+    type ComponentExtractionRunListResponse {
+        data: [ComponentExtractionRun!]
+        error: ComponentExtractionError
+    }
+
+    input ComponentExtractionCreateJobInput {
+        name: String!
+        siteUrl: String!
+        themeEntryId: String!
+        themeVersion: Int!
+        "Defaults to 40, clamped to a hard maximum of 150."
+        pageCap: Int
+        "The stages the run pauses at. Defaults to every stage."
+        stopAfter: [String!]
+        note: String
+    }
+
     extend type Query {
+        "List jobs with each one's latest run, for the extractions list."
+        componentExtractionListJobs: ComponentExtractionJobListResponse!
+        componentExtractionGetJob(jobId: ID!): ComponentExtractionJobResponse!
+        "The runs of a job, newest first."
+        componentExtractionListRuns(jobId: ID!): ComponentExtractionRunListResponse!
         "Read a run, including its nine-stage ledger. The polling fallback to the websocket stream."
         componentExtractionGetRun(runId: ID!): ComponentExtractionRunResponse!
     }
 
     extend type Mutation {
+        componentExtractionCreateJob(
+            data: ComponentExtractionCreateJobInput!
+        ): ComponentExtractionJobResponse!
         "Start a new run for a job. Fails if a run is already in flight for that job."
         componentExtractionCreateRun(jobId: ID!, note: String): ComponentExtractionRunResponse!
         "Trigger one stage of a run. Rejected if the stage's predecessor is not yet done."
