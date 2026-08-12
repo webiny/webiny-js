@@ -26,8 +26,33 @@ const RUN_FIELDS = /* GraphQL */ `
         startedOn
         finishedOn
         error
+        taskId
     }
     createdOn
+`;
+
+// A stage's log trail, read straight from the Background Tasks store by the stage's task id — so the
+// full per-item log is visible in the run view without leaving for CloudWatch. Logs come grouped by
+// iteration; the gateway flattens their items.
+export const LIST_STAGE_LOGS = /* GraphQL */ `
+    query ListComponentExtractionStageLogs($task: ID!) {
+        backgroundTasks {
+            listLogs(where: { task: $task }, sort: ["createdOn_ASC"], limit: 100) {
+                data {
+                    iteration
+                    items {
+                        message
+                        type
+                        createdOn
+                    }
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
 `;
 
 export const LIST_JOBS = /* GraphQL */ `

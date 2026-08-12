@@ -26,9 +26,15 @@ import {
 } from "~/constants.js";
 import { Routes } from "~/routes.js";
 
-/** The stage-progress websocket payload the runner sends; only `runId` is needed to filter. */
+/** The stage-progress websocket payload the runner sends. */
 interface StageEvent extends IncomingGenericData {
-    data?: { runId?: string };
+    data?: {
+        runId?: string;
+        stage?: string;
+        current?: number;
+        total?: number;
+        message?: string;
+    };
 }
 
 const RunViewInner = createReactiveComponent(function RunViewInner() {
@@ -45,12 +51,23 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         }
     }, [presenter, runId]);
 
-    // Live progress. A dropped message is caught by the poll below.
+    // Live progress. A per-item progress update refreshes only the live bar (no refetch); a stage start,
+    // completion or failure refetches the run. Dropped messages are caught by the poll below.
     useEffect(() => {
         const onEvent = (event: StageEvent) => {
-            if (event.data?.runId === runId) {
-                void presenter.refresh();
+            const data = event.data;
+            if (!data || data.runId !== runId) {
+                return;
             }
+            if (event.action === STAGE_PROGRESS_ACTION && data.stage && data.message) {
+                presenter.applyProgress(data.stage, {
+                    current: data.current ?? 0,
+                    total: data.total ?? 0,
+                    message: data.message
+                });
+                return;
+            }
+            void presenter.refresh();
         };
         const subs = [STAGE_PROGRESS_ACTION, STAGE_DONE_ACTION, STAGE_FAILED_ACTION].map(action =>
             websockets.onMessage<StageEvent>(action, onEvent)

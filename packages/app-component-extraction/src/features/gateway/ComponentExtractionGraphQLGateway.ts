@@ -5,6 +5,7 @@ import type {
     JobDto,
     JobListItemDto,
     RunDto,
+    StageLogItem,
     ThemeOptionDto
 } from "~/shared/types.js";
 import {
@@ -14,6 +15,7 @@ import {
     GET_RUN,
     LIST_JOBS,
     LIST_RUNS,
+    LIST_STAGE_LOGS,
     LIST_THEMES,
     RUN_STAGE
 } from "./graphql.js";
@@ -104,6 +106,18 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
             version: theme.version,
             name: theme.properties?.name || "Untitled theme"
         }));
+    }
+
+    async listStageLogs(taskId: string): Promise<StageLogItem[]> {
+        const response = await this.client.execute<{
+            backgroundTasks: {
+                listLogs: GqlEnvelope<Array<{ items: StageLogItem[] | null }>>;
+            };
+        }>({ query: LIST_STAGE_LOGS, variables: { task: taskId } });
+
+        // Logs come grouped by iteration; flatten to a single oldest-first item list.
+        const groups = unwrap(response.backgroundTasks.listLogs) ?? [];
+        return groups.flatMap(group => group.items ?? []);
     }
 }
 

@@ -1,17 +1,35 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Heading, Scrollbar, Tag, Text } from "@webiny/admin-ui";
+import { Heading, Loader, Scrollbar, Tag, Text, TimeAgo } from "@webiny/admin-ui";
 import { STAGE_LABELS, type Stage } from "~/constants.js";
 import { stageEntry } from "~/shared/ledger.js";
 import type { RunViewPresenter } from "../abstractions.js";
+import type { StageLogItem } from "~/shared/types.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
 }
 
+const LogLine = ({ item }: { item: StageLogItem }) => {
+    const errored = item.type === "error";
+    return (
+        <div className="flex gap-sm py-xs border-b border-neutral-dimmed last:border-b-0">
+            <Text
+                size="sm"
+                className={`flex-1 min-w-0 break-words ${errored ? "text-destructive-default" : ""}`}
+            >
+                {item.message}
+            </Text>
+            <Text size="sm" className="text-neutral-strong whitespace-nowrap shrink-0">
+                <TimeAgo datetime={item.createdOn} />
+            </Text>
+        </div>
+    );
+};
+
 /**
- * The raw stage record for the selected stage — its status, timing, artifact references and any error.
- * Phase 1 shows the ledger entry verbatim; richer per-artifact views come later.
+ * The selected stage's activity: its full task log trail (read from the Background Tasks store, so the
+ * per-item log is here without leaving for CloudWatch), followed by the raw stage record for inspection.
  */
 export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ presenter }: Props) {
     const { vm } = presenter;
@@ -27,6 +45,7 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
     }
 
     const entry = stageEntry(run, stage);
+    const logsForStage = vm.logsStage === stage ? vm.logs : [];
 
     return (
         <div className="flex flex-col h-full min-h-0">
@@ -42,9 +61,36 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
                         </Text>
                     </div>
                 ) : null}
-                <pre className="p-md text-sm whitespace-pre-wrap break-words font-mono">
-                    {entry ? JSON.stringify(entry, null, 2) : "This stage has not run yet."}
-                </pre>
+
+                <div className="px-md py-sm">
+                    <Text size="sm" className="font-medium">
+                        Activity log
+                    </Text>
+                    {vm.logsLoading && logsForStage.length === 0 ? (
+                        <div className="py-md">
+                            <Loader />
+                        </div>
+                    ) : logsForStage.length === 0 ? (
+                        <Text size="sm" className="text-neutral-strong">
+                            No log entries yet.
+                        </Text>
+                    ) : (
+                        <div className="mt-xs">
+                            {logsForStage.map((item, index) => (
+                                <LogLine key={index} item={item} />
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="px-md py-sm border-t border-neutral-dimmed">
+                    <Text size="sm" className="font-medium">
+                        Stage record
+                    </Text>
+                    <pre className="mt-xs text-sm whitespace-pre-wrap break-words font-mono">
+                        {entry ? JSON.stringify(entry, null, 2) : "This stage has not run yet."}
+                    </pre>
+                </div>
             </Scrollbar>
         </div>
     );

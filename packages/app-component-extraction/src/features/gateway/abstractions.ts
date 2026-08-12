@@ -4,6 +4,7 @@ import type {
     JobDto,
     JobListItemDto,
     RunDto,
+    StageLogItem,
     ThemeOptionDto
 } from "~/shared/types.js";
 
@@ -22,6 +23,8 @@ export interface IComponentExtractionGateway {
     createRun(jobId: string, note?: string): Promise<RunDto>;
     runStage(runId: string, stage: string): Promise<StageTriggerResult>;
     listThemes(): Promise<ThemeOptionDto[]>;
+    /** The full log trail of a stage's background task, oldest first. */
+    listStageLogs(taskId: string): Promise<StageLogItem[]>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

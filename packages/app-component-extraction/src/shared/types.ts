@@ -16,6 +16,22 @@ export interface StageDto {
     startedOn: string | null;
     finishedOn: string | null;
     error: string | null;
+    /** The background task id of this stage's latest run, for reading its logs. */
+    taskId: string | null;
+}
+
+/** One line of a stage's task log, for the inline log trail in the run view. */
+export interface StageLogItem {
+    message: string;
+    type: string;
+    createdOn: string;
+}
+
+/** Live progress for the running stage, delivered over the websocket. */
+export interface StageProgress {
+    current: number;
+    total: number;
+    message: string;
 }
 
 export interface RunDto {

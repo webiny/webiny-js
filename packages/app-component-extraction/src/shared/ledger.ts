@@ -4,7 +4,7 @@ import type { RunDto, StageDto } from "./types.js";
 
 const isStage = (value: string): value is Stage => (STAGES as readonly string[]).includes(value);
 
-export const stageEntry = (run: RunDto, stage: Stage): StageDto | undefined =>
+export const stageEntry = (run: RunDto, stage: string): StageDto | undefined =>
     run.stages.find(entry => entry.stage === stage);
 
 /**

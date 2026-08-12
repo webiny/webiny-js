@@ -1,7 +1,8 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
-import { currentStage } from "~/shared/ledger.js";
+import { currentStage, stageEntry } from "~/shared/ledger.js";
+import type { RunDto, StageProgress } from "~/shared/types.js";
 
 class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
@@ -10,7 +11,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         job: null,
         error: null,
         selectedStage: null,
-        actionStage: null
+        actionStage: null,
+        progressByStage: {},
+        logs: [],
+        logsLoading: false,
+        logsStage: null
     };
 
     constructor(private gateway: ComponentExtractionGateway.Interface) {
@@ -26,14 +31,17 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         try {
             const run = await this.gateway.getRun(runId);
             const job = await this.gateway.getJob(run.jobId);
+            const selected = currentStage(run) ?? run.stages[run.stages.length - 1]?.stage ?? null;
             runInAction(() => {
                 this.vm.run = run;
                 this.vm.job = job;
                 this.vm.loading = false;
                 // Open the stage the run is currently at, falling back to the last stage once complete.
-                this.vm.selectedStage =
-                    currentStage(run) ?? run.stages[run.stages.length - 1]?.stage ?? null;
+                this.vm.selectedStage = selected;
             });
+            if (selected) {
+                await this.loadLogs(run, selected);
+            }
         } catch (error) {
             runInAction(() => {
                 this.vm.error = (error as Error).message;
@@ -52,6 +60,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             runInAction(() => {
                 this.vm.run = run;
             });
+            // Keep the open stage's log trail fresh while it is running.
+            const stage = this.vm.selectedStage;
+            if (stage && stageEntry(run, stage)?.status === "running") {
+                await this.loadLogs(run, stage);
+            }
         } catch (error) {
             runInAction(() => {
                 this.vm.error = (error as Error).message;
@@ -67,6 +80,8 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         runInAction(() => {
             this.vm.actionStage = stage;
             this.vm.error = null;
+            // A fresh run of the stage starts with a clean progress + log slate.
+            delete this.vm.progressByStage[stage];
         });
         try {
             await this.gateway.runStage(runId, stage);
@@ -86,7 +101,46 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     }
 
     selectStage(stage: string) {
-        this.vm.selectedStage = stage;
+        runInAction(() => {
+            this.vm.selectedStage = stage;
+        });
+        if (this.vm.run) {
+            void this.loadLogs(this.vm.run, stage);
+        }
+    }
+
+    applyProgress(stage: string, progress: StageProgress) {
+        runInAction(() => {
+            this.vm.progressByStage[stage] = progress;
+        });
+    }
+
+    /** Load the task log trail for a stage, if it has a task id yet. */
+    private async loadLogs(run: RunDto, stage: string) {
+        const taskId = stageEntry(run, stage)?.taskId ?? null;
+        if (!taskId) {
+            runInAction(() => {
+                this.vm.logs = [];
+                this.vm.logsStage = stage;
+            });
+            return;
+        }
+        runInAction(() => {
+            this.vm.logsLoading = true;
+        });
+        try {
+            const logs = await this.gateway.listStageLogs(taskId);
+            runInAction(() => {
+                this.vm.logs = logs;
+                this.vm.logsStage = stage;
+                this.vm.logsLoading = false;
+            });
+        } catch {
+            // A log-fetch failure must not disrupt the run view; leave whatever was there.
+            runInAction(() => {
+                this.vm.logsLoading = false;
+            });
+        }
     }
 }
 
