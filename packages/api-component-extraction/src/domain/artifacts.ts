@@ -241,6 +241,24 @@ export interface AssembleArtifact {
     pages: AssembledPage[];
     /** The token-binding validation for each component, keyed by signature. */
     tokenValidation: Record<string, ValidationResult>;
+    /** The Generate artifact key, forwarded so Promote can read the component source without reaching back. */
+    componentsRef: string;
+}
+
+// ----- Promote (output) --------------------------------------------------------------------------
+
+export interface PromotedComponent {
+    signature: string;
+    /** The id of the component created in the Library. */
+    componentId: string;
+    /** The final name it was promoted under (may differ from the planned name after a collision rename). */
+    name: string;
+}
+
+export interface PromoteArtifact {
+    promoted: PromotedComponent[];
+    /** Signatures not promoted — failed validation, or a create error. */
+    skipped: string[];
 }
 
 // ----- Cluster (structural signature inputs) -----------------------------------------------------

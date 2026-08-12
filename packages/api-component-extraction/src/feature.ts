@@ -20,6 +20,7 @@ import { ClassifyHandler } from "~/features/stages/classify/ClassifyHandler.js";
 import { PlanHandler } from "~/features/stages/plan/PlanHandler.js";
 import { GenerateHandler } from "~/features/stages/generate/GenerateHandler.js";
 import { AssembleHandler } from "~/features/stages/assemble/AssembleHandler.js";
+import { PromoteHandler } from "~/features/stages/promote/PromoteHandler.js";
 import { ThemeManifestResolverService } from "~/features/shared/themeManifest.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
@@ -69,6 +70,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(PlanHandler);
         container.register(GenerateHandler);
         container.register(AssembleHandler);
+        container.register(PromoteHandler);
 
         registerComponentExtractionGraphQL(container);
 

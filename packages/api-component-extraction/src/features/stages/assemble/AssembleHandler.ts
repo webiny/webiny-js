@@ -90,7 +90,7 @@ class AssembleHandlerImpl implements StageHandler.Interface {
             instances: instances.sort((a, b) => a.sectionIndex - b.sectionIndex)
         }));
 
-        const artifact: AssembleArtifact = { pages, tokenValidation };
+        const artifact: AssembleArtifact = { pages, tokenValidation, componentsRef: generateRef };
         const key = context.artifactKey("assembly");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
