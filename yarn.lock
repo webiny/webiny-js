@@ -12190,6 +12190,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-component-extraction@npm:0.0.0, @webiny/app-component-extraction@workspace:packages/app-component-extraction":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-component-extraction@workspace:packages/app-component-extraction"
+  dependencies:
+    "@types/react": "npm:18.3.31"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-websockets": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    mobx: "npm:^7.0.0"
+    react: "npm:18.3.1"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-file-manager@npm:0.0.0, @webiny/app-file-manager@workspace:packages/app-file-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-file-manager@workspace:packages/app-file-manager"
@@ -12478,6 +12497,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-admin-ui": "npm:0.0.0"
     "@webiny/app-audit-logs": "npm:0.0.0"
+    "@webiny/app-component-extraction": "npm:0.0.0"
     "@webiny/app-file-manager": "npm:0.0.0"
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"

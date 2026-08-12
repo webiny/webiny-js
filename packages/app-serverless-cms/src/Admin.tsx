@@ -15,6 +15,7 @@ import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-admin/presentation/trashBin/index.js";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as Theme } from "@webiny/app-theme/Extension.js";
+import { Extension as ComponentExtraction } from "@webiny/app-component-extraction/Extension.js";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension.js";
 import { SchedulerModule } from "@webiny/app-scheduler";
 import { CmsScheduler } from "@webiny/app-headless-cms-scheduler";
@@ -54,6 +55,7 @@ const App = (props: AdminProps) => {
             <TrashBinConfigs />
             <AdvancedContentOrganisation />
             <Theme />
+            <ComponentExtraction />
             <WebsiteBuilder />
             <WorkflowsAdminApp />
             <CmsWorkflows />
