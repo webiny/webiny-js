@@ -1,0 +1,34 @@
+{
+  "name": "@webiny/api-component-extraction",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-component-extraction"
+  },
+  "description": "Extracts Webiny components from an existing website: crawl, segment, cluster, classify, plan, generate, promote.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/feature": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

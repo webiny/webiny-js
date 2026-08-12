@@ -10699,6 +10699,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-component-extraction@workspace:packages/api-component-extraction":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-component-extraction@workspace:packages/api-component-extraction"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/event-handler-core": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-core-ddb@npm:0.0.0, @webiny/api-core-ddb@workspace:packages/api-core-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core-ddb@workspace:packages/api-core-ddb"
