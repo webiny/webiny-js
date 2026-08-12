@@ -21,9 +21,11 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 
 const DESKTOP_WIDTH = 1440;
 const MAX_ATTEMPTS = 3;
-// One component can take several model calls (retries) plus the image crop; yield with this much runway
-// so a component never straddles the Lambda timeout.
-const GENERATE_SAFETY_MARGIN_SECONDS = 180;
+// One component can take up to MAX_ATTEMPTS model calls plus an image crop — well over a minute on a slow
+// model. The margin MUST exceed that worst case: the loop only checks the timeout between components, so
+// if a component starts with less runway than it needs, the Lambda is hard-killed mid-run and the stage
+// is left stuck "running". Keep this comfortably above one component's worst-case duration.
+const GENERATE_SAFETY_MARGIN_SECONDS = 360;
 
 /** Resumable checkpoint: how far through the planned components we are, and the results so far. */
 interface GenerateCheckpoint {

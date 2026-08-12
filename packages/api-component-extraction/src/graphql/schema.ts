@@ -127,11 +127,10 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         }
                     }
 
-                    // Don't double-trigger a stage that is already running.
-                    if (stageEntry(run.stages, stage)?.status === "running") {
-                        throw new Error(`Stage "${stage}" is already running.`);
-                    }
-
+                    // A "running" stage is intentionally re-triggerable: if its task was hard-killed
+                    // (e.g. a Lambda timeout mid-item), the ledger is stuck "running" with no live task.
+                    // Re-triggering resumes from the stage's checkpoint — if every item was already
+                    // processed, the new run just writes the final artifact and marks the stage done.
                     const triggered = await taskService.trigger<StageTaskInput>({
                         definition: stageTaskId(stage),
                         name: `Component extraction — ${stage} (run ${run.runNumber})`,

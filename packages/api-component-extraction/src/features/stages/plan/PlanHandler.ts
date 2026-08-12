@@ -16,8 +16,10 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 
 const SYSTEM =
     "You propose a Webiny component contract for a website section. Respond ONLY with a JSON object, no prose.";
-// One model call per cluster; yield with this much runway so a call never straddles the Lambda timeout.
-const PLAN_SAFETY_MARGIN_SECONDS = 120;
+// One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
+// between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
+// mid-call, leaving the stage stuck "running".
+const PLAN_SAFETY_MARGIN_SECONDS = 180;
 
 /** Resumable checkpoint: how far through the clusters we are, and the planned components so far. */
 interface PlanCheckpoint {

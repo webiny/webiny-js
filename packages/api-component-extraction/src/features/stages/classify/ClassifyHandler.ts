@@ -12,8 +12,10 @@ import { descriptiveName } from "~/features/stages/cluster/digest.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const CONFIDENCE_THRESHOLD = 0.6;
-// One model call per cluster; yield with this much runway so a call never straddles the Lambda timeout.
-const CLASSIFY_SAFETY_MARGIN_SECONDS = 120;
+// One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
+// between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
+// mid-call, leaving the stage stuck "running".
+const CLASSIFY_SAFETY_MARGIN_SECONDS = 180;
 
 /** Resumable checkpoint: how far through the clusters we are, and the classifications so far. */
 interface ClassifyCheckpoint {

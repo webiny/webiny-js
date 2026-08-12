@@ -15,9 +15,10 @@ const DESKTOP = { width: 1440, height: 900 };
 const NARROW = { width: 390, height: 844 };
 const PAGE_TIMEOUT_MS = 60_000;
 const MAX_NODES = 4000;
-// One page does a desktop + a narrow capture (each up to PAGE_TIMEOUT_MS) plus blob writes; yield with
-// this much runway so an in-flight page never straddles the Lambda timeout.
-const CAPTURE_SAFETY_MARGIN_SECONDS = 150;
+// One page does a desktop + a narrow capture (each up to PAGE_TIMEOUT_MS) plus blob writes — up to ~130s.
+// The margin MUST exceed one page's worst case: the timeout is only checked between pages, so if a page
+// starts with less runway than it needs the Lambda is hard-killed mid-page and the stage sticks "running".
+const CAPTURE_SAFETY_MARGIN_SECONDS = 200;
 
 /** Resumable checkpoint: which URLs are done, and the page/failure results accumulated so far. */
 interface CaptureCheckpoint {

@@ -272,6 +272,11 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             status: runStatus
         });
         if (persistedDone.isFail()) {
+            // Surfacing this on the trail matters: without it a failed done-write looks like a stage
+            // silently stuck "running" (the ledger keeps its pre-done state).
+            await appendActivity(
+                `Stage "${stage}" finished but could not be marked done: ${persistedDone.error.message}`
+            );
             return controller.response.error(persistedDone.error.message);
         }
 

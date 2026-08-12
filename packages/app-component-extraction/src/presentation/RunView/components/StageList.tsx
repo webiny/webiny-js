@@ -70,6 +70,20 @@ export const StageList = createReactiveComponent(function StageList({ presenter 
                                         void presenter.runStage(stage);
                                     }}
                                 />
+                            ) : status === "running" ? (
+                                // A running stage whose task died stays stuck here; re-running resumes it
+                                // from its checkpoint.
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    icon={<PlayIcon />}
+                                    text={busy ? "Starting..." : "Re-run"}
+                                    disabled={busy}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        void presenter.runStage(stage);
+                                    }}
+                                />
                             ) : null}
                         </div>
                         {progress ? (
