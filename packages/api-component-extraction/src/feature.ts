@@ -18,6 +18,7 @@ import { SegmentHandler } from "~/features/stages/segment/SegmentHandler.js";
 import { ClusterHandler } from "~/features/stages/cluster/ClusterHandler.js";
 import { ClassifyHandler } from "~/features/stages/classify/ClassifyHandler.js";
 import { PlanHandler } from "~/features/stages/plan/PlanHandler.js";
+import { AssembleHandler } from "~/features/stages/assemble/AssembleHandler.js";
 import { ThemeManifestResolverService } from "~/features/shared/themeManifest.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
@@ -65,6 +66,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(ClusterHandler);
         container.register(ClassifyHandler);
         container.register(PlanHandler);
+        container.register(AssembleHandler);
 
         registerComponentExtractionGraphQL(container);
 

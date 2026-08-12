@@ -167,10 +167,67 @@ export interface PlannedComponent {
     tokenBindings: TokenBinding[];
     /** The representative member, so Generate can crop its reference image. */
     representative: ClusterMember;
+    /** Every section this component covers, so Assemble can place its instances per page. */
+    members: ClusterMember[];
 }
 
 export interface PlanArtifact {
     components: PlannedComponent[];
+}
+
+// ----- Generate (output) -------------------------------------------------------------------------
+
+/** The result of one W5 validator. Lives here (domain) so the pure validators depend on it. */
+export interface ValidationResult {
+    passed: boolean;
+    failures: string[];
+}
+
+export interface GeneratedComponent {
+    signature: string;
+    name: string;
+    type: string;
+    /** The generated JSX source and CSS — held inside the job until Promote. */
+    source: string;
+    css: string;
+    props: ComponentProp[];
+    tokenBindings: TokenBinding[];
+    members: ClusterMember[];
+    /** How many generation attempts it took to pass validation. */
+    attempts: number;
+    validation: {
+        textPreservation: ValidationResult;
+        contractConformance: ValidationResult;
+        tokenBinding: ValidationResult;
+    };
+}
+
+export interface GenerateArtifact {
+    components: GeneratedComponent[];
+    /** Signatures of clusters that never produced a valid component. */
+    failed: string[];
+}
+
+// ----- Assemble (output) -------------------------------------------------------------------------
+
+export interface ComponentInstance {
+    signature: string;
+    componentName: string;
+    sectionIndex: number;
+    /** Prop values for this instance (Phase 1: the component's representative values). */
+    propValues: Record<string, string>;
+}
+
+export interface AssembledPage {
+    url: string;
+    /** Component instances in document order. */
+    instances: ComponentInstance[];
+}
+
+export interface AssembleArtifact {
+    pages: AssembledPage[];
+    /** The token-binding validation for each component, keyed by signature. */
+    tokenValidation: Record<string, ValidationResult>;
 }
 
 // ----- Cluster (structural signature inputs) -----------------------------------------------------
