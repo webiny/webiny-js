@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { getStorageOps } from "~/testing/environment.js";
 import { License } from "@webiny/wcp";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/features/users/UpdateUser/index.js";

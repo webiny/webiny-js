@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
-import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { getStorageOps } from "~/testing/environment.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { TenancyFeature } from "~/features/tenancy/TenancyFeature.js";
 import type {
