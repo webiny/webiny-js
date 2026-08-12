@@ -10,9 +10,12 @@
  */
 
 import { createRobotsPolicy, type RobotsPolicy } from "~/browser/robots.js";
-import { WEBINY_USER_AGENT, WEBINY_USER_AGENT_TOKEN } from "~/browser/launchConfig.js";
-import { withTimeoutOrDefault } from "~/browser/withTimeout.js";
-import { DEFAULT_TIMEOUTS } from "~/browser/launchConfig.js";
+import {
+    DEFAULT_TIMEOUTS,
+    WEBINY_USER_AGENT,
+    WEBINY_USER_AGENT_TOKEN,
+    withTimeoutOrDefault
+} from "@webiny/site-capture";
 
 /**
  * Cap on the bytes we will read.

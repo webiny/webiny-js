@@ -11759,20 +11759,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-theme-extraction@workspace:packages/api-theme-extraction"
   dependencies:
-    "@sparticuz/chromium-min": "npm:123.0.1"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"
     "@webiny/api-theme": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/site-capture": "npm:0.0.0"
     "@webiny/theme-common": "npm:0.0.0"
     ai: "npm:^7.0.40"
     jsdom: "npm:^30.0.0"
-    puppeteer-core: "npm:^22.6.0"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.10"
     zod: "npm:4.4.3"
@@ -13877,6 +13875,21 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     typescript: "npm:^7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/site-capture@npm:0.0.0, @webiny/site-capture@workspace:packages/site-capture":
+  version: 0.0.0-use.local
+  resolution: "@webiny/site-capture@workspace:packages/site-capture"
+  dependencies:
+    "@sparticuz/chromium-min": "npm:123.0.1"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    jsdom: "npm:^30.0.0"
+    puppeteer-core: "npm:^22.6.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
   languageName: unknown
   linkType: soft
 

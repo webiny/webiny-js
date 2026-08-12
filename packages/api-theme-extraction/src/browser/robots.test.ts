@@ -7,7 +7,7 @@ import {
     selectRobotsGroup
 } from "./robots.js";
 
-const groupFor = (text: string, agent = "webinythemeextractor") => {
+const groupFor = (text: string, agent = "webinybot") => {
     return selectRobotsGroup(parseRobotsTxt(text), agent);
 };
 
@@ -82,7 +82,7 @@ describe("selectRobotsGroup", () => {
         const group = groupFor(`
             User-agent: *
             Disallow: /
-            User-agent: WebinyThemeExtractor
+            User-agent: WebinyBot
             Disallow: /admin
         `);
 
@@ -91,15 +91,15 @@ describe("selectRobotsGroup", () => {
     });
 
     it("matches the agent case-insensitively", () => {
-        const group = groupFor("User-agent: webinythemeextractor\nDisallow: /x");
+        const group = groupFor("User-agent: webinybot\nDisallow: /x");
         expect(group?.rules).toHaveLength(1);
     });
 
     it("merges split groups naming the same agent", () => {
         const group = groupFor(`
-            User-agent: WebinyThemeExtractor
+            User-agent: WebinyBot
             Disallow: /a
-            User-agent: WebinyThemeExtractor
+            User-agent: WebinyBot
             Disallow: /b
         `);
 
@@ -108,9 +108,9 @@ describe("selectRobotsGroup", () => {
 
     it("takes the strictest delay when merged groups disagree", () => {
         const group = groupFor(`
-            User-agent: WebinyThemeExtractor
+            User-agent: WebinyBot
             Crawl-delay: 1
-            User-agent: WebinyThemeExtractor
+            User-agent: WebinyBot
             Crawl-delay: 3
         `);
 
@@ -189,21 +189,21 @@ describe("createRobotsPolicy", () => {
     it("is permissive when there is no robots.txt", () => {
         // Absence of rules is not a prohibition, and the alternative makes every site without a
         // robots.txt un-extractable.
-        const policy = createRobotsPolicy(undefined, "WebinyThemeExtractor");
+        const policy = createRobotsPolicy(undefined, "WebinyBot");
 
         expect(policy.isAllowed("https://northbeam.io/pricing")).toBe(true);
         expect(policy.crawlDelayMs).toBe(0);
     });
 
     it("is permissive when the file is unparseable", () => {
-        const policy = createRobotsPolicy("<html>not robots</html>", "WebinyThemeExtractor");
+        const policy = createRobotsPolicy("<html>not robots</html>", "WebinyBot");
         expect(policy.isAllowed("https://northbeam.io/")).toBe(true);
     });
 
     it("applies rules to a full URL's path and query", () => {
         const policy = createRobotsPolicy(
             "User-agent: *\nDisallow: /admin\nDisallow: /*?preview=",
-            "WebinyThemeExtractor"
+            "WebinyBot"
         );
 
         expect(policy.isAllowed("https://northbeam.io/admin/users")).toBe(false);
@@ -212,13 +212,13 @@ describe("createRobotsPolicy", () => {
     });
 
     it("exposes the crawl delay", () => {
-        const policy = createRobotsPolicy("User-agent: *\nCrawl-delay: 1", "WebinyThemeExtractor");
+        const policy = createRobotsPolicy("User-agent: *\nCrawl-delay: 1", "WebinyBot");
         expect(policy.crawlDelayMs).toBe(1000);
     });
 
     it("does not reject a malformed URL on robots' behalf", () => {
         // Let the fetch fail with a real error rather than reporting it as a robots restriction.
-        const policy = createRobotsPolicy("User-agent: *\nDisallow: /", "WebinyThemeExtractor");
+        const policy = createRobotsPolicy("User-agent: *\nDisallow: /", "WebinyBot");
         expect(policy.isAllowed("not-a-url")).toBe(true);
     });
 });

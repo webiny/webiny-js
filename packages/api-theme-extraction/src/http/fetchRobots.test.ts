@@ -44,9 +44,7 @@ describe("fetchRobotsPolicy", () => {
     it("honours rules written for our agent specifically", async () => {
         const policy = await fetchRobotsPolicy({
             url: "https://northbeam.io/",
-            fetchImpl: respond(
-                "User-agent: *\nDisallow: /\nUser-agent: WebinyThemeExtractor\nAllow: /"
-            )
+            fetchImpl: respond("User-agent: *\nDisallow: /\nUser-agent: WebinyBot\nAllow: /")
         });
 
         expect(policy.isAllowed("https://northbeam.io/pricing")).toBe(true);

@@ -15,17 +15,11 @@ export * from "./model/payload.js";
 export * from "./domain/abstractions.js";
 
 /**
- * The browser-adjacent decisions — robots.txt, bot-wall detection, launch resolution, timeouts — are
- * exported here because they are pure and worth reusing. `ChromiumBrowserProvider` deliberately is
- * not: importing it pulls in puppeteer-core, and nothing that only needs to score a URL should pay
- * for the driver. Reach for it at
- * `@webiny/api-theme-extraction/browser/ChromiumBrowserProvider.js`.
+ * `robots.txt` handling stays here — it is a crawl-policy decision, not a browser primitive. The
+ * browser-adjacent helpers it used to sit beside — launch resolution, timeouts, bot-wall detection,
+ * consent dismissal — and the Chromium provider itself now live in `@webiny/site-capture`.
  */
 export * from "./browser/robots.js";
-export * from "./browser/botChallenge.js";
-export * from "./browser/launchConfig.js";
-export * from "./browser/withTimeout.js";
-export * from "./browser/dismissBanners.js";
 
 export * from "./http/fetchRobots.js";
 export * from "./model/tokenAssignment.js";

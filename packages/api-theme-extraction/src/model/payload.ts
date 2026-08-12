@@ -1,5 +1,5 @@
 import { parseColor, relativeLuminance } from "@webiny/theme-common";
-import type { FontResource } from "~/domain/abstractions.js";
+import type { FontResource } from "@webiny/site-capture";
 import {
     quantiseColors,
     tally,

@@ -23,7 +23,7 @@ import {
     applyDerivedFonts,
     type ExtractionMetadata
 } from "~/model/applyAssignment.js";
-import { withTimeout } from "~/browser/withTimeout.js";
+import { withTimeout } from "@webiny/site-capture";
 
 /**
  * Phase two: judgement — see the design brief, section 10.5.

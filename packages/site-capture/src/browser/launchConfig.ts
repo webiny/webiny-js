@@ -9,14 +9,17 @@
  */
 
 /**
- * Honest by default.
+ * Honest by default, and neutral: this package is shared across features, so the token names the
+ * company rather than one feature. Site owners block on UA strings, and a per-feature token here would
+ * mean one feature's block silently applies to another's requests.
  *
  * A Chrome-lookalike user agent would get through more CDNs, and that is exactly why we do not use
  * one: this fetches a third party's site from Webiny's infrastructure, and it should be identifiable
- * and blockable. When a WAF does stop us, `BotChallengeError` says so and the agent is overridable —
- * so the customer extracting their own site can let themselves through deliberately.
+ * and blockable. When a WAF does stop us, `BotChallengeError` says so and the agent is overridable per
+ * consumer (`ChromiumConfig.userAgent`, or the env override) — so a customer capturing their own site
+ * can let themselves through deliberately.
  */
-export const WEBINY_USER_AGENT_TOKEN = "WebinyThemeExtractor";
+export const WEBINY_USER_AGENT_TOKEN = "WebinyBot";
 
 export const WEBINY_USER_AGENT = `Mozilla/5.0 (compatible; ${WEBINY_USER_AGENT_TOKEN}/1.0; +https://www.webiny.com)`;
 
@@ -48,7 +51,7 @@ export const LAYER_PACK_CANDIDATES = ["/opt/nodejs/node_modules/@sparticuz/chrom
 
 export const ENV_EXECUTABLE_PATH = "WEBINY_CHROMIUM_EXECUTABLE_PATH";
 export const ENV_PACK_PATH = "WEBINY_CHROMIUM_PACK_PATH";
-export const ENV_USER_AGENT = "WEBINY_THEME_EXTRACTION_USER_AGENT";
+export const ENV_USER_AGENT = "WEBINY_CAPTURE_USER_AGENT";
 
 export interface ChromiumConfig {
     /** Skips discovery entirely. */

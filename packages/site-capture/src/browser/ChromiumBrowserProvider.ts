@@ -5,13 +5,12 @@ import { createImplementation } from "@webiny/feature/api";
 import {
     BrowserProvider as BrowserProviderAbstraction,
     type CapturePageParams,
+    type CaptureResult,
     type FontResource,
     type IBrowserSession,
-    type PageSnapshot,
     type Screenshot,
     type ScreenshotCrop
-} from "~/domain/abstractions.js";
-import { samplePageScript, type SampleResult } from "~/crawl/samplePage.js";
+} from "~/abstractions.js";
 import { dismissBannersScript, type BannerDismissalResult } from "./dismissBanners.js";
 import { BotChallengeError, detectBotChallenge } from "./botChallenge.js";
 import {
@@ -153,7 +152,7 @@ class ChromiumSession implements IBrowserSession {
         readonly diagnostics: Record<string, unknown>
     ) {}
 
-    async capture(params: CapturePageParams): Promise<PageSnapshot> {
+    async capture<TResult>(params: CapturePageParams): Promise<CaptureResult<TResult>> {
         // A page per capture, closed afterwards. Reusing one page across a crawl leaks the previous
         // page's listeners and hidden-banner styles into the next one's sample.
         const page = await withTimeout("open a browser tab", DEFAULT_TIMEOUTS.launchMs, () =>
@@ -162,9 +161,9 @@ class ChromiumSession implements IBrowserSession {
 
         try {
             // The whole page is bounded, not just its parts: navigation can finish quickly and then a
-            // heavy page can spend a long time in sampling.
+            // heavy page can spend a long time in the evaluator.
             return await withTimeout(`read ${params.url}`, params.timeoutMs, () =>
-                this.capturePage(page, params)
+                this.capturePage<TResult>(page, params)
             );
         } finally {
             await withTimeoutOrDefault(
@@ -176,7 +175,10 @@ class ChromiumSession implements IBrowserSession {
         }
     }
 
-    private async capturePage(page: Page, params: CapturePageParams): Promise<PageSnapshot> {
+    private async capturePage<TResult>(
+        page: Page,
+        params: CapturePageParams
+    ): Promise<CaptureResult<TResult>> {
         const fonts = new Map<string, FontResource>();
 
         await page.setUserAgent(this.userAgent);
@@ -251,10 +253,13 @@ class ChromiumSession implements IBrowserSession {
             () => page.evaluate(dismissBannersScript()) as Promise<BannerDismissalResult>
         );
 
-        const sample = await withTimeout(
-            `sample styles on ${params.url}`,
+        // The pluggable seam. The visit sequence above is fixed; what to read off the settled page is
+        // the caller's — a token sampler, a DOM/segment sampler — supplied as an in-page script whose
+        // return value we hand back untouched as `result`.
+        const result = await withTimeout(
+            `evaluate ${params.url}`,
             DEFAULT_TIMEOUTS.evaluateMs,
-            () => page.evaluate(samplePageScript({ maxElements: 1500 })) as Promise<SampleResult>
+            () => page.evaluate(params.evaluate) as Promise<TResult>
         );
 
         const screenshots = await this.captureScreenshots(page, params);
@@ -264,16 +269,12 @@ class ChromiumSession implements IBrowserSession {
             finalUrl: page.url(),
             status,
             title,
-            links: sample.links,
-            // Reported as sampled. Turning these into weighted observations is `toObservations`' job,
-            // where that decision is unit tested.
-            elements: sample.elements,
-            candidateCount: sample.candidateCount,
+            result,
             fontResources: [...fonts.values()],
             screenshots: screenshots.taken,
             failedScreenshots: screenshots.failed,
-            // Returned rather than logged here: the caller has the task's logger, and this belongs in
-            // the extraction's own log where someone debugging a missing colour will look for it.
+            // Returned rather than logged here: the caller has its own logger, and this belongs in the
+            // consumer's own log where someone debugging a missing element will look for it.
             dismissedOverlays: dismissal.hidden
         };
     }

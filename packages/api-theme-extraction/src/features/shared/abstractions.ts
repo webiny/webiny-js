@@ -1,5 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IAiConnectionInline } from "@webiny/api-core/features/ai/index.js";
+import type { IScreenshotStore, StoredScreenshot } from "@webiny/site-capture";
 import type { ModelPayload } from "~/model/payload.js";
 import type { RoleSignals } from "~/crawl/roleSignals.js";
 import type { ExtractionError } from "./errors.js";
@@ -55,32 +56,18 @@ export const noopExtractionLog: IExtractionLog = {
  */
 export const CRAWL_CACHE_MAX_AGE_DAYS = 7;
 
-export interface StoredScreenshot {
-    key: string;
-    label: string;
-}
-
-export interface IScreenshotStore {
-    /**
-     * Persists one screenshot and returns its storage key.
-     *
-     * Screenshots never travel in a task's input or output — those live in DynamoDB, which has neither
-     * the room nor any business holding image bytes.
-     */
-    put(
-        extractionId: string,
-        label: string,
-        image: Uint8Array
-    ): Promise<Result<StoredScreenshot, ExtractionError>>;
-
-    /** Read back for the model call, which happens in a later task than the crawl. */
-    get(key: string): Promise<Result<Uint8Array, ExtractionError>>;
-
-    /** Called when an extraction finishes, however it finishes. */
-    deleteAll(extractionId: string): Promise<Result<void, ExtractionError>>;
-}
-
-export const ScreenshotStore = createAbstraction<IScreenshotStore>("Theme/ScreenshotStore");
+/**
+ * Theme extraction's own screenshot-store token.
+ *
+ * The interface and the S3 implementation live in `@webiny/site-capture`; the DI token stays here
+ * because it is per-consumer. Two capture features registering their own prefix against one shared
+ * token in the same container would collide, and the last registered would silently win — so each owns
+ * its token, bound to the shared `IScreenshotStore`, and registers a prefix-bound instance in
+ * `feature.ts`.
+ */
+export const ScreenshotStore = createAbstraction<IScreenshotStore>(
+    "ThemeExtraction/ScreenshotStore"
+);
 
 export namespace ScreenshotStore {
     export type Interface = IScreenshotStore;

@@ -1,13 +1,19 @@
 import { createImplementation, Result } from "@webiny/feature/api";
-import { BrowserProvider, type ScreenshotRequest } from "~/domain/abstractions.js";
+import {
+    BrowserProvider,
+    DEFAULT_TIMEOUTS,
+    type CaptureResult,
+    type FontResource,
+    type ScreenshotRequest,
+    type StoredScreenshot
+} from "@webiny/site-capture";
 import {
     CRAWL_CACHE_MAX_AGE_DAYS,
     ExtractionArtifactCache,
     noopExtractionLog,
     ScreenshotStore,
     type CachedCrawl,
-    type IExtractionLog,
-    type StoredScreenshot
+    type IExtractionLog
 } from "~/features/shared/abstractions.js";
 import {
     ExtractionBlockedByRobotsError,
@@ -22,11 +28,36 @@ import type { RobotsPolicy } from "~/browser/robots.js";
 import { DEFAULT_CRAWL_LIMIT, normaliseUrl, selectCrawlUrls } from "~/crawl/urlScoring.js";
 import { mergeObservations, toObservations, type Observations } from "~/crawl/toObservations.js";
 import { extractRoleSignals } from "~/crawl/roleSignals.js";
-import type { SampledElement } from "~/crawl/samplePage.js";
+import {
+    DEFAULT_MAX_ELEMENTS,
+    samplePageScript,
+    type SampledElement,
+    type SampleResult
+} from "~/crawl/samplePage.js";
 import { buildModelPayload, PAYLOAD_CAPS } from "~/model/payload.js";
-import { DEFAULT_TIMEOUTS } from "~/browser/launchConfig.js";
 import type { CandidateLink } from "~/crawl/urlScoring.js";
-import type { FontResource, PageSnapshot } from "~/domain/abstractions.js";
+import type { PageSnapshot } from "~/domain/abstractions.js";
+
+/**
+ * The in-page sampler, built once. `@webiny/site-capture` runs the visit sequence and hands the page to
+ * whatever evaluator we supply; ours is the token sampler that stays in this package. Mapping its
+ * `SampleResult` back onto our `PageSnapshot` keeps every consumer below unchanged.
+ */
+const SAMPLE_SCRIPT = samplePageScript({ maxElements: DEFAULT_MAX_ELEMENTS });
+
+const toPageSnapshot = (capture: CaptureResult<SampleResult>): PageSnapshot => ({
+    url: capture.url,
+    finalUrl: capture.finalUrl,
+    status: capture.status,
+    title: capture.title,
+    links: capture.result.links,
+    elements: capture.result.elements,
+    candidateCount: capture.result.candidateCount,
+    fontResources: capture.fontResources,
+    screenshots: capture.screenshots,
+    failedScreenshots: capture.failedScreenshots,
+    dismissedOverlays: capture.dismissedOverlays
+});
 
 /**
  * Phase one: read the site — see the design brief, sections 10.2 to 10.4.
@@ -381,11 +412,12 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
         requests: ScreenshotRequest[]
     ): Promise<Result<PageSnapshot, ExtractionError>> {
         try {
-            const snapshot = await session.capture({
+            const captured = await session.capture<SampleResult>({
                 url,
                 viewportWidth: VIEWPORT.width,
                 viewportHeight: VIEWPORT.height,
                 timeoutMs: DEFAULT_TIMEOUTS.pageTotalMs,
+                evaluate: SAMPLE_SCRIPT,
                 screenshots: {
                     requests,
                     write: async (image, label) => {
@@ -399,7 +431,7 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
                 }
             });
 
-            return Result.ok(snapshot);
+            return Result.ok(toPageSnapshot(captured));
         } catch (error) {
             // The browser layer's errors are already written for the user — a bot wall names the vendor
             // and what to do — so they are passed through rather than replaced with a generic message.
@@ -417,15 +449,16 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
         entryUrl: string
     ): Promise<Observations["colors"] | undefined> {
         try {
-            const snapshot = await session.capture({
+            const captured = await session.capture<SampleResult>({
                 url: entryUrl,
                 viewportWidth: VIEWPORT.width,
                 viewportHeight: VIEWPORT.height,
                 emulateDarkMode: true,
-                timeoutMs: DEFAULT_TIMEOUTS.pageTotalMs
+                timeoutMs: DEFAULT_TIMEOUTS.pageTotalMs,
+                evaluate: SAMPLE_SCRIPT
             });
 
-            return toObservations(snapshot.elements).colors;
+            return toObservations(captured.result.elements).colors;
         } catch {
             // Not knowing whether the site has a dark variant is a degraded result, not a failure —
             // `assessDarkMode` reports it as unprobed and dark is derived from light.
@@ -445,11 +478,12 @@ class CrawlSiteUseCaseImpl implements UseCaseAbstraction.Interface {
         const captured: StoredScreenshot[] = [];
 
         try {
-            await session.capture({
+            await session.capture<SampleResult>({
                 url: entryUrl,
                 viewportWidth: MOBILE_VIEWPORT.width,
                 viewportHeight: MOBILE_VIEWPORT.height,
                 timeoutMs: DEFAULT_TIMEOUTS.pageTotalMs,
+                evaluate: SAMPLE_SCRIPT,
                 screenshots: {
                     requests: [{ label: `${hostOf(entryUrl)} — on a phone`, crop: "above-fold" }],
                     write: async (image, label) => {
