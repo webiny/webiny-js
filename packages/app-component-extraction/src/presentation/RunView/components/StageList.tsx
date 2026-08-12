@@ -3,7 +3,7 @@ import { createReactiveComponent } from "@webiny/app-admin";
 import { Button, ProgressBar, Tag, Text } from "@webiny/admin-ui";
 import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
 import { STAGES, STAGE_LABELS } from "~/constants.js";
-import { nextRunnableStage, stageEntry } from "~/shared/ledger.js";
+import { stageEntry } from "~/shared/ledger.js";
 import type { RunViewPresenter } from "../abstractions.js";
 
 const statusVariant = (status: string | undefined): React.ComponentProps<typeof Tag>["variant"] => {
@@ -32,17 +32,26 @@ export const StageList = createReactiveComponent(function StageList({ presenter 
         return null;
     }
 
-    const runnable = nextRunnableStage(run);
+    // Only one stage runs at a time; while one is running, offer no other run buttons (except re-running
+    // the running one, to recover a stuck stage).
+    const anyRunning = STAGES.some(stage => stageEntry(run, stage)?.status === "running");
 
     return (
         <div className="flex flex-col">
-            {STAGES.map(stage => {
+            {STAGES.map((stage, index) => {
                 const entry = stageEntry(run, stage);
                 const status = entry?.status ?? "pending";
                 const selected = vm.selectedStage === stage;
-                const isRunnable = runnable === stage;
                 const busy = vm.actionStage === stage;
                 const progress = status === "running" ? vm.progressByStage[stage] : undefined;
+
+                // A stage can run when its predecessor is done (or it's the first). A pending stage runs
+                // forward ("Run"); an already-run stage re-runs ("Re-run") — which resumes a stuck stage
+                // from its checkpoint, or re-does a completed one (marking downstream stale).
+                const previous = index > 0 ? STAGES[index - 1] : null;
+                const predecessorDone = !previous || stageEntry(run, previous)?.status === "done";
+                const canRun = status === "running" || (predecessorDone && !anyRunning);
+                const label = status === "pending" ? "Run" : "Re-run";
 
                 return (
                     <div key={stage}>
@@ -58,26 +67,12 @@ export const StageList = createReactiveComponent(function StageList({ presenter 
                                 <Text className="font-medium">{STAGE_LABELS[stage]}</Text>
                             </div>
                             <Tag variant={statusVariant(status)} content={status} />
-                            {isRunnable ? (
+                            {canRun ? (
                                 <Button
-                                    variant="primary"
+                                    variant={status === "pending" ? "primary" : "secondary"}
                                     size="sm"
                                     icon={<PlayIcon />}
-                                    text={busy ? "Starting..." : "Run"}
-                                    disabled={busy}
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        void presenter.runStage(stage);
-                                    }}
-                                />
-                            ) : status === "running" ? (
-                                // A running stage whose task died stays stuck here; re-running resumes it
-                                // from its checkpoint.
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    icon={<PlayIcon />}
-                                    text={busy ? "Starting..." : "Re-run"}
+                                    text={busy ? "Starting..." : label}
                                     disabled={busy}
                                     onClick={event => {
                                         event.stopPropagation();
