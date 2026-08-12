@@ -34,6 +34,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.4",
     "@electric-sql/pglite-socket": "^0.2.7",
+    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
     "@webiny/project-utils": "0.0.0",

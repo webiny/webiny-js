@@ -1,6 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { until } from "@webiny/api/testing/until.js";
 import { createCmsTestHandler, processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";

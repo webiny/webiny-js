@@ -6,7 +6,7 @@ import { simulateStream } from "@webiny/api-opensearch-aws/testing/simulateStrea
 import { HeadlessCmsDdbEsFeature } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { setStorageOps } from "@webiny/project-utils/testing/environment";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests

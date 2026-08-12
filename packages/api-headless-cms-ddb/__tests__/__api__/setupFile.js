@@ -2,7 +2,7 @@ import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
 import { HeadlessCmsDdbFeature } from "../../src";
 import { FieldSortingRegistry } from "@webiny/api-headless-cms-storage";
-import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
