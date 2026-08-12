@@ -71,14 +71,21 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
         const promoted: PromotedComponent[] = [];
         const skipped: string[] = [];
+        const total = generate.components.length;
 
-        for (const component of generate.components) {
+        for (let index = 0; index < total; index++) {
+            const component = generate.components[index];
             const passed =
                 component.validation.textPreservation.passed &&
                 component.validation.contractConformance.passed &&
                 component.validation.tokenBinding.passed;
             if (!passed) {
                 skipped.push(component.signature);
+                await context.progress({
+                    message: `Skipped ${component.name} (failed validation) — ${index + 1}/${total}`,
+                    current: index + 1,
+                    total
+                });
                 continue;
             }
 
@@ -101,6 +108,11 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
             taken.add(name);
             promoted.push({ signature: component.signature, componentId: created.value.id, name });
+            await context.progress({
+                message: `Promoted ${name} to the Library — ${index + 1}/${total}`,
+                current: index + 1,
+                total
+            });
         }
 
         const artifact: PromoteArtifact = { promoted, skipped };

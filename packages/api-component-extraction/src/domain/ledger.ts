@@ -15,7 +15,8 @@ export const initLedger = (): StageLedgerEntry[] =>
         artifacts: {},
         startedOn: null,
         finishedOn: null,
-        error: null
+        error: null,
+        taskId: null
     }));
 
 const patch = (
@@ -23,6 +24,13 @@ const patch = (
     stage: Stage,
     change: (entry: StageLedgerEntry) => StageLedgerEntry
 ): StageLedgerEntry[] => ledger.map(entry => (entry.stage === stage ? change(entry) : entry));
+
+/** Stamp the background task id of the stage's latest run onto its entry (for log deep-linking). */
+export const withStageTaskId = (
+    ledger: StageLedgerEntry[],
+    stage: Stage,
+    taskId: string
+): StageLedgerEntry[] => patch(ledger, stage, entry => ({ ...entry, taskId }));
 
 /** Mark a stage as started. Clears any prior error so a re-run of a failed stage reads cleanly. */
 export const markStageRunning = (

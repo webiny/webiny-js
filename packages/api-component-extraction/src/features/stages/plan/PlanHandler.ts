@@ -16,6 +16,14 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 
 const SYSTEM =
     "You propose a Webiny component contract for a website section. Respond ONLY with a JSON object, no prose.";
+// One model call per cluster; yield with this much runway so a call never straddles the Lambda timeout.
+const PLAN_SAFETY_MARGIN_SECONDS = 120;
+
+/** Resumable checkpoint: how far through the clusters we are, and the planned components so far. */
+interface PlanCheckpoint {
+    nextIndex: number;
+    components: PlannedComponent[];
+}
 
 const slotLines = (manifest: ThemeManifest | null): string => {
     if (!manifest) {
@@ -126,8 +134,19 @@ class PlanHandlerImpl implements StageHandler.Interface {
             });
         }
 
-        const components: PlannedComponent[] = [];
-        for (const cluster of classify.clusters) {
+        const clusters = classify.clusters;
+        const total = clusters.length;
+
+        // Resume from the checkpoint if this is a continuation; start fresh otherwise.
+        const checkpointKey = context.artifactKey("checkpoint");
+        const loaded = await context.store.getJson<PlanCheckpoint>(checkpointKey);
+        if (loaded.isFail()) {
+            return Result.fail(loaded.error);
+        }
+        const checkpoint: PlanCheckpoint = loaded.value ?? { nextIndex: 0, components: [] };
+
+        while (checkpoint.nextIndex < total) {
+            const cluster = clusters[checkpoint.nextIndex];
             const aiResult = await this.ai.generate({
                 system: SYSTEM,
                 messages: [{ role: "user", content: buildPrompt(cluster, manifest) }]
@@ -139,39 +158,64 @@ class PlanHandlerImpl implements StageHandler.Interface {
                 await context.log.error({
                     message: `Plan failed for "${cluster.name}": ${aiResult.error.message}`
                 });
-                continue;
+            } else {
+                const contract = parseContract(aiResult.value);
+                if (!contract) {
+                    await context.log.error({
+                        message: `Plan returned no usable contract for "${cluster.name}".`
+                    });
+                } else {
+                    checkpoint.components.push({
+                        signature: cluster.cluster.signature,
+                        name: cluster.name,
+                        type: cluster.type,
+                        props: contract.props,
+                        tokenBindings: contract.tokenBindings,
+                        representative: cluster.cluster.representative,
+                        members: cluster.cluster.members,
+                        representativeCrop: cluster.cluster.representativeCrop,
+                        sourceTexts: cluster.cluster.observedTexts
+                    });
+                }
             }
 
-            const contract = parseContract(aiResult.value);
-            if (!contract) {
-                await context.log.error({
-                    message: `Plan returned no usable contract for "${cluster.name}".`
-                });
-                continue;
-            }
-
-            components.push({
-                signature: cluster.cluster.signature,
-                name: cluster.name,
-                type: cluster.type,
-                props: contract.props,
-                tokenBindings: contract.tokenBindings,
-                representative: cluster.cluster.representative,
-                members: cluster.cluster.members,
-                representativeCrop: cluster.cluster.representativeCrop,
-                sourceTexts: cluster.cluster.observedTexts
+            checkpoint.nextIndex++;
+            await context.progress({
+                message: `Planned ${checkpoint.nextIndex}/${total} sections`,
+                current: checkpoint.nextIndex,
+                total
             });
+            const saved = await context.store.putJson(checkpointKey, checkpoint);
+            if (saved.isFail()) {
+                return Result.fail(saved.error);
+            }
+
+            if (
+                checkpoint.nextIndex < total &&
+                context.isCloseToTimeout(PLAN_SAFETY_MARGIN_SECONDS)
+            ) {
+                return Result.ok({
+                    artifacts: {},
+                    counts: { components: checkpoint.components.length },
+                    more: true
+                });
+            }
         }
 
-        const artifact: PlanArtifact = { components };
+        const artifact: PlanArtifact = { components: checkpoint.components };
         const key = context.artifactKey("plan");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
             return Result.fail(written.error);
         }
 
-        await context.log.info({ message: `Planned ${components.length} component(s).` });
-        return Result.ok({ artifacts: { plan: key }, counts: { components: components.length } });
+        await context.log.info({
+            message: `Planned ${checkpoint.components.length} component(s).`
+        });
+        return Result.ok({
+            artifacts: { plan: key },
+            counts: { components: checkpoint.components.length }
+        });
     }
 }
 

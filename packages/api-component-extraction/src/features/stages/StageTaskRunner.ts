@@ -18,7 +18,13 @@ import {
     STAGE_PROGRESS_ACTION,
     type StageProgressPayload
 } from "~/domain/stage.js";
-import { markStageDone, markStageFailed, markStageRunning, stageEntry } from "~/domain/ledger.js";
+import {
+    markStageDone,
+    markStageFailed,
+    markStageRunning,
+    stageEntry,
+    withStageTaskId
+} from "~/domain/ledger.js";
 import { previousStage, stageArtifactKey, type Stage } from "~/constants.js";
 
 export interface StageTaskInput {
@@ -26,11 +32,20 @@ export interface StageTaskInput {
     [key: string]: string | undefined;
 }
 
+/** The live progress snapshot the runner writes to the task output, shown in the Background Tasks viewer. */
+export interface StageProgressOutput {
+    stage: string;
+    current: number;
+    total: number;
+    message: string;
+}
+
 export interface StageTaskOutput {
     stage?: string;
     status?: string;
     error?: IResponseError;
-    [key: string]: string | string[] | IResponseError | undefined;
+    progress?: StageProgressOutput;
+    [key: string]: unknown;
 }
 
 type RunParams = TaskDefinition.RunParams<StageTaskInput, StageTaskOutput>;
@@ -86,25 +101,44 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         }
         const job = jobResult.value;
 
-        // The version this run of the stage is producing — one past whatever it currently has. Used to
-        // key artifacts, and the value `markStageDone` bumps to.
-        const targetVersion = (stageEntry(run.stages, stage)?.stageVersion ?? 0) + 1;
+        // A stage already "running" means this invocation is a continuation of it (a `response.continue`
+        // re-invoke), not a fresh start — so the start bookkeeping runs only on the first invocation.
+        const existing = stageEntry(run.stages, stage);
+        const resuming = existing?.status === "running";
 
-        const running = markStageRunning(run.stages, stage, now());
-        const persistedRunning = await this.runRepository.update(run.id, {
-            stages: running,
-            status: "running"
-        });
-        if (persistedRunning.isFail()) {
-            return controller.response.error(persistedRunning.error.message);
+        // The version this run of the stage is producing — one past whatever it currently has. Stable
+        // across continuations: the entry's `stageVersion` only bumps at `markStageDone`, so re-deriving
+        // it every iteration yields the same value, and artifact keys stay consistent while resuming.
+        const targetVersion = (existing?.stageVersion ?? 0) + 1;
+
+        let ledger = run.stages;
+        if (!resuming) {
+            // First invocation: mark running, stamp the task id (for log deep-linking), announce the start.
+            const taskId = controller.state.getTask().id;
+            ledger = withStageTaskId(markStageRunning(run.stages, stage, now()), stage, taskId);
+            const persistedRunning = await this.runRepository.update(run.id, {
+                stages: ledger,
+                status: "running"
+            });
+            if (persistedRunning.isFail()) {
+                return controller.response.error(persistedRunning.error.message);
+            }
+            await this.report(STAGE_PROGRESS_ACTION, {
+                runId: run.id,
+                jobId: job.id,
+                stage,
+                status: "running"
+            });
+            await log.info({
+                message: `Stage "${stage}" started.`,
+                data: { runId: run.id, stage }
+            });
+        } else {
+            await log.info({
+                message: `Stage "${stage}" resuming.`,
+                data: { runId: run.id, stage }
+            });
         }
-        await this.report(STAGE_PROGRESS_ACTION, {
-            runId: run.id,
-            jobId: job.id,
-            stage,
-            status: "running"
-        });
-        await log.info({ message: `Stage "${stage}" started.`, data: { runId: run.id, stage } });
 
         const handler = this.handlers.find(candidate => candidate.stage === stage);
         if (!handler) {
@@ -115,25 +149,73 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 run.id,
                 job.id,
                 stage,
-                running,
+                ledger,
                 `Stage "${stage}" has no handler registered.`,
                 now
             );
         }
 
         const previous = previousStage(stage);
-        const upstream = previous ? (stageEntry(running, previous)?.artifacts ?? {}) : {};
+        const upstream = previous ? (stageEntry(ledger, previous)?.artifacts ?? {}) : {};
+
+        // Progress reporter passed to the handler: a database log (viewer trail) + task output (live
+        // counter) + websocket (run view). Best-effort — a hot-loop progress call must never fail a stage.
+        const progress = async (update: {
+            message: string;
+            current?: number;
+            total?: number;
+            data?: Record<string, unknown>;
+        }): Promise<void> => {
+            try {
+                await log.info({
+                    message: update.message,
+                    data: {
+                        runId: run.id,
+                        stage,
+                        current: update.current,
+                        total: update.total,
+                        ...update.data
+                    }
+                });
+                await controller.state.updateOutput({
+                    progress: {
+                        stage,
+                        current: update.current ?? 0,
+                        total: update.total ?? 0,
+                        message: update.message
+                    }
+                });
+                await this.report(STAGE_PROGRESS_ACTION, {
+                    runId: run.id,
+                    jobId: job.id,
+                    stage,
+                    status: "running",
+                    message: update.message,
+                    current: update.current,
+                    total: update.total
+                });
+            } catch (error) {
+                console.log(
+                    `[component-extraction] Could not report progress: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`
+                );
+            }
+        };
 
         let outcome;
         try {
             outcome = await handler.execute({
-                run: { ...run, stages: running },
+                run: { ...run, stages: ledger },
                 job,
                 upstream,
                 artifactKey: name => stageArtifactKey(run.id, stage, targetVersion, name),
                 store: this.artifactStore,
                 blobs: this.blobStore,
-                log
+                log,
+                progress,
+                isCloseToTimeout: (safetyMarginSeconds?: number) =>
+                    controller.runtime.isCloseToTimeout(safetyMarginSeconds)
             });
         } catch (error) {
             await log.error({ message: `Stage "${stage}" threw.`, error });
@@ -142,25 +224,32 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 run.id,
                 job.id,
                 stage,
-                running,
+                ledger,
                 error instanceof Error ? error.message : String(error),
                 now
             );
         }
 
         if (outcome.isFail()) {
-            return this.fail(
-                controller,
-                run.id,
-                job.id,
-                stage,
-                running,
-                outcome.error.message,
-                now
-            );
+            return this.fail(controller, run.id, job.id, stage, ledger, outcome.error.message, now);
         }
 
-        const done = markStageDone(running, stage, outcome.value.artifacts, now());
+        // Continuation: the stage checkpointed and has more work. Persist any partial counts so the run
+        // reflects progress between iterations, then re-invoke via the task framework.
+        if (outcome.value.more) {
+            if (outcome.value.counts) {
+                await this.runRepository.update(run.id, {
+                    counts: { ...run.counts, ...outcome.value.counts }
+                });
+            }
+            await log.info({
+                message: `Stage "${stage}" checkpointed; continuing in a new iteration.`,
+                data: { runId: run.id, stage }
+            });
+            return controller.response.continue(input, { seconds: 1 });
+        }
+
+        const done = markStageDone(ledger, stage, outcome.value.artifacts, now());
         const counts = { ...run.counts, ...outcome.value.counts };
         // The pipeline's terminal stage completing means the run is done; anything earlier leaves it
         // running (the gate awaits the next `runStage`).

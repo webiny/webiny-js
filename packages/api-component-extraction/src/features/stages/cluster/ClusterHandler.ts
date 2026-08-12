@@ -61,10 +61,14 @@ class ClusterHandlerImpl implements StageHandler.Interface {
             });
         }
 
+        const total = segment.pages.length;
+        await context.progress({ message: `Clustering sections across ${total} page(s)…` });
+
         const bySignature = new Map<string, MemberEntry[]>();
         let sectionCount = 0;
 
-        for (const page of segment.pages) {
+        for (let index = 0; index < total; index++) {
+            const page = segment.pages[index];
             const treeResult = await context.blobs.get(page.treeRef);
             if (treeResult.isFail()) {
                 await context.log.error({ message: `Could not read the tree for ${page.url}.` });
@@ -99,6 +103,11 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 bySignature.set(signature, list);
                 sectionCount++;
             }
+            await context.progress({
+                message: `Fingerprinted ${index + 1}/${total} page(s)`,
+                current: index + 1,
+                total
+            });
         }
 
         const clusters: Cluster[] = [...bySignature.values()].map(entries => ({

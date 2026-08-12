@@ -20,6 +20,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         startedOn: String
         finishedOn: String
         error: String
+        "The background task id of this stage's latest run, for deep-linking to its logs."
+        taskId: String
     }
 
     type ComponentExtractionRun {

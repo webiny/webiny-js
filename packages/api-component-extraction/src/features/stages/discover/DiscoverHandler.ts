@@ -34,6 +34,7 @@ class DiscoverHandlerImpl implements StageHandler.Interface {
             );
         }
         const cap = context.job.pageCap;
+        await context.progress({ message: `Discovering pages on ${entryUrl}…` });
 
         let source: DiscoverArtifact["source"] = "sitemap";
         let urls: string[] = [];
@@ -77,8 +78,10 @@ class DiscoverHandlerImpl implements StageHandler.Interface {
             return Result.fail(written.error);
         }
 
-        await context.log.info({
+        await context.progress({
             message: `Discovered ${sampled.length} URL(s) via ${source}.`,
+            current: sampled.length,
+            total: sampled.length,
             data: { entryUrl, source, groups: artifact.groups, cap }
         });
         return Result.ok({ artifacts: { urls: key }, counts: { pages: sampled.length } });

@@ -12,6 +12,15 @@ import { descriptiveName } from "~/features/stages/cluster/digest.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const CONFIDENCE_THRESHOLD = 0.6;
+// One model call per cluster; yield with this much runway so a call never straddles the Lambda timeout.
+const CLASSIFY_SAFETY_MARGIN_SECONDS = 120;
+
+/** Resumable checkpoint: how far through the clusters we are, and the classifications so far. */
+interface ClassifyCheckpoint {
+    nextIndex: number;
+    classified: ClassifiedCluster[];
+    unclassifiedCount: number;
+}
 const TAXONOMY =
     "hero, features, cta, testimonial, pricing, faq, header, footer, gallery, stats, logos, form, content, other";
 const SYSTEM =
@@ -73,10 +82,23 @@ class ClassifyHandlerImpl implements StageHandler.Interface {
             return Result.fail(new ExtractionValidationError("the cluster artifact is empty"));
         }
 
-        const classified: ClassifiedCluster[] = [];
-        let unclassifiedCount = 0;
+        const clusters = clusterArtifact.clusters;
+        const total = clusters.length;
 
-        for (const cluster of clusterArtifact.clusters) {
+        // Resume from the checkpoint if this is a continuation; start fresh otherwise.
+        const checkpointKey = context.artifactKey("checkpoint");
+        const loaded = await context.store.getJson<ClassifyCheckpoint>(checkpointKey);
+        if (loaded.isFail()) {
+            return Result.fail(loaded.error);
+        }
+        const checkpoint: ClassifyCheckpoint = loaded.value ?? {
+            nextIndex: 0,
+            classified: [],
+            unclassifiedCount: 0
+        };
+
+        while (checkpoint.nextIndex < total) {
+            const cluster = clusters[checkpoint.nextIndex];
             const aiResult = await this.ai.generate({
                 system: SYSTEM,
                 messages: [{ role: "user", content: buildPrompt(cluster.digest) }]
@@ -90,39 +112,56 @@ class ClassifyHandlerImpl implements StageHandler.Interface {
                 await context.log.error({
                     message: `Classify failed for a cluster: ${aiResult.error.message}`
                 });
-                classified.push({
+                checkpoint.classified.push({
                     cluster,
                     type: "unknown",
                     name: descriptiveName(cluster.digest),
                     confidence: 0,
                     unclassified: true
                 });
-                unclassifiedCount++;
-                continue;
+                checkpoint.unclassifiedCount++;
+            } else {
+                const parsed = parse(aiResult.value);
+                if (parsed && parsed.confidence >= CONFIDENCE_THRESHOLD) {
+                    checkpoint.classified.push({
+                        cluster,
+                        type: parsed.type,
+                        name: parsed.name || descriptiveName(cluster.digest),
+                        confidence: parsed.confidence,
+                        unclassified: false
+                    });
+                } else {
+                    checkpoint.classified.push({
+                        cluster,
+                        type: parsed?.type ?? "unknown",
+                        name: parsed?.name || descriptiveName(cluster.digest),
+                        confidence: parsed?.confidence ?? 0,
+                        unclassified: true
+                    });
+                    checkpoint.unclassifiedCount++;
+                }
             }
 
-            const parsed = parse(aiResult.value);
-            if (parsed && parsed.confidence >= CONFIDENCE_THRESHOLD) {
-                classified.push({
-                    cluster,
-                    type: parsed.type,
-                    name: parsed.name || descriptiveName(cluster.digest),
-                    confidence: parsed.confidence,
-                    unclassified: false
-                });
-            } else {
-                classified.push({
-                    cluster,
-                    type: parsed?.type ?? "unknown",
-                    name: parsed?.name || descriptiveName(cluster.digest),
-                    confidence: parsed?.confidence ?? 0,
-                    unclassified: true
-                });
-                unclassifiedCount++;
+            checkpoint.nextIndex++;
+            await context.progress({
+                message: `Classified ${checkpoint.nextIndex}/${total} sections`,
+                current: checkpoint.nextIndex,
+                total
+            });
+            const saved = await context.store.putJson(checkpointKey, checkpoint);
+            if (saved.isFail()) {
+                return Result.fail(saved.error);
+            }
+
+            if (
+                checkpoint.nextIndex < total &&
+                context.isCloseToTimeout(CLASSIFY_SAFETY_MARGIN_SECONDS)
+            ) {
+                return Result.ok({ artifacts: {}, more: true });
             }
         }
 
-        const artifact: ClassifyArtifact = { clusters: classified };
+        const artifact: ClassifyArtifact = { clusters: checkpoint.classified };
         const key = context.artifactKey("classifications");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
@@ -130,7 +169,7 @@ class ClassifyHandlerImpl implements StageHandler.Interface {
         }
 
         await context.log.info({
-            message: `Classified ${classified.length} cluster(s); ${unclassifiedCount} unclassified.`
+            message: `Classified ${checkpoint.classified.length} cluster(s); ${checkpoint.unclassifiedCount} unclassified.`
         });
         return Result.ok({ artifacts: { classifications: key } });
     }

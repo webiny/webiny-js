@@ -34,10 +34,14 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             return Result.fail(new ExtractionValidationError("the capture artifact is empty"));
         }
 
+        const total = capture.pages.length;
+        await context.progress({ message: `Segmenting ${total} captured page(s)…` });
+
         const pages: SegmentedPage[] = [];
         let totalSections = 0;
 
-        for (const page of capture.pages) {
+        for (let index = 0; index < total; index++) {
+            const page = capture.pages[index];
             const treeResult = await context.blobs.get(page.treeRef);
             if (treeResult.isFail()) {
                 await context.log.error({ message: `Could not read the tree for ${page.url}.` });
@@ -64,6 +68,11 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                 treeRef: page.treeRef,
                 documentHeight: page.documentHeight,
                 sections
+            });
+            await context.progress({
+                message: `Segmented ${index + 1}/${total} page(s)`,
+                current: index + 1,
+                total
             });
         }
 

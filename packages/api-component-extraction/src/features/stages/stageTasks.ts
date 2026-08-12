@@ -4,16 +4,21 @@ import { StageTaskRunner, type StageTaskInput, type StageTaskOutput } from "./St
 
 /**
  * One `TaskDefinition` per stage — nine tasks, each triggered independently by `runStage`. They are
- * deliberately thin: every task delegates to the shared `StageTaskRunner`, bound to its own stage. Phase
- * 1 sets `maxIterations = 1` (nothing fans out yet) and `databaseLogs = true` so the trail shows in the
- * Admin Background Tasks viewer. Not private, so a failed stage persists for inspection.
+ * deliberately thin: every task delegates to the shared `StageTaskRunner`, bound to its own stage.
+ * `databaseLogs = true` so the trail shows in the Admin Background Tasks viewer, and not private so a
+ * failed stage persists for inspection.
+ *
+ * `maxIterations` is generous because a long stage (Capture over many pages, the model-backed stages)
+ * checkpoints near the 900s Lambda timeout and continues in a fresh iteration via the runner — each
+ * iteration is one invocation, so the cap bounds how many continuations a single stage may take. Fast
+ * stages finish in their first iteration regardless.
  */
 const createStageTask = (stage: Stage) => {
     class StageTaskImpl implements TaskDefinition.Interface<StageTaskInput, StageTaskOutput> {
         readonly id = stageTaskId(stage);
         readonly title = `Component extraction — ${stage}`;
         readonly description = `Runs the "${stage}" stage of a component-extraction run.`;
-        readonly maxIterations = 1;
+        readonly maxIterations = 30;
         readonly isPrivate = false;
         readonly databaseLogs = true;
 

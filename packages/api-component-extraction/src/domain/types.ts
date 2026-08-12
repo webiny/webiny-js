@@ -31,6 +31,11 @@ export interface StageLedgerEntry {
     startedOn: string | null;
     finishedOn: string | null;
     error: string | null;
+    /**
+     * The background task id of the latest run of this stage. Lets the admin deep-link straight to that
+     * task's log trail in the Background Tasks viewer, so the full per-item log is one click away.
+     */
+    taskId: string | null;
 }
 
 /** Which stages a run pauses at. The stop-after set; phase 1 default is every stage (manual gate). */

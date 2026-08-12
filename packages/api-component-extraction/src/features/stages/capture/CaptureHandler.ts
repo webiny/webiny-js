@@ -15,6 +15,16 @@ const DESKTOP = { width: 1440, height: 900 };
 const NARROW = { width: 390, height: 844 };
 const PAGE_TIMEOUT_MS = 60_000;
 const MAX_NODES = 4000;
+// One page does a desktop + a narrow capture (each up to PAGE_TIMEOUT_MS) plus blob writes; yield with
+// this much runway so an in-flight page never straddles the Lambda timeout.
+const CAPTURE_SAFETY_MARGIN_SECONDS = 150;
+
+/** Resumable checkpoint: which URLs are done, and the page/failure results accumulated so far. */
+interface CaptureCheckpoint {
+    nextIndex: number;
+    pages: CapturedPage[];
+    failed: string[];
+}
 // Full-page PNGs are unbounded by document height, so downscale to a longest-edge cap before storing.
 const SCREENSHOT_MAX_EDGE = 1568;
 
@@ -63,31 +73,70 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             return Result.fail(new ExtractionValidationError("the discover artifact has no URLs"));
         }
 
-        const pages: CapturedPage[] = [];
-        const failed: string[] = [];
+        const total = discover.urls.length;
+
+        // Resume from the checkpoint if this is a continuation; start fresh otherwise.
+        const checkpointKey = context.artifactKey("checkpoint");
+        const loaded = await context.store.getJson<CaptureCheckpoint>(checkpointKey);
+        if (loaded.isFail()) {
+            return Result.fail(loaded.error);
+        }
+        const checkpoint: CaptureCheckpoint = loaded.value ?? {
+            nextIndex: 0,
+            pages: [],
+            failed: []
+        };
 
         const session = await this.browserProvider.open();
         try {
-            for (let index = 0; index < discover.urls.length; index++) {
+            while (checkpoint.nextIndex < total) {
+                const index = checkpoint.nextIndex;
                 const { url } = discover.urls[index];
                 try {
-                    pages.push(await this.capturePage(context, session, url, index));
-                    await context.log.info({ message: `Captured ${url}.`, data: { index } });
+                    checkpoint.pages.push(await this.capturePage(context, session, url, index));
+                    await context.progress({
+                        message: `Captured ${url}`,
+                        current: index + 1,
+                        total
+                    });
                 } catch (error) {
                     // One unreadable page must not lose the crawl — record and continue.
-                    failed.push(url);
+                    checkpoint.failed.push(url);
                     await context.log.error({ message: `Could not capture ${url}.`, error });
+                }
+                checkpoint.nextIndex++;
+                const saved = await context.store.putJson(checkpointKey, checkpoint);
+                if (saved.isFail()) {
+                    return Result.fail(saved.error);
+                }
+
+                // Near the timeout with pages remaining: checkpoint is already saved, so yield and let
+                // the runner continue this stage in a fresh invocation.
+                if (
+                    checkpoint.nextIndex < total &&
+                    context.isCloseToTimeout(CAPTURE_SAFETY_MARGIN_SECONDS)
+                ) {
+                    await context.progress({
+                        message: `Captured ${checkpoint.nextIndex}/${total} pages; pausing to continue in a new run.`,
+                        current: checkpoint.nextIndex,
+                        total
+                    });
+                    return Result.ok({
+                        artifacts: {},
+                        counts: { pages: checkpoint.pages.length },
+                        more: true
+                    });
                 }
             }
         } finally {
             await session.close();
         }
 
-        if (pages.length === 0) {
+        if (checkpoint.pages.length === 0) {
             return Result.fail(new ExtractionValidationError("no pages could be captured"));
         }
 
-        const artifact: CaptureArtifact = { pages, failed };
+        const artifact: CaptureArtifact = { pages: checkpoint.pages, failed: checkpoint.failed };
         const key = context.artifactKey("pages");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
@@ -96,8 +145,8 @@ class CaptureHandlerImpl implements StageHandler.Interface {
 
         return Result.ok({
             artifacts: { pages: key },
-            counts: { pages: pages.length },
-            degraded: failed
+            counts: { pages: checkpoint.pages.length },
+            degraded: checkpoint.failed
         });
     }
 

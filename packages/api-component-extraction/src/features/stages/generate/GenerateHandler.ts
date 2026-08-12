@@ -21,6 +21,16 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 
 const DESKTOP_WIDTH = 1440;
 const MAX_ATTEMPTS = 3;
+// One component can take several model calls (retries) plus the image crop; yield with this much runway
+// so a component never straddles the Lambda timeout.
+const GENERATE_SAFETY_MARGIN_SECONDS = 180;
+
+/** Resumable checkpoint: how far through the planned components we are, and the results so far. */
+interface GenerateCheckpoint {
+    nextIndex: number;
+    components: GeneratedComponent[];
+    failed: string[];
+}
 
 const clamp = (value: number, min: number, max: number): number =>
     Math.max(min, Math.min(max, value));
@@ -99,83 +109,67 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             );
         }
 
-        const components: GeneratedComponent[] = [];
-        const failed: string[] = [];
+        const total = plan.components.length;
 
-        for (const planned of plan.components) {
-            const fileId = await this.createReferenceImage(context, planned);
-            const additionalFileIds = fileId ? [fileId] : [];
-            let best: GeneratedComponent | null = null;
-            let attempts = 0;
+        // Resume from the checkpoint if this is a continuation; start fresh otherwise.
+        const checkpointKey = context.artifactKey("checkpoint");
+        const loaded = await context.store.getJson<GenerateCheckpoint>(checkpointKey);
+        if (loaded.isFail()) {
+            return Result.fail(loaded.error);
+        }
+        const checkpoint: GenerateCheckpoint = loaded.value ?? {
+            nextIndex: 0,
+            components: [],
+            failed: []
+        };
 
-            while (attempts < MAX_ATTEMPTS) {
-                attempts++;
-                const generated = await this.generateComponent.execute({
-                    prompt: buildPrompt(planned),
-                    name: planned.name,
-                    additionalFileIds
-                });
-                if (generated.isFail()) {
-                    await context.log.error({
-                        message: `Generate attempt ${attempts} failed for "${planned.name}": ${generated.error.message}`
-                    });
-                    continue;
-                }
-
-                const output = generated.value;
-                const validation = {
-                    textPreservation: validateTextPreservation(planned.sourceTexts, output.source),
-                    contractConformance: validateContractConformance(
-                        planned.props.map(prop => prop.name),
-                        output.source
-                    ),
-                    tokenBinding: validateTokenBinding(output.css, validVariables)
-                };
-
-                best = {
-                    signature: planned.signature,
-                    name: planned.name,
-                    type: planned.type,
-                    source: output.source,
-                    css: output.css,
-                    props: planned.props,
-                    tokenBindings: planned.tokenBindings,
-                    members: planned.members,
-                    attempts,
-                    validation
-                };
-
-                if (
-                    validation.textPreservation.passed &&
-                    validation.contractConformance.passed &&
-                    validation.tokenBinding.passed
-                ) {
-                    break;
-                }
-                await context.log.info({
-                    message: `"${planned.name}" attempt ${attempts} failed validation; retrying.`
-                });
-            }
+        while (checkpoint.nextIndex < total) {
+            const planned = plan.components[checkpoint.nextIndex];
+            const best = await this.generateOne(context, planned, validVariables);
 
             if (!best) {
-                failed.push(planned.signature);
+                checkpoint.failed.push(planned.signature);
                 await context.log.error({
                     message: `"${planned.name}" produced no output after ${MAX_ATTEMPTS} attempts.`
                 });
-                continue;
+            } else {
+                checkpoint.components.push(best);
+                const passed =
+                    best.validation.textPreservation.passed &&
+                    best.validation.contractConformance.passed &&
+                    best.validation.tokenBinding.passed;
+                if (!passed) {
+                    checkpoint.failed.push(planned.signature);
+                }
             }
 
-            components.push(best);
-            const passed =
-                best.validation.textPreservation.passed &&
-                best.validation.contractConformance.passed &&
-                best.validation.tokenBinding.passed;
-            if (!passed) {
-                failed.push(planned.signature);
+            checkpoint.nextIndex++;
+            await context.progress({
+                message: `Generated ${checkpoint.nextIndex}/${total} components (${planned.name})`,
+                current: checkpoint.nextIndex,
+                total
+            });
+            const saved = await context.store.putJson(checkpointKey, checkpoint);
+            if (saved.isFail()) {
+                return Result.fail(saved.error);
+            }
+
+            if (
+                checkpoint.nextIndex < total &&
+                context.isCloseToTimeout(GENERATE_SAFETY_MARGIN_SECONDS)
+            ) {
+                return Result.ok({
+                    artifacts: {},
+                    counts: { components: checkpoint.components.length },
+                    more: true
+                });
             }
         }
 
-        const artifact: GenerateArtifact = { components, failed };
+        const artifact: GenerateArtifact = {
+            components: checkpoint.components,
+            failed: checkpoint.failed
+        };
         const key = context.artifactKey("components");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
@@ -183,13 +177,76 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         }
 
         await context.log.info({
-            message: `Generated ${components.length} component(s); ${failed.length} did not pass validation.`
+            message: `Generated ${checkpoint.components.length} component(s); ${checkpoint.failed.length} did not pass validation.`
         });
         return Result.ok({
             artifacts: { components: key },
-            counts: { components: components.length },
-            degraded: failed
+            counts: { components: checkpoint.components.length },
+            degraded: checkpoint.failed
         });
+    }
+
+    /** Generate one component: crop the reference, then generate + validate up to `MAX_ATTEMPTS` times. */
+    private async generateOne(
+        context: StageContext,
+        planned: PlannedComponent,
+        validVariables: Set<string>
+    ): Promise<GeneratedComponent | null> {
+        const fileId = await this.createReferenceImage(context, planned);
+        const additionalFileIds = fileId ? [fileId] : [];
+        let best: GeneratedComponent | null = null;
+        let attempts = 0;
+
+        while (attempts < MAX_ATTEMPTS) {
+            attempts++;
+            const generated = await this.generateComponent.execute({
+                prompt: buildPrompt(planned),
+                name: planned.name,
+                additionalFileIds
+            });
+            if (generated.isFail()) {
+                await context.log.error({
+                    message: `Generate attempt ${attempts} failed for "${planned.name}": ${generated.error.message}`
+                });
+                continue;
+            }
+
+            const output = generated.value;
+            const validation = {
+                textPreservation: validateTextPreservation(planned.sourceTexts, output.source),
+                contractConformance: validateContractConformance(
+                    planned.props.map(prop => prop.name),
+                    output.source
+                ),
+                tokenBinding: validateTokenBinding(output.css, validVariables)
+            };
+
+            best = {
+                signature: planned.signature,
+                name: planned.name,
+                type: planned.type,
+                source: output.source,
+                css: output.css,
+                props: planned.props,
+                tokenBindings: planned.tokenBindings,
+                members: planned.members,
+                attempts,
+                validation
+            };
+
+            if (
+                validation.textPreservation.passed &&
+                validation.contractConformance.passed &&
+                validation.tokenBinding.passed
+            ) {
+                break;
+            }
+            await context.log.info({
+                message: `"${planned.name}" attempt ${attempts} failed validation; retrying.`
+            });
+        }
+
+        return best;
     }
 
     /** Crop the representative section from the page screenshot and store it as a File Manager record. */

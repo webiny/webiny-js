@@ -67,6 +67,20 @@ export interface StageOutcome {
     counts?: Partial<RunCounts>;
     /** Per-item failures that degraded the stage without failing it. */
     degraded?: string[];
+    /**
+     * When true, the stage has more work and has checkpointed its progress; the runner re-invokes it
+     * (a task continuation) rather than finishing. A resumable stage sets this on yielding near the
+     * Lambda timeout; `counts` may carry partial deltas to persist between iterations.
+     */
+    more?: boolean;
+}
+
+/** A live progress update from a stage: a human message plus an optional current/total for a bar. */
+export interface StageProgressUpdate {
+    message: string;
+    current?: number;
+    total?: number;
+    data?: Record<string, unknown>;
 }
 
 export interface StageContext {
@@ -81,6 +95,19 @@ export interface StageContext {
     /** Large binary artifacts (S3) — screenshots, compressed DOM. */
     blobs: IBlobStore;
     log: StageLog;
+    /**
+     * Report incremental progress. One call writes a database log (the Background Tasks viewer trail),
+     * updates the task output (a live counter), and emits a `stage.progress` websocket the admin run
+     * view renders live. Best-effort: it never throws, so a hot-loop progress call can't fail a stage.
+     */
+    progress(update: StageProgressUpdate): Promise<void>;
+    /**
+     * True when the task is within `safetyMarginSeconds` of its Lambda timeout. A resumable stage
+     * checkpoints and returns `{ more: true }` when this trips, so the runner continues it in a fresh
+     * invocation. Pass a margin larger than one item's worst-case duration so an item never straddles
+     * the timeout.
+     */
+    isCloseToTimeout(safetyMarginSeconds?: number): boolean;
 }
 
 export interface IStageHandler {
@@ -104,6 +131,9 @@ export interface StageProgressPayload {
     stage: Stage;
     status: string;
     message?: string;
+    /** Progress counter for a live bar in the run view; absent for coarse start/done events. */
+    current?: number;
+    total?: number;
     degraded?: string[];
     [key: string]: unknown;
 }

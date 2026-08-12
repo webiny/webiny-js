@@ -36,6 +36,9 @@ class AssembleHandlerImpl implements StageHandler.Interface {
         if (!generate) {
             return Result.fail(new ExtractionValidationError("the generate artifact is empty"));
         }
+        await context.progress({
+            message: `Assembling ${generate.components.length} component(s) across the pages…`
+        });
 
         // Valid css variables from the manifest, for the token validator.
         let validVariables = new Set<string>();
@@ -100,8 +103,10 @@ class AssembleHandlerImpl implements StageHandler.Interface {
         const tokenFailures = Object.values(tokenValidation).filter(
             result => !result.passed
         ).length;
-        await context.log.info({
-            message: `Assembled ${pages.length} page(s); ${tokenFailures} component(s) with token-binding issues.`
+        await context.progress({
+            message: `Assembled ${pages.length} page(s); ${tokenFailures} component(s) with token-binding issues.`,
+            current: pages.length,
+            total: pages.length
         });
         return Result.ok({ artifacts: { assembly: key } });
     }
