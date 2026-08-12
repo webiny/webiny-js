@@ -1,5 +1,4 @@
 import { gzipSync } from "node:zlib";
-import sharp from "sharp";
 import { Result } from "@webiny/feature/api";
 import { BrowserProvider } from "@webiny/site-capture";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
@@ -21,8 +20,13 @@ const SCREENSHOT_MAX_EDGE = 1568;
 
 const NARROW_EVALUATOR = `(() => ({ tree: null, documentHeight: 0, rawDom: "" }))()`;
 
-const downscalePng = async (image: Uint8Array): Promise<Buffer> =>
-    sharp(image)
+// `sharp` is a native module provided by a Lambda layer, present only on the background-task runtime
+// (where stages execute) — not on the GraphQL Lambda that imports this feature to build its schema.
+// So it is loaded lazily, at call time, never at module import. (Same pattern as api-file-manager's
+// SharpTransformer.)
+const downscalePng = async (image: Uint8Array): Promise<Buffer> => {
+    const sharp = (await import("sharp")).default;
+    return sharp(image)
         .resize({
             width: SCREENSHOT_MAX_EDGE,
             height: SCREENSHOT_MAX_EDGE,
@@ -31,6 +35,7 @@ const downscalePng = async (image: Uint8Array): Promise<Buffer> =>
         })
         .png()
         .toBuffer();
+};
 
 /**
  * Capture — read each discovered page with the shared browser and stream its artifacts to S3 as the

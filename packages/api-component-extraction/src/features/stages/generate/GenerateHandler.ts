@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto";
-import sharp from "sharp";
 import { Result } from "@webiny/feature/api";
 import { createS3, PutObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import { GenerateRemoteComponentUseCase } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
@@ -211,6 +210,10 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         }
 
         try {
+            // `sharp` is a native module from a Lambda layer present only on the background-task
+            // runtime (where this stage executes), not on the GraphQL Lambda that imports this feature
+            // to build its schema — so it is loaded lazily at call time, never at module import.
+            const sharp = (await import("sharp")).default;
             const bytes = shotResult.value;
             // The screenshot was downscaled from the 1440-wide capture; scale the document-space box to it.
             const meta = await sharp(bytes).metadata();
