@@ -32,6 +32,13 @@ export const StageList = createReactiveComponent(function StageList({ presenter 
         return null;
     }
 
+    // TEMP diagnostic: what the sidebar is actually rendering. Compare against the "[ce] refresh:" line
+    // from the presenter — if they diverge, the observer isn't repainting. Remove once resolved.
+    console.info(
+        "[ce] StageList render:",
+        run.stages.map(entry => `${entry.stage}:${entry.status}`).join(" ")
+    );
+
     // Only one stage runs at a time; while one is running, offer no other run buttons (except re-running
     // the running one, to recover a stuck stage).
     const anyRunning = STAGES.some(stage => stageEntry(run, stage)?.status === "running");

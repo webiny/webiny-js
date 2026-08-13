@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
-import { currentStage, stageEntry } from "~/shared/ledger.js";
+import { stageEntry } from "~/shared/ledger.js";
 import type {
     DecisionsDto,
     GenerateArtifactDto,
@@ -58,12 +58,17 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         try {
             const run = await this.gateway.getRun(runId);
             const job = await this.gateway.getJob(run.jobId);
-            const selected = currentStage(run) ?? run.stages[run.stages.length - 1]?.stage ?? null;
+            // Open the most-recently-active stage: whatever is running, else the last stage that has
+            // actually run (has a task id). This keeps a completed/running stage — and its activity
+            // trail — in view across a reload, instead of jumping ahead to the next pending stage (which
+            // has no logs and looks like the trail was lost).
+            const running = run.stages.find(entry => entry.status === "running");
+            const lastRun = [...run.stages].reverse().find(entry => entry.taskId);
+            const selected = running?.stage ?? lastRun?.stage ?? run.stages[0]?.stage ?? null;
             runInAction(() => {
                 this.vm.run = run;
                 this.vm.job = job;
                 this.vm.loading = false;
-                // Open the stage the run is currently at, falling back to the last stage once complete.
                 this.vm.selectedStage = selected;
             });
             if (selected) {
@@ -85,6 +90,12 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
         try {
             const run = await this.gateway.getRun(runId);
+            // TEMP diagnostic: what the server returned vs. what the sidebar shows. Remove once the
+            // live-update reliability issue is pinned.
+            console.info(
+                "[ce] refresh:",
+                run.stages.map(entry => `${entry.stage}:${entry.status}`).join(" ")
+            );
             runInAction(() => {
                 this.vm.run = run;
             });
