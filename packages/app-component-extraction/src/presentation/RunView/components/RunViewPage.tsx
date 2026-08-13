@@ -89,6 +89,7 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
 
     const { vm } = presenter;
     const run = vm.run;
+    const actionStage = vm.actionStage;
 
     const items = useMemo(() => {
         if (!run) {
@@ -96,10 +97,12 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         }
         return STAGES.map(stage => {
             const entry = run.stages.find(candidate => candidate.stage === stage);
-            const { state, errored } = progressStateOf(entry?.status);
+            // A just-triggered stage shows as in-progress ("starting") before the backend marks it running.
+            const status = actionStage === stage ? "starting" : entry?.status;
+            const { state, errored } = progressStateOf(status);
             return { id: stage, label: STAGE_LABELS[stage], state, errored };
         });
-    }, [run]);
+    }, [run, actionStage]);
 
     if (vm.loading && !run) {
         return <OverlayLoader text="Loading run..." />;

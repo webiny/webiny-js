@@ -45,6 +45,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     /** Pre-refine source per signature, so a completed regenerate is detected when the source changes. */
     private regenerateBaseline: Record<string, string> = {};
 
+    /** Task id of the stage the operator just triggered, to keep a "starting" indication until it runs. */
+    private pendingActionTaskId: string | null = null;
+
     constructor(private gateway: ComponentExtractionGateway.Interface) {
         makeAutoObservable(this);
     }
@@ -93,6 +96,23 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             runInAction(() => {
                 this.vm.run = run;
             });
+            // Clear the "starting" indication once the triggered stage has picked up its task (the task
+            // stamps its id and marks the stage running). The task-id match also covers a stage that ran
+            // to completion between polls, where "running" was never observed.
+            if (this.vm.actionStage) {
+                const entry = stageEntry(run, this.vm.actionStage);
+                const started =
+                    !!entry &&
+                    ((this.pendingActionTaskId !== null &&
+                        entry.taskId === this.pendingActionTaskId) ||
+                        entry.status === "running");
+                if (started) {
+                    this.pendingActionTaskId = null;
+                    runInAction(() => {
+                        this.vm.actionStage = null;
+                    });
+                }
+            }
             // Reload the open stage's trail while it runs (live), and whenever its task id changes —
             // a re-run mints a new task, so the old task's trail must be replaced.
             const stage = this.vm.selectedStage;
@@ -132,15 +152,18 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             delete this.vm.progressByStage[stage];
         });
         try {
-            await this.gateway.runStage(runId, stage);
-            // The stage now runs in the background; pick up its "running" status right away. Live
-            // progress arrives over the websocket, with polling as the fallback.
-            await this.refresh();
+            const result = await this.gateway.runStage(runId, stage);
+            // Keep `actionStage` set (the "starting" indication) — it is NOT cleared here. There's a gap
+            // between triggering the task and the task marking the stage "running", and clearing now would
+            // drop the stage back to a plain "pending" look during that gap. refresh() clears it once the
+            // ledger shows the stage picked up this task (or reached running).
+            this.pendingActionTaskId = result.taskId;
             runInAction(() => {
-                this.vm.actionStage = null;
                 this.vm.selectedStage = stage;
             });
+            await this.refresh();
         } catch (error) {
+            this.pendingActionTaskId = null;
             runInAction(() => {
                 this.vm.actionStage = null;
                 this.vm.error = (error as Error).message;

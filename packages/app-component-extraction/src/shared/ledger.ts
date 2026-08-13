@@ -63,6 +63,7 @@ export const progressStateOf = (
     switch (status) {
         case "done":
             return { state: ProgressItemState.COMPLETED_AFFIRMATIVE, errored: false };
+        case "starting":
         case "running":
             return { state: ProgressItemState.IN_PROGRESS, errored: false };
         case "failed":
