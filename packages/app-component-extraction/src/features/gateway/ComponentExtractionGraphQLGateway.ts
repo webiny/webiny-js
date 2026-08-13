@@ -14,12 +14,14 @@ import {
     CREATE_RUN,
     EXCLUDE_CAPTURED_PAGES,
     GET_JOB,
+    GET_RENDERS,
     GET_RUN,
     GET_STAGE_ARTIFACT,
     GET_STAGE_TASK,
     LIST_JOBS,
     LIST_RUNS,
     LIST_THEMES,
+    RENDER_COMPONENTS,
     RUN_STAGE,
     UPDATE_DISCOVER_URLS
 } from "./graphql.js";
@@ -153,6 +155,22 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: EXCLUDE_CAPTURED_PAGES, variables: { runId, urls } });
 
         return unwrap(response.componentExtractionExcludeCapturedPages);
+    }
+
+    async renderComponents(runId: string): Promise<StageTriggerResult> {
+        const response = await this.client.execute<{
+            componentExtractionRenderComponents: GqlEnvelope<StageTriggerResult>;
+        }>({ query: RENDER_COMPONENTS, variables: { runId } });
+
+        return unwrap(response.componentExtractionRenderComponents);
+    }
+
+    async getRenders(runId: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionGetRenders: GqlEnvelope<unknown>;
+        }>({ query: GET_RENDERS, variables: { runId } });
+
+        return unwrap(response.componentExtractionGetRenders);
     }
 }
 

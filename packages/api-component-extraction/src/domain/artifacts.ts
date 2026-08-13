@@ -242,6 +242,27 @@ export interface GenerateArtifact {
     failed: string[];
 }
 
+// ----- Render (rendered-component screenshots, W7.7) ---------------------------------------------
+
+/** One generated component's rendered-screenshot result, keyed to its cluster signature. */
+export interface RenderRecord {
+    signature: string;
+    /** Blob key of the rendered PNG, or "" when the render failed. */
+    renderRef: string;
+    width: number;
+    height: number;
+    ok: boolean;
+}
+
+/**
+ * The rendered screenshots for a run's generated components, produced on demand by the render task and
+ * keyed to the Generate stage version it was built from (so a Generate re-run's renders never mix with
+ * the previous version's).
+ */
+export interface RenderArtifact {
+    renders: RenderRecord[];
+}
+
 // ----- Assemble (output) -------------------------------------------------------------------------
 
 export interface ComponentInstance {

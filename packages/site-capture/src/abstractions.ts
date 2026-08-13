@@ -76,6 +76,43 @@ export interface CapturePageParams {
     screenshots?: ScreenshotCapture;
 }
 
+/**
+ * Render a page whose content is pushed in after load, then screenshot it — as opposed to `capture`,
+ * which reads a public URL as-is. Used to screenshot a standalone-mounted component: navigate to a
+ * render host, inject the bundle/theme via an in-page script, wait until it has mounted, and shoot.
+ * None of `capture`'s crawl machinery (media abort, consent dismissal, bot-wall check) applies here —
+ * the page is our own.
+ */
+export interface RenderPageParams {
+    url: string;
+    viewportWidth: number;
+    viewportHeight: number;
+    /** Hard ceiling for the whole render, including the wait for content to mount. */
+    timeoutMs: number;
+    /**
+     * In-page script run once after navigation to push content in (e.g. `window.postMessage` a bundle).
+     * A string, exactly as `page.evaluate` accepts — the provider never depends on function serialisation.
+     */
+    inject: string;
+    /**
+     * In-page boolean expression polled until it returns true — the signal that the injected content has
+     * mounted and is safe to screenshot (e.g. a rendered root element being present and non-empty). A
+     * string, evaluated repeatedly; a timeout is treated as "render did not appear".
+     */
+    waitFor: string;
+    /** Extra settle after `waitFor` succeeds, for fonts/images to paint. Defaults to a small value. */
+    settleMs?: number;
+}
+
+export interface RenderResult {
+    /** The URL actually landed on, after redirects. */
+    finalUrl: string;
+    /** The PNG bytes. Handed back to the caller to store; the browser layer never touches storage. */
+    image: Uint8Array;
+    width: number;
+    height: number;
+}
+
 export interface CaptureResult<TResult> {
     url: string;
     /** The URL actually landed on, after redirects. */
@@ -95,6 +132,13 @@ export interface CaptureResult<TResult> {
 
 export interface IBrowserSession {
     capture<TResult>(params: CapturePageParams): Promise<CaptureResult<TResult>>;
+    /**
+     * Render a page whose content is injected after load, then screenshot it. See {@link RenderPageParams}.
+     * Separate from `capture` because the visit sequence is different: no media interception, consent
+     * dismissal or bot-wall check — the page is ours — and a screenshot is taken only once the injected
+     * content has mounted.
+     */
+    render(params: RenderPageParams): Promise<RenderResult>;
     close(): Promise<void>;
     /**
      * What the driver resolved at launch — for Chromium, which executable it found and where. Surfaced

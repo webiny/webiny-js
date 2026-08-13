@@ -175,3 +175,38 @@ export interface ClusterDto {
 export interface ClusterArtifactDto {
     clusters: ClusterDto[];
 }
+
+export interface ValidationResultDto {
+    passed: boolean;
+    failures: string[];
+}
+
+export interface GeneratedComponentDto {
+    signature: string;
+    name: string;
+    type: string;
+    attempts: number;
+    validation: {
+        textPreservation: ValidationResultDto;
+        contractConformance: ValidationResultDto;
+        tokenBinding: ValidationResultDto;
+    };
+}
+
+export interface GenerateArtifactDto {
+    components: GeneratedComponentDto[];
+    failed: string[];
+}
+
+/** One generated component's rendered-screenshot result (W7.7), keyed to its cluster signature. */
+export interface RenderRecordDto {
+    signature: string;
+    renderRef: string;
+    width: number;
+    height: number;
+    ok: boolean;
+}
+
+export interface RenderArtifactDto {
+    renders: RenderRecordDto[];
+}

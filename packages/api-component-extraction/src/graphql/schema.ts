@@ -11,6 +11,8 @@ import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
     previousStage,
+    RENDER_COMPONENTS_TASK_ID,
+    stageArtifactKey,
     STAGES,
     stageTaskId,
     type Stage
@@ -451,6 +453,78 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw persisted.error;
                     }
                     return persisted.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetRenders",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const generate = stageEntry(runResult.value.stages, "generate");
+                    if (!generate || !generate.artifacts.components) {
+                        return null;
+                    }
+                    // Keyed to the current Generate version, so a re-run's stale renders never surface.
+                    const key = stageArtifactKey(
+                        args.runId,
+                        "generate",
+                        generate.stageVersion,
+                        "renders"
+                    );
+                    const artifact = await store.getJson(key);
+                    return artifact.isOk() ? artifact.value : null;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionRenderComponents",
+        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    const generate = stageEntry(run.stages, "generate");
+                    if (!generate || generate.status !== "done") {
+                        throw new Error("Render requires Generate to be done.");
+                    }
+
+                    const triggered = await taskService.trigger<{ runId: string }>({
+                        definition: RENDER_COMPONENTS_TASK_ID,
+                        name: `Component extraction — render (run ${run.runNumber})`,
+                        input: { runId: run.id }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+
+                    return { taskId: triggered.value.id, runId: run.id, stage: "render" };
                 });
         }
     });

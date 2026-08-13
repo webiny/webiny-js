@@ -1,12 +1,12 @@
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
-import { IMMUTABLE_CACHE_CONTROL, RUN_IMAGE_ROUTE } from "~/constants.js";
+import { IMMUTABLE_CACHE_CONTROL, RUN_IMAGE_ROUTE, stageArtifactKey } from "~/constants.js";
 import { RunRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore, BlobStore } from "~/domain/stage.js";
 import { stageEntry } from "~/domain/ledger.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
-import type { CaptureArtifact, SegmentArtifact } from "~/domain/artifacts.js";
+import type { CaptureArtifact, RenderArtifact, SegmentArtifact } from "~/domain/artifacts.js";
 import type { Run } from "~/domain/types.js";
 
 const json = (statusCode: number, body: unknown): IHttpResponse => ({
@@ -99,6 +99,24 @@ class RunImageRouteImpl implements HttpRoute.Interface {
                     for (const section of page.sections) {
                         allowed.add(section.cropRef);
                     }
+                }
+            }
+        }
+
+        // Rendered-component screenshots (W7.7): keyed to the current Generate stage version, so a
+        // Generate re-run's stale renders drop out of the allowlist automatically.
+        const generate = stageEntry(run.stages, "generate");
+        if (generate?.artifacts.components) {
+            const rendersKey = stageArtifactKey(
+                run.id,
+                "generate",
+                generate.stageVersion,
+                "renders"
+            );
+            const renders = await store.getJson<RenderArtifact>(rendersKey);
+            if (renders.isOk() && renders.value) {
+                for (const record of renders.value.renders) {
+                    allowed.add(record.renderRef);
                 }
             }
         }

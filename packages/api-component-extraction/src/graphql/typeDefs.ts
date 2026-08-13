@@ -125,6 +125,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             stage: String!
         ): ComponentExtractionArtifactResponse!
+        "The rendered-component screenshots for a run (W7.7), keyed to the current Generate version. Image refs are served by the run-image route."
+        componentExtractionGetRenders(runId: ID!): ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {
@@ -145,5 +147,7 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             urls: [String!]!
         ): ComponentExtractionRunResponse!
+        "Render the run's generated components to screenshots for the Generate view (W7.7). Requires Generate to be done."
+        componentExtractionRenderComponents(runId: ID!): ComponentExtractionTaskResponse!
     }
 `;

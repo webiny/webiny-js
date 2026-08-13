@@ -37,6 +37,10 @@ import { GenerateHandler } from "~/features/stages/generate/GenerateHandler.js";
 import { AssembleHandler } from "~/features/stages/assemble/AssembleHandler.js";
 import { PromoteHandler } from "~/features/stages/promote/PromoteHandler.js";
 import { ThemeManifestResolverService } from "~/features/shared/themeManifest.js";
+import { ThemeCssResolverService } from "~/features/shared/themeCss.js";
+import { PreviewDomainResolverService } from "~/features/shared/previewDomain.js";
+import { ComponentRenderServiceImplementation } from "~/features/shared/ComponentRenderService.js";
+import { RenderComponentsTask } from "~/features/render/RenderComponentsTask.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { RunImageRoute } from "~/rest/RunImageRoute.js";
@@ -79,6 +83,13 @@ export const ComponentExtractionFeature = createFeature({
         // Stage topology: the shared runner and one thin task per stage.
         container.register(StageTaskRunnerService);
         STAGE_TASKS.forEach(task => container.register(task));
+
+        // Rendered-component screenshots (W7.7): the resolvers and service the render task composes, and
+        // the on-demand task that screenshots a run's generated components for the Generate view.
+        container.register(ThemeCssResolverService);
+        container.register(PreviewDomainResolverService);
+        container.register(ComponentRenderServiceImplementation);
+        container.register(RenderComponentsTask);
 
         // Shared services for the model-backed stages: manifest resolution (Cluster, Plan) and the AI
         // provider selection (Classify, Plan, Generate).

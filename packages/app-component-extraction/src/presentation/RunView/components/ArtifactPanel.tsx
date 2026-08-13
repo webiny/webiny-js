@@ -9,6 +9,7 @@ import { DiscoverView } from "./stages/DiscoverView.js";
 import { CaptureView } from "./stages/CaptureView.js";
 import { SegmentView } from "./stages/SegmentView.js";
 import { ClusterView } from "./stages/ClusterView.js";
+import { GenerateView } from "./stages/GenerateView.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -31,12 +32,14 @@ const StageView = ({
             return <SegmentView presenter={presenter} />;
         case "cluster":
             return <ClusterView presenter={presenter} />;
+        case "generate":
+            return <GenerateView presenter={presenter} />;
         default:
             return null;
     }
 };
 
-const VIEW_STAGES = new Set<Stage>(["discover", "capture", "segment", "cluster"]);
+const VIEW_STAGES = new Set<Stage>(["discover", "capture", "segment", "cluster", "generate"]);
 
 const LogLine = ({ item }: { item: StageLogItem }) => {
     const errored = item.type === "error";

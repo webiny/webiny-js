@@ -8,6 +8,8 @@ import {
     type CaptureResult,
     type FontResource,
     type IBrowserSession,
+    type RenderPageParams,
+    type RenderResult,
     type Screenshot,
     type ScreenshotCrop
 } from "~/abstractions.js";
@@ -173,6 +175,62 @@ class ChromiumSession implements IBrowserSession {
                 () => page.close()
             );
         }
+    }
+
+    async render(params: RenderPageParams): Promise<RenderResult> {
+        const page = await withTimeout("open a browser tab", DEFAULT_TIMEOUTS.launchMs, () =>
+            this.browser.newPage()
+        );
+        try {
+            return await withTimeout(`render ${params.url}`, params.timeoutMs, () =>
+                this.renderPage(page, params)
+            );
+        } finally {
+            await withTimeoutOrDefault(
+                "close the browser tab",
+                DEFAULT_TIMEOUTS.closeMs,
+                undefined,
+                () => page.close()
+            );
+        }
+    }
+
+    private async renderPage(page: Page, params: RenderPageParams): Promise<RenderResult> {
+        await page.setUserAgent(this.userAgent);
+        await page.setViewport({
+            width: params.viewportWidth,
+            height: params.viewportHeight,
+            deviceScaleFactor: 1
+        });
+
+        await withTimeout(`navigate to ${params.url}`, DEFAULT_TIMEOUTS.navigationMs, () =>
+            page.goto(params.url, { waitUntil: "domcontentloaded" })
+        );
+
+        // Push the content in (a bundle + theme, via postMessage) once the render host is loaded.
+        await withTimeout(`inject into ${params.url}`, DEFAULT_TIMEOUTS.evaluateMs, () =>
+            page.evaluate(params.inject)
+        );
+
+        // Wait until the injected content has actually mounted before shooting — the host renders
+        // asynchronously after receiving the bundle, so a screenshot taken now would be blank.
+        await page.waitForFunction(params.waitFor, {
+            timeout: DEFAULT_TIMEOUTS.navigationMs,
+            polling: 100
+        });
+
+        // A short settle so late fonts/images paint.
+        await new Promise(resolve => setTimeout(resolve, params.settleMs ?? 400));
+
+        const image = await page.screenshot({ type: "png", fullPage: true });
+        const bytes = image instanceof Uint8Array ? image : new Uint8Array();
+
+        return {
+            finalUrl: page.url(),
+            image: bytes,
+            width: params.viewportWidth,
+            height: await this.documentHeight(page)
+        };
     }
 
     private async capturePage<TResult>(

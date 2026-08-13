@@ -32,6 +32,34 @@ const RUN_FIELDS = /* GraphQL */ `
     createdOn
 `;
 
+export const GET_RENDERS = /* GraphQL */ `
+    query GetComponentExtractionRenders($runId: ID!) {
+        componentExtractionGetRenders(runId: $runId) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+export const RENDER_COMPONENTS = /* GraphQL */ `
+    mutation RenderComponentExtractionComponents($runId: ID!) {
+        componentExtractionRenderComponents(runId: $runId) {
+            data {
+                taskId
+                runId
+                stage
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const GET_STAGE_ARTIFACT = /* GraphQL */ `
     query GetComponentExtractionStageArtifact($runId: ID!, $stage: String!) {
         componentExtractionGetStageArtifact(runId: $runId, stage: $stage) {

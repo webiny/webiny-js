@@ -1,5 +1,11 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { JobDto, RunDto, StageLogItem, StageProgress } from "~/shared/types.js";
+import type {
+    JobDto,
+    RenderRecordDto,
+    RunDto,
+    StageLogItem,
+    StageProgress
+} from "~/shared/types.js";
 
 export interface IRunViewVm {
     loading: boolean;
@@ -21,6 +27,10 @@ export interface IRunViewVm {
     artifact: unknown;
     artifactStage: string | null;
     artifactLoading: boolean;
+    /** The rendered-component screenshots (W7.7), keyed by cluster signature; null until produced. */
+    renders: RenderRecordDto[] | null;
+    /** A render pass has been triggered and its screenshots are not in yet. */
+    rendering: boolean;
 }
 
 export interface IRunViewPresenter {
@@ -35,6 +45,8 @@ export interface IRunViewPresenter {
     updateDiscoverUrls(urls: Array<{ url: string; group?: string }>): Promise<void>;
     /** Drop captured/failed pages, then refresh the run and the open artifact. */
     excludeCapturedPages(urls: string[]): Promise<void>;
+    /** Trigger the rendered-component screenshot pass for this run (W7.7). */
+    renderComponents(): Promise<void>;
 }
 
 export const RunViewPresenter = createAbstraction<IRunViewPresenter>(

@@ -66,6 +66,13 @@ const capitalize = (value: string): string => value.charAt(0).toUpperCase() + va
 export const stageTaskId = (stage: Stage): string => `componentExtraction${capitalize(stage)}`;
 
 /**
+ * The background-task id for the rendered-component screenshot pass (W7.7). Not a pipeline stage — it
+ * runs on demand over a completed Generate artifact, screenshotting each generated component as it
+ * renders standalone so the Generate view can compare it against its source section.
+ */
+export const RENDER_COMPONENTS_TASK_ID = "componentExtractionRenderComponents";
+
+/**
  * Deterministic artifact key. Includes the run, the stage and the stage version, so re-running a stage
  * writes to a fresh key (its version bumped) and a stale downstream artifact never collides with a new
  * one. `name` distinguishes a stage's multiple artifacts (e.g. a page's pruned tree vs its raw DOM).

@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
-import type { RunDto, StageProgress } from "~/shared/types.js";
+import type { RenderArtifactDto, RunDto, StageProgress } from "~/shared/types.js";
 
 class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
@@ -18,7 +18,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         logsStage: null,
         artifact: null,
         artifactStage: null,
-        artifactLoading: false
+        artifactLoading: false,
+        renders: null,
+        rendering: false
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -77,6 +79,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                     (entry.status === "running" || entry.taskId !== this.loadedLogsTaskId)
                 ) {
                     await this.loadLogs(run, stage);
+                }
+                // While a render pass is in flight, poll its results so thumbnails appear when ready.
+                if (stage === "generate" && this.vm.rendering) {
+                    await this.loadRenders(run);
                 }
             }
         } catch (error) {
@@ -160,6 +166,41 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    async renderComponents(): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.rendering = true;
+            this.vm.error = null;
+        });
+        try {
+            await this.gateway.renderComponents(runId);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.rendering = false;
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    /** Load the run's rendered-component screenshots, if the render pass has produced them. */
+    private async loadRenders(run: RunDto): Promise<void> {
+        try {
+            const artifact = (await this.gateway.getRenders(run.id)) as RenderArtifactDto | null;
+            runInAction(() => {
+                this.vm.renders = artifact?.renders ?? null;
+                // The artifact is written when the pass completes, so its arrival clears "rendering".
+                if (artifact?.renders) {
+                    this.vm.rendering = false;
+                }
+            });
+        } catch {
+            // A missing render artifact is the normal "not rendered yet" state, not an error to surface.
+        }
+    }
+
     /** Load the selected stage's structured artifact for its visibility view. */
     private async loadArtifact(run: RunDto, stage: string) {
         const entry = stageEntry(run, stage);
@@ -182,6 +223,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.artifactStage = stage;
                 this.vm.artifactLoading = false;
             });
+            // The Generate view pairs each component with its rendered screenshot (W7.7).
+            if (stage === "generate") {
+                void this.loadRenders(run);
+            }
         } catch {
             runInAction(() => {
                 this.vm.artifact = null;
