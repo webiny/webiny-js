@@ -25,6 +25,13 @@ export interface IComponentExtractionGateway {
     listThemes(): Promise<ThemeOptionDto[]>;
     /** The full log trail of a stage's background task, oldest first. */
     listStageLogs(taskId: string): Promise<StageLogItem[]>;
+    /** The structured artifact a stage produced, for the visibility views. Null if the stage has no output. */
+    getStageArtifact(runId: string, stage: string): Promise<unknown>;
+    /** Rewrite Discover's URL list before Capture; returns the run with Capture+downstream marked stale. */
+    updateDiscoverUrls(
+        runId: string,
+        urls: Array<{ url: string; group?: string }>
+    ): Promise<RunDto>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

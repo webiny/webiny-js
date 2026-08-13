@@ -17,6 +17,10 @@ export interface IRunViewVm {
     logsLoading: boolean;
     /** Which stage `logs` belongs to, so the panel knows whether they're for the open stage. */
     logsStage: string | null;
+    /** The selected stage's structured artifact (for the visibility views), and which stage it's for. */
+    artifact: unknown;
+    artifactStage: string | null;
+    artifactLoading: boolean;
 }
 
 export interface IRunViewPresenter {
@@ -27,6 +31,8 @@ export interface IRunViewPresenter {
     selectStage(stage: string): void;
     /** Apply a live progress update pushed over the websocket for a stage. */
     applyProgress(stage: string, progress: StageProgress): void;
+    /** Rewrite Discover's URL list, then refresh the run and the open artifact. */
+    updateDiscoverUrls(urls: Array<{ url: string; group?: string }>): Promise<void>;
 }
 
 export const RunViewPresenter = createAbstraction<IRunViewPresenter>(

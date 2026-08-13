@@ -14,11 +14,13 @@ import {
     CREATE_RUN,
     GET_JOB,
     GET_RUN,
+    GET_STAGE_ARTIFACT,
     GET_STAGE_TASK,
     LIST_JOBS,
     LIST_RUNS,
     LIST_THEMES,
-    RUN_STAGE
+    RUN_STAGE,
+    UPDATE_DISCOVER_URLS
 } from "./graphql.js";
 
 interface GqlEnvelope<T> {
@@ -123,6 +125,25 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
             type: "info",
             createdOn: entry.at
         }));
+    }
+
+    async getStageArtifact(runId: string, stage: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionGetStageArtifact: GqlEnvelope<unknown>;
+        }>({ query: GET_STAGE_ARTIFACT, variables: { runId, stage } });
+
+        return unwrap(response.componentExtractionGetStageArtifact);
+    }
+
+    async updateDiscoverUrls(
+        runId: string,
+        urls: Array<{ url: string; group?: string }>
+    ): Promise<RunDto> {
+        const response = await this.client.execute<{
+            componentExtractionUpdateDiscoverUrls: GqlEnvelope<RunDto>;
+        }>({ query: UPDATE_DISCOVER_URLS, variables: { runId, urls } });
+
+        return unwrap(response.componentExtractionUpdateDiscoverUrls);
     }
 }
 

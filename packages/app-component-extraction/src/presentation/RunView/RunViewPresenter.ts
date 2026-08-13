@@ -15,7 +15,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         progressByStage: {},
         logs: [],
         logsLoading: false,
-        logsStage: null
+        logsStage: null,
+        artifact: null,
+        artifactStage: null,
+        artifactLoading: false
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -44,6 +47,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             });
             if (selected) {
                 await this.loadLogs(run, selected);
+                await this.loadArtifact(run, selected);
             }
         } catch (error) {
             runInAction(() => {
@@ -116,6 +120,56 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         });
         if (this.vm.run) {
             void this.loadLogs(this.vm.run, stage);
+            void this.loadArtifact(this.vm.run, stage);
+        }
+    }
+
+    async updateDiscoverUrls(urls: Array<{ url: string; group?: string }>): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        try {
+            const run = await this.gateway.updateDiscoverUrls(runId, urls);
+            runInAction(() => {
+                this.vm.run = run;
+            });
+            await this.loadArtifact(run, "discover");
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    /** Load the selected stage's structured artifact for its visibility view. */
+    private async loadArtifact(run: RunDto, stage: string) {
+        const entry = stageEntry(run, stage);
+        // No artifact before a stage has produced output; clear so the view shows the right empty state.
+        if (!entry || (entry.status !== "done" && entry.status !== "stale")) {
+            runInAction(() => {
+                this.vm.artifact = null;
+                this.vm.artifactStage = stage;
+                this.vm.artifactLoading = false;
+            });
+            return;
+        }
+        runInAction(() => {
+            this.vm.artifactLoading = true;
+        });
+        try {
+            const artifact = await this.gateway.getStageArtifact(run.id, stage);
+            runInAction(() => {
+                this.vm.artifact = artifact;
+                this.vm.artifactStage = stage;
+                this.vm.artifactLoading = false;
+            });
+        } catch {
+            runInAction(() => {
+                this.vm.artifact = null;
+                this.vm.artifactStage = stage;
+                this.vm.artifactLoading = false;
+            });
         }
     }
 

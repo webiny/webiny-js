@@ -94,3 +94,74 @@ export interface CreateJobData {
     stopAfter?: string[];
     note?: string;
 }
+
+// ----- Stage artifact shapes (the subset the visibility views render) ----------------------------
+
+export interface ImageBox {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+
+export interface DiscoverUrlDto {
+    url: string;
+    group: string;
+}
+
+export interface DiscoverArtifactDto {
+    entryUrl: string;
+    source: string;
+    groups: string[];
+    urls: DiscoverUrlDto[];
+}
+
+export interface CapturePageDto {
+    url: string;
+    finalUrl: string;
+    documentHeight: number;
+    screenshotRef: string;
+    narrowScreenshotRef: string;
+    thumbnailRef: string;
+}
+
+export interface CaptureArtifactDto {
+    pages: CapturePageDto[];
+    failed: string[];
+}
+
+export interface SegmentSectionDto {
+    index: number;
+    box: ImageBox;
+    cropRef: string;
+}
+
+export interface SegmentPageDto {
+    url: string;
+    screenshotRef: string;
+    documentHeight: number;
+    sections: SegmentSectionDto[];
+}
+
+export interface SegmentArtifactDto {
+    pages: SegmentPageDto[];
+}
+
+export interface ClusterMemberDto {
+    url: string;
+    sectionIndex: number;
+    cropRef: string;
+}
+
+export interface ClusterDto {
+    signature: string;
+    representative: ClusterMemberDto;
+    members: ClusterMemberDto[];
+    representativeCrop: { cropRef: string };
+    digest: { structure: string; texts: string[] };
+    observedTexts: string[];
+}
+
+export interface ClusterArtifactDto {
+    clusters: ClusterDto[];
+}

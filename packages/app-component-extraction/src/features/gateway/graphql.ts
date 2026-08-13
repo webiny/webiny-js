@@ -27,8 +27,38 @@ const RUN_FIELDS = /* GraphQL */ `
         finishedOn
         error
         taskId
+        modelUsage
     }
     createdOn
+`;
+
+export const GET_STAGE_ARTIFACT = /* GraphQL */ `
+    query GetComponentExtractionStageArtifact($runId: ID!, $stage: String!) {
+        componentExtractionGetStageArtifact(runId: $runId, stage: $stage) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+export const UPDATE_DISCOVER_URLS = /* GraphQL */ `
+    mutation UpdateComponentExtractionDiscoverUrls(
+        $runId: ID!
+        $urls: [ComponentExtractionDiscoverUrlInput!]!
+    ) {
+        componentExtractionUpdateDiscoverUrls(runId: $runId, urls: $urls) {
+            data {
+                ${RUN_FIELDS}
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
 `;
 
 // A stage's activity trail. It lives in the task OUTPUT (a JSON field), not the background-task LOG:
