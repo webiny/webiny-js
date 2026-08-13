@@ -19,7 +19,6 @@ import {
 } from "~/features/shared/validators.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
-const DESKTOP_WIDTH = 1440;
 const MAX_ATTEMPTS = 3;
 // How many of a section's text fragments the prompt asks the model to preserve. Text preservation is
 // validated against this SAME slice — validating against text the model was never given would fail every
@@ -37,9 +36,6 @@ interface GenerateCheckpoint {
     components: GeneratedComponent[];
     failed: string[];
 }
-
-const clamp = (value: number, min: number, max: number): number =>
-    Math.max(min, Math.min(max, value));
 
 const buildPrompt = (component: PlannedComponent): string => {
     const props = component.props.map(
@@ -71,11 +67,11 @@ const buildPrompt = (component: PlannedComponent): string => {
 };
 
 /**
- * Generate — model-backed, one component per cluster. For each planned component it crops the
- * representative section from the page screenshot, stores it as a File Manager record, and calls the
- * existing remote-components generation path with the contract encoded into the prompt and the crop as
- * a reference image. Each result is checked against the three W5 validators and retried up to a fixed
- * limit. Generated components stay inside the job — Promote moves them to the Library.
+ * Generate — model-backed, one component per cluster. For each planned component it copies the section
+ * crop Segment already produced into a File Manager record, and calls the existing remote-components
+ * generation path with the contract encoded into the prompt and the crop as a reference image. Each
+ * result is checked against the three W5 validators and retried up to a fixed limit. Generated
+ * components stay inside the job — Promote moves them to the Library.
  */
 class GenerateHandlerImpl implements StageHandler.Interface {
     readonly stage = "generate" as const;
@@ -277,57 +273,43 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         return best;
     }
 
-    /** Crop the representative section from the page screenshot and store it as a File Manager record. */
+    /**
+     * The reference image for the model: the section crop Segment already produced. Copied into a File
+     * Manager record so the remote-components generation path can attach it. No cropping here — Segment
+     * is the single place that reads the screenshot and derives crops.
+     */
     private async createReferenceImage(
         context: StageContext,
         planned: PlannedComponent
     ): Promise<string | null> {
-        const crop = planned.representativeCrop;
-        if (!crop.screenshotRef) {
+        const cropRef = planned.representativeCrop.cropRef;
+        if (!cropRef) {
             return null;
         }
-        const shotResult = await context.blobs.get(crop.screenshotRef);
-        if (shotResult.isFail()) {
+        const cropResult = await context.blobs.get(cropRef);
+        if (cropResult.isFail()) {
             await context.log.error({
-                message: `Could not read the screenshot for "${planned.name}".`
+                message: `Could not read the section crop for "${planned.name}".`
             });
             return null;
         }
 
         try {
-            // `sharp` is a native module from a Lambda layer present only on the background-task
-            // runtime (where this stage executes), not on the GraphQL Lambda that imports this feature
-            // to build its schema — so it is loaded lazily at call time, never at module import.
-            const sharp = (await import("sharp")).default;
-            const bytes = shotResult.value;
-            // The screenshot was downscaled from the 1440-wide capture; scale the document-space box to it.
-            const meta = await sharp(bytes).metadata();
-            const imageWidth = meta.width ?? DESKTOP_WIDTH;
-            const imageHeight = meta.height ?? 0;
-            const scale = imageWidth / DESKTOP_WIDTH;
-            const left = clamp(Math.round(crop.box.x * scale), 0, Math.max(0, imageWidth - 1));
-            const top = clamp(Math.round(crop.box.y * scale), 0, Math.max(0, imageHeight - 1));
-            const width = clamp(Math.round(crop.box.width * scale), 1, imageWidth - left);
-            const height = clamp(Math.round(crop.box.height * scale), 1, imageHeight - top);
-            const cropped = await sharp(bytes)
-                .extract({ left, top, width, height })
-                .png()
-                .toBuffer();
-
+            const bytes = Buffer.from(cropResult.value);
             const tenant = this.tenantContext.getTenant().id;
             const fileKey = `component-extraction/${context.run.id}/${randomUUID()}.png`;
             await createS3().send(
                 new PutObjectCommand({
                     Bucket: String(process.env.S3_BUCKET),
                     Key: `tenants/${tenant}/files/${fileKey}`,
-                    Body: cropped,
+                    Body: bytes,
                     ContentType: "image/png"
                 })
             );
 
             const created = await this.createFile.execute({
                 key: fileKey,
-                size: cropped.length,
+                size: bytes.length,
                 type: "image/png",
                 name: `${planned.name} reference`
             });

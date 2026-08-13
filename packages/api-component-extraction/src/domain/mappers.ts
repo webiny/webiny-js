@@ -1,5 +1,14 @@
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import type { GateConfig, Job, Override, Run, RunCounts, StageLedgerEntry } from "./types.js";
+import type {
+    GateConfig,
+    Job,
+    ModelCall,
+    Override,
+    Run,
+    RunCounts,
+    StageLedgerEntry
+} from "./types.js";
+import type { Stage } from "~/constants.js";
 import { DEFAULT_PAGE_CAP } from "~/constants.js";
 import { initLedger } from "./ledger.js";
 
@@ -48,6 +57,26 @@ export class EntryToRunMapper {
             pinned: entry.values.pinned ?? false,
             counts: entry.values.counts ?? emptyCounts(),
             stages
+        };
+    }
+}
+
+export class EntryToModelCallMapper {
+    static toModelCall(entry: CmsEntry): ModelCall {
+        return {
+            id: entry.id,
+            entryId: entry.entryId,
+            createdOn: entry.createdOn,
+            tenant: entry.tenant,
+            runId: entry.values.runId ?? "",
+            stage: (entry.values.stage ?? "discover") as Stage,
+            stageVersion: entry.values.stageVersion ?? 0,
+            name: entry.values.name ?? "",
+            modelId: entry.values.modelId ?? "",
+            inputTokens: entry.values.inputTokens ?? 0,
+            outputTokens: entry.values.outputTokens ?? 0,
+            latencyMs: entry.values.latencyMs ?? 0,
+            ok: entry.values.ok ?? false
         };
     }
 }

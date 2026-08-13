@@ -8,7 +8,13 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
-import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
+import {
+    JobRepository,
+    ModelCallRepository,
+    RunLock,
+    RunRepository
+} from "~/domain/abstractions.js";
+import { ModelCallScope } from "~/features/shared/modelCallScope.js";
 import {
     BlobStore,
     StageArtifactStore,
@@ -23,10 +29,14 @@ import {
     markStageFailed,
     markStageRunning,
     stageEntry,
+    withStageModelUsage,
     withStageTaskId
 } from "~/domain/ledger.js";
 import { previousStage, stageArtifactKey, type Stage } from "~/constants.js";
-import type { Run } from "~/domain/types.js";
+import type { Run, StageModelUsage } from "~/domain/types.js";
+
+/** The model-backed stages, whose per-stage token aggregate the runner writes at stage close. */
+const MODEL_STAGES = new Set<Stage>(["classify", "plan", "generate"]);
 
 export interface StageTaskInput {
     runId: string;
@@ -97,8 +107,29 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         private blobStore: BlobStore.Interface,
         private handlers: StageHandler.Interface[],
         private identityContext: IdentityContext.Interface,
-        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
+        private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface,
+        private modelCallScope: ModelCallScope.Interface,
+        private modelCalls: ModelCallRepository.Interface
     ) {}
+
+    /** Sum a model-backed stage's recorded calls into its per-stage aggregate (retries/failures included). */
+    private async aggregateModelUsage(
+        runId: string,
+        stage: Stage,
+        stageVersion: number
+    ): Promise<StageModelUsage> {
+        const result = await this.modelCalls.listByRun(runId, { stage, stageVersion });
+        const calls = result.isOk() ? result.value : [];
+        return calls.reduce<StageModelUsage>(
+            (total, call) => ({
+                inputTokens: total.inputTokens + call.inputTokens,
+                outputTokens: total.outputTokens + call.outputTokens,
+                calls: total.calls + 1,
+                latencyMs: total.latencyMs + call.latencyMs
+            }),
+            { inputTokens: 0, outputTokens: 0, calls: 0, latencyMs: 0 }
+        );
+    }
 
     async execute(stage: Stage, { input, controller }: RunParams): RunResult {
         const now = () => new Date().toISOString();
@@ -240,18 +271,25 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
 
         let outcome;
         try {
-            outcome = await handler.execute({
-                run: { ...run, stages: ledger },
-                job,
-                upstream,
-                artifactKey: name => stageArtifactKey(run.id, stage, targetVersion, name),
-                store: this.artifactStore,
-                blobs: this.blobStore,
-                log,
-                progress,
-                isCloseToTimeout: (safetyMarginSeconds?: number) =>
-                    controller.runtime.isCloseToTimeout(safetyMarginSeconds)
-            });
+            // The scope attributes every model call made during this stage (Classify/Plan directly,
+            // Generate via remote-components) to the run + stage, for the model-call recorder.
+            outcome = await this.modelCallScope.run(
+                { runId: run.id, stage, stageVersion: targetVersion },
+                () =>
+                    handler.execute({
+                        run: { ...run, stages: ledger },
+                        job,
+                        stageVersion: targetVersion,
+                        upstream,
+                        artifactKey: name => stageArtifactKey(run.id, stage, targetVersion, name),
+                        store: this.artifactStore,
+                        blobs: this.blobStore,
+                        log,
+                        progress,
+                        isCloseToTimeout: (safetyMarginSeconds?: number) =>
+                            controller.runtime.isCloseToTimeout(safetyMarginSeconds)
+                    })
+            );
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             await log.error({ message: `Stage "${stage}" threw.`, error });
@@ -281,7 +319,13 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         // Apply the done transition to the latest ledger, not the snapshot from execute start (stale
         // after a long handler run), so completing this stage never reverts another stage's status.
         const latest = await latestRun(run);
-        const done = markStageDone(latest.stages, stage, outcome.value.artifacts, now());
+        let done = markStageDone(latest.stages, stage, outcome.value.artifacts, now());
+        // Single-writer point for a model-backed stage's token aggregate: sum its recorded calls once,
+        // now that the stage is complete, so the UI reads a total rather than scanning while it runs.
+        if (MODEL_STAGES.has(stage)) {
+            const usage = await this.aggregateModelUsage(run.id, stage, targetVersion);
+            done = withStageModelUsage(done, stage, usage);
+        }
         const counts = { ...latest.counts, ...outcome.value.counts };
         // The pipeline's terminal stage completing means the run is done; anything earlier leaves it
         // running (the gate awaits the next `runStage`).
@@ -362,6 +406,8 @@ export const StageTaskRunnerService = createImplementation({
         BlobStore,
         [StageHandler, { multiple: true }],
         IdentityContext,
-        WebsocketsSendToIdentityUseCase
+        WebsocketsSendToIdentityUseCase,
+        ModelCallScope,
+        ModelCallRepository
     ]
 });

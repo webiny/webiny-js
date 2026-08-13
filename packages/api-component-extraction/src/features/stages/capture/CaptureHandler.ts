@@ -9,6 +9,7 @@ import type {
     DiscoverArtifact
 } from "~/domain/artifacts.js";
 import { captureEvaluator, type CaptureEvalResult } from "./captureEvaluator.js";
+import { downscale } from "~/features/shared/imageCrop.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const DESKTOP = { width: 1440, height: 900 };
@@ -28,6 +29,9 @@ interface CaptureCheckpoint {
 }
 // Full-page PNGs are unbounded by document height, so downscale to a longest-edge cap before storing.
 const SCREENSHOT_MAX_EDGE = 1568;
+// A small derivative for the capture grid (~40 tiles), so the grid isn't tens of MB of full-page PNGs;
+// the full-page image is served only when a tile is opened.
+const PAGE_THUMB_MAX_EDGE = 480;
 
 const NARROW_EVALUATOR = `(() => ({ tree: null, documentHeight: 0, rawDom: "" }))()`;
 
@@ -168,8 +172,9 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         const base = `${context.run.id}/capture/page-${index}`;
         let screenshotRef = "";
         let narrowScreenshotRef = "";
+        let thumbnailRef = "";
 
-        // Desktop: tree + raw DOM + full-page screenshot.
+        // Desktop: tree + raw DOM + full-page screenshot (plus a small grid thumbnail derived from it).
         const desktop = await session.capture<CaptureEvalResult>({
             url,
             viewportWidth: DESKTOP.width,
@@ -180,7 +185,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                 requests: [{ label: "full-page", crop: "full-page" }],
                 write: async image => {
                     const stored = await context.blobs.put(
-                        `${base}/screenshot.png`,
+                        `${base}/screenshot-v${context.stageVersion}.png`,
                         await downscalePng(image),
                         "image/png"
                     );
@@ -188,6 +193,24 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                         throw new Error(stored.error.message);
                     }
                     screenshotRef = stored.value;
+
+                    // Grid thumbnail, versioned so a Capture re-run's derivative never mixes with the
+                    // previous version's. A thumbnail failure must not fail the page.
+                    try {
+                        const thumb = await context.blobs.put(
+                            `${base}/thumbnail-v${context.stageVersion}.png`,
+                            await downscale(image, PAGE_THUMB_MAX_EDGE),
+                            "image/png"
+                        );
+                        if (thumb.isOk()) {
+                            thumbnailRef = thumb.value;
+                        }
+                    } catch (error) {
+                        await context.log.error({
+                            message: `Could not build the thumbnail for ${url}.`,
+                            error
+                        });
+                    }
                     return stored.value;
                 }
             }
@@ -227,7 +250,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                 requests: [{ label: "full-page-narrow", crop: "full-page" }],
                 write: async image => {
                     const stored = await context.blobs.put(
-                        `${base}/screenshot-narrow.png`,
+                        `${base}/screenshot-narrow-v${context.stageVersion}.png`,
                         await downscalePng(image),
                         "image/png"
                     );
@@ -248,7 +271,8 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             treeRef: treeStored.value,
             screenshotRef,
             rawDomRef: domStored.value,
-            narrowScreenshotRef
+            narrowScreenshotRef,
+            thumbnailRef
         };
     }
 }

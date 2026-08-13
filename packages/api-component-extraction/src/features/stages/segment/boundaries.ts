@@ -1,4 +1,10 @@
-import type { CapturedNode, SectionBox } from "~/domain/artifacts.js";
+import type { Box, CapturedNode } from "~/domain/artifacts.js";
+
+/** A detected section boundary before its crop is produced (Segment attaches `cropRef`). */
+export interface DetectedSection {
+    box: Box;
+    index: number;
+}
 
 export interface SegmentOptions {
     /** A section must be at least this tall (px) — filters out headers, nav bars, links. */
@@ -28,9 +34,9 @@ export const findContentRoot = (node: CapturedNode): CapturedNode => {
  * a section rather than a control. Boxes are in document coordinates, i.e. into the full-page screenshot,
  * so a crop can be taken from the PNG without a second visit.
  */
-export const detectSections = (root: CapturedNode, options: SegmentOptions): SectionBox[] => {
+export const detectSections = (root: CapturedNode, options: SegmentOptions): DetectedSection[] => {
     const contentRoot = findContentRoot(root);
-    const sections: SectionBox[] = [];
+    const sections: DetectedSection[] = [];
     contentRoot.children.forEach((child, index) => {
         if (
             child.box.height >= options.minHeight &&

@@ -23,6 +23,15 @@ export type StageStatus = "pending" | "running" | "done" | "stale" | "failed";
  * artifact is detected (it was produced against an older upstream version). `artifacts` holds
  * references — S3 keys, KV keys — never artifact bodies.
  */
+/** The per-stage model-usage aggregate, written once by the runner when a model-backed stage closes. */
+export interface StageModelUsage {
+    inputTokens: number;
+    outputTokens: number;
+    /** Number of model calls, counting retries and failures. */
+    calls: number;
+    latencyMs: number;
+}
+
 export interface StageLedgerEntry {
     stage: Stage;
     status: StageStatus;
@@ -36,6 +45,40 @@ export interface StageLedgerEntry {
      * task's log trail in the Background Tasks viewer, so the full per-item log is one click away.
      */
     taskId: string | null;
+    /**
+     * The stage's model-usage totals, or null for a deterministic stage / before it closes. Written once
+     * at stage close (single writer); while the stage runs the UI sums the individual call records.
+     */
+    modelUsage: StageModelUsage | null;
+}
+
+// ----- Model call --------------------------------------------------------------------------------
+
+/**
+ * One model call made by a model-backed stage (Classify, Plan, Generate). Stored one entry per call so
+ * concurrent writers never clobber a shared array — recorded by the `Ai` wrapper, aggregated per stage
+ * by the runner. Failed and retried calls are recorded too; a component that took three attempts cost
+ * three calls, which is what we want visible.
+ */
+export interface ModelCallValues {
+    runId: string;
+    stage: Stage;
+    stageVersion: number;
+    /** The call name, e.g. `classify-section`, `plan-component`, `generate-component`. */
+    name: string;
+    modelId: string;
+    inputTokens: number;
+    outputTokens: number;
+    latencyMs: number;
+    /** False for a call that errored (it still cost tokens up to the failure and is counted). */
+    ok: boolean;
+}
+
+export interface ModelCall extends ModelCallValues {
+    id: string;
+    entryId: string;
+    createdOn: string;
+    tenant: string;
 }
 
 /** Which stages a run pauses at. The stop-after set; phase 1 default is every stage (manual gate). */

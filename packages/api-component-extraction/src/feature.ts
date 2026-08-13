@@ -2,10 +2,25 @@ import { type Container, createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { JOB_MODEL_ID, OVERRIDE_MODEL_ID, RUN_MODEL_ID } from "~/constants.js";
-import { JobModelPlugin, OverrideModelPlugin, RunModelPlugin } from "~/domain/models.js";
-import { JobModel, OverrideModel, RunModel } from "~/domain/abstractions.js";
-import { JobRepository, OverrideRepository, RunRepository } from "~/features/repositories.js";
+import { JOB_MODEL_ID, MODEL_CALL_MODEL_ID, OVERRIDE_MODEL_ID, RUN_MODEL_ID } from "~/constants.js";
+import {
+    JobModelPlugin,
+    ModelCallModelPlugin,
+    OverrideModelPlugin,
+    RunModelPlugin
+} from "~/domain/models.js";
+import { JobModel, ModelCallModel, OverrideModel, RunModel } from "~/domain/abstractions.js";
+import {
+    JobRepository,
+    ModelCallRepository,
+    OverrideRepository,
+    RunRepository
+} from "~/features/repositories.js";
+import { ModelCallScopeService } from "~/features/shared/modelCallScope.js";
+import {
+    ModelCallErrorRecorder,
+    ModelCallSuccessRecorder
+} from "~/features/shared/modelCallRecorder.js";
 import { RunLock } from "~/storage/RunLock.js";
 import { ComponentExtractionPermissionsFeature } from "~/features/permissions.js";
 import { KeyValueStageArtifactStore } from "~/storage/StageArtifactStore.js";
@@ -24,6 +39,7 @@ import { PromoteHandler } from "~/features/stages/promote/PromoteHandler.js";
 import { ThemeManifestResolverService } from "~/features/shared/themeManifest.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
+import { RunImageRoute } from "~/rest/RunImageRoute.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 
 /**
@@ -40,13 +56,21 @@ export const ComponentExtractionFeature = createFeature({
         container.register(JobModelPlugin);
         container.register(RunModelPlugin);
         container.register(OverrideModelPlugin);
+        container.register(ModelCallModelPlugin);
 
         ComponentExtractionPermissionsFeature.register(container);
 
         container.register(JobRepository);
         container.register(RunRepository);
         container.register(OverrideRepository);
+        container.register(ModelCallRepository);
         container.register(RunLock);
+
+        // Model-call accounting (W7.1): the stage scope the runner sets, and the recorder that captures
+        // every model call the core `Ai` makes during a stage — covering Classify, Plan and Generate.
+        container.register(ModelCallScopeService);
+        container.register(ModelCallSuccessRecorder);
+        container.register(ModelCallErrorRecorder);
         container.register(KeyValueStageArtifactStore);
         container.register(S3BlobStore);
         // The headless browser used by Capture. Stateless — safe to register alongside theme extraction's.
@@ -74,6 +98,9 @@ export const ComponentExtractionFeature = createFeature({
 
         registerComponentExtractionGraphQL(container);
 
+        // The auth-gated run-image delivery route (W7.2), serving derived images for the visibility screens.
+        container.register(RunImageRoute);
+
         // Per-request resolution of the three CmsModels. Runs without authorization because reading a
         // model definition is not the same act as reading an entry — entry-level authorization still
         // applies in the use cases.
@@ -92,6 +119,9 @@ export const ComponentExtractionFeature = createFeature({
 
                     const override = await getModel.execute(OVERRIDE_MODEL_ID);
                     requestContainer.registerInstance(OverrideModel, override.value);
+
+                    const modelCall = await getModel.execute(MODEL_CALL_MODEL_ID);
+                    requestContainer.registerInstance(ModelCallModel, modelCall.value);
                 });
             }
         });

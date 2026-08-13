@@ -56,6 +56,8 @@ export interface CapturedPage {
     rawDomRef: string;
     /** Full-page screenshot at the narrow width, for responsive inspection. */
     narrowScreenshotRef: string;
+    /** A small downscaled derivative of the desktop screenshot, so the capture grid isn't tens of MB. */
+    thumbnailRef: string;
 }
 
 export interface CaptureArtifact {
@@ -71,6 +73,8 @@ export interface SectionBox {
     box: Box;
     /** Index of the section among the content root's children — a stable handle within the page. */
     index: number;
+    /** Blob key of this section's cropped, downscaled image, produced by Segment from the screenshot. */
+    cropRef: string;
 }
 
 export interface SegmentedPage {
@@ -94,6 +98,8 @@ export interface ClusterMember {
     /** Index of the section on its page (into the content root's children). */
     sectionIndex: number;
     signature: string;
+    /** Blob key of this member's section crop, so the cluster view can show every member. */
+    cropRef: string;
 }
 
 /**
@@ -110,11 +116,13 @@ export interface SectionDigest {
     headingCount: number;
 }
 
-/** Where to crop the representative section's reference image from — a box into a page's screenshot. */
+/** The representative section's reference image — the crop Segment produced, plus its source box. */
 export interface RepresentativeCrop {
     screenshotRef: string;
-    /** The section box in document coordinates; Generate scales it to the (downscaled) screenshot. */
+    /** The section box in document coordinates (kept for reference/debugging). */
     box: Box;
+    /** Blob key of the pre-made section crop Generate uses as its reference image. */
+    cropRef: string;
 }
 
 export interface Cluster {

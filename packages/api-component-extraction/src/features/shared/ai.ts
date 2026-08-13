@@ -9,7 +9,10 @@ import {
 } from "~/domain/errors.js";
 
 /**
- * The shared AI entry point for the model-backed stages (Classify, Plan, Generate).
+ * The shared AI entry point for the model-backed stages (Classify, Plan). Generate goes through
+ * remote-components' generation path, so token accounting is NOT done here — it is captured for all
+ * three stages uniformly by subscribing to the core `Ai`'s events (see `ModelCallRecorder`), which is
+ * the one point every model call funnels through.
  *
  * It centralises the provider selection that `GenerateRemoteComponentUseCase` does inline: read the AI
  * Power-Ups settings, take the first configured provider preset, decrypt its key, and call the `Ai`

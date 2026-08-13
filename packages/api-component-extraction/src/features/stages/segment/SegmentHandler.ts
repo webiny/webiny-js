@@ -3,15 +3,20 @@ import { StageHandler, type StageContext, type StageOutcome } from "~/domain/sta
 import type {
     CapturedNode,
     CaptureArtifact,
+    SectionBox,
     SegmentArtifact,
     SegmentedPage
 } from "~/domain/artifacts.js";
 import { detectSections } from "./boundaries.js";
+import { cropFromScreenshot } from "~/features/shared/imageCrop.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const MIN_SECTION_HEIGHT = 120;
 const MIN_WIDTH_RATIO = 0.5;
 const DESKTOP_WIDTH = 1440;
+// Section crops serve both the cluster gallery and the model reference image; this edge is a balance
+// between the two — enough detail for generation, small enough for a four-across gallery.
+const CROP_MAX_EDGE = 1024;
 
 /**
  * Segment — deterministic, offline, no browser. Reads each captured page's pruned tree from S3 and
@@ -56,11 +61,45 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                 continue;
             }
 
-            const sections = detectSections(tree, {
+            const detected = detectSections(tree, {
                 minHeight: MIN_SECTION_HEIGHT,
                 minWidthRatio: MIN_WIDTH_RATIO,
                 viewportWidth: DESKTOP_WIDTH
             });
+
+            // Crop each section from the page's full-page screenshot, once, so downstream views and
+            // Generate reuse a stored image rather than re-cropping. Keyed with the stage version so a
+            // Segment re-run's crops never mix with the previous version's.
+            const screenshot = await context.blobs.get(page.screenshotRef);
+            const sections: SectionBox[] = [];
+            for (const section of detected) {
+                let cropRef = "";
+                if (screenshot.isOk()) {
+                    try {
+                        const cropped = await cropFromScreenshot(
+                            screenshot.value,
+                            section.box,
+                            DESKTOP_WIDTH,
+                            CROP_MAX_EDGE
+                        );
+                        const stored = await context.blobs.put(
+                            `${context.run.id}/segment/v${context.stageVersion}/${index}/section-${section.index}.png`,
+                            cropped,
+                            "image/png"
+                        );
+                        if (stored.isOk()) {
+                            cropRef = stored.value;
+                        }
+                    } catch (error) {
+                        await context.log.error({
+                            message: `Could not crop section ${section.index} of ${page.url}.`,
+                            error
+                        });
+                    }
+                }
+                sections.push({ ...section, cropRef });
+            }
+
             totalSections += sections.length;
             pages.push({
                 url: page.url,

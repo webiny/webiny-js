@@ -8,6 +8,8 @@ import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abst
 import {
     JobModel,
     JobRepository as JobRepositoryAbstraction,
+    ModelCallModel,
+    ModelCallRepository as ModelCallRepositoryAbstraction,
     OverrideModel,
     OverrideRepository as OverrideRepositoryAbstraction,
     RunModel,
@@ -15,14 +17,19 @@ import {
     type ListMeta,
     type ListParams
 } from "~/domain/abstractions.js";
-import { EntryToJobMapper, EntryToOverrideMapper, EntryToRunMapper } from "~/domain/mappers.js";
+import {
+    EntryToJobMapper,
+    EntryToModelCallMapper,
+    EntryToOverrideMapper,
+    EntryToRunMapper
+} from "~/domain/mappers.js";
 import {
     ExtractionNotFoundError,
     ExtractionPersistenceError,
     ExtractionValidationError,
     type ExtractionError
 } from "~/domain/errors.js";
-import type { JobValues, OverrideValues, RunValues } from "~/domain/types.js";
+import type { JobValues, ModelCallValues, OverrideValues, RunValues } from "~/domain/types.js";
 
 const DEFAULT_LIMIT = 50;
 
@@ -229,4 +236,54 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
 export const OverrideRepository = OverrideRepositoryAbstraction.createImplementation({
     implementation: OverrideRepositoryImpl,
     dependencies: [OverrideModel, CreateEntryUseCase, ListLatestEntriesUseCase, CmsWhereMapper]
+});
+
+// ----- Model calls -------------------------------------------------------------------------------
+
+const MODEL_CALL_LIMIT = 500;
+
+class ModelCallRepositoryImpl implements ModelCallRepositoryAbstraction.Interface {
+    constructor(
+        private model: ModelCallModel.Interface,
+        private createEntry: CreateEntryUseCase.Interface,
+        private listLatestEntries: ListLatestEntriesUseCase.Interface,
+        private whereMapper: CmsWhereMapper.Interface
+    ) {}
+
+    async create(values: ModelCallValues) {
+        const result = await this.createEntry.execute(this.model, { values });
+        if (result.isFail()) {
+            return Result.fail(toWriteError(result.error));
+        }
+        return Result.ok(EntryToModelCallMapper.toModelCall(result.value));
+    }
+
+    async listByRun(
+        runId: string,
+        params: { stage?: string; stageVersion?: number; limit?: number } = {}
+    ) {
+        const where: Record<string, unknown> = { runId };
+        if (params.stage) {
+            where.stage = params.stage;
+        }
+        if (params.stageVersion !== undefined) {
+            where.stageVersion = params.stageVersion;
+        }
+        const result = await this.listLatestEntries.execute(this.model, {
+            where: this.whereMapper.map({ fields: this.model.fields, input: where }),
+            limit: params.limit ?? MODEL_CALL_LIMIT,
+            after: null
+        });
+        if (result.isFail()) {
+            return Result.fail(new ExtractionPersistenceError(result.error));
+        }
+        return Result.ok(
+            result.value.entries.map(entry => EntryToModelCallMapper.toModelCall(entry))
+        );
+    }
+}
+
+export const ModelCallRepository = ModelCallRepositoryAbstraction.createImplementation({
+    implementation: ModelCallRepositoryImpl,
+    dependencies: [ModelCallModel, CreateEntryUseCase, ListLatestEntriesUseCase, CmsWhereMapper]
 });

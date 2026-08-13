@@ -51,6 +51,10 @@ export interface IBlobStore {
         contentType: string
     ): Promise<Result<string, ExtractionError>>;
     get(ref: string): Promise<Result<Uint8Array, ExtractionError>>;
+    /** Fetch bytes plus the stored content type, for serving a blob over the run-image route. */
+    getObject(
+        ref: string
+    ): Promise<Result<{ bytes: Uint8Array; contentType: string }, ExtractionError>>;
     /** Remove every blob written under a run's prefix, when the run's working data is no longer needed. */
     deleteAll(runId: string): Promise<Result<void, ExtractionError>>;
 }
@@ -86,6 +90,8 @@ export interface StageProgressUpdate {
 export interface StageContext {
     run: Run;
     job: Job;
+    /** The version this run of the stage is producing — for model-call accounting and derived-image keys. */
+    stageVersion: number;
     /** The prior stage's artifact refs (name -> key), for handoff. Empty for the first stage. */
     upstream: Record<string, string>;
     /** Deterministic key for one of this stage's artifacts — includes run, stage and target version. */

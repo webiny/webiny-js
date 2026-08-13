@@ -1,6 +1,15 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { Job, JobValues, Override, OverrideValues, Run, RunValues } from "./types.js";
+import type {
+    Job,
+    JobValues,
+    ModelCall,
+    ModelCallValues,
+    Override,
+    OverrideValues,
+    Run,
+    RunValues
+} from "./types.js";
 import type { ExtractionError } from "./errors.js";
 
 /**
@@ -19,6 +28,11 @@ export namespace RunModel {
 
 export const OverrideModel = createAbstraction<CmsModel>("ComponentExtraction/OverrideModel");
 export namespace OverrideModel {
+    export type Interface = CmsModel;
+}
+
+export const ModelCallModel = createAbstraction<CmsModel>("ComponentExtraction/ModelCallModel");
+export namespace ModelCallModel {
     export type Interface = CmsModel;
 }
 
@@ -80,6 +94,24 @@ export const OverrideRepository = createAbstraction<IOverrideRepository>(
 );
 export namespace OverrideRepository {
     export type Interface = IOverrideRepository;
+}
+
+// ----- Model call repository ----------------------------------------------------------------------
+
+export interface IModelCallRepository {
+    create(values: ModelCallValues): Promise<Result<ModelCall, ExtractionError>>;
+    /** A run's calls, optionally narrowed to one stage (and its version) for the per-stage aggregate. */
+    listByRun(
+        runId: string,
+        params?: { stage?: string; stageVersion?: number; limit?: number }
+    ): Promise<Result<ModelCall[], ExtractionError>>;
+}
+
+export const ModelCallRepository = createAbstraction<IModelCallRepository>(
+    "ComponentExtraction/ModelCallRepository"
+);
+export namespace ModelCallRepository {
+    export type Interface = IModelCallRepository;
 }
 
 // ----- Run lock ----------------------------------------------------------------------------------

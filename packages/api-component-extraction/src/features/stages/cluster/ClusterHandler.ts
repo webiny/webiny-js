@@ -92,13 +92,18 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 const member: ClusterMember = {
                     url: page.url,
                     sectionIndex: section.index,
-                    signature
+                    signature,
+                    cropRef: section.cropRef
                 };
                 const list = bySignature.get(signature) ?? [];
                 list.push({
                     member,
                     digest: sectionDigest(node),
-                    crop: { screenshotRef: page.screenshotRef, box: section.box }
+                    crop: {
+                        screenshotRef: page.screenshotRef,
+                        box: section.box,
+                        cropRef: section.cropRef
+                    }
                 });
                 bySignature.set(signature, list);
                 sectionCount++;

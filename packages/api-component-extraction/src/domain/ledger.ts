@@ -1,5 +1,5 @@
 import { STAGES, stagesAfter, type Stage } from "~/constants.js";
-import type { StageLedgerEntry } from "./types.js";
+import type { StageLedgerEntry, StageModelUsage } from "./types.js";
 
 /**
  * Pure transforms over a run's stage ledger. Kept pure and separate from the repository so the
@@ -16,7 +16,8 @@ export const initLedger = (): StageLedgerEntry[] =>
         startedOn: null,
         finishedOn: null,
         error: null,
-        taskId: null
+        taskId: null,
+        modelUsage: null
     }));
 
 const patch = (
@@ -31,6 +32,13 @@ export const withStageTaskId = (
     stage: Stage,
     taskId: string
 ): StageLedgerEntry[] => patch(ledger, stage, entry => ({ ...entry, taskId }));
+
+/** Stamp a model-backed stage's usage aggregate onto its entry (written once, at stage close). */
+export const withStageModelUsage = (
+    ledger: StageLedgerEntry[],
+    stage: Stage,
+    modelUsage: StageModelUsage
+): StageLedgerEntry[] => patch(ledger, stage, entry => ({ ...entry, modelUsage }));
 
 /** Mark a stage as started. Clears any prior error so a re-run of a failed stage reads cleanly. */
 export const markStageRunning = (

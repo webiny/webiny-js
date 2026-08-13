@@ -67,6 +67,31 @@ class S3BlobStoreImpl implements BlobStoreAbstraction.Interface {
         }
     }
 
+    async getObject(
+        ref: string
+    ): Promise<Result<{ bytes: Uint8Array; contentType: string }, ExtractionError>> {
+        try {
+            const s3 = createS3();
+            const response = await s3.send(new GetObjectCommand({ Bucket: bucket(), Key: ref }));
+            if (!response.Body) {
+                return Result.fail(
+                    new ExtractionStorageError("read a blob", `${ref} returned no content`)
+                );
+            }
+            return Result.ok({
+                bytes: await response.Body.transformToByteArray(),
+                contentType: response.ContentType ?? "application/octet-stream"
+            });
+        } catch (error) {
+            return Result.fail(
+                new ExtractionStorageError(
+                    "read a blob",
+                    error instanceof Error ? error.message : String(error)
+                )
+            );
+        }
+    }
+
     async deleteAll(runId: string): Promise<Result<void, ExtractionError>> {
         try {
             const s3 = createS3();

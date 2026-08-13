@@ -1,5 +1,5 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { JOB_MODEL_ID, RUN_MODEL_ID, OVERRIDE_MODEL_ID } from "~/constants.js";
+import { JOB_MODEL_ID, MODEL_CALL_MODEL_ID, RUN_MODEL_ID, OVERRIDE_MODEL_ID } from "~/constants.js";
 
 /**
  * The three private CMS models — jobs, runs and overrides. Private (like `wbyTheme`) means invisible
@@ -84,5 +84,34 @@ class OverrideModelFactory implements ModelFactory.Interface {
 
 export const OverrideModelPlugin = ModelFactory.createImplementation({
     implementation: OverrideModelFactory,
+    dependencies: []
+});
+
+class ModelCallModelFactory implements ModelFactory.Interface {
+    async execute(builder: ModelFactory.Builder) {
+        const model = builder.private({
+            modelId: MODEL_CALL_MODEL_ID,
+            name: "Component Extraction Model Call"
+        });
+
+        model.fields(fields => ({
+            // Filtered on to list a run's calls, and a stage's calls at a given version.
+            runId: fields.text().label("Run id"),
+            stage: fields.text().label("Stage"),
+            stageVersion: fields.number().label("Stage version"),
+            name: fields.text().label("Call name"),
+            modelId: fields.text().label("Model id"),
+            inputTokens: fields.number().label("Input tokens"),
+            outputTokens: fields.number().label("Output tokens"),
+            latencyMs: fields.number().label("Latency (ms)"),
+            ok: fields.boolean().label("Succeeded")
+        }));
+
+        return [model];
+    }
+}
+
+export const ModelCallModelPlugin = ModelFactory.createImplementation({
+    implementation: ModelCallModelFactory,
     dependencies: []
 });

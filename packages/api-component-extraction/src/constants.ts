@@ -34,6 +34,10 @@ export const previousStage = (stage: Stage): Stage | null => {
 export const JOB_MODEL_ID = "wbyExtractionJob";
 export const RUN_MODEL_ID = "wbyExtractionRun";
 export const OVERRIDE_MODEL_ID = "wbyExtractionOverride";
+// One entry per model call (Classify/Plan/Generate). A private CMS model rather than the key-value
+// store because the KV store cannot list by prefix, and the token panel lists a run's calls. The
+// per-stage aggregate is written once onto the Run's stage ledger by the runner when the stage closes.
+export const MODEL_CALL_MODEL_ID = "wbyExtractionModelCall";
 
 // Tenant-scoped key-value keys. Scoping comes free from `KeyValueStore`; one tenant's run lock must
 // not block another's.
@@ -45,6 +49,13 @@ export const runLockKey = (jobId: string): string => `${RUN_LOCK_KEY_PREFIX}${jo
 // Phase-1 page-cap bounds (decision 3): configurable per job, default 40, hard maximum 150.
 export const DEFAULT_PAGE_CAP = 40;
 export const MAX_PAGE_CAP = 150;
+
+// The auth-gated run-image delivery route (W7.2). Serves derived images (screenshots, crops,
+// thumbnails) from raw S3 for the visibility screens, gated on the feature permission and scoped to a
+// tenant's run. `:ref` is passed as a query parameter (`?ref=`) because blob keys contain slashes.
+export const RUN_IMAGE_ROUTE = "/_webiny/component-extraction/run/:runId/image";
+// Derived-image keys include the stage version, so a stored object never changes under the same key.
+export const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable";
 
 const capitalize = (value: string): string => value.charAt(0).toUpperCase() + value.slice(1);
 
