@@ -18,6 +18,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         logsStage: null
     };
 
+    /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
+    private loadedLogsTaskId: string | null = null;
+
     constructor(private gateway: ComponentExtractionGateway.Interface) {
         makeAutoObservable(this);
     }
@@ -60,10 +63,17 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             runInAction(() => {
                 this.vm.run = run;
             });
-            // Keep the open stage's log trail fresh while it is running.
+            // Reload the open stage's trail while it runs (live), and whenever its task id changes —
+            // a re-run mints a new task, so the old task's trail must be replaced.
             const stage = this.vm.selectedStage;
-            if (stage && stageEntry(run, stage)?.status === "running") {
-                await this.loadLogs(run, stage);
+            if (stage) {
+                const entry = stageEntry(run, stage);
+                if (
+                    entry &&
+                    (entry.status === "running" || entry.taskId !== this.loadedLogsTaskId)
+                ) {
+                    await this.loadLogs(run, stage);
+                }
             }
         } catch (error) {
             runInAction(() => {
@@ -126,6 +136,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     /** Load the task log trail for a stage, if it has a task id yet. */
     private async loadLogs(run: RunDto, stage: string) {
         const taskId = stageEntry(run, stage)?.taskId ?? null;
+        this.loadedLogsTaskId = taskId;
         if (!taskId) {
             runInAction(() => {
                 this.vm.logs = [];

@@ -75,14 +75,12 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         return () => subs.forEach(sub => sub.off());
     }, [presenter, runId, websockets]);
 
-    // Poll fallback while a stage is running.
+    // Poll unconditionally while the run view is open. Not just while a stage shows "running": a re-run
+    // of a completed stage isn't reflected in the current copy yet, so a running-gated poll would never
+    // fire to pick it up. refresh() only reloads logs when they actually change (new task id / running).
     useEffect(() => {
         const interval = setInterval(() => {
-            const run = presenter.vm.run;
-            const running = run ? run.stages.some(stage => stage.status === "running") : false;
-            if (running) {
-                void presenter.refresh();
-            }
+            void presenter.refresh();
         }, 3000);
         return () => clearInterval(interval);
     }, [presenter]);
