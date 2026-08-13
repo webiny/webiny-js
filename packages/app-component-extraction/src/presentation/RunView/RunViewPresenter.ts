@@ -2,7 +2,13 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
-import type { RenderArtifactDto, RunDto, StageProgress } from "~/shared/types.js";
+import type {
+    DecisionsDto,
+    PlanArtifactDto,
+    RenderArtifactDto,
+    RunDto,
+    StageProgress
+} from "~/shared/types.js";
 
 class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
@@ -20,7 +26,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         artifactStage: null,
         artifactLoading: false,
         renders: null,
-        rendering: false
+        rendering: false,
+        decisions: {},
+        sourceCrops: {}
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -185,6 +193,47 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    async setDecision(signature: string, decision: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        try {
+            const updated = (await this.gateway.setComponentDecision(
+                runId,
+                signature,
+                decision
+            )) as DecisionsDto | null;
+            runInAction(() => {
+                this.vm.decisions = updated?.decisions ?? {};
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    /** Load the accept/reject decisions and the source crop refs the Generate view pairs with renders. */
+    private async loadGenerateExtras(run: RunDto): Promise<void> {
+        try {
+            const [decisions, plan] = await Promise.all([
+                this.gateway.getDecisions(run.id) as Promise<DecisionsDto | null>,
+                this.gateway.getStageArtifact(run.id, "plan") as Promise<PlanArtifactDto | null>
+            ]);
+            const sourceCrops: Record<string, string> = {};
+            for (const planned of plan?.components ?? []) {
+                sourceCrops[planned.signature] = planned.representativeCrop.cropRef;
+            }
+            runInAction(() => {
+                this.vm.decisions = decisions?.decisions ?? {};
+                this.vm.sourceCrops = sourceCrops;
+            });
+        } catch {
+            // The comparison still renders without the source crop or a prior decision.
+        }
+    }
+
     /** Load the run's rendered-component screenshots, if the render pass has produced them. */
     private async loadRenders(run: RunDto): Promise<void> {
         try {
@@ -223,9 +272,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.artifactStage = stage;
                 this.vm.artifactLoading = false;
             });
-            // The Generate view pairs each component with its rendered screenshot (W7.7).
+            // The Generate view pairs each component with its rendered screenshot (W7.7), its source
+            // crop and the operator's accept/reject decisions (W7.8).
             if (stage === "generate") {
                 void this.loadRenders(run);
+                void this.loadGenerateExtras(run);
             }
         } catch {
             runInAction(() => {

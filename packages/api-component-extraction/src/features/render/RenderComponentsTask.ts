@@ -4,7 +4,12 @@ import { RENDER_COMPONENTS_TASK_ID, stageArtifactKey } from "~/constants.js";
 import { RunRepository, JobRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import { stageEntry } from "~/domain/ledger.js";
-import type { GenerateArtifact, RenderArtifact, RenderRecord } from "~/domain/artifacts.js";
+import type {
+    GenerateArtifact,
+    PlanArtifact,
+    RenderArtifact,
+    RenderRecord
+} from "~/domain/artifacts.js";
 import { ComponentRenderService } from "~/features/shared/ComponentRenderService.js";
 import { ThemeCssResolver } from "~/features/shared/themeCss.js";
 import { PreviewDomainResolver } from "~/features/shared/previewDomain.js";
@@ -101,6 +106,20 @@ class RenderComponentsTaskImpl implements TaskDefinition.Interface<
         const components = generateArtifact.value.components;
         const total = components.length;
 
+        // The source section crop per component, for the visual-similarity indicator — read from the
+        // Plan artifact (which carries each component's representative crop). Best-effort: a missing plan
+        // just leaves the indicators null.
+        const cropBySignature = new Map<string, string>();
+        const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
+        if (planKey) {
+            const plan = await this.artifactStore.getJson<PlanArtifact>(planKey);
+            if (plan.isOk() && plan.value) {
+                for (const planned of plan.value.components) {
+                    cropBySignature.set(planned.signature, planned.representativeCrop.cropRef);
+                }
+            }
+        }
+
         const rendersKey = stageArtifactKey(run.id, "generate", generateVersion, "renders");
         if (total === 0) {
             const empty: RenderArtifact = { renders: [] };
@@ -150,7 +169,8 @@ class RenderComponentsTaskImpl implements TaskDefinition.Interface<
                         name: component.name,
                         source: component.source,
                         css: component.css
-                    }
+                    },
+                    sourceCropRef: cropBySignature.get(component.signature)
                 });
 
                 if (result.isOk()) {
@@ -159,7 +179,8 @@ class RenderComponentsTaskImpl implements TaskDefinition.Interface<
                         renderRef: result.value.renderRef,
                         width: result.value.width,
                         height: result.value.height,
-                        ok: true
+                        ok: true,
+                        similarity: result.value.similarity
                     });
                 } else {
                     // One component failing to render must not lose the rest — record and continue.
@@ -168,7 +189,8 @@ class RenderComponentsTaskImpl implements TaskDefinition.Interface<
                         renderRef: "",
                         width: 0,
                         height: 0,
-                        ok: false
+                        ok: false,
+                        similarity: null
                     });
                     await log.error({
                         message: `Could not render "${component.name}": ${result.error.message}`

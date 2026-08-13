@@ -38,6 +38,10 @@ export interface IComponentExtractionGateway {
     renderComponents(runId: string): Promise<StageTriggerResult>;
     /** The rendered-component screenshots for a run, or null if none produced yet. */
     getRenders(runId: string): Promise<unknown>;
+    /** The operator's accept/reject decisions for a run's generated components (W7.8). */
+    getDecisions(runId: string): Promise<unknown>;
+    /** Set (or clear, with "none") a component's decision; returns the updated decision map. */
+    setComponentDecision(runId: string, signature: string, decision: string): Promise<unknown>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

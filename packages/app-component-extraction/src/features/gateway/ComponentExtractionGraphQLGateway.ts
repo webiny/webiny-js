@@ -13,6 +13,7 @@ import {
     CREATE_JOB,
     CREATE_RUN,
     EXCLUDE_CAPTURED_PAGES,
+    GET_DECISIONS,
     GET_JOB,
     GET_RENDERS,
     GET_RUN,
@@ -23,6 +24,7 @@ import {
     LIST_THEMES,
     RENDER_COMPONENTS,
     RUN_STAGE,
+    SET_COMPONENT_DECISION,
     UPDATE_DISCOVER_URLS
 } from "./graphql.js";
 
@@ -171,6 +173,26 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_RENDERS, variables: { runId } });
 
         return unwrap(response.componentExtractionGetRenders);
+    }
+
+    async getDecisions(runId: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionGetDecisions: GqlEnvelope<unknown>;
+        }>({ query: GET_DECISIONS, variables: { runId } });
+
+        return unwrap(response.componentExtractionGetDecisions);
+    }
+
+    async setComponentDecision(
+        runId: string,
+        signature: string,
+        decision: string
+    ): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionSetComponentDecision: GqlEnvelope<unknown>;
+        }>({ query: SET_COMPONENT_DECISION, variables: { runId, signature, decision } });
+
+        return unwrap(response.componentExtractionSetComponentDecision);
     }
 }
 

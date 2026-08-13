@@ -36,6 +36,40 @@ const buildInject = (
 
 const slug = (signature: string): string => signature.replace(/[^a-zA-Z0-9_-]/g, "-");
 
+// Both images are reduced to this greyscale grid before differencing — small enough that aspect-ratio
+// and layout differences wash out, leaving a coarse "do these look alike" signal (W7.8's indicator).
+const SIMILARITY_EDGE = 64;
+
+/**
+ * A rough visual-similarity indicator in [0,1] between two PNGs: downscale both to a fixed greyscale
+ * grid and take the normalised mean absolute pixel difference (1 - diff). Deliberately crude — labelled
+ * an indicator, never a structural-similarity score. Returns null if either image can't be read.
+ */
+const computeSimilarity = async (a: Uint8Array, b: Uint8Array): Promise<number | null> => {
+    try {
+        const sharp = (await import("sharp")).default;
+        const toGrid = (bytes: Uint8Array): Promise<Buffer> =>
+            sharp(bytes)
+                .resize(SIMILARITY_EDGE, SIMILARITY_EDGE, { fit: "fill" })
+                .greyscale()
+                .raw()
+                .toBuffer();
+        const [gridA, gridB] = await Promise.all([toGrid(a), toGrid(b)]);
+        const length = Math.min(gridA.length, gridB.length);
+        if (length === 0) {
+            return null;
+        }
+        let total = 0;
+        for (let i = 0; i < length; i++) {
+            total += Math.abs(gridA[i] - gridB[i]);
+        }
+        const diff = total / (length * 255);
+        return Math.max(0, Math.min(1, 1 - diff));
+    } catch {
+        return null;
+    }
+};
+
 export interface RenderComponentInput {
     session: BrowserProvider.Session;
     runId: string;
@@ -45,12 +79,15 @@ export interface RenderComponentInput {
     /** The pinned theme's `--wby-*` token CSS, or "" to fall back to the site's active theme. */
     themeCss: string;
     component: { signature: string; name: string; source: string; css: string };
+    /** Blob key of the source section crop, for the visual-similarity indicator. Optional. */
+    sourceCropRef?: string;
 }
 
 export interface RenderedComponent {
     renderRef: string;
     width: number;
     height: number;
+    similarity: number | null;
 }
 
 /**
@@ -125,10 +162,20 @@ class ComponentRenderServiceImpl implements IComponentRenderService {
             return Result.fail(stored.error);
         }
 
+        // Best-effort similarity against the source crop — a missing crop just yields a null indicator.
+        let similarity: number | null = null;
+        if (input.sourceCropRef) {
+            const crop = await this.blobStore.get(input.sourceCropRef);
+            if (crop.isOk()) {
+                similarity = await computeSimilarity(rendered.image, crop.value);
+            }
+        }
+
         return Result.ok({
             renderRef: stored.value,
             width: rendered.width,
-            height: rendered.height
+            height: rendered.height,
+            similarity
         });
     }
 }

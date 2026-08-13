@@ -181,11 +181,21 @@ export interface ValidationResultDto {
     failures: string[];
 }
 
+export interface ComponentMemberDto {
+    url: string;
+    sectionIndex: number;
+    cropRef: string;
+}
+
 export interface GeneratedComponentDto {
     signature: string;
     name: string;
     type: string;
+    /** The generated JSX source and CSS — surfaced for "view code". */
+    source: string;
+    css: string;
     attempts: number;
+    members: ComponentMemberDto[];
     validation: {
         textPreservation: ValidationResultDto;
         contractConformance: ValidationResultDto;
@@ -198,6 +208,16 @@ export interface GenerateArtifactDto {
     failed: string[];
 }
 
+/** One planned component (subset), for the source crop the Generate view shows beside the render. */
+export interface PlannedComponentDto {
+    signature: string;
+    representativeCrop: { cropRef: string };
+}
+
+export interface PlanArtifactDto {
+    components: PlannedComponentDto[];
+}
+
 /** One generated component's rendered-screenshot result (W7.7), keyed to its cluster signature. */
 export interface RenderRecordDto {
     signature: string;
@@ -205,8 +225,16 @@ export interface RenderRecordDto {
     width: number;
     height: number;
     ok: boolean;
+    /** Rough visual-similarity indicator in [0,1] (1 = closest), or null if not computed. */
+    similarity: number | null;
 }
 
 export interface RenderArtifactDto {
     renders: RenderRecordDto[];
+}
+
+export type ComponentDecisionDto = "accepted" | "rejected";
+
+export interface DecisionsDto {
+    decisions: Record<string, ComponentDecisionDto>;
 }

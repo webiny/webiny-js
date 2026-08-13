@@ -127,6 +127,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         ): ComponentExtractionArtifactResponse!
         "The rendered-component screenshots for a run (W7.7), keyed to the current Generate version. Image refs are served by the run-image route."
         componentExtractionGetRenders(runId: ID!): ComponentExtractionArtifactResponse!
+        "The operator's accept/reject decisions on a run's generated components (W7.8), keyed by signature."
+        componentExtractionGetDecisions(runId: ID!): ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {
@@ -149,5 +151,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         ): ComponentExtractionRunResponse!
         "Render the run's generated components to screenshots for the Generate view (W7.7). Requires Generate to be done."
         componentExtractionRenderComponents(runId: ID!): ComponentExtractionTaskResponse!
+        "Set (or clear, with \"none\") the accept/reject decision on a generated component (W7.8). Returns the updated decision map."
+        componentExtractionSetComponentDecision(
+            runId: ID!
+            signature: String!
+            decision: String!
+        ): ComponentExtractionArtifactResponse!
     }
 `;

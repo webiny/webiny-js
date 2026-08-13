@@ -4,10 +4,13 @@ import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/featu
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
 import type {
     AssembleArtifact,
+    DecisionsArtifact,
     GenerateArtifact,
     PromoteArtifact,
     PromotedComponent
 } from "~/domain/artifacts.js";
+import { stageArtifactKey } from "~/constants.js";
+import { stageEntry } from "~/domain/ledger.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 /** Collision policy: keep both by renaming — suffix "(2)", "(3)", … until the name is free. */
@@ -69,12 +72,39 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             existing.isOk() ? existing.value.items.map(item => item.name) : []
         );
 
+        // The operator's accept/reject decisions (W7.8), keyed to the Generate version. When any decision
+        // exists, only accepted components are promoted; with none, every valid component is (as before).
+        const generateVersion = stageEntry(context.run.stages, "generate")?.stageVersion ?? 0;
+        const decisionsResult = await context.store.getJson<DecisionsArtifact>(
+            stageArtifactKey(context.run.id, "generate", generateVersion, "decisions")
+        );
+        const decisions =
+            decisionsResult.isOk() && decisionsResult.value ? decisionsResult.value.decisions : {};
+        const hasDecisions = Object.keys(decisions).length > 0;
+
         const promoted: PromotedComponent[] = [];
         const skipped: string[] = [];
         const total = generate.components.length;
 
         for (let index = 0; index < total; index++) {
             const component = generate.components[index];
+
+            // Honour the operator's decisions first: a rejected component is never promoted, and once any
+            // decision has been made, an undecided one is held back too (only explicit accepts promote).
+            const decision = decisions[component.signature];
+            if (decision === "rejected" || (hasDecisions && decision !== "accepted")) {
+                skipped.push(component.signature);
+                await context.progress({
+                    message: `Skipped ${component.name} — ${
+                        decision === "rejected"
+                            ? "rejected by operator"
+                            : "not accepted by operator"
+                    } — ${index + 1}/${total}`,
+                    current: index + 1,
+                    total
+                });
+                continue;
+            }
             // Gate promotion on the editability-critical checks only: text preservation (content is
             // intact) and contract conformance (every prop is exposed). Token binding is advisory — a
             // component that references a token outside the theme still renders and is editable, so it

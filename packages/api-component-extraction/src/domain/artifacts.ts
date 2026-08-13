@@ -252,6 +252,12 @@ export interface RenderRecord {
     width: number;
     height: number;
     ok: boolean;
+    /**
+     * A rough visual-similarity indicator in [0,1] (1 = closest) between the rendered component and its
+     * source section crop — greyscale, downscaled, normalised pixel difference. An indicator, not a
+     * structural-similarity score; null when either image was unavailable.
+     */
+    similarity: number | null;
 }
 
 /**
@@ -261,6 +267,19 @@ export interface RenderRecord {
  */
 export interface RenderArtifact {
     renders: RenderRecord[];
+}
+
+// ----- Component decisions (accept/reject, W7.8) -------------------------------------------------
+
+export type ComponentDecision = "accepted" | "rejected";
+
+/**
+ * The operator's accept/reject decisions on a run's generated components, keyed to the Generate stage
+ * version and by cluster signature. When any decision exists, Promote moves only the accepted ones;
+ * with no decisions it falls back to promoting every component that passed validation.
+ */
+export interface DecisionsArtifact {
+    decisions: Record<string, ComponentDecision>;
 }
 
 // ----- Assemble (output) -------------------------------------------------------------------------

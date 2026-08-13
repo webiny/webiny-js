@@ -6,7 +6,13 @@ import { ComponentExtractionPermissions } from "~/features/permissions.js";
 import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
-import type { CaptureArtifact, DiscoverArtifact, DiscoveredUrl } from "~/domain/artifacts.js";
+import type {
+    CaptureArtifact,
+    ComponentDecision,
+    DecisionsArtifact,
+    DiscoverArtifact,
+    DiscoveredUrl
+} from "~/domain/artifacts.js";
 import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
@@ -487,6 +493,89 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     );
                     const artifact = await store.getJson(key);
                     return artifact.isOk() ? artifact.value : null;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetDecisions",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const generate = stageEntry(runResult.value.stages, "generate");
+                    if (!generate) {
+                        return { decisions: {} };
+                    }
+                    const key = stageArtifactKey(
+                        args.runId,
+                        "generate",
+                        generate.stageVersion,
+                        "decisions"
+                    );
+                    const artifact = await store.getJson<DecisionsArtifact>(key);
+                    return artifact.isOk() && artifact.value ? artifact.value : { decisions: {} };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionSetComponentDecision",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signature: string; decision: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to edit component extraction.");
+                    }
+                    if (!["accepted", "rejected", "none"].includes(args.decision)) {
+                        throw new Error(`Unknown decision "${args.decision}".`);
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const generate = stageEntry(runResult.value.stages, "generate");
+                    if (!generate || !generate.artifacts.components) {
+                        throw new Error("Generate has not produced components to decide on.");
+                    }
+                    const key = stageArtifactKey(
+                        args.runId,
+                        "generate",
+                        generate.stageVersion,
+                        "decisions"
+                    );
+                    const current = await store.getJson<DecisionsArtifact>(key);
+                    const decisions: Record<string, ComponentDecision> =
+                        current.isOk() && current.value ? { ...current.value.decisions } : {};
+
+                    if (args.decision === "none") {
+                        delete decisions[args.signature];
+                    } else {
+                        decisions[args.signature] = args.decision as ComponentDecision;
+                    }
+
+                    const updated: DecisionsArtifact = { decisions };
+                    const written = await store.putJson(key, updated);
+                    if (written.isFail()) {
+                        throw written.error;
+                    }
+                    return updated;
                 });
         }
     });

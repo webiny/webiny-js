@@ -44,6 +44,34 @@ export const GET_RENDERS = /* GraphQL */ `
     }
 `;
 
+export const GET_DECISIONS = /* GraphQL */ `
+    query GetComponentExtractionDecisions($runId: ID!) {
+        componentExtractionGetDecisions(runId: $runId) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+export const SET_COMPONENT_DECISION = /* GraphQL */ `
+    mutation SetComponentExtractionDecision($runId: ID!, $signature: String!, $decision: String!) {
+        componentExtractionSetComponentDecision(
+            runId: $runId
+            signature: $signature
+            decision: $decision
+        ) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const RENDER_COMPONENTS = /* GraphQL */ `
     mutation RenderComponentExtractionComponents($runId: ID!) {
         componentExtractionRenderComponents(runId: $runId) {
