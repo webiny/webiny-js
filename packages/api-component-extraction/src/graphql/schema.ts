@@ -4,7 +4,9 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { componentExtractionTypeDefs } from "./typeDefs.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
 import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
-import { initLedger, stageEntry } from "~/domain/ledger.js";
+import { StageArtifactStore } from "~/domain/stage.js";
+import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
+import type { DiscoverArtifact, DiscoveredUrl } from "~/domain/artifacts.js";
 import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
@@ -294,6 +296,100 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw runsResult.error;
                     }
                     return runsResult.value.runs;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetStageArtifact",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; stage: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    if (!isStage(args.stage)) {
+                        throw new Error(`Unknown stage "${args.stage}".`);
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const entry = stageEntry(runResult.value.stages, args.stage);
+                    // A stage stores its output under a single artifact key; return its contents verbatim.
+                    const key = entry ? Object.values(entry.artifacts)[0] : undefined;
+                    if (!key) {
+                        return null;
+                    }
+                    const artifact = await store.getJson(key);
+                    return artifact.isOk() ? artifact.value : null;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionUpdateDiscoverUrls",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: { runId: string; urls: Array<{ url: string; group?: string }> };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to edit component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    const discover = stageEntry(run.stages, "discover");
+                    const discoverKey = discover ? discover.artifacts.urls : undefined;
+                    if (!discover || discover.status !== "done" || !discoverKey) {
+                        throw new Error("Discover has not produced a URL list to edit.");
+                    }
+
+                    const artifactResult = await store.getJson<DiscoverArtifact>(discoverKey);
+                    if (artifactResult.isFail() || !artifactResult.value) {
+                        throw new Error("The discover artifact could not be read.");
+                    }
+
+                    const urls: DiscoveredUrl[] = args.urls.map(item => ({
+                        url: item.url,
+                        group: item.group ?? "manual"
+                    }));
+                    const updated: DiscoverArtifact = {
+                        ...artifactResult.value,
+                        groups: [...new Set(urls.map(item => item.group))],
+                        urls
+                    };
+                    const written = await store.putJson(discoverKey, updated);
+                    if (written.isFail()) {
+                        throw written.error;
+                    }
+
+                    // Editing Discover's output invalidates Capture and everything downstream.
+                    const stages = markStaleFrom(run.stages, "capture");
+                    const persisted = await runRepository.update(run.id, {
+                        stages,
+                        counts: { ...run.counts, pages: urls.length }
+                    });
+                    if (persisted.isFail()) {
+                        throw persisted.error;
+                    }
+                    return persisted.value;
                 });
         }
     });

@@ -22,6 +22,20 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         error: String
         "The background task id of this stage's latest run, for deep-linking to its logs."
         taskId: String
+        "Model-usage totals for a model-backed stage (input/output tokens, calls, latency); null otherwise."
+        modelUsage: JSON
+    }
+
+    type ComponentExtractionArtifactResponse {
+        "The stage's structured artifact (capture pages, segment sections, clusters, …), or null if none."
+        data: JSON
+        error: ComponentExtractionError
+    }
+
+    "One discovered URL, as edited on the Discover gate before Capture consumes the list."
+    input ComponentExtractionDiscoverUrlInput {
+        url: String!
+        group: String
     }
 
     type ComponentExtractionRun {
@@ -106,6 +120,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionListRuns(jobId: ID!): ComponentExtractionRunListResponse!
         "Read a run, including its nine-stage ledger. The polling fallback to the websocket stream."
         componentExtractionGetRun(runId: ID!): ComponentExtractionRunResponse!
+        "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route."
+        componentExtractionGetStageArtifact(
+            runId: ID!
+            stage: String!
+        ): ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {
@@ -116,5 +135,10 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionCreateRun(jobId: ID!, note: String): ComponentExtractionRunResponse!
         "Trigger one stage of a run. Rejected if the stage's predecessor is not yet done."
         componentExtractionRunStage(runId: ID!, stage: String!): ComponentExtractionTaskResponse!
+        "Edit the discovered URL list before Capture. Marks Capture and everything downstream stale."
+        componentExtractionUpdateDiscoverUrls(
+            runId: ID!
+            urls: [ComponentExtractionDiscoverUrlInput!]!
+        ): ComponentExtractionRunResponse!
     }
 `;

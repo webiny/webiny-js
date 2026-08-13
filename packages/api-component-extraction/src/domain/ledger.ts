@@ -87,6 +87,19 @@ export const markStageDone = (
     });
 };
 
+/**
+ * Mark a stage and everything after it stale — for editing an upstream stage's output (e.g. the Discover
+ * URL list) without re-running it. A stage that never ran stays pending; there is nothing to invalidate.
+ */
+export const markStaleFrom = (ledger: StageLedgerEntry[], stage: Stage): StageLedgerEntry[] => {
+    const affected = new Set<Stage>([stage, ...stagesAfter(stage)]);
+    return ledger.map(entry =>
+        affected.has(entry.stage) && entry.status !== "pending"
+            ? { ...entry, status: "stale" }
+            : entry
+    );
+};
+
 /** Mark a stage failed. No version bump and no cascade — a failed stage produced no new output. */
 export const markStageFailed = (
     ledger: StageLedgerEntry[],
