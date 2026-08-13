@@ -17,6 +17,7 @@ import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
     previousStage,
+    REGENERATE_COMPONENT_TASK_ID,
     RENDER_COMPONENTS_TASK_ID,
     stageArtifactKey,
     STAGES,
@@ -614,6 +615,56 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
 
                     return { taskId: triggered.value.id, runId: run.id, stage: "render" };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionRegenerateComponent",
+        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: { runId: string; signature: string; instruction: string };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const instruction = args.instruction.trim();
+                    if (!instruction) {
+                        throw new Error("An instruction is required to regenerate a component.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    const generate = stageEntry(run.stages, "generate");
+                    if (!generate || !generate.artifacts.components) {
+                        throw new Error("Generate has not produced components to refine.");
+                    }
+
+                    const triggered = await taskService.trigger<{
+                        runId: string;
+                        signature: string;
+                        instruction: string;
+                    }>({
+                        definition: REGENERATE_COMPONENT_TASK_ID,
+                        name: `Component extraction — regenerate (run ${run.runNumber})`,
+                        input: { runId: run.id, signature: args.signature, instruction }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+
+                    return { taskId: triggered.value.id, runId: run.id, stage: "regenerate" };
                 });
         }
     });

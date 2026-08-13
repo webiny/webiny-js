@@ -73,6 +73,13 @@ export const stageTaskId = (stage: Stage): string => `componentExtraction${capit
 export const RENDER_COMPONENTS_TASK_ID = "componentExtractionRenderComponents";
 
 /**
+ * The background-task id for regenerating a single generated component (W7.8) via the refine path —
+ * an AI edit of the current source/css from an operator instruction, re-validated, replacing that one
+ * component in the Generate artifact. Model-backed, so it runs as a task rather than inline.
+ */
+export const REGENERATE_COMPONENT_TASK_ID = "componentExtractionRegenerateComponent";
+
+/**
  * Deterministic artifact key. Includes the run, the stage and the stage version, so re-running a stage
  * writes to a fresh key (its version bumped) and a stale downstream artifact never collides with a new
  * one. `name` distinguishes a stage's multiple artifacts (e.g. a page's pruned tree vs its raw DOM).

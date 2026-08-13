@@ -42,6 +42,12 @@ export interface IComponentExtractionGateway {
     getDecisions(runId: string): Promise<unknown>;
     /** Set (or clear, with "none") a component's decision; returns the updated decision map. */
     setComponentDecision(runId: string, signature: string, decision: string): Promise<unknown>;
+    /** Regenerate one component from an instruction via the refine path (W7.8). */
+    regenerateComponent(
+        runId: string,
+        signature: string,
+        instruction: string
+    ): Promise<StageTriggerResult>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

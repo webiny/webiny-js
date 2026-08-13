@@ -22,6 +22,7 @@ import {
     LIST_JOBS,
     LIST_RUNS,
     LIST_THEMES,
+    REGENERATE_COMPONENT,
     RENDER_COMPONENTS,
     RUN_STAGE,
     SET_COMPONENT_DECISION,
@@ -193,6 +194,18 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: SET_COMPONENT_DECISION, variables: { runId, signature, decision } });
 
         return unwrap(response.componentExtractionSetComponentDecision);
+    }
+
+    async regenerateComponent(
+        runId: string,
+        signature: string,
+        instruction: string
+    ): Promise<StageTriggerResult> {
+        const response = await this.client.execute<{
+            componentExtractionRegenerateComponent: GqlEnvelope<StageTriggerResult>;
+        }>({ query: REGENERATE_COMPONENT, variables: { runId, signature, instruction } });
+
+        return unwrap(response.componentExtractionRegenerateComponent);
     }
 }
 

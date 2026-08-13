@@ -157,5 +157,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             signature: String!
             decision: String!
         ): ComponentExtractionArtifactResponse!
+        "Regenerate one generated component from an instruction via the refine path (W7.8), re-validating and replacing it."
+        componentExtractionRegenerateComponent(
+            runId: ID!
+            signature: String!
+            instruction: String!
+        ): ComponentExtractionTaskResponse!
     }
 `;

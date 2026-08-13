@@ -4,6 +4,7 @@ import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
 import type {
     DecisionsDto,
+    GenerateArtifactDto,
     PlanArtifactDto,
     RenderArtifactDto,
     RunDto,
@@ -28,11 +29,15 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         renders: null,
         rendering: false,
         decisions: {},
-        sourceCrops: {}
+        sourceCrops: {},
+        regenerating: []
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
     private loadedLogsTaskId: string | null = null;
+
+    /** Pre-refine source per signature, so a completed regenerate is detected when the source changes. */
+    private regenerateBaseline: Record<string, string> = {};
 
     constructor(private gateway: ComponentExtractionGateway.Interface) {
         makeAutoObservable(this);
@@ -91,6 +96,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 // While a render pass is in flight, poll its results so thumbnails appear when ready.
                 if (stage === "generate" && this.vm.rendering) {
                     await this.loadRenders(run);
+                }
+                // While a regenerate is in flight, poll the artifact so the refined component lands.
+                if (stage === "generate" && this.vm.regenerating.length > 0) {
+                    await this.pollRegenerations(run);
                 }
             }
         } catch (error) {
@@ -210,6 +219,48 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         } catch (error) {
             runInAction(() => {
                 this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    async regenerateComponent(signature: string, instruction: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        const trimmed = instruction.trim();
+        if (!runId || !trimmed) {
+            return;
+        }
+        // Remember the current source so the refresh loop can tell when the refined version lands.
+        const artifact = this.vm.artifact as GenerateArtifactDto | null;
+        const current = artifact?.components.find(component => component.signature === signature);
+        this.regenerateBaseline[signature] = current?.source ?? "";
+        runInAction(() => {
+            this.vm.regenerating = [...new Set([...this.vm.regenerating, signature])];
+            this.vm.error = null;
+        });
+        try {
+            await this.gateway.regenerateComponent(runId, signature, trimmed);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.regenerating = this.vm.regenerating.filter(item => item !== signature);
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    /**
+     * While a regenerate is in flight, reload the Generate artifact and clear each signature whose source
+     * has changed — the refine task replaces the component in place, so a changed source means it's done.
+     */
+    private async pollRegenerations(run: RunDto): Promise<void> {
+        await this.loadArtifact(run, "generate");
+        const artifact = this.vm.artifact as GenerateArtifactDto | null;
+        const stillRunning = this.vm.regenerating.filter(signature => {
+            const component = artifact?.components.find(item => item.signature === signature);
+            return !component || component.source === this.regenerateBaseline[signature];
+        });
+        if (stillRunning.length !== this.vm.regenerating.length) {
+            runInAction(() => {
+                this.vm.regenerating = stillRunning;
             });
         }
     }

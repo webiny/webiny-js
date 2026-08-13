@@ -72,6 +72,30 @@ export const SET_COMPONENT_DECISION = /* GraphQL */ `
     }
 `;
 
+export const REGENERATE_COMPONENT = /* GraphQL */ `
+    mutation RegenerateComponentExtractionComponent(
+        $runId: ID!
+        $signature: String!
+        $instruction: String!
+    ) {
+        componentExtractionRegenerateComponent(
+            runId: $runId
+            signature: $signature
+            instruction: $instruction
+        ) {
+            data {
+                taskId
+                runId
+                stage
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const RENDER_COMPONENTS = /* GraphQL */ `
     mutation RenderComponentExtractionComponents($runId: ID!) {
         componentExtractionRenderComponents(runId: $runId) {

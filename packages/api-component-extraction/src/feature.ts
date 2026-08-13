@@ -41,6 +41,7 @@ import { ThemeCssResolverService } from "~/features/shared/themeCss.js";
 import { PreviewDomainResolverService } from "~/features/shared/previewDomain.js";
 import { ComponentRenderServiceImplementation } from "~/features/shared/ComponentRenderService.js";
 import { RenderComponentsTask } from "~/features/render/RenderComponentsTask.js";
+import { RegenerateComponentTask } from "~/features/render/RegenerateComponentTask.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { RunImageRoute } from "~/rest/RunImageRoute.js";
@@ -90,6 +91,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(PreviewDomainResolverService);
         container.register(ComponentRenderServiceImplementation);
         container.register(RenderComponentsTask);
+        container.register(RegenerateComponentTask);
 
         // Shared services for the model-backed stages: manifest resolution (Cluster, Plan) and the AI
         // provider selection (Classify, Plan, Generate).

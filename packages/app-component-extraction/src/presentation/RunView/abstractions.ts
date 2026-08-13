@@ -36,6 +36,8 @@ export interface IRunViewVm {
     decisions: Record<string, ComponentDecisionDto>;
     /** Source section crop ref per component signature, from the Plan artifact. */
     sourceCrops: Record<string, string>;
+    /** Signatures of components whose regenerate (refine) is in flight (W7.8). */
+    regenerating: string[];
 }
 
 export interface IRunViewPresenter {
@@ -54,6 +56,8 @@ export interface IRunViewPresenter {
     renderComponents(): Promise<void>;
     /** Set (or clear, with "none") a generated component's accept/reject decision (W7.8). */
     setDecision(signature: string, decision: string): Promise<void>;
+    /** Regenerate a component from an instruction via the refine path (W7.8). */
+    regenerateComponent(signature: string, instruction: string): Promise<void>;
 }
 
 export const RunViewPresenter = createAbstraction<IRunViewPresenter>(

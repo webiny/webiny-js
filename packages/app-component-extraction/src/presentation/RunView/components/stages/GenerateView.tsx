@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, Heading, Tag, Text } from "@webiny/admin-ui";
+import { Button, Heading, Input, Tag, Text } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
@@ -68,6 +68,7 @@ const GenerateCard = ({
     render,
     sourceCropRef,
     decision,
+    regenerating,
     runId,
     onViewCode
 }: {
@@ -76,11 +77,24 @@ const GenerateCard = ({
     render: RenderRecordDto | undefined;
     sourceCropRef: string | undefined;
     decision: ComponentDecisionDto | undefined;
+    regenerating: boolean;
     runId: string;
     onViewCode: () => void;
 }) => {
     const pageCount = pageCountOf(component);
     const exhausted = !allPassed(component);
+    const [showInstruction, setShowInstruction] = useState(false);
+    const [instruction, setInstruction] = useState("");
+
+    const submitRegenerate = () => {
+        const text = instruction.trim();
+        if (!text) {
+            return;
+        }
+        void presenter.regenerateComponent(component.signature, text);
+        setInstruction("");
+        setShowInstruction(false);
+    };
 
     // Accepted / rejected cards carry the decision as a border (per the screen specification).
     const border =
@@ -173,20 +187,53 @@ const GenerateCard = ({
                 </div>
             </div>
 
-            <div className="flex items-center gap-sm px-md py-sm border-t border-neutral-dimmed">
-                <Button
-                    variant={decision === "accepted" ? "primary" : "secondary"}
-                    size="sm"
-                    text="Accept"
-                    onClick={() => toggle("accepted")}
-                />
-                <Button
-                    variant={decision === "rejected" ? "primary" : "secondary"}
-                    size="sm"
-                    text="Reject"
-                    onClick={() => toggle("rejected")}
-                />
-                <Button variant="tertiary" size="sm" text="View code" onClick={onViewCode} />
+            <div className="flex flex-col gap-sm px-md py-sm border-t border-neutral-dimmed">
+                <div className="flex items-center gap-sm">
+                    <Button
+                        variant={decision === "accepted" ? "primary" : "secondary"}
+                        size="sm"
+                        text="Accept"
+                        onClick={() => toggle("accepted")}
+                    />
+                    <Button
+                        variant={decision === "rejected" ? "primary" : "secondary"}
+                        size="sm"
+                        text="Reject"
+                        onClick={() => toggle("rejected")}
+                    />
+                    <Button variant="tertiary" size="sm" text="View code" onClick={onViewCode} />
+                    <div className="flex-1" />
+                    <Button
+                        variant="tertiary"
+                        size="sm"
+                        text={
+                            regenerating
+                                ? "Regenerating…"
+                                : showInstruction
+                                  ? "Cancel"
+                                  : "Regenerate"
+                        }
+                        disabled={regenerating}
+                        onClick={() => setShowInstruction(open => !open)}
+                    />
+                </div>
+                {showInstruction && !regenerating ? (
+                    <div className="flex items-center gap-sm">
+                        <Input
+                            value={instruction}
+                            onChange={(value: string) => setInstruction(value)}
+                            placeholder="What should change? e.g. make the heading larger"
+                            onEnter={submitRegenerate}
+                        />
+                        <Button
+                            variant="primary"
+                            size="sm"
+                            text="Submit"
+                            disabled={!instruction.trim()}
+                            onClick={submitRegenerate}
+                        />
+                    </div>
+                ) : null}
             </div>
         </div>
     );
@@ -256,6 +303,7 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                             render={rendersBySignature.get(component.signature)}
                             sourceCropRef={vm.sourceCrops[component.signature]}
                             decision={vm.decisions[component.signature]}
+                            regenerating={vm.regenerating.includes(component.signature)}
                             runId={runId}
                             onViewCode={() => setCodeFor(component)}
                         />
