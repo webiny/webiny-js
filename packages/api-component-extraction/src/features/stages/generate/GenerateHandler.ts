@@ -21,6 +21,10 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 
 const DESKTOP_WIDTH = 1440;
 const MAX_ATTEMPTS = 3;
+// How many of a section's text fragments the prompt asks the model to preserve. Text preservation is
+// validated against this SAME slice — validating against text the model was never given would fail every
+// text-heavy section on content it never saw.
+const PRESERVED_TEXT_LIMIT = 30;
 // One component can take up to MAX_ATTEMPTS model calls plus an image crop — well over a minute on a slow
 // model. The margin MUST exceed that worst case: the loop only checks the timeout between components, so
 // if a component starts with less runway than it needs, the Lambda is hard-killed mid-run and the stage
@@ -62,7 +66,7 @@ const buildPrompt = (component: PlannedComponent): string => {
             : ["- use semantic theme tokens for colours, spacing and type"]),
         "",
         "Preserve this text content exactly:",
-        ...component.sourceTexts.slice(0, 30).map(text => `- ${text}`)
+        ...component.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT).map(text => `- ${text}`)
     ].join("\n");
 };
 
@@ -229,7 +233,10 @@ class GenerateHandlerImpl implements StageHandler.Interface {
 
             const output = generated.value;
             const validation = {
-                textPreservation: validateTextPreservation(planned.sourceTexts, output.source),
+                textPreservation: validateTextPreservation(
+                    planned.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT),
+                    output.source
+                ),
                 contractConformance: validateContractConformance(
                     planned.props.map(prop => prop.name),
                     output.source

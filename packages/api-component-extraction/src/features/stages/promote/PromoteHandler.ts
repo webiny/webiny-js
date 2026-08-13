@@ -79,15 +79,29 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             // intact) and contract conformance (every prop is exposed). Token binding is advisory — a
             // component that references a token outside the theme still renders and is editable, so it
             // should reach the Library flagged, not be silently dropped.
-            const passed =
-                component.validation.textPreservation.passed &&
-                component.validation.contractConformance.passed;
-            if (!passed) {
+            const textCheck = component.validation.textPreservation;
+            const propsCheck = component.validation.contractConformance;
+            if (!textCheck.passed || !propsCheck.passed) {
                 skipped.push(component.signature);
+                // A specific reason on the trail, so the user can tell a real problem from a strict check.
+                const reasons: string[] = [];
+                if (!textCheck.passed) {
+                    reasons.push(`${textCheck.failures.length} text fragment(s) not reproduced`);
+                }
+                if (!propsCheck.passed) {
+                    reasons.push(
+                        `missing prop(s): ${propsCheck.failures
+                            .map(failure => failure.replace(/^missing prop:\s*/, ""))
+                            .join(", ")}`
+                    );
+                }
                 await context.progress({
-                    message: `Skipped ${component.name} (content or props did not validate) — ${index + 1}/${total}`,
+                    message: `Skipped ${component.name} — ${reasons.join("; ")} — ${index + 1}/${total}`,
                     current: index + 1,
                     total
+                });
+                await context.log.info({
+                    message: `"${component.name}" not promoted. ${[...textCheck.failures, ...propsCheck.failures].slice(0, 8).join(" | ")}`
                 });
                 continue;
             }
