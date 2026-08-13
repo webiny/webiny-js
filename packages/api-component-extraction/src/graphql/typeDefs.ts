@@ -140,5 +140,10 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             runId: ID!
             urls: [ComponentExtractionDiscoverUrlInput!]!
         ): ComponentExtractionRunResponse!
+        "Drop captured (or failed) pages from a run so they don't flow into Segment. Marks Segment and everything downstream stale."
+        componentExtractionExcludeCapturedPages(
+            runId: ID!
+            urls: [String!]!
+        ): ComponentExtractionRunResponse!
     }
 `;

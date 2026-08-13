@@ -33,6 +33,8 @@ export interface IRunViewPresenter {
     applyProgress(stage: string, progress: StageProgress): void;
     /** Rewrite Discover's URL list, then refresh the run and the open artifact. */
     updateDiscoverUrls(urls: Array<{ url: string; group?: string }>): Promise<void>;
+    /** Drop captured/failed pages, then refresh the run and the open artifact. */
+    excludeCapturedPages(urls: string[]): Promise<void>;
 }
 
 export const RunViewPresenter = createAbstraction<IRunViewPresenter>(

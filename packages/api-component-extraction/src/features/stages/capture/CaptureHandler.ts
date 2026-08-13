@@ -266,13 +266,19 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         return {
             url,
             finalUrl: desktop.finalUrl,
+            title: desktop.result.title,
             viewport: { x: 0, y: 0, width: DESKTOP.width, height: DESKTOP.height },
             documentHeight: desktop.result.documentHeight,
             treeRef: treeStored.value,
             screenshotRef,
             rawDomRef: domStored.value,
             narrowScreenshotRef,
-            thumbnailRef
+            thumbnailRef,
+            warnings: {
+                consentPresent: desktop.result.consentPresent,
+                brokenImages: desktop.result.imagesBroken,
+                totalImages: desktop.result.imagesTotal
+            }
         };
     }
 }

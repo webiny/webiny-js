@@ -6,7 +6,7 @@ import { ComponentExtractionPermissions } from "~/features/permissions.js";
 import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
-import type { DiscoverArtifact, DiscoveredUrl } from "~/domain/artifacts.js";
+import type { CaptureArtifact, DiscoverArtifact, DiscoveredUrl } from "~/domain/artifacts.js";
 import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
@@ -385,6 +385,67 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     const persisted = await runRepository.update(run.id, {
                         stages,
                         counts: { ...run.counts, pages: urls.length }
+                    });
+                    if (persisted.isFail()) {
+                        throw persisted.error;
+                    }
+                    return persisted.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionExcludeCapturedPages",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string; urls: string[] } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to edit component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    const capture = stageEntry(run.stages, "capture");
+                    const captureKey = capture ? capture.artifacts.pages : undefined;
+                    if (!capture || capture.status !== "done" || !captureKey) {
+                        throw new Error("Capture has not produced pages to edit.");
+                    }
+
+                    const artifactResult = await store.getJson<CaptureArtifact>(captureKey);
+                    if (artifactResult.isFail() || !artifactResult.value) {
+                        throw new Error("The capture artifact could not be read.");
+                    }
+
+                    // Drop the excluded URLs from both the captured pages and the failed list, so neither
+                    // flows downstream. Blobs are left to the job's retention TTL rather than deleted here.
+                    const excluded = new Set(args.urls);
+                    const artifact = artifactResult.value;
+                    const pages = artifact.pages.filter(page => !excluded.has(page.url));
+                    const failed = artifact.failed.filter(url => !excluded.has(url));
+                    if (pages.length === 0) {
+                        throw new Error(
+                            "Excluding these pages would leave the run with nothing to segment."
+                        );
+                    }
+                    const updated: CaptureArtifact = { ...artifact, pages, failed };
+                    const written = await store.putJson(captureKey, updated);
+                    if (written.isFail()) {
+                        throw written.error;
+                    }
+
+                    // Capture itself stays done (fewer pages); Segment and everything after must re-run.
+                    const stages = markStaleFrom(run.stages, "segment");
+                    const persisted = await runRepository.update(run.id, {
+                        stages,
+                        counts: { ...run.counts, pages: pages.length }
                     });
                     if (persisted.isFail()) {
                         throw persisted.error;

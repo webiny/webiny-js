@@ -116,13 +116,23 @@ export interface DiscoverArtifactDto {
     urls: DiscoverUrlDto[];
 }
 
+/** Capture-time warnings on a page. Optional — runs captured before this shipped won't carry it. */
+export interface CaptureWarningsDto {
+    consentPresent: boolean;
+    brokenImages: number;
+    totalImages: number;
+}
+
 export interface CapturePageDto {
     url: string;
     finalUrl: string;
+    /** The page's `<title>`; may be absent on older runs. */
+    title?: string;
     documentHeight: number;
     screenshotRef: string;
     narrowScreenshotRef: string;
     thumbnailRef: string;
+    warnings?: CaptureWarningsDto;
 }
 
 export interface CaptureArtifactDto {

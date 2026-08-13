@@ -45,9 +45,20 @@ export interface CapturedNode {
     children: CapturedNode[];
 }
 
+/** Signals observed while a page was captured, surfaced as warnings on the Capture grid. */
+export interface CaptureWarnings {
+    /** A cookie/consent overlay was still present after the visit sequence (dismissal likely failed). */
+    consentPresent: boolean;
+    /** Broken `<img>` elements (loaded, zero natural size) at capture time, and the total on the page. */
+    brokenImages: number;
+    totalImages: number;
+}
+
 export interface CapturedPage {
     url: string;
     finalUrl: string;
+    /** The page's `<title>`, so the capture grid reads by name rather than by path. */
+    title: string;
     viewport: Box;
     documentHeight: number;
     /** Blob keys for this page's pruned tree, full-page desktop screenshot and compressed raw DOM. */
@@ -58,6 +69,8 @@ export interface CapturedPage {
     narrowScreenshotRef: string;
     /** A small downscaled derivative of the desktop screenshot, so the capture grid isn't tens of MB. */
     thumbnailRef: string;
+    /** Capture-time warnings (consent overlay, broken images) for the visibility view. */
+    warnings: CaptureWarnings;
 }
 
 export interface CaptureArtifact {

@@ -32,6 +32,8 @@ export interface IComponentExtractionGateway {
         runId: string,
         urls: Array<{ url: string; group?: string }>
     ): Promise<RunDto>;
+    /** Drop captured/failed pages from a run; returns the run with Segment+downstream marked stale. */
+    excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

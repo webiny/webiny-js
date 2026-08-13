@@ -142,6 +142,24 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    async excludeCapturedPages(urls: string[]): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId || urls.length === 0) {
+            return;
+        }
+        try {
+            const run = await this.gateway.excludeCapturedPages(runId, urls);
+            runInAction(() => {
+                this.vm.run = run;
+            });
+            await this.loadArtifact(run, "capture");
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
     /** Load the selected stage's structured artifact for its visibility view. */
     private async loadArtifact(run: RunDto, stage: string) {
         const entry = stageEntry(run, stage);

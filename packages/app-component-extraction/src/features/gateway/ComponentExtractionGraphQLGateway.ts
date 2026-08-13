@@ -12,6 +12,7 @@ import type {
 import {
     CREATE_JOB,
     CREATE_RUN,
+    EXCLUDE_CAPTURED_PAGES,
     GET_JOB,
     GET_RUN,
     GET_STAGE_ARTIFACT,
@@ -144,6 +145,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: UPDATE_DISCOVER_URLS, variables: { runId, urls } });
 
         return unwrap(response.componentExtractionUpdateDiscoverUrls);
+    }
+
+    async excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto> {
+        const response = await this.client.execute<{
+            componentExtractionExcludeCapturedPages: GqlEnvelope<RunDto>;
+        }>({ query: EXCLUDE_CAPTURED_PAGES, variables: { runId, urls } });
+
+        return unwrap(response.componentExtractionExcludeCapturedPages);
     }
 }
 

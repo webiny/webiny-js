@@ -61,6 +61,20 @@ export const UPDATE_DISCOVER_URLS = /* GraphQL */ `
     }
 `;
 
+export const EXCLUDE_CAPTURED_PAGES = /* GraphQL */ `
+    mutation ExcludeComponentExtractionCapturedPages($runId: ID!, $urls: [String!]!) {
+        componentExtractionExcludeCapturedPages(runId: $runId, urls: $urls) {
+            data {
+                ${RUN_FIELDS}
+            }
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 // A stage's activity trail. It lives in the task OUTPUT (a JSON field), not the background-task LOG:
 // the log record replaces its items on every write (only the last survives), so it can't hold a trail.
 // The runner accumulates the trail in output.activity, and this reads it back by the stage's task id —
