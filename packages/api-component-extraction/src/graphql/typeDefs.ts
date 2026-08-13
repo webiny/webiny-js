@@ -129,6 +129,10 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionGetRenders(runId: ID!): ComponentExtractionArtifactResponse!
         "The operator's accept/reject decisions on a run's generated components (W7.8), keyed by signature."
         componentExtractionGetDecisions(runId: ID!): ComponentExtractionArtifactResponse!
+        "A run's individual model calls (W7.9): stage, call name, model id, tokens in/out, latency, ok."
+        componentExtractionListModelCalls(runId: ID!): ComponentExtractionArtifactResponse!
+        "Projected generation cost for a run's plan (W7.9): component count × mean tokens/generate-call from prior runs of the job."
+        componentExtractionProjectPlanCost(runId: ID!): ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {

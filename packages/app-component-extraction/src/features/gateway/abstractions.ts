@@ -48,6 +48,10 @@ export interface IComponentExtractionGateway {
         signature: string,
         instruction: string
     ): Promise<StageTriggerResult>;
+    /** A run's individual model calls, for the token panel (W7.9). */
+    listModelCalls(runId: string): Promise<unknown>;
+    /** The projected generation cost for a run's plan (W7.9). */
+    projectPlanCost(runId: string): Promise<unknown>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

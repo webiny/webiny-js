@@ -44,6 +44,30 @@ export const GET_RENDERS = /* GraphQL */ `
     }
 `;
 
+export const LIST_MODEL_CALLS = /* GraphQL */ `
+    query ListComponentExtractionModelCalls($runId: ID!) {
+        componentExtractionListModelCalls(runId: $runId) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
+export const PROJECT_PLAN_COST = /* GraphQL */ `
+    query ProjectComponentExtractionPlanCost($runId: ID!) {
+        componentExtractionProjectPlanCost(runId: $runId) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;
+
 export const GET_DECISIONS = /* GraphQL */ `
     query GetComponentExtractionDecisions($runId: ID!) {
         componentExtractionGetDecisions(runId: $runId) {

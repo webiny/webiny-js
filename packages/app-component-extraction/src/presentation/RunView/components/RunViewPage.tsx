@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { DiContainerProvider, useContainer, useFeature, useRoute } from "@webiny/app";
 import { createReactiveComponent, useRouter } from "@webiny/app-admin";
 import {
+    Button,
     Heading,
     IconButton,
     OverlayLoader,
@@ -15,6 +16,7 @@ import { ReactComponent as ArrowBackIcon } from "@webiny/icons/arrow_back.svg";
 import { RunViewFeature } from "../feature.js";
 import { StageList } from "./StageList.js";
 import { ArtifactPanel } from "./ArtifactPanel.js";
+import { TokenPanel } from "./TokenPanel.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { progressStateOf } from "~/shared/ledger.js";
 import {
@@ -113,7 +115,7 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                     onClick={() => goToRoute(Routes.List)}
                     aria-label="Back to extractions"
                 />
-                <div className="flex flex-col min-w-0">
+                <div className="flex flex-col min-w-0 flex-1">
                     <Heading level={6}>
                         {vm.job ? vm.job.name : "Extraction"}
                         {run ? ` — run ${run.runNumber}` : ""}
@@ -126,6 +128,14 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                         </Text>
                     ) : null}
                 </div>
+                {run ? (
+                    <Button
+                        variant={vm.showTokens ? "primary" : "secondary"}
+                        size="sm"
+                        text="Token usage"
+                        onClick={() => presenter.toggleTokens()}
+                    />
+                ) : null}
             </div>
             <Separator />
 
@@ -146,7 +156,11 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                     <StageList presenter={presenter} />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <ArtifactPanel presenter={presenter} />
+                    {vm.showTokens ? (
+                        <TokenPanel presenter={presenter} />
+                    ) : (
+                        <ArtifactPanel presenter={presenter} />
+                    )}
                 </div>
             </div>
         </div>

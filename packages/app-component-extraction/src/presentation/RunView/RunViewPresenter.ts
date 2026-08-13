@@ -5,7 +5,9 @@ import { currentStage, stageEntry } from "~/shared/ledger.js";
 import type {
     DecisionsDto,
     GenerateArtifactDto,
+    ModelCallDto,
     PlanArtifactDto,
+    PlanCostProjectionDto,
     RenderArtifactDto,
     RunDto,
     StageProgress
@@ -30,7 +32,11 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         rendering: false,
         decisions: {},
         sourceCrops: {},
-        regenerating: []
+        regenerating: [],
+        showTokens: false,
+        modelCalls: null,
+        modelCallsLoading: false,
+        planProjection: null
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -265,6 +271,51 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    toggleTokens(): void {
+        const opening = !this.vm.showTokens;
+        runInAction(() => {
+            this.vm.showTokens = opening;
+        });
+        if (opening && this.vm.run && this.vm.modelCalls === null) {
+            void this.loadModelCalls(this.vm.run);
+        }
+    }
+
+    /** Load a run's individual model calls for the token panel. */
+    private async loadModelCalls(run: RunDto): Promise<void> {
+        runInAction(() => {
+            this.vm.modelCallsLoading = true;
+        });
+        try {
+            const calls = (await this.gateway.listModelCalls(run.id)) as ModelCallDto[] | null;
+            runInAction(() => {
+                this.vm.modelCalls = calls ?? [];
+                this.vm.modelCallsLoading = false;
+            });
+        } catch {
+            runInAction(() => {
+                this.vm.modelCalls = [];
+                this.vm.modelCallsLoading = false;
+            });
+        }
+    }
+
+    /** Load the Plan-gate cost projection when the Plan stage is open. */
+    private async loadPlanProjection(run: RunDto): Promise<void> {
+        try {
+            const projection = (await this.gateway.projectPlanCost(
+                run.id
+            )) as PlanCostProjectionDto | null;
+            runInAction(() => {
+                this.vm.planProjection = projection;
+            });
+        } catch {
+            runInAction(() => {
+                this.vm.planProjection = null;
+            });
+        }
+    }
+
     /** Load the accept/reject decisions and the source crop refs the Generate view pairs with renders. */
     private async loadGenerateExtras(run: RunDto): Promise<void> {
         try {
@@ -328,6 +379,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             if (stage === "generate") {
                 void this.loadRenders(run);
                 void this.loadGenerateExtras(run);
+            }
+            // The Plan gate shows the projected generation cost before approval (W7.9).
+            if (stage === "plan") {
+                void this.loadPlanProjection(run);
             }
         } catch {
             runInAction(() => {

@@ -7,6 +7,14 @@ export interface RunCounts {
     components: number;
 }
 
+/** Model-usage totals for a model-backed stage (W7.1). */
+export interface StageModelUsageDto {
+    inputTokens: number;
+    outputTokens: number;
+    calls: number;
+    latencyMs: number;
+}
+
 /** One stage's entry in a run's ledger. `status` is one of pending/running/done/stale/failed. */
 export interface StageDto {
     stage: string;
@@ -18,6 +26,8 @@ export interface StageDto {
     error: string | null;
     /** The background task id of this stage's latest run, for reading its logs. */
     taskId: string | null;
+    /** Per-stage model-usage totals (W7.1), or null for a deterministic stage / before it closes. */
+    modelUsage: StageModelUsageDto | null;
 }
 
 /** One line of a stage's task log, for the inline log trail in the run view. */
@@ -208,14 +218,37 @@ export interface GenerateArtifactDto {
     failed: string[];
 }
 
-/** One planned component (subset), for the source crop the Generate view shows beside the render. */
+/** One planned component (subset): the source crop for Generate, plus name/type/pages for the Plan gate. */
 export interface PlannedComponentDto {
     signature: string;
+    name: string;
+    type: string;
+    members: { url: string }[];
     representativeCrop: { cropRef: string };
 }
 
 export interface PlanArtifactDto {
     components: PlannedComponentDto[];
+}
+
+/** One model call in the token panel (W7.9). */
+export interface ModelCallDto {
+    stage: string;
+    name: string;
+    modelId: string;
+    inputTokens: number;
+    outputTokens: number;
+    latencyMs: number;
+    ok: boolean;
+    createdOn: string;
+}
+
+/** The Plan-gate cost projection (W7.9). `meanTokensPerCall`/`projectedTokens` are null with no prior run. */
+export interface PlanCostProjectionDto {
+    components: number;
+    meanTokensPerCall: number | null;
+    projectedTokens: number | null;
+    priorRuns: number;
 }
 
 /** One generated component's rendered-screenshot result (W7.7), keyed to its cluster signature. */

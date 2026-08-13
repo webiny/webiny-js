@@ -20,8 +20,10 @@ import {
     GET_STAGE_ARTIFACT,
     GET_STAGE_TASK,
     LIST_JOBS,
+    LIST_MODEL_CALLS,
     LIST_RUNS,
     LIST_THEMES,
+    PROJECT_PLAN_COST,
     REGENERATE_COMPONENT,
     RENDER_COMPONENTS,
     RUN_STAGE,
@@ -206,6 +208,22 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: REGENERATE_COMPONENT, variables: { runId, signature, instruction } });
 
         return unwrap(response.componentExtractionRegenerateComponent);
+    }
+
+    async listModelCalls(runId: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionListModelCalls: GqlEnvelope<unknown>;
+        }>({ query: LIST_MODEL_CALLS, variables: { runId } });
+
+        return unwrap(response.componentExtractionListModelCalls);
+    }
+
+    async projectPlanCost(runId: string): Promise<unknown> {
+        const response = await this.client.execute<{
+            componentExtractionProjectPlanCost: GqlEnvelope<unknown>;
+        }>({ query: PROJECT_PLAN_COST, variables: { runId } });
+
+        return unwrap(response.componentExtractionProjectPlanCost);
     }
 }
 

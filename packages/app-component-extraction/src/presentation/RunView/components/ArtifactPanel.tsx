@@ -9,6 +9,7 @@ import { DiscoverView } from "./stages/DiscoverView.js";
 import { CaptureView } from "./stages/CaptureView.js";
 import { SegmentView } from "./stages/SegmentView.js";
 import { ClusterView } from "./stages/ClusterView.js";
+import { PlanView } from "./stages/PlanView.js";
 import { GenerateView } from "./stages/GenerateView.js";
 
 interface Props {
@@ -32,6 +33,8 @@ const StageView = ({
             return <SegmentView presenter={presenter} />;
         case "cluster":
             return <ClusterView presenter={presenter} />;
+        case "plan":
+            return <PlanView presenter={presenter} />;
         case "generate":
             return <GenerateView presenter={presenter} />;
         default:
@@ -39,7 +42,14 @@ const StageView = ({
     }
 };
 
-const VIEW_STAGES = new Set<Stage>(["discover", "capture", "segment", "cluster", "generate"]);
+const VIEW_STAGES = new Set<Stage>([
+    "discover",
+    "capture",
+    "segment",
+    "cluster",
+    "plan",
+    "generate"
+]);
 
 const LogLine = ({ item }: { item: StageLogItem }) => {
     const errored = item.type === "error";

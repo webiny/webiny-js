@@ -3,7 +3,12 @@ import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQL
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { componentExtractionTypeDefs } from "./typeDefs.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
-import { JobRepository, RunLock, RunRepository } from "~/domain/abstractions.js";
+import {
+    JobRepository,
+    ModelCallRepository,
+    RunLock,
+    RunRepository
+} from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
 import type {
@@ -11,7 +16,8 @@ import type {
     ComponentDecision,
     DecisionsArtifact,
     DiscoverArtifact,
-    DiscoveredUrl
+    DiscoveredUrl,
+    PlanArtifact
 } from "~/domain/artifacts.js";
 import {
     DEFAULT_PAGE_CAP,
@@ -665,6 +671,97 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
 
                     return { taskId: triggered.value.id, runId: run.id, stage: "regenerate" };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionListModelCalls",
+        dependencies: [ComponentExtractionPermissions, ModelCallRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            modelCalls: ModelCallRepository.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const result = await modelCalls.listByRun(args.runId);
+                    const calls = result.isOk() ? result.value : [];
+                    // Bodies are out of scope (W7.1) — only the accounting fields are returned.
+                    return calls.map(call => ({
+                        stage: call.stage,
+                        name: call.name,
+                        modelId: call.modelId,
+                        inputTokens: call.inputTokens,
+                        outputTokens: call.outputTokens,
+                        latencyMs: call.latencyMs,
+                        ok: call.ok,
+                        createdOn: call.createdOn
+                    }));
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionProjectPlanCost",
+        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    // How many components the plan will generate.
+                    let components = 0;
+                    const planKey = stageEntry(run.stages, "plan")?.artifacts.plan;
+                    if (planKey) {
+                        const plan = await store.getJson<PlanArtifact>(planKey);
+                        if (plan.isOk() && plan.value) {
+                            components = plan.value.components.length;
+                        }
+                    }
+
+                    // Mean tokens per generate call, from this job's prior runs' Generate aggregates.
+                    const runs = await runRepository.listByJob(run.jobId, {
+                        sort: ["runNumber_DESC"]
+                    });
+                    let totalTokens = 0;
+                    let totalCalls = 0;
+                    let priorRuns = 0;
+                    if (runs.isOk()) {
+                        for (const prior of runs.value.runs) {
+                            if (prior.id === run.id) {
+                                continue;
+                            }
+                            const usage = stageEntry(prior.stages, "generate")?.modelUsage;
+                            if (usage && usage.calls > 0) {
+                                totalTokens += usage.inputTokens + usage.outputTokens;
+                                totalCalls += usage.calls;
+                                priorRuns++;
+                            }
+                        }
+                    }
+
+                    const meanTokensPerCall =
+                        totalCalls > 0 ? Math.round(totalTokens / totalCalls) : null;
+                    const projectedTokens =
+                        meanTokensPerCall !== null
+                            ? Math.round(components * meanTokensPerCall)
+                            : null;
+
+                    return { components, meanTokensPerCall, projectedTokens, priorRuns };
                 });
         }
     });
