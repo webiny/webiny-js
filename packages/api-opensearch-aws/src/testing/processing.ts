@@ -1,18 +1,17 @@
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import {
-    PutCommand,
-    UpdateCommand,
-    DeleteCommand,
-    BatchWriteCommand
-} from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { PutCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { UpdateCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { DeleteCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { BatchWriteCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 const streamTableName = process.env.DB_TABLE_OPENSEARCH;
 
-const isOpenSearchStreamTable = table => {
+const isOpenSearchStreamTable = (table: string) => {
     return table === streamTableName;
 };
 
-const createMarshalledObject = target => {
+const createMarshalledObject = (target: Record<string, unknown> | undefined) => {
     if (!target) {
         return undefined;
     }
@@ -22,14 +21,19 @@ const createMarshalledObject = target => {
     });
 };
 
-export const createDynamoStreamEvent = (...records) => {
+export const createDynamoStreamEvent = (...records: Record<string, unknown>[]) => {
     return { Records: records };
 };
 
-export const createDynamoStreamRecord = (eventName, data = {}) => {
+export const createDynamoStreamRecord = (
+    eventName: string,
+    data: {
+        Keys?: Record<string, unknown>;
+        NewImage?: Record<string, unknown>;
+        OldImage?: Record<string, unknown>;
+    } = {}
+) => {
     const { Keys = {}, NewImage = {}, OldImage = {} } = data;
-    // Return an event mock with completely random data, except the Keys, NewImage and OldImage which we use in
-    // the real Lambda to synchronize with Elasticsearch.
     return {
         eventID: "2cb5ad3ffabca3639e4f7858e3bdd138",
         eventName,
@@ -50,11 +54,16 @@ export const createDynamoStreamRecord = (eventName, data = {}) => {
     };
 };
 
-const processDelete = async (documentClient, handler, params) => {
+type StreamHandler = (event: Record<string, unknown>) => Promise<void>;
+
+const processDelete = async (
+    documentClient: DynamoDBDocument,
+    handler: StreamHandler,
+    params: Record<string, any>
+) => {
     if (isOpenSearchStreamTable(params.input?.TableName) === false) {
         return;
     }
-    // Get original item from DDB to use as OldImage
     const { Key, TableName } = params.input;
     const { Item } = await documentClient.get({ Key, TableName });
 
@@ -67,7 +76,11 @@ const processDelete = async (documentClient, handler, params) => {
     await handler(event);
 };
 
-const processPut = async (documentClient, handler, params) => {
+const processPut = async (
+    documentClient: DynamoDBDocument,
+    handler: StreamHandler,
+    params: Record<string, any>
+) => {
     const tableName = params.input?.TableName;
     if (isOpenSearchStreamTable(tableName) === false) {
         return;
@@ -85,8 +98,12 @@ const processPut = async (documentClient, handler, params) => {
     await handler(event);
 };
 
-const processBatchWrite = async (documentClient, handler, params) => {
-    const operations = params?.input?.RequestItems?.[streamTableName];
+const processBatchWrite = async (
+    documentClient: DynamoDBDocument,
+    handler: StreamHandler,
+    params: Record<string, any>
+) => {
+    const operations = params?.input?.RequestItems?.[streamTableName!];
     if (!Array.isArray(operations)) {
         return;
     }
@@ -130,18 +147,21 @@ const processBatchWrite = async (documentClient, handler, params) => {
     await handler(createDynamoStreamEvent(...records));
 };
 
-export const processing = {
+export const processing: Record<
+    string,
+    (
+        documentClient: DynamoDBDocument,
+        handler: StreamHandler,
+        params: Record<string, any>
+    ) => Promise<void>
+> = {
     put: processPut,
     update: processPut,
     delete: processDelete,
     batchWrite: processBatchWrite
 };
-/**
- *
- * @param command {PutCommand|UpdateCommand|DeleteCommand|BatchWriteCommand}
- * @returns {string|null}
- */
-export const getCommandName = command => {
+
+export const getCommandName = (command: unknown): string | null => {
     if (!command) {
         return null;
     }

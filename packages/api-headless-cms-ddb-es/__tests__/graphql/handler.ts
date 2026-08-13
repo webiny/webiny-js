@@ -10,8 +10,8 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import type { PluginCollection } from "@webiny/plugins/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createTable } from "@webiny/db-dynamodb";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { createEntryEntity } from "~/definitions/entry";

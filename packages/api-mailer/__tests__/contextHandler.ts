@@ -13,7 +13,7 @@ import {
     AuthenticatedIdentity
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { until, sleep, createPermissions } from "./context/helpers";
 import type { PermissionsArg } from "./context/helpers";

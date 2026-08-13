@@ -1,4 +1,4 @@
-import type { TaskService } from "@webiny/background-tasks/api/domain/TaskService";
+import type { TaskService } from "~/api/domain/TaskService.js";
 
 export const createMockTaskService = (): TaskService.Interface => {
     return {

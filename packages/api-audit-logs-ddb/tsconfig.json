@@ -9,7 +9,8 @@
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../api-core" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -33,7 +34,9 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
     }
   }
 }

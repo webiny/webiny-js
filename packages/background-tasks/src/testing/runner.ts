@@ -1,16 +1,11 @@
-import type {
-    Context,
-    IResponseContinueResult,
-    IResponseResult,
-    ITaskEvent
-} from "../../../background-tasks/src/api/types";
-import { TaskRunner } from "../../../background-tasks/src/api/runner";
+import type { Context, IResponseContinueResult, IResponseResult, ITaskEvent } from "~/api/types.js";
+import { TaskRunner } from "~/api/runner/index.js";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
-import { TaskEventValidation } from "../../../background-tasks/src/api/runner/TaskEventValidation";
-import { ResponseContinueResult } from "../../../background-tasks/src/api/response/ResponseContinueResult";
-import { createMockTaskService } from "./mockTaskTriggerTransportPlugin";
-import { TaskService } from "../../../background-tasks/src/api/domain/TaskService";
-import { TaskDefinition } from "../../../api-core/src/features/task/TaskDefinition/index.js";
+import { TaskEventValidation } from "~/api/runner/TaskEventValidation.js";
+import { ResponseContinueResult } from "~/api/response/ResponseContinueResult.js";
+import { createMockTaskService } from "./mockTaskTriggerTransportPlugin.js";
+import { TaskService } from "~/api/domain/TaskService.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface ICreateRunnerParamsOnContinueCallableParams {
     taskId: string;
@@ -29,10 +24,6 @@ export interface ICreateRunnerParams<
     context: Context;
     task: TaskDefinition.Interface<I, O>;
     getRemainingTimeInMills?: () => number;
-    /**
-     * If provided, this function will be called every time the task continues.
-     * If the task is not supposed to continue, this function will not be called.
-     */
     onContinue?: ICreateRunnerParamsOnContinueCallable;
 }
 
