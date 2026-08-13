@@ -4,6 +4,7 @@ import {
     markStageDone,
     markStageFailed,
     markStageRunning,
+    mergeLedgers,
     stageEntry
 } from "./ledger.js";
 import { STAGES } from "~/constants.js";
@@ -59,5 +60,35 @@ describe("markStageFailed", () => {
         // Capture (upstream) is untouched; nothing downstream of segment went stale.
         expect(stageEntry(ledger, "capture")!.stageVersion).toBe(1);
         expect(ledger.filter(e => e.status === "stale")).toHaveLength(0);
+    });
+});
+
+describe("mergeLedgers — non-regressing writes", () => {
+    it("keeps a running stage when a stale writer's ledger still has it pending", () => {
+        // The live ledger: discover done, capture running (started, not yet done).
+        const live = markStageRunning(
+            markStageDone(initLedger(), "discover", { urls: "k" }, NOW),
+            "capture",
+            NOW
+        );
+        // A stale writer holds the pre-capture snapshot (capture still pending) and re-writes it.
+        const stale = markStageDone(initLedger(), "discover", { urls: "k" }, NOW);
+        const merged = mergeLedgers(live, stale);
+        // Capture must not be knocked back to pending — the running write has the higher rev.
+        expect(stageEntry(merged, "capture")?.status).toBe("running");
+    });
+
+    it("keeps a done stage against a stale pending write", () => {
+        const live = markStageDone(initLedger(), "capture", { tree: "k" }, NOW);
+        const stale = initLedger(); // capture pending, rev 0
+        const merged = mergeLedgers(live, stale);
+        expect(stageEntry(merged, "capture")?.status).toBe("done");
+    });
+
+    it("lets a genuine forward transition win (higher rev than stored)", () => {
+        const stored = markStageRunning(initLedger(), "discover", NOW);
+        const incoming = markStageDone(stored, "discover", { urls: "k" }, NOW);
+        const merged = mergeLedgers(stored, incoming);
+        expect(stageEntry(merged, "discover")?.status).toBe("done");
     });
 });

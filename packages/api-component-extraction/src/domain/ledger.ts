@@ -12,6 +12,7 @@ export const initLedger = (): StageLedgerEntry[] =>
         stage,
         status: "pending",
         stageVersion: 0,
+        rev: 0,
         artifacts: {},
         startedOn: null,
         finishedOn: null,
@@ -20,11 +21,17 @@ export const initLedger = (): StageLedgerEntry[] =>
         modelUsage: null
     }));
 
+/** The next monotonic revision for an entry (defaulting a legacy entry with no `rev` to 0). */
+const nextRev = (entry: StageLedgerEntry): number => (entry.rev ?? 0) + 1;
+
 const patch = (
     ledger: StageLedgerEntry[],
     stage: Stage,
     change: (entry: StageLedgerEntry) => StageLedgerEntry
-): StageLedgerEntry[] => ledger.map(entry => (entry.stage === stage ? change(entry) : entry));
+): StageLedgerEntry[] =>
+    ledger.map(entry =>
+        entry.stage === stage ? { ...change(entry), rev: nextRev(entry) } : entry
+    );
 
 /** Stamp the background task id of the stage's latest run onto its entry (for log deep-linking). */
 export const withStageTaskId = (
@@ -77,11 +84,12 @@ export const markStageDone = (
                 finishedOn: now,
                 error: null,
                 artifacts,
-                stageVersion: entry.stageVersion + 1
+                stageVersion: entry.stageVersion + 1,
+                rev: nextRev(entry)
             };
         }
         if (downstream.has(entry.stage) && entry.status !== "pending") {
-            return { ...entry, status: "stale" };
+            return { ...entry, status: "stale", rev: nextRev(entry) };
         }
         return entry;
     });
@@ -95,7 +103,7 @@ export const markStaleFrom = (ledger: StageLedgerEntry[], stage: Stage): StageLe
     const affected = new Set<Stage>([stage, ...stagesAfter(stage)]);
     return ledger.map(entry =>
         affected.has(entry.stage) && entry.status !== "pending"
-            ? { ...entry, status: "stale" }
+            ? { ...entry, status: "stale", rev: nextRev(entry) }
             : entry
     );
 };
@@ -122,15 +130,17 @@ export const stageEntry = (
 
 /**
  * Merge a freshly-read stored ledger with an incoming one, keeping the more-advanced entry per stage —
- * the one with the higher `stageVersion`; a tie keeps the incoming.
+ * the one with the higher monotonic `rev`.
  *
  * The nine-stage ledger is a single JSON blob written read-modify-write, so a writer holding a stale
  * copy — most often a retrying/zombie stage task that read the run before later stages ran — can
- * otherwise clobber a completed stage back to its initial `pending`, silently undoing real work. A
- * stale entry always has a lower `stageVersion` than the stored one (a completed stage is at v1+, its
- * pre-run copy at v0), so keeping the higher version drops the regression while every legitimate
- * transition — running (same version), done (version bumped), stale (same version) — still wins on its
- * tie or its bump. Applied at the repository so it guards every writer, not just the stage runner.
+ * otherwise clobber a stage back to an earlier state, silently undoing real work. Every transition bumps
+ * `rev`, so a stale writer's untouched stages carry a strictly lower `rev` than what is stored and lose
+ * the merge — regressions are dropped while every legitimate forward transition (which bumped `rev`)
+ * still wins. Unlike `stageVersion`, `rev` also orders the `running` state (which shares a version with
+ * the `pending`/`done` it came from), so a running stage cannot be knocked back either. Applied at the
+ * repository so it guards every writer, not just the stage runner. `rev` defaults to 0 for legacy
+ * entries written before this field existed.
  */
 export const mergeLedgers = (
     stored: StageLedgerEntry[],
@@ -139,6 +149,6 @@ export const mergeLedgers = (
     const storedByStage = new Map(stored.map(entry => [entry.stage, entry]));
     return incoming.map(entry => {
         const current = storedByStage.get(entry.stage);
-        return current && current.stageVersion > entry.stageVersion ? current : entry;
+        return current && (current.rev ?? 0) > (entry.rev ?? 0) ? current : entry;
     });
 };
