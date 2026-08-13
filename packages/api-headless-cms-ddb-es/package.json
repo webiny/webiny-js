@@ -59,7 +59,6 @@
     "@webiny/di": "^1.0.2",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.1.3",

@@ -21,7 +21,7 @@
     "@webiny/project": "0.0.0",
     "@webiny/project-server": "0.0.0",
     "chalk": "^6.0.0",
-    "tsx": "4.23.11"
+    "tsx": "4.23.12"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

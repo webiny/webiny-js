@@ -38,7 +38,6 @@
   "devDependencies": {
     "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "vitest": "^4.1.10"
   },
