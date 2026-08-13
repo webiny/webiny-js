@@ -90,12 +90,6 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
         try {
             const run = await this.gateway.getRun(runId);
-            // TEMP diagnostic: what the server returned vs. what the sidebar shows. Remove once the
-            // live-update reliability issue is pinned.
-            console.info(
-                "[ce] refresh:",
-                run.stages.map(entry => `${entry.stage}:${entry.status}`).join(" ")
-            );
             runInAction(() => {
                 this.vm.run = run;
             });
