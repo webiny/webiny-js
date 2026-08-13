@@ -16037,6 +16037,7 @@ __metadata:
   dependencies:
     "@4tw/cypress-drag-drop": "npm:^2.3.1"
     "@testing-library/cypress": "npm:^10.1.3"
+    "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -23288,7 +23289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.25":
+"postcss@npm:^8.5.26":
   version: 8.5.26
   resolution: "postcss@npm:8.5.26"
   dependencies:
