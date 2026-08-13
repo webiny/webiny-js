@@ -359,6 +359,15 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
 
     /** Load the selected stage's structured artifact for its visibility view. */
     private async loadArtifact(run: RunDto, stage: string) {
+        // Switching stages: drop the previous stage's artifact immediately. Otherwise a shape-specific
+        // view (e.g. Plan expects `components`, Cluster `clusters`) can render against the wrong stage's
+        // artifact during the async load and crash on a missing field.
+        if (this.vm.artifactStage !== stage) {
+            runInAction(() => {
+                this.vm.artifact = null;
+                this.vm.artifactStage = stage;
+            });
+        }
         const entry = stageEntry(run, stage);
         // No artifact before a stage has produced output; clear so the view shows the right empty state.
         if (!entry || (entry.status !== "done" && entry.status !== "stale")) {

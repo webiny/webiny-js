@@ -50,10 +50,10 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
         return [...byGroup.entries()];
     }, [artifact, manual]);
 
-    if (vm.artifactLoading && !artifact) {
+    if (vm.artifactLoading && !artifact?.urls) {
         return <Text className="p-md text-neutral-strong">Loading discovered URLs…</Text>;
     }
-    if (!artifact) {
+    if (!artifact?.urls) {
         return (
             <Text className="p-md text-neutral-strong">Run Discover to produce a URL list.</Text>
         );

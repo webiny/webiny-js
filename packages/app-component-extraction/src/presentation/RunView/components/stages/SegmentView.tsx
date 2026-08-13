@@ -49,7 +49,7 @@ export const SegmentView = createReactiveComponent(function SegmentView({ presen
     if (vm.artifactLoading && !artifact) {
         return <Text className="p-md text-neutral-strong">Loading segmentation…</Text>;
     }
-    if (!artifact || artifact.pages.length === 0) {
+    if (!artifact?.pages?.length) {
         return <Text className="p-md text-neutral-strong">Run Segment to detect sections.</Text>;
     }
 

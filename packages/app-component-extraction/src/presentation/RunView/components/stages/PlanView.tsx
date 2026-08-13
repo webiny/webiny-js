@@ -28,10 +28,10 @@ export const PlanView = createReactiveComponent(function PlanView({ presenter }:
     const projection = vm.planProjection;
     const generating = vm.actionStage === "generate";
 
-    if (vm.artifactLoading && !artifact) {
+    if (vm.artifactLoading && !artifact?.components) {
         return <Text className="p-md text-neutral-strong">Loading plan…</Text>;
     }
-    if (!artifact || artifact.components.length === 0) {
+    if (!artifact?.components?.length) {
         return (
             <Text className="p-md text-neutral-strong">Run Plan to produce a component plan.</Text>
         );

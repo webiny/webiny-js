@@ -88,7 +88,7 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
     if (vm.artifactLoading && !artifact) {
         return <Text className="p-md text-neutral-strong">Loading clusters…</Text>;
     }
-    if (!artifact || artifact.clusters.length === 0) {
+    if (!artifact?.clusters?.length) {
         return <Text className="p-md text-neutral-strong">Run Cluster to group sections.</Text>;
     }
 

@@ -55,9 +55,10 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
     }, [artifact]);
 
     const tiles = useMemo<Tile[]>(() => {
-        if (!artifact) {
+        if (!artifact?.pages) {
             return [];
         }
+        const failedUrls = artifact.failed ?? [];
         const medianHeight = median(artifact.pages.map(page => page.documentHeight));
         const captured: Tile[] = artifact.pages.map(page => {
             const warnings: string[] = [];
@@ -78,7 +79,7 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
                 warnings
             };
         });
-        const failed: Tile[] = artifact.failed.map(url => ({
+        const failed: Tile[] = failedUrls.map(url => ({
             url,
             label: pathOf(url),
             page: null,
@@ -93,15 +94,16 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
         );
     }, [artifact]);
 
-    if (vm.artifactLoading && !artifact) {
+    if (vm.artifactLoading && !artifact?.pages) {
         return <Text className="p-md text-neutral-strong">Loading captured pages…</Text>;
     }
-    if (!artifact) {
+    if (!artifact?.pages) {
         return (
             <Text className="p-md text-neutral-strong">Run Capture to produce page images.</Text>
         );
     }
 
+    const failedCount = artifact.failed?.length ?? 0;
     const flagged = tiles.filter(tile => !tile.failed && tile.warnings.length > 0).length;
 
     const toggle = (url: string) =>
@@ -125,8 +127,7 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
         <div className="flex flex-col h-full min-h-0">
             <div className="flex items-center justify-between gap-sm px-md py-sm border-b border-neutral-dimmed">
                 <Text size="sm" className="text-neutral-strong">
-                    {artifact.pages.length} captured · {artifact.failed.length} failed · {flagged}{" "}
-                    flagged
+                    {artifact.pages.length} captured · {failedCount} failed · {flagged} flagged
                 </Text>
                 {selected.size > 0 ? (
                     <Button

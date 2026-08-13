@@ -266,10 +266,10 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
         [artifact]
     );
 
-    if (vm.artifactLoading && !artifact) {
+    if (vm.artifactLoading && !artifact?.components) {
         return <Text className="p-md text-neutral-strong">Loading generated components…</Text>;
     }
-    if (!artifact || artifact.components.length === 0) {
+    if (!artifact?.components?.length) {
         return (
             <Text className="p-md text-neutral-strong">Run Generate to produce components.</Text>
         );
