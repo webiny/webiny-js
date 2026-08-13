@@ -119,3 +119,26 @@ export const stageEntry = (
     ledger: StageLedgerEntry[],
     stage: Stage
 ): StageLedgerEntry | undefined => ledger.find(entry => entry.stage === stage);
+
+/**
+ * Merge a freshly-read stored ledger with an incoming one, keeping the more-advanced entry per stage —
+ * the one with the higher `stageVersion`; a tie keeps the incoming.
+ *
+ * The nine-stage ledger is a single JSON blob written read-modify-write, so a writer holding a stale
+ * copy — most often a retrying/zombie stage task that read the run before later stages ran — can
+ * otherwise clobber a completed stage back to its initial `pending`, silently undoing real work. A
+ * stale entry always has a lower `stageVersion` than the stored one (a completed stage is at v1+, its
+ * pre-run copy at v0), so keeping the higher version drops the regression while every legitimate
+ * transition — running (same version), done (version bumped), stale (same version) — still wins on its
+ * tie or its bump. Applied at the repository so it guards every writer, not just the stage runner.
+ */
+export const mergeLedgers = (
+    stored: StageLedgerEntry[],
+    incoming: StageLedgerEntry[]
+): StageLedgerEntry[] => {
+    const storedByStage = new Map(stored.map(entry => [entry.stage, entry]));
+    return incoming.map(entry => {
+        const current = storedByStage.get(entry.stage);
+        return current && current.stageVersion > entry.stageVersion ? current : entry;
+    });
+};

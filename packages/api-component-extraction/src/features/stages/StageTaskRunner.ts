@@ -209,6 +209,14 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         const existing = stageEntry(run.stages, stage);
         const resuming = existing?.status === "running";
 
+        // Idempotence guard: if this same task already completed the stage (its id is stamped on the
+        // done entry), the framework is retrying it after a post-`done` error — re-running would clobber
+        // downstream stages that ran since. Ack success and stop. A user-initiated re-run is a NEW task
+        // (different id), so it is not caught here and proceeds to re-run as intended.
+        if (existing?.status === "done" && existing.taskId === controller.state.getTask().id) {
+            return controller.response.done(controller.state.getOutput());
+        }
+
         // The version this run of the stage is producing — one past whatever it currently has. Stable
         // across continuations: the entry's `stageVersion` only bumps at `markStageDone`, so re-deriving
         // it every iteration yields the same value, and artifact keys stay consistent while resuming.

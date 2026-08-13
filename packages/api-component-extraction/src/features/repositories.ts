@@ -29,7 +29,14 @@ import {
     ExtractionValidationError,
     type ExtractionError
 } from "~/domain/errors.js";
-import type { JobValues, ModelCallValues, OverrideValues, RunValues } from "~/domain/types.js";
+import type {
+    JobValues,
+    ModelCallValues,
+    OverrideValues,
+    RunValues,
+    StageLedgerEntry
+} from "~/domain/types.js";
+import { mergeLedgers } from "~/domain/ledger.js";
 
 const DEFAULT_LIMIT = 50;
 
@@ -179,7 +186,20 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
     }
 
     async update(id: string, values: Partial<RunValues>) {
-        const result = await this.updateEntry.execute(this.model, id, { values });
+        let nextValues = values;
+        // Non-regressing ledger write: merge the incoming stages against the freshly-stored ones,
+        // keeping the more-advanced entry per stage. A stale writer (a retrying/zombie stage task that
+        // read the run before later stages ran) can otherwise clobber completed stages back to pending.
+        if (values.stages) {
+            const current = await this.getEntryById.execute(this.model, id);
+            if (current.isOk()) {
+                const stored = Array.isArray(current.value.values.stages)
+                    ? (current.value.values.stages as StageLedgerEntry[])
+                    : [];
+                nextValues = { ...values, stages: mergeLedgers(stored, values.stages) };
+            }
+        }
+        const result = await this.updateEntry.execute(this.model, id, { values: nextValues });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
