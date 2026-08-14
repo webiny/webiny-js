@@ -29,11 +29,6 @@ export interface IComponentExtractionGateway {
     listStageLogs(taskId: string): Promise<StageLogItem[]>;
     /** The structured artifact a stage produced, for the visibility views. Null if the stage has no output. */
     getStageArtifact(runId: string, stage: string, machine?: boolean): Promise<unknown>;
-    /** Rewrite Discover's URL list before Capture; returns the run with Capture+downstream marked stale. */
-    updateDiscoverUrls(
-        runId: string,
-        urls: Array<{ url: string; group?: string }>
-    ): Promise<RunDto>;
     /** Drop captured/failed pages from a run; returns the run with Segment+downstream marked stale. */
     excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto>;
     /** Trigger the render task that screenshots the run's generated components (W7.7). */

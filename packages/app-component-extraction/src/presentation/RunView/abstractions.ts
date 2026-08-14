@@ -77,8 +77,10 @@ export interface IRunViewPresenter {
     selectStage(stage: string): void;
     /** Apply a live progress update pushed over the websocket for a stage. */
     applyProgress(stage: string, progress: StageProgress): void;
-    /** Rewrite Discover's URL list, then refresh the run and the open artifact. */
-    updateDiscoverUrls(urls: Array<{ url: string; group?: string }>): Promise<void>;
+    /** Exclude or re-include a discovered URL, as a discover.url override that reattaches across runs. */
+    setDiscoverExclusion(url: string, excluded: boolean): Promise<void>;
+    /** Add a manual URL to Discover's list, as a discover.url override. */
+    addDiscoverUrl(url: string): Promise<void>;
     /** Drop captured/failed pages, then refresh the run and the open artifact. */
     excludeCapturedPages(urls: string[]): Promise<void>;
     /** Trigger the rendered-component screenshot pass for this run (W7.7). */

@@ -148,23 +148,6 @@ export const GET_STAGE_ARTIFACT = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_DISCOVER_URLS = /* GraphQL */ `
-    mutation UpdateComponentExtractionDiscoverUrls(
-        $runId: ID!
-        $urls: [ComponentExtractionDiscoverUrlInput!]!
-    ) {
-        componentExtractionUpdateDiscoverUrls(runId: $runId, urls: $urls) {
-            data {
-                ${RUN_FIELDS}
-            }
-            error {
-                code
-                message
-            }
-        }
-    }
-`;
-
 export const EXCLUDE_CAPTURED_PAGES = /* GraphQL */ `
     mutation ExcludeComponentExtractionCapturedPages($runId: ID!, $urls: [String!]!) {
         componentExtractionExcludeCapturedPages(runId: $runId, urls: $urls) {

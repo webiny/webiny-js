@@ -32,12 +32,6 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         error: ComponentExtractionError
     }
 
-    "One discovered URL, as edited on the Discover gate before Capture consumes the list."
-    input ComponentExtractionDiscoverUrlInput {
-        url: String!
-        group: String
-    }
-
     type ComponentExtractionRun {
         id: ID!
         jobId: String!
@@ -150,11 +144,6 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionCreateRun(jobId: ID!, note: String): ComponentExtractionRunResponse!
         "Trigger one stage of a run. Rejected if the stage's predecessor is not yet done."
         componentExtractionRunStage(runId: ID!, stage: String!): ComponentExtractionTaskResponse!
-        "Edit the discovered URL list before Capture. Marks Capture and everything downstream stale."
-        componentExtractionUpdateDiscoverUrls(
-            runId: ID!
-            urls: [ComponentExtractionDiscoverUrlInput!]!
-        ): ComponentExtractionRunResponse!
         "Drop captured (or failed) pages from a run so they don't flow into Segment. Marks Segment and everything downstream stale."
         componentExtractionExcludeCapturedPages(
             runId: ID!

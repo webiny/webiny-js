@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { RunViewPresenter as PresenterAbstraction } from "./abstractions.js";
 import { ComponentExtractionGateway } from "~/features/gateway/abstractions.js";
 import { stageEntry } from "~/shared/ledger.js";
+import { normalizeUrl } from "~/shared/url.js";
 import type {
     DecisionsDto,
     GenerateArtifactDto,
@@ -222,22 +223,47 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
-    async updateDiscoverUrls(urls: Array<{ url: string; group?: string }>): Promise<void> {
+    async setDiscoverExclusion(url: string, excluded: boolean): Promise<void> {
         const runId = this.vm.run?.id;
         if (!runId) {
             return;
         }
-        try {
-            const run = await this.gateway.updateDiscoverUrls(runId, urls);
-            runInAction(() => {
-                this.vm.run = run;
-            });
-            await this.loadArtifact(run, "discover");
-        } catch (error) {
-            runInAction(() => {
-                this.vm.error = (error as Error).message;
-            });
+        const signature = normalizeUrl(url);
+        if (excluded) {
+            await this.runCorrection(() =>
+                this.gateway.setOverride(runId, "discover", signature, {
+                    kind: "discover.url",
+                    action: "exclude"
+                })
+            );
+            return;
         }
+        // Re-include: clear the exclude override for this URL.
+        const target = this.vm.overrides.find(
+            override =>
+                override.stage === "discover" &&
+                override.structuralSignature === signature &&
+                override.correction.kind === "discover.url" &&
+                override.correction.action === "exclude"
+        );
+        if (target) {
+            await this.clearOverride(target.id);
+        }
+    }
+
+    async addDiscoverUrl(url: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        const trimmed = url.trim();
+        if (!runId || !trimmed) {
+            return;
+        }
+        await this.runCorrection(() =>
+            this.gateway.setOverride(runId, "discover", normalizeUrl(trimmed), {
+                kind: "discover.url",
+                action: "add",
+                group: "manual"
+            })
+        );
     }
 
     async excludeCapturedPages(urls: string[]): Promise<void> {
@@ -750,6 +776,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // The correction stages need the job's overrides (badges) and, for classify/plan, the
             // machine artifact so an edited item can show its original machine value (W8.3–8.5).
             if (
+                stage === "discover" ||
                 stage === "cluster" ||
                 stage === "classify" ||
                 stage === "plan" ||
@@ -757,7 +784,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             ) {
                 void this.loadOverrides(run);
             }
-            if (stage === "classify" || stage === "plan") {
+            if (stage === "discover" || stage === "classify" || stage === "plan") {
                 void this.loadMachineArtifact(run, stage);
             }
             // The Promote gate lists the generated components eligible for promotion, with collision

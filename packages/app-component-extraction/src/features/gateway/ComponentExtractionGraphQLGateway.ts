@@ -34,8 +34,7 @@ import {
     RENDER_COMPONENTS,
     RUN_STAGE,
     SET_COMPONENT_DECISION,
-    SET_OVERRIDE,
-    UPDATE_DISCOVER_URLS
+    SET_OVERRIDE
 } from "./graphql.js";
 
 interface GqlEnvelope<T> {
@@ -148,17 +147,6 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_STAGE_ARTIFACT, variables: { runId, stage, machine } });
 
         return unwrap(response.componentExtractionGetStageArtifact);
-    }
-
-    async updateDiscoverUrls(
-        runId: string,
-        urls: Array<{ url: string; group?: string }>
-    ): Promise<RunDto> {
-        const response = await this.client.execute<{
-            componentExtractionUpdateDiscoverUrls: GqlEnvelope<RunDto>;
-        }>({ query: UPDATE_DISCOVER_URLS, variables: { runId, urls } });
-
-        return unwrap(response.componentExtractionUpdateDiscoverUrls);
     }
 
     async excludeCapturedPages(runId: string, urls: string[]): Promise<RunDto> {

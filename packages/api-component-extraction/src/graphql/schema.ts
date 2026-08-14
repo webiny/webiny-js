@@ -17,8 +17,6 @@ import type {
     ClassifyArtifact,
     ClusterArtifact,
     ComponentDecision,
-    DiscoverArtifact,
-    DiscoveredUrl,
     PlanArtifact
 } from "~/domain/artifacts.js";
 import type { Correction, Run } from "~/domain/types.js";
@@ -623,68 +621,6 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     await reapplyStage(applicator, runRepository, run, target.stage);
                     const remaining = await overrides.listByJob(run.jobId);
                     return remaining.isOk() ? remaining.value : [];
-                });
-        }
-    });
-
-    builder.addResolver({
-        path: "Mutation.componentExtractionUpdateDiscoverUrls",
-        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
-        resolver(
-            permissions: ComponentExtractionPermissions.Interface,
-            runRepository: RunRepository.Interface,
-            store: StageArtifactStore.Interface
-        ) {
-            return ({
-                args
-            }: {
-                args: { runId: string; urls: Array<{ url: string; group?: string }> };
-            }) =>
-                resolve(async () => {
-                    if (!(await permissions.canCreate("componentExtraction"))) {
-                        throw new Error("You do not have permission to edit component extraction.");
-                    }
-                    const runResult = await runRepository.get(args.runId);
-                    if (runResult.isFail()) {
-                        throw runResult.error;
-                    }
-                    const run = runResult.value;
-
-                    const discover = stageEntry(run.stages, "discover");
-                    const discoverKey = discover ? discover.artifacts.urls : undefined;
-                    if (!discover || discover.status !== "done" || !discoverKey) {
-                        throw new Error("Discover has not produced a URL list to edit.");
-                    }
-
-                    const artifactResult = await store.getJson<DiscoverArtifact>(discoverKey);
-                    if (artifactResult.isFail() || !artifactResult.value) {
-                        throw new Error("The discover artifact could not be read.");
-                    }
-
-                    const urls: DiscoveredUrl[] = args.urls.map(item => ({
-                        url: item.url,
-                        group: item.group ?? "manual"
-                    }));
-                    const updated: DiscoverArtifact = {
-                        ...artifactResult.value,
-                        groups: [...new Set(urls.map(item => item.group))],
-                        urls
-                    };
-                    const written = await store.putJson(discoverKey, updated);
-                    if (written.isFail()) {
-                        throw written.error;
-                    }
-
-                    // Editing Discover's output invalidates Capture and everything downstream.
-                    const stages = markStaleFrom(run.stages, "capture");
-                    const persisted = await runRepository.update(run.id, {
-                        stages,
-                        counts: { ...run.counts, pages: urls.length }
-                    });
-                    if (persisted.isFail()) {
-                        throw persisted.error;
-                    }
-                    return persisted.value;
                 });
         }
     });

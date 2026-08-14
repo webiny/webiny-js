@@ -3,6 +3,7 @@ import {
     applyCaptureOverrides,
     applyClassifyOverrides,
     applyClusterOverrides,
+    applyDiscoverOverrides,
     applyPlanOverrides,
     decisionsFromOverrides,
     effectiveClusterThreshold,
@@ -307,6 +308,41 @@ describe("applyCaptureOverrides (page exclusion)", () => {
         const missing = result.reattachments.find(r => r.signature === "https://x.com/gone");
         expect(applied?.status).toBe("applied");
         expect(missing?.status).toBe("not-applicable");
+    });
+});
+
+describe("applyDiscoverOverrides", () => {
+    const artifact = {
+        entryUrl: "https://x.com",
+        source: "sitemap",
+        groups: ["root"],
+        urls: [
+            { url: "https://x.com/a", group: "root" },
+            { url: "https://x.com/b", group: "root" }
+        ]
+    } as never;
+
+    it("excludes a URL and appends a manually-added one", () => {
+        const result = applyDiscoverOverrides(artifact, [
+            override("discover", "https://x.com/a", { kind: "discover.url", action: "exclude" }),
+            override("discover", "https://x.com/new", {
+                kind: "discover.url",
+                action: "add",
+                group: "manual"
+            })
+        ]);
+        expect(result.effective.urls.map(u => u.url)).toEqual([
+            "https://x.com/b",
+            "https://x.com/new"
+        ]);
+        expect(result.reattachments.every(r => r.status === "applied")).toBe(true);
+    });
+
+    it("reports an exclude as not-applicable when its URL is absent this run", () => {
+        const result = applyDiscoverOverrides(artifact, [
+            override("discover", "https://x.com/gone", { kind: "discover.url", action: "exclude" })
+        ]);
+        expect(result.reattachments[0].status).toBe("not-applicable");
     });
 });
 

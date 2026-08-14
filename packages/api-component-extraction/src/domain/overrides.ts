@@ -14,6 +14,7 @@ import type {
     ClusterArtifact,
     ClusterMember,
     DiscoverArtifact,
+    DiscoveredUrl,
     PlanArtifact,
     SectionDigest,
     SegmentArtifact
@@ -368,18 +369,60 @@ const pageExclusionReattachments = (
                 : reattachment(override, "not-applicable", "the excluded page is absent this run")
         );
 
-/** Apply page-exclusion overrides to the Discover URL list — drop the excluded URLs. */
+/**
+ * Apply Discover overrides to the URL list: drop excluded URLs (`page.exclude` or `discover.url` exclude)
+ * and append manually-added ones (`discover.url` add). An exclude reattaches if its URL is present this
+ * run; an add always applies. Added URLs use their normalised form (a valid absolute URL) and their group.
+ */
 export const applyDiscoverOverrides = (
     artifact: DiscoverArtifact,
     overrides: Override[]
 ): ApplyResult<DiscoverArtifact> => {
-    const excluded = excludedPageUrls(overrides);
     const present = new Set(artifact.urls.map(entry => normalizeUrl(entry.url)));
-    const urls = artifact.urls.filter(entry => !excluded.has(normalizeUrl(entry.url)));
-    return {
-        effective: { ...artifact, urls },
-        reattachments: pageExclusionReattachments(overrides, present)
-    };
+    const excluded = new Set<string>();
+    const additions: DiscoveredUrl[] = [];
+    const reattachments: Reattachment[] = [];
+
+    for (const override of overrides) {
+        const correction = override.correction;
+        if (correction.kind === "page.exclude") {
+            excluded.add(override.structuralSignature);
+            reattachments.push(
+                present.has(override.structuralSignature)
+                    ? reattachment(override, "applied", null)
+                    : reattachment(
+                          override,
+                          "not-applicable",
+                          "the excluded page is absent this run"
+                      )
+            );
+        } else if (correction.kind === "discover.url") {
+            if (correction.action === "exclude") {
+                excluded.add(override.structuralSignature);
+                reattachments.push(
+                    present.has(override.structuralSignature)
+                        ? reattachment(override, "applied", null)
+                        : reattachment(
+                              override,
+                              "not-applicable",
+                              "the excluded URL is absent this run"
+                          )
+                );
+            } else if (correction.action === "add") {
+                additions.push({
+                    url: override.structuralSignature,
+                    group: correction.group ?? "manual"
+                });
+                reattachments.push(reattachment(override, "applied", null));
+            }
+        }
+    }
+
+    const kept = artifact.urls.filter(entry => !excluded.has(normalizeUrl(entry.url)));
+    const existing = new Set(kept.map(entry => normalizeUrl(entry.url)));
+    const urls = [...kept, ...additions.filter(entry => !existing.has(normalizeUrl(entry.url)))];
+
+    return { effective: { ...artifact, urls }, reattachments };
 };
 
 /** Apply page-exclusion overrides to the captured pages — drop the excluded ones from pages and failed. */

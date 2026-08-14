@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Button, Heading, Input, Separator, Tag, Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { normalizeUrl } from "~/shared/url.js";
 import type { RunViewPresenter } from "../../abstractions.js";
-import type { DiscoverArtifactDto, DiscoverUrlDto } from "~/shared/types.js";
+import type { DiscoverArtifactDto, DiscoverUrlDto, OverrideDto } from "~/shared/types.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -19,25 +20,52 @@ const pathOf = (url: string): string => {
 };
 
 /**
- * The Discover gate (W7.3). Shows the sampled URLs grouped by path prefix, lets the operator exclude
- * some and add specific ones, and rewrites the list Capture consumes — which marks Capture and
- * everything downstream stale. A bad URL sample produces bad clustering no matter how good the rest is.
+ * The Discover gate (W7.3 + W8 overrides). Shows the discovered URLs (the machine list, so an excluded
+ * one stays visible and struck through) grouped by path prefix, plus any manually-added ones. Excluding a
+ * URL, re-including it, or adding one writes a discover.url override that reattaches across runs and marks
+ * Capture + downstream stale — applied immediately, no separate save.
  */
 export const DiscoverView = createReactiveComponent(function DiscoverView({ presenter }: Props) {
     const { vm } = presenter;
-    const artifact = vm.artifact as DiscoverArtifactDto | null;
+    // Read the machine list so excluded URLs remain visible (the effective list would have dropped them).
+    const artifact =
+        vm.machineArtifactStage === "discover"
+            ? (vm.machineArtifact as DiscoverArtifactDto | null)
+            : (vm.artifact as DiscoverArtifactDto | null);
     const pageCap = vm.job?.pageCap ?? 0;
-
-    const [excluded, setExcluded] = useState<Set<string>>(new Set());
-    const [manual, setManual] = useState<DiscoverUrlDto[]>([]);
     const [manualInput, setManualInput] = useState("");
-    const [saving, setSaving] = useState(false);
 
-    // Reset the local edit state whenever a fresh artifact loads (after a save or stage re-run).
-    useEffect(() => {
-        setExcluded(new Set());
-        setManual([]);
-    }, [artifact]);
+    // The exclude/add state comes entirely from the job's discover overrides.
+    const excluded = useMemo(
+        () =>
+            new Set(
+                vm.overrides
+                    .filter(
+                        (override: OverrideDto) =>
+                            override.stage === "discover" &&
+                            ((override.correction.kind === "discover.url" &&
+                                override.correction.action === "exclude") ||
+                                override.correction.kind === "page.exclude")
+                    )
+                    .map(override => override.structuralSignature)
+            ),
+        [vm.overrides]
+    );
+    const manual = useMemo(
+        () =>
+            vm.overrides
+                .filter(
+                    override =>
+                        override.stage === "discover" &&
+                        override.correction.kind === "discover.url" &&
+                        override.correction.action === "add"
+                )
+                .map(override => ({
+                    url: override.structuralSignature,
+                    group: "manual"
+                })) as DiscoverUrlDto[],
+        [vm.overrides]
+    );
 
     const groups = useMemo(() => {
         const all = [...(artifact?.urls ?? []), ...manual];
@@ -59,49 +87,16 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
         );
     }
 
-    const total = artifact.urls.length + manual.length;
-    const includedCount = total - excluded.size;
-
-    const toggle = (url: string) =>
-        setExcluded(prev => {
-            const next = new Set(prev);
-            if (next.has(url)) {
-                next.delete(url);
-            } else {
-                next.add(url);
-            }
-            return next;
-        });
-
-    const setGroup = (items: DiscoverUrlDto[], include: boolean) =>
-        setExcluded(prev => {
-            const next = new Set(prev);
-            for (const item of items) {
-                if (include) {
-                    next.delete(item.url);
-                } else {
-                    next.add(item.url);
-                }
-            }
-            return next;
-        });
+    const includedCount = artifact.urls.length + manual.length - excluded.size;
+    const isExcluded = (url: string) => excluded.has(normalizeUrl(url));
 
     const addManual = () => {
         const url = manualInput.trim();
         if (!url) {
             return;
         }
-        setManual(prev => [...prev, { url, group: "manual" }]);
+        void presenter.addDiscoverUrl(url);
         setManualInput("");
-    };
-
-    const save = async () => {
-        setSaving(true);
-        const urls = [...(artifact.urls ?? []), ...manual].filter(item => !excluded.has(item.url));
-        await presenter.updateDiscoverUrls(
-            urls.map(item => ({ url: item.url, group: item.group }))
-        );
-        setSaving(false);
     };
 
     return (
@@ -111,13 +106,6 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                     {artifact.urls.length} discovered · {includedCount} included · cap {pageCap} ·
                     via {artifact.source}
                 </Text>
-                <Button
-                    variant="primary"
-                    size="sm"
-                    text={saving ? "Saving…" : "Save URL list"}
-                    disabled={saving}
-                    onClick={() => void save()}
-                />
             </div>
 
             <div className="flex items-center gap-sm px-md py-sm">
@@ -125,6 +113,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                     value={manualInput}
                     onChange={(value: string) => setManualInput(value)}
                     placeholder="https://www.example.com/specific-page"
+                    disabled={vm.clusterBusy}
                     onEnter={addManual}
                 />
                 <Button
@@ -132,6 +121,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                     size="sm"
                     icon={<AddIcon />}
                     text="Add"
+                    disabled={vm.clusterBusy}
                     onClick={addManual}
                 />
             </div>
@@ -139,7 +129,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
 
             <div className="flex-1 overflow-y-auto">
                 {groups.map(([group, items]) => {
-                    const groupIncluded = items.filter(item => !excluded.has(item.url)).length;
+                    const groupIncluded = items.filter(item => !isExcluded(item.url)).length;
                     return (
                         <div key={group} className="border-b border-neutral-dimmed">
                             <div className="flex items-center justify-between px-md py-sm bg-neutral-light">
@@ -150,23 +140,9 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                         content={`${groupIncluded}/${items.length}`}
                                     />
                                 </div>
-                                <div className="flex items-center gap-xs">
-                                    <Button
-                                        variant="tertiary"
-                                        size="sm"
-                                        text="All"
-                                        onClick={() => setGroup(items, true)}
-                                    />
-                                    <Button
-                                        variant="tertiary"
-                                        size="sm"
-                                        text="None"
-                                        onClick={() => setGroup(items, false)}
-                                    />
-                                </div>
                             </div>
                             {items.map(item => {
-                                const isIncluded = !excluded.has(item.url);
+                                const included = !isExcluded(item.url);
                                 return (
                                     <label
                                         key={item.url}
@@ -175,12 +151,18 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                         <input
                                             type="checkbox"
                                             className="cursor-pointer"
-                                            checked={isIncluded}
-                                            onChange={() => toggle(item.url)}
+                                            checked={included}
+                                            disabled={vm.clusterBusy}
+                                            onChange={() =>
+                                                void presenter.setDiscoverExclusion(
+                                                    item.url,
+                                                    included
+                                                )
+                                            }
                                         />
                                         <Text
                                             size="sm"
-                                            className={`font-mono truncate ${isIncluded ? "" : "text-neutral-strong line-through"}`}
+                                            className={`font-mono truncate ${included ? "" : "text-neutral-strong line-through"}`}
                                         >
                                             {pathOf(item.url)}
                                         </Text>
