@@ -39,6 +39,7 @@ import { RunLock } from "~/storage/RunLock.js";
 import { ComponentExtractionPermissionsFeature } from "~/features/permissions.js";
 import { KeyValueStageArtifactStore } from "~/storage/StageArtifactStore.js";
 import { S3BlobStore } from "~/storage/S3BlobStore.js";
+import { OverrideApplicatorService } from "~/features/shared/OverrideApplicator.js";
 import { StageTaskRunnerService } from "~/features/stages/StageTaskRunner.js";
 import { STAGE_TASKS } from "~/features/stages/stageTasks.js";
 import { DiscoverHandler } from "~/features/stages/discover/DiscoverHandler.js";
@@ -94,6 +95,8 @@ export const ComponentExtractionFeature = createFeature({
         container.register(ModelCallErrorRecorder);
         container.register(KeyValueStageArtifactStore);
         container.register(S3BlobStore);
+        // Override application (W8.1): turns a stage's machine output into its effective output.
+        container.register(OverrideApplicatorService);
         // The headless browser used by Capture. Stateless — safe to register alongside theme extraction's.
         container.register(ChromiumBrowserProvider);
 

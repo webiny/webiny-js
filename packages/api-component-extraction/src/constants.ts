@@ -102,3 +102,7 @@ export const stageArtifactKey = (
  * (a stale read there briefly reverted a just-completed stage in the run view).
  */
 export const runLedgerKey = (runId: string): string => `componentExtraction:ledger:${runId}`;
+
+/** Per-run reattachment outcomes (W8.1): one entry per override applied on this run, for the panel. */
+export const runReattachmentsKey = (runId: string): string =>
+    `componentExtraction:reattachments:${runId}`;

@@ -34,6 +34,7 @@ import {
 } from "~/domain/ledger.js";
 import { previousStage, stageArtifactKey, type Stage } from "~/constants.js";
 import type { Run, StageModelUsage } from "~/domain/types.js";
+import { OverrideApplicator } from "~/features/shared/OverrideApplicator.js";
 
 /** The model-backed stages, whose per-stage token aggregate the runner writes at stage close. */
 const MODEL_STAGES = new Set<Stage>(["classify", "plan", "generate"]);
@@ -109,7 +110,8 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         private identityContext: IdentityContext.Interface,
         private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface,
         private modelCallScope: ModelCallScope.Interface,
-        private modelCalls: ModelCallRepository.Interface
+        private modelCalls: ModelCallRepository.Interface,
+        private overrideApplicator: OverrideApplicator.Interface
     ) {}
 
     /** Sum a model-backed stage's recorded calls into its per-stage aggregate (retries/failures included). */
@@ -324,10 +326,30 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             return controller.response.continue(input, { seconds: 1 });
         }
 
+        // Apply the job's overrides to the machine output before it is handed on (W8.1): the stage
+        // records the effective artifact at its primary ref (what downstream reads) plus a `.machine`
+        // sibling, and the reattachment outcomes are stored per run. Best-effort — a failure here must not
+        // fail a stage that otherwise succeeded, so it falls back to the un-overridden artifacts.
+        let effectiveArtifacts = outcome.value.artifacts;
+        const applied = await this.overrideApplicator.apply({
+            stage,
+            jobId: job.id,
+            runId: run.id,
+            artifacts: outcome.value.artifacts,
+            artifactKey: name => stageArtifactKey(run.id, stage, targetVersion, name)
+        });
+        if (applied.isOk()) {
+            effectiveArtifacts = applied.value.artifacts;
+        } else {
+            await log.error({
+                message: `Could not apply overrides for "${stage}": ${applied.error.message}`
+            });
+        }
+
         // Apply the done transition to the latest ledger, not the snapshot from execute start (stale
         // after a long handler run), so completing this stage never reverts another stage's status.
         const latest = await latestRun(run);
-        let done = markStageDone(latest.stages, stage, outcome.value.artifacts, now());
+        let done = markStageDone(latest.stages, stage, effectiveArtifacts, now());
         // Single-writer point for a model-backed stage's token aggregate: sum its recorded calls once,
         // now that the stage is complete, so the UI reads a total rather than scanning while it runs.
         if (MODEL_STAGES.has(stage)) {
@@ -416,6 +438,7 @@ export const StageTaskRunnerService = createImplementation({
         IdentityContext,
         WebsocketsSendToIdentityUseCase,
         ModelCallScope,
-        ModelCallRepository
+        ModelCallRepository,
+        OverrideApplicator
     ]
 });

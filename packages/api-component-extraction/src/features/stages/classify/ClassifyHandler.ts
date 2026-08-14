@@ -84,7 +84,9 @@ class ClassifyHandlerImpl implements StageHandler.Interface {
             return Result.fail(new ExtractionValidationError("the cluster artifact is empty"));
         }
 
-        const clusters = clusterArtifact.clusters;
+        // Skip clusters a `cluster.exclude` override removed from the run (W8.1): they stay in the
+        // cluster artifact for the UI (muted) but must not be classified, planned or generated.
+        const clusters = clusterArtifact.clusters.filter(cluster => !cluster.excluded);
         const total = clusters.length;
 
         // Resume from the checkpoint if this is a continuation; start fresh otherwise.
