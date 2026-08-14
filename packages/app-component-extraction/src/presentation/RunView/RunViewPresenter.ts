@@ -57,6 +57,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     /** When the current "starting" indication began, so it can't hang if the task never progresses. */
     private pendingActionSince: number | null = null;
 
+    /** `stage:stageVersion` of the loaded artifact, so a re-run to a new version refetches it. */
+    private loadedArtifactKey: string | null = null;
+
     constructor(private gateway: ComponentExtractionGateway.Interface) {
         makeAutoObservable(this);
     }
@@ -139,6 +142,15 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                     (entry.status === "running" || entry.taskId !== this.loadedLogsTaskId)
                 ) {
                     await this.loadLogs(run, stage);
+                }
+                // Refetch the artifact when the open stage advances to a new version — a re-run writes
+                // its screenshots/crops under new keys, so a stale artifact would keep showing the old
+                // images even after the re-run completes.
+                if (entry && (entry.status === "done" || entry.status === "stale")) {
+                    const key = `${stage}:${entry.stageVersion}`;
+                    if (key !== this.loadedArtifactKey) {
+                        await this.loadArtifact(run, stage);
+                    }
                 }
                 // While a render pass is in flight, poll its results so thumbnails appear when ready.
                 if (stage === "generate" && this.vm.rendering) {
@@ -404,6 +416,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         // view (e.g. Plan expects `components`, Cluster `clusters`) can render against the wrong stage's
         // artifact during the async load and crash on a missing field.
         if (this.vm.artifactStage !== stage) {
+            this.loadedArtifactKey = null;
             runInAction(() => {
                 this.vm.artifact = null;
                 this.vm.artifactStage = stage;
@@ -412,6 +425,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         const entry = stageEntry(run, stage);
         // No artifact before a stage has produced output; clear so the view shows the right empty state.
         if (!entry || (entry.status !== "done" && entry.status !== "stale")) {
+            this.loadedArtifactKey = null;
             runInAction(() => {
                 this.vm.artifact = null;
                 this.vm.artifactStage = stage;
@@ -424,6 +438,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         });
         try {
             const artifact = await this.gateway.getStageArtifact(run.id, stage);
+            // Tag the loaded artifact with the stage version it came from, so a later re-run to a new
+            // version (whose artifacts — screenshots, crops — live under new keys) is refetched.
+            this.loadedArtifactKey = `${stage}:${entry.stageVersion}`;
             runInAction(() => {
                 this.vm.artifact = artifact;
                 this.vm.artifactStage = stage;
