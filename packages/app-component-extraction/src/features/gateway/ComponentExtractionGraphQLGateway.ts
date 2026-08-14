@@ -141,10 +141,10 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }));
     }
 
-    async getStageArtifact(runId: string, stage: string): Promise<unknown> {
+    async getStageArtifact(runId: string, stage: string, machine?: boolean): Promise<unknown> {
         const response = await this.client.execute<{
             componentExtractionGetStageArtifact: GqlEnvelope<unknown>;
-        }>({ query: GET_STAGE_ARTIFACT, variables: { runId, stage } });
+        }>({ query: GET_STAGE_ARTIFACT, variables: { runId, stage, machine } });
 
         return unwrap(response.componentExtractionGetStageArtifact);
     }

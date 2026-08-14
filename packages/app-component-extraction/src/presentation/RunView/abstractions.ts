@@ -50,9 +50,12 @@ export interface IRunViewVm {
     planProjection: PlanCostProjectionDto | null;
     /** The job's active overrides (W8), loaded when a correctable stage is open. */
     overrides: OverrideDto[];
+    /** The open stage's machine (un-overridden) artifact, so a corrected item can show its original value. */
+    machineArtifact: unknown;
+    machineArtifactStage: string | null;
     /** Cluster signatures currently selected for a bulk correction (merge/exclude) (W8.3). */
     selectedClusters: string[];
-    /** A cluster correction is being applied, so the controls show a busy state (W8.3). */
+    /** A correction is being applied, so the controls show a busy state (W8.3+). */
     clusterBusy: boolean;
 }
 
@@ -90,6 +93,15 @@ export interface IRunViewPresenter {
     excludeCluster(signature: string): Promise<void>;
     /** Clear an override, reverting that item to machine output (W8.3). */
     clearOverride(overrideId: string): Promise<void>;
+    /** Set a cluster's name and/or type (W8.4 classify controls). */
+    setClassification(signature: string, name?: string, type?: string): Promise<void>;
+    /** Edit, add or remove a planned component's prop (W8.5 plan controls). */
+    setPlanProp(
+        signature: string,
+        op: "edit" | "add" | "remove",
+        propName: string,
+        extra?: { newName?: string; type?: string }
+    ): Promise<void>;
 }
 
 export const RunViewPresenter = createAbstraction<IRunViewPresenter>(

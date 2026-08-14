@@ -120,10 +120,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionListRuns(jobId: ID!): ComponentExtractionRunListResponse!
         "Read a run, including its nine-stage ledger. The polling fallback to the websocket stream."
         componentExtractionGetRun(runId: ID!): ComponentExtractionRunResponse!
-        "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route."
+        "The structured artifact a stage produced, for the visibility screens. Image refs are served by the run-image route. Pass machine:true for the un-overridden (machine) artifact (W8)."
         componentExtractionGetStageArtifact(
             runId: ID!
             stage: String!
+            machine: Boolean
         ): ComponentExtractionArtifactResponse!
         "The rendered-component screenshots for a run (W7.7), keyed to the current Generate version. Image refs are served by the run-image route."
         componentExtractionGetRenders(runId: ID!): ComponentExtractionArtifactResponse!

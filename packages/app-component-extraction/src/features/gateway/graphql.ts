@@ -137,8 +137,8 @@ export const RENDER_COMPONENTS = /* GraphQL */ `
 `;
 
 export const GET_STAGE_ARTIFACT = /* GraphQL */ `
-    query GetComponentExtractionStageArtifact($runId: ID!, $stage: String!) {
-        componentExtractionGetStageArtifact(runId: $runId, stage: $stage) {
+    query GetComponentExtractionStageArtifact($runId: ID!, $stage: String!, $machine: Boolean) {
+        componentExtractionGetStageArtifact(runId: $runId, stage: $stage, machine: $machine) {
             data
             error {
                 code

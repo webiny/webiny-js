@@ -189,6 +189,18 @@ export interface ClusterArtifactDto {
     clusters: ClusterDto[];
 }
 
+export interface ClassifiedClusterDto {
+    cluster: ClusterDto;
+    type: string;
+    name: string;
+    confidence: number;
+    unclassified: boolean;
+}
+
+export interface ClassifyArtifactDto {
+    clusters: ClassifiedClusterDto[];
+}
+
 // ----- Overrides (W8) ----------------------------------------------------------------------------
 
 /** A correction payload — loosely typed on the frontend; the kind discriminates it. */

@@ -45,6 +45,8 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         modelCallsLoading: false,
         planProjection: null,
         overrides: [],
+        machineArtifact: null,
+        machineArtifactStage: null,
         selectedClusters: [],
         clusterBusy: false
     };
@@ -357,6 +359,57 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    /** Load the machine (un-overridden) artifact for a stage, so a corrected item can show its original. */
+    private async loadMachineArtifact(run: RunDto, stage: string): Promise<void> {
+        try {
+            const machine = await this.gateway.getStageArtifact(run.id, stage, true);
+            runInAction(() => {
+                this.vm.machineArtifact = machine;
+                this.vm.machineArtifactStage = stage;
+            });
+        } catch {
+            runInAction(() => {
+                this.vm.machineArtifact = null;
+                this.vm.machineArtifactStage = stage;
+            });
+        }
+    }
+
+    async setClassification(signature: string, name?: string, type?: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        await this.runCorrection(() =>
+            this.gateway.setOverride(runId, "classify", signature, {
+                kind: "classify.set",
+                name,
+                type
+            })
+        );
+    }
+
+    async setPlanProp(
+        signature: string,
+        op: "edit" | "add" | "remove",
+        propName: string,
+        extra?: { newName?: string; type?: string }
+    ): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        await this.runCorrection(() =>
+            this.gateway.setOverride(runId, "plan", signature, {
+                kind: "plan.prop",
+                op,
+                propName,
+                newName: extra?.newName,
+                type: extra?.type
+            })
+        );
+    }
+
     toggleClusterSelection(signature: string): void {
         runInAction(() => {
             this.vm.selectedClusters = this.vm.selectedClusters.includes(signature)
@@ -441,7 +494,8 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
      */
     private async runCorrection(action: () => Promise<OverrideDto[]>): Promise<void> {
         const runId = this.vm.run?.id;
-        if (!runId) {
+        const stage = this.vm.selectedStage;
+        if (!runId || !stage) {
             return;
         }
         runInAction(() => {
@@ -457,9 +511,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.run = run;
                 this.vm.clusterBusy = false;
             });
-            // Force a refetch of the effective artifact — a correction does not bump the stage version.
+            // Force a refetch of the open stage's effective artifact — a correction does not bump the
+            // stage version — and refresh its machine copy for the "was" hint.
             this.loadedArtifactKey = null;
-            await this.loadArtifact(run, "cluster");
+            await this.loadArtifact(run, stage);
         } catch (error) {
             runInAction(() => {
                 this.vm.clusterBusy = false;
@@ -585,9 +640,13 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             if (stage === "plan") {
                 void this.loadPlanProjection(run);
             }
-            // The Cluster stage's correction controls need the job's overrides for their badges (W8.3).
-            if (stage === "cluster") {
+            // The correction stages need the job's overrides (badges) and, for classify/plan, the
+            // machine artifact so an edited item can show its original machine value (W8.3–8.5).
+            if (stage === "cluster" || stage === "classify" || stage === "plan") {
                 void this.loadOverrides(run);
+            }
+            if (stage === "classify" || stage === "plan") {
+                void this.loadMachineArtifact(run, stage);
             }
         } catch {
             runInAction(() => {

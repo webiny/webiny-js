@@ -398,7 +398,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
             runRepository: RunRepository.Interface,
             store: StageArtifactStore.Interface
         ) {
-            return ({ args }: { args: { runId: string; stage: string } }) =>
+            return ({ args }: { args: { runId: string; stage: string; machine?: boolean } }) =>
                 resolve(async () => {
                     if (!(await permissions.canRead("componentExtraction"))) {
                         throw new Error("You do not have permission to view component extraction.");
@@ -411,8 +411,17 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw runResult.error;
                     }
                     const entry = stageEntry(runResult.value.stages, args.stage);
-                    // A stage stores its output under a single artifact key; return its contents verbatim.
-                    const key = entry ? Object.values(entry.artifacts)[0] : undefined;
+                    // The primary ref is the effective (overridden) artifact; `machine` returns the
+                    // un-overridden one from its `<name>.machine` sibling (W8), falling back to the
+                    // primary when no override has been applied.
+                    const artifacts = entry?.artifacts ?? {};
+                    const machineKey = Object.keys(artifacts).find(name =>
+                        name.endsWith(".machine")
+                    );
+                    const key =
+                        args.machine && machineKey
+                            ? artifacts[machineKey]
+                            : Object.values(artifacts)[0];
                     if (!key) {
                         return null;
                     }

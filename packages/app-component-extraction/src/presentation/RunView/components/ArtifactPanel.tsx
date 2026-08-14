@@ -9,6 +9,7 @@ import { DiscoverView } from "./stages/DiscoverView.js";
 import { CaptureView } from "./stages/CaptureView.js";
 import { SegmentView } from "./stages/SegmentView.js";
 import { ClusterView } from "./stages/ClusterView.js";
+import { ClassifyView } from "./stages/ClassifyView.js";
 import { PlanView } from "./stages/PlanView.js";
 import { GenerateView } from "./stages/GenerateView.js";
 
@@ -33,6 +34,8 @@ const StageView = ({
             return <SegmentView presenter={presenter} />;
         case "cluster":
             return <ClusterView presenter={presenter} />;
+        case "classify":
+            return <ClassifyView presenter={presenter} />;
         case "plan":
             return <PlanView presenter={presenter} />;
         case "generate":
@@ -47,6 +50,7 @@ const VIEW_STAGES = new Set<Stage>([
     "capture",
     "segment",
     "cluster",
+    "classify",
     "plan",
     "generate"
 ]);
