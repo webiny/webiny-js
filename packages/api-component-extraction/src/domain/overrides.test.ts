@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+    applyCaptureOverrides,
     applyClassifyOverrides,
     applyClusterOverrides,
     applyPlanOverrides,
+    decisionsFromOverrides,
     effectiveClusterThreshold,
     excludedPageUrls,
     normalizeUrl,
@@ -279,6 +281,43 @@ describe("applyPlanOverrides", () => {
         const names = result.effective.components[0].props.map(p => p.name);
         expect(names).toEqual(["heading", "subtitle"]);
         expect(result.reattachments.every(r => r.status === "applied")).toBe(true);
+    });
+});
+
+describe("applyCaptureOverrides (page exclusion)", () => {
+    const artifact = {
+        pages: [
+            { url: "https://x.com/a" },
+            { url: "https://x.com/b/" },
+            { url: "https://x.com/c" }
+        ],
+        failed: ["https://x.com/d"]
+    } as never;
+
+    it("drops the excluded pages (matched by normalised URL) and reports reattachment", () => {
+        const result = applyCaptureOverrides(artifact, [
+            override("capture", "https://x.com/b", { kind: "page.exclude" }),
+            override("capture", "https://x.com/gone", { kind: "page.exclude" })
+        ]);
+        expect(result.effective.pages.map(p => p.url)).toEqual([
+            "https://x.com/a",
+            "https://x.com/c"
+        ]);
+        const applied = result.reattachments.find(r => r.signature === "https://x.com/b");
+        const missing = result.reattachments.find(r => r.signature === "https://x.com/gone");
+        expect(applied?.status).toBe("applied");
+        expect(missing?.status).toBe("not-applicable");
+    });
+});
+
+describe("decisionsFromOverrides", () => {
+    it("builds the accept/reject map from generate.decision overrides", () => {
+        const map = decisionsFromOverrides([
+            override("generate", "A", { kind: "generate.decision", decision: "accepted" }),
+            override("generate", "B", { kind: "generate.decision", decision: "rejected" }),
+            override("cluster", "C", { kind: "cluster.exclude" })
+        ]);
+        expect(map).toEqual({ A: "accepted", B: "rejected" });
     });
 });
 

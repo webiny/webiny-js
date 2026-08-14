@@ -4,17 +4,14 @@ import { UpdateRemoteComponentUseCase } from "@webiny/remote-components/api/feat
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
-import { overridesForStage } from "~/domain/overrides.js";
+import { decisionsFromOverrides, overridesForStage } from "~/domain/overrides.js";
 import type { Correction } from "~/domain/types.js";
 import type {
     AssembleArtifact,
-    DecisionsArtifact,
     GenerateArtifact,
     PromoteArtifact,
     PromotedComponent
 } from "~/domain/artifacts.js";
-import { stageArtifactKey } from "~/constants.js";
-import { stageEntry } from "~/domain/ledger.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 /** The promote overrides for a component signature: whether it's selected, and its collision resolution. */
@@ -87,30 +84,24 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             existingItems.map(item => [item.name, item.id])
         );
 
-        // The operator's Promote corrections (W8.6): which accepted components to promote, and how to
-        // resolve a name collision with the Library (Replace, or Keep both with a rename).
-        const promoteOverrides = await this.overrides.listByJob(context.job.id);
+        // The job's overrides (W8): the Promote corrections — which accepted components to promote and
+        // how to resolve a Library name collision — and the accept/reject decisions, both now overrides
+        // (keyed by cluster signature) so they reattach across runs.
+        const jobOverrides = await this.overrides.listByJob(context.job.id);
+        const allOverrides = jobOverrides.isOk() ? jobOverrides.value : [];
         const choices = new Map<string, PromoteChoice>();
-        if (promoteOverrides.isOk()) {
-            for (const override of overridesForStage(promoteOverrides.value, "promote")) {
-                const choice = choices.get(override.structuralSignature) ?? { selected: true };
-                if (override.correction.kind === "promote.select") {
-                    choice.selected = override.correction.selected;
-                } else if (override.correction.kind === "promote.collision") {
-                    choice.collision = override.correction;
-                }
-                choices.set(override.structuralSignature, choice);
+        for (const override of overridesForStage(allOverrides, "promote")) {
+            const choice = choices.get(override.structuralSignature) ?? { selected: true };
+            if (override.correction.kind === "promote.select") {
+                choice.selected = override.correction.selected;
+            } else if (override.correction.kind === "promote.collision") {
+                choice.collision = override.correction;
             }
+            choices.set(override.structuralSignature, choice);
         }
 
-        // The operator's accept/reject decisions (W7.8), keyed to the Generate version. When any decision
-        // exists, only accepted components are promoted; with none, every valid component is (as before).
-        const generateVersion = stageEntry(context.run.stages, "generate")?.stageVersion ?? 0;
-        const decisionsResult = await context.store.getJson<DecisionsArtifact>(
-            stageArtifactKey(context.run.id, "generate", generateVersion, "decisions")
-        );
-        const decisions =
-            decisionsResult.isOk() && decisionsResult.value ? decisionsResult.value.decisions : {};
+        // When any decision exists, only accepted components are promoted; with none, every valid one is.
+        const decisions = decisionsFromOverrides(allOverrides);
         const hasDecisions = Object.keys(decisions).length > 0;
 
         const promoted: PromotedComponent[] = [];

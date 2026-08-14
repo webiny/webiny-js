@@ -32,6 +32,16 @@ const describe = (correction: CorrectionDto): string => {
             return `${String(correction.op)} prop "${String(correction.propName)}"`;
         case "page.exclude":
             return "Excluded a page";
+        case "generate.decision":
+            return `Marked ${String(correction.decision)}`;
+        case "generate.regenerate":
+            return "Regenerated with an instruction";
+        case "promote.select":
+            return correction.selected ? "Selected for promotion" : "Deselected from promotion";
+        case "promote.collision":
+            return correction.resolution === "replace"
+                ? "On collision: replace"
+                : "On collision: keep both";
         default:
             return correction.kind;
     }

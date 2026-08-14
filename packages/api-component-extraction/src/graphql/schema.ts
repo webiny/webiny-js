@@ -14,11 +14,9 @@ import {
 import { StageArtifactStore } from "~/domain/stage.js";
 import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
 import type {
-    CaptureArtifact,
     ClassifyArtifact,
     ClusterArtifact,
     ComponentDecision,
-    DecisionsArtifact,
     DiscoverArtifact,
     DiscoveredUrl,
     PlanArtifact
@@ -40,6 +38,7 @@ import {
 import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
 import { OverrideApplicator, stageArtifactName } from "~/features/shared/OverrideApplicator.js";
+import { decisionsFromOverrides, normalizeUrl } from "~/domain/overrides.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 
 /** Thin resolvers: authorize, delegate, map onto the `{ data, error }` envelope. */
@@ -692,11 +691,19 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
     builder.addResolver({
         path: "Mutation.componentExtractionExcludeCapturedPages",
-        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            OverrideRepository,
+            CorrectionRepository,
+            OverrideApplicator
+        ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
-            store: StageArtifactStore.Interface
+            overrides: OverrideRepository.Interface,
+            corrections: CorrectionRepository.Interface,
+            applicator: OverrideApplicator.Interface
         ) {
             return ({ args }: { args: { runId: string; urls: string[] } }) =>
                 resolve(async () => {
@@ -710,43 +717,42 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     const run = runResult.value;
 
                     const capture = stageEntry(run.stages, "capture");
-                    const captureKey = capture ? capture.artifacts.pages : undefined;
-                    if (!capture || capture.status !== "done" || !captureKey) {
+                    if (!capture || (capture.status !== "done" && capture.status !== "stale")) {
                         throw new Error("Capture has not produced pages to edit.");
                     }
 
-                    const artifactResult = await store.getJson<CaptureArtifact>(captureKey);
-                    if (artifactResult.isFail() || !artifactResult.value) {
-                        throw new Error("The capture artifact could not be read.");
+                    // Page exclusion is now a job override keyed by normalised URL (W8): it reattaches on
+                    // every run, filters the captured pages via the applicator, and cascades to Segment.
+                    for (const url of args.urls) {
+                        const signature = normalizeUrl(url);
+                        const upserted = await overrides.upsert({
+                            jobId: run.jobId,
+                            stage: "capture",
+                            structuralSignature: signature,
+                            correction: { kind: "page.exclude" },
+                            originRunId: run.id
+                        });
+                        if (upserted.isFail()) {
+                            throw upserted.error;
+                        }
+                        await corrections.create({
+                            runId: run.id,
+                            jobId: run.jobId,
+                            stage: "capture",
+                            stageVersion: capture.stageVersion,
+                            signature,
+                            kind: "page.exclude",
+                            machineValue: { url },
+                            humanValue: { kind: "page.exclude" }
+                        });
                     }
 
-                    // Drop the excluded URLs from both the captured pages and the failed list, so neither
-                    // flows downstream. Blobs are left to the job's retention TTL rather than deleted here.
-                    const excluded = new Set(args.urls);
-                    const artifact = artifactResult.value;
-                    const pages = artifact.pages.filter(page => !excluded.has(page.url));
-                    const failed = artifact.failed.filter(url => !excluded.has(url));
-                    if (pages.length === 0) {
-                        throw new Error(
-                            "Excluding these pages would leave the run with nothing to segment."
-                        );
+                    await reapplyStage(applicator, runRepository, run, "capture");
+                    const updated = await runRepository.get(run.id);
+                    if (updated.isFail()) {
+                        throw updated.error;
                     }
-                    const updated: CaptureArtifact = { ...artifact, pages, failed };
-                    const written = await store.putJson(captureKey, updated);
-                    if (written.isFail()) {
-                        throw written.error;
-                    }
-
-                    // Capture itself stays done (fewer pages); Segment and everything after must re-run.
-                    const stages = markStaleFrom(run.stages, "segment");
-                    const persisted = await runRepository.update(run.id, {
-                        stages,
-                        counts: { ...run.counts, pages: pages.length }
-                    });
-                    if (persisted.isFail()) {
-                        throw persisted.error;
-                    }
-                    return persisted.value;
+                    return updated.value;
                 });
         }
     });
@@ -787,11 +793,11 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
 
     builder.addResolver({
         path: "Query.componentExtractionGetDecisions",
-        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        dependencies: [ComponentExtractionPermissions, RunRepository, OverrideRepository],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
-            store: StageArtifactStore.Interface
+            overrides: OverrideRepository.Interface
         ) {
             return ({ args }: { args: { runId: string } }) =>
                 resolve(async () => {
@@ -802,29 +808,26 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     if (runResult.isFail()) {
                         throw runResult.error;
                     }
-                    const generate = stageEntry(runResult.value.stages, "generate");
-                    if (!generate) {
-                        return { decisions: {} };
-                    }
-                    const key = stageArtifactKey(
-                        args.runId,
-                        "generate",
-                        generate.stageVersion,
-                        "decisions"
-                    );
-                    const artifact = await store.getJson<DecisionsArtifact>(key);
-                    return artifact.isOk() && artifact.value ? artifact.value : { decisions: {} };
+                    // Decisions are now generate.decision overrides on the job (W8), so they reattach.
+                    const list = await overrides.listByJob(runResult.value.jobId);
+                    return { decisions: list.isOk() ? decisionsFromOverrides(list.value) : {} };
                 });
         }
     });
 
     builder.addResolver({
         path: "Mutation.componentExtractionSetComponentDecision",
-        dependencies: [ComponentExtractionPermissions, RunRepository, StageArtifactStore],
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            OverrideRepository,
+            CorrectionRepository
+        ],
         resolver(
             permissions: ComponentExtractionPermissions.Interface,
             runRepository: RunRepository.Interface,
-            store: StageArtifactStore.Interface
+            overrides: OverrideRepository.Interface,
+            corrections: CorrectionRepository.Interface
         ) {
             return ({ args }: { args: { runId: string; signature: string; decision: string } }) =>
                 resolve(async () => {
@@ -838,32 +841,54 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     if (runResult.isFail()) {
                         throw runResult.error;
                     }
-                    const generate = stageEntry(runResult.value.stages, "generate");
+                    const run = runResult.value;
+                    const generate = stageEntry(run.stages, "generate");
                     if (!generate || !generate.artifacts.components) {
                         throw new Error("Generate has not produced components to decide on.");
                     }
-                    const key = stageArtifactKey(
-                        args.runId,
-                        "generate",
-                        generate.stageVersion,
-                        "decisions"
-                    );
-                    const current = await store.getJson<DecisionsArtifact>(key);
-                    const decisions: Record<string, ComponentDecision> =
-                        current.isOk() && current.value ? { ...current.value.decisions } : {};
 
                     if (args.decision === "none") {
-                        delete decisions[args.signature];
+                        // Clear the decision override for this component.
+                        const list = await overrides.listByJob(run.jobId);
+                        const target = list.isOk()
+                            ? list.value.find(
+                                  override =>
+                                      override.stage === "generate" &&
+                                      override.structuralSignature === args.signature &&
+                                      override.correction.kind === "generate.decision"
+                              )
+                            : undefined;
+                        if (target) {
+                            await overrides.delete(target.id);
+                        }
                     } else {
-                        decisions[args.signature] = args.decision as ComponentDecision;
+                        const upserted = await overrides.upsert({
+                            jobId: run.jobId,
+                            stage: "generate",
+                            structuralSignature: args.signature,
+                            correction: {
+                                kind: "generate.decision",
+                                decision: args.decision as ComponentDecision
+                            },
+                            originRunId: run.id
+                        });
+                        if (upserted.isFail()) {
+                            throw upserted.error;
+                        }
+                        await corrections.create({
+                            runId: run.id,
+                            jobId: run.jobId,
+                            stage: "generate",
+                            stageVersion: generate.stageVersion,
+                            signature: args.signature,
+                            kind: "generate.decision",
+                            machineValue: null,
+                            humanValue: { decision: args.decision }
+                        });
                     }
 
-                    const updated: DecisionsArtifact = { decisions };
-                    const written = await store.putJson(key, updated);
-                    if (written.isFail()) {
-                        throw written.error;
-                    }
-                    return updated;
+                    const list = await overrides.listByJob(run.jobId);
+                    return { decisions: list.isOk() ? decisionsFromOverrides(list.value) : {} };
                 });
         }
     });

@@ -8,12 +8,15 @@ import type {
     ReattachStatus
 } from "./types.js";
 import type {
+    CaptureArtifact,
     ClassifyArtifact,
     Cluster,
     ClusterArtifact,
     ClusterMember,
+    DiscoverArtifact,
     PlanArtifact,
-    SectionDigest
+    SectionDigest,
+    SegmentArtifact
 } from "./artifacts.js";
 
 /**
@@ -351,6 +354,75 @@ export const excludedPageUrls = (overrides: Override[]): Set<string> =>
             .filter(override => override.correction.kind === "page.exclude")
             .map(override => override.structuralSignature)
     );
+
+/** Per page-exclusion override: applied if its URL is present this run (so it's removed), else n/a. */
+const pageExclusionReattachments = (
+    overrides: Override[],
+    presentUrls: Set<string>
+): Reattachment[] =>
+    overrides
+        .filter(override => override.correction.kind === "page.exclude")
+        .map(override =>
+            presentUrls.has(override.structuralSignature)
+                ? reattachment(override, "applied", null)
+                : reattachment(override, "not-applicable", "the excluded page is absent this run")
+        );
+
+/** Apply page-exclusion overrides to the Discover URL list — drop the excluded URLs. */
+export const applyDiscoverOverrides = (
+    artifact: DiscoverArtifact,
+    overrides: Override[]
+): ApplyResult<DiscoverArtifact> => {
+    const excluded = excludedPageUrls(overrides);
+    const present = new Set(artifact.urls.map(entry => normalizeUrl(entry.url)));
+    const urls = artifact.urls.filter(entry => !excluded.has(normalizeUrl(entry.url)));
+    return {
+        effective: { ...artifact, urls },
+        reattachments: pageExclusionReattachments(overrides, present)
+    };
+};
+
+/** Apply page-exclusion overrides to the captured pages — drop the excluded ones from pages and failed. */
+export const applyCaptureOverrides = (
+    artifact: CaptureArtifact,
+    overrides: Override[]
+): ApplyResult<CaptureArtifact> => {
+    const excluded = excludedPageUrls(overrides);
+    const present = new Set(artifact.pages.map(page => normalizeUrl(page.url)));
+    const pages = artifact.pages.filter(page => !excluded.has(normalizeUrl(page.url)));
+    const failed = artifact.failed.filter(url => !excluded.has(normalizeUrl(url)));
+    return {
+        effective: { ...artifact, pages, failed },
+        reattachments: pageExclusionReattachments(overrides, present)
+    };
+};
+
+/** Apply page-exclusion overrides to the segmented pages — drop the excluded ones. */
+export const applySegmentOverrides = (
+    artifact: SegmentArtifact,
+    overrides: Override[]
+): ApplyResult<SegmentArtifact> => {
+    const excluded = excludedPageUrls(overrides);
+    const present = new Set(artifact.pages.map(page => normalizeUrl(page.url)));
+    const pages = artifact.pages.filter(page => !excluded.has(normalizeUrl(page.url)));
+    return {
+        effective: { ...artifact, pages },
+        reattachments: pageExclusionReattachments(overrides, present)
+    };
+};
+
+/** The accept/reject decision map (signature -> decision) from a job's generate.decision overrides (W8). */
+export const decisionsFromOverrides = (
+    overrides: Override[]
+): Record<string, "accepted" | "rejected"> => {
+    const map: Record<string, "accepted" | "rejected"> = {};
+    for (const override of overrides) {
+        if (override.stage === "generate" && override.correction.kind === "generate.decision") {
+            map[override.structuralSignature] = override.correction.decision;
+        }
+    }
+    return map;
+};
 
 /** The effective cluster similarity threshold — the latest parameter override, or the fallback. */
 export const effectiveClusterThreshold = (overrides: Override[], fallback: number): number => {

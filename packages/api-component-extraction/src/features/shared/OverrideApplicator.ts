@@ -5,12 +5,22 @@ import { OverrideRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
 import type { ExtractionError } from "~/domain/errors.js";
 import type { Reattachment } from "~/domain/types.js";
-import type { ClassifyArtifact, ClusterArtifact, PlanArtifact } from "~/domain/artifacts.js";
+import type {
+    CaptureArtifact,
+    ClassifyArtifact,
+    ClusterArtifact,
+    DiscoverArtifact,
+    PlanArtifact,
+    SegmentArtifact
+} from "~/domain/artifacts.js";
 import {
     type ApplyResult,
+    applyCaptureOverrides,
     applyClassifyOverrides,
     applyClusterOverrides,
+    applyDiscoverOverrides,
     applyPlanOverrides,
+    applySegmentOverrides,
     overrideMode,
     overridesForStage
 } from "~/domain/overrides.js";
@@ -60,6 +70,21 @@ interface StageApplier {
 }
 
 const STAGE_APPLIERS: Partial<Record<Stage, StageApplier>> = {
+    discover: {
+        name: "urls",
+        apply: (artifact, overrides) =>
+            applyDiscoverOverrides(artifact as DiscoverArtifact, overrides)
+    },
+    capture: {
+        name: "pages",
+        apply: (artifact, overrides) =>
+            applyCaptureOverrides(artifact as CaptureArtifact, overrides)
+    },
+    segment: {
+        name: "sections",
+        apply: (artifact, overrides) =>
+            applySegmentOverrides(artifact as SegmentArtifact, overrides)
+    },
     cluster: {
         name: "clusters",
         apply: (artifact, overrides) =>
