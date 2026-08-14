@@ -4,8 +4,10 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { componentExtractionTypeDefs } from "./typeDefs.js";
 import { ComponentExtractionPermissions } from "~/features/permissions.js";
 import {
+    CorrectionRepository,
     JobRepository,
     ModelCallRepository,
+    OverrideRepository,
     RunLock,
     RunRepository
 } from "~/domain/abstractions.js";
@@ -13,25 +15,31 @@ import { StageArtifactStore } from "~/domain/stage.js";
 import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
 import type {
     CaptureArtifact,
+    ClassifyArtifact,
+    ClusterArtifact,
     ComponentDecision,
     DecisionsArtifact,
     DiscoverArtifact,
     DiscoveredUrl,
     PlanArtifact
 } from "~/domain/artifacts.js";
+import type { Correction, Run } from "~/domain/types.js";
 import {
     DEFAULT_PAGE_CAP,
     MAX_PAGE_CAP,
     previousStage,
     REGENERATE_COMPONENT_TASK_ID,
     RENDER_COMPONENTS_TASK_ID,
+    runReattachmentsKey,
     stageArtifactKey,
+    stagesAfter,
     STAGES,
     stageTaskId,
     type Stage
 } from "~/constants.js";
 import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
+import { OverrideApplicator, stageArtifactName } from "~/features/shared/OverrideApplicator.js";
 
 /** Thin resolvers: authorize, delegate, map onto the `{ data, error }` envelope. */
 const resolve = async (fn: () => Promise<unknown>) => {
@@ -43,6 +51,73 @@ const resolve = async (fn: () => Promise<unknown>) => {
 };
 
 const isStage = (value: string): value is Stage => (STAGES as readonly string[]).includes(value);
+
+/** The machine value for the affected item (W8.2 correction log) — best-effort per stage. */
+const extractMachineValue = (stage: Stage, signature: string, artifact: unknown): unknown => {
+    if (!artifact) {
+        return null;
+    }
+    if (stage === "classify") {
+        const found = (artifact as ClassifyArtifact).clusters.find(
+            entry => entry.cluster.signature === signature
+        );
+        return found ? { name: found.name, type: found.type, confidence: found.confidence } : null;
+    }
+    if (stage === "plan") {
+        const found = (artifact as PlanArtifact).components.find(
+            component => component.signature === signature
+        );
+        return found ? { props: found.props } : null;
+    }
+    if (stage === "cluster") {
+        const found = (artifact as ClusterArtifact).clusters.find(
+            cluster => cluster.representative.signature === signature
+        );
+        return found
+            ? {
+                  signature: found.signature,
+                  members: found.members.length,
+                  excluded: !!found.excluded
+              }
+            : null;
+    }
+    return null;
+};
+
+/**
+ * Re-apply a stage's overrides in place and mark everything downstream stale (W8.1). An artifact override
+ * edits the stage's output without re-running it, so the effective artifact is recomputed from the machine
+ * one here and the downstream stages — whose inputs changed — go stale.
+ */
+const reapplyStage = async (
+    applicator: OverrideApplicator.Interface,
+    runRepository: RunRepository.Interface,
+    run: Run,
+    stage: Stage
+): Promise<void> => {
+    const entry = stageEntry(run.stages, stage);
+    if (!entry) {
+        return;
+    }
+    const applied = await applicator.apply({
+        stage,
+        jobId: run.jobId,
+        runId: run.id,
+        artifacts: entry.artifacts,
+        artifactKey: name => stageArtifactKey(run.id, stage, entry.stageVersion, name)
+    });
+    let stages = run.stages;
+    if (applied.isOk()) {
+        stages = stages.map(current =>
+            current.stage === stage ? { ...current, artifacts: applied.value.artifacts } : current
+        );
+    }
+    const downstream = stagesAfter(stage)[0];
+    if (downstream) {
+        stages = markStaleFrom(stages, downstream);
+    }
+    await runRepository.update(run.id, { stages });
+};
 
 export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): void => {
     builder.addTypeDefs(componentExtractionTypeDefs);
@@ -343,6 +418,182 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
                     const artifact = await store.getJson(key);
                     return artifact.isOk() ? artifact.value : null;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionListOverrides",
+        dependencies: [ComponentExtractionPermissions, OverrideRepository],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            overrides: OverrideRepository.Interface
+        ) {
+            return ({ args }: { args: { jobId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const result = await overrides.listByJob(args.jobId);
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionGetReattachments",
+        dependencies: [ComponentExtractionPermissions, StageArtifactStore],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            store: StageArtifactStore.Interface
+        ) {
+            return ({ args }: { args: { runId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const result = await store.getJson(runReattachmentsKey(args.runId));
+                    return result.isOk() && Array.isArray(result.value) ? result.value : [];
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionSetOverride",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            OverrideRepository,
+            CorrectionRepository,
+            StageArtifactStore,
+            OverrideApplicator
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            overrides: OverrideRepository.Interface,
+            corrections: CorrectionRepository.Interface,
+            store: StageArtifactStore.Interface,
+            applicator: OverrideApplicator.Interface
+        ) {
+            return ({
+                args
+            }: {
+                args: { runId: string; stage: string; signature: string; correction: unknown };
+            }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to edit component extraction.");
+                    }
+                    if (!isStage(args.stage)) {
+                        throw new Error(`Unknown stage "${args.stage}".`);
+                    }
+                    const stage = args.stage;
+                    const correction = args.correction as Correction;
+                    if (!correction || typeof correction.kind !== "string") {
+                        throw new Error("A correction with a kind is required.");
+                    }
+
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    const entry = stageEntry(run.stages, stage);
+                    if (!entry || (entry.status !== "done" && entry.status !== "stale")) {
+                        throw new Error(`Run "${stage}" before correcting it.`);
+                    }
+
+                    // Capture the machine value for the affected item for the correction log (W8.2).
+                    const name = stageArtifactName(stage);
+                    let machineValue: unknown = null;
+                    if (name) {
+                        const machineRef =
+                            entry.artifacts[`${name}.machine`] ?? entry.artifacts[name];
+                        if (machineRef) {
+                            const machine = await store.getJson(machineRef);
+                            if (machine.isOk()) {
+                                machineValue = extractMachineValue(
+                                    stage,
+                                    args.signature,
+                                    machine.value
+                                );
+                            }
+                        }
+                    }
+
+                    const upserted = await overrides.upsert({
+                        jobId: run.jobId,
+                        stage,
+                        structuralSignature: args.signature,
+                        correction,
+                        originRunId: run.id
+                    });
+                    if (upserted.isFail()) {
+                        throw upserted.error;
+                    }
+
+                    // No correction is possible through a route that bypasses the log (W8.2).
+                    await corrections.create({
+                        runId: run.id,
+                        jobId: run.jobId,
+                        stage,
+                        stageVersion: entry.stageVersion,
+                        signature: args.signature,
+                        kind: correction.kind,
+                        machineValue,
+                        humanValue: correction
+                    });
+
+                    await reapplyStage(applicator, runRepository, run, stage);
+
+                    const list = await overrides.listByJob(run.jobId);
+                    return list.isOk() ? list.value : [];
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionClearOverride",
+        dependencies: [
+            ComponentExtractionPermissions,
+            RunRepository,
+            OverrideRepository,
+            OverrideApplicator
+        ],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            overrides: OverrideRepository.Interface,
+            applicator: OverrideApplicator.Interface
+        ) {
+            return ({ args }: { args: { runId: string; overrideId: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to edit component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+                    const list = await overrides.listByJob(run.jobId);
+                    const target = list.isOk()
+                        ? list.value.find(override => override.id === args.overrideId)
+                        : undefined;
+                    if (!target) {
+                        throw new Error("Override not found.");
+                    }
+                    const deleted = await overrides.delete(args.overrideId);
+                    if (deleted.isFail()) {
+                        throw deleted.error;
+                    }
+                    await reapplyStage(applicator, runRepository, run, target.stage);
+                    const remaining = await overrides.listByJob(run.jobId);
+                    return remaining.isOk() ? remaining.value : [];
                 });
         }
     });

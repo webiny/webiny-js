@@ -133,6 +133,10 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionListModelCalls(runId: ID!): ComponentExtractionArtifactResponse!
         "Projected generation cost for a run's plan (W7.9): component count × mean tokens/generate-call from prior runs of the job."
         componentExtractionProjectPlanCost(runId: ID!): ComponentExtractionArtifactResponse!
+        "A job's active overrides (W8.1) — the corrections that reapply across its runs."
+        componentExtractionListOverrides(jobId: ID!): ComponentExtractionArtifactResponse!
+        "A run's override reattachment outcomes (W8.1): applied, not-applicable or conflicting, for the panel."
+        componentExtractionGetReattachments(runId: ID!): ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {
@@ -167,5 +171,17 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             signature: String!
             instruction: String!
         ): ComponentExtractionTaskResponse!
+        "Set (upsert) a job override from a run (W8.1). Re-corrects in place, marks downstream stale, and appends to the correction log. Returns the job's overrides."
+        componentExtractionSetOverride(
+            runId: ID!
+            stage: String!
+            signature: String!
+            correction: JSON!
+        ): ComponentExtractionArtifactResponse!
+        "Clear a job override (W8.1), reverting that item to machine output and marking downstream stale. Returns the job's overrides."
+        componentExtractionClearOverride(
+            runId: ID!
+            overrideId: ID!
+        ): ComponentExtractionArtifactResponse!
     }
 `;

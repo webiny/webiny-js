@@ -76,6 +76,9 @@ const STAGE_APPLIERS: Partial<Record<Stage, StageApplier>> = {
     }
 };
 
+/** The artifact name whose overrides a stage transforms, or undefined for a stage without an applier. */
+export const stageArtifactName = (stage: Stage): string | undefined => STAGE_APPLIERS[stage]?.name;
+
 class OverrideApplicatorImpl implements IOverrideApplicator {
     constructor(
         private overrides: OverrideRepository.Interface,
@@ -92,6 +95,11 @@ class OverrideApplicatorImpl implements IOverrideApplicator {
             return Result.ok(unchanged);
         }
 
+        // Always apply against the MACHINE ref, never a previously-computed effective — so re-applying
+        // after a correction is set or cleared is idempotent, not a double-apply.
+        const machineKey =
+            params.artifacts[`${applier.name}.machine`] ?? params.artifacts[applier.name];
+
         const stored = await this.overrides.listByJob(params.jobId);
         const overrides = stored.isOk()
             ? overridesForStage(stored.value, params.stage).filter(
@@ -99,10 +107,17 @@ class OverrideApplicatorImpl implements IOverrideApplicator {
               )
             : [];
         if (overrides.length === 0) {
+            // No overrides (or all cleared): revert the primary ref to the machine artifact and clear this
+            // stage's reattachments.
+            await this.recordReattachments(params.runId, params.stage, []);
+            if (params.artifacts[`${applier.name}.machine`]) {
+                const reverted = { ...params.artifacts, [applier.name]: machineKey };
+                delete reverted[`${applier.name}.machine`];
+                return Result.ok({ artifacts: reverted, reattachments: [] });
+            }
             return Result.ok(unchanged);
         }
 
-        const machineKey = params.artifacts[applier.name];
         if (!machineKey) {
             return Result.ok(unchanged);
         }
