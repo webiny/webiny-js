@@ -36,14 +36,6 @@ export interface StageLedgerEntry {
     stage: Stage;
     status: StageStatus;
     stageVersion: number;
-    /**
-     * Monotonic per-stage revision, bumped on every transition (running, done, stale, failed, task-id or
-     * usage stamp). Unlike `stageVersion` — which only bumps at `markStageDone` and so ties `running`
-     * with the `pending` it came from — `rev` strictly increases with each change. The repository merges
-     * concurrent ledger writes by keeping the higher `rev` per stage, so a stale writer (a retrying task
-     * holding an older snapshot) can never regress a stage, including while it is only `running`.
-     */
-    rev: number;
     artifacts: Record<string, string>;
     startedOn: string | null;
     finishedOn: string | null;

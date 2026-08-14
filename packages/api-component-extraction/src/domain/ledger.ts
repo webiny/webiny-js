@@ -12,7 +12,6 @@ export const initLedger = (): StageLedgerEntry[] =>
         stage,
         status: "pending",
         stageVersion: 0,
-        rev: 0,
         artifacts: {},
         startedOn: null,
         finishedOn: null,
@@ -21,17 +20,11 @@ export const initLedger = (): StageLedgerEntry[] =>
         modelUsage: null
     }));
 
-/** The next monotonic revision for an entry (defaulting a legacy entry with no `rev` to 0). */
-const nextRev = (entry: StageLedgerEntry): number => (entry.rev ?? 0) + 1;
-
 const patch = (
     ledger: StageLedgerEntry[],
     stage: Stage,
     change: (entry: StageLedgerEntry) => StageLedgerEntry
-): StageLedgerEntry[] =>
-    ledger.map(entry =>
-        entry.stage === stage ? { ...change(entry), rev: nextRev(entry) } : entry
-    );
+): StageLedgerEntry[] => ledger.map(entry => (entry.stage === stage ? change(entry) : entry));
 
 /** Stamp the background task id of the stage's latest run onto its entry (for log deep-linking). */
 export const withStageTaskId = (
@@ -84,12 +77,11 @@ export const markStageDone = (
                 finishedOn: now,
                 error: null,
                 artifacts,
-                stageVersion: entry.stageVersion + 1,
-                rev: nextRev(entry)
+                stageVersion: entry.stageVersion + 1
             };
         }
         if (downstream.has(entry.stage) && entry.status !== "pending") {
-            return { ...entry, status: "stale", rev: nextRev(entry) };
+            return { ...entry, status: "stale" };
         }
         return entry;
     });
@@ -103,7 +95,7 @@ export const markStaleFrom = (ledger: StageLedgerEntry[], stage: Stage): StageLe
     const affected = new Set<Stage>([stage, ...stagesAfter(stage)]);
     return ledger.map(entry =>
         affected.has(entry.stage) && entry.status !== "pending"
-            ? { ...entry, status: "stale", rev: nextRev(entry) }
+            ? { ...entry, status: "stale" }
             : entry
     );
 };
@@ -129,18 +121,25 @@ export const stageEntry = (
 ): StageLedgerEntry | undefined => ledger.find(entry => entry.stage === stage);
 
 /**
- * Merge a freshly-read stored ledger with an incoming one, keeping the more-advanced entry per stage —
- * the one with the higher monotonic `rev`.
+ * Merge a freshly-read stored ledger with an incoming one, dropping only writes that would REGRESS a
+ * stage — keeping the incoming for every legitimate transition.
  *
  * The nine-stage ledger is a single JSON blob written read-modify-write, so a writer holding a stale
- * copy — most often a retrying/zombie stage task that read the run before later stages ran — can
- * otherwise clobber a stage back to an earlier state, silently undoing real work. Every transition bumps
- * `rev`, so a stale writer's untouched stages carry a strictly lower `rev` than what is stored and lose
- * the merge — regressions are dropped while every legitimate forward transition (which bumped `rev`)
- * still wins. Unlike `stageVersion`, `rev` also orders the `running` state (which shares a version with
- * the `pending`/`done` it came from), so a running stage cannot be knocked back either. Applied at the
- * repository so it guards every writer, not just the stage runner. `rev` defaults to 0 for legacy
- * entries written before this field existed.
+ * copy — a retrying/zombie task, or a task whose read predates a later stage's progress — can otherwise
+ * clobber a stage back to an earlier state and silently undo real work. Two regressions are dropped:
+ *
+ *  1. An **older stage version** than what is stored. `stageVersion` only advances via a stage's own
+ *     `markStageDone`, so a writer whose snapshot is behind carries a lower version and loses.
+ *  2. A move back to **pending** from a stage that has already started. Only run creation is ever
+ *     pending; no transition targets it, so an incoming `pending` over a non-pending stored entry is a
+ *     stale clobber (this was the "stage snapped back to pending" bug).
+ *
+ * Everything else — running, done (version bumped), the stale invalidation cascade, failed — is a real
+ * forward transition and is kept. Crucially this is decided on `stageVersion` + `status`, which are
+ * coarse and only change via a stage's own task, so it is robust to eventually-consistent reads: a
+ * task's own running→done sequence always wins even if the read it computed from was slightly stale
+ * (a finer per-write counter did NOT survive that, which is why it was dropping legitimate writes).
+ * Applied at the repository so it guards every writer, not just the stage runner.
  */
 export const mergeLedgers = (
     stored: StageLedgerEntry[],
@@ -149,6 +148,11 @@ export const mergeLedgers = (
     const storedByStage = new Map(stored.map(entry => [entry.stage, entry]));
     return incoming.map(entry => {
         const current = storedByStage.get(entry.stage);
-        return current && (current.rev ?? 0) > (entry.rev ?? 0) ? current : entry;
+        if (!current) {
+            return entry;
+        }
+        const olderVersion = entry.stageVersion < current.stageVersion;
+        const pendingRegression = entry.status === "pending" && current.status !== "pending";
+        return olderVersion || pendingRegression ? current : entry;
     });
 };
