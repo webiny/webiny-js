@@ -20,7 +20,7 @@ class GlobalKeyValueStoreImpl implements ServiceAbstraction.Interface {
         options?: IGlobalKeyValueStoreOptions
     ): Promise<Result<T, ServiceAbstraction.Error>> {
         const scope = this.getScope(options);
-        return this.repository.get<T>(key, scope);
+        return this.repository.get<T>(key, scope, { consistent: options?.consistent });
     }
 
     async set(

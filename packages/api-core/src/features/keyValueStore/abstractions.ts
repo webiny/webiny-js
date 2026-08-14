@@ -11,6 +11,18 @@ export interface IKeyValueRecord {
 export interface IGlobalKeyValueStoreOptions {
     scope?: string;
     expiresAt?: Date;
+    /**
+     * Read with strong consistency (DynamoDB `ConsistentRead`) instead of the eventually-consistent
+     * default. For a record updated read-modify-write under concurrency, where a stale read would drop a
+     * just-committed write. Slightly higher cost, so opt in only where freshness is load-bearing.
+     */
+    consistent?: boolean;
+}
+
+/** Read options for a single key-value get. */
+export interface IKeyValueStoreGetOptions {
+    /** See {@link IGlobalKeyValueStoreOptions.consistent}. */
+    consistent?: boolean;
 }
 
 export interface IGlobalKeyValueStore {
@@ -40,7 +52,10 @@ export namespace GlobalKeyValueStore {
 
 // KeyValueStore - Tenant-aware service
 export interface IKeyValueStore {
-    get<T = unknown>(key: string): Promise<Result<T, KeyValueStoreRepository.Error>>;
+    get<T = unknown>(
+        key: string,
+        options?: IKeyValueStoreGetOptions
+    ): Promise<Result<T, KeyValueStoreRepository.Error>>;
     set(key: string, value: any): Promise<Result<void, KeyValueStoreRepository.Error>>;
     delete(key: string): Promise<Result<void, KeyValueStoreRepository.Error>>;
 }
@@ -67,7 +82,11 @@ export interface IKeyValueStoreSetOptions {
 }
 
 export interface IKeyValueStoreRepository {
-    get<T = unknown>(key: string, scope: string): Promise<Result<T, RepositoryError>>;
+    get<T = unknown>(
+        key: string,
+        scope: string,
+        options?: IKeyValueStoreGetOptions
+    ): Promise<Result<T, RepositoryError>>;
     set(
         key: string,
         value: any,
@@ -89,7 +108,11 @@ export namespace KeyValueStoreRepository {
 // Storage Operations
 
 export interface IKeyValueStorageOperations {
-    get(key: string, scope: string): Promise<{ key: string; value: any } | null>;
+    get(
+        key: string,
+        scope: string,
+        options?: IKeyValueStoreGetOptions
+    ): Promise<{ key: string; value: any } | null>;
     set(key: string, value: any, scope: string, options?: IKeyValueStoreSetOptions): Promise<void>;
     delete(key: string, scope: string): Promise<void>;
 }

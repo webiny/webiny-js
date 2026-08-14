@@ -17,7 +17,7 @@ import {
     queryOneClean,
     type QueryOneParams
 } from "~/utils/query.js";
-import type { get, getClean, GetRecordParamsKeys } from "~/utils/get.js";
+import type { get, getClean, GetRecordOptions, GetRecordParamsKeys } from "~/utils/get.js";
 import type { deleteItem, IDeleteItemKeys } from "~/utils/delete.js";
 import type { batchReadAll, BatchReadItem } from "~/utils/batch/batchRead.js";
 import type { IEntityWriteBatchParams } from "./EntityWriteBatch.js";
@@ -53,7 +53,10 @@ export interface IEntity<T extends GenericRecord = GenericRecord> {
     createEntityWriter(params?: IEntityCreateEntityWriterParams<T>): IEntityWriteBatch<T>;
     createTableWriter(): ITableWriteBatch;
     put(item: IPutParamsItem<T>): IEntityPutResult;
-    get<R extends T = T>(keys: GetRecordParamsKeys): IEntityGetResult<R>;
+    get<R extends T = T>(
+        keys: GetRecordParamsKeys,
+        options?: GetRecordOptions
+    ): IEntityGetResult<R>;
     getClean<R extends T = T>(keys: GetRecordParamsKeys): IEntityGetCleanResult<R>;
     delete(keys: IDeleteItemKeys): IEntityDeleteResult;
     queryOne<R extends T = T>(params: IEntityQueryOneParams): IEntityQueryOneResult<R>;

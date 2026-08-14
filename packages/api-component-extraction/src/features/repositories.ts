@@ -5,6 +5,7 @@ import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import {
     JobModel,
     JobRepository as JobRepositoryAbstraction,
@@ -37,6 +38,7 @@ import type {
     StageLedgerEntry
 } from "~/domain/types.js";
 import { mergeLedgers } from "~/domain/ledger.js";
+import { runLedgerKey } from "~/constants.js";
 
 const DEFAULT_LIMIT = 50;
 
@@ -140,15 +142,38 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
         private updateEntry: UpdateEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface,
-        private sortMapper: CmsSortMapper.Interface
+        private sortMapper: CmsSortMapper.Interface,
+        private ledgerStore: KeyValueStore.Interface
     ) {}
+
+    /**
+     * The run's authoritative stage ledger, read strongly-consistently from the KV store. Returns null
+     * when no KV ledger exists yet — a run created before the ledger moved off the CMS entry; the caller
+     * falls back to the entry's denormalized copy, which the next write promotes into the KV store.
+     */
+    private async readLedger(id: string): Promise<StageLedgerEntry[] | null> {
+        const result = await this.ledgerStore.get<StageLedgerEntry[]>(runLedgerKey(id), {
+            consistent: true
+        });
+        if (result.isFail() || !Array.isArray(result.value)) {
+            return null;
+        }
+        return result.value;
+    }
+
+    private async writeLedger(id: string, stages: StageLedgerEntry[]): Promise<void> {
+        await this.ledgerStore.set(runLedgerKey(id), stages);
+    }
 
     async create(values: RunValues) {
         const result = await this.createEntry.execute(this.model, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
-        return Result.ok(EntryToRunMapper.toRun(result.value));
+        const run = EntryToRunMapper.toRun(result.value);
+        // Seed the ledger's authoritative home (KV) alongside the denormalized copy on the entry.
+        await this.writeLedger(run.id, values.stages);
+        return Result.ok({ ...run, stages: values.stages });
     }
 
     async get(id: string) {
@@ -159,7 +184,11 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
             }
             return Result.fail(new ExtractionPersistenceError(result.error));
         }
-        return Result.ok(EntryToRunMapper.toRun(result.value));
+        const run = EntryToRunMapper.toRun(result.value);
+        // Read the ledger from its authoritative, strongly-consistent home; fall back to the entry's copy
+        // for a legacy run whose ledger hasn't been promoted to KV yet.
+        const ledger = await this.readLedger(id);
+        return Result.ok(ledger ? { ...run, stages: ledger } : run);
     }
 
     async listByJob(jobId: string, params: ListParams = {}) {
@@ -187,23 +216,33 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
 
     async update(id: string, values: Partial<RunValues>) {
         let nextValues = values;
-        // Non-regressing ledger write: merge the incoming stages against the freshly-stored ones,
-        // keeping the more-advanced entry per stage. A stale writer (a retrying/zombie stage task that
-        // read the run before later stages ran) can otherwise clobber completed stages back to pending.
+        // Non-regressing ledger write: merge the incoming stages against the stored ones, keeping the
+        // more-advanced entry per stage, so a stale writer (a retrying/zombie stage task that read the run
+        // before later stages ran) can't clobber completed stages back. The stored copy is read from the
+        // KV ledger with STRONG consistency — the eventually-consistent CMS-entry read this merge used
+        // before could return a pre-write snapshot, defeating the version guard and letting a stale write
+        // win (the "completed stage reverts a few seconds later" bug).
         if (values.stages) {
-            const current = await this.getEntryById.execute(this.model, id);
-            if (current.isOk()) {
-                const stored = Array.isArray(current.value.values.stages)
-                    ? (current.value.values.stages as StageLedgerEntry[])
-                    : [];
-                nextValues = { ...values, stages: mergeLedgers(stored, values.stages) };
-            }
+            const stored = (await this.readLedger(id)) ?? (await this.readEntryStages(id)) ?? [];
+            const merged = mergeLedgers(stored, values.stages);
+            await this.writeLedger(id, merged);
+            nextValues = { ...values, stages: merged };
         }
         const result = await this.updateEntry.execute(this.model, id, { values: nextValues });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
-        return Result.ok(EntryToRunMapper.toRun(result.value));
+        const run = EntryToRunMapper.toRun(result.value);
+        return Result.ok(nextValues.stages ? { ...run, stages: nextValues.stages } : run);
+    }
+
+    /** Legacy fallback: the denormalized ledger on the CMS entry, for a run predating the KV ledger. */
+    private async readEntryStages(id: string): Promise<StageLedgerEntry[] | null> {
+        const current = await this.getEntryById.execute(this.model, id);
+        if (current.isFail() || !Array.isArray(current.value.values.stages)) {
+            return null;
+        }
+        return current.value.values.stages as StageLedgerEntry[];
     }
 }
 
@@ -216,7 +255,8 @@ export const RunRepository = RunRepositoryAbstraction.createImplementation({
         UpdateEntryUseCase,
         ListLatestEntriesUseCase,
         CmsWhereMapper,
-        CmsSortMapper
+        CmsSortMapper,
+        KeyValueStore
     ]
 });
 

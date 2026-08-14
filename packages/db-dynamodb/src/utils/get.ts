@@ -6,9 +6,15 @@ export interface GetRecordParamsKeys {
     SK: string;
 }
 
+export interface GetRecordOptions {
+    /** Read with strong consistency (DynamoDB `ConsistentRead`) instead of the eventual default. */
+    consistent?: boolean;
+}
+
 export interface GetRecordParams {
     entity: Entity;
     keys: GetRecordParamsKeys;
+    options?: GetRecordOptions;
 }
 
 /**
@@ -20,10 +26,11 @@ export interface GetRecordParams {
  * @throws
  */
 export const get = async <T>(params: GetRecordParams): Promise<T | null> => {
-    const { entity, keys } = params;
+    const { entity, keys, options } = params;
 
     const result = await entity.get(keys, {
-        execute: true
+        execute: true,
+        consistent: options?.consistent
     });
 
     if (!result?.Item) {

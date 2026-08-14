@@ -3,6 +3,7 @@ import { Result } from "@webiny/feature/api";
 import {
     KeyValueStorageOperations,
     KeyValueStoreRepository as RepositoryAbstraction,
+    type IKeyValueStoreGetOptions,
     type IKeyValueStoreSetOptions
 } from "./abstractions.js";
 import { KeyNotFoundError, KeyValueStorageError } from "./errors.js";
@@ -18,10 +19,11 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async get<T = unknown>(
         key: string,
-        scope: string
+        scope: string,
+        options?: IKeyValueStoreGetOptions
     ): Promise<Result<T, RepositoryAbstraction.Error>> {
         try {
-            const record = await this.storageOperations.get(key, scope);
+            const record = await this.storageOperations.get(key, scope, options);
 
             if (!record) {
                 return Result.fail(new KeyNotFoundError(key));

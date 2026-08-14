@@ -90,3 +90,11 @@ export const stageArtifactKey = (
     stageVersion: number,
     name: string
 ): string => `componentExtraction:artifact:${runId}:${stage}:v${stageVersion}:${name}`;
+
+/**
+ * The run's stage-ledger key on the tenant key-value store. The ledger is the run's live progress state,
+ * updated read-modify-write by every stage task; it lives here — a direct, strongly-consistent DynamoDB
+ * record — rather than on the run's CMS entry, whose reads are eventually consistent and request-cached
+ * (a stale read there briefly reverted a just-completed stage in the run view).
+ */
+export const runLedgerKey = (runId: string): string => `componentExtraction:ledger:${runId}`;

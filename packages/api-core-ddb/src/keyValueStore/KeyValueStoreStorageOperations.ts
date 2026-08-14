@@ -1,6 +1,9 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { WebinyError } from "@webiny/error";
-import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type {
+    IKeyValueStoreGetOptions,
+    IKeyValueStoreSetOptions
+} from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
 interface KeyValueRecord {
@@ -22,10 +25,16 @@ export class KeyValueStoreStorageOperations {
         return `${scope}:${key}`;
     }
 
-    async get(key: string, scope: string): Promise<KeyValueRecord | null> {
+    async get(
+        key: string,
+        scope: string,
+        options?: IKeyValueStoreGetOptions
+    ): Promise<KeyValueRecord | null> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
-            const entry = await this.entity.get(this.table.createKeys({ scopedKey }));
+            const entry = await this.entity.get(this.table.createKeys({ scopedKey }), {
+                consistent: options?.consistent
+            });
 
             if (!entry) {
                 return null;

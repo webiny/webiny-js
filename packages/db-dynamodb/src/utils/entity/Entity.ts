@@ -26,7 +26,7 @@ import type {
 } from "./types.js";
 import type { IPutParamsItem } from "../put.js";
 import { put } from "../put.js";
-import type { GetRecordParamsKeys } from "../get.js";
+import type { GetRecordOptions, GetRecordParamsKeys } from "../get.js";
 import { get, getClean } from "../get.js";
 import type { IDeleteItemKeys } from "../delete.js";
 import { deleteItem } from "../delete.js";
@@ -89,10 +89,14 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
         });
     }
 
-    public async get<T>(keys: GetRecordParamsKeys): IEntityGetResult<T> {
+    public async get<T>(
+        keys: GetRecordParamsKeys,
+        options?: GetRecordOptions
+    ): IEntityGetResult<T> {
         return get<T>({
             entity: this.entity,
-            keys
+            keys,
+            options
         });
     }
 
