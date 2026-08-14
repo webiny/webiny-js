@@ -206,7 +206,16 @@ export class ComponentsSdk {
 }
 
 function toScopeClassName(name: string): string {
-    return `rc-${name.replace(/\//g, "-").toLowerCase()}`;
+    // Slugify to a valid CSS identifier: any run of non-alphanumerics (spaces, "/", punctuation) becomes
+    // a single hyphen. This is the class the runtime puts on the component's wrapper element, and it MUST
+    // match the class the bundlers scope the CSS to — otherwise a name like "Testimonials with features"
+    // yields "rc-testimonials with features" (three classes) and the scoped styles never apply.
+    const slug =
+        name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "") || "component";
+    return `rc-${slug}`;
 }
 
 function scopeCss(rawCss: string, scopeName: string): string {

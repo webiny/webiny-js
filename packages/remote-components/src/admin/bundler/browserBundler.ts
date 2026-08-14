@@ -274,7 +274,16 @@ function transformManifestInputs(source: string, manifestNode: any): string {
 }
 
 function scopeClassName(componentName: string): string {
-    return `rc-${componentName.replace(/\//g, "-").toLowerCase()}`;
+    // Slugify to a valid CSS identifier: any run of non-alphanumerics (spaces, "/", punctuation) becomes
+    // a single hyphen. Without this a name like "Testimonials with features" yields "rc-testimonials with
+    // features" — three classes on the element and a descendant-combinator selector in the scoped CSS, so
+    // the styles never match and the component renders unstyled. Must match the API bundler's rule.
+    const slug =
+        componentName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "") || "component";
+    return `rc-${slug}`;
 }
 
 function scopeCss(css: string, scope: string): string {

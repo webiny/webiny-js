@@ -77,8 +77,17 @@ export function createComponent(runtime) {
 `.trim();
 }
 
-function scopeClassName(componentName: string): string {
-    return `rc-${componentName.replace(/\//g, "-").toLowerCase()}`;
+export function scopeClassName(componentName: string): string {
+    // Slugify to a valid CSS identifier: any run of non-alphanumerics (spaces, "/", punctuation) becomes
+    // a single hyphen. Without this a name like "Testimonials with features" yields "rc-testimonials with
+    // features" — three classes on the element and a descendant-combinator selector in the scoped CSS, so
+    // the styles never match and the component renders unstyled.
+    const slug =
+        componentName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "") || "component";
+    return `rc-${slug}`;
 }
 
 function scopeCss(css: string, scope: string): string {
