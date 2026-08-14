@@ -113,6 +113,14 @@ export interface ClusterMember {
     signature: string;
     /** Blob key of this member's section crop, so the cluster view can show every member. */
     cropRef: string;
+    /**
+     * Per-member detail carried so a `cluster.split`/`cluster.move` override (W8) can promote this member
+     * into its own cluster and still be classified, planned and generated. Optional for backward
+     * compatibility with artifacts written before W8; Cluster now populates them for every member.
+     */
+    digest?: SectionDigest;
+    screenshotRef?: string;
+    box?: Box;
 }
 
 /**
@@ -149,6 +157,11 @@ export interface Cluster {
     observedTexts: string[];
     /** Where Generate crops the reference image for this cluster. */
     representativeCrop: RepresentativeCrop;
+    /**
+     * Set by a `cluster.exclude` override (W8): the cluster stays in the artifact (visible, muted, and
+     * restorable in the UI) but downstream stages skip it. Absent/false on a machine-produced cluster.
+     */
+    excluded?: boolean;
 }
 
 export interface ClusterArtifact {

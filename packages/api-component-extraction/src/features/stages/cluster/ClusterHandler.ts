@@ -93,16 +93,21 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                     continue;
                 }
                 const signature = structuralSignature(sectionShape(node, DESKTOP_WIDTH, lookup));
+                const digest = sectionDigest(node);
                 const member: ClusterMember = {
                     url: page.url,
                     sectionIndex: section.index,
                     signature,
-                    cropRef: section.cropRef
+                    cropRef: section.cropRef,
+                    // Carried per member so a W8 split/move override can promote it to a representative.
+                    digest,
+                    screenshotRef: page.screenshotRef,
+                    box: section.box
                 };
                 const list = bySignature.get(signature) ?? [];
                 list.push({
                     member,
-                    digest: sectionDigest(node),
+                    digest,
                     crop: {
                         screenshotRef: page.screenshotRef,
                         box: section.box,
