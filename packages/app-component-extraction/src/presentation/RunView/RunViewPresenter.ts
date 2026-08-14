@@ -13,6 +13,12 @@ import type {
     StageProgress
 } from "~/shared/types.js";
 
+// How long to hold the optimistic "starting" indication before giving up on it. A stage marks itself
+// running within a few seconds of its task starting; if the ledger hasn't reflected the trigger by now
+// the task did not take (e.g. it never ran), so drop the indication and show the real status rather than
+// hang on "starting" forever.
+const STARTING_TIMEOUT_MS = 30000;
+
 class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     vm: PresenterAbstraction.ViewModel = {
         loading: false,
@@ -47,6 +53,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
 
     /** Task id of the stage the operator just triggered, to keep a "starting" indication until it runs. */
     private pendingActionTaskId: string | null = null;
+
+    /** When the current "starting" indication began, so it can't hang if the task never progresses. */
+    private pendingActionSince: number | null = null;
 
     constructor(private gateway: ComponentExtractionGateway.Interface) {
         makeAutoObservable(this);
@@ -97,17 +106,24 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.run = run;
             });
             // Clear the "starting" indication once the triggered stage has picked up its task (the task
-            // stamps its id and marks the stage running). The task-id match also covers a stage that ran
-            // to completion between polls, where "running" was never observed.
+            // stamps its id and marks the stage running/failed). The task-id match also covers a stage
+            // that ran to completion between polls, where "running" was never observed. And, so it can't
+            // hang, drop it after a timeout — e.g. a re-run of a done stage whose task never ran keeps
+            // the ledger at its old "done", which would otherwise leave "starting" stuck until reload.
             if (this.vm.actionStage) {
                 const entry = stageEntry(run, this.vm.actionStage);
-                const started =
+                const confirmed =
                     !!entry &&
                     ((this.pendingActionTaskId !== null &&
                         entry.taskId === this.pendingActionTaskId) ||
-                        entry.status === "running");
-                if (started) {
+                        entry.status === "running" ||
+                        entry.status === "failed");
+                const timedOut =
+                    this.pendingActionSince !== null &&
+                    Date.now() - this.pendingActionSince > STARTING_TIMEOUT_MS;
+                if (confirmed || timedOut) {
                     this.pendingActionTaskId = null;
+                    this.pendingActionSince = null;
                     runInAction(() => {
                         this.vm.actionStage = null;
                     });
@@ -145,6 +161,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (!runId) {
             return;
         }
+        this.pendingActionSince = Date.now();
         runInAction(() => {
             this.vm.actionStage = stage;
             this.vm.error = null;
@@ -164,6 +181,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             await this.refresh();
         } catch (error) {
             this.pendingActionTaskId = null;
+            this.pendingActionSince = null;
             runInAction(() => {
                 this.vm.actionStage = null;
                 this.vm.error = (error as Error).message;
