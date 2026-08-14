@@ -14,6 +14,12 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 const MIN_SECTION_HEIGHT = 120;
 const MIN_WIDTH_RATIO = 0.5;
 const DESKTOP_WIDTH = 1440;
+// A near-full-width block taller than this that is a vertical stack of several full-width children is a
+// container to split into those children, not one section — so a page-wrapping <main>/content <div> can't
+// swallow the whole page as a single giant block. ~1.8 viewport heights: comfortably above a tall hero or
+// content section, well below a page-length wrapper.
+const MAX_SECTION_HEIGHT = 1600;
+const MIN_CHILDREN_TO_SPLIT = 2;
 // Section crops serve both the cluster gallery and the model reference image. Width and height are
 // capped independently so a tall section keeps its full horizontal detail (a single edge cap would
 // crush a tall crop's width): the width cap sits above the 1440 capture so a full-width section is kept
@@ -67,7 +73,9 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             const detected = detectSections(tree, {
                 minHeight: MIN_SECTION_HEIGHT,
                 minWidthRatio: MIN_WIDTH_RATIO,
-                viewportWidth: DESKTOP_WIDTH
+                viewportWidth: DESKTOP_WIDTH,
+                maxSectionHeight: MAX_SECTION_HEIGHT,
+                minChildrenToSplit: MIN_CHILDREN_TO_SPLIT
             });
 
             // Crop each section from the page's full-page screenshot, once, so downstream views and
