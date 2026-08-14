@@ -258,11 +258,24 @@ export interface GenerateArtifactDto {
     failed: string[];
 }
 
-/** One planned component (subset): the source crop for Generate, plus name/type/pages for the Plan gate. */
+export interface ComponentPropDto {
+    name: string;
+    type: string;
+    observedValues: string[];
+}
+
+export interface TokenBindingDto {
+    target: string;
+    token: string;
+}
+
+/** One planned component: name/type/pages for the gate, plus editable props and read-only token bindings. */
 export interface PlannedComponentDto {
     signature: string;
     name: string;
     type: string;
+    props: ComponentPropDto[];
+    tokenBindings: TokenBindingDto[];
     members: { url: string }[];
     representativeCrop: { cropRef: string };
 }

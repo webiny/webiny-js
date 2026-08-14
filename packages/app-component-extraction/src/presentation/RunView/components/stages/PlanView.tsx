@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Alert, Button, Heading, Tag, Text } from "@webiny/admin-ui";
+import { Alert, Button, Heading, Input, Select, Tag, Text } from "@webiny/admin-ui";
 import type { RunViewPresenter } from "../../abstractions.js";
-import type { PlanArtifactDto, PlannedComponentDto } from "~/shared/types.js";
+import type {
+    ComponentPropDto,
+    OverrideDto,
+    PlanArtifactDto,
+    PlannedComponentDto
+} from "~/shared/types.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -10,17 +15,185 @@ interface Props {
 
 const num = (value: number): string => value.toLocaleString();
 
+const PROP_TYPES = ["text", "richText", "image", "url", "boolean", "number"].map(value => ({
+    value,
+    label: value
+}));
+
 const pageCountOf = (component: PlannedComponentDto): number =>
     new Set(component.members.map(member => member.url)).size;
 
+const hasOverride = (overrides: OverrideDto[], signature: string): boolean =>
+    overrides.some(
+        override => override.stage === "plan" && override.structuralSignature === signature
+    );
+
+/** One editable prop: rename (commit on blur/enter), retype, or remove. */
+const PropRow = ({
+    presenter,
+    signature,
+    prop
+}: {
+    presenter: RunViewPresenter.Interface;
+    signature: string;
+    prop: ComponentPropDto;
+}) => {
+    const { vm } = presenter;
+    const [name, setName] = useState(prop.name);
+
+    const commitName = () => {
+        if (name.trim() && name.trim() !== prop.name) {
+            void presenter.setPlanProp(signature, "edit", prop.name, { newName: name.trim() });
+        }
+    };
+    const typeOptions = PROP_TYPES.some(option => option.value === prop.type)
+        ? PROP_TYPES
+        : [{ value: prop.type, label: prop.type }, ...PROP_TYPES];
+
+    return (
+        <div className="flex items-center gap-sm">
+            <div className="flex-1 min-w-0">
+                <Input
+                    value={name}
+                    disabled={vm.clusterBusy}
+                    onChange={(value: string) => setName(value)}
+                    onBlur={commitName}
+                    onEnter={commitName}
+                />
+            </div>
+            <div className="w-32 flex-shrink-0">
+                <Select
+                    value={prop.type}
+                    options={typeOptions}
+                    disabled={vm.clusterBusy}
+                    onChange={(value: string) =>
+                        void presenter.setPlanProp(signature, "edit", prop.name, { type: value })
+                    }
+                />
+            </div>
+            <Button
+                variant="tertiary"
+                size="sm"
+                text="Remove"
+                disabled={vm.clusterBusy}
+                onClick={() => void presenter.setPlanProp(signature, "remove", prop.name)}
+            />
+        </div>
+    );
+};
+
+const PlanComponentCard = ({
+    presenter,
+    component,
+    corrected
+}: {
+    presenter: RunViewPresenter.Interface;
+    component: PlannedComponentDto;
+    corrected: boolean;
+}) => {
+    const { vm } = presenter;
+    const [expanded, setExpanded] = useState(false);
+    const [newPropName, setNewPropName] = useState("");
+    const [newPropType, setNewPropType] = useState("text");
+
+    const addProp = () => {
+        if (newPropName.trim()) {
+            void presenter.setPlanProp(component.signature, "add", newPropName.trim(), {
+                type: newPropType
+            });
+            setNewPropName("");
+        }
+    };
+
+    return (
+        <div className="border border-neutral-dimmed rounded-sm">
+            <div className="flex items-center justify-between gap-sm px-sm py-xs">
+                <div className="flex items-center gap-sm min-w-0">
+                    <Text size="sm" className="font-medium truncate">
+                        {component.name}
+                    </Text>
+                    <Tag variant="neutral-muted" content={component.type} />
+                    {corrected ? <Tag variant="accent" content="corrected" /> : null}
+                </div>
+                <div className="flex items-center gap-sm flex-shrink-0">
+                    <Text size="sm" className="text-neutral-strong whitespace-nowrap">
+                        {pageCountOf(component)} page(s)
+                    </Text>
+                    <Text
+                        size="sm"
+                        className="text-primary cursor-pointer hover:underline"
+                        onClick={() => setExpanded(prev => !prev)}
+                    >
+                        {expanded ? "Hide props" : `${component.props.length} props`}
+                    </Text>
+                </div>
+            </div>
+            {expanded ? (
+                <div className="flex flex-col gap-sm px-sm py-sm border-t border-neutral-dimmed">
+                    <div className="flex flex-col gap-xs">
+                        {component.props.map(prop => (
+                            <PropRow
+                                key={prop.name}
+                                presenter={presenter}
+                                signature={component.signature}
+                                prop={prop}
+                            />
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-sm">
+                        <div className="flex-1 min-w-0">
+                            <Input
+                                value={newPropName}
+                                placeholder="New prop name"
+                                disabled={vm.clusterBusy}
+                                onChange={(value: string) => setNewPropName(value)}
+                                onEnter={addProp}
+                            />
+                        </div>
+                        <div className="w-32 flex-shrink-0">
+                            <Select
+                                value={newPropType}
+                                options={PROP_TYPES}
+                                disabled={vm.clusterBusy}
+                                onChange={(value: string) => setNewPropType(value)}
+                            />
+                        </div>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            text="Add prop"
+                            disabled={!newPropName.trim() || vm.clusterBusy}
+                            onClick={addProp}
+                        />
+                    </div>
+                    {component.tokenBindings.length > 0 ? (
+                        <div className="flex flex-col gap-xxs">
+                            <Text size="sm" className="font-medium">
+                                Token bindings (read-only)
+                            </Text>
+                            {component.tokenBindings.map((binding, index) => (
+                                <Text
+                                    key={index}
+                                    size="sm"
+                                    className="font-mono text-neutral-strong"
+                                >
+                                    {binding.target} → {binding.token}
+                                </Text>
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
+            ) : null}
+        </div>
+    );
+};
+
 /**
- * The Plan gate (W7.9 slice). The hard gate: before Generate runs, project its cost — the number of
- * planned components times the mean tokens per generate call from this job's prior runs — so approving
- * is a decision, not a rubber stamp. With no prior run there is no mean to project from, so the
- * component count is shown alone rather than a made-up figure. Below the projection, the planned
- * components; the primary action approves the plan and starts the (paid) generation.
- *
- * Prop editing (§5.6) is out of this pass's scope — this establishes the projection and the gate.
+ * The Plan gate (W7.9) + prop controls (W8.5). The gate projects Generate's cost — planned components ×
+ * the mean tokens per generate call from prior runs — so approving is a decision. Each component expands
+ * to edit its props (rename, retype, remove, add), which write plan.prop overrides that reattach across
+ * runs. Token bindings are read-only: they come from the theme manifest and editing them by hand invites
+ * bindings that fail the Generate validator.
  */
 export const PlanView = createReactiveComponent(function PlanView({ presenter }: Props) {
     const { vm } = presenter;
@@ -81,20 +254,12 @@ export const PlanView = createReactiveComponent(function PlanView({ presenter }:
             <div className="flex-1 overflow-y-auto p-md">
                 <div className="flex flex-col gap-xs">
                     {artifact.components.map(component => (
-                        <div
+                        <PlanComponentCard
                             key={component.signature}
-                            className="flex items-center justify-between gap-sm px-sm py-xs border border-neutral-dimmed rounded-sm"
-                        >
-                            <div className="flex items-center gap-sm min-w-0">
-                                <Text size="sm" className="font-medium truncate">
-                                    {component.name}
-                                </Text>
-                                <Tag variant="neutral-muted" content={component.type} />
-                            </div>
-                            <Text size="sm" className="text-neutral-strong whitespace-nowrap">
-                                {pageCountOf(component)} page(s)
-                            </Text>
-                        </div>
+                            presenter={presenter}
+                            component={component}
+                            corrected={hasOverride(vm.overrides, component.signature)}
+                        />
                     ))}
                 </div>
             </div>
