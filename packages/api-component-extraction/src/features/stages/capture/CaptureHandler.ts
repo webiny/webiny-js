@@ -27,8 +27,13 @@ interface CaptureCheckpoint {
     pages: CapturedPage[];
     failed: string[];
 }
-// Full-page PNGs are unbounded by document height, so downscale to a longest-edge cap before storing.
-const SCREENSHOT_MAX_EDGE = 1568;
+// Full-page PNGs are bounded by height only, NOT longest edge: a full-page screenshot is much taller
+// than wide, so a longest-edge cap scales by the height and crushes the width — a 1440×5000 page would
+// store at ~451px wide, losing two thirds of the horizontal detail the section crops and Segment
+// overlays depend on. Instead keep the capture's native width (1440 desktop, 390 narrow — the WIDTH cap
+// sits well above both so it never triggers) and bound only pathologically tall pages by height.
+const SCREENSHOT_MAX_WIDTH = 2000;
+const SCREENSHOT_MAX_HEIGHT = 16000;
 // A small derivative for the capture grid (~40 tiles), so the grid isn't tens of MB of full-page PNGs;
 // the full-page image is served only when a tile is opened.
 const PAGE_THUMB_MAX_EDGE = 480;
@@ -43,8 +48,8 @@ const downscalePng = async (image: Uint8Array): Promise<Buffer> => {
     const sharp = (await import("sharp")).default;
     return sharp(image)
         .resize({
-            width: SCREENSHOT_MAX_EDGE,
-            height: SCREENSHOT_MAX_EDGE,
+            width: SCREENSHOT_MAX_WIDTH,
+            height: SCREENSHOT_MAX_HEIGHT,
             fit: "inside",
             withoutEnlargement: true
         })

@@ -10,15 +10,18 @@ const clamp = (value: number, min: number, max: number): number =>
     Math.max(min, Math.min(max, value));
 
 /**
- * Crop a section out of a page's full-page screenshot and downscale it to `maxEdge`. The screenshot was
- * itself downscaled from a `desktopWidth`-wide capture, so the document-space box is scaled to the
- * screenshot's actual pixels first.
+ * Crop a section out of a page's full-page screenshot and downscale it, keeping the section's native
+ * width up to `maxWidth` and bounding only its height by `maxHeight`. A single longest-edge cap would
+ * crush the width of a tall section the same way it crushed the screenshot — so width and height are
+ * capped independently. The screenshot is stored at (near) the `desktopWidth`-wide capture width, so the
+ * document-space box is scaled to the screenshot's actual pixels first.
  */
 export const cropFromScreenshot = async (
     screenshot: Uint8Array,
     box: Box,
     desktopWidth: number,
-    maxEdge: number
+    maxWidth: number,
+    maxHeight: number
 ): Promise<Buffer> => {
     const sharp = (await import("sharp")).default;
     const meta = await sharp(screenshot).metadata();
@@ -33,7 +36,7 @@ export const cropFromScreenshot = async (
 
     return sharp(screenshot)
         .extract({ left, top, width, height })
-        .resize({ width: maxEdge, height: maxEdge, fit: "inside", withoutEnlargement: true })
+        .resize({ width: maxWidth, height: maxHeight, fit: "inside", withoutEnlargement: true })
         .png()
         .toBuffer();
 };

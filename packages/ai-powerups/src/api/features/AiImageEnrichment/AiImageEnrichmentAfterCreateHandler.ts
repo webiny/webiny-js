@@ -17,6 +17,13 @@ class AiImageEnrichmentAfterCreateHandlerImpl implements FileAfterCreateEventHan
             return;
         }
 
+        // Per-file opt-out: a file created with `metadata.aiImageEnrichment === false` skips enrichment
+        // (no description/tag extraction). For images uploaded as machine inputs — e.g. a component-
+        // extraction reference crop — the enrichment is wasted work and unwanted metadata.
+        if (file.metadata?.aiImageEnrichment === false) {
+            return;
+        }
+
         if (!this.featureFlags.get().isEnabled("aiPowerups.fileManager.imageEnrichment")) {
             return;
         }

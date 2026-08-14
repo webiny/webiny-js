@@ -14,9 +14,12 @@ import { ExtractionValidationError, type ExtractionError } from "~/domain/errors
 const MIN_SECTION_HEIGHT = 120;
 const MIN_WIDTH_RATIO = 0.5;
 const DESKTOP_WIDTH = 1440;
-// Section crops serve both the cluster gallery and the model reference image; this edge is a balance
-// between the two — enough detail for generation, small enough for a four-across gallery.
-const CROP_MAX_EDGE = 1024;
+// Section crops serve both the cluster gallery and the model reference image. Width and height are
+// capped independently so a tall section keeps its full horizontal detail (a single edge cap would
+// crush a tall crop's width): the width cap sits above the 1440 capture so a full-width section is kept
+// intact, and the height cap bounds an unusually tall section for the model image.
+const CROP_MAX_WIDTH = 1600;
+const CROP_MAX_HEIGHT = 4000;
 
 /**
  * Segment — deterministic, offline, no browser. Reads each captured page's pruned tree from S3 and
@@ -80,7 +83,8 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                             screenshot.value,
                             section.box,
                             DESKTOP_WIDTH,
-                            CROP_MAX_EDGE
+                            CROP_MAX_WIDTH,
+                            CROP_MAX_HEIGHT
                         );
                         const stored = await context.blobs.put(
                             `${context.run.id}/segment/v${context.stageVersion}/${index}/section-${section.index}.png`,

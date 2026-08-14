@@ -311,7 +311,10 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                 key: fileKey,
                 size: bytes.length,
                 type: "image/png",
-                name: `${planned.name} reference`
+                name: `${planned.name} reference`,
+                // This is a machine input for the generation call, not a media-library asset — skip the
+                // AI image enrichment (description/tag extraction), which would be wasted model calls.
+                metadata: { aiImageEnrichment: false }
             });
             if (created.isFail()) {
                 await context.log.error({
