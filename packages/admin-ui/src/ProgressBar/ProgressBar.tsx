@@ -21,7 +21,7 @@ const DecoratableProgressBar = ({ valuePosition, className, ...props }: Progress
                 <ProgressValue value={valuePosition === "start" ? vm.textValue : vm.textMin} />
             )}
             <ProgressRoot {...props}>
-                <ProgressIndicator value={vm.value} />
+                <ProgressIndicator value={vm.percent} />
             </ProgressRoot>
             {valuePosition && valuePosition !== "start" && <ProgressValue value={vm.textValue} />}
         </div>
