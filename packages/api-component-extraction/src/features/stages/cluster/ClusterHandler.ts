@@ -10,7 +10,7 @@ import type {
     SegmentArtifact
 } from "~/domain/artifacts.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
-import { findContentRoot } from "~/features/stages/segment/boundaries.js";
+import { findNodeByBox } from "./sectionNode.js";
 import { structuralSignature } from "./signature.js";
 import { buildTokenLookup, sectionShape, type TokenLookup } from "./sectionShape.js";
 import { sectionDigest } from "./digest.js";
@@ -82,10 +82,14 @@ class ClusterHandlerImpl implements StageHandler.Interface {
                 continue;
             }
 
-            const contentRoot = findContentRoot(tree);
             for (const section of page.sections) {
-                const node = contentRoot.children[section.index];
+                // Resolve the section back to its node by its box, not by tree position — a section may
+                // be nested well below the content root, so `contentRoot.children[index]` missed it.
+                const node = findNodeByBox(tree, section.box);
                 if (!node) {
+                    await context.log.error({
+                        message: `No node matched section ${section.index} of ${page.url}; skipping.`
+                    });
                     continue;
                 }
                 const signature = structuralSignature(sectionShape(node, DESKTOP_WIDTH, lookup));
