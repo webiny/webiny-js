@@ -185,8 +185,19 @@ export interface ClusterDto {
     excluded?: boolean;
 }
 
+export interface ThresholdCurvePointDto {
+    threshold: number;
+    clusters: number;
+}
+
 export interface ClusterArtifactDto {
     clusters: ClusterDto[];
+    /** The similarity threshold this artifact was clustered at (W8.3). */
+    threshold?: number;
+    /** The highest similarity between any two clusters (0–1). */
+    nearestPair?: number;
+    /** Cluster count across a grid of thresholds, for the slider's live preview. */
+    thresholdCurve?: ThresholdCurvePointDto[];
 }
 
 export interface ClassifiedClusterDto {

@@ -103,6 +103,8 @@ export interface IRunViewPresenter {
     moveClusterMember(memberSignature: string, targetSignature: string): Promise<void>;
     /** Exclude a cluster from the run (W8.3). */
     excludeCluster(signature: string): Promise<void>;
+    /** Set the cluster similarity threshold and re-run Cluster (W8.3). */
+    applyThreshold(threshold: number): Promise<void>;
     /** Clear an override, reverting that item to machine output (W8.3). */
     clearOverride(overrideId: string): Promise<void>;
     /** Set a cluster's name and/or type (W8.4 classify controls). */

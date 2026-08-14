@@ -554,6 +554,29 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         await this.applyClusterCorrection(runId, signature, { kind: "cluster.exclude" });
     }
 
+    async applyThreshold(threshold: number): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        try {
+            // A parameter override — it changes what Cluster runs with, so it takes effect by re-running.
+            const overrides = await this.gateway.setOverride(runId, "cluster", "", {
+                kind: "cluster.threshold",
+                threshold
+            });
+            runInAction(() => {
+                this.vm.overrides = overrides as OverrideDto[];
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+            return;
+        }
+        await this.runStage("cluster");
+    }
+
     async clearOverride(overrideId: string): Promise<void> {
         const runId = this.vm.run?.id;
         if (!runId) {

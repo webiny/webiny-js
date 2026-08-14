@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, Checkbox, Select, Tag, Text } from "@webiny/admin-ui";
+import { Alert, Button, Checkbox, Select, Slider, Tag, Text } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { ClusterArtifactDto, ClusterDto, OverrideDto } from "~/shared/types.js";
@@ -200,6 +200,70 @@ const ClusterCard = ({
     );
 };
 
+/** The similarity-threshold control: a slider previewing the cluster count, with Apply re-running Cluster. */
+const ThresholdControl = ({
+    presenter,
+    artifact
+}: {
+    presenter: RunViewPresenter.Interface;
+    artifact: ClusterArtifactDto;
+}) => {
+    const { vm } = presenter;
+    const current = artifact.threshold ?? 0.85;
+    const [pct, setPct] = useState(Math.round(current * 100));
+    const threshold = pct / 100;
+    const curve = artifact.thresholdCurve ?? [];
+    const previewCount = curve.find(
+        point => Math.abs(point.threshold - threshold) < 0.001
+    )?.clusters;
+    const changed = Math.abs(threshold - current) > 0.001;
+    const clusterCorrections = vm.overrides.filter(
+        override => override.stage === "cluster" && override.correction.kind !== "cluster.threshold"
+    ).length;
+
+    return (
+        <div className="flex flex-col gap-xs px-md py-sm border-b border-neutral-dimmed">
+            <div className="flex items-center gap-md">
+                <div className="flex-1 min-w-0">
+                    <Slider
+                        label="Similarity"
+                        value={pct}
+                        min={50}
+                        max={100}
+                        step={5}
+                        disabled={vm.clusterBusy}
+                        transformValue={(value: number) => `${value}%`}
+                        onValueChange={(value: number) => setPct(value)}
+                    />
+                </div>
+                <Text size="sm" className="text-neutral-strong whitespace-nowrap">
+                    {previewCount !== undefined
+                        ? `${previewCount} clusters`
+                        : `${artifact.clusters.length} clusters`}
+                </Text>
+                <Button
+                    variant="primary"
+                    size="sm"
+                    text="Apply"
+                    disabled={!changed || vm.clusterBusy}
+                    onClick={() => void presenter.applyThreshold(threshold)}
+                />
+            </div>
+            <Text size="sm" className="text-neutral-strong">
+                {artifact.nearestPair !== undefined
+                    ? `Closest clusters are ${Math.round(artifact.nearestPair * 100)}% similar. `
+                    : ""}
+                Lower the threshold to merge more; raise it to split.
+            </Text>
+            {changed && clusterCorrections > 0 ? (
+                <Alert type="warning" variant="subtle">
+                    {`Re-clustering rebuilds the clusters — up to ${clusterCorrections} correction(s) may not reattach.`}
+                </Alert>
+            ) : null}
+        </div>
+    );
+};
+
 const SelectionBar = ({ presenter }: Props) => {
     const { vm } = presenter;
     if (vm.selectedClusters.length === 0) {
@@ -258,9 +322,12 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
                     {artifact.clusters.length - active > 0
                         ? `· ${artifact.clusters.length - active} excluded `
                         : ""}
-                    · exact structural match
+                    {artifact.threshold !== undefined
+                        ? ` · clustered at ${Math.round(artifact.threshold * 100)}% similarity`
+                        : " · exact structural match"}
                 </Text>
             </div>
+            <ThresholdControl presenter={presenter} artifact={artifact} />
             <SelectionBar presenter={presenter} />
             <div className="flex-1 overflow-y-auto p-md">
                 <div className="grid grid-cols-4 gap-md">
