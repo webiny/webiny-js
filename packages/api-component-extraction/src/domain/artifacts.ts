@@ -296,16 +296,13 @@ export interface RenderArtifact {
 
 // ----- Component decisions (accept/reject, W7.8) -------------------------------------------------
 
-export type ComponentDecision = "accepted" | "rejected";
-
 /**
- * The operator's accept/reject decisions on a run's generated components, keyed to the Generate stage
- * version and by cluster signature. When any decision exists, Promote moves only the accepted ones;
- * with no decisions it falls back to promoting every component that passed validation.
+ * An operator's accept/reject decision on a generated component. Stored as a `generate.decision` job
+ * override keyed by cluster signature (W8) — the standalone decisions artifact it once used is gone.
+ * When any decision exists, Promote moves only the accepted ones; with none it falls back to promoting
+ * every component that passed validation.
  */
-export interface DecisionsArtifact {
-    decisions: Record<string, ComponentDecision>;
-}
+export type ComponentDecision = "accepted" | "rejected";
 
 // ----- Assemble (output) -------------------------------------------------------------------------
 
