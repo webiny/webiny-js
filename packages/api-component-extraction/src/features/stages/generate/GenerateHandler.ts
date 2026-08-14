@@ -37,7 +37,15 @@ interface GenerateCheckpoint {
     failed: string[];
 }
 
-const buildPrompt = (component: PlannedComponent, feedback: string[] = []): string => {
+// The theme's semantic slots are limited by design, but cap the in-prompt list so a pathological theme
+// can't blow up the prompt. Bound variables are always shown, so the cap only trims the extra palette.
+const MAX_PROMPT_VARIABLES = 150;
+
+const buildPrompt = (
+    component: PlannedComponent,
+    slotVariables: Map<string, string[]>,
+    feedback: string[] = []
+): string => {
     const props = component.props.map(
         prop =>
             `- ${prop.name} (${prop.type})${
@@ -46,9 +54,15 @@ const buildPrompt = (component: PlannedComponent, feedback: string[] = []): stri
                     : ""
             }`
     );
-    const bindings = component.tokenBindings.map(
-        binding => `- ${binding.target} -> ${binding.token}`
-    );
+    // Resolve each planned binding's slot path to the theme's real css variable name(s) — the model must
+    // reference these exact names, not a name derived from the slot path.
+    const bindings = component.tokenBindings.map(binding => {
+        const names = slotVariables.get(binding.token) ?? [];
+        return names.length > 0
+            ? `- ${binding.target}: ${names.map(name => `var(${name})`).join(" or ")}`
+            : `- ${binding.target}: theme token "${binding.token}" — use the closest allowed variable below`;
+    });
+    const allowed = [...new Set([...slotVariables.values()].flat())];
     const lines = [
         `Build a "${component.type}" website section component named "${component.name}".`,
         "Reproduce the section shown in the reference image.",
@@ -56,10 +70,18 @@ const buildPrompt = (component: PlannedComponent, feedback: string[] = []): stri
         "It must expose exactly these editable props (use these prop names):",
         ...(props.length ? props : ["- (no props; static content)"]),
         "",
-        "Bind visual styles to the theme, using var(--wby-...) for the following:",
-        ...(bindings.length
-            ? bindings
-            : ["- use semantic theme tokens for colours, spacing and type"]),
+        "Theme the component with these CSS variables:",
+        ...(bindings.length ? bindings : ["- use the allowed theme variables listed below"]),
+        ...(allowed.length > 0
+            ? [
+                  "",
+                  "Use ONLY these theme CSS variables — any other var(--wby-*) fails validation; for anything without a suitable variable, use a plain CSS value:",
+                  allowed
+                      .slice(0, MAX_PROMPT_VARIABLES)
+                      .map(name => `var(${name})`)
+                      .join(", ")
+              ]
+            : []),
         "",
         "Preserve this text content exactly:",
         ...component.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT).map(text => `- ${text}`)
@@ -139,6 +161,10 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         // unpublished theme), token binding is NOT checked — otherwise every `var(--wby-*)` the model
         // emits counts as unknown and every component fails validation, and Promote skips them all.
         let validVariables = new Set<string>();
+        // Each planned binding's slot path -> the theme's ACTUAL css variable name(s). The prompt needs
+        // this to hand the model real `var(--wby-*)` names: it cannot derive them from a slot path, which
+        // is why every component was failing token binding.
+        const slotVariables = new Map<string, string[]>();
         let manifestAvailable = false;
         const manifestResult = await this.manifestResolver.resolve(
             context.job.themeEntryId,
@@ -146,10 +172,11 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         );
         if (manifestResult.isOk()) {
             manifestAvailable = true;
+            for (const slot of manifestResult.value.slots) {
+                slotVariables.set(String(slot.path), slot.cssVariables);
+            }
             validVariables = new Set(
-                manifestResult.value.slots.flatMap(slot =>
-                    slot.cssVariables.map(variable => variable.toLowerCase())
-                )
+                [...slotVariables.values()].flat().map(variable => variable.toLowerCase())
             );
         } else {
             await context.log.info({
@@ -177,7 +204,8 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                 context,
                 planned,
                 validVariables,
-                manifestAvailable
+                manifestAvailable,
+                slotVariables
             );
 
             if (!best) {
@@ -244,7 +272,8 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         context: StageContext,
         planned: PlannedComponent,
         validVariables: Set<string>,
-        manifestAvailable: boolean
+        manifestAvailable: boolean,
+        slotVariables: Map<string, string[]>
     ): Promise<GeneratedComponent | null> {
         const fileId = await this.createReferenceImage(context, planned);
         const additionalFileIds = fileId ? [fileId] : [];
@@ -261,7 +290,7 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                 ? buildRetryFeedback(previousFailures, validVariables)
                 : [];
             const generated = await this.generateComponent.execute({
-                prompt: buildPrompt(planned, feedback),
+                prompt: buildPrompt(planned, slotVariables, feedback),
                 name: planned.name,
                 additionalFileIds
             });
