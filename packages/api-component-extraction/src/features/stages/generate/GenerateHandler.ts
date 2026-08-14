@@ -37,7 +37,7 @@ interface GenerateCheckpoint {
     failed: string[];
 }
 
-const buildPrompt = (component: PlannedComponent): string => {
+const buildPrompt = (component: PlannedComponent, feedback: string[] = []): string => {
     const props = component.props.map(
         prop =>
             `- ${prop.name} (${prop.type})${
@@ -49,7 +49,7 @@ const buildPrompt = (component: PlannedComponent): string => {
     const bindings = component.tokenBindings.map(
         binding => `- ${binding.target} -> ${binding.token}`
     );
-    return [
+    const lines = [
         `Build a "${component.type}" website section component named "${component.name}".`,
         "Reproduce the section shown in the reference image.",
         "",
@@ -63,7 +63,45 @@ const buildPrompt = (component: PlannedComponent): string => {
         "",
         "Preserve this text content exactly:",
         ...component.sourceTexts.slice(0, PRESERVED_TEXT_LIMIT).map(text => `- ${text}`)
-    ].join("\n");
+    ];
+    // On a retry, tell the model precisely what the previous attempt got wrong so it can fix that rather
+    // than re-rolling blindly — the single biggest lever on both pass rate and wasted attempts.
+    if (feedback.length > 0) {
+        lines.push(
+            "",
+            "Your previous attempt was rejected by automated validation. Fix EXACTLY these issues and keep everything that was already correct:",
+            ...feedback.map(item => `- ${item}`)
+        );
+    }
+    return lines.join("\n");
+};
+
+/** Whether two attempts produced the same set of validation failures (so a retry made no progress). */
+const sameFailures = (a: string[], b: string[]): boolean => {
+    if (a.length !== b.length) {
+        return false;
+    }
+    const seen = new Set(a);
+    return b.every(item => seen.has(item));
+};
+
+/**
+ * The retry instructions for the next attempt: the failures verbatim, plus — when the model invented
+ * token variables — the actual valid ones to choose from (it cannot guess exact names).
+ */
+const buildRetryFeedback = (failures: string[], validVariables: Set<string>): string[] => {
+    const feedback = [...failures];
+    if (
+        failures.some(item => item.startsWith("unknown token variable")) &&
+        validVariables.size > 0
+    ) {
+        feedback.push(
+            `Use ONLY these theme CSS variables (no others): ${[...validVariables]
+                .slice(0, 60)
+                .join(", ")}`
+        );
+    }
+    return feedback;
 };
 
 /**
@@ -211,12 +249,19 @@ class GenerateHandlerImpl implements StageHandler.Interface {
         const fileId = await this.createReferenceImage(context, planned);
         const additionalFileIds = fileId ? [fileId] : [];
         let best: GeneratedComponent | null = null;
+        let bestFailureCount = Number.POSITIVE_INFINITY;
+        // The prior attempt's failures, fed into the next prompt so a retry is a targeted fix. Null on
+        // the first attempt (no feedback yet).
+        let previousFailures: string[] | null = null;
         let attempts = 0;
 
         while (attempts < MAX_ATTEMPTS) {
             attempts++;
+            const feedback = previousFailures
+                ? buildRetryFeedback(previousFailures, validVariables)
+                : [];
             const generated = await this.generateComponent.execute({
-                prompt: buildPrompt(planned),
+                prompt: buildPrompt(planned, feedback),
                 name: planned.name,
                 additionalFileIds
             });
@@ -244,8 +289,15 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                           failures: ["theme manifest unavailable; token binding not checked"]
                       }
             };
+            const failures = [
+                ...(validation.textPreservation.passed ? [] : validation.textPreservation.failures),
+                ...(validation.contractConformance.passed
+                    ? []
+                    : validation.contractConformance.failures),
+                ...(validation.tokenBinding.passed ? [] : validation.tokenBinding.failures)
+            ];
 
-            best = {
+            const candidate: GeneratedComponent = {
                 signature: planned.signature,
                 name: planned.name,
                 type: planned.type,
@@ -257,20 +309,31 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                 attempts,
                 validation
             };
+            // Keep the least-broken attempt, not merely the last — an informed retry can still regress.
+            if (failures.length < bestFailureCount) {
+                best = candidate;
+                bestFailureCount = failures.length;
+            }
 
-            if (
-                validation.textPreservation.passed &&
-                validation.contractConformance.passed &&
-                validation.tokenBinding.passed
-            ) {
+            if (failures.length === 0) {
                 break;
             }
+            // Stop early when a retry made no progress: identical failures mean the feedback isn't
+            // landing, so another attempt would just burn tokens for the same result.
+            if (previousFailures && sameFailures(previousFailures, failures)) {
+                await context.log.info({
+                    message: `"${planned.name}" not converging after ${attempts} attempt(s); stopping early.`
+                });
+                break;
+            }
+            previousFailures = failures;
             await context.log.info({
-                message: `"${planned.name}" attempt ${attempts} failed validation; retrying.`
+                message: `"${planned.name}" attempt ${attempts} failed validation; retrying with feedback.`
             });
         }
 
-        return best;
+        // Report the total attempts actually spent (the token cost), even when an earlier one was kept.
+        return best ? { ...best, attempts } : null;
     }
 
     /**
