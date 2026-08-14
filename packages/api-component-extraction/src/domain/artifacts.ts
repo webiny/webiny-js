@@ -164,8 +164,20 @@ export interface Cluster {
     excluded?: boolean;
 }
 
+/** One point on the threshold→cluster-count curve, for the threshold slider's live preview (W8.3). */
+export interface ThresholdCurvePoint {
+    threshold: number;
+    clusters: number;
+}
+
 export interface ClusterArtifact {
     clusters: Cluster[];
+    /** The similarity threshold this artifact was clustered at (W8.3); absent on pre-threshold artifacts. */
+    threshold?: number;
+    /** The highest similarity between any two clusters (0–1) — how close the nearest pair is. */
+    nearestPair?: number;
+    /** Cluster count across a grid of thresholds, so the slider previews the count without re-running. */
+    thresholdCurve?: ThresholdCurvePoint[];
 }
 
 // ----- Classify (output) -------------------------------------------------------------------------
