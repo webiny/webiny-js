@@ -67,6 +67,8 @@ export interface IComponentExtractionGateway {
     ): Promise<OverrideDto[]>;
     /** Clear an override, reverting that item to machine output (W8.1). */
     clearOverride(runId: string, overrideId: string): Promise<OverrideDto[]>;
+    /** Names of the components already in the Library, for Promote collision detection (W8.6). */
+    listLibraryNames(): Promise<string[]>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(

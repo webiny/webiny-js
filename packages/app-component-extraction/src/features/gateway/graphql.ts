@@ -356,3 +356,16 @@ export const CLEAR_OVERRIDE = /* GraphQL */ `
         }
     }
 `;
+
+export const LIST_LIBRARY_NAMES = /* GraphQL */ `
+    query ListComponentExtractionLibraryNames {
+        componentExtractionListLibraryNames {
+            data
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;

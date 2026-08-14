@@ -51,7 +51,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         selectedClusters: [],
         clusterBusy: false,
         showOverrides: false,
-        reattachments: []
+        reattachments: [],
+        promoteComponents: [],
+        libraryNames: []
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -438,6 +440,60 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         );
     }
 
+    /** Load the Promote gate: the promotable generated components, decisions, Library names, overrides. */
+    private async loadPromoteGate(run: RunDto): Promise<void> {
+        try {
+            const [generate, names, decisions] = await Promise.all([
+                this.gateway.getStageArtifact(
+                    run.id,
+                    "generate"
+                ) as Promise<GenerateArtifactDto | null>,
+                this.gateway.listLibraryNames(),
+                this.gateway.getDecisions(run.id) as Promise<DecisionsDto | null>
+            ]);
+            runInAction(() => {
+                this.vm.promoteComponents = generate?.components ?? [];
+                this.vm.libraryNames = names;
+                this.vm.decisions = decisions?.decisions ?? this.vm.decisions;
+            });
+        } catch {
+            // A missing gate input just yields an empty gate, not an error.
+        }
+    }
+
+    async setPromoteSelection(signature: string, selected: boolean): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        const overrides = await this.gateway.setOverride(runId, "promote", signature, {
+            kind: "promote.select",
+            selected
+        });
+        runInAction(() => {
+            this.vm.overrides = overrides as OverrideDto[];
+        });
+    }
+
+    async setPromoteCollision(
+        signature: string,
+        resolution: "replace" | "keepBoth",
+        renameTo?: string
+    ): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        const overrides = await this.gateway.setOverride(runId, "promote", signature, {
+            kind: "promote.collision",
+            resolution,
+            renameTo
+        });
+        runInAction(() => {
+            this.vm.overrides = overrides as OverrideDto[];
+        });
+    }
+
     toggleClusterSelection(signature: string): void {
         runInAction(() => {
             this.vm.selectedClusters = this.vm.selectedClusters.includes(signature)
@@ -670,11 +726,21 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             }
             // The correction stages need the job's overrides (badges) and, for classify/plan, the
             // machine artifact so an edited item can show its original machine value (W8.3–8.5).
-            if (stage === "cluster" || stage === "classify" || stage === "plan") {
+            if (
+                stage === "cluster" ||
+                stage === "classify" ||
+                stage === "plan" ||
+                stage === "promote"
+            ) {
                 void this.loadOverrides(run);
             }
             if (stage === "classify" || stage === "plan") {
                 void this.loadMachineArtifact(run, stage);
+            }
+            // The Promote gate lists the generated components eligible for promotion, with collision
+            // detection against the Library (W8.6).
+            if (stage === "promote") {
+                void this.loadPromoteGate(run);
             }
         } catch {
             runInAction(() => {

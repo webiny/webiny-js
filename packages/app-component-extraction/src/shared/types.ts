@@ -201,6 +201,11 @@ export interface ClassifyArtifactDto {
     clusters: ClassifiedClusterDto[];
 }
 
+export interface PromoteArtifactDto {
+    promoted: { signature: string; componentId: string; name: string }[];
+    skipped: string[];
+}
+
 // ----- Overrides (W8) ----------------------------------------------------------------------------
 
 /** A correction payload — loosely typed on the frontend; the kind discriminates it. */

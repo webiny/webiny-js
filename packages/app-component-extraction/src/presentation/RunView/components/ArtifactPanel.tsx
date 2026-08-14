@@ -12,6 +12,7 @@ import { ClusterView } from "./stages/ClusterView.js";
 import { ClassifyView } from "./stages/ClassifyView.js";
 import { PlanView } from "./stages/PlanView.js";
 import { GenerateView } from "./stages/GenerateView.js";
+import { PromoteView } from "./stages/PromoteView.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -40,6 +41,8 @@ const StageView = ({
             return <PlanView presenter={presenter} />;
         case "generate":
             return <GenerateView presenter={presenter} />;
+        case "promote":
+            return <PromoteView presenter={presenter} />;
         default:
             return null;
     }
@@ -52,7 +55,8 @@ const VIEW_STAGES = new Set<Stage>([
     "cluster",
     "classify",
     "plan",
-    "generate"
+    "generate",
+    "promote"
 ]);
 
 const LogLine = ({ item }: { item: StageLogItem }) => {
@@ -93,9 +97,12 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
     const logsForStage = vm.logsStage === stage ? vm.logs : [];
 
     // Once a view-stage has output, show its visibility view; before then (pending/running) keep the
-    // activity log + record so the run is legible while it works.
+    // activity log + record so the run is legible while it works. Promote is the exception — its gate
+    // (W8.6) opens as soon as Generate has produced components to select, before Promote itself runs.
     const hasOutput = entry?.status === "done" || entry?.status === "stale";
-    const showView = VIEW_STAGES.has(stage) && hasOutput;
+    const generateEntry = stageEntry(run, "generate");
+    const generateDone = generateEntry?.status === "done" || generateEntry?.status === "stale";
+    const showView = VIEW_STAGES.has(stage) && (hasOutput || (stage === "promote" && generateDone));
 
     return (
         <div className="flex flex-col h-full min-h-0">

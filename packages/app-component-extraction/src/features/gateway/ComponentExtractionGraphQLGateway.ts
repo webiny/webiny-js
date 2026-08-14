@@ -24,6 +24,7 @@ import {
     GET_STAGE_ARTIFACT,
     GET_STAGE_TASK,
     LIST_JOBS,
+    LIST_LIBRARY_NAMES,
     LIST_MODEL_CALLS,
     LIST_OVERRIDES,
     LIST_RUNS,
@@ -227,6 +228,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: CLEAR_OVERRIDE, variables: { runId, overrideId } });
 
         return unwrap(response.componentExtractionClearOverride) ?? [];
+    }
+
+    async listLibraryNames(): Promise<string[]> {
+        const response = await this.client.execute<{
+            componentExtractionListLibraryNames: GqlEnvelope<string[]>;
+        }>({ query: LIST_LIBRARY_NAMES });
+
+        return unwrap(response.componentExtractionListLibraryNames) ?? [];
     }
 
     async setComponentDecision(

@@ -1,7 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { CreateRemoteComponentUseCase } from "@webiny/remote-components/api/features/createComponent/abstractions.js";
+import { UpdateRemoteComponentUseCase } from "@webiny/remote-components/api/features/updateComponent/abstractions.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
+import { OverrideRepository } from "~/domain/abstractions.js";
+import { overridesForStage } from "~/domain/overrides.js";
+import type { Correction } from "~/domain/types.js";
 import type {
     AssembleArtifact,
     DecisionsArtifact,
@@ -12,6 +16,12 @@ import type {
 import { stageArtifactKey } from "~/constants.js";
 import { stageEntry } from "~/domain/ledger.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
+
+/** The promote overrides for a component signature: whether it's selected, and its collision resolution. */
+interface PromoteChoice {
+    selected: boolean;
+    collision?: Extract<Correction, { kind: "promote.collision" }>;
+}
 
 /** Collision policy: keep both by renaming — suffix "(2)", "(3)", … until the name is free. */
 const uniqueName = (name: string, taken: Set<string>): string => {
@@ -36,7 +46,9 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
     constructor(
         private createComponent: CreateRemoteComponentUseCase.Interface,
-        private listComponents: ListRemoteComponentsUseCase.Interface
+        private updateComponent: UpdateRemoteComponentUseCase.Interface,
+        private listComponents: ListRemoteComponentsUseCase.Interface,
+        private overrides: OverrideRepository.Interface
     ) {}
 
     async execute(context: StageContext): Promise<Result<StageOutcome, ExtractionError>> {
@@ -66,11 +78,30 @@ class PromoteHandlerImpl implements StageHandler.Interface {
             );
         }
 
-        // Existing names, so the collision policy can keep both.
+        // Existing names, so the collision policy can keep both — and their ids, so Replace can update in
+        // place.
         const existing = await this.listComponents.execute();
-        const taken = new Set<string>(
-            existing.isOk() ? existing.value.items.map(item => item.name) : []
+        const existingItems = existing.isOk() ? existing.value.items : [];
+        const taken = new Set<string>(existingItems.map(item => item.name));
+        const existingIdByName = new Map<string, string>(
+            existingItems.map(item => [item.name, item.id])
         );
+
+        // The operator's Promote corrections (W8.6): which accepted components to promote, and how to
+        // resolve a name collision with the Library (Replace, or Keep both with a rename).
+        const promoteOverrides = await this.overrides.listByJob(context.job.id);
+        const choices = new Map<string, PromoteChoice>();
+        if (promoteOverrides.isOk()) {
+            for (const override of overridesForStage(promoteOverrides.value, "promote")) {
+                const choice = choices.get(override.structuralSignature) ?? { selected: true };
+                if (override.correction.kind === "promote.select") {
+                    choice.selected = override.correction.selected;
+                } else if (override.correction.kind === "promote.collision") {
+                    choice.collision = override.correction;
+                }
+                choices.set(override.structuralSignature, choice);
+            }
+        }
 
         // The operator's accept/reject decisions (W7.8), keyed to the Generate version. When any decision
         // exists, only accepted components are promoted; with none, every valid component is (as before).
@@ -141,7 +172,58 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                 });
             }
 
-            const name = uniqueName(component.name, taken);
+            // Honour the operator's Promote selection: a component explicitly deselected is not promoted.
+            const choice = choices.get(component.signature);
+            if (choice && !choice.selected) {
+                skipped.push(component.signature);
+                await context.progress({
+                    message: `Skipped ${component.name} — deselected — ${index + 1}/${total}`,
+                    current: index + 1,
+                    total
+                });
+                continue;
+            }
+
+            const collides = taken.has(component.name);
+            const resolution = choice?.collision?.resolution;
+
+            // Replace: update the colliding Library component in place (the module has no version history,
+            // so Replace is the latest-revision update; no "New version" option exists).
+            if (collides && resolution === "replace") {
+                const existingId = existingIdByName.get(component.name);
+                if (existingId) {
+                    const updated = await this.updateComponent.execute(existingId, {
+                        label: component.name,
+                        source: component.source,
+                        css: component.css
+                    });
+                    if (updated.isFail()) {
+                        await context.log.error({
+                            message: `Could not replace "${component.name}": ${updated.error.message}`
+                        });
+                        skipped.push(component.signature);
+                        continue;
+                    }
+                    promoted.push({
+                        signature: component.signature,
+                        componentId: existingId,
+                        name: component.name
+                    });
+                    await context.progress({
+                        message: `Replaced ${component.name} in the Library — ${index + 1}/${total}`,
+                        current: index + 1,
+                        total
+                    });
+                    continue;
+                }
+            }
+
+            // Keep both (default): use the operator's rename if given and free, else auto-suffix.
+            const requested =
+                collides && resolution === "keepBoth" && choice?.collision?.renameTo
+                    ? choice.collision.renameTo
+                    : component.name;
+            const name = uniqueName(requested, taken);
             const created = await this.createComponent.execute({
                 name,
                 label: component.name,
@@ -186,5 +268,10 @@ class PromoteHandlerImpl implements StageHandler.Interface {
 
 export const PromoteHandler = StageHandler.createImplementation({
     implementation: PromoteHandlerImpl,
-    dependencies: [CreateRemoteComponentUseCase, ListRemoteComponentsUseCase]
+    dependencies: [
+        CreateRemoteComponentUseCase,
+        UpdateRemoteComponentUseCase,
+        ListRemoteComponentsUseCase,
+        OverrideRepository
+    ]
 });

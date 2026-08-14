@@ -138,6 +138,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionListOverrides(jobId: ID!): ComponentExtractionArtifactResponse!
         "A run's override reattachment outcomes (W8.1): applied, not-applicable or conflicting, for the panel."
         componentExtractionGetReattachments(runId: ID!): ComponentExtractionArtifactResponse!
+        "The names of the components already in the Library, for Promote collision detection (W8.6)."
+        componentExtractionListLibraryNames: ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {

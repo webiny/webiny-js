@@ -40,6 +40,7 @@ import {
 import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
 import { OverrideApplicator, stageArtifactName } from "~/features/shared/OverrideApplicator.js";
+import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 
 /** Thin resolvers: authorize, delegate, map onto the `{ data, error }` envelope. */
 const resolve = async (fn: () => Promise<unknown>) => {
@@ -453,6 +454,24 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
     });
 
     builder.addResolver({
+        path: "Query.componentExtractionListLibraryNames",
+        dependencies: [ComponentExtractionPermissions, ListRemoteComponentsUseCase],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            listComponents: ListRemoteComponentsUseCase.Interface
+        ) {
+            return () =>
+                resolve(async () => {
+                    if (!(await permissions.canRead("componentExtraction"))) {
+                        throw new Error("You do not have permission to view component extraction.");
+                    }
+                    const result = await listComponents.execute();
+                    return result.isOk() ? result.value.items.map(item => item.name) : [];
+                });
+        }
+    });
+
+    builder.addResolver({
         path: "Query.componentExtractionGetReattachments",
         dependencies: [ComponentExtractionPermissions, StageArtifactStore],
         resolver(
@@ -512,14 +531,16 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
                     const run = runResult.value;
                     const entry = stageEntry(run.stages, stage);
-                    if (!entry || (entry.status !== "done" && entry.status !== "stale")) {
+                    // An artifact override edits a stage's output, so that stage must have run. A stage
+                    // without an applier (Promote selection/collision) is a pre-run choice, allowed anytime.
+                    const name = stageArtifactName(stage);
+                    if (name && (!entry || (entry.status !== "done" && entry.status !== "stale"))) {
                         throw new Error(`Run "${stage}" before correcting it.`);
                     }
 
                     // Capture the machine value for the affected item for the correction log (W8.2).
-                    const name = stageArtifactName(stage);
                     let machineValue: unknown = null;
-                    if (name) {
+                    if (name && entry) {
                         const machineRef =
                             entry.artifacts[`${name}.machine`] ?? entry.artifacts[name];
                         if (machineRef) {
@@ -550,7 +571,7 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         runId: run.id,
                         jobId: run.jobId,
                         stage,
-                        stageVersion: entry.stageVersion,
+                        stageVersion: entry?.stageVersion ?? 0,
                         signature: args.signature,
                         kind: correction.kind,
                         machineValue,

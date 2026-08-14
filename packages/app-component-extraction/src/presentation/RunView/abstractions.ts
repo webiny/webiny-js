@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type {
     ComponentDecisionDto,
+    GeneratedComponentDto,
     JobDto,
     ModelCallDto,
     OverrideDto,
@@ -62,6 +63,10 @@ export interface IRunViewVm {
     showOverrides: boolean;
     /** This run's override reattachment outcomes (W8.7). */
     reattachments: ReattachmentDto[];
+    /** The generated components eligible for Promotion, for the Promote gate (W8.6). */
+    promoteComponents: GeneratedComponentDto[];
+    /** Names already in the Library, for Promote collision detection (W8.6). */
+    libraryNames: string[];
 }
 
 export interface IRunViewPresenter {
@@ -108,6 +113,14 @@ export interface IRunViewPresenter {
         op: "edit" | "add" | "remove",
         propName: string,
         extra?: { newName?: string; type?: string }
+    ): Promise<void>;
+    /** Select or deselect a component for Promotion (W8.6). */
+    setPromoteSelection(signature: string, selected: boolean): Promise<void>;
+    /** Resolve a Promote name collision — replace, or keep both with a rename (W8.6). */
+    setPromoteCollision(
+        signature: string,
+        resolution: "replace" | "keepBoth",
+        renameTo?: string
     ): Promise<void>;
 }
 
