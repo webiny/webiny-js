@@ -293,3 +293,66 @@ export const LIST_THEMES = /* GraphQL */ `
         }
     }
 `;
+
+// Overrides (W8.1). The data field is a JSON scalar carrying the override / reattachment array.
+export const LIST_OVERRIDES = /* GraphQL */ `
+    query ListComponentExtractionOverrides($jobId: ID!) {
+        componentExtractionListOverrides(jobId: $jobId) {
+            data
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
+
+export const GET_REATTACHMENTS = /* GraphQL */ `
+    query GetComponentExtractionReattachments($runId: ID!) {
+        componentExtractionGetReattachments(runId: $runId) {
+            data
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
+
+export const SET_OVERRIDE = /* GraphQL */ `
+    mutation SetComponentExtractionOverride(
+        $runId: ID!
+        $stage: String!
+        $signature: String!
+        $correction: JSON!
+    ) {
+        componentExtractionSetOverride(
+            runId: $runId
+            stage: $stage
+            signature: $signature
+            correction: $correction
+        ) {
+            data
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
+
+export const CLEAR_OVERRIDE = /* GraphQL */ `
+    mutation ClearComponentExtractionOverride($runId: ID!, $overrideId: ID!) {
+        componentExtractionClearOverride(runId: $runId, overrideId: $overrideId) {
+            data
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;

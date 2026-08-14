@@ -3,6 +3,7 @@ import type {
     ComponentDecisionDto,
     JobDto,
     ModelCallDto,
+    OverrideDto,
     PlanCostProjectionDto,
     RenderRecordDto,
     RunDto,
@@ -47,6 +48,12 @@ export interface IRunViewVm {
     modelCallsLoading: boolean;
     /** The Plan-gate cost projection (W7.9), loaded when the Plan stage is open and done. */
     planProjection: PlanCostProjectionDto | null;
+    /** The job's active overrides (W8), loaded when a correctable stage is open. */
+    overrides: OverrideDto[];
+    /** Cluster signatures currently selected for a bulk correction (merge/exclude) (W8.3). */
+    selectedClusters: string[];
+    /** A cluster correction is being applied, so the controls show a busy state (W8.3). */
+    clusterBusy: boolean;
 }
 
 export interface IRunViewPresenter {
@@ -69,6 +76,20 @@ export interface IRunViewPresenter {
     regenerateComponent(signature: string, instruction: string): Promise<void>;
     /** Toggle the token-usage panel; loads the call list on first open (W7.9). */
     toggleTokens(): void;
+    /** Toggle a cluster's selection for a bulk correction (W8.3). */
+    toggleClusterSelection(signature: string): void;
+    /** Clear the cluster selection (W8.3). */
+    clearClusterSelection(): void;
+    /** Merge the selected clusters, optionally pinning a representative (W8.3). */
+    mergeSelectedClusters(pinnedSignature?: string): Promise<void>;
+    /** Split the given members out of a cluster into a new one (W8.3). */
+    splitClusterMembers(sourceSignature: string, memberSignatures: string[]): Promise<void>;
+    /** Move a member to another cluster (W8.3). */
+    moveClusterMember(memberSignature: string, targetSignature: string): Promise<void>;
+    /** Exclude a cluster from the run (W8.3). */
+    excludeCluster(signature: string): Promise<void>;
+    /** Clear an override, reverting that item to machine output (W8.3). */
+    clearOverride(overrideId: string): Promise<void>;
 }
 
 export const RunViewPresenter = createAbstraction<IRunViewPresenter>(

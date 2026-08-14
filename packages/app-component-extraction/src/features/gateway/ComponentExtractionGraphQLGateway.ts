@@ -4,23 +4,28 @@ import type {
     CreateJobData,
     JobDto,
     JobListItemDto,
+    OverrideDto,
+    ReattachmentDto,
     RunDto,
     StageLogItem,
     StageTaskOutput,
     ThemeOptionDto
 } from "~/shared/types.js";
 import {
+    CLEAR_OVERRIDE,
     CREATE_JOB,
     CREATE_RUN,
     EXCLUDE_CAPTURED_PAGES,
     GET_DECISIONS,
     GET_JOB,
+    GET_REATTACHMENTS,
     GET_RENDERS,
     GET_RUN,
     GET_STAGE_ARTIFACT,
     GET_STAGE_TASK,
     LIST_JOBS,
     LIST_MODEL_CALLS,
+    LIST_OVERRIDES,
     LIST_RUNS,
     LIST_THEMES,
     PROJECT_PLAN_COST,
@@ -28,6 +33,7 @@ import {
     RENDER_COMPONENTS,
     RUN_STAGE,
     SET_COMPONENT_DECISION,
+    SET_OVERRIDE,
     UPDATE_DISCOVER_URLS
 } from "./graphql.js";
 
@@ -184,6 +190,43 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: GET_DECISIONS, variables: { runId } });
 
         return unwrap(response.componentExtractionGetDecisions);
+    }
+
+    async listOverrides(jobId: string): Promise<OverrideDto[]> {
+        const response = await this.client.execute<{
+            componentExtractionListOverrides: GqlEnvelope<OverrideDto[]>;
+        }>({ query: LIST_OVERRIDES, variables: { jobId } });
+
+        return unwrap(response.componentExtractionListOverrides) ?? [];
+    }
+
+    async getReattachments(runId: string): Promise<ReattachmentDto[]> {
+        const response = await this.client.execute<{
+            componentExtractionGetReattachments: GqlEnvelope<ReattachmentDto[]>;
+        }>({ query: GET_REATTACHMENTS, variables: { runId } });
+
+        return unwrap(response.componentExtractionGetReattachments) ?? [];
+    }
+
+    async setOverride(
+        runId: string,
+        stage: string,
+        signature: string,
+        correction: unknown
+    ): Promise<OverrideDto[]> {
+        const response = await this.client.execute<{
+            componentExtractionSetOverride: GqlEnvelope<OverrideDto[]>;
+        }>({ query: SET_OVERRIDE, variables: { runId, stage, signature, correction } });
+
+        return unwrap(response.componentExtractionSetOverride) ?? [];
+    }
+
+    async clearOverride(runId: string, overrideId: string): Promise<OverrideDto[]> {
+        const response = await this.client.execute<{
+            componentExtractionClearOverride: GqlEnvelope<OverrideDto[]>;
+        }>({ query: CLEAR_OVERRIDE, variables: { runId, overrideId } });
+
+        return unwrap(response.componentExtractionClearOverride) ?? [];
     }
 
     async setComponentDecision(

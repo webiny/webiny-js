@@ -6,6 +6,7 @@ import type {
     DecisionsDto,
     GenerateArtifactDto,
     ModelCallDto,
+    OverrideDto,
     PlanArtifactDto,
     PlanCostProjectionDto,
     RenderArtifactDto,
@@ -42,7 +43,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         showTokens: false,
         modelCalls: null,
         modelCallsLoading: false,
-        planProjection: null
+        planProjection: null,
+        overrides: [],
+        selectedClusters: [],
+        clusterBusy: false
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -339,6 +343,131 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    // ----- Cluster correction controls (W8.3) ----------------------------------------------------
+
+    /** Load the job's overrides, for the correction badges. */
+    private async loadOverrides(run: RunDto): Promise<void> {
+        try {
+            const overrides = await this.gateway.listOverrides(run.jobId);
+            runInAction(() => {
+                this.vm.overrides = overrides as OverrideDto[];
+            });
+        } catch {
+            // A missing/failed override list must not break the cluster view.
+        }
+    }
+
+    toggleClusterSelection(signature: string): void {
+        runInAction(() => {
+            this.vm.selectedClusters = this.vm.selectedClusters.includes(signature)
+                ? this.vm.selectedClusters.filter(item => item !== signature)
+                : [...this.vm.selectedClusters, signature];
+        });
+    }
+
+    clearClusterSelection(): void {
+        runInAction(() => {
+            this.vm.selectedClusters = [];
+        });
+    }
+
+    async mergeSelectedClusters(pinnedSignature?: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        const selected = this.vm.selectedClusters;
+        if (!runId || selected.length < 2) {
+            return;
+        }
+        const primary = pinnedSignature ?? selected[0];
+        await this.applyClusterCorrection(runId, primary, {
+            kind: "cluster.merge",
+            representativeSignatures: selected,
+            representativeSignature: pinnedSignature
+        });
+    }
+
+    async splitClusterMembers(sourceSignature: string, memberSignatures: string[]): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId || memberSignatures.length === 0) {
+            return;
+        }
+        void sourceSignature;
+        await this.applyClusterCorrection(runId, memberSignatures[0], {
+            kind: "cluster.split",
+            memberSignatures
+        });
+    }
+
+    async moveClusterMember(memberSignature: string, targetSignature: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        await this.applyClusterCorrection(runId, memberSignature, {
+            kind: "cluster.move",
+            memberSignature,
+            targetRepresentativeSignature: targetSignature
+        });
+    }
+
+    async excludeCluster(signature: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        await this.applyClusterCorrection(runId, signature, { kind: "cluster.exclude" });
+    }
+
+    async clearOverride(overrideId: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        await this.runCorrection(() => this.gateway.clearOverride(runId, overrideId));
+    }
+
+    private async applyClusterCorrection(
+        runId: string,
+        signature: string,
+        correction: Record<string, unknown>
+    ): Promise<void> {
+        await this.runCorrection(() =>
+            this.gateway.setOverride(runId, "cluster", signature, correction)
+        );
+    }
+
+    /**
+     * Run a correction, then reload: the correction re-applies in place (so the effective cluster
+     * artifact changed without a version bump) and marks downstream stale (so the run's ledger changed).
+     */
+    private async runCorrection(action: () => Promise<OverrideDto[]>): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.clusterBusy = true;
+            this.vm.error = null;
+        });
+        try {
+            const overrides = await action();
+            const run = await this.gateway.getRun(runId);
+            runInAction(() => {
+                this.vm.overrides = overrides as OverrideDto[];
+                this.vm.selectedClusters = [];
+                this.vm.run = run;
+                this.vm.clusterBusy = false;
+            });
+            // Force a refetch of the effective artifact — a correction does not bump the stage version.
+            this.loadedArtifactKey = null;
+            await this.loadArtifact(run, "cluster");
+        } catch (error) {
+            runInAction(() => {
+                this.vm.clusterBusy = false;
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
     /** Load a run's individual model calls for the token panel. */
     private async loadModelCalls(run: RunDto): Promise<void> {
         runInAction(() => {
@@ -455,6 +584,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // The Plan gate shows the projected generation cost before approval (W7.9).
             if (stage === "plan") {
                 void this.loadPlanProjection(run);
+            }
+            // The Cluster stage's correction controls need the job's overrides for their badges (W8.3).
+            if (stage === "cluster") {
+                void this.loadOverrides(run);
             }
         } catch {
             runInAction(() => {

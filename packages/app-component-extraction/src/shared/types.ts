@@ -170,6 +170,7 @@ export interface SegmentArtifactDto {
 export interface ClusterMemberDto {
     url: string;
     sectionIndex: number;
+    signature: string;
     cropRef: string;
 }
 
@@ -180,10 +181,37 @@ export interface ClusterDto {
     representativeCrop: { cropRef: string };
     digest: { structure: string; texts: string[] };
     observedTexts: string[];
+    /** Set by a cluster.exclude override (W8): visible, muted, restorable; skipped downstream. */
+    excluded?: boolean;
 }
 
 export interface ClusterArtifactDto {
     clusters: ClusterDto[];
+}
+
+// ----- Overrides (W8) ----------------------------------------------------------------------------
+
+/** A correction payload — loosely typed on the frontend; the kind discriminates it. */
+export interface CorrectionDto {
+    kind: string;
+    [key: string]: unknown;
+}
+
+export interface OverrideDto {
+    id: string;
+    stage: string;
+    structuralSignature: string;
+    correction: CorrectionDto;
+    originRunId: string;
+}
+
+export interface ReattachmentDto {
+    overrideId: string;
+    stage: string;
+    signature: string;
+    kind: string;
+    status: "applied" | "not-applicable" | "conflicting";
+    reason: string | null;
 }
 
 export interface ValidationResultDto {

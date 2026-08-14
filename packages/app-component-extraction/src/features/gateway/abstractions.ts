@@ -3,6 +3,8 @@ import type {
     CreateJobData,
     JobDto,
     JobListItemDto,
+    OverrideDto,
+    ReattachmentDto,
     RunDto,
     StageLogItem,
     ThemeOptionDto
@@ -52,6 +54,19 @@ export interface IComponentExtractionGateway {
     listModelCalls(runId: string): Promise<unknown>;
     /** The projected generation cost for a run's plan (W7.9). */
     projectPlanCost(runId: string): Promise<unknown>;
+    /** A job's active overrides (W8.1). */
+    listOverrides(jobId: string): Promise<OverrideDto[]>;
+    /** A run's override reattachment outcomes (W8.1). */
+    getReattachments(runId: string): Promise<ReattachmentDto[]>;
+    /** Set (upsert) an override from a run, re-applying in place and marking downstream stale (W8.1). */
+    setOverride(
+        runId: string,
+        stage: string,
+        signature: string,
+        correction: unknown
+    ): Promise<OverrideDto[]>;
+    /** Clear an override, reverting that item to machine output (W8.1). */
+    clearOverride(runId: string, overrideId: string): Promise<OverrideDto[]>;
 }
 
 export const ComponentExtractionGateway = createAbstraction<IComponentExtractionGateway>(
