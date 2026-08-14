@@ -38,6 +38,10 @@ export const OVERRIDE_MODEL_ID = "wbyExtractionOverride";
 // store because the KV store cannot list by prefix, and the token panel lists a run's calls. The
 // per-stage aggregate is written once onto the Run's stage ledger by the runner when the stage closes.
 export const MODEL_CALL_MODEL_ID = "wbyExtractionModelCall";
+// The append-only correction log (W8.2). One entry per correction made — machine value, human value,
+// signature, run and stage version — the labelled ground truth the eval harness reads. A private CMS
+// model (not KV) because it must be listed by run/job; nothing in the UI reads it yet.
+export const CORRECTION_MODEL_ID = "wbyExtractionCorrection";
 
 // Tenant-scoped key-value keys. Scoping comes free from `KeyValueStore`; one tenant's run lock must
 // not block another's.

@@ -227,3 +227,28 @@ export interface Reattachment {
     /** Why an override did not cleanly apply — null when applied. */
     reason: string | null;
 }
+
+// ----- Correction log (W8.2) ---------------------------------------------------------------------
+
+/**
+ * One append-only correction-log entry — the labelled ground truth for the eval harness. Written the
+ * moment a correction is made (not on reattachment), carrying BOTH the machine value for the affected
+ * item and the human value, so a run's decisions can be reconstructed later. Nothing in the UI reads it.
+ */
+export interface CorrectionLogValues {
+    runId: string;
+    jobId: string;
+    stage: Stage;
+    stageVersion: number;
+    signature: string;
+    kind: CorrectionKind;
+    machineValue: unknown;
+    humanValue: unknown;
+}
+
+export interface CorrectionLogEntry extends CorrectionLogValues {
+    id: string;
+    entryId: string;
+    createdOn: string;
+    tenant: string;
+}

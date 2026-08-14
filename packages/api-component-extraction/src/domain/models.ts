@@ -1,5 +1,11 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { JOB_MODEL_ID, MODEL_CALL_MODEL_ID, RUN_MODEL_ID, OVERRIDE_MODEL_ID } from "~/constants.js";
+import {
+    CORRECTION_MODEL_ID,
+    JOB_MODEL_ID,
+    MODEL_CALL_MODEL_ID,
+    RUN_MODEL_ID,
+    OVERRIDE_MODEL_ID
+} from "~/constants.js";
 
 /**
  * The three private CMS models — jobs, runs and overrides. Private (like `wbyTheme`) means invisible
@@ -113,5 +119,34 @@ class ModelCallModelFactory implements ModelFactory.Interface {
 
 export const ModelCallModelPlugin = ModelFactory.createImplementation({
     implementation: ModelCallModelFactory,
+    dependencies: []
+});
+
+class CorrectionModelFactory implements ModelFactory.Interface {
+    async execute(builder: ModelFactory.Builder) {
+        const model = builder.private({
+            modelId: CORRECTION_MODEL_ID,
+            name: "Component Extraction Correction"
+        });
+
+        model.fields(fields => ({
+            // Filtered on to list a run's / job's corrections for the eval harness.
+            runId: fields.text().label("Run id"),
+            jobId: fields.text().label("Job id"),
+            stage: fields.text().label("Stage"),
+            stageVersion: fields.number().label("Stage version"),
+            signature: fields.text().label("Signature"),
+            kind: fields.text().label("Correction kind"),
+            // The machine output for the affected item and the human output — both sides of the label.
+            machineValue: fields.json().label("Machine value"),
+            humanValue: fields.json().label("Human value")
+        }));
+
+        return [model];
+    }
+}
+
+export const CorrectionModelPlugin = ModelFactory.createImplementation({
+    implementation: CorrectionModelFactory,
     dependencies: []
 });

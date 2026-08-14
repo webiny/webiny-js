@@ -1,6 +1,8 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
+    CorrectionLogEntry,
+    CorrectionLogValues,
     Job,
     JobValues,
     ModelCall,
@@ -33,6 +35,11 @@ export namespace OverrideModel {
 
 export const ModelCallModel = createAbstraction<CmsModel>("ComponentExtraction/ModelCallModel");
 export namespace ModelCallModel {
+    export type Interface = CmsModel;
+}
+
+export const CorrectionModel = createAbstraction<CmsModel>("ComponentExtraction/CorrectionModel");
+export namespace CorrectionModel {
     export type Interface = CmsModel;
 }
 
@@ -82,11 +89,18 @@ export namespace RunRepository {
     export type Interface = IRunRepository;
 }
 
-// ----- Override repository (defined in phase 1, not yet populated) --------------------------------
+// ----- Override repository (W8.1) -----------------------------------------------------------------
 
 export interface IOverrideRepository {
     create(values: OverrideValues): Promise<Result<Override, ExtractionError>>;
     listByJob(jobId: string): Promise<Result<Override[], ExtractionError>>;
+    /**
+     * Set an override, replacing any existing one with the same (job, stage, signature, kind) rather than
+     * stacking a second — re-correcting an item replaces its correction (W8.1).
+     */
+    upsert(values: OverrideValues): Promise<Result<Override, ExtractionError>>;
+    /** Clear an override, reverting that item to machine output. */
+    delete(id: string): Promise<Result<void, ExtractionError>>;
 }
 
 export const OverrideRepository = createAbstraction<IOverrideRepository>(
@@ -94,6 +108,20 @@ export const OverrideRepository = createAbstraction<IOverrideRepository>(
 );
 export namespace OverrideRepository {
     export type Interface = IOverrideRepository;
+}
+
+// ----- Correction log repository (W8.2) -----------------------------------------------------------
+
+export interface ICorrectionRepository {
+    create(values: CorrectionLogValues): Promise<Result<CorrectionLogEntry, ExtractionError>>;
+    listByRun(runId: string): Promise<Result<CorrectionLogEntry[], ExtractionError>>;
+}
+
+export const CorrectionRepository = createAbstraction<ICorrectionRepository>(
+    "ComponentExtraction/CorrectionRepository"
+);
+export namespace CorrectionRepository {
+    export type Interface = ICorrectionRepository;
 }
 
 // ----- Model call repository ----------------------------------------------------------------------

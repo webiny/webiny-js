@@ -1,5 +1,8 @@
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type {
+    Correction,
+    CorrectionKind,
+    CorrectionLogEntry,
     GateConfig,
     Job,
     ModelCall,
@@ -91,8 +94,27 @@ export class EntryToOverrideMapper {
             jobId: entry.values.jobId ?? "",
             stage: entry.values.stage,
             structuralSignature: entry.values.structuralSignature ?? "",
-            correction: entry.values.correction ?? {},
+            correction: entry.values.correction as Correction,
             originRunId: entry.values.originRunId ?? ""
+        };
+    }
+}
+
+export class EntryToCorrectionMapper {
+    static toCorrection(entry: CmsEntry): CorrectionLogEntry {
+        return {
+            id: entry.id,
+            entryId: entry.entryId,
+            createdOn: entry.createdOn,
+            tenant: entry.tenant,
+            runId: entry.values.runId ?? "",
+            jobId: entry.values.jobId ?? "",
+            stage: (entry.values.stage ?? "discover") as Stage,
+            stageVersion: entry.values.stageVersion ?? 0,
+            signature: entry.values.signature ?? "",
+            kind: (entry.values.kind ?? "classify.set") as CorrectionKind,
+            machineValue: entry.values.machineValue ?? null,
+            humanValue: entry.values.humanValue ?? null
         };
     }
 }

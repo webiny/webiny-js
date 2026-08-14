@@ -2,15 +2,29 @@ import { type Container, createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { JOB_MODEL_ID, MODEL_CALL_MODEL_ID, OVERRIDE_MODEL_ID, RUN_MODEL_ID } from "~/constants.js";
 import {
+    CORRECTION_MODEL_ID,
+    JOB_MODEL_ID,
+    MODEL_CALL_MODEL_ID,
+    OVERRIDE_MODEL_ID,
+    RUN_MODEL_ID
+} from "~/constants.js";
+import {
+    CorrectionModelPlugin,
     JobModelPlugin,
     ModelCallModelPlugin,
     OverrideModelPlugin,
     RunModelPlugin
 } from "~/domain/models.js";
-import { JobModel, ModelCallModel, OverrideModel, RunModel } from "~/domain/abstractions.js";
 import {
+    CorrectionModel,
+    JobModel,
+    ModelCallModel,
+    OverrideModel,
+    RunModel
+} from "~/domain/abstractions.js";
+import {
+    CorrectionRepository,
     JobRepository,
     ModelCallRepository,
     OverrideRepository,
@@ -62,6 +76,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(RunModelPlugin);
         container.register(OverrideModelPlugin);
         container.register(ModelCallModelPlugin);
+        container.register(CorrectionModelPlugin);
 
         ComponentExtractionPermissionsFeature.register(container);
 
@@ -69,6 +84,7 @@ export const ComponentExtractionFeature = createFeature({
         container.register(RunRepository);
         container.register(OverrideRepository);
         container.register(ModelCallRepository);
+        container.register(CorrectionRepository);
         container.register(RunLock);
 
         // Model-call accounting (W7.1): the stage scope the runner sets, and the recorder that captures
@@ -135,6 +151,9 @@ export const ComponentExtractionFeature = createFeature({
 
                     const modelCall = await getModel.execute(MODEL_CALL_MODEL_ID);
                     requestContainer.registerInstance(ModelCallModel, modelCall.value);
+
+                    const correction = await getModel.execute(CORRECTION_MODEL_ID);
+                    requestContainer.registerInstance(CorrectionModel, correction.value);
                 });
             }
         });

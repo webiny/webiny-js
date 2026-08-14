@@ -2,11 +2,14 @@ import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
+import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import {
+    CorrectionModel,
+    CorrectionRepository as CorrectionRepositoryAbstraction,
     JobModel,
     JobRepository as JobRepositoryAbstraction,
     ModelCallModel,
@@ -19,6 +22,7 @@ import {
     type ListParams
 } from "~/domain/abstractions.js";
 import {
+    EntryToCorrectionMapper,
     EntryToJobMapper,
     EntryToModelCallMapper,
     EntryToOverrideMapper,
@@ -31,6 +35,7 @@ import {
     type ExtractionError
 } from "~/domain/errors.js";
 import type {
+    CorrectionLogValues,
     JobValues,
     ModelCallValues,
     OverrideValues,
@@ -260,12 +265,14 @@ export const RunRepository = RunRepositoryAbstraction.createImplementation({
     ]
 });
 
-// ----- Overrides (defined in phase 1, not yet populated) -----------------------------------------
+// ----- Overrides (W8.1) --------------------------------------------------------------------------
 
 class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface {
     constructor(
         private model: OverrideModel.Interface,
         private createEntry: CreateEntryUseCase.Interface,
+        private updateEntry: UpdateEntryUseCase.Interface,
+        private deleteEntry: DeleteEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface
     ) {}
@@ -291,11 +298,92 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
             result.value.entries.map(entry => EntryToOverrideMapper.toOverride(entry))
         );
     }
+
+    /**
+     * Replace any existing override with the same (job, stage, signature, kind) rather than stack a
+     * second — re-correcting an item replaces its correction. The kind lives inside the `correction`
+     * json (not a filterable field), so the identity match is narrowed by the filterable fields and the
+     * kind is compared in memory.
+     */
+    async upsert(values: OverrideValues) {
+        const existing = await this.listByJob(values.jobId);
+        if (existing.isOk()) {
+            const match = existing.value.find(
+                override =>
+                    override.stage === values.stage &&
+                    override.structuralSignature === values.structuralSignature &&
+                    override.correction.kind === values.correction.kind
+            );
+            if (match) {
+                const updated = await this.updateEntry.execute(this.model, match.id, { values });
+                if (updated.isFail()) {
+                    return Result.fail(toWriteError(updated.error));
+                }
+                return Result.ok(EntryToOverrideMapper.toOverride(updated.value));
+            }
+        }
+        return this.create(values);
+    }
+
+    async delete(id: string) {
+        const result = await this.deleteEntry.execute(this.model, id);
+        if (result.isFail()) {
+            return Result.fail(new ExtractionPersistenceError(result.error));
+        }
+        return Result.ok(undefined);
+    }
 }
 
 export const OverrideRepository = OverrideRepositoryAbstraction.createImplementation({
     implementation: OverrideRepositoryImpl,
-    dependencies: [OverrideModel, CreateEntryUseCase, ListLatestEntriesUseCase, CmsWhereMapper]
+    dependencies: [
+        OverrideModel,
+        CreateEntryUseCase,
+        UpdateEntryUseCase,
+        DeleteEntryUseCase,
+        ListLatestEntriesUseCase,
+        CmsWhereMapper
+    ]
+});
+
+// ----- Correction log (W8.2) ---------------------------------------------------------------------
+
+const CORRECTION_LIMIT = 500;
+
+class CorrectionRepositoryImpl implements CorrectionRepositoryAbstraction.Interface {
+    constructor(
+        private model: CorrectionModel.Interface,
+        private createEntry: CreateEntryUseCase.Interface,
+        private listLatestEntries: ListLatestEntriesUseCase.Interface,
+        private whereMapper: CmsWhereMapper.Interface
+    ) {}
+
+    async create(values: CorrectionLogValues) {
+        const result = await this.createEntry.execute(this.model, { values });
+        if (result.isFail()) {
+            return Result.fail(toWriteError(result.error));
+        }
+        return Result.ok(EntryToCorrectionMapper.toCorrection(result.value));
+    }
+
+    async listByRun(runId: string) {
+        const result = await this.listLatestEntries.execute(this.model, {
+            where: this.whereMapper.map({ fields: this.model.fields, input: { runId } }),
+            limit: CORRECTION_LIMIT,
+            after: null
+        });
+        if (result.isFail()) {
+            return Result.fail(new ExtractionPersistenceError(result.error));
+        }
+        return Result.ok(
+            result.value.entries.map(entry => EntryToCorrectionMapper.toCorrection(entry))
+        );
+    }
+}
+
+export const CorrectionRepository = CorrectionRepositoryAbstraction.createImplementation({
+    implementation: CorrectionRepositoryImpl,
+    dependencies: [CorrectionModel, CreateEntryUseCase, ListLatestEntriesUseCase, CmsWhereMapper]
 });
 
 // ----- Model calls -------------------------------------------------------------------------------
