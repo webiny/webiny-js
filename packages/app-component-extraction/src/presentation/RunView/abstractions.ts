@@ -5,6 +5,7 @@ import type {
     ModelCallDto,
     OverrideDto,
     PlanCostProjectionDto,
+    ReattachmentDto,
     RenderRecordDto,
     RunDto,
     StageLogItem,
@@ -57,6 +58,10 @@ export interface IRunViewVm {
     selectedClusters: string[];
     /** A correction is being applied, so the controls show a busy state (W8.3+). */
     clusterBusy: boolean;
+    /** The overrides panel is open (W8.7), replacing the artifact panel. */
+    showOverrides: boolean;
+    /** This run's override reattachment outcomes (W8.7). */
+    reattachments: ReattachmentDto[];
 }
 
 export interface IRunViewPresenter {
@@ -79,6 +84,8 @@ export interface IRunViewPresenter {
     regenerateComponent(signature: string, instruction: string): Promise<void>;
     /** Toggle the token-usage panel; loads the call list on first open (W7.9). */
     toggleTokens(): void;
+    /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */
+    toggleOverrides(): void;
     /** Toggle a cluster's selection for a bulk correction (W8.3). */
     toggleClusterSelection(signature: string): void;
     /** Clear the cluster selection (W8.3). */

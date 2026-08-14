@@ -9,6 +9,7 @@ import type {
     OverrideDto,
     PlanArtifactDto,
     PlanCostProjectionDto,
+    ReattachmentDto,
     RenderArtifactDto,
     RunDto,
     StageProgress
@@ -48,7 +49,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         machineArtifact: null,
         machineArtifactStage: null,
         selectedClusters: [],
-        clusterBusy: false
+        clusterBusy: false,
+        showOverrides: false,
+        reattachments: []
     };
 
     /** The task id whose logs are currently loaded, so a re-run (new task id) triggers a reload. */
@@ -339,9 +342,34 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         const opening = !this.vm.showTokens;
         runInAction(() => {
             this.vm.showTokens = opening;
+            this.vm.showOverrides = false;
         });
         if (opening && this.vm.run && this.vm.modelCalls === null) {
             void this.loadModelCalls(this.vm.run);
+        }
+    }
+
+    toggleOverrides(): void {
+        const opening = !this.vm.showOverrides;
+        runInAction(() => {
+            this.vm.showOverrides = opening;
+            this.vm.showTokens = false;
+        });
+        if (opening && this.vm.run) {
+            void this.loadOverrides(this.vm.run);
+            void this.loadReattachments(this.vm.run);
+        }
+    }
+
+    /** Load this run's override reattachment outcomes for the panel (W8.7). */
+    private async loadReattachments(run: RunDto): Promise<void> {
+        try {
+            const reattachments = await this.gateway.getReattachments(run.id);
+            runInAction(() => {
+                this.vm.reattachments = reattachments as ReattachmentDto[];
+            });
+        } catch {
+            // A missing/failed reattachment list must not break the panel.
         }
     }
 

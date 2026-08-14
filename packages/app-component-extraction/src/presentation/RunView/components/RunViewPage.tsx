@@ -17,6 +17,7 @@ import { RunViewFeature } from "../feature.js";
 import { StageList } from "./StageList.js";
 import { ArtifactPanel } from "./ArtifactPanel.js";
 import { TokenPanel } from "./TokenPanel.js";
+import { OverridesPanel } from "./OverridesPanel.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { progressStateOf } from "~/shared/ledger.js";
 import {
@@ -133,6 +134,14 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 </div>
                 {run ? (
                     <Button
+                        variant={vm.showOverrides ? "primary" : "secondary"}
+                        size="sm"
+                        text="Overrides"
+                        onClick={() => presenter.toggleOverrides()}
+                    />
+                ) : null}
+                {run ? (
+                    <Button
                         variant={vm.showTokens ? "primary" : "secondary"}
                         size="sm"
                         text="Token usage"
@@ -161,6 +170,8 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 <div className="flex-1 min-w-0">
                     {vm.showTokens ? (
                         <TokenPanel presenter={presenter} />
+                    ) : vm.showOverrides ? (
+                        <OverridesPanel presenter={presenter} />
                     ) : (
                         <ArtifactPanel presenter={presenter} />
                     )}
