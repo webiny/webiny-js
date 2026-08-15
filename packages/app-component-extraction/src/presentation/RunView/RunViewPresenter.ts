@@ -441,12 +441,24 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (!runId) {
             return;
         }
+        // A classify.set override is a single record per cluster carrying BOTH name and type. Name and
+        // type are edited independently, so merge the changed field onto the existing override — otherwise
+        // setting the name would drop a previously-set type (and vice versa), reverting it to the machine
+        // value.
+        const existing = this.vm.overrides.find(
+            override =>
+                override.stage === "classify" &&
+                override.structuralSignature === signature &&
+                override.correction.kind === "classify.set"
+        );
+        const mergedName = name ?? (existing?.correction.name as string | undefined);
+        const mergedType = type ?? (existing?.correction.type as string | undefined);
         await this.runCorrection(
             () =>
                 this.gateway.setOverride(runId, "classify", signature, {
                     kind: "classify.set",
-                    name,
-                    type
+                    name: mergedName,
+                    type: mergedType
                 }),
             { signature, kind: "classify.set" }
         );
