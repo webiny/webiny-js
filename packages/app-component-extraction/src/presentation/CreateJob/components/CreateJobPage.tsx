@@ -192,19 +192,17 @@ const CreateJobContent = createReactiveComponent(function CreateJobContent() {
                     />
                     <div className="grid grid-cols-3 gap-sm">
                         {STAGE_META.map(meta => (
-                            <label
+                            <div
                                 key={meta.stage}
-                                className="flex cursor-pointer items-center gap-xs rounded-sm px-xs py-xxs hover:bg-neutral-light"
+                                className="flex items-center gap-xs rounded-sm px-xs py-xxs hover:bg-neutral-light"
                             >
                                 <Checkbox
                                     checked={stopAfter.has(meta.stage)}
                                     onChange={() => presenter.toggleGate(meta.stage)}
+                                    label={`${meta.number} · ${meta.label}`}
                                 />
-                                <Text size="sm" className="flex-1 truncate">
-                                    {meta.number} · {meta.label}
-                                </Text>
                                 <StageKindChip kind={meta.kind} />
-                            </label>
+                            </div>
                         ))}
                     </div>
                 </div>
