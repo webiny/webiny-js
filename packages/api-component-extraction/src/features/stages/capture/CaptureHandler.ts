@@ -10,7 +10,6 @@ import type {
     DiscoverArtifact
 } from "~/domain/artifacts.js";
 import { captureEvaluator, type CaptureEvalResult } from "./captureEvaluator.js";
-import { downscale } from "~/features/shared/imageCrop.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const DESKTOP = { width: 1440, height: 900 };
@@ -38,9 +37,10 @@ interface CaptureCheckpoint {
 // sits well above both so it never triggers) and bound only pathologically tall pages by height.
 const SCREENSHOT_MAX_WIDTH = 2000;
 const SCREENSHOT_MAX_HEIGHT = 16000;
-// A small derivative for the capture grid (~40 tiles), so the grid isn't tens of MB of full-page PNGs;
-// the full-page image is served only when a tile is opened.
-const PAGE_THUMB_MAX_EDGE = 480;
+// The grid tile is a 3:4 crop of the top of the page (object-cover object-top), so the thumbnail is built
+// to match: the top of the page cropped to that aspect at a crisp width. A longest-edge downscale would
+// crush a tall full-page screenshot's width to ~140px and render blurry in the ~205px tiles.
+const PAGE_THUMB = { width: 600, height: 800 };
 
 const NARROW_EVALUATOR = `(() => ({ tree: null, documentHeight: 0, rawDom: "" }))()`;
 
@@ -56,6 +56,20 @@ const downscalePng = async (image: Uint8Array): Promise<Buffer> => {
             height: SCREENSHOT_MAX_HEIGHT,
             fit: "inside",
             withoutEnlargement: true
+        })
+        .png()
+        .toBuffer();
+};
+
+/** The grid thumbnail: the top of the page cropped to the tile's 3:4 aspect at a crisp width. */
+const thumbnailPng = async (image: Uint8Array): Promise<Buffer> => {
+    const sharp = (await import("sharp")).default;
+    return sharp(image)
+        .resize({
+            width: PAGE_THUMB.width,
+            height: PAGE_THUMB.height,
+            fit: "cover",
+            position: "top"
         })
         .png()
         .toBuffer();
@@ -223,7 +237,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                     try {
                         const thumb = await context.blobs.put(
                             `${base}/thumbnail-v${context.stageVersion}.png`,
-                            await downscale(image, PAGE_THUMB_MAX_EDGE),
+                            await thumbnailPng(image),
                             "image/png"
                         );
                         if (thumb.isOk()) {
