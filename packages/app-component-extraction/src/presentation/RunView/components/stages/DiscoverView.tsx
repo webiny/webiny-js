@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, Checkbox, Input, Text, cn } from "@webiny/admin-ui";
+import { Button, CheckboxPrimitive, Input, Text, cn } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { normalizeUrl } from "~/shared/url.js";
 import type { RunViewPresenter } from "../../abstractions.js";
@@ -162,7 +162,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                         groupIndex > 0 && "border-t border-neutral-dimmed"
                                     )}
                                 >
-                                    <Checkbox
+                                    <CheckboxPrimitive
                                         checked={allIncluded}
                                         disabled={vm.clusterBusy}
                                         onChange={() => void toggleGroup(items, !allIncluded)}
@@ -187,7 +187,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                             key={item.url}
                                             className="flex items-center gap-sm border-t border-neutral-dimmed px-md py-xs"
                                         >
-                                            <Checkbox
+                                            <CheckboxPrimitive
                                                 checked={included}
                                                 disabled={vm.clusterBusy}
                                                 onChange={() =>
