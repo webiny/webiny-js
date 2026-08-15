@@ -20,6 +20,15 @@ interface PromoteChoice {
     collision?: Extract<Correction, { kind: "promote.collision" }>;
 }
 
+/**
+ * The extraction's name sanitised into a namespace segment — alphanumerics only, so "Webiny -4" becomes
+ * "Webiny4". A name with no alphanumerics yields "" (no prefix).
+ */
+const namespaceSegment = (jobName: string): string => jobName.replace(/[^a-zA-Z0-9]+/g, "");
+
+/** Qualify a component name with the extraction namespace: "Webiny4" + "Hero" → "Webiny4/Hero". */
+const qualify = (segment: string, name: string): string => (segment ? `${segment}/${name}` : name);
+
 /** Collision policy: keep both by renaming — suffix "(2)", "(3)", … until the name is free. */
 const uniqueName = (name: string, taken: Set<string>): string => {
     if (!taken.has(name)) {
@@ -104,6 +113,9 @@ class PromoteHandlerImpl implements StageHandler.Interface {
         const decisions = decisionsFromOverrides(allOverrides);
         const hasDecisions = Object.keys(decisions).length > 0;
 
+        // Every promoted component is namespaced under the extraction's name, e.g. "Webiny4/Hero".
+        const namespace = namespaceSegment(context.job.name);
+
         const promoted: PromotedComponent[] = [];
         const skipped: string[] = [];
         const total = generate.components.length;
@@ -175,22 +187,24 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                 continue;
             }
 
-            const collides = taken.has(component.name);
+            // The Library name is the classified name namespaced under the extraction, e.g. "Webiny4/Hero".
+            const qualifiedName = qualify(namespace, component.name);
+            const collides = taken.has(qualifiedName);
             const resolution = choice?.collision?.resolution;
 
             // Replace: update the colliding Library component in place (the module has no version history,
             // so Replace is the latest-revision update; no "New version" option exists).
             if (collides && resolution === "replace") {
-                const existingId = existingIdByName.get(component.name);
+                const existingId = existingIdByName.get(qualifiedName);
                 if (existingId) {
                     const updated = await this.updateComponent.execute(existingId, {
-                        label: component.name,
+                        label: qualifiedName,
                         source: component.source,
                         css: component.css
                     });
                     if (updated.isFail()) {
                         await context.log.error({
-                            message: `Could not replace "${component.name}": ${updated.error.message}`
+                            message: `Could not replace "${qualifiedName}": ${updated.error.message}`
                         });
                         skipped.push(component.signature);
                         continue;
@@ -198,10 +212,10 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                     promoted.push({
                         signature: component.signature,
                         componentId: existingId,
-                        name: component.name
+                        name: qualifiedName
                     });
                     await context.progress({
-                        message: `Replaced ${component.name} in the Library — ${index + 1}/${total}`,
+                        message: `Replaced ${qualifiedName} in the Library — ${index + 1}/${total}`,
                         current: index + 1,
                         total
                     });
@@ -209,15 +223,16 @@ class PromoteHandlerImpl implements StageHandler.Interface {
                 }
             }
 
-            // Keep both (default): use the operator's rename if given and free, else auto-suffix.
+            // Keep both (default): use the operator's explicit rename if given (as-is, they know what they
+            // want), else the namespaced name auto-suffixed until free.
             const requested =
                 collides && resolution === "keepBoth" && choice?.collision?.renameTo
                     ? choice.collision.renameTo
-                    : component.name;
+                    : qualifiedName;
             const name = uniqueName(requested, taken);
             const created = await this.createComponent.execute({
                 name,
-                label: component.name,
+                label: name,
                 description: `Extracted ${component.type} section`,
                 source: component.source,
                 css: component.css,

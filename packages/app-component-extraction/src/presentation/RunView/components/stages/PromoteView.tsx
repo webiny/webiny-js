@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert, Button, Checkbox, Input, Select, Tag, Text } from "@webiny/admin-ui";
 import type { RunViewPresenter } from "../../abstractions.js";
+import { namespaceSegment, qualify } from "~/shared/naming.js";
 import type {
     ComponentDecisionDto,
     GeneratedComponentDto,
@@ -49,10 +50,12 @@ const promoteOverride = (
 const PromoteRow = ({
     presenter,
     component,
+    qualifiedName,
     collides
 }: {
     presenter: RunViewPresenter.Interface;
     component: GeneratedComponentDto;
+    qualifiedName: string;
     collides: boolean;
 }) => {
     const { vm } = presenter;
@@ -62,7 +65,7 @@ const PromoteRow = ({
     const selected = selectOverride ? Boolean(selectOverride.correction.selected) : true;
     const resolution = (collisionOverride?.correction.resolution as string) ?? "keepBoth";
     const [renameTo, setRenameTo] = useState(
-        (collisionOverride?.correction.renameTo as string) ?? `${component.name} (2)`
+        (collisionOverride?.correction.renameTo as string) ?? `${qualifiedName} (2)`
     );
 
     const commitRename = () => {
@@ -79,7 +82,7 @@ const PromoteRow = ({
                     onChange={() => void presenter.setPromoteSelection(signature, !selected)}
                 />
                 <Text size="sm" className="font-medium truncate flex-1 min-w-0">
-                    {component.name}
+                    {qualifiedName}
                 </Text>
                 <Tag variant="neutral-muted" content={component.type} />
                 {collides ? <Tag variant="warning" content="name in Library" /> : null}
@@ -132,6 +135,9 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
     const promoting = vm.actionStage === "promote";
     const hasDecisions = Object.keys(vm.decisions).length > 0;
     const library = new Set(vm.libraryNames);
+    // Promoted components are namespaced under the extraction (see PromoteHandler), so preview and
+    // collision-detect against the same qualified name the API will create.
+    const namespace = namespaceSegment(vm.job?.name ?? "");
 
     const promotable = vm.promoteComponents.filter(component =>
         isPromotable(component, vm.decisions, hasDecisions)
@@ -172,14 +178,18 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                             the Library shows a collision choice.
                         </Alert>
                     </div>
-                    {promotable.map(component => (
-                        <PromoteRow
-                            key={component.signature}
-                            presenter={presenter}
-                            component={component}
-                            collides={library.has(component.name)}
-                        />
-                    ))}
+                    {promotable.map(component => {
+                        const qualifiedName = qualify(namespace, component.name);
+                        return (
+                            <PromoteRow
+                                key={component.signature}
+                                presenter={presenter}
+                                component={component}
+                                qualifiedName={qualifiedName}
+                                collides={library.has(qualifiedName)}
+                            />
+                        );
+                    })}
                 </div>
             )}
         </div>
