@@ -277,11 +277,12 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
 
     const rendered = (vm.renders ?? []).filter(record => record.ok).length;
 
-    // Only validation-passing components can be promoted, so "Accept all" targets exactly those.
-    const acceptable = sorted.filter(allPassed);
-    const allAccepted =
-        acceptable.length > 0 &&
-        acceptable.every(component => vm.decisions[component.signature] === "accepted");
+    const isAccepted = (component: GeneratedComponentDto) =>
+        vm.decisions[component.signature] === "accepted";
+    // "Accept passed" targets only the validation-passing components; "Accept all" targets every one.
+    const passed = sorted.filter(allPassed);
+    const passedAllAccepted = passed.length > 0 && passed.every(isAccepted);
+    const allAccepted = sorted.length > 0 && sorted.every(isAccepted);
 
     return (
         <div className="flex flex-col h-full min-h-0">
@@ -294,13 +295,25 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                     <Button
                         variant="secondary"
                         size="sm"
-                        text={allAccepted ? "All accepted" : `Accept all (${acceptable.length})`}
-                        disabled={acceptable.length === 0 || allAccepted}
-                        title="Accept every component that passed validation"
+                        text={
+                            passedAllAccepted
+                                ? "Passed accepted"
+                                : `Accept passed (${passed.length})`
+                        }
+                        disabled={passed.length === 0 || passedAllAccepted}
+                        title="Accept only the components that passed every validator"
                         onClick={() =>
-                            void presenter.acceptAll(
-                                acceptable.map(component => component.signature)
-                            )
+                            void presenter.acceptAll(passed.map(component => component.signature))
+                        }
+                    />
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        text={allAccepted ? "All accepted" : `Accept all (${sorted.length})`}
+                        disabled={sorted.length === 0 || allAccepted}
+                        title="Accept every generated component, including those with failing validators"
+                        onClick={() =>
+                            void presenter.acceptAll(sorted.map(component => component.signature))
                         }
                     />
                     <Button
