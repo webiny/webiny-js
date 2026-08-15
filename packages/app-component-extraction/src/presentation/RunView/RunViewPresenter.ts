@@ -230,11 +230,13 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
         const signature = normalizeUrl(url);
         if (excluded) {
-            await this.runCorrection(() =>
-                this.gateway.setOverride(runId, "discover", signature, {
-                    kind: "discover.url",
-                    action: "exclude"
-                })
+            await this.runCorrection(
+                () =>
+                    this.gateway.setOverride(runId, "discover", signature, {
+                        kind: "discover.url",
+                        action: "exclude"
+                    }),
+                { signature, kind: "discover.url" }
             );
             return;
         }
@@ -257,12 +259,15 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (!runId || !trimmed) {
             return;
         }
-        await this.runCorrection(() =>
-            this.gateway.setOverride(runId, "discover", normalizeUrl(trimmed), {
-                kind: "discover.url",
-                action: "add",
-                group: "manual"
-            })
+        const signature = normalizeUrl(trimmed);
+        await this.runCorrection(
+            () =>
+                this.gateway.setOverride(runId, "discover", signature, {
+                    kind: "discover.url",
+                    action: "add",
+                    group: "manual"
+                }),
+            { signature, kind: "discover.url" }
         );
     }
 
@@ -436,12 +441,14 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (!runId) {
             return;
         }
-        await this.runCorrection(() =>
-            this.gateway.setOverride(runId, "classify", signature, {
-                kind: "classify.set",
-                name,
-                type
-            })
+        await this.runCorrection(
+            () =>
+                this.gateway.setOverride(runId, "classify", signature, {
+                    kind: "classify.set",
+                    name,
+                    type
+                }),
+            { signature, kind: "classify.set" }
         );
     }
 
@@ -455,14 +462,16 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         if (!runId) {
             return;
         }
-        await this.runCorrection(() =>
-            this.gateway.setOverride(runId, "plan", signature, {
-                kind: "plan.prop",
-                op,
-                propName,
-                newName: extra?.newName,
-                type: extra?.type
-            })
+        await this.runCorrection(
+            () =>
+                this.gateway.setOverride(runId, "plan", signature, {
+                    kind: "plan.prop",
+                    op,
+                    propName,
+                    newName: extra?.newName,
+                    type: extra?.type
+                }),
+            { signature, kind: "plan.prop" }
         );
     }
 
@@ -617,16 +626,23 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         signature: string,
         correction: Record<string, unknown>
     ): Promise<void> {
-        await this.runCorrection(() =>
-            this.gateway.setOverride(runId, "cluster", signature, correction)
+        await this.runCorrection(
+            () => this.gateway.setOverride(runId, "cluster", signature, correction),
+            { signature, kind: correction.kind as string }
         );
     }
 
     /**
      * Run a correction, then reload: the correction re-applies in place (so the effective cluster
      * artifact changed without a version bump) and marks downstream stale (so the run's ledger changed).
+     *
+     * `expect` identifies the correction just made (its signature + kind) so we surface ONLY its outcome —
+     * not some other, older override at the same stage that happens to be unapplied.
      */
-    private async runCorrection(action: () => Promise<OverrideDto[]>): Promise<void> {
+    private async runCorrection(
+        action: () => Promise<OverrideDto[]>,
+        expect?: { signature: string; kind: string }
+    ): Promise<void> {
         const runId = this.vm.run?.id;
         const stage = this.vm.selectedStage;
         if (!runId || !stage) {
@@ -649,25 +665,22 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // stage version — and refresh its machine copy for the "was" hint.
             this.loadedArtifactKey = null;
             await this.loadArtifact(run, stage);
-            // Surface a correction that couldn't be applied — otherwise it silently looks like nothing
-            // happened. A correction set THIS run that reattached as not-applicable/conflicting is a real
-            // failure the operator should see (e.g. a merge whose clusters aren't both present).
+            // Refresh the reattachment list for the panel, and surface THIS correction's own failure —
+            // matched by its signature + kind so an unrelated older override never masquerades as it.
             try {
                 const reattachments = await this.gateway.getReattachments(runId);
                 runInAction(() => {
                     this.vm.reattachments = reattachments as ReattachmentDto[];
                 });
-                const setThisRun = new Set(
-                    (overrides as OverrideDto[])
-                        .filter(override => override.originRunId === run.id)
-                        .map(override => override.id)
-                );
-                const failed = (reattachments as ReattachmentDto[]).find(
-                    entry =>
-                        entry.stage === stage &&
-                        entry.status !== "applied" &&
-                        setThisRun.has(entry.overrideId)
-                );
+                const failed =
+                    expect &&
+                    (reattachments as ReattachmentDto[]).find(
+                        entry =>
+                            entry.stage === stage &&
+                            entry.signature === expect.signature &&
+                            entry.kind === expect.kind &&
+                            entry.status !== "applied"
+                    );
                 if (failed) {
                     runInAction(() => {
                         this.vm.error = `That correction could not be applied — ${
