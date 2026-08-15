@@ -10,6 +10,7 @@ import type {
     DiscoverArtifact
 } from "~/domain/artifacts.js";
 import { captureEvaluator, type CaptureEvalResult } from "./captureEvaluator.js";
+import { downscale } from "~/features/shared/imageCrop.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const DESKTOP = { width: 1440, height: 900 };
@@ -20,17 +21,6 @@ const MAX_NODES = 4000;
 // The margin MUST exceed one page's worst case: the timeout is only checked between pages, so if a page
 // starts with less runway than it needs the Lambda is hard-killed mid-page and the stage sticks "running".
 const CAPTURE_SAFETY_MARGIN_SECONDS = 200;
-// Non-visual, connection-heavy resource types aborted during capture so a heavy page can't exhaust the
-// browser's sockets/handles (net::ERR_INSUFFICIENT_RESOURCES). None of these affect the screenshot, the
-// element tree or the sampled colours/type/spacing — media was already dropped for the same reason.
-const BLOCKED_RESOURCE_TYPES = [
-    "media",
-    "websocket",
-    "eventsource",
-    "manifest",
-    "ping",
-    "texttrack"
-];
 
 const errMessage = (error: unknown): string =>
     error instanceof Error ? error.message : String(error);
@@ -48,11 +38,9 @@ interface CaptureCheckpoint {
 // sits well above both so it never triggers) and bound only pathologically tall pages by height.
 const SCREENSHOT_MAX_WIDTH = 2000;
 const SCREENSHOT_MAX_HEIGHT = 16000;
-// The grid tile is a 3:4 crop of the top of the page (object-cover object-top), so the thumbnail is built
-// to match: the top of the page cropped to 3:4 at a crisp width, not a longest-edge downscale (which for
-// a tall full-page screenshot crushes the width to ~140px and renders blurry). The full-page image is
-// still served only when a tile is opened.
-const PAGE_THUMB = { width: 600, height: 800 };
+// A small derivative for the capture grid (~40 tiles), so the grid isn't tens of MB of full-page PNGs;
+// the full-page image is served only when a tile is opened.
+const PAGE_THUMB_MAX_EDGE = 480;
 
 const NARROW_EVALUATOR = `(() => ({ tree: null, documentHeight: 0, rawDom: "" }))()`;
 
@@ -68,20 +56,6 @@ const downscalePng = async (image: Uint8Array): Promise<Buffer> => {
             height: SCREENSHOT_MAX_HEIGHT,
             fit: "inside",
             withoutEnlargement: true
-        })
-        .png()
-        .toBuffer();
-};
-
-/** The grid thumbnail: the top of the page cropped to the tile's 3:4 aspect at a crisp width. */
-const thumbnailPng = async (image: Uint8Array): Promise<Buffer> => {
-    const sharp = (await import("sharp")).default;
-    return sharp(image)
-        .resize({
-            width: PAGE_THUMB.width,
-            height: PAGE_THUMB.height,
-            fit: "cover",
-            position: "top"
         })
         .png()
         .toBuffer();
@@ -226,7 +200,6 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             viewportWidth: DESKTOP.width,
             viewportHeight: DESKTOP.height,
             timeoutMs: PAGE_TIMEOUT_MS,
-            blockResourceTypes: BLOCKED_RESOURCE_TYPES,
             evaluate: captureEvaluator({ maxNodes: MAX_NODES }),
             screenshots: {
                 requests: [{ label: "full-page", crop: "full-page" }],
@@ -246,7 +219,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                     try {
                         const thumb = await context.blobs.put(
                             `${base}/thumbnail-v${context.stageVersion}.png`,
-                            await thumbnailPng(image),
+                            await downscale(image, PAGE_THUMB_MAX_EDGE),
                             "image/png"
                         );
                         if (thumb.isOk()) {
@@ -292,7 +265,6 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             viewportWidth: NARROW.width,
             viewportHeight: NARROW.height,
             timeoutMs: PAGE_TIMEOUT_MS,
-            blockResourceTypes: BLOCKED_RESOURCE_TYPES,
             evaluate: NARROW_EVALUATOR,
             screenshots: {
                 requests: [{ label: "full-page-narrow", crop: "full-page" }],
