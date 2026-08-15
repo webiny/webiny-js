@@ -78,15 +78,22 @@ const ClusterCard = React.memo(function ClusterCard({
         setSplitMembers([]);
     };
 
-    // Other clusters a member can be moved into — labelled by their card number, representative page and
-    // member count so they're distinguishable (their structure strings are usually identical).
+    // Other clusters a member can be moved into — labelled by their card number (the #N badge on the
+    // grid) and member count so they're distinguishable, since their structure strings are usually
+    // identical. The representative's page is appended only when it's actually known.
     const moveTargets = clusters
         .map((other, position) => ({ other, number: position + 1 }))
         .filter(entry => entry.other.signature !== cluster.signature && !entry.other.excluded)
-        .map(entry => ({
-            value: entry.other.signature,
-            label: `#${entry.number} · ${pathOf(entry.other.representative.url)} · ${entry.other.members.length}m`
-        }));
+        .map(entry => {
+            const count = entry.other.members.length;
+            const page = pathOf(entry.other.representative.url ?? "");
+            return {
+                value: entry.other.signature,
+                label: `Cluster #${entry.number} · ${count} member${count === 1 ? "" : "s"}${
+                    page ? ` · ${page}` : ""
+                }`
+            };
+        });
 
     return (
         <div
