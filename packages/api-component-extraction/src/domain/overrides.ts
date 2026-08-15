@@ -127,17 +127,26 @@ const asKind = <K extends CorrectionKind>(
 ): Extract<Correction, { kind: K }> => correction as Extract<Correction, { kind: K }>;
 
 /**
- * Apply the Cluster stage's overrides. Order is deterministic — merge, split, move, exclude — so the
- * effective output does not depend on the order corrections were made.
+ * Apply the Cluster stage's overrides.
+ *
+ * Corrections are applied in CREATION ORDER on top of one another, so composed edits build correctly —
+ * splitting a cluster and then merging the pieces back means the merge runs against the post-split state
+ * where those pieces exist, not against the machine base where they don't.
+ *
+ * Matching is by MEMBER identity, never by representative-equality: a cluster is identified by the
+ * section it holds, and a representative is always one of its members. A prior split/merge/move can
+ * re-choose a cluster's representative, so matching on `representative.signature` would fail to find a
+ * cluster the operator can plainly see. `clusterHolding(sig)` finds the current cluster containing that
+ * section instead.
  *
  * Matching rules (reported per the brief):
- *  - merge: whichever recorded representative signatures are present this run merge; FEWER THAN TWO
+ *  - merge: recorded signatures whose section is present this run merge; FEWER THAN TWO distinct clusters
  *    present ⇒ not-applicable (nothing to merge), never conflicting.
  *  - split: any present recorded member signatures are pulled out into a new cluster; none present ⇒
  *    not-applicable.
  *  - move: member present + target present ⇒ move; member present, target absent ⇒ conflicting; member
  *    absent ⇒ not-applicable.
- *  - exclude: representative present ⇒ mark excluded; absent ⇒ not-applicable.
+ *  - exclude: the cluster holding the signature ⇒ mark excluded; absent ⇒ not-applicable.
  */
 export const applyClusterOverrides = (
     artifact: ClusterArtifact,
@@ -148,98 +157,126 @@ export const applyClusterOverrides = (
         members: [...cluster.members]
     }));
     const reattachments: Reattachment[] = [];
-    const ofKind = (kind: CorrectionKind) =>
-        overrides.filter(override => override.correction.kind === kind);
 
-    for (const override of ofKind("cluster.merge")) {
-        const correction = asKind(override.correction, "cluster.merge");
-        const targets = new Set(correction.representativeSignatures);
-        const matched = clusters.filter(
-            cluster => targets.has(cluster.representative.signature) && !cluster.excluded
-        );
-        if (matched.length < 2) {
-            reattachments.push(
-                reattachment(
-                    override,
-                    "not-applicable",
-                    `merge needs at least two of its clusters present; found ${matched.length}`
-                )
-            );
-            continue;
-        }
-        const insertAt = clusters.indexOf(matched[0]);
-        const merged = mergeClusters(matched, correction.representativeSignature);
-        clusters = clusters.filter(cluster => !matched.includes(cluster));
-        clusters.splice(Math.max(0, insertAt), 0, merged);
-        reattachments.push(reattachment(override, "applied", null));
-    }
+    // The current cluster holding a given section (a representative is always a member) — stable across
+    // representative re-selection, unlike matching on `representative.signature`.
+    const clusterHolding = (signature: string): Cluster | undefined =>
+        clusters.find(cluster => cluster.members.some(member => member.signature === signature));
 
-    for (const override of ofKind("cluster.split")) {
-        const correction = asKind(override.correction, "cluster.split");
-        const targets = new Set(correction.memberSignatures);
-        const pulled: ClusterMember[] = [];
-        for (const cluster of clusters) {
-            const staying = cluster.members.filter(member => !targets.has(member.signature));
-            const leaving = cluster.members.filter(member => targets.has(member.signature));
-            if (leaving.length > 0) {
-                pulled.push(...leaving);
-                cluster.members = staying;
+    // Apply in creation order so a later correction sees the effect of earlier ones.
+    const ordered = [...overrides].sort((a, b) => a.createdOn.localeCompare(b.createdOn));
+
+    for (const override of ordered) {
+        switch (override.correction.kind) {
+            case "cluster.merge": {
+                const correction = override.correction;
+                const matched: Cluster[] = [];
+                for (const signature of correction.representativeSignatures) {
+                    const cluster = clusterHolding(signature);
+                    if (cluster && !cluster.excluded && !matched.includes(cluster)) {
+                        matched.push(cluster);
+                    }
+                }
+                if (matched.length < 2) {
+                    reattachments.push(
+                        reattachment(
+                            override,
+                            "not-applicable",
+                            `merge needs at least two of its clusters present; found ${matched.length}`
+                        )
+                    );
+                    break;
+                }
+                const insertAt = clusters.indexOf(matched[0]);
+                const merged = mergeClusters(matched, correction.representativeSignature);
+                clusters = clusters.filter(cluster => !matched.includes(cluster));
+                clusters.splice(Math.max(0, insertAt), 0, merged);
+                reattachments.push(reattachment(override, "applied", null));
+                break;
             }
+            case "cluster.split": {
+                const correction = override.correction;
+                const targets = new Set(correction.memberSignatures);
+                const pulled: ClusterMember[] = [];
+                for (const cluster of clusters) {
+                    const staying = cluster.members.filter(
+                        member => !targets.has(member.signature)
+                    );
+                    const leaving = cluster.members.filter(member => targets.has(member.signature));
+                    if (leaving.length > 0) {
+                        pulled.push(...leaving);
+                        cluster.members = staying;
+                    }
+                }
+                if (pulled.length === 0) {
+                    reattachments.push(
+                        reattachment(
+                            override,
+                            "not-applicable",
+                            "none of the split members are present"
+                        )
+                    );
+                    break;
+                }
+                clusters = clusters.filter(cluster => cluster.members.length > 0);
+                clusters.push(clusterFromMembers(pulled));
+                reattachments.push(reattachment(override, "applied", null));
+                break;
+            }
+            case "cluster.move": {
+                const correction = override.correction;
+                const source = clusterHolding(correction.memberSignature);
+                const target = clusterHolding(correction.targetRepresentativeSignature);
+                if (!source) {
+                    reattachments.push(
+                        reattachment(
+                            override,
+                            "not-applicable",
+                            "the moved member is absent this run"
+                        )
+                    );
+                    break;
+                }
+                if (!target) {
+                    reattachments.push(
+                        reattachment(
+                            override,
+                            "conflicting",
+                            "the move target cluster is absent this run"
+                        )
+                    );
+                    break;
+                }
+                if (source !== target) {
+                    const member = source.members.find(
+                        item => item.signature === correction.memberSignature
+                    )!;
+                    source.members = source.members.filter(item => item !== member);
+                    target.members.push(member);
+                    clusters = clusters.filter(cluster => cluster.members.length > 0);
+                }
+                reattachments.push(reattachment(override, "applied", null));
+                break;
+            }
+            case "cluster.exclude": {
+                const target = clusterHolding(override.structuralSignature);
+                if (!target) {
+                    reattachments.push(
+                        reattachment(
+                            override,
+                            "not-applicable",
+                            "the excluded cluster is absent this run"
+                        )
+                    );
+                    break;
+                }
+                target.excluded = true;
+                reattachments.push(reattachment(override, "applied", null));
+                break;
+            }
+            default:
+                break;
         }
-        if (pulled.length === 0) {
-            reattachments.push(
-                reattachment(override, "not-applicable", "none of the split members are present")
-            );
-            continue;
-        }
-        clusters = clusters.filter(cluster => cluster.members.length > 0);
-        clusters.push(clusterFromMembers(pulled));
-        reattachments.push(reattachment(override, "applied", null));
-    }
-
-    for (const override of ofKind("cluster.move")) {
-        const correction = asKind(override.correction, "cluster.move");
-        const source = clusters.find(cluster =>
-            cluster.members.some(member => member.signature === correction.memberSignature)
-        );
-        const target = clusters.find(
-            cluster => cluster.representative.signature === correction.targetRepresentativeSignature
-        );
-        if (!source) {
-            reattachments.push(
-                reattachment(override, "not-applicable", "the moved member is absent this run")
-            );
-            continue;
-        }
-        if (!target) {
-            reattachments.push(
-                reattachment(override, "conflicting", "the move target cluster is absent this run")
-            );
-            continue;
-        }
-        if (source !== target) {
-            const member = source.members.find(
-                item => item.signature === correction.memberSignature
-            )!;
-            source.members = source.members.filter(item => item !== member);
-            target.members.push(member);
-        }
-        reattachments.push(reattachment(override, "applied", null));
-    }
-    clusters = clusters.filter(cluster => cluster.members.length > 0);
-
-    for (const override of ofKind("cluster.exclude")) {
-        const target = clusters.find(
-            cluster => cluster.representative.signature === override.structuralSignature
-        );
-        if (!target) {
-            reattachments.push(
-                reattachment(override, "not-applicable", "the excluded cluster is absent this run")
-            );
-            continue;
-        }
-        target.excluded = true;
-        reattachments.push(reattachment(override, "applied", null));
     }
 
     // Preserve the artifact's own fields (threshold, nearestPair, thresholdCurve) — only `clusters` changes.

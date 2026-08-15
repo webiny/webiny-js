@@ -210,6 +210,63 @@ describe("applyClusterOverrides — exclude", () => {
     });
 });
 
+describe("applyClusterOverrides — composed edits", () => {
+    const at = (iso: string, signature: string, correction: Correction): Override => ({
+        ...override("cluster", signature, correction),
+        createdOn: iso
+    });
+
+    it("merges pieces a prior split created (applied in creation order, matched by member)", () => {
+        // Machine has one cluster; the operator split a member out, then merged the two back.
+        const artifact = { clusters: [cluster("A", [member("A", "/1"), member("X", "/2")])] };
+        const result = applyClusterOverrides(artifact, [
+            // Deliberately out of creation order in the array — the applier sorts by createdOn.
+            at("2026-01-02T00:00:02.000Z", "A", {
+                kind: "cluster.merge",
+                representativeSignatures: ["A", "X"]
+            }),
+            at("2026-01-02T00:00:01.000Z", "A", {
+                kind: "cluster.split",
+                memberSignatures: ["X"]
+            })
+        ]);
+        expect(result.effective.clusters).toHaveLength(1);
+        expect(result.effective.clusters[0].members.map(m => m.signature).sort()).toEqual([
+            "A",
+            "X"
+        ]);
+        expect(result.reattachments.every(r => r.status === "applied")).toBe(true);
+    });
+
+    it("merges by member identity even after a prior merge re-chose a representative", () => {
+        // Machine: three single-member clusters. Merge {A,B} first (rep becomes A), then merge that with C.
+        const artifact = {
+            clusters: [
+                cluster("A", [member("A", "/1")]),
+                cluster("B", [member("B", "/2")]),
+                cluster("C", [member("C", "/3")])
+            ]
+        };
+        const result = applyClusterOverrides(artifact, [
+            at("2026-01-02T00:00:01.000Z", "A", {
+                kind: "cluster.merge",
+                representativeSignatures: ["A", "B"]
+            }),
+            at("2026-01-02T00:00:02.000Z", "A", {
+                kind: "cluster.merge",
+                representativeSignatures: ["B", "C"]
+            })
+        ]);
+        expect(result.effective.clusters).toHaveLength(1);
+        expect(result.effective.clusters[0].members.map(m => m.signature).sort()).toEqual([
+            "A",
+            "B",
+            "C"
+        ]);
+        expect(result.reattachments.every(r => r.status === "applied")).toBe(true);
+    });
+});
+
 describe("applyClassifyOverrides", () => {
     const artifact: ClassifyArtifact = {
         clusters: [
