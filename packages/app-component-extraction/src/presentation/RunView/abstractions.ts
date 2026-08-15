@@ -91,7 +91,7 @@ export interface IRunViewPresenter {
     setDecision(signature: string, decision: string): Promise<void>;
     /** Regenerate a component from an instruction via the refine path (W7.8). */
     regenerateComponent(signature: string, instruction: string): Promise<void>;
-    regeneratePlanComponent(signature: string): Promise<void>;
+    regeneratePlanComponent(signature: string, instruction?: string): Promise<void>;
     /** Toggle the token-usage panel; loads the call list on first open (W7.9). */
     toggleTokens(): void;
     /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */

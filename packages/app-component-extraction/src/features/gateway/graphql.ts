@@ -121,8 +121,16 @@ export const REGENERATE_COMPONENT = /* GraphQL */ `
 `;
 
 export const REGENERATE_PLAN = /* GraphQL */ `
-    mutation RegenerateComponentExtractionPlan($runId: ID!, $signature: String!) {
-        componentExtractionRegeneratePlan(runId: $runId, signature: $signature) {
+    mutation RegenerateComponentExtractionPlan(
+        $runId: ID!
+        $signature: String!
+        $instruction: String
+    ) {
+        componentExtractionRegeneratePlan(
+            runId: $runId
+            signature: $signature
+            instruction: $instruction
+        ) {
             data {
                 taskId
                 runId

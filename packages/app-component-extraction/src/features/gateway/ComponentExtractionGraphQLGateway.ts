@@ -251,10 +251,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         return unwrap(response.componentExtractionRegenerateComponent);
     }
 
-    async regeneratePlanComponent(runId: string, signature: string): Promise<StageTriggerResult> {
+    async regeneratePlanComponent(
+        runId: string,
+        signature: string,
+        instruction?: string
+    ): Promise<StageTriggerResult> {
         const response = await this.client.execute<{
             componentExtractionRegeneratePlan: GqlEnvelope<StageTriggerResult>;
-        }>({ query: REGENERATE_PLAN, variables: { runId, signature } });
+        }>({ query: REGENERATE_PLAN, variables: { runId, signature, instruction } });
 
         return unwrap(response.componentExtractionRegeneratePlan);
     }

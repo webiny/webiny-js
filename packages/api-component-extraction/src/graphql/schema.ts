@@ -926,7 +926,11 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
             runRepository: RunRepository.Interface,
             taskService: TaskService.Interface
         ) {
-            return ({ args }: { args: { runId: string; signature: string } }) =>
+            return ({
+                args
+            }: {
+                args: { runId: string; signature: string; instruction?: string };
+            }) =>
                 resolve(async () => {
                     if (!(await permissions.canCreate("componentExtraction"))) {
                         throw new Error("You do not have permission to run component extraction.");
@@ -942,13 +946,15 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw new Error("Plan has not produced a contract to regenerate.");
                     }
 
+                    const instruction = args.instruction?.trim() || undefined;
                     const triggered = await taskService.trigger<{
                         runId: string;
                         signature: string;
+                        instruction?: string;
                     }>({
                         definition: REGENERATE_PLAN_TASK_ID,
                         name: `Component extraction — regenerate plan (run ${run.runNumber})`,
-                        input: { runId: run.id, signature: args.signature }
+                        input: { runId: run.id, signature: args.signature, instruction }
                     });
                     if (triggered.isFail()) {
                         throw triggered.error;

@@ -95,7 +95,18 @@ const PlanComponentCard = ({
     const [expanded, setExpanded] = useState(false);
     const [newPropName, setNewPropName] = useState("");
     const [newPropType, setNewPropType] = useState("text");
+    const [showInstruction, setShowInstruction] = useState(false);
+    const [instruction, setInstruction] = useState("");
     const regenerating = vm.planRegenerating.includes(component.signature);
+
+    const submitRegenerate = () => {
+        void presenter.regeneratePlanComponent(
+            component.signature,
+            instruction.trim() || undefined
+        );
+        setInstruction("");
+        setShowInstruction(false);
+    };
 
     const addProp = () => {
         if (newPropName.trim()) {
@@ -123,10 +134,16 @@ const PlanComponentCard = ({
                     <Button
                         variant="tertiary"
                         size="sm"
-                        text={regenerating ? "Regenerating…" : "Regenerate props"}
+                        text={
+                            regenerating
+                                ? "Regenerating…"
+                                : showInstruction
+                                  ? "Cancel"
+                                  : "Regenerate props"
+                        }
                         disabled={regenerating || vm.clusterBusy}
                         title="Re-propose all props and token bindings for this component"
-                        onClick={() => void presenter.regeneratePlanComponent(component.signature)}
+                        onClick={() => setShowInstruction(open => !open)}
                     />
                     <Text
                         size="sm"
@@ -137,6 +154,26 @@ const PlanComponentCard = ({
                     </Text>
                 </div>
             </div>
+            {showInstruction && !regenerating ? (
+                <div className="flex items-center gap-sm px-sm py-xs border-t border-neutral-dimmed">
+                    <div className="flex-1 min-w-0">
+                        <Input
+                            value={instruction}
+                            placeholder="Optional guidance, e.g. add a background image prop and split the CTA into label + URL"
+                            disabled={vm.clusterBusy}
+                            onChange={(value: string) => setInstruction(value)}
+                            onEnter={submitRegenerate}
+                        />
+                    </div>
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        text="Regenerate"
+                        disabled={vm.clusterBusy}
+                        onClick={submitRegenerate}
+                    />
+                </div>
+            ) : null}
             {expanded ? (
                 <div className="flex flex-col gap-sm px-sm py-sm border-t border-neutral-dimmed">
                     <div className="flex flex-col gap-xs">

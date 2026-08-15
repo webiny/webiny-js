@@ -22,9 +22,13 @@ const slotLines = (manifest: ThemeManifest | null): string => {
 
 export const buildPlanPrompt = (
     cluster: ClassifiedCluster,
-    manifest: ThemeManifest | null
+    manifest: ThemeManifest | null,
+    instruction?: string
 ): string => {
     const digest = cluster.cluster.digest;
+    const guidance = instruction?.trim()
+        ? ["", "Operator guidance — follow this when proposing the contract:", instruction.trim()]
+        : [];
     return [
         `Propose a component contract for this "${cluster.type}" section named "${cluster.name}".`,
         `Structure: ${digest.structure}`,
@@ -34,6 +38,7 @@ export const buildPlanPrompt = (
         "",
         "Available theme tokens (bind visual props to these slot paths):",
         slotLines(manifest),
+        ...guidance,
         "",
         "Respond with JSON:",
         '{ "props": [ { "name": "...", "type": "text|richText|image|url|boolean", "observedValues": ["..."] } ],',

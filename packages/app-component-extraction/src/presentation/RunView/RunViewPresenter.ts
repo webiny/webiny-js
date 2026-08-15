@@ -361,7 +361,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
-    async regeneratePlanComponent(signature: string): Promise<void> {
+    async regeneratePlanComponent(signature: string, instruction?: string): Promise<void> {
         const runId = this.vm.run?.id;
         if (!runId) {
             return;
@@ -375,7 +375,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             this.vm.error = null;
         });
         try {
-            await this.gateway.regeneratePlanComponent(runId, signature);
+            await this.gateway.regeneratePlanComponent(runId, signature, instruction?.trim());
         } catch (error) {
             runInAction(() => {
                 this.vm.planRegenerating = this.vm.planRegenerating.filter(

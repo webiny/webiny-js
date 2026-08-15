@@ -12,6 +12,8 @@ import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.
 export interface RegeneratePlanTaskInput {
     runId: string;
     signature: string;
+    /** Optional operator guidance to steer the new contract; a plain re-roll when absent. */
+    instruction?: string;
 }
 
 type RunParams = TaskDefinition.RunParams<RegeneratePlanTaskInput>;
@@ -105,7 +107,12 @@ class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanT
 
         const aiResult = await this.ai.generate({
             system: PLAN_SYSTEM,
-            messages: [{ role: "user", content: buildPlanPrompt(classified, manifestValue) }]
+            messages: [
+                {
+                    role: "user",
+                    content: buildPlanPrompt(classified, manifestValue, input.instruction)
+                }
+            ]
         });
         if (aiResult.isFail()) {
             await log.error({ message: `Plan regenerate failed: ${aiResult.error.message}` });
