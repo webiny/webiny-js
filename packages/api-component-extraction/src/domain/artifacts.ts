@@ -9,6 +9,8 @@ export interface DiscoveredUrl {
     url: string;
     /** The path-prefix group this URL was sampled from (e.g. "blog", "root"). */
     group: string;
+    /** The page's <title>, fetched best-effort at discovery; null when unavailable. */
+    title?: string | null;
 }
 
 export interface DiscoverArtifact {

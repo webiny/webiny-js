@@ -3,6 +3,7 @@ import { StageHandler, type StageContext, type StageOutcome } from "~/domain/sta
 import type { DiscoverArtifact } from "~/domain/artifacts.js";
 import { sampleAcrossGroups } from "./grouping.js";
 import { extractSameOriginLinks, parseSitemapUrls } from "./sitemap.js";
+import { fetchTitles } from "./titles.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 // Neutral, honest UA. TODO: source from the shared crawl-policy module once Discover's robots handling
@@ -65,11 +66,20 @@ class DiscoverHandlerImpl implements StageHandler.Interface {
             }
         }
 
+        // Read each page's <title> best-effort (spec §6.1). Bounded to the sampled list, so at most the
+        // page cap; a failed fetch just leaves the title null.
+        await context.progress({ message: `Reading page titles for ${sampled.length} URL(s)…` });
+        const titles = await fetchTitles(sampled.map(item => item.url));
+        const withTitles = sampled.map(item => ({
+            ...item,
+            title: titles.get(item.url) ?? null
+        }));
+
         const artifact: DiscoverArtifact = {
             entryUrl,
             source,
-            groups: [...new Set(sampled.map(item => item.group))],
-            urls: sampled
+            groups: [...new Set(withTitles.map(item => item.group))],
+            urls: withTitles
         };
 
         const key = context.artifactKey("urls");

@@ -200,12 +200,25 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                             <Text
                                                 size="sm"
                                                 className={cn(
-                                                    "truncate font-mono",
+                                                    "w-56 flex-shrink-0 truncate font-mono",
                                                     !included && "text-neutral-strong line-through"
                                                 )}
                                             >
                                                 {pathOf(item.url)}
                                             </Text>
+                                            {item.title ? (
+                                                <Text
+                                                    size="sm"
+                                                    className={cn(
+                                                        "min-w-0 flex-1 truncate",
+                                                        !included
+                                                            ? "text-neutral-strong line-through"
+                                                            : "text-neutral-strong"
+                                                    )}
+                                                >
+                                                    {item.title}
+                                                </Text>
+                                            ) : null}
                                         </div>
                                     );
                                 })}

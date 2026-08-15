@@ -142,6 +142,8 @@ export interface ImageBox {
 export interface DiscoverUrlDto {
     url: string;
     group: string;
+    /** The page's <title>, read best-effort at discovery (spec §6.1); null/absent when unavailable. */
+    title?: string | null;
 }
 
 export interface DiscoverArtifactDto {
