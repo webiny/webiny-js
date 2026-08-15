@@ -277,6 +277,12 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
 
     const rendered = (vm.renders ?? []).filter(record => record.ok).length;
 
+    // Only validation-passing components can be promoted, so "Accept all" targets exactly those.
+    const acceptable = sorted.filter(allPassed);
+    const allAccepted =
+        acceptable.length > 0 &&
+        acceptable.every(component => vm.decisions[component.signature] === "accepted");
+
     return (
         <div className="flex flex-col h-full min-h-0">
             <div className="flex items-center justify-between gap-sm px-md py-sm border-b border-neutral-dimmed">
@@ -284,13 +290,27 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                     {artifact.components.length} generated · {artifact.failed.length} failed
                     validation · {rendered} rendered
                 </Text>
-                <Button
-                    variant="secondary"
-                    size="sm"
-                    text={vm.rendering ? "Rendering…" : "Render previews"}
-                    disabled={vm.rendering}
-                    onClick={() => void presenter.renderComponents()}
-                />
+                <div className="flex items-center gap-sm flex-shrink-0">
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        text={allAccepted ? "All accepted" : `Accept all (${acceptable.length})`}
+                        disabled={acceptable.length === 0 || allAccepted}
+                        title="Accept every component that passed validation"
+                        onClick={() =>
+                            void presenter.acceptAll(
+                                acceptable.map(component => component.signature)
+                            )
+                        }
+                    />
+                    <Button
+                        variant="secondary"
+                        size="sm"
+                        text={vm.rendering ? "Rendering…" : "Render previews"}
+                        disabled={vm.rendering}
+                        onClick={() => void presenter.renderComponents()}
+                    />
+                </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-md">

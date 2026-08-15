@@ -337,6 +337,37 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         }
     }
 
+    async acceptAll(signatures: string[]): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId || signatures.length === 0) {
+            return;
+        }
+        runInAction(() => {
+            this.vm.error = null;
+        });
+        try {
+            // Each call upserts one decision override and returns the full map; the last reflects them all.
+            let latest: DecisionsDto | null = null;
+            for (const signature of signatures) {
+                latest = (await this.gateway.setComponentDecision(
+                    runId,
+                    signature,
+                    "accepted"
+                )) as DecisionsDto | null;
+            }
+            if (latest) {
+                const decisions = latest.decisions;
+                runInAction(() => {
+                    this.vm.decisions = decisions ?? this.vm.decisions;
+                });
+            }
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
     async regenerateComponent(signature: string, instruction: string): Promise<void> {
         const runId = this.vm.run?.id;
         const trimmed = instruction.trim();

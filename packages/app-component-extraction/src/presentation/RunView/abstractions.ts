@@ -89,6 +89,8 @@ export interface IRunViewPresenter {
     renderComponents(): Promise<void>;
     /** Set (or clear, with "none") a generated component's accept/reject decision (W7.8). */
     setDecision(signature: string, decision: string): Promise<void>;
+    /** Accept every listed component (the validation-passing ones) in one action. */
+    acceptAll(signatures: string[]): Promise<void>;
     /** Regenerate a component from an instruction via the refine path (W7.8). */
     regenerateComponent(signature: string, instruction: string): Promise<void>;
     regeneratePlanComponent(signature: string, instruction?: string): Promise<void>;
