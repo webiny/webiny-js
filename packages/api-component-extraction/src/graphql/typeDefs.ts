@@ -163,6 +163,11 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
             signature: String!
             instruction: String!
         ): ComponentExtractionTaskResponse!
+        "Regenerate one component's Plan contract (W8) — a fresh model proposal of its props and token bindings, clearing that component's prop edits."
+        componentExtractionRegeneratePlan(
+            runId: ID!
+            signature: String!
+        ): ComponentExtractionTaskResponse!
         "Set (upsert) a job override from a run (W8.1). Re-corrects in place, marks downstream stale, and appends to the correction log. Returns the job's overrides."
         componentExtractionSetOverride(
             runId: ID!

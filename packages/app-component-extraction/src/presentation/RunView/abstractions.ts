@@ -43,6 +43,8 @@ export interface IRunViewVm {
     sourceCrops: Record<string, string>;
     /** Signatures of components whose regenerate (refine) is in flight (W7.8). */
     regenerating: string[];
+    /** Signatures of components whose Plan-contract regenerate is in flight (W8). */
+    planRegenerating: string[];
     /** The token-usage panel is open (W7.9), replacing the artifact panel. */
     showTokens: boolean;
     /** A run's individual model calls for the token panel; null until loaded. */
@@ -89,6 +91,7 @@ export interface IRunViewPresenter {
     setDecision(signature: string, decision: string): Promise<void>;
     /** Regenerate a component from an instruction via the refine path (W7.8). */
     regenerateComponent(signature: string, instruction: string): Promise<void>;
+    regeneratePlanComponent(signature: string): Promise<void>;
     /** Toggle the token-usage panel; loads the call list on first open (W7.9). */
     toggleTokens(): void;
     /** Toggle the overrides panel; loads the job's overrides + this run's reattachments (W8.7). */

@@ -84,6 +84,13 @@ export const RENDER_COMPONENTS_TASK_ID = "componentExtractionRenderComponents";
 export const REGENERATE_COMPONENT_TASK_ID = "componentExtractionRegenerateComponent";
 
 /**
+ * The background-task id for regenerating a single component's Plan contract (W8) — a fresh model call
+ * for one cluster that replaces that component's props and token bindings in the Plan artifact and clears
+ * its prop edits. Model-backed, so it runs as a task rather than inline.
+ */
+export const REGENERATE_PLAN_TASK_ID = "componentExtractionRegeneratePlan";
+
+/**
  * Deterministic artifact key. Includes the run, the stage and the stage version, so re-running a stage
  * writes to a fresh key (its version bumped) and a stale downstream artifact never collides with a new
  * one. `name` distinguishes a stage's multiple artifacts (e.g. a page's pruned tree vs its raw DOM).

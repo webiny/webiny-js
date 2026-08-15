@@ -31,6 +31,7 @@ import {
     LIST_THEMES,
     PROJECT_PLAN_COST,
     REGENERATE_COMPONENT,
+    REGENERATE_PLAN,
     RENDER_COMPONENTS,
     RUN_STAGE,
     SET_COMPONENT_DECISION,
@@ -248,6 +249,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
         }>({ query: REGENERATE_COMPONENT, variables: { runId, signature, instruction } });
 
         return unwrap(response.componentExtractionRegenerateComponent);
+    }
+
+    async regeneratePlanComponent(runId: string, signature: string): Promise<StageTriggerResult> {
+        const response = await this.client.execute<{
+            componentExtractionRegeneratePlan: GqlEnvelope<StageTriggerResult>;
+        }>({ query: REGENERATE_PLAN, variables: { runId, signature } });
+
+        return unwrap(response.componentExtractionRegeneratePlan);
     }
 
     async listModelCalls(runId: string): Promise<unknown> {

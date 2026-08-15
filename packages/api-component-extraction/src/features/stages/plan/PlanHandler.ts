@@ -1,21 +1,12 @@
 import { Result } from "@webiny/feature/api";
 import type { ThemeManifest } from "@webiny/theme-common";
 import { StageHandler, type StageContext, type StageOutcome } from "~/domain/stage.js";
-import type {
-    ClassifiedCluster,
-    ClassifyArtifact,
-    ComponentProp,
-    PlanArtifact,
-    PlannedComponent,
-    TokenBinding
-} from "~/domain/artifacts.js";
+import type { ClassifyArtifact, PlanArtifact, PlannedComponent } from "~/domain/artifacts.js";
 import { ComponentExtractionAi } from "~/features/shared/ai.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
-import { extractJson } from "~/features/shared/parseJson.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
+import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 
-const SYSTEM =
-    "You propose a Webiny component contract for a website section. Respond ONLY with a JSON object, no prose.";
 // One model call per cluster. The margin MUST exceed one call's worst case: the timeout is checked only
 // between clusters, so too small a margin lets a call start without runway and the Lambda is hard-killed
 // mid-call, leaving the stage stuck "running".
@@ -26,74 +17,6 @@ interface PlanCheckpoint {
     nextIndex: number;
     components: PlannedComponent[];
 }
-
-const slotLines = (manifest: ThemeManifest | null): string => {
-    if (!manifest) {
-        return "(no theme tokens available; propose props but leave tokenBindings empty)";
-    }
-    return manifest.slots
-        .slice(0, 60)
-        .map(slot => `- ${String(slot.path)}: ${slot.description || slot.displayName}`)
-        .join("\n");
-};
-
-const buildPrompt = (cluster: ClassifiedCluster, manifest: ThemeManifest | null): string => {
-    const digest = cluster.cluster.digest;
-    return [
-        `Propose a component contract for this "${cluster.type}" section named "${cluster.name}".`,
-        `Structure: ${digest.structure}`,
-        `Counts: headings ${digest.headingCount}, images ${digest.imageCount}, links/buttons ${digest.linkCount}`,
-        "Text observed across instances:",
-        ...cluster.cluster.observedTexts.slice(0, 20).map(text => `- ${text}`),
-        "",
-        "Available theme tokens (bind visual props to these slot paths):",
-        slotLines(manifest),
-        "",
-        "Respond with JSON:",
-        '{ "props": [ { "name": "...", "type": "text|richText|image|url|boolean", "observedValues": ["..."] } ],',
-        '  "tokenBindings": [ { "target": "<prop or element>", "token": "<slot path>" } ] }'
-    ].join("\n");
-};
-
-interface ContractJson {
-    props?: unknown;
-    tokenBindings?: unknown;
-}
-
-const asRecord = (value: unknown): Record<string, unknown> | null =>
-    value && typeof value === "object" ? (value as Record<string, unknown>) : null;
-
-const parseContract = (
-    text: string
-): { props: ComponentProp[]; tokenBindings: TokenBinding[] } | null => {
-    const raw = extractJson<ContractJson>(text);
-    if (!raw) {
-        return null;
-    }
-
-    const props: ComponentProp[] = [];
-    for (const item of Array.isArray(raw.props) ? (raw.props as unknown[]) : []) {
-        const prop = asRecord(item);
-        if (prop && typeof prop.name === "string" && typeof prop.type === "string") {
-            const values = Array.isArray(prop.observedValues)
-                ? (prop.observedValues as unknown[])
-                      .filter((value): value is string => typeof value === "string")
-                      .slice(0, 10)
-                : [];
-            props.push({ name: prop.name, type: prop.type, observedValues: values });
-        }
-    }
-
-    const tokenBindings: TokenBinding[] = [];
-    for (const item of Array.isArray(raw.tokenBindings) ? (raw.tokenBindings as unknown[]) : []) {
-        const binding = asRecord(item);
-        if (binding && typeof binding.target === "string" && typeof binding.token === "string") {
-            tokenBindings.push({ target: binding.target, token: binding.token });
-        }
-    }
-
-    return { props, tokenBindings };
-};
 
 /**
  * Plan — model-backed. For each cluster, proposes a component contract: props (name, type, observed
@@ -150,8 +73,8 @@ class PlanHandlerImpl implements StageHandler.Interface {
         while (checkpoint.nextIndex < total) {
             const cluster = clusters[checkpoint.nextIndex];
             const aiResult = await this.ai.generate({
-                system: SYSTEM,
-                messages: [{ role: "user", content: buildPrompt(cluster, manifest) }]
+                system: PLAN_SYSTEM,
+                messages: [{ role: "user", content: buildPlanPrompt(cluster, manifest) }]
             });
             if (aiResult.isFail()) {
                 if (aiResult.error.code === "ComponentExtraction/ValidationError") {
@@ -161,7 +84,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
                     message: `Plan failed for "${cluster.name}": ${aiResult.error.message}`
                 });
             } else {
-                const contract = parseContract(aiResult.value);
+                const contract = parsePlanContract(aiResult.value);
                 if (!contract) {
                     await context.log.error({
                         message: `Plan returned no usable contract for "${cluster.name}".`

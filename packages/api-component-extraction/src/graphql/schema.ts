@@ -25,6 +25,7 @@ import {
     MAX_PAGE_CAP,
     previousStage,
     REGENERATE_COMPONENT_TASK_ID,
+    REGENERATE_PLAN_TASK_ID,
     RENDER_COMPONENTS_TASK_ID,
     runReattachmentsKey,
     stageArtifactKey,
@@ -913,6 +914,47 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
 
                     return { taskId: triggered.value.id, runId: run.id, stage: "regenerate" };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Mutation.componentExtractionRegeneratePlan",
+        dependencies: [ComponentExtractionPermissions, RunRepository, TaskService],
+        resolver(
+            permissions: ComponentExtractionPermissions.Interface,
+            runRepository: RunRepository.Interface,
+            taskService: TaskService.Interface
+        ) {
+            return ({ args }: { args: { runId: string; signature: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    const runResult = await runRepository.get(args.runId);
+                    if (runResult.isFail()) {
+                        throw runResult.error;
+                    }
+                    const run = runResult.value;
+
+                    const plan = stageEntry(run.stages, "plan");
+                    if (!plan || !plan.artifacts.plan) {
+                        throw new Error("Plan has not produced a contract to regenerate.");
+                    }
+
+                    const triggered = await taskService.trigger<{
+                        runId: string;
+                        signature: string;
+                    }>({
+                        definition: REGENERATE_PLAN_TASK_ID,
+                        name: `Component extraction — regenerate plan (run ${run.runNumber})`,
+                        input: { runId: run.id, signature: args.signature }
+                    });
+                    if (triggered.isFail()) {
+                        throw triggered.error;
+                    }
+
+                    return { taskId: triggered.value.id, runId: run.id, stage: "regenerate-plan" };
                 });
         }
     });

@@ -45,6 +45,8 @@ export interface IComponentExtractionGateway {
         signature: string,
         instruction: string
     ): Promise<StageTriggerResult>;
+    /** Regenerate one component's Plan contract — a fresh props/token-binding proposal (W8). */
+    regeneratePlanComponent(runId: string, signature: string): Promise<StageTriggerResult>;
     /** A run's individual model calls, for the token panel (W7.9). */
     listModelCalls(runId: string): Promise<unknown>;
     /** The projected generation cost for a run's plan (W7.9). */

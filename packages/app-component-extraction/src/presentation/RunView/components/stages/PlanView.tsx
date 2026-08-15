@@ -95,6 +95,7 @@ const PlanComponentCard = ({
     const [expanded, setExpanded] = useState(false);
     const [newPropName, setNewPropName] = useState("");
     const [newPropType, setNewPropType] = useState("text");
+    const regenerating = vm.planRegenerating.includes(component.signature);
 
     const addProp = () => {
         if (newPropName.trim()) {
@@ -119,6 +120,14 @@ const PlanComponentCard = ({
                     <Text size="sm" className="text-neutral-strong whitespace-nowrap">
                         {pageCountOf(component)} page(s)
                     </Text>
+                    <Button
+                        variant="tertiary"
+                        size="sm"
+                        text={regenerating ? "Regenerating…" : "Regenerate props"}
+                        disabled={regenerating || vm.clusterBusy}
+                        title="Re-propose all props and token bindings for this component"
+                        onClick={() => void presenter.regeneratePlanComponent(component.signature)}
+                    />
                     <Text
                         size="sm"
                         className="text-primary cursor-pointer hover:underline"

@@ -42,6 +42,7 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         decisions: {},
         sourceCrops: {},
         regenerating: [],
+        planRegenerating: [],
         showTokens: false,
         modelCalls: null,
         modelCallsLoading: false,
@@ -62,6 +63,9 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
 
     /** Pre-refine source per signature, so a completed regenerate is detected when the source changes. */
     private regenerateBaseline: Record<string, string> = {};
+
+    /** Pre-regenerate props fingerprint per signature, so a completed Plan regenerate is detected. */
+    private planRegenerateBaseline: Record<string, string> = {};
 
     /** Task id of the stage the operator just triggered, to keep a "starting" indication until it runs. */
     private pendingActionTaskId: string | null = null;
@@ -171,6 +175,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
                 // While a regenerate is in flight, poll the artifact so the refined component lands.
                 if (stage === "generate" && this.vm.regenerating.length > 0) {
                     await this.pollRegenerations(run);
+                }
+                // While a Plan regenerate is in flight, poll so the fresh contract lands.
+                if (stage === "plan" && this.vm.planRegenerating.length > 0) {
+                    await this.pollPlanRegenerations(run);
                 }
             }
         } catch (error) {
@@ -349,6 +357,59 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             runInAction(() => {
                 this.vm.regenerating = this.vm.regenerating.filter(item => item !== signature);
                 this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    async regeneratePlanComponent(signature: string): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        // Remember the current props so the refresh loop can tell when the fresh contract lands.
+        const artifact = this.vm.artifact as PlanArtifactDto | null;
+        const current = artifact?.components.find(component => component.signature === signature);
+        this.planRegenerateBaseline[signature] = this.propsFingerprint(current?.props);
+        runInAction(() => {
+            this.vm.planRegenerating = [...new Set([...this.vm.planRegenerating, signature])];
+            this.vm.error = null;
+        });
+        try {
+            await this.gateway.regeneratePlanComponent(runId, signature);
+        } catch (error) {
+            runInAction(() => {
+                this.vm.planRegenerating = this.vm.planRegenerating.filter(
+                    item => item !== signature
+                );
+                this.vm.error = (error as Error).message;
+            });
+        }
+    }
+
+    /** A stable fingerprint of a component's props, so a regenerate is detected when the contract changes. */
+    private propsFingerprint(
+        props: PlanArtifactDto["components"][number]["props"] | undefined
+    ): string {
+        return JSON.stringify((props ?? []).map(prop => `${prop.name}:${prop.type}`));
+    }
+
+    /**
+     * While a Plan regenerate is in flight, reload the Plan artifact and clear each signature whose props
+     * changed — the task replaces the component's contract in place, so a changed fingerprint means done.
+     */
+    private async pollPlanRegenerations(run: RunDto): Promise<void> {
+        await this.loadArtifact(run, "plan");
+        const artifact = this.vm.artifact as PlanArtifactDto | null;
+        const stillRunning = this.vm.planRegenerating.filter(signature => {
+            const component = artifact?.components.find(item => item.signature === signature);
+            return (
+                !component ||
+                this.propsFingerprint(component.props) === this.planRegenerateBaseline[signature]
+            );
+        });
+        if (stillRunning.length !== this.vm.planRegenerating.length) {
+            runInAction(() => {
+                this.vm.planRegenerating = stillRunning;
             });
         }
     }
