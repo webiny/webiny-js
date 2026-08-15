@@ -242,7 +242,8 @@ export const applyClusterOverrides = (
         reattachments.push(reattachment(override, "applied", null));
     }
 
-    return { effective: { clusters }, reattachments };
+    // Preserve the artifact's own fields (threshold, nearestPair, thresholdCurve) — only `clusters` changes.
+    return { effective: { ...artifact, clusters }, reattachments };
 };
 
 /** Apply Classify overrides: set a cluster's name and/or type, keyed by cluster signature. */
