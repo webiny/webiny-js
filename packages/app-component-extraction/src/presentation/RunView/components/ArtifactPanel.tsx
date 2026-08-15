@@ -123,34 +123,33 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
                 </div>
             ) : (
                 <Scrollbar>
-                    <div className="px-md py-sm">
-                        <Text size="sm" className="font-medium">
-                            Activity log
-                        </Text>
-                        {vm.logsLoading && logsForStage.length === 0 ? (
-                            <div className="py-md">
-                                <Loader />
-                            </div>
-                        ) : logsForStage.length === 0 ? (
+                    <div className="flex flex-col gap-sm px-md py-sm">
+                        {!entry || entry.status === "pending" ? (
                             <Text size="sm" className="text-neutral-strong">
-                                No log entries yet.
+                                This stage hasn&apos;t run yet. Run it to produce its output — the
+                                raw artifact is always available in the run inspector.
                             </Text>
-                        ) : (
-                            <div className="mt-xs">
-                                {logsForStage.map((item, index) => (
-                                    <LogLine key={index} item={item} />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="px-md py-sm border-t border-neutral-dimmed">
-                        <Text size="sm" className="font-medium">
-                            Stage record
-                        </Text>
-                        <pre className="mt-xs text-sm whitespace-pre-wrap break-words font-mono">
-                            {entry ? JSON.stringify(entry, null, 2) : "This stage has not run yet."}
-                        </pre>
+                        ) : null}
+                        <div>
+                            <Text size="sm" className="font-medium">
+                                Activity log
+                            </Text>
+                            {vm.logsLoading && logsForStage.length === 0 ? (
+                                <div className="py-md">
+                                    <Loader />
+                                </div>
+                            ) : logsForStage.length === 0 ? (
+                                <Text size="sm" className="text-neutral-strong">
+                                    No log entries yet.
+                                </Text>
+                            ) : (
+                                <div className="mt-xs">
+                                    {logsForStage.map((item, index) => (
+                                        <LogLine key={index} item={item} />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </Scrollbar>
             )}

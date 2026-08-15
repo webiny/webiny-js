@@ -19,7 +19,7 @@ import { ArtifactPanel } from "./ArtifactPanel.js";
 import { TokenPanel } from "./TokenPanel.js";
 import { OverridesPanel } from "./OverridesPanel.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
-import { currentStage, nextRunnableStage, stageEntry } from "~/shared/ledger.js";
+import { currentStage, stageEntry } from "~/shared/ledger.js";
 import {
     STAGES,
     STAGE_DONE_ACTION,
@@ -174,7 +174,10 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         pausedGate: selected === gate
     });
     const busy = vm.actionStage !== null || run.stages.some(item => item.status === "running");
-    const next = nextRunnableStage(run);
+    const selectedDone = entry?.status === "done" || entry?.status === "stale";
+    const hasRun = selectedDone || entry?.status === "failed";
+    // The stage immediately after the selected one — where "Continue" leads.
+    const nextStage = STAGES[meta.number] as Stage | undefined;
     const earlier = STAGES.slice(0, meta.number - 1).filter(
         stage =>
             stageEntry(run, stage)?.status === "done" || stageEntry(run, stage)?.status === "stale"
@@ -191,13 +194,18 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         }
     };
 
-    const continueTarget = selected === "promote" ? "promote" : next;
-    const continueLabel =
-        selected === "promote"
-            ? "Promote and finish run"
-            : next
-              ? `Continue to ${stageMeta(next).number} · ${stageMeta(next).label}`
-              : "Run complete";
+    // The primary action adapts to state: run the selected stage if it hasn't produced output yet;
+    // once it's done, continue to the next stage (Promote is the finishing action on stage 9).
+    const primaryAction: { text: string; target: Stage } | null = !selectedDone
+        ? selected === "promote"
+            ? { text: "Promote and finish run", target: "promote" }
+            : { text: `Run ${meta.number} · ${meta.label}`, target: selected }
+        : nextStage
+          ? {
+                text: `Continue to ${stageMeta(nextStage).number} · ${stageMeta(nextStage).label}`,
+                target: nextStage
+            }
+          : null;
 
     return (
         <div className="flex h-main-content flex-col">
@@ -302,20 +310,22 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                                                 ))}
                                             </DropdownMenu>
                                         ) : null}
-                                        <Button
-                                            variant="secondary"
-                                            size="sm"
-                                            text="Re-run this stage"
-                                            disabled={busy}
-                                            onClick={() => void runStage(selected)}
-                                        />
-                                        {continueTarget ? (
+                                        {hasRun ? (
+                                            <Button
+                                                variant="secondary"
+                                                size="sm"
+                                                text="Re-run this stage"
+                                                disabled={busy}
+                                                onClick={() => void runStage(selected)}
+                                            />
+                                        ) : null}
+                                        {primaryAction ? (
                                             <Button
                                                 variant="primary"
                                                 size="sm"
-                                                text={continueLabel}
+                                                text={primaryAction.text}
                                                 disabled={busy}
-                                                onClick={() => void runStage(continueTarget)}
+                                                onClick={() => void runStage(primaryAction.target)}
                                             />
                                         ) : null}
                                     </div>
