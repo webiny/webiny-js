@@ -1,7 +1,7 @@
 import React from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Heading, Loader, Scrollbar, Tag, Text, TimeAgo } from "@webiny/admin-ui";
-import { STAGE_LABELS, type Stage } from "~/constants.js";
+import { Loader, Scrollbar, Text, TimeAgo } from "@webiny/admin-ui";
+import { type Stage } from "~/constants.js";
 import { stageEntry } from "~/shared/ledger.js";
 import type { RunViewPresenter } from "../abstractions.js";
 import type { StageLogItem } from "~/shared/types.js";
@@ -12,6 +12,7 @@ import { ClusterView } from "./stages/ClusterView.js";
 import { ClassifyView } from "./stages/ClassifyView.js";
 import { PlanView } from "./stages/PlanView.js";
 import { GenerateView } from "./stages/GenerateView.js";
+import { AssembleView } from "./stages/AssembleView.js";
 import { PromoteView } from "./stages/PromoteView.js";
 
 interface Props {
@@ -41,6 +42,8 @@ const StageView = ({
             return <PlanView presenter={presenter} />;
         case "generate":
             return <GenerateView presenter={presenter} />;
+        case "assemble":
+            return <AssembleView presenter={presenter} />;
         case "promote":
             return <PromoteView presenter={presenter} />;
         default:
@@ -56,6 +59,7 @@ const VIEW_STAGES = new Set<Stage>([
     "classify",
     "plan",
     "generate",
+    "assemble",
     "promote"
 ]);
 
@@ -106,10 +110,6 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
 
     return (
         <div className="flex flex-col h-full min-h-0">
-            <div className="flex items-center gap-sm px-md py-sm border-b border-neutral-dimmed">
-                <Heading level={6}>{STAGE_LABELS[stage]}</Heading>
-                {entry ? <Tag variant="neutral-muted" content={entry.status} /> : null}
-            </div>
             {entry?.error ? (
                 <div className="px-md py-sm border-b border-destructive-dimmed bg-destructive-subtle">
                     <Text size="sm" className="text-destructive-default">

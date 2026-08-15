@@ -88,6 +88,21 @@ export interface JobListItemDto {
     latestRun: RunDto | null;
 }
 
+/** The Assemble stage artifact (spec §6.8): each page's placed component instances. */
+export interface ComponentInstanceDto {
+    signature: string;
+    componentName: string;
+    sectionIndex: number;
+    propValues: Record<string, string>;
+}
+export interface AssembledPageDto {
+    url: string;
+    instances: ComponentInstanceDto[];
+}
+export interface AssembleArtifactDto {
+    pages: AssembledPageDto[];
+}
+
 /** The Create-job pre-flight reachability result (W9.3). */
 export interface ReachabilityDto {
     normalizedUrl: string;
