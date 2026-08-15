@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Alert, Button, Checkbox, Select, Slider, Tag, Text } from "@webiny/admin-ui";
+import { Alert, Button, Select, Slider, Tag, Text } from "@webiny/admin-ui";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { ClusterArtifactDto, ClusterDto, OverrideDto } from "~/shared/types.js";
@@ -45,13 +45,15 @@ const ClusterCard = ({
     runId,
     cluster,
     clusters,
-    override
+    override,
+    index
 }: {
     presenter: RunViewPresenter.Interface;
     runId: string;
     cluster: ClusterDto;
     clusters: ClusterDto[];
     override: OverrideDto | undefined;
+    index: number;
 }) => {
     const { vm } = presenter;
     const [expanded, setExpanded] = useState(false);
@@ -71,12 +73,14 @@ const ClusterCard = ({
         setSplitMembers([]);
     };
 
-    // Other clusters a member can be moved into.
+    // Other clusters a member can be moved into — labelled by their card number, representative page and
+    // member count so they're distinguishable (their structure strings are usually identical).
     const moveTargets = clusters
-        .filter(other => other.signature !== cluster.signature && !other.excluded)
-        .map(other => ({
-            value: other.signature,
-            label: other.digest?.structure || other.signature.slice(0, 16)
+        .map((other, position) => ({ other, number: position + 1 }))
+        .filter(entry => entry.other.signature !== cluster.signature && !entry.other.excluded)
+        .map(entry => ({
+            value: entry.other.signature,
+            label: `#${entry.number} · ${pathOf(entry.other.representative.url)} · ${entry.other.members.length}m`
         }));
 
     return (
@@ -85,18 +89,31 @@ const ClusterCard = ({
                 selected ? "border-primary-default" : "border-neutral-dimmed"
             } ${cluster.excluded ? "opacity-50" : ""}`}
         >
-            <div className="relative aspect-[3/2] bg-neutral-light overflow-hidden">
+            {/* The whole crop is the selection target — a reliable, large hit area. */}
+            <div
+                className="relative aspect-[3/2] bg-neutral-light overflow-hidden cursor-pointer"
+                onClick={() => presenter.toggleClusterSelection(cluster.signature)}
+                title={selected ? "Click to deselect" : "Click to select"}
+            >
                 <RunImage
                     runId={runId}
                     imageRef={cluster.representativeCrop.cropRef}
                     alt={cluster.signature}
                     className="w-full h-full object-cover object-top"
                 />
-                <div className="absolute top-xs left-xs bg-neutral-base/80 rounded-sm">
-                    <Checkbox
-                        checked={selected}
-                        onChange={() => presenter.toggleClusterSelection(cluster.signature)}
-                    />
+                {selected ? (
+                    <div className="absolute inset-0 ring-2 ring-inset ring-primary-default bg-primary-default/10" />
+                ) : null}
+                <div className="absolute top-xs left-xs">
+                    <span
+                        className={`inline-flex items-center justify-center min-w-5 h-5 px-xxs rounded-sm text-xs font-medium ${
+                            selected
+                                ? "bg-primary-default text-neutral-light"
+                                : "bg-neutral-base/80 text-neutral-strong"
+                        }`}
+                    >
+                        {selected ? "✓" : `#${index + 1}`}
+                    </span>
                 </div>
                 <div className="absolute top-xs right-xs flex flex-col items-end gap-xxs">
                     {override ? <OverrideBadge override={override} runId={runId} /> : null}
@@ -105,7 +122,7 @@ const ClusterCard = ({
             </div>
             <div className="p-sm flex flex-col gap-xxs">
                 <Text size="sm" className="font-mono truncate">
-                    {cluster.digest?.structure || cluster.signature.slice(0, 24)}
+                    #{index + 1} · {cluster.digest?.structure || cluster.signature.slice(0, 20)}
                 </Text>
                 <div className="flex items-center gap-xs">
                     <Tag variant="neutral-muted" content={`${cluster.members.length} members`} />
@@ -142,6 +159,10 @@ const ClusterCard = ({
 
                 {expanded ? (
                     <div className="flex flex-col gap-xs mt-xs">
+                        <Text size="sm" className="text-neutral-strong">
+                            Click members to select them, then Split; or Move one into another
+                            cluster.
+                        </Text>
                         {splitMembers.length > 0 ? (
                             <Button
                                 variant="secondary"
@@ -152,46 +173,54 @@ const ClusterCard = ({
                             />
                         ) : null}
                         <div className="grid grid-cols-2 gap-xs">
-                            {cluster.members.map(member => (
-                                <div
-                                    key={member.signature + member.url}
-                                    className="flex flex-col gap-xxs"
-                                >
-                                    <div className="relative aspect-[3/2] bg-neutral-light overflow-hidden rounded-xs">
-                                        <RunImage
-                                            runId={runId}
-                                            imageRef={member.cropRef}
-                                            alt={member.url}
-                                            className="w-full h-full object-cover object-top"
-                                        />
-                                        <div className="absolute top-xxs left-xxs bg-neutral-base/80 rounded-sm">
-                                            <Checkbox
-                                                checked={splitMembers.includes(member.signature)}
-                                                onChange={() => toggleMember(member.signature)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <Text
-                                        size="sm"
-                                        className="font-mono truncate text-neutral-strong"
+                            {cluster.members.map(member => {
+                                const memberSelected = splitMembers.includes(member.signature);
+                                return (
+                                    <div
+                                        key={member.signature + member.url}
+                                        className="flex flex-col gap-xxs"
                                     >
-                                        {pathOf(member.url)}
-                                    </Text>
-                                    {moveTargets.length > 0 ? (
-                                        <Select
-                                            value=""
-                                            placeholder="Move to…"
-                                            options={moveTargets}
-                                            onChange={(target: string) =>
-                                                void presenter.moveClusterMember(
-                                                    member.signature,
-                                                    target
-                                                )
-                                            }
-                                        />
-                                    ) : null}
-                                </div>
-                            ))}
+                                        <div
+                                            className={`relative aspect-[3/2] bg-neutral-light overflow-hidden rounded-xs cursor-pointer ${
+                                                memberSelected
+                                                    ? "ring-2 ring-inset ring-primary-default"
+                                                    : ""
+                                            }`}
+                                            onClick={() => toggleMember(member.signature)}
+                                        >
+                                            <RunImage
+                                                runId={runId}
+                                                imageRef={member.cropRef}
+                                                alt={member.url}
+                                                className="w-full h-full object-cover object-top"
+                                            />
+                                            {memberSelected ? (
+                                                <div className="absolute inset-0 bg-primary-default/10" />
+                                            ) : null}
+                                        </div>
+                                        <Text
+                                            size="sm"
+                                            className="font-mono truncate text-neutral-strong"
+                                        >
+                                            {pathOf(member.url)}
+                                        </Text>
+                                        {moveTargets.length > 0 ? (
+                                            <Select
+                                                value=""
+                                                placeholder="Move to…"
+                                                options={moveTargets}
+                                                disabled={vm.clusterBusy}
+                                                onChange={(target: string) =>
+                                                    void presenter.moveClusterMember(
+                                                        member.signature,
+                                                        target
+                                                    )
+                                                }
+                                            />
+                                        ) : null}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 ) : null}
@@ -331,7 +360,7 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
             <SelectionBar presenter={presenter} />
             <div className="flex-1 overflow-y-auto p-md">
                 <div className="grid grid-cols-4 gap-md">
-                    {artifact.clusters.map(cluster => (
+                    {artifact.clusters.map((cluster, index) => (
                         <ClusterCard
                             key={cluster.signature}
                             presenter={presenter}
@@ -339,6 +368,7 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
                             cluster={cluster}
                             clusters={artifact.clusters}
                             override={overrideForCluster(vm.overrides, cluster.signature)}
+                            index={index}
                         />
                     ))}
                 </div>
