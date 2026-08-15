@@ -8,7 +8,6 @@ import {
     DropdownMenu,
     EmptyState,
     Heading,
-    Icon,
     IconButton,
     Input,
     Scrollbar,
@@ -25,7 +24,6 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as OpenIcon } from "@webiny/icons/open_in_new.svg";
 import { ReactComponent as PlayIcon } from "@webiny/icons/play_arrow.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
-import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
 import { ReactComponent as DuplicateIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ExtractionListFeature } from "../feature.js";
@@ -100,29 +98,18 @@ const TabItem = ({
     </button>
 );
 
-/** The Job cell: pin indicator + name (opens the job) with the site URL beneath. */
+/** The Job cell: the name (opens the job) on one line, the site URL on the next. */
 const JobCell = ({ item, onOpen }: { item: JobRow; onOpen: () => void }) => (
-    <div className="flex items-start gap-sm">
-        <Icon
-            icon={<PinIcon />}
-            label={item.job.pinned ? "Pinned" : "Not pinned"}
-            size="sm"
-            className={cn(
-                "mt-xxs",
-                item.job.pinned ? "[&_svg]:fill-primary" : "[&_svg]:fill-neutral-muted"
-            )}
-        />
-        <div className="min-w-0">
-            <Text
-                className="cursor-pointer truncate font-medium text-neutral-primary hover:underline"
-                onClick={onOpen}
-            >
-                {item.job.name}
-            </Text>
-            <Text size="sm" className="truncate text-neutral-strong">
-                {item.job.siteUrl}
-            </Text>
-        </div>
+    <div className="min-w-0">
+        <Text
+            className="block cursor-pointer truncate font-medium text-neutral-primary hover:underline"
+            onClick={onOpen}
+        >
+            {item.job.name}
+        </Text>
+        <Text size="sm" className="block truncate text-neutral-strong">
+            {item.job.siteUrl}
+        </Text>
     </div>
 );
 
@@ -232,18 +219,14 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
             pages: {
                 header: "Pages",
                 cell: (item: JobRow) => (
-                    <Text size="sm" className="block text-right">
-                        {item.latestRun ? item.latestRun.counts.pages : "—"}
-                    </Text>
+                    <Text size="sm">{item.latestRun ? item.latestRun.counts.pages : "—"}</Text>
                 ),
                 size: 80
             },
             components: {
                 header: "Components",
                 cell: (item: JobRow) => (
-                    <Text size="sm" className="block text-right">
-                        {item.latestRun ? item.latestRun.counts.components : "—"}
-                    </Text>
+                    <Text size="sm">{item.latestRun ? item.latestRun.counts.components : "—"}</Text>
                 ),
                 size: 110
             },
