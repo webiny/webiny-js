@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { createReactiveComponent, useRouter } from "@webiny/app-admin";
+import { createReactiveComponent, Route, useRouter } from "@webiny/app-admin";
 import { DialogsProvider } from "@webiny/app-admin/components/index.js";
 import {
     Button,
@@ -45,6 +45,12 @@ import type { ListSort, StatusFilter } from "../abstractions.js";
 
 type JobRow = JobListItemDto & { id: string; name: string; siteUrl: string };
 
+/**
+ * The component Library lives in the separate remote-components app. We navigate to it by route name so
+ * this package needs no dependency on it; if that extension isn't installed the router simply no-ops.
+ */
+const LIBRARY_ROUTE = new Route({ name: "RemoteComponents/List", path: "/remote-components" });
+
 const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
     { value: "all", label: "Status: all" },
     { value: "not-started", label: "Never run" },
@@ -59,26 +65,27 @@ const SORT_OPTIONS: { value: ListSort; label: string }[] = [
     { value: "name", label: "Name" }
 ];
 
-/** A tab in the Library / Extractions strip: label, count, active underline (spec §2). */
+/** A tab in the Extractions / Library strip: label, count, active underline (spec §2). */
 const TabItem = ({
     label,
     count,
     active,
-    muted,
-    title
+    title,
+    onClick
 }: {
     label: string;
     count: number;
     active?: boolean;
-    muted?: boolean;
     title?: string;
+    onClick: () => void;
 }) => (
-    <div
+    <button
+        type="button"
         title={title}
+        onClick={onClick}
         className={cn(
-            "-mb-px flex items-center gap-xs border-b-2 pb-sm pt-xs",
-            active ? "border-primary" : "border-transparent",
-            muted && "cursor-default"
+            "-mb-px flex cursor-pointer items-center gap-xs border-b-2 pb-sm pt-xs",
+            active ? "border-primary" : "border-transparent hover:border-neutral-muted"
         )}
     >
         <Text
@@ -90,7 +97,7 @@ const TabItem = ({
         <Text size="sm" className="text-neutral-strong">
             {count}
         </Text>
-    </div>
+    </button>
 );
 
 /** The Job cell: pin indicator + name (opens the job) with the site URL beneath. */
@@ -321,12 +328,17 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
             </div>
 
             <div className="flex items-center gap-lg border-b border-neutral-dimmed px-md">
-                <TabItem label="Extractions" count={vm.items.length} active />
+                <TabItem
+                    label="Extractions"
+                    count={vm.items.length}
+                    active
+                    onClick={() => goToRoute(Routes.List)}
+                />
                 <TabItem
                     label="Library"
                     count={vm.libraryCount}
-                    muted
-                    title="The component Library lives in the Components app"
+                    title="Open the component Library"
+                    onClick={() => goToRoute(LIBRARY_ROUTE)}
                 />
             </div>
 
@@ -374,17 +386,18 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                     />
                 </div>
             ) : (
-                <div className="min-h-0 flex-1 overflow-x-auto">
-                    <div className="min-w-[900px]">
-                        <Scrollbar>
+                <div className="min-h-0 flex-1 overflow-hidden">
+                    <Scrollbar>
+                        {/* min-w keeps the columns from clipping; the Scrollbar scrolls it below the breakpoint. */}
+                        <div className="min-w-[900px]">
                             <DataTable<JobRow>
                                 columns={columns}
                                 data={rows}
                                 loading={vm.loading}
                                 stickyHeader
                             />
-                        </Scrollbar>
-                    </div>
+                        </div>
+                    </Scrollbar>
                 </div>
             )}
         </>
