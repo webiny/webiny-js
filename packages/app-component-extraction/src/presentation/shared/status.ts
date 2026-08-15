@@ -26,6 +26,8 @@ export interface StatusConfig {
     glyph: StatusGlyph;
     /** Whether the dot pulses (the running state, spec §1: 1.4s pulse). */
     pulse: boolean;
+    /** Tailwind background class for the nine-pip progress strip's bar in this state. */
+    pip: string;
 }
 
 /**
@@ -39,7 +41,8 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         dot: "bg-success border border-transparent",
         glyphColor: "[&_svg]:fill-neutral-light",
         glyph: "check",
-        pulse: false
+        pulse: false,
+        pip: "bg-success"
     },
     running: {
         label: "Running",
@@ -47,7 +50,8 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         dot: "bg-primary border border-transparent",
         glyphColor: "[&_svg]:fill-neutral-light",
         glyph: "autorenew",
-        pulse: true
+        pulse: true,
+        pip: "bg-primary"
     },
     paused: {
         label: "Paused",
@@ -55,7 +59,8 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         dot: "bg-primary-subtle border border-primary",
         glyphColor: "[&_svg]:fill-primary",
         glyph: "pause",
-        pulse: false
+        pulse: false,
+        pip: "bg-primary-subtle"
     },
     failed: {
         label: "Failed",
@@ -63,7 +68,8 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         dot: "bg-destructive border border-transparent",
         glyphColor: "[&_svg]:fill-neutral-light",
         glyph: "error",
-        pulse: false
+        pulse: false,
+        pip: "bg-destructive"
     },
     stale: {
         label: "Stale",
@@ -72,7 +78,8 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         dot: "bg-warning-muted border border-warning",
         glyphColor: "[&_svg]:fill-neutral-primary",
         glyph: "history",
-        pulse: false
+        pulse: false,
+        pip: "bg-warning-muted"
     },
     "not-started": {
         label: "Not started",
@@ -80,7 +87,8 @@ export const STATUS_CONFIG: Record<DisplayStatus, StatusConfig> = {
         dot: "bg-neutral-base border border-neutral-muted",
         glyphColor: "text-neutral-strong",
         glyph: "number",
-        pulse: false
+        pulse: false,
+        pip: "bg-neutral-muted"
     }
 };
 
