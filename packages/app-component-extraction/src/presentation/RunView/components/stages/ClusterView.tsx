@@ -114,7 +114,7 @@ const ClusterCard = React.memo(function ClusterCard({
                     runId={runId}
                     imageRef={cluster.representativeCrop.cropRef}
                     alt={cluster.signature}
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-contain object-top"
                 />
                 {selected ? (
                     <div className="absolute inset-0 ring-2 ring-inset ring-primary-default bg-primary-default/10" />
