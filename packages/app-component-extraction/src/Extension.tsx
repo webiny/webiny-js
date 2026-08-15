@@ -8,6 +8,7 @@ import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { ExtractionListPage } from "~/presentation/ExtractionList/components/ExtractionListPage.js";
 import { RunViewPage } from "~/presentation/RunView/components/RunViewPage.js";
 import { CreateJobPage } from "~/presentation/CreateJob/components/CreateJobPage.js";
+import { JobDetailPage } from "~/presentation/JobDetail/components/JobDetailPage.js";
 import { Routes } from "~/routes.js";
 
 const { Security, Menu, Route } = AdminConfig;
@@ -43,6 +44,14 @@ export const Extension = () => {
                         element={
                             <AdminLayout title="New extraction">
                                 <CreateJobPage />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
+                        route={Routes.Job}
+                        element={
+                            <AdminLayout title="Extraction job">
+                                <JobDetailPage />
                             </AdminLayout>
                         }
                     />
