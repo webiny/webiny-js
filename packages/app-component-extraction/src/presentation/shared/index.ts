@@ -1,5 +1,6 @@
 export * from "./stages.js";
 export * from "./status.js";
+export * from "./runStatus.js";
 export * from "./StatusIndicator.js";
 export * from "./StagePips.js";
 export * from "./StageRail.js";

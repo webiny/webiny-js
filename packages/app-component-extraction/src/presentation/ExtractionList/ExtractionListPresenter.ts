@@ -7,7 +7,11 @@ class ExtractionListPresenterImpl implements PresenterAbstraction.Interface {
         loading: false,
         items: [],
         error: null,
-        startingJobId: null
+        startingJobId: null,
+        search: "",
+        statusFilter: "all",
+        sort: "lastRun",
+        libraryCount: 0
     };
 
     constructor(private gateway: ComponentExtractionGateway.Interface) {
@@ -21,9 +25,13 @@ class ExtractionListPresenterImpl implements PresenterAbstraction.Interface {
         });
 
         try {
-            const items = await this.gateway.listJobs();
+            const [items, libraryNames] = await Promise.all([
+                this.gateway.listJobs(),
+                this.gateway.listLibraryNames().catch(() => [] as string[])
+            ]);
             runInAction(() => {
                 this.vm.items = items;
+                this.vm.libraryCount = libraryNames.length;
                 this.vm.loading = false;
             });
         } catch (error) {
@@ -32,6 +40,24 @@ class ExtractionListPresenterImpl implements PresenterAbstraction.Interface {
                 this.vm.loading = false;
             });
         }
+    }
+
+    setSearch(search: string): void {
+        runInAction(() => {
+            this.vm.search = search;
+        });
+    }
+
+    setStatusFilter(status: PresenterAbstraction.ViewModel["statusFilter"]): void {
+        runInAction(() => {
+            this.vm.statusFilter = status;
+        });
+    }
+
+    setSort(sort: PresenterAbstraction.ViewModel["sort"]): void {
+        runInAction(() => {
+            this.vm.sort = sort;
+        });
     }
 
     async startRun(jobId: string): Promise<string> {

@@ -5,6 +5,13 @@ export const Routes = {
         name: "ComponentExtraction/List",
         path: "/component-extraction"
     }),
+    Job: new Route({
+        name: "ComponentExtraction/Job",
+        path: "/component-extraction/jobs/:jobId",
+        params: zod => ({
+            jobId: zod.string()
+        })
+    }),
     Run: new Route({
         name: "ComponentExtraction/Run",
         path: "/component-extraction/runs/:runId",
