@@ -47,6 +47,14 @@ export const ApiBackgroundTask = createAppModule({
                 // real per-GB-second cost change — the alternative is a dedicated crawler function,
                 // and that trade-off is written up in the Phase 6 notes.
                 memorySize: 2048,
+                // Chromium unpacks its binary into /tmp AND — with --disable-dev-shm-usage (which the
+                // @sparticuz/chromium layer sets) — uses /tmp as its shared-memory scratch, on top of
+                // puppeteer's per-launch profile dir. Lambda's default 512 MB /tmp overflows on heavy
+                // pages (ENOSPC on mkdtemp; the failed allocations surface as ERR_INSUFFICIENT_RESOURCES),
+                // so give it real headroom. Ephemeral storage is billed per GB-second and is cheap.
+                ephemeralStorage: {
+                    size: 2048
+                },
                 description: "Performs background tasks.",
                 loggingConfig: {
                     logFormat: "JSON"
