@@ -60,6 +60,12 @@ export interface CapturePageParams {
     /** Hard ceiling for this page. Every network operation must be able to time out. */
     timeoutMs: number;
     /**
+     * Puppeteer resource types to abort during load (e.g. "media", "websocket", "eventsource"). Defaults
+     * to just "media". A caller crawling resource-heavy pages can add non-visual connection-heavy types to
+     * keep the browser from exhausting its sockets/handles — none of these affect the screenshot or DOM.
+     */
+    blockResourceTypes?: string[];
+    /**
      * The in-page script run after navigation, settle, the bot-wall check and consent dismissal, and
      * before screenshots. A string, exactly as `page.evaluate` accepts, so the provider hands it to any
      * driver without depending on that driver's function-serialisation rules. Its return value becomes

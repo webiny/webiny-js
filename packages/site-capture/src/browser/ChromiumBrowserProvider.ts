@@ -265,12 +265,13 @@ class ChromiumSession implements IBrowserSession {
             }
         });
 
-        // Media is the one resource class that costs real time and tells us nothing: a hero video
-        // contributes no colours, no type and no spacing.
+        // Media is the default here — a hero video costs real time and contributes no colours, type or
+        // spacing. A caller can widen this to other non-visual, connection-heavy types (websockets,
+        // beacons) to keep a heavy page from exhausting the browser's sockets and handles.
+        const blocked = new Set(params.blockResourceTypes ?? ["media"]);
         await page.setRequestInterception(true);
         page.on("request", request => {
-            const type = request.resourceType();
-            if (type === "media") {
+            if (blocked.has(request.resourceType())) {
                 void request.abort().catch(() => undefined);
                 return;
             }

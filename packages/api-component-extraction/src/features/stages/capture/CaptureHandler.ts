@@ -20,6 +20,20 @@ const MAX_NODES = 4000;
 // The margin MUST exceed one page's worst case: the timeout is only checked between pages, so if a page
 // starts with less runway than it needs the Lambda is hard-killed mid-page and the stage sticks "running".
 const CAPTURE_SAFETY_MARGIN_SECONDS = 200;
+// Recycle the headless browser every N captured pages so accumulated Chromium memory/handles don't build
+// to exhaustion mid-crawl. The recycle is best-effort and never breaks the crawl (see `recycle`).
+const PAGES_PER_BROWSER = 10;
+// Non-visual, connection-heavy resource types aborted during capture so a heavy page can't exhaust the
+// browser's sockets/handles (net::ERR_INSUFFICIENT_RESOURCES). None of these affect the screenshot, the
+// element tree or the sampled colours/type/spacing — media was already dropped for the same reason.
+const BLOCKED_RESOURCE_TYPES = [
+    "media",
+    "websocket",
+    "eventsource",
+    "manifest",
+    "ping",
+    "texttrack"
+];
 
 const errMessage = (error: unknown): string =>
     error instanceof Error ? error.message : String(error);
@@ -124,20 +138,42 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             total
         });
 
-        const session = await this.browserProvider.open();
+        let session = await this.browserProvider.open();
+        let pagesOnBrowser = 0;
         try {
             while (checkpoint.nextIndex < total) {
                 const index = checkpoint.nextIndex;
                 const { url } = discover.urls[index];
+
+                // Proactively recycle so accumulated resources don't build to exhaustion. Best-effort:
+                // if a fresh browser can't be launched, `recycle` keeps the current one.
+                if (pagesOnBrowser >= PAGES_PER_BROWSER) {
+                    session = await this.recycle(session, context);
+                    pagesOnBrowser = 0;
+                }
+
                 try {
-                    checkpoint.pages.push(await this.capturePage(context, session, url, index));
+                    let page: CapturedPage;
+                    try {
+                        page = await this.capturePage(context, session, url, index);
+                    } catch (firstError) {
+                        // Recover once on a fresh browser — a transient exhaustion usually captures fine
+                        // with a clean pool. If the relaunch fails, the retry runs on the current browser.
+                        await context.log.info({
+                            message: `Retrying ${url} on a fresh browser after: ${errMessage(firstError)}`
+                        });
+                        session = await this.recycle(session, context);
+                        pagesOnBrowser = 0;
+                        page = await this.capturePage(context, session, url, index);
+                    }
+                    checkpoint.pages.push(page);
                     await context.progress({
                         message: `Captured ${url}`,
                         current: index + 1,
                         total
                     });
                 } catch (error) {
-                    // One unreadable page must not lose the crawl — record the reason and continue.
+                    // Both attempts failed — record the reason and continue; one page must not lose the crawl.
                     const reason = errMessage(error);
                     checkpoint.failed.push({ url, reason });
                     await context.log.error({
@@ -145,6 +181,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                         error
                     });
                 }
+                pagesOnBrowser++;
                 checkpoint.nextIndex++;
                 const saved = await context.store.putJson(checkpointKey, checkpoint);
                 if (saved.isFail()) {
@@ -191,6 +228,32 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         });
     }
 
+    /**
+     * Swap the browser for a fresh one to release accumulated Chromium resources. Robust by construction:
+     * the replacement is launched FIRST, and only if that succeeds is the old one closed — so a failed
+     * relaunch keeps the working browser rather than leaving the crawl without one.
+     */
+    private async recycle(
+        session: BrowserProvider.Session,
+        context: StageContext
+    ): Promise<BrowserProvider.Session> {
+        let fresh: BrowserProvider.Session;
+        try {
+            fresh = await this.browserProvider.open();
+        } catch (error) {
+            await context.log.info({
+                message: `Kept the current browser — could not launch a fresh one: ${errMessage(error)}`
+            });
+            return session;
+        }
+        try {
+            await session.close();
+        } catch {
+            // The old browser wouldn't close cleanly; it's being discarded anyway.
+        }
+        return fresh;
+    }
+
     private async capturePage(
         context: StageContext,
         session: BrowserProvider.Session,
@@ -208,6 +271,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             viewportWidth: DESKTOP.width,
             viewportHeight: DESKTOP.height,
             timeoutMs: PAGE_TIMEOUT_MS,
+            blockResourceTypes: BLOCKED_RESOURCE_TYPES,
             evaluate: captureEvaluator({ maxNodes: MAX_NODES }),
             screenshots: {
                 requests: [{ label: "full-page", crop: "full-page" }],
@@ -273,6 +337,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             viewportWidth: NARROW.width,
             viewportHeight: NARROW.height,
             timeoutMs: PAGE_TIMEOUT_MS,
+            blockResourceTypes: BLOCKED_RESOURCE_TYPES,
             evaluate: NARROW_EVALUATOR,
             screenshots: {
                 requests: [{ label: "full-page-narrow", crop: "full-page" }],
