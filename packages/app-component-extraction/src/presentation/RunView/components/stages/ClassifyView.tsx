@@ -44,13 +44,15 @@ const ClassifyRow = ({
     runId,
     entry,
     override,
-    machine
+    machine,
+    onOpenImage
 }: {
     presenter: RunViewPresenter.Interface;
     runId: string;
     entry: ClassifiedClusterDto;
     override: OverrideDto | undefined;
     machine: ClassifiedClusterDto | undefined;
+    onOpenImage: (src: string, alt: string) => void;
 }) => {
     const { vm } = presenter;
     const signature = entry.cluster.signature;
@@ -68,12 +70,16 @@ const ClassifyRow = ({
 
     return (
         <div className="flex items-start gap-md px-md py-sm border-b border-neutral-dimmed">
-            <div className="w-24 flex-shrink-0 aspect-[3/2] bg-neutral-light rounded-sm overflow-hidden">
+            <div
+                className="w-24 flex-shrink-0 aspect-[3/2] bg-neutral-light rounded-sm overflow-hidden"
+                title="Click to view full size"
+            >
                 <RunImage
                     runId={runId}
                     imageRef={entry.cluster.representativeCrop.cropRef}
                     alt={signature}
                     className="w-full h-full object-cover object-top"
+                    onOpen={src => onOpenImage(src, entry.name || signature)}
                 />
             </div>
             <div className="flex-1 min-w-0 flex flex-col gap-xs">
@@ -132,6 +138,7 @@ export const ClassifyView = createReactiveComponent(function ClassifyView({ pres
             ? (vm.machineArtifact as ClassifyArtifactDto | null)
             : null;
     const runId = vm.run?.id ?? "";
+    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
     if (vm.artifactLoading && !artifact) {
         return <Text className="p-md text-neutral-strong">Loading classifications…</Text>;
@@ -159,9 +166,26 @@ export const ClassifyView = createReactiveComponent(function ClassifyView({ pres
                         entry={entry}
                         override={overrideFor(vm.overrides, entry.cluster.signature)}
                         machine={machineFor(machine, entry.cluster.signature)}
+                        onOpenImage={(src, alt) => setLightbox({ src, alt })}
                     />
                 ))}
             </div>
+
+            {lightbox ? (
+                <div
+                    className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-xl cursor-pointer"
+                    onClick={() => setLightbox(null)}
+                    title="Click to close"
+                >
+                    <div className="max-h-full overflow-y-auto bg-neutral-base rounded-sm">
+                        <img
+                            src={lightbox.src}
+                            alt={lightbox.alt}
+                            className="w-[900px] max-w-full"
+                        />
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 });
