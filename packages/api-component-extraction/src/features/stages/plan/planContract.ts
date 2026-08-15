@@ -41,7 +41,7 @@ export const buildPlanPrompt = (
         ...guidance,
         "",
         "Respond with JSON:",
-        '{ "props": [ { "name": "...", "type": "text|richText|image|url|boolean", "observedValues": ["..."] } ],',
+        '{ "props": [ { "name": "...", "type": "text|richText|image|url|boolean|number|object", "observedValues": ["..."] } ],',
         '  "tokenBindings": [ { "target": "<prop or element>", "token": "<slot path>" } ] }'
     ].join("\n");
 };
