@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { Alert, Button, Heading, Input, Select, Tag, Text } from "@webiny/admin-ui";
+import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
     ComponentPropDto,
@@ -85,11 +86,15 @@ const PropRow = ({
 const PlanComponentCard = ({
     presenter,
     component,
-    corrected
+    corrected,
+    runId,
+    onOpenImage
 }: {
     presenter: RunViewPresenter.Interface;
     component: PlannedComponentDto;
     corrected: boolean;
+    runId: string;
+    onOpenImage: (src: string, alt: string) => void;
 }) => {
     const { vm } = presenter;
     const [expanded, setExpanded] = useState(false);
@@ -121,6 +126,18 @@ const PlanComponentCard = ({
         <div className="border border-neutral-dimmed rounded-sm">
             <div className="flex items-center justify-between gap-sm px-sm py-xs">
                 <div className="flex items-center gap-sm min-w-0">
+                    <div
+                        className="w-16 flex-shrink-0 aspect-[3/2] bg-neutral-light rounded-xs overflow-hidden"
+                        title="Click to view full size"
+                    >
+                        <RunImage
+                            runId={runId}
+                            imageRef={component.representativeCrop.cropRef}
+                            alt={component.name}
+                            className="w-full h-full object-cover object-top"
+                            onOpen={src => onOpenImage(src, component.name)}
+                        />
+                    </div>
                     <Text size="sm" className="font-medium truncate">
                         {component.name}
                     </Text>
@@ -246,6 +263,8 @@ export const PlanView = createReactiveComponent(function PlanView({ presenter }:
     const artifact = vm.artifact as PlanArtifactDto | null;
     const projection = vm.planProjection;
     const generating = vm.actionStage === "generate";
+    const runId = vm.run?.id ?? "";
+    const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
     if (vm.artifactLoading && !artifact?.components) {
         return <Text className="p-md text-neutral-strong">Loading plan…</Text>;
@@ -305,10 +324,28 @@ export const PlanView = createReactiveComponent(function PlanView({ presenter }:
                             presenter={presenter}
                             component={component}
                             corrected={hasOverride(vm.overrides, component.signature)}
+                            runId={runId}
+                            onOpenImage={(src, alt) => setLightbox({ src, alt })}
                         />
                     ))}
                 </div>
             </div>
+
+            {lightbox ? (
+                <div
+                    className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-xl cursor-pointer"
+                    onClick={() => setLightbox(null)}
+                    title="Click to close"
+                >
+                    <div className="max-h-full overflow-y-auto bg-neutral-base rounded-sm">
+                        <img
+                            src={lightbox.src}
+                            alt={lightbox.alt}
+                            className="w-[900px] max-w-full"
+                        />
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 });
