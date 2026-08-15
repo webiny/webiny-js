@@ -84,7 +84,7 @@ class PlanHandlerImpl implements StageHandler.Interface {
                     message: `Plan failed for "${cluster.name}": ${aiResult.error.message}`
                 });
             } else {
-                const contract = parsePlanContract(aiResult.value);
+                const contract = parsePlanContract(aiResult.value, cluster.cluster.members.length);
                 if (!contract) {
                     await context.log.error({
                         message: `Plan returned no usable contract for "${cluster.name}".`

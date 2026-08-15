@@ -207,12 +207,40 @@ export interface ClassifyArtifact {
 
 // ----- Plan (output) -----------------------------------------------------------------------------
 
+/**
+ * A model-proposed observation summary for one prop, feeding the Plan gate's "values observed" column.
+ * These are estimates (the plan is a proposal), with one grounded field: `totalInstances` is stamped
+ * server-side from the cluster's real member count, so "N of M" always has a true denominator.
+ */
+export interface PropObservation {
+    /** How many instances included this prop (model estimate). */
+    presentInstances?: number | null;
+    /** Total instances in the cluster — grounded to the member count, not model-supplied. */
+    totalInstances?: number | null;
+    /** Array props only: fewest / most items seen per instance (model estimate). */
+    countMin?: number | null;
+    countMax?: number | null;
+    /** Frequent literal values with their counts, most frequent first — e.g. `0.5 (4), 0.32 (2)`. */
+    valueCounts?: { value: string; count: number }[] | null;
+}
+
 export interface ComponentProp {
     name: string;
-    /** "text" | "richText" | "image" | "url" | "boolean" | … — the model proposes it. */
+    /**
+     * The BASE type the model proposes — a scalar ("string" | "richText" | "url" | "number" | "boolean" |
+     * "image"), a composite type name ("Link" | "Image" | "Point" | …), or an enum literal ("2 | 3 | 4").
+     * The `?` / `[]` decorations are carried by `optional` / `array`, not baked into this string.
+     */
     type: string;
+    /** Optional prop — renders a trailing "?" and shifts phrasing to "present on N of M". */
+    optional?: boolean;
+    /** Array / repeated prop — renders "[]" and drives the "N–M per instance" / "per item" phrasing. */
+    array?: boolean;
+    /** Sub-fields for composite props (object, Link/Image/Point, array-of-object). Recursive, depth-capped. */
+    fields?: ComponentProp[];
     /** Sample values observed across the cluster's members. */
     observedValues: string[];
+    observation?: PropObservation;
 }
 
 export interface TokenBinding {

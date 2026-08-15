@@ -118,7 +118,7 @@ class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanT
             await log.error({ message: `Plan regenerate failed: ${aiResult.error.message}` });
             return controller.response.error(aiResult.error.message);
         }
-        const contract = parsePlanContract(aiResult.value);
+        const contract = parsePlanContract(aiResult.value, classified.cluster.members.length);
         if (!contract || contract.props.length === 0) {
             await log.error({ message: "The model returned no usable contract." });
             return controller.response.error("The model returned no usable contract; try again.");

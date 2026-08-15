@@ -5,6 +5,8 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as RegenerateIcon } from "@webiny/icons/autorenew.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
+import { ReactComponent as ChevronRightIcon } from "@webiny/icons/chevron_right.svg";
+import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
@@ -36,23 +38,61 @@ const hasOverride = (overrides: OverrideDto[], signature: string): boolean =>
         override => override.stage === "plan" && override.structuralSignature === signature
     );
 
+/** The rendered type label — base type plus the "[]" / "?" decorations carried by the array/optional flags. */
+const typeLabel = (prop: ComponentPropDto): string =>
+    `${prop.type}${prop.array ? "[]" : ""}${prop.optional ? "?" : ""}`;
+
+/** The "N fields" tag for a composite prop — "per item" when it's an array of objects. */
+const fieldsTag = (prop: ComponentPropDto): string | null => {
+    const count = prop.fields?.length ?? 0;
+    if (count === 0) {
+        return null;
+    }
+    return prop.array ? `${count} fields per item` : `${count} fields`;
+};
+
 /**
- * The "values observed" phrase. The plan only carries a capped sample of values per prop (≤10), not true
- * frequency stats, so this reports the distinct sample count — with a trailing "+" when the sample hit
- * its cap — and keeps the actual values in a tooltip. (The design's richer forms — "present on 4 of 6",
- * "0.5 (4), 0.32 (2)" — need occurrence counts the Plan stage does not emit yet.)
+ * The "values observed" phrase, chosen from the model-proposed observation. Priority mirrors the design:
+ * array items-per-instance → value frequencies → composite presence across instances → distinct sample
+ * count. Counts are estimates; only `totalInstances` is grounded (the cluster's member count).
  */
 const valuesObserved = (prop: ComponentPropDto): { label: string; title: string } => {
-    const distinct = [...new Set(prop.observedValues ?? [])];
-    if (distinct.length === 0) {
-        return { label: "—", title: "" };
+    const obs = prop.observation ?? {};
+    const total = obs.totalInstances ?? null;
+    const present = obs.presentInstances ?? null;
+
+    if (prop.array && (obs.countMin != null || obs.countMax != null)) {
+        const lo = obs.countMin ?? obs.countMax;
+        const hi = obs.countMax ?? obs.countMin;
+        return { label: `${lo === hi ? lo : `${lo}–${hi}`} per instance`, title: "" };
     }
-    const capped = (prop.observedValues?.length ?? 0) >= 10;
-    const plural = distinct.length === 1 ? "value" : "values";
-    return {
-        label: `${distinct.length}${capped ? "+" : ""} distinct ${plural}`,
-        title: distinct.join(" · ")
-    };
+
+    if (obs.valueCounts && obs.valueCounts.length > 0) {
+        const parts = obs.valueCounts.map(entry => `${entry.value} (${entry.count})`);
+        return { label: parts.slice(0, 3).join(", "), title: parts.join(", ") };
+    }
+
+    if (prop.fields && prop.fields.length > 0 && total != null) {
+        const n = present ?? total;
+        return prop.optional
+            ? { label: `present on ${n} of ${total}`, title: "" }
+            : { label: `${n} of ${total} instances`, title: "" };
+    }
+
+    const distinct = [...new Set(prop.observedValues ?? [])];
+    if (distinct.length > 0) {
+        const capped = (prop.observedValues?.length ?? 0) >= 10;
+        const plural = distinct.length === 1 ? "value" : "values";
+        return {
+            label: `${distinct.length}${capped ? "+" : ""} distinct ${plural}`,
+            title: distinct.join(" · ")
+        };
+    }
+
+    if (prop.optional && total != null && present != null) {
+        return { label: `present on ${present} of ${total}`, title: "" };
+    }
+    return { label: "—", title: "" };
 };
 
 /** A row-level icon button (edit / delete) — a muted glyph that darkens on hover. */
@@ -84,20 +124,32 @@ const IconButton = ({
     </button>
 );
 
-/** One prop row (spec §6.6): prop · type · values observed · edit/delete. Editing is behind the pencil. */
+/**
+ * One prop row (spec §6.6): prop · type · values observed · edit/delete. Composite props (with `fields`)
+ * disclose their sub-fields, indented, via the leading chevron. Editing (rename/retype/delete) is a
+ * top-level operation — the override model keys corrections by top-level prop name — so nested field
+ * rows are read-only; adjust them by regenerating the component's props.
+ */
 const PropRow = ({
     presenter,
     signature,
-    prop
+    prop,
+    depth = 0
 }: {
     presenter: RunViewPresenter.Interface;
     signature: string;
     prop: ComponentPropDto;
+    depth?: number;
 }) => {
     const { vm } = presenter;
     const [editing, setEditing] = useState(false);
+    const [expanded, setExpanded] = useState(true);
     const [name, setName] = useState(prop.name);
     const observed = valuesObserved(prop);
+    const fields = prop.fields ?? [];
+    const hasFields = fields.length > 0;
+    const editable = depth === 0;
+    const tag = fieldsTag(prop);
 
     const commitName = () => {
         if (name.trim() && name.trim() !== prop.name) {
@@ -109,61 +161,110 @@ const PropRow = ({
         : [{ value: prop.type, label: prop.type }, ...PROP_TYPES];
 
     return (
-        <div
-            className={cn(
-                PROP_COLS,
-                "border-t border-neutral-dimmed px-sm py-xs hover:bg-neutral-light/40"
-            )}
-        >
-            {editing ? (
-                <Input
-                    value={name}
-                    disabled={vm.clusterBusy}
-                    onChange={(value: string) => setName(value)}
-                    onBlur={commitName}
-                    onEnter={commitName}
-                />
-            ) : (
-                <Text size="md" className="truncate font-mono">
-                    {prop.name}
+        <>
+            <div
+                className={cn(
+                    PROP_COLS,
+                    "border-t border-neutral-dimmed px-sm py-xs hover:bg-neutral-light/40",
+                    depth > 0 && "bg-neutral-light/20"
+                )}
+            >
+                {/* PROP cell: indent · chevron · name (or edit input). */}
+                <div
+                    className="flex min-w-0 items-center gap-xs"
+                    style={{ paddingLeft: depth * 16 }}
+                >
+                    {hasFields ? (
+                        <button
+                            type="button"
+                            title={expanded ? "Collapse" : "Expand"}
+                            onClick={() => setExpanded(open => !open)}
+                            className="inline-flex flex-shrink-0 cursor-pointer text-neutral-strong hover:text-neutral-xstrong"
+                        >
+                            <Icon
+                                icon={expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                                label={expanded ? "Collapse" : "Expand"}
+                                size="sm"
+                            />
+                        </button>
+                    ) : (
+                        <span className="inline-block w-[20px] flex-shrink-0" />
+                    )}
+                    {editing ? (
+                        <Input
+                            value={name}
+                            disabled={vm.clusterBusy}
+                            onChange={(value: string) => setName(value)}
+                            onBlur={commitName}
+                            onEnter={commitName}
+                        />
+                    ) : (
+                        <Text size="md" className="truncate font-mono">
+                            {prop.name}
+                        </Text>
+                    )}
+                </div>
+
+                {/* TYPE cell: type label + optional "N fields" tag (or edit select). */}
+                {editing ? (
+                    <Select
+                        value={prop.type}
+                        options={typeOptions}
+                        disabled={vm.clusterBusy}
+                        onChange={(value: string) =>
+                            void presenter.setPlanProp(signature, "edit", prop.name, {
+                                type: value
+                            })
+                        }
+                    />
+                ) : (
+                    <div className="flex min-w-0 items-center gap-xs">
+                        <Text size="md" className="truncate font-mono text-neutral-strong">
+                            {typeLabel(prop)}
+                        </Text>
+                        {tag ? <Tag variant="neutral-light" content={tag} /> : null}
+                    </div>
+                )}
+
+                <Text size="sm" className="truncate text-neutral-strong" title={observed.title}>
+                    {observed.label}
                 </Text>
-            )}
 
-            {editing ? (
-                <Select
-                    value={prop.type}
-                    options={typeOptions}
-                    disabled={vm.clusterBusy}
-                    onChange={(value: string) =>
-                        void presenter.setPlanProp(signature, "edit", prop.name, { type: value })
-                    }
-                />
-            ) : (
-                <Text size="md" className="truncate font-mono text-neutral-strong">
-                    {prop.type}
-                </Text>
-            )}
-
-            <Text size="sm" className="truncate text-neutral-strong" title={observed.title}>
-                {observed.label}
-            </Text>
-
-            <div className="flex items-center justify-end gap-xxs">
-                <IconButton
-                    icon={<EditIcon />}
-                    label={editing ? "Done" : "Edit"}
-                    active={editing}
-                    disabled={vm.clusterBusy}
-                    onClick={() => setEditing(open => !open)}
-                />
-                <IconButton
-                    icon={<DeleteIcon />}
-                    label="Delete"
-                    disabled={vm.clusterBusy}
-                    onClick={() => void presenter.setPlanProp(signature, "remove", prop.name)}
-                />
+                <div className="flex items-center justify-end gap-xxs">
+                    {editable ? (
+                        <>
+                            <IconButton
+                                icon={<EditIcon />}
+                                label={editing ? "Done" : "Edit"}
+                                active={editing}
+                                disabled={vm.clusterBusy}
+                                onClick={() => setEditing(open => !open)}
+                            />
+                            <IconButton
+                                icon={<DeleteIcon />}
+                                label="Delete"
+                                disabled={vm.clusterBusy}
+                                onClick={() =>
+                                    void presenter.setPlanProp(signature, "remove", prop.name)
+                                }
+                            />
+                        </>
+                    ) : null}
+                </div>
             </div>
-        </div>
+
+            {hasFields && expanded
+                ? fields.map(field => (
+                      <PropRow
+                          key={field.name}
+                          presenter={presenter}
+                          signature={signature}
+                          prop={field}
+                          depth={depth + 1}
+                      />
+                  ))
+                : null}
+        </>
     );
 };
 

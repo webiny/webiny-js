@@ -46,14 +46,16 @@ const buildPrompt = (
     slotVariables: Map<string, string[]>,
     feedback: string[] = []
 ): string => {
-    const props = component.props.map(
-        prop =>
-            `- ${prop.name} (${prop.type})${
-                prop.observedValues.length
-                    ? `: e.g. ${prop.observedValues.slice(0, 3).join(" | ")}`
-                    : ""
-            }`
-    );
+    const propLines = (prop: PlannedComponent["props"][number], indent: string): string[] => {
+        const decor = `${prop.array ? "[]" : ""}${prop.optional ? "?" : ""}`;
+        const sample = prop.observedValues.length
+            ? `: e.g. ${prop.observedValues.slice(0, 3).join(" | ")}`
+            : "";
+        const line = `${indent}${prop.name} (${prop.type}${decor})${sample}`;
+        const children = (prop.fields ?? []).flatMap(field => propLines(field, `  ${indent}`));
+        return [line, ...children];
+    };
+    const props = component.props.flatMap(prop => propLines(prop, "- "));
     // Resolve each planned binding's slot path to the theme's real css variable name(s) — the model must
     // reference these exact names, not a name derived from the slot path.
     const bindings = component.tokenBindings.map(binding => {

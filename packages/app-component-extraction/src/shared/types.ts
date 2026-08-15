@@ -307,10 +307,26 @@ export interface GenerateArtifactDto {
     failed: string[];
 }
 
+/** Model-proposed observation of a prop across the cluster (see PropObservation on the API side). */
+export interface PropObservationDto {
+    presentInstances?: number | null;
+    totalInstances?: number | null;
+    countMin?: number | null;
+    countMax?: number | null;
+    valueCounts?: { value: string; count: number }[] | null;
+}
+
 export interface ComponentPropDto {
     name: string;
     type: string;
+    /** Optional prop — renders a trailing "?". */
+    optional?: boolean;
+    /** Array / repeated prop — renders "[]" and drives per-instance / per-item phrasing. */
+    array?: boolean;
+    /** Sub-fields for composite props (object, Link/Image/Point, array-of-object). */
+    fields?: ComponentPropDto[];
     observedValues: string[];
+    observation?: PropObservationDto;
 }
 
 export interface TokenBindingDto {
