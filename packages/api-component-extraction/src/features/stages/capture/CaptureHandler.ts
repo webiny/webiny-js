@@ -20,10 +20,6 @@ const MAX_NODES = 4000;
 // The margin MUST exceed one page's worst case: the timeout is only checked between pages, so if a page
 // starts with less runway than it needs the Lambda is hard-killed mid-page and the stage sticks "running".
 const CAPTURE_SAFETY_MARGIN_SECONDS = 200;
-// Recycle the headless browser every N captured pages. Each page is closed after capture, but the browser
-// process itself accumulates memory, handles and network-stack pressure across a long crawl and eventually
-// refuses new requests (net::ERR_INSUFFICIENT_RESOURCES) — a fresh browser resets that.
-const PAGES_PER_BROWSER = 10;
 
 const errMessage = (error: unknown): string =>
     error instanceof Error ? error.message : String(error);
@@ -128,41 +124,20 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             total
         });
 
-        let session = await this.browserProvider.open();
-        let pagesOnBrowser = 0;
+        const session = await this.browserProvider.open();
         try {
             while (checkpoint.nextIndex < total) {
                 const index = checkpoint.nextIndex;
                 const { url } = discover.urls[index];
-
-                // Proactively recycle the browser so accumulated resources don't build to exhaustion.
-                if (pagesOnBrowser >= PAGES_PER_BROWSER) {
-                    session = await this.recycle(session);
-                    pagesOnBrowser = 0;
-                }
-
                 try {
-                    let page: CapturedPage;
-                    try {
-                        page = await this.capturePage(context, session, url, index);
-                    } catch (firstError) {
-                        // Recover once on a fresh browser — a resource exhaustion (ERR_INSUFFICIENT_
-                        // RESOURCES) or a wedged renderer usually captures fine with a clean pool.
-                        await context.log.info({
-                            message: `Retrying ${url} on a fresh browser after: ${errMessage(firstError)}`
-                        });
-                        session = await this.recycle(session);
-                        pagesOnBrowser = 0;
-                        page = await this.capturePage(context, session, url, index);
-                    }
-                    checkpoint.pages.push(page);
+                    checkpoint.pages.push(await this.capturePage(context, session, url, index));
                     await context.progress({
                         message: `Captured ${url}`,
                         current: index + 1,
                         total
                     });
                 } catch (error) {
-                    // Both attempts failed — record the reason and continue; one page must not lose the crawl.
+                    // One unreadable page must not lose the crawl — record the reason and continue.
                     const reason = errMessage(error);
                     checkpoint.failed.push({ url, reason });
                     await context.log.error({
@@ -170,7 +145,6 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                         error
                     });
                 }
-                pagesOnBrowser++;
                 checkpoint.nextIndex++;
                 const saved = await context.store.putJson(checkpointKey, checkpoint);
                 if (saved.isFail()) {
@@ -215,16 +189,6 @@ class CaptureHandlerImpl implements StageHandler.Interface {
             counts: { pages: checkpoint.pages.length },
             degraded: checkpoint.failed.map(failure => failure.url)
         });
-    }
-
-    /** Close the current browser and open a fresh one, releasing accumulated Chromium resources. */
-    private async recycle(session: BrowserProvider.Session): Promise<BrowserProvider.Session> {
-        try {
-            await session.close();
-        } catch {
-            // A browser that won't close cleanly is being discarded anyway.
-        }
-        return this.browserProvider.open();
     }
 
     private async capturePage(
