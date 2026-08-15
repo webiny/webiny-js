@@ -211,7 +211,14 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         }
 
         if (checkpoint.pages.length === 0) {
-            return Result.fail(new ExtractionValidationError("no pages could be captured"));
+            // Surface why: with no artifact written, the per-page reasons have nowhere else to show.
+            const reasons = [
+                ...new Set(checkpoint.failed.map(failure => failure.reason).filter(Boolean))
+            ];
+            const detail = reasons.length > 0 ? ` — ${reasons.slice(0, 3).join("; ")}` : "";
+            return Result.fail(
+                new ExtractionValidationError(`no pages could be captured${detail}`)
+            );
         }
 
         const artifact: CaptureArtifact = { pages: checkpoint.pages, failed: checkpoint.failed };
