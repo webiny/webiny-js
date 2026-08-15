@@ -134,6 +134,8 @@ export const componentExtractionTypeDefs = /* GraphQL */ `
         componentExtractionGetReattachments(runId: ID!): ComponentExtractionArtifactResponse!
         "The names of the components already in the Library, for Promote collision detection (W8.6)."
         componentExtractionListLibraryNames: ComponentExtractionArtifactResponse!
+        "Pre-flight reachability for the Create-job screen (W9.3): resolves the URL and looks for a sitemap. Data carries normalizedUrl, reachable, status, sitemapFound, sitemapUrlCount and error."
+        componentExtractionCheckReachability(url: String!): ComponentExtractionArtifactResponse!
     }
 
     extend type Mutation {

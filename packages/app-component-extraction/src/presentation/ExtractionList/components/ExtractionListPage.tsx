@@ -30,7 +30,6 @@ import { ReactComponent as DuplicateIcon } from "@webiny/icons/content_copy.svg"
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ExtractionListFeature } from "../feature.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
-import { useCreateJobDialog } from "~/presentation/CreateJob/components/CreateJobDialog.js";
 import { currentStage } from "~/shared/ledger.js";
 import {
     StagePips,
@@ -153,7 +152,6 @@ const CurrentStageCell = ({ item }: { item: JobRow }) => {
 const ExtractionListContent = createReactiveComponent(function ExtractionListContent() {
     const { presenter } = useFeature(ExtractionListFeature);
     const { goToRoute } = useRouter();
-    const { openDialog: openCreateDialog } = useCreateJobDialog();
     const toast = useToast();
 
     useEffect(() => {
@@ -315,7 +313,7 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                     />
                     <Button
                         variant="primary"
-                        onClick={() => openCreateDialog()}
+                        onClick={() => goToRoute(Routes.CreateJob)}
                         icon={<AddIcon />}
                         text="New extraction"
                     />
@@ -368,7 +366,7 @@ const ExtractionListContent = createReactiveComponent(function ExtractionListCon
                         actions={
                             <Button
                                 variant="primary"
-                                onClick={() => openCreateDialog()}
+                                onClick={() => goToRoute(Routes.CreateJob)}
                                 icon={<AddIcon />}
                                 text="New extraction"
                             />

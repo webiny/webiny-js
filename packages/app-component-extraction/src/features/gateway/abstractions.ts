@@ -4,6 +4,7 @@ import type {
     JobDto,
     JobListItemDto,
     OverrideDto,
+    ReachabilityDto,
     ReattachmentDto,
     RunDto,
     StageLogItem,
@@ -25,6 +26,8 @@ export interface IComponentExtractionGateway {
     createRun(jobId: string, note?: string): Promise<RunDto>;
     runStage(runId: string, stage: string): Promise<StageTriggerResult>;
     listThemes(): Promise<ThemeOptionDto[]>;
+    /** Pre-flight check of a site URL for the Create-job screen (W9.3). */
+    checkReachability(url: string): Promise<ReachabilityDto>;
     /** The full log trail of a stage's background task, oldest first. */
     listStageLogs(taskId: string): Promise<StageLogItem[]>;
     /** The structured artifact a stage produced, for the visibility views. Null if the stage has no output. */

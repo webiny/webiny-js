@@ -88,6 +88,16 @@ export interface JobListItemDto {
     latestRun: RunDto | null;
 }
 
+/** The Create-job pre-flight reachability result (W9.3). */
+export interface ReachabilityDto {
+    normalizedUrl: string;
+    reachable: boolean;
+    status: number | null;
+    sitemapFound: boolean;
+    sitemapUrlCount: number;
+    error: string | null;
+}
+
 /** A published/draft theme the extraction can bind generated components to. */
 export interface ThemeOptionDto {
     id: string;

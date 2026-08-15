@@ -376,3 +376,15 @@ export const LIST_LIBRARY_NAMES = /* GraphQL */ `
         }
     }
 `;
+
+export const CHECK_REACHABILITY = /* GraphQL */ `
+    query CheckComponentExtractionReachability($url: String!) {
+        componentExtractionCheckReachability(url: $url) {
+            data
+            error {
+                code
+                message
+            }
+        }
+    }
+`;

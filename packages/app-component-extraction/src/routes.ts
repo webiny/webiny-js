@@ -5,6 +5,10 @@ export const Routes = {
         name: "ComponentExtraction/List",
         path: "/component-extraction"
     }),
+    CreateJob: new Route({
+        name: "ComponentExtraction/CreateJob",
+        path: "/component-extraction/new"
+    }),
     Job: new Route({
         name: "ComponentExtraction/Job",
         path: "/component-extraction/jobs/:jobId",

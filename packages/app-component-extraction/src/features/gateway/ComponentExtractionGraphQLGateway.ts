@@ -5,6 +5,7 @@ import type {
     JobDto,
     JobListItemDto,
     OverrideDto,
+    ReachabilityDto,
     ReattachmentDto,
     RunDto,
     StageLogItem,
@@ -12,6 +13,7 @@ import type {
     ThemeOptionDto
 } from "~/shared/types.js";
 import {
+    CHECK_REACHABILITY,
     CLEAR_OVERRIDE,
     CREATE_JOB,
     CREATE_RUN,
@@ -124,6 +126,14 @@ class ComponentExtractionGraphQLGatewayImpl implements ComponentExtractionGatewa
             version: theme.version,
             name: theme.properties?.name || "Untitled theme"
         }));
+    }
+
+    async checkReachability(url: string): Promise<ReachabilityDto> {
+        const response = await this.client.execute<{
+            componentExtractionCheckReachability: GqlEnvelope<ReachabilityDto>;
+        }>({ query: CHECK_REACHABILITY, variables: { url } });
+
+        return unwrap(response.componentExtractionCheckReachability) as ReachabilityDto;
     }
 
     async listStageLogs(taskId: string): Promise<StageLogItem[]> {

@@ -7,13 +7,10 @@ import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { ExtractionListPage } from "~/presentation/ExtractionList/components/ExtractionListPage.js";
 import { RunViewPage } from "~/presentation/RunView/components/RunViewPage.js";
-import {
-    CREATE_JOB_DIALOG,
-    CreateJobDialogContent
-} from "~/presentation/CreateJob/components/CreateJobDialog.js";
+import { CreateJobPage } from "~/presentation/CreateJob/components/CreateJobPage.js";
 import { Routes } from "~/routes.js";
 
-const { Security, Menu, Route, Dialog } = AdminConfig;
+const { Security, Menu, Route } = AdminConfig;
 
 export const Extension = () => {
     const { getLink } = useRouter();
@@ -42,6 +39,14 @@ export const Extension = () => {
                         }
                     />
                     <Route
+                        route={Routes.CreateJob}
+                        element={
+                            <AdminLayout title="New extraction">
+                                <CreateJobPage />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
                         route={Routes.Run}
                         element={
                             <AdminLayout title="Extraction run">
@@ -49,7 +54,6 @@ export const Extension = () => {
                             </AdminLayout>
                         }
                     />
-                    <Dialog name={CREATE_JOB_DIALOG} element={<CreateJobDialogContent />} />
                     <Menu
                         name="component-extraction"
                         parent="dev-tools"

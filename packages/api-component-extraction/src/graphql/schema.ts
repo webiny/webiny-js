@@ -38,6 +38,7 @@ import { ExtractionRunInProgressError } from "~/domain/errors.js";
 import type { StageTaskInput } from "~/features/stages/StageTaskRunner.js";
 import { OverrideApplicator, stageArtifactName } from "~/features/shared/OverrideApplicator.js";
 import { decisionsFromOverrides, normalizeUrl } from "~/domain/overrides.js";
+import { checkReachability } from "~/features/shared/reachability.js";
 import { ListRemoteComponentsUseCase } from "@webiny/remote-components/api/features/listComponents/abstractions.js";
 
 /** Thin resolvers: authorize, delegate, map onto the `{ data, error }` envelope. */
@@ -465,6 +466,20 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
                     const result = await listComponents.execute();
                     return result.isOk() ? result.value.items.map(item => item.name) : [];
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "Query.componentExtractionCheckReachability",
+        dependencies: [ComponentExtractionPermissions],
+        resolver(permissions: ComponentExtractionPermissions.Interface) {
+            return ({ args }: { args: { url: string } }) =>
+                resolve(async () => {
+                    if (!(await permissions.canCreate("componentExtraction"))) {
+                        throw new Error("You do not have permission to run component extraction.");
+                    }
+                    return checkReachability(args.url);
                 });
         }
     });
