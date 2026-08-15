@@ -541,9 +541,10 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             return;
         }
         const primary = pinnedSignature ?? selected[0];
+        // Spread to a plain array — `selected` is a live observable, not a request payload.
         await this.applyClusterCorrection(runId, primary, {
             kind: "cluster.merge",
-            representativeSignatures: selected,
+            representativeSignatures: [...selected],
             representativeSignature: pinnedSignature
         });
     }
@@ -648,6 +649,35 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
             // stage version — and refresh its machine copy for the "was" hint.
             this.loadedArtifactKey = null;
             await this.loadArtifact(run, stage);
+            // Surface a correction that couldn't be applied — otherwise it silently looks like nothing
+            // happened. A correction set THIS run that reattached as not-applicable/conflicting is a real
+            // failure the operator should see (e.g. a merge whose clusters aren't both present).
+            try {
+                const reattachments = await this.gateway.getReattachments(runId);
+                runInAction(() => {
+                    this.vm.reattachments = reattachments as ReattachmentDto[];
+                });
+                const setThisRun = new Set(
+                    (overrides as OverrideDto[])
+                        .filter(override => override.originRunId === run.id)
+                        .map(override => override.id)
+                );
+                const failed = (reattachments as ReattachmentDto[]).find(
+                    entry =>
+                        entry.stage === stage &&
+                        entry.status !== "applied" &&
+                        setThisRun.has(entry.overrideId)
+                );
+                if (failed) {
+                    runInAction(() => {
+                        this.vm.error = `That correction could not be applied — ${
+                            failed.reason ?? "its target isn't present in the current output."
+                        }`;
+                    });
+                }
+            } catch {
+                // A reattachment-check failure must not mask the correction itself.
+            }
         } catch (error) {
             runInAction(() => {
                 this.vm.clusterBusy = false;
