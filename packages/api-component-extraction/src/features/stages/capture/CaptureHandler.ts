@@ -95,11 +95,15 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         if (loaded.isFail()) {
             return Result.fail(loaded.error);
         }
-        const checkpoint: CaptureCheckpoint = loaded.value ?? {
-            nextIndex: 0,
-            pages: [],
-            failed: []
-        };
+        // Resume only an INCOMPLETE checkpoint (a run paused near the Lambda timeout, still mid-crawl). A
+        // completed one — nextIndex at total — is not a resume point: it's a prior attempt that finished,
+        // and for a failed stage the version does not bump, so a re-run lands on the same checkpoint key.
+        // Reloading it would skip the loop and re-report the old result (all failed) without re-capturing.
+        const previous = loaded.value;
+        const checkpoint: CaptureCheckpoint =
+            previous && previous.nextIndex < total
+                ? previous
+                : { nextIndex: 0, pages: [], failed: [] };
 
         // An immediate line so the run view shows activity during the (slow) headless-browser launch,
         // before the first page completes.
