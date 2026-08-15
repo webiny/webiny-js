@@ -22,5 +22,12 @@ export const Routes = {
         params: zod => ({
             runId: zod.string()
         })
+    }),
+    RunInspector: new Route({
+        name: "ComponentExtraction/RunInspector",
+        path: "/component-extraction/runs/:runId/inspect",
+        params: zod => ({
+            runId: zod.string()
+        })
     })
 };

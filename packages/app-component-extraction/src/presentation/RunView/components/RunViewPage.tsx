@@ -216,6 +216,12 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                 />
                 <div className="flex items-center gap-sm">
                     <Button
+                        variant="secondary"
+                        size="sm"
+                        text="Inspector"
+                        onClick={() => goToRoute(Routes.RunInspector, { runId: run.id })}
+                    />
+                    <Button
                         variant={vm.showOverrides ? "primary" : "secondary"}
                         size="sm"
                         text="Overrides"

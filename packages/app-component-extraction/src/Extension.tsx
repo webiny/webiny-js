@@ -9,6 +9,7 @@ import { ExtractionListPage } from "~/presentation/ExtractionList/components/Ext
 import { RunViewPage } from "~/presentation/RunView/components/RunViewPage.js";
 import { CreateJobPage } from "~/presentation/CreateJob/components/CreateJobPage.js";
 import { JobDetailPage } from "~/presentation/JobDetail/components/JobDetailPage.js";
+import { RunInspectorPage } from "~/presentation/RunInspector/components/RunInspectorPage.js";
 import { Routes } from "~/routes.js";
 
 const { Security, Menu, Route } = AdminConfig;
@@ -60,6 +61,14 @@ export const Extension = () => {
                         element={
                             <AdminLayout title="Extraction run">
                                 <RunViewPage />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
+                        route={Routes.RunInspector}
+                        element={
+                            <AdminLayout title="Run inspector">
+                                <RunInspectorPage />
                             </AdminLayout>
                         }
                     />

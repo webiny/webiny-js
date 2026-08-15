@@ -434,16 +434,12 @@ const JobDetailContent = createReactiveComponent(function JobDetailContent() {
                         <Heading level={4}>{job.name}</Heading>
                     </div>
                     <div className="flex items-center gap-sm">
-                        <Tooltip
-                            content="The run inspector is not available yet"
-                            trigger={
-                                <Button
-                                    variant="tertiary"
-                                    size="sm"
-                                    text="Run inspector"
-                                    disabled
-                                />
-                            }
+                        <Button
+                            variant="tertiary"
+                            size="sm"
+                            text="Run inspector"
+                            disabled={!run}
+                            onClick={() => run && goToRoute(Routes.RunInspector, { runId: run.id })}
                         />
                         <Tooltip
                             content="Editing configuration is not available yet"
