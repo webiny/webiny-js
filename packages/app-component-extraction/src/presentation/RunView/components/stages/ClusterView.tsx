@@ -40,13 +40,18 @@ const OverrideBadge = ({ override, runId }: { override: OverrideDto; runId: stri
     );
 };
 
-const ClusterCard = ({
+// Plain memoised component (NOT an observer): it renders only when its own props change. `selected` and
+// `busy` are passed in by the observing ClusterView, so toggling one cluster's selection re-renders that
+// one card, not every card (and every crop image) in the grid.
+const ClusterCard = React.memo(function ClusterCard({
     presenter,
     runId,
     cluster,
     clusters,
     override,
-    index
+    index,
+    selected,
+    busy
 }: {
     presenter: RunViewPresenter.Interface;
     runId: string;
@@ -54,12 +59,12 @@ const ClusterCard = ({
     clusters: ClusterDto[];
     override: OverrideDto | undefined;
     index: number;
-}) => {
-    const { vm } = presenter;
+    selected: boolean;
+    busy: boolean;
+}) {
     const [expanded, setExpanded] = useState(false);
     const [splitMembers, setSplitMembers] = useState<string[]>([]);
     const pages = distinctPages(cluster);
-    const selected = vm.selectedClusters.includes(cluster.signature);
 
     const toggleMember = (signature: string) =>
         setSplitMembers(current =>
@@ -143,7 +148,7 @@ const ClusterCard = ({
                             variant="tertiary"
                             size="sm"
                             text="Restore"
-                            disabled={vm.clusterBusy}
+                            disabled={busy}
                             onClick={() => void presenter.clearOverride(override.id)}
                         />
                     ) : (
@@ -151,7 +156,7 @@ const ClusterCard = ({
                             variant="tertiary"
                             size="sm"
                             text="Exclude"
-                            disabled={vm.clusterBusy}
+                            disabled={busy}
                             onClick={() => void presenter.excludeCluster(cluster.signature)}
                         />
                     )}
@@ -168,7 +173,7 @@ const ClusterCard = ({
                                 variant="secondary"
                                 size="sm"
                                 text={`Split ${splitMembers.length} into a new cluster`}
-                                disabled={vm.clusterBusy}
+                                disabled={busy}
                                 onClick={submitSplit}
                             />
                         ) : null}
@@ -209,7 +214,7 @@ const ClusterCard = ({
                                                 value=""
                                                 placeholder="Move to…"
                                                 options={moveTargets}
-                                                disabled={vm.clusterBusy}
+                                                disabled={busy}
                                                 onChange={(target: string) =>
                                                     void presenter.moveClusterMember(
                                                         member.signature,
@@ -227,7 +232,7 @@ const ClusterCard = ({
             </div>
         </div>
     );
-};
+});
 
 /** The similarity-threshold control: a slider previewing the cluster count, with Apply re-running Cluster. */
 const ThresholdControl = ({
@@ -369,6 +374,8 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
                             clusters={artifact.clusters}
                             override={overrideForCluster(vm.overrides, cluster.signature)}
                             index={index}
+                            selected={vm.selectedClusters.includes(cluster.signature)}
+                            busy={vm.clusterBusy}
                         />
                     ))}
                 </div>
