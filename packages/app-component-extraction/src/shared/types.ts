@@ -172,9 +172,15 @@ export interface CapturePageDto {
     warnings?: CaptureWarningsDto;
 }
 
+/** A page that failed to capture, with its reason. */
+export interface CaptureFailureDto {
+    url: string;
+    reason: string;
+}
 export interface CaptureArtifactDto {
     pages: CapturePageDto[];
-    failed: string[];
+    /** {url, reason}[] since reasons were captured; a plain URL string[] on older runs. */
+    failed: (CaptureFailureDto | string)[];
 }
 
 export interface SegmentSectionDto {

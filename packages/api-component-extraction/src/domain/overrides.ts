@@ -9,6 +9,7 @@ import type {
 } from "./types.js";
 import type {
     CaptureArtifact,
+    CaptureFailure,
     ClassifyArtifact,
     Cluster,
     ClusterArtifact,
@@ -471,7 +472,10 @@ export const applyCaptureOverrides = (
     const excluded = excludedPageUrls(overrides);
     const present = new Set(artifact.pages.map(page => normalizeUrl(page.url)));
     const pages = artifact.pages.filter(page => !excluded.has(normalizeUrl(page.url)));
-    const failed = artifact.failed.filter(url => !excluded.has(normalizeUrl(url)));
+    // `failed` was a URL string[] before reasons were captured; tolerate both shapes.
+    const failed = (artifact.failed as Array<CaptureFailure | string>)
+        .map(failure => (typeof failure === "string" ? { url: failure, reason: "" } : failure))
+        .filter(failure => !excluded.has(normalizeUrl(failure.url)));
     return {
         effective: { ...artifact, pages, failed },
         reattachments: pageExclusionReattachments(overrides, present)

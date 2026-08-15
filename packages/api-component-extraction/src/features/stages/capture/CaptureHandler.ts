@@ -6,6 +6,7 @@ import type {
     CapturedNode,
     CapturedPage,
     CaptureArtifact,
+    CaptureFailure,
     DiscoverArtifact
 } from "~/domain/artifacts.js";
 import { captureEvaluator, type CaptureEvalResult } from "./captureEvaluator.js";
@@ -24,7 +25,7 @@ const CAPTURE_SAFETY_MARGIN_SECONDS = 200;
 interface CaptureCheckpoint {
     nextIndex: number;
     pages: CapturedPage[];
-    failed: string[];
+    failed: CaptureFailure[];
 }
 // Full-page PNGs are bounded by height only, NOT longest edge: a full-page screenshot is much taller
 // than wide, so a longest-edge cap scales by the height and crushes the width — a 1440×5000 page would
@@ -133,9 +134,13 @@ class CaptureHandlerImpl implements StageHandler.Interface {
                         total
                     });
                 } catch (error) {
-                    // One unreadable page must not lose the crawl — record and continue.
-                    checkpoint.failed.push(url);
-                    await context.log.error({ message: `Could not capture ${url}.`, error });
+                    // One unreadable page must not lose the crawl — record the reason and continue.
+                    const reason = error instanceof Error ? error.message : String(error);
+                    checkpoint.failed.push({ url, reason });
+                    await context.log.error({
+                        message: `Could not capture ${url}: ${reason}`,
+                        error
+                    });
                 }
                 checkpoint.nextIndex++;
                 const saved = await context.store.putJson(checkpointKey, checkpoint);
@@ -179,7 +184,7 @@ class CaptureHandlerImpl implements StageHandler.Interface {
         return Result.ok({
             artifacts: { pages: key },
             counts: { pages: checkpoint.pages.length },
-            degraded: checkpoint.failed
+            degraded: checkpoint.failed.map(failure => failure.url)
         });
     }
 

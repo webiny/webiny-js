@@ -75,10 +75,16 @@ export interface CapturedPage {
     warnings: CaptureWarnings;
 }
 
+/** A page that could not be captured, with the reason (so the operator can tell why). */
+export interface CaptureFailure {
+    url: string;
+    reason: string;
+}
+
 export interface CaptureArtifact {
     pages: CapturedPage[];
-    /** URLs that could not be captured — degraded, not fatal. */
-    failed: string[];
+    /** Pages that could not be captured — degraded, not fatal — each with its failure reason. */
+    failed: CaptureFailure[];
 }
 
 // ----- Segment -----------------------------------------------------------------------------------

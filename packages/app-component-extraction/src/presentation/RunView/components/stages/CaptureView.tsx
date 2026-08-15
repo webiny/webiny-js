@@ -30,6 +30,8 @@ interface Tile {
     label: string;
     page: CapturePageDto | null;
     failed: boolean;
+    /** Why the page failed to capture (failed tiles only). */
+    reason?: string;
     /** Capture-quality warnings (short page, consent overlay, broken images). */
     warnings: string[];
 }
@@ -58,7 +60,9 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
         if (!artifact?.pages) {
             return [];
         }
-        const failedUrls = artifact.failed ?? [];
+        const failures = (artifact.failed ?? []).map(failure =>
+            typeof failure === "string" ? { url: failure, reason: "" } : failure
+        );
         const medianHeight = median(artifact.pages.map(page => page.documentHeight));
         const captured: Tile[] = artifact.pages.map(page => {
             const warnings: string[] = [];
@@ -79,11 +83,12 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
                 warnings
             };
         });
-        const failed: Tile[] = failedUrls.map(url => ({
-            url,
-            label: pathOf(url),
+        const failed: Tile[] = failures.map(failure => ({
+            url: failure.url,
+            label: pathOf(failure.url),
             page: null,
             failed: true,
+            reason: failure.reason,
             warnings: []
         }));
         // Failed and flagged tiles sort to the top.
@@ -211,6 +216,15 @@ export const CaptureView = createReactiveComponent(function CaptureView({ presen
                                             <Tag variant="success-light" content="ok" />
                                         )}
                                     </div>
+                                    {tile.failed && tile.reason ? (
+                                        <Text
+                                            size="sm"
+                                            className="line-clamp-3 break-words text-destructive-default"
+                                            title={tile.reason}
+                                        >
+                                            {tile.reason}
+                                        </Text>
+                                    ) : null}
                                 </div>
                             </div>
                         );
