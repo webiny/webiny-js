@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Alert, Button, Select, Slider, Tag, Text } from "@webiny/admin-ui";
+import { Alert, Button, Icon, Select, Slider, Tag, Text } from "@webiny/admin-ui";
+import { ReactComponent as ZoomIcon } from "@webiny/icons/zoom_in.svg";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type { ClusterArtifactDto, ClusterDto, OverrideDto } from "~/shared/types.js";
@@ -51,7 +52,8 @@ const ClusterCard = React.memo(function ClusterCard({
     override,
     index,
     selected,
-    busy
+    busy,
+    onZoom
 }: {
     presenter: RunViewPresenter.Interface;
     runId: string;
@@ -61,6 +63,7 @@ const ClusterCard = React.memo(function ClusterCard({
     index: number;
     selected: boolean;
     busy: boolean;
+    onZoom: (cropRef: string, alt: string) => void;
 }) {
     const [expanded, setExpanded] = useState(false);
     const [splitMembers, setSplitMembers] = useState<string[]>([]);
@@ -116,6 +119,18 @@ const ClusterCard = React.memo(function ClusterCard({
                 {selected ? (
                     <div className="absolute inset-0 ring-2 ring-inset ring-primary-default bg-primary-default/10" />
                 ) : null}
+                {/* Zoom is a separate target so a crop click still selects the cluster for merging. */}
+                <button
+                    type="button"
+                    title="View full size"
+                    onClick={event => {
+                        event.stopPropagation();
+                        onZoom(cluster.representativeCrop.cropRef, `#${index + 1}`);
+                    }}
+                    className="absolute bottom-xs right-xs inline-flex cursor-pointer items-center justify-center rounded-sm bg-neutral-base/80 p-xxs hover:bg-neutral-base"
+                >
+                    <Icon icon={<ZoomIcon />} label="View full size" size="sm" />
+                </button>
                 <div className="absolute top-xs left-xs">
                     <span
                         className={`inline-flex items-center justify-center min-w-5 h-5 px-xxs rounded-sm text-xs font-medium ${
@@ -345,6 +360,12 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
     const { vm } = presenter;
     const artifact = vm.artifact as ClusterArtifactDto | null;
     const runId = vm.run?.id ?? "";
+    const [lightbox, setLightbox] = useState<{ cropRef: string; alt: string } | null>(null);
+    // Stable so it doesn't defeat ClusterCard's memoisation.
+    const openZoom = useCallback(
+        (cropRef: string, alt: string) => setLightbox({ cropRef, alt }),
+        []
+    );
 
     if (vm.artifactLoading && !artifact) {
         return <Text className="p-md text-neutral-strong">Loading clusters…</Text>;
@@ -383,10 +404,28 @@ export const ClusterView = createReactiveComponent(function ClusterView({ presen
                             index={index}
                             selected={vm.selectedClusters.includes(cluster.signature)}
                             busy={vm.clusterBusy}
+                            onZoom={openZoom}
                         />
                     ))}
                 </div>
             </div>
+
+            {lightbox ? (
+                <div
+                    className="fixed inset-0 z-50 flex cursor-pointer items-center justify-center bg-black/70 p-xl"
+                    onClick={() => setLightbox(null)}
+                    title="Click to close"
+                >
+                    <div className="max-h-full overflow-y-auto rounded-sm bg-neutral-base">
+                        <RunImage
+                            runId={runId}
+                            imageRef={lightbox.cropRef}
+                            alt={lightbox.alt}
+                            className="w-[900px] max-w-full"
+                        />
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 });
