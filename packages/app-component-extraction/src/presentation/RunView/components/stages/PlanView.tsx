@@ -16,10 +16,12 @@ interface Props {
 
 const num = (value: number): string => value.toLocaleString();
 
-const PROP_TYPES = ["text", "richText", "image", "url", "boolean", "number"].map(value => ({
-    value,
-    label: value
-}));
+const PROP_TYPES = ["text", "richText", "image", "url", "boolean", "number", "object"].map(
+    value => ({
+        value,
+        label: value
+    })
+);
 
 const pageCountOf = (component: PlannedComponentDto): number =>
     new Set(component.members.map(member => member.url)).size;
