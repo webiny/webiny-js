@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createReactiveComponent, useRouter } from "@webiny/app-admin";
 import {
+    Alert,
     Button,
     CheckboxPrimitive,
     Input,
@@ -71,12 +72,14 @@ const PromoteRow = ({
     presenter,
     component,
     qualifiedName,
-    collides
+    collides,
+    promoted
 }: {
     presenter: RunViewPresenter.Interface;
     component: GeneratedComponentDto;
     qualifiedName: string;
     collides: boolean;
+    promoted: boolean;
 }) => {
     const { vm } = presenter;
     const signature = component.signature;
@@ -87,7 +90,9 @@ const PromoteRow = ({
         (collisionOverride?.correction.renameTo as string) ?? `${qualifiedName} (2)`
     );
     const pages = pageCountOf(component);
-    const conflict = collides && selected;
+    // A promoted component's name is (correctly) now in the Library, so its collision is expected, not a
+    // warning — suppress the conflict treatment once it has been promoted.
+    const conflict = collides && selected && !promoted;
 
     const commitRename = () => {
         if (renameTo.trim()) {
@@ -115,6 +120,7 @@ const PromoteRow = ({
                 <Text size="sm" className="whitespace-nowrap text-neutral-strong">
                     {pages} page{pages === 1 ? "" : "s"}
                 </Text>
+                {promoted ? <Tag variant="success-light" content="Promoted" /> : null}
             </div>
             {conflict ? (
                 <div className="flex flex-col gap-xs pl-lg">
@@ -178,11 +184,16 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
         component,
         qualifiedName: qualify(namespace, component.name)
     }));
+    const promotedSignatures = new Set((result?.promoted ?? []).map(entry => entry.signature));
     const selectedCount = named.filter(item =>
         isSelected(vm.overrides, item.component.signature)
     ).length;
-    const conflicts = named.filter(item => library.has(item.qualifiedName)).length;
+    // A promoted component's name is expected to be in the Library — don't count it as a conflict.
+    const conflicts = named.filter(
+        item => library.has(item.qualifiedName) && !promotedSignatures.has(item.component.signature)
+    ).length;
     const promoted = result?.promoted.length ?? 0;
+    const skipped = result?.skipped.length ?? 0;
 
     return (
         <div className="flex h-full min-h-0 flex-col">
@@ -220,6 +231,15 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                 </div>
             </div>
 
+            {promoted > 0 ? (
+                <div className="px-md pt-sm">
+                    <Alert type="success" variant="subtle">
+                        Promoted {promoted} component{promoted === 1 ? "" : "s"} to the Library
+                        {skipped > 0 ? ` · ${skipped} skipped` : ""}. Open the Library to use them.
+                    </Alert>
+                </div>
+            ) : null}
+
             {promotable.length === 0 ? (
                 <Text size="sm" className="px-md py-sm text-neutral-strong">
                     No components are eligible — generate and accept components first.
@@ -233,6 +253,7 @@ export const PromoteView = createReactiveComponent(function PromoteView({ presen
                             component={component}
                             qualifiedName={qualifiedName}
                             collides={library.has(qualifiedName)}
+                            promoted={promotedSignatures.has(component.signature)}
                         />
                     ))}
                 </div>
