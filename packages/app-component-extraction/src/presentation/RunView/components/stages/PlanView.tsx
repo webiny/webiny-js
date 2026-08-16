@@ -537,58 +537,55 @@ export const PlanView = createReactiveComponent(function PlanView({ presenter }:
 
     return (
         <div className="flex h-full min-h-0 flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto p-md">
-                <div className="flex gap-md">
-                    <div className="flex min-w-0 flex-1 flex-col gap-md">
-                        {artifact.components.map(component => (
-                            <PlanComponentCard
-                                key={component.signature}
-                                presenter={presenter}
-                                component={component}
-                                corrected={hasOverride(vm.overrides, component.signature)}
-                                runId={runId}
-                                themeLabel={themeLabel}
-                                onOpenImage={(src, alt) => setLightbox({ src, alt })}
-                            />
-                        ))}
-                    </div>
+            <div className="flex min-h-0 flex-1 gap-md p-md">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-md overflow-y-auto">
+                    {artifact.components.map(component => (
+                        <PlanComponentCard
+                            key={component.signature}
+                            presenter={presenter}
+                            component={component}
+                            corrected={hasOverride(vm.overrides, component.signature)}
+                            runId={runId}
+                            themeLabel={themeLabel}
+                            onOpenImage={(src, alt) => setLightbox({ src, alt })}
+                        />
+                    ))}
+                </div>
 
-                    <div className="w-[300px] flex-shrink-0">
-                        <div className="sticky top-0 flex flex-col gap-sm rounded-lg border border-primary-muted bg-neutral-base p-md">
-                            <Heading level={6}>Approve plan</Heading>
-                            <Fact label="Components" value={components} />
-                            <Fact label="Pages" value={pages} />
-                            <Fact label="Props inferred" value={totalProps} />
-                            <Fact label="Estimated generation" value={estimated} />
-                            {projection && projection.priorRuns > 0 ? (
-                                <Text size="sm" className="text-neutral-strong">
-                                    From {projection.priorRuns} prior run(s).
-                                </Text>
-                            ) : null}
-                            <div className="rounded-sm bg-primary-subtle p-sm">
-                                <Text size="sm" className="text-neutral-xstrong">
-                                    Stages 1–6 are cheap. Approving starts generation, which spends
-                                    inference budget for every component in this plan.
-                                </Text>
-                            </div>
-                            <Button
-                                variant="primary"
-                                text={generating ? "Starting…" : "Approve plan and generate"}
-                                disabled={generating}
-                                onClick={() => void presenter.runStage("generate")}
-                                className={cn("w-full")}
-                            />
-                            <Button
-                                variant="tertiary"
-                                text="Back to stage 5"
-                                onClick={() => presenter.selectStage("classify")}
-                                className={cn("w-full")}
-                            />
+                <div className="min-h-0 w-[300px] flex-shrink-0 overflow-y-auto">
+                    <div className="flex flex-col gap-sm rounded-lg border border-primary-muted bg-neutral-base p-md">
+                        <Heading level={6}>Approve plan</Heading>
+                        <Fact label="Components" value={components} />
+                        <Fact label="Pages" value={pages} />
+                        <Fact label="Props inferred" value={totalProps} />
+                        <Fact label="Estimated generation" value={estimated} />
+                        {projection && projection.priorRuns > 0 ? (
+                            <Text size="sm" className="text-neutral-strong">
+                                From {projection.priorRuns} prior run(s).
+                            </Text>
+                        ) : null}
+                        <div className="rounded-sm bg-primary-subtle p-sm">
+                            <Text size="sm" className="text-neutral-xstrong">
+                                Stages 1–6 are cheap. Approving starts generation, which spends
+                                inference budget for every component in this plan.
+                            </Text>
                         </div>
+                        <Button
+                            variant="primary"
+                            text={generating ? "Starting…" : "Approve plan and generate"}
+                            disabled={generating}
+                            onClick={() => void presenter.runStage("generate")}
+                            className={cn("w-full")}
+                        />
+                        <Button
+                            variant="tertiary"
+                            text="Back to stage 5"
+                            onClick={() => presenter.selectStage("classify")}
+                            className={cn("w-full")}
+                        />
                     </div>
                 </div>
             </div>
-
             {lightbox ? (
                 <div
                     className="fixed inset-0 z-50 flex cursor-pointer items-center justify-center bg-black/70 p-xl"
