@@ -90,6 +90,12 @@ type RunResult = Promise<TaskDefinition.Result<StageTaskInput, StageTaskOutput>>
  */
 export interface IStageTaskRunner {
     execute(stage: Stage, params: RunParams): RunResult;
+    /**
+     * Mark a stage failed when its task exhausted its iterations (a long coordinator/poll ran past the
+     * cap). Called from the stage task's `onMaxIterations` hook so the ledger never stays stuck "running"
+     * with a dead task — the operator can re-run to resume from the checkpoint.
+     */
+    markStalled(stage: Stage, runId: string): Promise<void>;
 }
 
 export const StageTaskRunner = createAbstraction<IStageTaskRunner>(
@@ -410,6 +416,28 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
         await this.runRepository.update(runId, { stages: failed, status: "failed" });
         await this.report(STAGE_FAILED_ACTION, { runId, jobId, stage, status: "failed", message });
         return controller.response.error(message);
+    }
+
+    async markStalled(stage: Stage, runId: string): Promise<void> {
+        const latest = await this.runRepository.get(runId);
+        if (latest.isFail()) {
+            return;
+        }
+        const message = `Stage "${stage}" was stopped after exceeding its maximum iterations. Re-run it to resume from the checkpoint.`;
+        const failed = markStageFailed(
+            latest.value.stages,
+            stage,
+            message,
+            new Date().toISOString()
+        );
+        await this.runRepository.update(runId, { stages: failed, status: "failed" });
+        await this.report(STAGE_FAILED_ACTION, {
+            runId,
+            jobId: latest.value.jobId,
+            stage,
+            status: "failed",
+            message
+        });
     }
 
     /** Progress is a courtesy — a dropped websocket must never fail a stage that otherwise succeeded. */

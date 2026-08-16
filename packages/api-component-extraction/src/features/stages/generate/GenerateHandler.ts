@@ -16,8 +16,10 @@ const GENERATE_CONCURRENCY = 4;
 const CHILD_TIMEOUT_MS = 8 * 60 * 1000;
 // How many times one component may be (re)triggered before it's given up on as failed.
 const CHILD_MAX_TRIGGERS = 2;
-// Seconds between coordinator poll passes — slow enough not to hot-loop re-invocations while children work.
-const POLL_SECONDS = 5;
+// Seconds between coordinator poll passes. Each pass is one task iteration, so this is paced against the
+// stage's iteration budget (see STAGE_MAX_ITERATIONS.generate) — slow enough not to burn the budget while
+// children work, quick enough for responsive progress.
+const POLL_SECONDS = 10;
 
 const allPassed = (component: GeneratedComponent): boolean =>
     component.validation.textPreservation.passed &&
