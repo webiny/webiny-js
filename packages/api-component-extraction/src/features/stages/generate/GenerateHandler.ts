@@ -200,11 +200,28 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             failed: []
         };
 
+        // An immediate line so the run view shows life before the first (slow) component completes —
+        // each component is up to MAX_ATTEMPTS remote generate+render calls, minutes of opaque work.
+        await context.progress({
+            message: `Generating ${total} component(s), one model call per attempt…`,
+            current: checkpoint.nextIndex,
+            total
+        });
+
         while (checkpoint.nextIndex < total) {
             const planned = plan.components[checkpoint.nextIndex];
+            // Announce the component BEFORE its (long) work, not only after — otherwise the first sign of
+            // progress is delayed by a whole component. The per-attempt heartbeat lives in generateOne.
+            await context.progress({
+                message: `Generating "${planned.name}" (${checkpoint.nextIndex + 1}/${total})…`,
+                current: checkpoint.nextIndex,
+                total
+            });
             const best = await this.generateOne(
                 context,
                 planned,
+                checkpoint.nextIndex + 1,
+                total,
                 validVariables,
                 manifestAvailable,
                 slotVariables
@@ -273,10 +290,16 @@ class GenerateHandlerImpl implements StageHandler.Interface {
     private async generateOne(
         context: StageContext,
         planned: PlannedComponent,
+        position: number,
+        total: number,
         validVariables: Set<string>,
         manifestAvailable: boolean,
         slotVariables: Map<string, string[]>
     ): Promise<GeneratedComponent | null> {
+        // Live heartbeat for the run view — the message the operator watches while a component works.
+        const beat = (message: string): Promise<void> =>
+            context.progress({ message, current: position - 1, total });
+
         const fileId = await this.createReferenceImage(context, planned);
         const additionalFileIds = fileId ? [fileId] : [];
         let best: GeneratedComponent | null = null;
@@ -288,6 +311,7 @@ class GenerateHandlerImpl implements StageHandler.Interface {
 
         while (attempts < MAX_ATTEMPTS) {
             attempts++;
+            await beat(`"${planned.name}": generation attempt ${attempts}/${MAX_ATTEMPTS}…`);
             const feedback = previousFailures
                 ? buildRetryFeedback(previousFailures, validVariables)
                 : [];
@@ -297,6 +321,9 @@ class GenerateHandlerImpl implements StageHandler.Interface {
                 additionalFileIds
             });
             if (generated.isFail()) {
+                await beat(
+                    `"${planned.name}": attempt ${attempts} errored (${generated.error.message}).`
+                );
                 await context.log.error({
                     message: `Generate attempt ${attempts} failed for "${planned.name}": ${generated.error.message}`
                 });
@@ -347,17 +374,24 @@ class GenerateHandlerImpl implements StageHandler.Interface {
             }
 
             if (failures.length === 0) {
+                await beat(`"${planned.name}": passed validation on attempt ${attempts}.`);
                 break;
             }
             // Stop early when a retry made no progress: identical failures mean the feedback isn't
             // landing, so another attempt would just burn tokens for the same result.
             if (previousFailures && sameFailures(previousFailures, failures)) {
+                await beat(
+                    `"${planned.name}": not converging after ${attempts} attempt(s); stopping early.`
+                );
                 await context.log.info({
                     message: `"${planned.name}" not converging after ${attempts} attempt(s); stopping early.`
                 });
                 break;
             }
             previousFailures = failures;
+            await beat(
+                `"${planned.name}": attempt ${attempts} failed validation (${failures.length} issue(s)); retrying…`
+            );
             await context.log.info({
                 message: `"${planned.name}" attempt ${attempts} failed validation; retrying with feedback.`
             });
