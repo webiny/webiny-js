@@ -91,6 +91,14 @@ export const REGENERATE_COMPONENT_TASK_ID = "componentExtractionRegenerateCompon
 export const REGENERATE_PLAN_TASK_ID = "componentExtractionRegeneratePlan";
 
 /**
+ * The background-task id for generating ONE planned component. Generate fans out one of these per
+ * component (bounded concurrency) instead of running a single long stage task, so each component is a
+ * separate, independently visible task and a slow one can't block the rest. The Generate stage handler
+ * coordinates: it triggers these, polls their per-component result artifacts, and aggregates.
+ */
+export const GENERATE_COMPONENT_TASK_ID = "componentExtractionGenerateComponent";
+
+/**
  * Deterministic artifact key. Includes the run, the stage and the stage version, so re-running a stage
  * writes to a fresh key (its version bumped) and a stale downstream artifact never collides with a new
  * one. `name` distinguishes a stage's multiple artifacts (e.g. a page's pruned tree vs its raw DOM).

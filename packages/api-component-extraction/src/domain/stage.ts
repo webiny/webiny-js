@@ -77,6 +77,11 @@ export interface StageOutcome {
      * Lambda timeout; `counts` may carry partial deltas to persist between iterations.
      */
     more?: boolean;
+    /**
+     * Seconds to wait before the next continuation (defaults to 1). A coordinator that yields to poll
+     * child tasks sets this higher so it does not hot-loop re-invocations while children work.
+     */
+    waitSeconds?: number;
 }
 
 /** A live progress update from a stage: a human message plus an optional current/total for a bar. */

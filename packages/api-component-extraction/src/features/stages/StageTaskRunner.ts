@@ -323,7 +323,9 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
                 });
             }
             await appendActivity(`Stage "${stage}" checkpointed; continuing in a new run…`);
-            return controller.response.continue(input, { seconds: 1 });
+            return controller.response.continue(input, {
+                seconds: outcome.value.waitSeconds ?? 1
+            });
         }
 
         // Apply the job's overrides to the machine output before it is handed on (W8.1): the stage

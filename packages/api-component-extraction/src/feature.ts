@@ -58,6 +58,7 @@ import { ComponentRenderServiceImplementation } from "~/features/shared/Componen
 import { RenderComponentsTask } from "~/features/render/RenderComponentsTask.js";
 import { RegenerateComponentTask } from "~/features/render/RegenerateComponentTask.js";
 import { RegeneratePlanTask } from "~/features/stages/plan/RegeneratePlanTask.js";
+import { GenerateComponentTask } from "~/features/stages/generate/GenerateComponentTask.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { RunImageRoute } from "~/rest/RunImageRoute.js";
@@ -114,6 +115,8 @@ export const ComponentExtractionFeature = createFeature({
         container.register(RegenerateComponentTask);
         // Single-component Plan regeneration (W8): a fresh contract proposal for one component.
         container.register(RegeneratePlanTask);
+        // Generate fan-out (W-fanout): one child task per component, coordinated by the Generate stage.
+        container.register(GenerateComponentTask);
 
         // Shared services for the model-backed stages: manifest resolution (Cluster, Plan) and the AI
         // provider selection (Classify, Plan, Generate).
