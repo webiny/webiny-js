@@ -264,6 +264,12 @@ export interface PlannedComponent {
     representativeCrop: RepresentativeCrop;
     /** The section's text, for Generate's text-preservation validator. */
     sourceTexts: string[];
+    /**
+     * The operator's running list of "Regenerate props" instructions for this component, oldest first.
+     * Fed back on every regenerate so the model keeps cumulative intent (e.g. a field the operator had
+     * removed does not creep back in). Absent until the first steered regenerate.
+     */
+    refinements?: string[];
 }
 
 export interface PlanArtifact {

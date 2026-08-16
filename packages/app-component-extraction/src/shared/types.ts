@@ -343,6 +343,8 @@ export interface PlannedComponentDto {
     tokenBindings: TokenBindingDto[];
     members: { url: string }[];
     representativeCrop: { cropRef: string };
+    /** The operator's cumulative "Regenerate props" instructions, oldest first (W-refine). */
+    refinements?: string[];
 }
 
 export interface PlanArtifactDto {

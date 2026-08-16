@@ -7,7 +7,12 @@ import type { ClassifyArtifact, PlanArtifact } from "~/domain/artifacts.js";
 import { ComponentExtractionAi } from "~/features/shared/ai.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { OverrideApplicator } from "~/features/shared/OverrideApplicator.js";
-import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
+import {
+    PLAN_SYSTEM,
+    buildPlanPrompt,
+    buildPlanRefinePrompt,
+    parsePlanContract
+} from "./planContract.js";
 
 export interface RegeneratePlanTaskInput {
     runId: string;
@@ -105,12 +110,42 @@ class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanT
         const manifest = await this.manifestResolver.resolve(job.themeEntryId, job.themeVersion);
         const manifestValue = manifest.isOk() ? manifest.value : null;
 
+        // The contract the operator is reacting to is the EFFECTIVE plan (machine + their prop edits), and
+        // the running list of instructions lives on the machine component. Refine that contract instead of
+        // re-proposing blind, so unmentioned props are preserved and removed props stay removed. A first
+        // regenerate with no instruction is still a plain from-scratch re-roll.
+        let currentProps = component.props;
+        let currentBindings = component.tokenBindings;
+        const effectiveKey = plan.artifacts["plan"];
+        if (effectiveKey && effectiveKey !== machineKey) {
+            const effective = await this.artifactStore.getJson<PlanArtifact>(effectiveKey);
+            if (effective.isOk() && effective.value) {
+                const effectiveComponent = effective.value.components.find(
+                    entry => entry.signature === input.signature
+                );
+                if (effectiveComponent) {
+                    currentProps = effectiveComponent.props;
+                    currentBindings = effectiveComponent.tokenBindings;
+                }
+            }
+        }
+        const history = component.refinements ?? [];
+        const refine = Boolean(input.instruction?.trim()) || history.length > 0;
+
         const aiResult = await this.ai.generate({
             system: PLAN_SYSTEM,
             messages: [
                 {
                     role: "user",
-                    content: buildPlanPrompt(classified, manifestValue, input.instruction)
+                    content: refine
+                        ? buildPlanRefinePrompt(
+                              classified,
+                              manifestValue,
+                              { props: currentProps, tokenBindings: currentBindings },
+                              history,
+                              input.instruction
+                          )
+                        : buildPlanPrompt(classified, manifestValue, input.instruction)
                 }
             ]
         });
@@ -125,12 +160,17 @@ class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanT
         }
 
         // Replace this component's props and token bindings in the machine artifact, keeping everything
-        // else (name, type, representative, members, source texts) intact.
+        // else (name, type, representative, members, source texts) intact. Append this instruction to the
+        // component's refinement history so the next regenerate carries the full cumulative intent.
+        const nextHistory = input.instruction?.trim()
+            ? [...history, input.instruction.trim()]
+            : history;
         const components = [...planArtifact.components];
         components[index] = {
             ...component,
             props: contract.props,
-            tokenBindings: contract.tokenBindings
+            tokenBindings: contract.tokenBindings,
+            refinements: nextHistory.length > 0 ? nextHistory : undefined
         };
         const written = await this.artifactStore.putJson(machineKey, {
             ...planArtifact,

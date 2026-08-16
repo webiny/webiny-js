@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { parsePlanContract } from "./planContract.js";
+import { buildPlanRefinePrompt, parsePlanContract } from "./planContract.js";
+import type { ClassifiedCluster, ComponentProp } from "~/domain/artifacts.js";
 
 const contract = (props: unknown): string => JSON.stringify({ props, tokenBindings: [] });
+
+// A minimal cluster with the fields the refine prompt reads (type, name, digest, members, observedTexts).
+const cluster = (members: number): ClassifiedCluster =>
+    ({
+        type: "feature-grid",
+        name: "FeatureGrid",
+        cluster: {
+            digest: { structure: "grid", headingCount: 1, imageCount: 3, linkCount: 0 },
+            members: Array.from({ length: members }, (_, i) => ({ url: `/p${i}` })),
+            observedTexts: ["Feature one", "Feature two"]
+        }
+    }) as unknown as ClassifiedCluster;
 
 describe("parsePlanContract", () => {
     it("keeps the base type and reads the optional/array flags", () => {
@@ -102,5 +115,57 @@ describe("parsePlanContract", () => {
         );
         expect(result?.props).toHaveLength(1);
         expect(result?.props[0].name).toBe("ok");
+    });
+});
+
+describe("buildPlanRefinePrompt", () => {
+    const current: { props: ComponentProp[]; tokenBindings: [] } = {
+        props: [
+            { name: "features", type: "Feature", array: true, observedValues: [] },
+            { name: "columns", type: "number", observedValues: [] }
+        ],
+        tokenBindings: []
+    };
+
+    it("echoes the current contract and instructs an edit-in-place, no-regression refinement", () => {
+        const prompt = buildPlanRefinePrompt(
+            cluster(9),
+            null,
+            current,
+            [],
+            "drop the columns field"
+        );
+        // Current contract is echoed so the model edits rather than re-proposes.
+        expect(prompt).toContain('"features"');
+        expect(prompt).toContain('"columns"');
+        expect(prompt).toContain("New instruction: drop the columns field");
+        // The guardrails that stop the circular churn.
+        expect(prompt).toContain("Change ONLY what the instruction");
+        expect(prompt).toContain("Never re-introduce a prop an earlier refinement removed");
+    });
+
+    it("carries the full refinement history forward, oldest first", () => {
+        const prompt = buildPlanRefinePrompt(
+            cluster(9),
+            null,
+            current,
+            ["drop the columns field — count the items instead", "add an icon field"],
+            "keep icon as a dropdown"
+        );
+        expect(prompt).toContain("1. drop the columns field — count the items instead");
+        expect(prompt).toContain("2. add an icon field");
+        expect(prompt).toContain("New instruction: keep icon as a dropdown");
+    });
+
+    it("still produces a coherent prompt with no new instruction (re-roll honouring history)", () => {
+        const prompt = buildPlanRefinePrompt(
+            cluster(9),
+            null,
+            current,
+            ["drop columns"],
+            undefined
+        );
+        expect(prompt).toContain("No new instruction");
+        expect(prompt).toContain("1. drop columns");
     });
 });

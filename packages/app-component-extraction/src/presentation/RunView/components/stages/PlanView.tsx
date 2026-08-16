@@ -291,6 +291,7 @@ const PlanComponentCard = ({
     const [instruction, setInstruction] = useState("");
     const regenerating = vm.planRegenerating.includes(component.signature);
     const pages = pageCountOf(component);
+    const refinements = component.refinements ?? [];
 
     const submitRegenerate = () => {
         void presenter.regeneratePlanComponent(
@@ -371,25 +372,39 @@ const PlanComponentCard = ({
                 </div>
             </div>
 
-            {/* Optional guidance for a regenerate. */}
+            {/* Optional guidance for a regenerate, with the running list of refinements carried forward. */}
             {showInstruction && !regenerating ? (
-                <div className="flex items-center gap-sm border-t border-neutral-dimmed px-sm py-xs">
-                    <div className="min-w-0 flex-1">
-                        <Input
-                            value={instruction}
-                            placeholder="Optional guidance, e.g. add a background image prop and split the CTA into label + URL"
+                <div className="flex flex-col gap-xs border-t border-neutral-dimmed px-sm py-xs">
+                    {refinements.length > 0 ? (
+                        <div className="flex flex-col gap-xxs rounded-sm bg-neutral-light/50 px-sm py-xs">
+                            <Text size="sm" className="font-medium text-neutral-strong">
+                                Refinements carried forward
+                            </Text>
+                            {refinements.map((entry, i) => (
+                                <Text key={i} size="sm" className="text-neutral-strong">
+                                    {i + 1}. {entry}
+                                </Text>
+                            ))}
+                        </div>
+                    ) : null}
+                    <div className="flex items-center gap-sm">
+                        <div className="min-w-0 flex-1">
+                            <Input
+                                value={instruction}
+                                placeholder="What to change, e.g. drop the columns field — count the items instead; keep icon as a dropdown"
+                                disabled={vm.clusterBusy}
+                                onChange={(value: string) => setInstruction(value)}
+                                onEnter={submitRegenerate}
+                            />
+                        </div>
+                        <Button
+                            variant="primary"
+                            size="sm"
+                            text="Regenerate"
                             disabled={vm.clusterBusy}
-                            onChange={(value: string) => setInstruction(value)}
-                            onEnter={submitRegenerate}
+                            onClick={submitRegenerate}
                         />
                     </div>
-                    <Button
-                        variant="primary"
-                        size="sm"
-                        text="Regenerate"
-                        disabled={vm.clusterBusy}
-                        onClick={submitRegenerate}
-                    />
                 </div>
             ) : null}
 

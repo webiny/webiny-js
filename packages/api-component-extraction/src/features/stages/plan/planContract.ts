@@ -30,6 +30,28 @@ const slotLines = (manifest: ThemeManifest | null): string => {
         .join("\n");
 };
 
+/** The schema rules + JSON shape, shared by the fresh-proposal and the refinement prompts. */
+const schemaLines = (instances: number): string[] => [
+    "Model the contract as editable props. Rules:",
+    `- "type" holds the BASE type only — a scalar (string, richText, url, number, boolean, image), a`,
+    `  PascalCase composite name (Link, Image, Point, …), or an enum literal like "2 | 3 | 4". Do NOT`,
+    `  put "?" or "[]" in the type; use the "optional" and "array" booleans instead.`,
+    `- For a composite prop (an object, a Link/Image/Point, or an array of objects) list its sub-fields`,
+    `  under "fields" (same shape, recursively, at most ${MAX_PROP_DEPTH} levels deep).`,
+    `- "observation": estimate how the prop varies across the ${instances} instance(s). Set`,
+    `  "presentInstances" (how many include it, ≤ ${instances}); for array props set "countMin"/"countMax"`,
+    `  (items per instance); for enums/short scalars set "valueCounts" (frequent literals with counts,`,
+    `  most frequent first). Omit fields you cannot estimate.`,
+    "",
+    "Respond with JSON:",
+    '{ "props": [ { "name": "...", "type": "...", "optional": false, "array": false,',
+    '    "fields": [ /* nested props, same shape, for composite types */ ],',
+    '    "observedValues": ["..."],',
+    '    "observation": { "presentInstances": 0, "countMin": null, "countMax": null,',
+    '      "valueCounts": [ { "value": "...", "count": 0 } ] } } ],',
+    '  "tokenBindings": [ { "target": "<prop or element>", "token": "<slot path>" } ] }'
+];
+
 export const buildPlanPrompt = (
     cluster: ClassifiedCluster,
     manifest: ThemeManifest | null,
@@ -52,24 +74,85 @@ export const buildPlanPrompt = (
         slotLines(manifest),
         ...guidance,
         "",
-        "Model the contract as editable props. Rules:",
-        `- "type" holds the BASE type only — a scalar (string, richText, url, number, boolean, image), a`,
-        `  PascalCase composite name (Link, Image, Point, …), or an enum literal like "2 | 3 | 4". Do NOT`,
-        `  put "?" or "[]" in the type; use the "optional" and "array" booleans instead.`,
-        `- For a composite prop (an object, a Link/Image/Point, or an array of objects) list its sub-fields`,
-        `  under "fields" (same shape, recursively, at most ${MAX_PROP_DEPTH} levels deep).`,
-        `- "observation": estimate how the prop varies across the ${instances} instance(s). Set`,
-        `  "presentInstances" (how many include it, ≤ ${instances}); for array props set "countMin"/"countMax"`,
-        `  (items per instance); for enums/short scalars set "valueCounts" (frequent literals with counts,`,
-        `  most frequent first). Omit fields you cannot estimate.`,
+        ...schemaLines(instances)
+    ].join("\n");
+};
+
+/** A structure-only view of a prop for echoing the current contract back — no observation stats. */
+interface PropShape {
+    name: string;
+    type: string;
+    optional?: boolean;
+    array?: boolean;
+    fields?: PropShape[];
+    observedValues?: string[];
+}
+
+const toShape = (prop: ComponentProp): PropShape => ({
+    name: prop.name,
+    type: prop.type,
+    ...(prop.optional ? { optional: true } : {}),
+    ...(prop.array ? { array: true } : {}),
+    ...(prop.fields && prop.fields.length > 0 ? { fields: prop.fields.map(toShape) } : {}),
+    ...(prop.observedValues.length > 0 ? { observedValues: prop.observedValues.slice(0, 5) } : {})
+});
+
+/**
+ * The refinement prompt — used once the operator has started steering a component. Unlike the fresh
+ * proposal, it echoes the CURRENT contract and the running list of prior refinements, and asks the model
+ * to edit in place: change only what the new instruction requires, preserve every other prop, and never
+ * re-introduce a prop an earlier refinement removed. This is what stops the "regenerate goes in circles"
+ * problem — the model refines a known contract with memory of intent, rather than re-proposing blind.
+ */
+export const buildPlanRefinePrompt = (
+    cluster: ClassifiedCluster,
+    manifest: ThemeManifest | null,
+    current: { props: ComponentProp[]; tokenBindings: TokenBinding[] },
+    history: string[],
+    instruction?: string
+): string => {
+    const digest = cluster.cluster.digest;
+    const instances = cluster.cluster.members.length;
+    const contractJson = JSON.stringify(
+        { props: current.props.map(toShape), tokenBindings: current.tokenBindings },
+        null,
+        2
+    );
+    const priorLines =
+        history.length > 0
+            ? [
+                  "",
+                  "Refinements already applied to this contract (all still in force, oldest first):",
+                  ...history.map((entry, i) => `${i + 1}. ${entry}`)
+              ]
+            : [];
+    const newLines = instruction?.trim()
+        ? ["", `New instruction: ${instruction.trim()}`]
+        : [
+              "",
+              "No new instruction — propose a cleaner variant that still honours every refinement above",
+              "and keeps the current structure."
+          ];
+    return [
+        `Refine the existing contract for this "${cluster.type}" section named "${cluster.name}".`,
+        "Apply the new instruction to the CURRENT contract below. Change ONLY what the instruction",
+        "requires; keep every other prop exactly as-is — same names, types, nesting, optional/array flags",
+        "and token bindings. Never re-introduce a prop an earlier refinement removed.",
         "",
-        "Respond with JSON:",
-        '{ "props": [ { "name": "...", "type": "...", "optional": false, "array": false,',
-        '    "fields": [ /* nested props, same shape, for composite types */ ],',
-        '    "observedValues": ["..."],',
-        '    "observation": { "presentInstances": 0, "countMin": null, "countMax": null,',
-        '      "valueCounts": [ { "value": "...", "count": 0 } ] } } ],',
-        '  "tokenBindings": [ { "target": "<prop or element>", "token": "<slot path>" } ] }'
+        `Structure: ${digest.structure}. Appears on ${instances} instance(s).`,
+        "Text observed across instances (use only to fill values for NEW props):",
+        ...cluster.cluster.observedTexts.slice(0, 20).map(text => `- ${text}`),
+        "",
+        "Available theme tokens (bind visual props to these slot paths):",
+        slotLines(manifest),
+        "",
+        "Current contract (JSON):",
+        contractJson,
+        ...priorLines,
+        ...newLines,
+        "",
+        "Return the FULL updated contract in the same JSON schema:",
+        ...schemaLines(instances)
     ].join("\n");
 };
 
