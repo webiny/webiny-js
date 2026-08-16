@@ -118,7 +118,7 @@ export const ArtifactPanel = createReactiveComponent(function ArtifactPanel({ pr
                 </div>
             ) : null}
             {showView ? (
-                <div className="flex-1 min-h-0">
+                <div className="min-h-0 flex-1 overflow-hidden">
                     <StageView stage={stage} presenter={presenter} />
                 </div>
             ) : (
