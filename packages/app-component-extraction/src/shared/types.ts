@@ -97,6 +97,10 @@ export interface ComponentInstanceDto {
 }
 export interface AssembledPageDto {
     url: string;
+    /** The page's original capture screenshot, for the side-by-side preview. */
+    screenshotRef?: string;
+    /** Total sections detected; any beyond the matched instances were kept as raw HTML. */
+    totalSections?: number;
     instances: ComponentInstanceDto[];
 }
 export interface AssembleArtifactDto {

@@ -5,8 +5,10 @@ import type {
     AssembledPage,
     ComponentInstance,
     GenerateArtifact,
+    SegmentArtifact,
     ValidationResult
 } from "~/domain/artifacts.js";
+import { stageEntry } from "~/domain/ledger.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
 import { validateTokenBinding } from "~/features/shared/validators.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
@@ -70,6 +72,23 @@ class AssembleHandlerImpl implements StageHandler.Interface {
                   };
         }
 
+        // Original capture + section counts come from the Segment artifact (it forwards the page
+        // screenshot and holds every detected section), so the Assemble view can show the source page
+        // beside the assembly and how many sections were matched vs kept as raw HTML.
+        const segmentByUrl = new Map<string, { screenshotRef: string; totalSections: number }>();
+        const segmentRef = stageEntry(context.run.stages, "segment")?.artifacts.sections;
+        if (segmentRef) {
+            const segmentResult = await context.store.getJson<SegmentArtifact>(segmentRef);
+            if (segmentResult.isOk() && segmentResult.value) {
+                for (const page of segmentResult.value.pages) {
+                    segmentByUrl.set(page.url, {
+                        screenshotRef: page.screenshotRef,
+                        totalSections: page.sections.length
+                    });
+                }
+            }
+        }
+
         // Per-page instances, ordered by section, from each component's members.
         const byUrl = new Map<string, ComponentInstance[]>();
         for (const component of generate.components) {
@@ -88,10 +107,15 @@ class AssembleHandlerImpl implements StageHandler.Interface {
                 byUrl.set(member.url, list);
             }
         }
-        const pages: AssembledPage[] = [...byUrl.entries()].map(([url, instances]) => ({
-            url,
-            instances: instances.sort((a, b) => a.sectionIndex - b.sectionIndex)
-        }));
+        const pages: AssembledPage[] = [...byUrl.entries()].map(([url, instances]) => {
+            const segment = segmentByUrl.get(url);
+            return {
+                url,
+                screenshotRef: segment?.screenshotRef,
+                totalSections: segment?.totalSections,
+                instances: instances.sort((a, b) => a.sectionIndex - b.sectionIndex)
+            };
+        });
 
         const artifact: AssembleArtifact = { pages, tokenValidation, componentsRef: generateRef };
         const key = context.artifactKey("assembly");

@@ -358,6 +358,13 @@ export interface ComponentInstance {
 
 export interface AssembledPage {
     url: string;
+    /** The page's original capture screenshot (forwarded from Segment), for the side-by-side preview. */
+    screenshotRef?: string;
+    /**
+     * How many sections Segment detected on the page. Sections beyond the matched instances had no
+     * generated component and were kept as raw HTML — surfaced in the Assemble view's match line.
+     */
+    totalSections?: number;
     /** Component instances in document order. */
     instances: ComponentInstance[];
 }
