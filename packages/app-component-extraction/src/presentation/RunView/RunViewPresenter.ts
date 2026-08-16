@@ -965,6 +965,8 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
     /** Load the task log trail for a stage, if it has a task id yet. */
     private async loadLogs(run: RunDto, stage: string) {
         const taskId = stageEntry(run, stage)?.taskId ?? null;
+        const taskChanged = taskId !== this.loadedLogsTaskId;
+        const stageChanged = this.vm.logsStage !== stage;
         this.loadedLogsTaskId = taskId;
         if (!taskId) {
             runInAction(() => {
@@ -979,7 +981,14 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         try {
             const logs = await this.gateway.listStageLogs(taskId);
             runInAction(() => {
-                this.vm.logs = logs;
+                // On a same-task refresh, only GROW the trail. The websocket already appends every
+                // activity line live, and the task-output snapshot can come back shorter mid-run (a fresh
+                // continuation iteration has not re-accumulated it yet) — replacing with it would collapse
+                // the live trail back to "started" (the flicker). A longer fetch still replaces, so real
+                // gap-healing survives; a task/stage change replaces outright, since a reset is correct there.
+                if (taskChanged || stageChanged || logs.length > this.vm.logs.length) {
+                    this.vm.logs = logs;
+                }
                 this.vm.logsStage = stage;
                 this.vm.logsLoading = false;
             });
