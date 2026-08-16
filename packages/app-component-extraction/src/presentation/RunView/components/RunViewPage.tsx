@@ -310,6 +310,20 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                                                 ))}
                                             </DropdownMenu>
                                         ) : null}
+                                        {status === "running" ? (
+                                            <Button
+                                                variant="secondary"
+                                                size="sm"
+                                                text={
+                                                    vm.actionStage === selected
+                                                        ? "Re-running…"
+                                                        : "Re-run stage"
+                                                }
+                                                title="Re-trigger this stage. It resumes from its checkpoint — use this to recover a stage whose background task was interrupted and left it stuck 'running'."
+                                                disabled={vm.actionStage !== null}
+                                                onClick={() => void runStage(selected)}
+                                            />
+                                        ) : null}
                                         {hasRun ? (
                                             <Button
                                                 variant="secondary"
