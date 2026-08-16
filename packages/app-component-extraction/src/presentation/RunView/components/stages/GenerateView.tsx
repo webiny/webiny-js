@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, Heading, Input, Tag, Text } from "@webiny/admin-ui";
+import { Button, Heading, Icon, Input, Tag, Text, cn } from "@webiny/admin-ui";
+import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
+import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { RunImage } from "~/presentation/runImage/RunImage.js";
 import type { RunViewPresenter } from "../../abstractions.js";
 import type {
@@ -23,21 +25,43 @@ const allPassed = (component: GeneratedComponentDto): boolean => {
     return v.textPreservation.passed && v.contractConformance.passed && v.tokenBinding.passed;
 };
 
-/** A pass/fail assertion pill with its failure detail listed when it failed (the detail is actionable). */
+/** The retry line (spec §6.7): first-attempt vs the number of automatic retries, "exhausted" at the cap. */
+const retryLine = (component: GeneratedComponentDto): string => {
+    const exhausted = !allPassed(component);
+    if (component.attempts <= 1) {
+        return "Generated on the first attempt";
+    }
+    const retries = component.attempts - 1;
+    return `${retries} automatic retr${retries === 1 ? "y" : "ies"}${
+        exhausted ? " — exhausted" : ""
+    }`;
+};
+
+/** An assertion pill (spec §6.7): a green/red glyph chip; a failed one lists its actionable detail. */
 const AssertionPill = ({ label, result }: { label: string; result: ValidationResultDto }) => (
     <div className="flex flex-col gap-xxs">
-        <div className="flex items-center justify-between gap-sm">
-            <Text size="sm">{label}</Text>
-            <Tag
-                variant={result.passed ? "success-light" : "destructive"}
-                content={result.passed ? "pass" : "fail"}
+        <div
+            className={cn(
+                "flex items-center gap-xs rounded-sm px-sm py-xxs",
+                result.passed
+                    ? "bg-success-subtle text-success-strong"
+                    : "bg-destructive-subtle text-destructive-strong"
+            )}
+        >
+            <Icon
+                icon={result.passed ? <CheckIcon /> : <CloseIcon />}
+                label={result.passed ? "pass" : "fail"}
+                size="sm"
             />
+            <Text size="sm" className="font-medium">
+                {label}
+            </Text>
         </div>
         {!result.passed && result.failures.length > 0 ? (
-            <ul className="list-none m-0 p-0">
+            <ul className="m-0 list-none p-0 pl-sm">
                 {result.failures.slice(0, 6).map((failure, index) => (
                     <li key={index}>
-                        <Text size="sm" className="font-mono text-destructive-default break-words">
+                        <Text size="sm" className="break-words font-mono text-destructive-strong">
                             {failure}
                         </Text>
                     </li>
@@ -47,20 +71,35 @@ const AssertionPill = ({ label, result }: { label: string; result: ValidationRes
     </div>
 );
 
-/** The visual-similarity indicator — a coarse number, deliberately labelled "indicator", not a score. */
-const SimilarityIndicator = ({ value }: { value: number | null | undefined }) => (
-    <div className="flex items-center justify-between gap-sm">
-        <Text size="sm">Visual similarity</Text>
-        <Tag
-            variant="neutral-muted"
-            content={
-                value === null || value === undefined
-                    ? "—"
-                    : `~${Math.round(value * 100)}% indicator`
-            }
-        />
-    </div>
-);
+/** The visual-similarity score block (spec §6.7): a large mono number and a threshold-colored bar. */
+const ScoreBlock = ({ value }: { value: number | null | undefined }) => {
+    const has = value !== null && value !== undefined;
+    const tone = !has
+        ? { bar: "bg-neutral-muted", text: "text-neutral-strong" }
+        : value >= 0.85
+          ? { bar: "bg-success-strong", text: "text-success-strong" }
+          : value >= 0.75
+            ? { bar: "bg-warning-strong", text: "text-warning-strong" }
+            : { bar: "bg-destructive-strong", text: "text-destructive-strong" };
+    return (
+        <div className="flex flex-col gap-xs rounded-sm border border-neutral-dimmed p-sm">
+            <div className="flex items-center justify-between gap-sm">
+                <Text size="sm" className="text-neutral-strong">
+                    Visual similarity
+                </Text>
+                <Text className={cn("font-mono text-xl leading-none", tone.text)}>
+                    {has ? value.toFixed(2) : "—"}
+                </Text>
+            </div>
+            <div className="h-[4px] w-full overflow-hidden rounded-full bg-neutral-light">
+                <div
+                    className={cn("h-full rounded-full", tone.bar)}
+                    style={{ width: `${has ? Math.round(value * 100) : 0}%` }}
+                />
+            </div>
+        </div>
+    );
+};
 
 const GenerateCard = ({
     presenter,
@@ -82,7 +121,6 @@ const GenerateCard = ({
     onViewCode: () => void;
 }) => {
     const pageCount = pageCountOf(component);
-    const exhausted = !allPassed(component);
     const [showInstruction, setShowInstruction] = useState(false);
     const [instruction, setInstruction] = useState("");
 
@@ -96,43 +134,49 @@ const GenerateCard = ({
         setShowInstruction(false);
     };
 
-    // Accepted / rejected cards carry the decision as a border (per the screen specification).
+    // Accepted / rejected cards carry the decision as a border (spec §6.7).
     const border =
         decision === "accepted"
-            ? "border-success-default"
+            ? "border-success-strong"
             : decision === "rejected"
-              ? "border-destructive-default"
+              ? "border-destructive-strong"
               : "border-neutral-dimmed";
 
     const toggle = (target: ComponentDecisionDto) =>
         void presenter.setDecision(component.signature, decision === target ? "none" : target);
 
     return (
-        <div className={`flex flex-col rounded-sm border-2 ${border}`}>
+        <div className={cn("flex flex-col rounded-lg border-2 bg-neutral-base", border)}>
             <div className="flex min-w-0">
-                <div className="flex-1 min-w-0 p-md flex flex-col gap-sm">
-                    <div>
-                        <Heading level={6}>
-                            <span className="font-mono">{component.name}</span>
-                        </Heading>
-                        <Text size="sm" className="text-neutral-strong">
-                            {pageCount} page(s) · {component.type}
-                        </Text>
-                        <Text size="sm" className="text-neutral-strong">
-                            {component.attempts} generation attempt(s)
-                            {exhausted ? " · retries exhausted" : ""}
-                        </Text>
+                <div className="flex min-w-0 flex-1 flex-col gap-sm p-md">
+                    <div className="flex items-start justify-between gap-sm">
+                        <div className="min-w-0">
+                            <Heading level={6}>
+                                <span className="font-mono">{component.name}</span>
+                            </Heading>
+                            <Text size="sm" className="text-neutral-strong">
+                                {pageCount} page{pageCount === 1 ? "" : "s"} · {component.type}
+                            </Text>
+                            <Text size="sm" className="text-neutral-strong">
+                                {retryLine(component)}
+                            </Text>
+                        </div>
+                        {decision === "accepted" ? (
+                            <Tag variant="success-light" content="Accepted" />
+                        ) : decision === "rejected" ? (
+                            <Tag variant="destructive" content="Rejected" />
+                        ) : null}
                     </div>
 
                     <div className="grid grid-cols-2 gap-sm">
                         <figure className="m-0 flex flex-col gap-xxs">
-                            <div className="aspect-[4/3] bg-neutral-light rounded-sm overflow-hidden flex items-center justify-center">
+                            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-sm bg-neutral-subtle">
                                 {sourceCropRef ? (
                                     <RunImage
                                         runId={runId}
                                         imageRef={sourceCropRef}
                                         alt="source section"
-                                        className="w-full h-full object-contain object-top"
+                                        className="h-full w-full object-contain object-top"
                                     />
                                 ) : (
                                     <Text size="sm" className="text-neutral-strong">
@@ -142,18 +186,18 @@ const GenerateCard = ({
                             </div>
                             <figcaption>
                                 <Text size="sm" className="text-neutral-strong">
-                                    source
+                                    Source
                                 </Text>
                             </figcaption>
                         </figure>
                         <figure className="m-0 flex flex-col gap-xxs">
-                            <div className="aspect-[4/3] bg-neutral-light rounded-sm overflow-hidden flex items-center justify-center">
+                            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-sm border border-neutral-dimmed bg-neutral-base">
                                 {render && render.ok && render.renderRef ? (
                                     <RunImage
                                         runId={runId}
                                         imageRef={render.renderRef}
                                         alt="generated component"
-                                        className="w-full h-full object-contain object-top"
+                                        className="h-full w-full object-contain object-top"
                                     />
                                 ) : (
                                     <Text size="sm" className="text-neutral-strong">
@@ -163,31 +207,31 @@ const GenerateCard = ({
                             </div>
                             <figcaption>
                                 <Text size="sm" className="text-neutral-strong">
-                                    generated
+                                    Rendered
                                 </Text>
                             </figcaption>
                         </figure>
                     </div>
                 </div>
 
-                <div className="w-[260px] flex-shrink-0 border-l border-neutral-dimmed p-md flex flex-col gap-sm">
+                <div className="flex w-[280px] flex-shrink-0 flex-col gap-sm border-l border-neutral-dimmed p-md">
                     <AssertionPill
-                        label="Text preservation"
+                        label="Text preserved"
                         result={component.validation.textPreservation}
                     />
                     <AssertionPill
-                        label="Contract conformance"
+                        label="Contract conformant"
                         result={component.validation.contractConformance}
                     />
                     <AssertionPill
                         label="Token binding"
                         result={component.validation.tokenBinding}
                     />
-                    <SimilarityIndicator value={render?.similarity} />
+                    <ScoreBlock value={render?.similarity} />
                 </div>
             </div>
 
-            <div className="flex flex-col gap-sm px-md py-sm border-t border-neutral-dimmed">
+            <div className="flex flex-col gap-sm border-t border-neutral-dimmed px-md py-sm">
                 <div className="flex items-center gap-sm">
                     <Button
                         variant={decision === "accepted" ? "primary" : "secondary"}
@@ -222,13 +266,13 @@ const GenerateCard = ({
                         <Input
                             value={instruction}
                             onChange={(value: string) => setInstruction(value)}
-                            placeholder="What should change? e.g. make the heading larger"
+                            placeholder="Instruction, then regenerate — e.g. make the heading larger"
                             onEnter={submitRegenerate}
                         />
                         <Button
                             variant="primary"
                             size="sm"
-                            text="Submit"
+                            text="Regenerate"
                             disabled={!instruction.trim()}
                             onClick={submitRegenerate}
                         />
@@ -240,11 +284,11 @@ const GenerateCard = ({
 };
 
 /**
- * The Generate view (W7.8). One card per component, most-used first: the source section beside the
- * rendered component, the three validators kept visually distinct (two assertion pills plus the token
- * pill) with actionable failure detail, a coarse visual-similarity indicator, and an accept/reject
- * decision that gates Promotion. "View code" shows the generated source; the render pass is triggered
- * from here (W7.7). Regenerate-with-instruction is the one remaining action, tracked separately.
+ * The Generate view (spec §6.7). One card per component, most-used first: the source section beside the
+ * rendered component, the validators kept visually distinct as green/red assertion pills plus a bordered
+ * visual-similarity score block, and an accept/reject decision that gates Promotion. The summary reports
+ * the decision state (accepted / rejected / undecided). "View code" shows the generated source; renders
+ * are triggered from here; regenerate-with-instruction is tracked separately.
  */
 export const GenerateView = createReactiveComponent(function GenerateView({ presenter }: Props) {
     const { vm } = presenter;
@@ -275,30 +319,34 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
         );
     }
 
-    const rendered = (vm.renders ?? []).filter(record => record.ok).length;
-
     const isAccepted = (component: GeneratedComponentDto) =>
         vm.decisions[component.signature] === "accepted";
+    const isRejected = (component: GeneratedComponentDto) =>
+        vm.decisions[component.signature] === "rejected";
+    const accepted = sorted.filter(isAccepted).length;
+    const rejected = sorted.filter(isRejected).length;
+    const undecided = sorted.length - accepted - rejected;
+
     // "Accept passed" targets only the validation-passing components; "Accept all" targets every one.
     const passed = sorted.filter(allPassed);
     const passedAllAccepted = passed.length > 0 && passed.every(isAccepted);
     const allAccepted = sorted.length > 0 && sorted.every(isAccepted);
 
     return (
-        <div className="flex flex-col h-full min-h-0">
-            <div className="flex items-center justify-between gap-sm px-md py-sm border-b border-neutral-dimmed">
+        <div className="flex h-full min-h-0 flex-col">
+            <div className="flex items-center justify-between gap-sm border-b border-neutral-dimmed px-md py-sm">
                 <Text size="sm" className="text-neutral-strong">
-                    {artifact.components.length} generated · {artifact.failed.length} failed
-                    validation · {rendered} rendered
+                    {accepted} accepted · {rejected} rejected · {undecided} undecided · sorted by
+                    page count
                 </Text>
-                <div className="flex items-center gap-sm flex-shrink-0">
+                <div className="flex flex-shrink-0 items-center gap-sm">
                     <Button
                         variant="secondary"
                         size="sm"
                         text={
                             passedAllAccepted
-                                ? "Passed accepted"
-                                : `Accept passed (${passed.length})`
+                                ? "Passing accepted"
+                                : `Accept all passing (${passed.length})`
                         }
                         disabled={passed.length === 0 || passedAllAccepted}
                         title="Accept only the components that passed every validator"
@@ -326,7 +374,7 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-md">
+            <div className="min-h-0 flex-1 overflow-y-auto p-md">
                 <div className="flex flex-col gap-md">
                     {sorted.map(component => (
                         <GenerateCard
@@ -346,14 +394,14 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
 
             {codeFor ? (
                 <div
-                    className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-xl"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-xl"
                     onClick={() => setCodeFor(null)}
                 >
                     <div
-                        className="bg-neutral-base rounded-sm max-w-[900px] w-full max-h-full overflow-y-auto"
+                        className="max-h-full w-full max-w-[900px] overflow-y-auto rounded-sm bg-neutral-base"
                         onClick={event => event.stopPropagation()}
                     >
-                        <div className="flex items-center justify-between px-md py-sm border-b border-neutral-dimmed">
+                        <div className="flex items-center justify-between border-b border-neutral-dimmed px-md py-sm">
                             <Heading level={6}>
                                 <span className="font-mono">{codeFor.name}</span>
                             </Heading>
@@ -364,12 +412,12 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                                 onClick={() => setCodeFor(null)}
                             />
                         </div>
-                        <div className="p-md flex flex-col gap-md">
+                        <div className="flex flex-col gap-md p-md">
                             <div>
                                 <Text size="sm" className="font-medium">
                                     Source
                                 </Text>
-                                <pre className="mt-xs text-sm whitespace-pre-wrap break-words font-mono">
+                                <pre className="mt-xs whitespace-pre-wrap break-words font-mono text-sm">
                                     {codeFor.source}
                                 </pre>
                             </div>
@@ -378,7 +426,7 @@ export const GenerateView = createReactiveComponent(function GenerateView({ pres
                                     <Text size="sm" className="font-medium">
                                         CSS
                                     </Text>
-                                    <pre className="mt-xs text-sm whitespace-pre-wrap break-words font-mono">
+                                    <pre className="mt-xs whitespace-pre-wrap break-words font-mono text-sm">
                                         {codeFor.css}
                                     </pre>
                                 </div>
