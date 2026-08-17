@@ -2,6 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import type {
+    ContentEntryInput,
     DocumentElement,
     DocumentElementBindings,
     OnResolved
@@ -12,11 +13,21 @@ import { useViewport } from "./useViewportInfo.js";
 import { useBindingsForElement } from "./useBindingsForElement.js";
 import { useDocumentState } from "./useDocumentState.js";
 import { useContentEntryResolution } from "../contentEntry/ContentEntryResolutionContext.js";
+import { contentEntryEditorCache } from "../contentEntry/contentEntryEditorCache.js";
 
 interface LiveElementRendererProps {
     element: DocumentElement;
     bindings?: DocumentElementBindings;
 }
+
+// The empty shape shown for an autoLoad content-entry input until the editor
+// cache resolves (matches the resolved shape per mode / cardinality).
+const emptyResolved = (input: ContentEntryInput) => {
+    if (input.mode === "query") {
+        return { items: [], pageInfo: { cursor: null, hasMore: false, totalCount: 0 } };
+    }
+    return input.list ? [] : null;
+};
 
 export const LiveElementRenderer = observer(({ element }: LiveElementRendererProps) => {
     const viewport = useViewport();
@@ -49,11 +60,28 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
                 );
             }
             if (input.type === "contentEntry") {
-                // For autoLoad inputs, the server pre-pass has already resolved the
-                // selection into entries; swap the raw value for the resolved data.
-                // Falls back to the raw value (autoLoad:false, or unresolved).
-                const key = `${element.id}:${input.name}`;
-                return key in contentEntryResolution ? contentEntryResolution[key] : value;
+                const baseKey = `${element.id}:${input.name}`;
+                const hasServerValue = baseKey in contentEntryResolution;
+                const serverValue = contentEntryResolution[baseKey];
+
+                // Editor preview: resolve reactively so the list updates as the
+                // editor changes the selection/query, without a server round-trip.
+                // Keyed by the raw value → an edit yields a fresh key + re-resolve.
+                if (contentSdk.isEditing()) {
+                    const cacheKey = `${baseKey}:${JSON.stringify(value ?? null)}`;
+                    contentEntryEditorCache.resolve(cacheKey, input as ContentEntryInput, value);
+                    const cached = contentEntryEditorCache.get(cacheKey);
+                    if (cached !== undefined) {
+                        return cached;
+                    }
+                    // Until it resolves, show the server-resolved value (no flash),
+                    // otherwise an empty shape.
+                    return hasServerValue ? serverValue : emptyResolved(input as ContentEntryInput);
+                }
+
+                // Live/SSR: use the server pre-pass result (fall back to the raw
+                // value for autoLoad:false / unresolved).
+                return hasServerValue ? serverValue : value;
             }
             return value;
         }) as OnResolved,
