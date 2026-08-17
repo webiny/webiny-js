@@ -65,7 +65,6 @@ const MultiAutoCompleteInput = ({
                 return (
                     <Tag
                         key={`tag-${option.value}-${index}`}
-                        className={"max-w-full"}
                         variant={variant === "ghost-negative" ? "neutral-xstrong" : "neutral-muted"}
                         content={option.label}
                         onDismiss={() => removeSelectedOption(option.value)}
@@ -100,7 +99,7 @@ const MultiAutoCompleteInput = ({
             data-focused={focused}
         >
             {startIcon && <InputIcon icon={startIcon} inputSize={size} />}
-            <div className="relative flex flex-wrap flex-1 gap-xs min-w-0">
+            <div className="relative flex flex-wrap flex-1 gap-xs">
                 {renderSelectedOptions(selectedOptions)}
                 <Command.Input
                     className={"bg-transparent border-none outline-none"}
