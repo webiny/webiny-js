@@ -7,7 +7,6 @@ import {
     type ResolvedContentEntry
 } from "@webiny/website-builder-sdk";
 import { contentSdk } from "@webiny/cms-sdk";
-import { editorComponents } from "../editorComponents/index.js";
 
 const loader: ContentEntryLoader = {
     getEntry: params => contentSdk.getEntry(params),
@@ -47,9 +46,17 @@ export async function resolveAutoLoad(
 
     // Guard against a non-array (e.g. a `"use client"` module reference passed
     // in from a server component).
+    // Only the passed manifests are considered. The framework's own built-in
+    // components (Box, Grid, Root, …) are `"use client"` modules — unreadable on
+    // the server — and never contain `contentEntry` inputs, so they're excluded.
     const list = Array.isArray(components) ? components : [];
     const manifestMap = new Map<string, Pick<ComponentManifest, "name" | "inputs">>();
-    for (const blueprint of [...editorComponents, ...list]) {
+    for (const blueprint of list) {
+        // Skip anything that isn't a real manifest carrier (e.g. a client-module
+        // reference that resolved to a proxy on the server).
+        if (!blueprint?.manifest) {
+            continue;
+        }
         manifestMap.set(blueprint.manifest.name, blueprint.manifest);
     }
 
