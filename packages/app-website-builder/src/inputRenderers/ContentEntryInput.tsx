@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { AutoComplete, MultiAutoComplete, Select, Input } from "@webiny/admin-ui";
+import { AutoComplete, Select, Input, Tag } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import type {
     ContentEntryInput,
@@ -102,25 +102,46 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
     }, []);
 
     const vm = presenter.vm;
+    const labelFor = (entryId: string) =>
+        vm.options.find(option => option.value === entryId)?.label ?? entryId;
+
+    const setSelection = (entryIds: string[]) => {
+        const refs = presenter.select(entryIds);
+        onChange(({ value }) => value.set(refs.length > 0 ? refs : null));
+    };
 
     return (
-        <MultiAutoComplete
-            label={input.label}
-            description={input.description}
-            loading={vm.loading}
-            values={vm.values}
-            options={vm.options}
-            uniqueValues
-            onValueSearch={query => presenter.search(query)}
-            onValuesChange={entryIds => {
-                const refs = presenter.select(entryIds);
-                onChange(({ value }) => value.set(refs.length > 0 ? refs : null));
-            }}
-            onValuesReset={() => {
-                presenter.clear();
-                onChange(({ value }) => value.set(null));
-            }}
-        />
+        <div className={"flex flex-col gap-sm"}>
+            {/* Picker: a single autocomplete that adds the chosen entry to the list below. */}
+            <AutoComplete
+                label={input.label}
+                description={input.description}
+                loading={vm.loading}
+                value={undefined}
+                options={vm.options.filter(option => !vm.values.includes(option.value))}
+                onValueSearch={query => presenter.search(query)}
+                onValueChange={entryId => {
+                    if (entryId && !vm.values.includes(entryId)) {
+                        setSelection([...vm.values, entryId]);
+                    }
+                }}
+            />
+            {/* Selected entries as dismissible tags — their own block, so they wrap and
+                truncate cleanly instead of overflowing an input row. */}
+            {vm.values.length > 0 ? (
+                <div className={"flex flex-wrap gap-xs"}>
+                    {vm.values.map(entryId => (
+                        <Tag
+                            key={entryId}
+                            className={"max-w-full"}
+                            variant={"neutral-muted"}
+                            content={labelFor(entryId)}
+                            onDismiss={() => setSelection(vm.values.filter(id => id !== entryId))}
+                        />
+                    ))}
+                </div>
+            ) : null}
+        </div>
     );
 });
 
