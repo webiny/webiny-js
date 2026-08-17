@@ -14,6 +14,7 @@ import { LayoutDescriptorCell } from "./LayoutDescriptorCell.js";
 import { useAuthentication } from "@webiny/app-admin";
 import { FieldRulesProvider, useParentRules } from "./FieldRulesProvider.js";
 import { evaluateAccessControlRules, useFieldEffectiveRules } from "./useFieldRules.js";
+import { BindParentNameContext } from "./useBind.js";
 
 interface FieldsProps {
     Bind: BindComponent;
@@ -183,19 +184,23 @@ export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Fi
         return <LayoutNotDefined />;
     }
 
+    const parentName = Bind.parentName || "";
+
     return (
-        <Grid className={gridClassName}>
-            {layout.map((row, rowIndex) => (
-                <React.Fragment key={rowIndex}>
-                    <RowRenderer
-                        row={row}
-                        fields={fields}
-                        Bind={Bind}
-                        contentModel={contentModel}
-                        gridClassName={gridClassName}
-                    />
-                </React.Fragment>
-            ))}
-        </Grid>
+        <BindParentNameContext.Provider value={parentName}>
+            <Grid className={gridClassName}>
+                {layout.map((row, rowIndex) => (
+                    <React.Fragment key={rowIndex}>
+                        <RowRenderer
+                            row={row}
+                            fields={fields}
+                            Bind={Bind}
+                            contentModel={contentModel}
+                            gridClassName={gridClassName}
+                        />
+                    </React.Fragment>
+                ))}
+            </Grid>
+        </BindParentNameContext.Provider>
     );
 };
