@@ -1,9 +1,4 @@
-import type {
-    Component,
-    ComponentManifest,
-    ContentEntryInput,
-    Document
-} from "@webiny/website-builder-sdk";
+import type { ComponentManifest, ContentEntryInput, Document } from "@webiny/website-builder-sdk";
 import {
     BindingsResolver,
     ComponentManifestToAstConverter,
@@ -22,6 +17,14 @@ const loader: ContentEntryLoader = {
 export type ResolvedContentEntries = Record<string, ResolvedContentEntry>;
 
 /**
+ * The framework reads only a component's manifest, so callers may pass either
+ * full component blueprints or plain `{ manifest }` carriers. A server module
+ * should expose the latter, since component modules are `"use client"` (their
+ * exports become client references and can't be read on the server).
+ */
+export type ManifestCarrier = { manifest: Pick<ComponentManifest, "name" | "inputs"> };
+
+/**
  * Server-side (RSC) pre-pass: resolves every `contentEntry` input with
  * `autoLoad !== false` into CMS entries, keyed by `"<elementId>:<inputName>"`.
  *
@@ -35,15 +38,18 @@ export type ResolvedContentEntries = Record<string, ResolvedContentEntry>;
  */
 export async function resolveAutoLoad(
     document: Document | null,
-    components: Component[]
+    components: ManifestCarrier[]
 ): Promise<ResolvedContentEntries> {
     const result: ResolvedContentEntries = {};
     if (!document) {
         return result;
     }
 
-    const manifestMap = new Map<string, ComponentManifest>();
-    for (const blueprint of [...editorComponents, ...components]) {
+    // Guard against a non-array (e.g. a `"use client"` module reference passed
+    // in from a server component).
+    const list = Array.isArray(components) ? components : [];
+    const manifestMap = new Map<string, Pick<ComponentManifest, "name" | "inputs">>();
+    for (const blueprint of [...editorComponents, ...list]) {
         manifestMap.set(blueprint.manifest.name, blueprint.manifest);
     }
 
