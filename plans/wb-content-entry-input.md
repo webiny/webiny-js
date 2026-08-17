@@ -68,7 +68,7 @@ The page document stores only **which component + input values**. Values are res
 
 The CMS SDK surface we depend on (single unified SDK, `sdk.cms.{method}`):
 
-- `sdk.cms.listEntries({ modelId, where, sort, limit, after, preview })` → `{ data, meta: { cursor, hasMoreItems, totalCount } }` — **cursor-based** pagination.
+- `sdk.cms.listEntries({ modelId, where, sort, limit, after, search, fields, preview })` → `{ data, meta: { cursor, hasMoreItems, totalCount } }` — **cursor-based** pagination. `sort` is `Record<fieldId, "asc"/"desc">` (single field), `search` is a native full-text term, and `fields` is required (`"values."`-prefixed).
 - `sdk.cms.getEntry(...)` / `sdk.cms.getModel(...)` for single lookups and model metadata.
 - Existing CMS reference-picker infrastructure (autocomplete presenters + entry search use cases) that the editor renderer reuses.
 
@@ -95,9 +95,9 @@ createContentEntryInput({
   mode: "query",
   models: ["product"],
   query: {
-    sort: { fields: ["price", "createdOn", "name"] }, // dev declares options; editor picks field + direction
+    sort: { fields: ["price", "createdOn", "name"] }, // dev declares options; editor picks ONE field + direction
     limit: { default: 10, max: 50 },
-    search: true,          // editor-configured search term (v1)
+    search: true,          // editor-configured term; matches fullTextSearch-enabled fields
     pagination: true       // none | loadMore
   },
   autoLoad: true
@@ -167,8 +167,8 @@ A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping dif
 | **Cursor-based pagination** | `after` + `meta.cursor` + `hasMoreItems`, not offset. `loadMore` fits; numbered / jump-to-page-N does not. | Ship `none` + `loadMore`. With `autoLoad: true`, expose `pageInfo` + load-more handle. |
 | **Deep-item SEO** | Page one is always server-rendered (crawlable); items behind `loadMore` are fetched client-side and not crawled. | Acceptable for v1. If all items must be indexed, revisit URL-based pagination (deferred). |
 | **Discriminated typing** | `inputs.<name>` is `CmsEntry[]` when `autoLoad: true`, references/query-spec when `false`. | Provide typed helpers so the component's props type follows the flag. |
-| **Sort enum format** | Admin builds `values_<field>_ASC` (underscore); some docs show `values.<field>_ASC` (dot). | Verify against installed SDK (§9). |
-| **`search` support** | Need to confirm `sdk.cms.listEntries` accepts a `search` arg vs. mapping into `where`. | Verify (§9). |
+| **Sort shape (resolved)** | `sdk.cms.listEntries` `sort` is `{ [fieldId]: "asc"/"desc" }` (e.g. `{ price: "desc" }`), bare field id — not the `values_…_ASC`/`values.…` forms. The read API converts it via `transformSortToArray`. | Pass the object form; **single sort field only** (storage throws on multiple). |
+| **`search` (resolved)** | Native `search?: string`, forwarded to the GraphQL read API — no `where` mapping. | Works only against fields with `fullTextSearch` enabled on the model — document this for editors. |
 | **Broken / unpublished references** | May resolve to nothing. | Filtered out with graceful gaps; optional editor placeholder. |
 | **Stable component names** | `name` is stored in page documents; renaming breaks existing pages. | Treat names as immutable identifiers. |
 | **Validation deferred (future note)** | Not in v1. | When added, runs at the component level (`onChange` / programmatic API), not input level. |
@@ -192,8 +192,10 @@ A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping dif
 
 ## 9. Open items to verify before/at Phase 1
 
-1. **`sdk.cms.listEntries` sort enum format** (`values_<field>_ASC` vs `values.<field>_ASC`).
-2. **`sdk.cms.listEntries` `search` support** (dedicated arg vs. `where` mapping).
+**Phase 0 — RESOLVED (verified against `next`, `packages/sdk` + `packages/api-headless-cms`):**
+
+1. **Sort** — `sdk.cms.listEntries` takes `sort: Record<fieldId, "asc"/"desc">` (bare field id, e.g. `{ price: "desc" }`); the read API maps it via `transformSortToArray` (`{price:"desc"} → ["price_DESC"]`). **Single sort field only** — the storage layer throws `SORT_MULTIPLE_FIELDS_ERROR` on more than one. Neither the `values_<field>_ASC` nor the `values.<field>_ASC` form applies at the SDK layer.
+2. **Search** — native `search?: string` on `sdk.cms.listEntries`, no `where` mapping needed. Matches only fields with `fullTextSearch` enabled on the model.
 
 *(The earlier validation-gate item is closed: validation is out of v1; when introduced it uses the component-level `onChange` / programmatic API.)*
 
@@ -203,7 +205,7 @@ A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping dif
 
 | Phase | Scope | Estimate | Exit criteria |
 |-------|-------|----------|---------------|
-| **0 — Verification** | Confirm the two items in §9. | 0.5 day | Open items resolved. |
+| **0 — Verification** ✅ | Confirmed sort shape + native search against `next` (see §9). | 0.5 day (done) | Sort = `{fieldId:"asc"/"desc"}`, single field; search native (fullTextSearch fields). |
 | **1 — Core primitive (manual)** | `createContentEntryInput` type + factory; `"Webiny/ContentEntry"` autocomplete renderer; single/`list`; store references. | 3–5 days | Editor can pick entries; value persists as references. |
 | **2 — Bridge components + curated E2E** | `EntryListing` renderer + `ProductListing`/`BlogListing` bridges proving reuse (`autoLoad: false` path). | 2–3 days | Same renderer, two models, correct output. |
 | **3 — Query mode + editor controls + pagination** | Query builder (sort from dev-declared fields, limit, search, pagination toggle); `sdk.cms.listEntries` wiring; `none` + `loadMore`. | 3–5 days | Editor configures "last 10 by price"; load-more works. |
