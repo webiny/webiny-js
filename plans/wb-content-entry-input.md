@@ -22,7 +22,7 @@ This unlocks the common "collection" use cases — product lists, blog listings,
 
 ## 2. Motivation
 
-Today, surfacing CMS data in a WB page means hand-writing a Server Component that hard-codes the model, the query, and field access, with no first-class way for an editor to choose *which* entries appear or *how* they're ordered. We want:
+Today, surfacing CMS data in a WB page means hand-writing a Server Component that hard-codes the model, the query, and field access, with no first-class way for an editor to choose _which_ entries appear or _how_ they're ordered. We want:
 
 - A first-class **entry input** an editor can drop into any component, scoped to a model.
 - Both **curated** (editor hand-picks entries) and **query** (editor configures sort / limit / search on a fixed model) sourcing.
@@ -44,7 +44,7 @@ Today, surfacing CMS data in a WB page means hand-writing a Server Component tha
 **Non-goals (this iteration)**
 
 - **Input/selection validation** (`required` / `minLength` / `maxLength`). Deferred; when added it runs at the **component** level (`onChange` / programmatic component API), not the input level.
-- **Editor-selectable model** (a generic listing where the editor picks *any* model). Deferred — the model is author-fixed; query mode locks to one model, which keeps typed props and avoids per-model template dispatch.
+- **Editor-selectable model** (a generic listing where the editor picks _any_ model). Deferred — the model is author-fixed; query mode locks to one model, which keeps typed props and avoids per-model template dispatch.
 - **Declarative, data-driven field mapping** (dot-paths / transforms) — reuse is handled by bridge components in code.
 - **Database-sourced manifests** — handled in a separate project.
 - **Structured per-field filters** — v1 uses a single editor-configured search term instead.
@@ -84,9 +84,9 @@ A new WB input type scoped to an **author-fixed model**, with two modes and an `
 // Manual mode — editor hand-picks entries (stored as references)
 createContentEntryInput({
   name: "items",
-  models: ["product"],   // author-fixed
-  list: true,            // single (omit/false) or multiple (true)
-  autoLoad: true         // default — framework resolves server-side
+  models: ["product"], // author-fixed
+  list: true, // single (omit/false) or multiple (true)
+  autoLoad: true // default — framework resolves server-side
 });
 
 // Query mode — editor configures a dynamic query on the fixed model
@@ -97,8 +97,8 @@ createContentEntryInput({
   query: {
     sort: { fields: ["price", "createdOn", "name"] }, // dev declares options; editor picks ONE field + direction
     limit: { default: 10, max: 50 },
-    search: true,          // editor-configured term; matches fullTextSearch-enabled fields
-    pagination: true       // none | loadMore
+    search: true, // editor-configured term; matches fullTextSearch-enabled fields
+    pagination: true // none | loadMore
   },
   autoLoad: true
 });
@@ -109,7 +109,7 @@ createContentEntryInput({
 
 ### 5.2 Data loading: `autoLoad`
 
-The single knob that decides who loads the data. **Loading is always server-side** in both cases (SEO-safe) — `autoLoad` only decides *where the code lives*.
+The single knob that decides who loads the data. **Loading is always server-side** in both cases (SEO-safe) — `autoLoad` only decides _where the code lives_.
 
 - **`autoLoad: true` (default)** — the framework resolves the stored value server-side (fetch-by-id for manual; `listEntries` for query) and passes the component a **ready list**. The component contains **no SDK code**.
 - **`autoLoad: false`** — the component receives the **raw params** (references or query spec) and calls `sdk.cms.*` itself — for custom `where`, joins, post-processing, or bespoke fetch tuning.
@@ -119,17 +119,28 @@ The single knob that decides who loads the data. **Loading is always server-side
 ```tsx
 // autoLoad: true — component just renders a resolved list
 function ProductListing({ inputs }: ComponentProps<{ items: CmsEntry<Product>[] }>) {
-  return <EntryListing items={inputs.items.map(p => ({ heading: p.values.name, href: `/products/${p.id}` }))} />;
+  return (
+    <EntryListing
+      items={inputs.items.map(p => ({ heading: p.values.name, href: `/products/${p.id}` }))}
+    />
+  );
 }
 
 // autoLoad: false — component gets params and loads itself
 async function ProductListing({ inputs }: ComponentProps<{ items: EntryQueryValue }>) {
-  const res = await sdk.cms.listEntries<Product>({ modelId: "product", ...toQueryArgs(inputs.items) });
-  return <EntryListing items={res.data.map(p => ({ heading: p.values.name, href: `/products/${p.id}` }))} />;
+  const res = await sdk.cms.listEntries<Product>({
+    modelId: "product",
+    ...toQueryArgs(inputs.items)
+  });
+  return (
+    <EntryListing
+      items={res.data.map(p => ({ heading: p.values.name, href: `/products/${p.id}` }))}
+    />
+  );
 }
 ```
 
-**Pagination interaction:** with `loadMore` + `autoLoad: true`, the framework hands the component the first page **plus** `pageInfo` (cursor / `hasMoreItems`) and a load-more handle — i.e. "a list *and a way to get more*", not a bare list. The load-more control is a small client boundary; page one is always server-rendered.
+**Pagination interaction:** with `loadMore` + `autoLoad: true`, the framework hands the component the first page **plus** `pageInfo` (cursor / `hasMoreItems`) and a load-more handle — i.e. "a list _and a way to get more_", not a bare list. The load-more control is a small client boundary; page one is always server-rendered.
 
 ### 5.3 Reuse via bridge components
 
@@ -137,8 +148,13 @@ Render components stay **purely presentational** and typed. A **bridge** adapts 
 
 ```tsx
 // EntryListing.tsx — shared presentational renderer (model-agnostic)
-export interface EntryListingItem { heading: string; href?: string }
-export function EntryListing({ items, title }: { items: EntryListingItem[]; title?: string }) { /* ... */ }
+export interface EntryListingItem {
+  heading: string;
+  href?: string;
+}
+export function EntryListing({ items, title }: { items: EntryListingItem[]; title?: string }) {
+  /* ... */
+}
 ```
 
 A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping differs (`heading: b.values.title`). With `autoLoad: true` the bridge is trivial (map a resolved list); with `autoLoad: false` it also does the fetch.
@@ -147,31 +163,31 @@ A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping dif
 
 ## 6. Key design decisions
 
-| # | Decision | Rationale |
-|---|----------|-----------|
-| 1 | **Author-fixed model** (manual and query) | Component knows the shape → typed props. Query mode locking to one model avoids model-picker + per-model template dispatch. |
-| 2 | **Store references / query specs, not copies** | Data stays live; only published entries show on the live site. |
-| 3 | **`autoLoad: true` by default, framework resolves server-side** | Lowest-boilerplate ergonomics (component gets a list) while keeping SEO; `autoLoad: false` preserves full control. |
-| 4 | **Single + list in one input** via `list` flag | One primitive, two behaviors; consistent naming with the platform. |
-| 5 | **Query controls editor-configured** (dev declares sort options, editor chooses) | Editors get "last 10 by price" without dev redeploys; dev still bounds what's sortable. |
-| 6 | **Reuse via bridge components (code)** | Typed, simple; no data-mapping layer to build or maintain. |
-| 7 | **Pagination: `none` + `loadMore` only** | Fits Webiny's cursor model; numbered/random-access is out (see §7). |
+| #   | Decision                                                                         | Rationale                                                                                                                   |
+| --- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Author-fixed model** (manual and query)                                        | Component knows the shape → typed props. Query mode locking to one model avoids model-picker + per-model template dispatch. |
+| 2   | **Store references / query specs, not copies**                                   | Data stays live; only published entries show on the live site.                                                              |
+| 3   | **`autoLoad: true` by default, framework resolves server-side**                  | Lowest-boilerplate ergonomics (component gets a list) while keeping SEO; `autoLoad: false` preserves full control.          |
+| 4   | **Single + list in one input** via `list` flag                                   | One primitive, two behaviors; consistent naming with the platform.                                                          |
+| 5   | **Query controls editor-configured** (dev declares sort options, editor chooses) | Editors get "last 10 by price" without dev redeploys; dev still bounds what's sortable.                                     |
+| 6   | **Reuse via bridge components (code)**                                           | Typed, simple; no data-mapping layer to build or maintain.                                                                  |
+| 7   | **Pagination: `none` + `loadMore` only**                                         | Fits Webiny's cursor model; numbered/random-access is out (see §7).                                                         |
 
 ---
 
 ## 7. Constraints & risks
 
-| Item | Detail | Mitigation |
-|------|--------|------------|
-| **`autoLoad` adds a core capability** | `autoLoad: true` requires the WB render pipeline to resolve `contentEntry` inputs server-side (couples WB render → CMS SDK / read key). | Scoped as a dedicated phase (§10); `autoLoad: false` is the escape hatch and needs no core resolution. |
-| **Cursor-based pagination** | `after` + `meta.cursor` + `hasMoreItems`, not offset. `loadMore` fits; numbered / jump-to-page-N does not. | Ship `none` + `loadMore`. With `autoLoad: true`, expose `pageInfo` + load-more handle. |
-| **Deep-item SEO** | Page one is always server-rendered (crawlable); items behind `loadMore` are fetched client-side and not crawled. | Acceptable for v1. If all items must be indexed, revisit URL-based pagination (deferred). |
-| **Discriminated typing** | `inputs.<name>` is `CmsEntry[]` when `autoLoad: true`, references/query-spec when `false`. | Provide typed helpers so the component's props type follows the flag. |
-| **Sort shape (resolved)** | `sdk.cms.listEntries` `sort` is `{ [fieldId]: "asc"/"desc" }` (e.g. `{ price: "desc" }`), bare field id — not the `values_…_ASC`/`values.…` forms. The read API converts it via `transformSortToArray`. | Pass the object form; **single sort field only** (storage throws on multiple). |
-| **`search` (resolved)** | Native `search?: string`, forwarded to the GraphQL read API — no `where` mapping. | Works only against fields with `fullTextSearch` enabled on the model — document this for editors. |
-| **Broken / unpublished references** | May resolve to nothing. | Filtered out with graceful gaps; optional editor placeholder. |
-| **Stable component names** | `name` is stored in page documents; renaming breaks existing pages. | Treat names as immutable identifiers. |
-| **Validation deferred (future note)** | Not in v1. | When added, runs at the component level (`onChange` / programmatic API), not input level. |
+| Item                                  | Detail                                                                                                                                                                                                  | Mitigation                                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **`autoLoad` adds a core capability** | `autoLoad: true` requires the WB render pipeline to resolve `contentEntry` inputs server-side (couples WB render → CMS SDK / read key).                                                                 | Scoped as a dedicated phase (§10); `autoLoad: false` is the escape hatch and needs no core resolution. |
+| **Cursor-based pagination**           | `after` + `meta.cursor` + `hasMoreItems`, not offset. `loadMore` fits; numbered / jump-to-page-N does not.                                                                                              | Ship `none` + `loadMore`. With `autoLoad: true`, expose `pageInfo` + load-more handle.                 |
+| **Deep-item SEO**                     | Page one is always server-rendered (crawlable); items behind `loadMore` are fetched client-side and not crawled.                                                                                        | Acceptable for v1. If all items must be indexed, revisit URL-based pagination (deferred).              |
+| **Discriminated typing**              | `inputs.<name>` is `CmsEntry[]` when `autoLoad: true`, references/query-spec when `false`.                                                                                                              | Provide typed helpers so the component's props type follows the flag.                                  |
+| **Sort shape (resolved)**             | `sdk.cms.listEntries` `sort` is `{ [fieldId]: "asc"/"desc" }` (e.g. `{ price: "desc" }`), bare field id — not the `values_…_ASC`/`values.…` forms. The read API converts it via `transformSortToArray`. | Pass the object form; **single sort field only** (storage throws on multiple).                         |
+| **`search` (resolved)**               | Native `search?: string`, forwarded to the GraphQL read API — no `where` mapping.                                                                                                                       | Works only against fields with `fullTextSearch` enabled on the model — document this for editors.      |
+| **Broken / unpublished references**   | May resolve to nothing.                                                                                                                                                                                 | Filtered out with graceful gaps; optional editor placeholder.                                          |
+| **Stable component names**            | `name` is stored in page documents; renaming breaks existing pages.                                                                                                                                     | Treat names as immutable identifiers.                                                                  |
+| **Validation deferred (future note)** | Not in v1.                                                                                                                                                                                              | When added, runs at the component level (`onChange` / programmatic API), not input level.              |
 
 ---
 
@@ -197,20 +213,20 @@ A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping dif
 1. **Sort** — `sdk.cms.listEntries` takes `sort: Record<fieldId, "asc"/"desc">` (bare field id, e.g. `{ price: "desc" }`); the read API maps it via `transformSortToArray` (`{price:"desc"} → ["price_DESC"]`). **Single sort field only** — the storage layer throws `SORT_MULTIPLE_FIELDS_ERROR` on more than one. Neither the `values_<field>_ASC` nor the `values.<field>_ASC` form applies at the SDK layer.
 2. **Search** — native `search?: string` on `sdk.cms.listEntries`, no `where` mapping needed. Matches only fields with `fullTextSearch` enabled on the model.
 
-*(The earlier validation-gate item is closed: validation is out of v1; when introduced it uses the component-level `onChange` / programmatic API.)*
+_(The earlier validation-gate item is closed: validation is out of v1; when introduced it uses the component-level `onChange` / programmatic API.)_
 
 ---
 
 ## 10. Implementation plan (phased)
 
-| Phase | Scope | Estimate | Exit criteria |
-|-------|-------|----------|---------------|
-| **0 — Verification** ✅ | Confirmed sort shape + native search against `next` (see §9). | 0.5 day (done) | Sort = `{fieldId:"asc"/"desc"}`, single field; search native (fullTextSearch fields). |
-| **1 — Core primitive (manual)** | `createContentEntryInput` type + factory; `"Webiny/ContentEntry"` autocomplete renderer; single/`list`; store references. | 3–5 days | Editor can pick entries; value persists as references. |
-| **2 — Bridge components + curated E2E** | `EntryListing` renderer + `ProductListing`/`BlogListing` bridges proving reuse (`autoLoad: false` path). | 2–3 days | Same renderer, two models, correct output. |
-| **3 — Query mode + editor controls + pagination** | Query builder (sort from dev-declared fields, limit, search, pagination toggle); `sdk.cms.listEntries` wiring; `none` + `loadMore`. | 3–5 days | Editor configures "last 10 by price"; load-more works. |
-| **4 — `autoLoad` framework resolution** | Server-side resolvable input: resolve references/query → entries and inject; `pageInfo` for `loadMore`; discriminated typing helpers. | 3–4 days | `autoLoad: true` components render with zero SDK code. |
-| **5 — Docs, examples, hardening** | Starter-kit examples (both modes, both `autoLoad` values), authoring guide, edge cases. | 2 days | Documented and demoable. |
+| Phase                                             | Scope                                                                                                                                 | Estimate       | Exit criteria                                                                         |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------- |
+| **0 — Verification** ✅                           | Confirmed sort shape + native search against `next` (see §9).                                                                         | 0.5 day (done) | Sort = `{fieldId:"asc"/"desc"}`, single field; search native (fullTextSearch fields). |
+| **1 — Core primitive (manual)**                   | `createContentEntryInput` type + factory; `"Webiny/ContentEntry"` autocomplete renderer; single/`list`; store references.             | 3–5 days       | Editor can pick entries; value persists as references.                                |
+| **2 — Bridge components + curated E2E**           | `EntryListing` renderer + `ProductListing`/`BlogListing` bridges proving reuse (`autoLoad: false` path).                              | 2–3 days       | Same renderer, two models, correct output.                                            |
+| **3 — Query mode + editor controls + pagination** | Query builder (sort from dev-declared fields, limit, search, pagination toggle); `sdk.cms.listEntries` wiring; `none` + `loadMore`.   | 3–5 days       | Editor configures "last 10 by price"; load-more works.                                |
+| **4 — `autoLoad` framework resolution**           | Server-side resolvable input: resolve references/query → entries and inject; `pageInfo` for `loadMore`; discriminated typing helpers. | 3–4 days       | `autoLoad: true` components render with zero SDK code.                                |
+| **5 — Docs, examples, hardening**                 | Starter-kit examples (both modes, both `autoLoad` values), authoring guide, edge cases.                                               | 2 days         | Documented and demoable.                                                              |
 
 **Rough total:** ~14–19 engineering days, single developer. Estimates firm up after Phase 0. Phases 1–3 deliver the usable feature; Phase 4 (`autoLoad: true`) is the ergonomic/core upgrade and can ship as a fast-follow if needed.
 

@@ -544,6 +544,20 @@ export type RadioInput = BaseInput<string> & {
     options: { label: string; value: string }[];
 };
 
+export interface ContentEntryReference {
+    id: string;
+    modelId: string;
+}
+
+export type ContentEntryInput = BaseInput<ContentEntryReference | ContentEntryReference[]> & {
+    type: "contentEntry";
+    /**
+     * The content model(s) the editor may pick entries from. Author-fixed.
+     */
+    models: string[];
+    // `list` (single vs. multiple selection) is inherited from BaseInput.
+};
+
 export type ObjectInput = BaseInput<Record<string, any>> & {
     type: "object";
     fields: ComponentInput[];
@@ -569,6 +583,7 @@ export type ComponentInput =
     | TagsInput
     | ObjectInput
     | SlotInput
+    | ContentEntryInput
     | CustomInput;
 
 export type ManifestInputsArray<
