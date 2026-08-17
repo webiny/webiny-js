@@ -9,6 +9,7 @@ import { createValidationContainer } from "~/createValidationContainer.js";
 const BindParentNameContext = createContext<string>("");
 
 export const useBindParentName = (): string => useContext(BindParentNameContext);
+export { BindParentNameContext };
 
 interface UseBindProps {
     Bind: BindComponent;
