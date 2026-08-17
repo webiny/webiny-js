@@ -100,7 +100,7 @@ const MultiAutoCompleteInput = ({
             data-focused={focused}
         >
             {startIcon && <InputIcon icon={startIcon} inputSize={size} />}
-            <div className="relative flex flex-wrap flex-1 gap-xs">
+            <div className="relative flex flex-wrap flex-1 gap-xs min-w-0">
                 {renderSelectedOptions(selectedOptions)}
                 <Command.Input
                     className={"bg-transparent border-none outline-none"}
