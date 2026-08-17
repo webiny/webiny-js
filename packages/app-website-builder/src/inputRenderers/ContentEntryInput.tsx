@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { AutoComplete, Select, Input, Tag } from "@webiny/admin-ui";
+import { AutoComplete, Select, Input } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import type {
     ContentEntryInput,
@@ -10,6 +10,8 @@ import type {
 } from "@webiny/website-builder-sdk";
 import { RefSingleAutocompletePresenterFeature } from "@webiny/app-headless-cms/presentation/fieldRenderers/ref/autocomplete/single/feature.js";
 import { RefMultiAutocompletePresenterFeature } from "@webiny/app-headless-cms/presentation/fieldRenderers/ref/autocomplete/multi/feature.js";
+import { ObjectRow } from "~/inputRenderers/ObjectInput/ObjectRow.js";
+import { ObjectRowActions } from "~/inputRenderers/ObjectInput/ObjectRowActions.js";
 
 /**
  * Editor sidebar renderer for the `contentEntry` input. Supports two modes:
@@ -96,6 +98,8 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
     const { presenter } = useFeature(RefMultiAutocompletePresenterFeature);
 
     const current: ContentEntryReference[] = Array.isArray(value) ? value : [];
+    // Bumping this remounts the AutoComplete, clearing its search text after a pick.
+    const [pickerKey, setPickerKey] = useState(0);
 
     useEffect(() => {
         presenter.init({ modelIds: input.models, values: current });
@@ -110,10 +114,21 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
         onChange(({ value }) => value.set(refs.length > 0 ? refs : null));
     };
 
+    const moveItem = (from: number, to: number) => {
+        if (to < 0 || to >= vm.values.length) {
+            return;
+        }
+        const next = [...vm.values];
+        [next[from], next[to]] = [next[to], next[from]];
+        setSelection(next);
+    };
+
     return (
         <div className={"flex flex-col gap-sm"}>
-            {/* Picker: a single autocomplete that adds the chosen entry to the list below. */}
+            {/* Picker: a single autocomplete that adds the chosen entry to the list below,
+                then remounts (via pickerKey) so its search input clears. */}
             <AutoComplete
+                key={pickerKey}
                 label={input.label}
                 description={input.description}
                 loading={vm.loading}
@@ -123,20 +138,30 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
                 onValueChange={entryId => {
                     if (entryId && !vm.values.includes(entryId)) {
                         setSelection([...vm.values, entryId]);
+                        setPickerKey(key => key + 1);
                     }
                 }}
             />
-            {/* Selected entries as dismissible tags — their own block, so they wrap and
-                truncate cleanly instead of overflowing an input row. */}
+            {/* Selected entries as reorderable rows (mirrors the object-list input): a
+                truncating title plus hover actions to move up / down / remove. */}
             {vm.values.length > 0 ? (
-                <div className={"flex flex-wrap gap-xs"}>
-                    {vm.values.map(entryId => (
-                        <Tag
+                <div className={"flex flex-col gap-xs"}>
+                    {vm.values.map((entryId, index) => (
+                        <ObjectRow
                             key={entryId}
-                            className={"max-w-full"}
-                            variant={"neutral-muted"}
-                            content={labelFor(entryId)}
-                            onDismiss={() => setSelection(vm.values.filter(id => id !== entryId))}
+                            title={labelFor(entryId)}
+                            onOpen={() => undefined}
+                            actions={
+                                <ObjectRowActions
+                                    onMoveUp={() => moveItem(index, index - 1)}
+                                    onMoveDown={() => moveItem(index, index + 1)}
+                                    onRemove={() =>
+                                        setSelection(vm.values.filter(id => id !== entryId))
+                                    }
+                                    canMoveUp={index > 0}
+                                    canMoveDown={index < vm.values.length - 1}
+                                />
+                            }
                         />
                     ))}
                 </div>
