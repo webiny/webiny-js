@@ -188,7 +188,9 @@ const DecoratableTag = (props: TagProps) => {
             >
                 <TagSwatchBox />
                 <TagIcon />
-                <span className={"overflow-hidden truncate whitespace-nowrap"}>{content}</span>
+                <span className={"min-w-0 overflow-hidden truncate whitespace-nowrap"}>
+                    {content}
+                </span>
                 {onDismiss && (
                     <IconButton
                         icon={
