@@ -11,6 +11,7 @@ import { ElementSlot } from "./ElementSlot.js";
 import { useViewport } from "./useViewportInfo.js";
 import { useBindingsForElement } from "./useBindingsForElement.js";
 import { useDocumentState } from "./useDocumentState.js";
+import { useContentEntryResolution } from "../contentEntry/ContentEntryResolutionContext.js";
 
 interface LiveElementRendererProps {
     element: DocumentElement;
@@ -33,6 +34,7 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
     // Bindings for current breakpoint
     const elementBindings = useBindingsForElement(element.id, breakpoint); // pass breakpoint explicitly if possible
     const state = useDocumentState();
+    const contentEntryResolution = useContentEntryResolution();
 
     const onResolved = useCallback(
         ((value, input) => {
@@ -46,9 +48,16 @@ export const LiveElementRenderer = observer(({ element }: LiveElementRendererPro
                     />
                 );
             }
+            if (input.type === "contentEntry") {
+                // For autoLoad inputs, the server pre-pass has already resolved the
+                // selection into entries; swap the raw value for the resolved data.
+                // Falls back to the raw value (autoLoad:false, or unresolved).
+                const key = `${element.id}:${input.name}`;
+                return key in contentEntryResolution ? contentEntryResolution[key] : value;
+            }
             return value;
         }) as OnResolved,
-        [element.id]
+        [element.id, contentEntryResolution]
     );
 
     if (!element || !element.component) {
