@@ -591,6 +591,13 @@ export type ContentEntryInput = BaseInput<
      * Query-mode configuration. Only used when `mode` is "query".
      */
     query?: ContentEntryQueryConfig;
+    /**
+     * When true (the default), the framework resolves the selection into CMS
+     * entries server-side and passes them to the component. When false, the
+     * component receives the raw value (references or query spec) and loads the
+     * data itself.
+     */
+    autoLoad?: boolean;
     // `list` (single vs. multiple selection) is inherited from BaseInput.
 };
 
