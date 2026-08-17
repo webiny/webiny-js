@@ -30,6 +30,10 @@ export interface IListWbRedirectsWhere {
     redirectType_not_in?: string[];
 
     isEnabled?: boolean;
+
+    location?: {
+        folderId: string;
+    };
 }
 
 export interface ListWbRedirectsParams {
