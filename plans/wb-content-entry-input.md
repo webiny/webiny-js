@@ -225,12 +225,14 @@ _(The earlier validation-gate item is closed: validation is out of v1; when intr
 | **1 — Core primitive (manual)** ✅             | `createContentEntryInput` type + factory; `"Webiny/ContentEntry"` autocomplete renderer; single/`list`; store references.             | 3–5 days       | Editor can pick entries; value persists as references.                                |
 | **2 — Bridge components + curated E2E**        | `EntryListing` renderer + `ProductListing`/`BlogListing` bridges proving reuse (`autoLoad: false` path).                              | 2–3 days       | Same renderer, two models, correct output.                                            |
 | **3 — Query mode + editor controls** ✅ (core) | Query builder (sort from dev-declared fields, limit, search, pagination toggle); `sdk.cms.listEntries` wiring; `none` + `loadMore`.   | 3–5 days       | Editor configures "last 10 by price"; load-more works.                                |
-| **4 — `autoLoad` framework resolution**        | Server-side resolvable input: resolve references/query → entries and inject; `pageInfo` for `loadMore`; discriminated typing helpers. | 3–4 days       | `autoLoad: true` components render with zero SDK code.                                |
+| **4 — `autoLoad` framework resolution** 🟡 (live done) | Server-side resolvable input: resolve references/query → entries and inject; `pageInfo` for `loadMore`; discriminated typing helpers. | 3–4 days       | `autoLoad: true` components render with zero SDK code.                                |
 | **5 — Docs, examples, hardening**              | Starter-kit examples (both modes, both `autoLoad` values), authoring guide, edge cases.                                               | 2 days         | Documented and demoable.                                                              |
 
 **Rough total:** ~14–19 engineering days, single developer. Estimates firm up after Phase 0. Phases 1–3 deliver the usable feature; Phase 4 (`autoLoad: true`) is the ergonomic/core upgrade and can ship as a fast-follow if needed.
 
 **Progress:** Phases 0–1 complete and committed. Phase 3's core is complete — the SDK `mode`/`query` types (`ContentEntryQueryConfig`, `ContentEntryQueryValue`) plus the editor query-builder UI (editor-chosen sort field + direction from dev-declared options, limit, search). The actual query execution (`sdk.cms.listEntries`) and `loadMore` land with Phase 4 (`autoLoad` resolver) and the app-side bridge (Phase 2).
+
+Phase 4 is underway: increment 1 (the `autoLoad` flag + the decoupled `resolveContentEntryInput`) and increment 2 (the live/SSR server pre-pass — `resolveAutoLoad(document, components)` awaited in the RSC page, threaded via `ContentEntryResolutionProvider` context, read synchronously in `LiveElementRenderer.onResolved`) are complete and committed; `cms-sdk` now forwards `search` for query mode. Increment 3 — the editor-preview reactive cache (mirroring the CMS `refCache`/`resolveRefsLazy`) so live edits re-resolve on the client without a server round-trip — is the remaining piece.
 
 ---
 
