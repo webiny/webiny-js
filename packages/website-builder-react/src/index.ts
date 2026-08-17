@@ -58,6 +58,8 @@ export {
     type ComponentInput,
     type ContentEntryInput,
     type ContentEntryReference,
+    type ContentEntryQueryConfig,
+    type ContentEntryQueryValue,
     type ComponentConstraint,
     type WebsiteBuilderThemeInput,
     type AssetCrop,

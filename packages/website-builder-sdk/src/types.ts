@@ -549,12 +549,48 @@ export interface ContentEntryReference {
     modelId: string;
 }
 
-export type ContentEntryInput = BaseInput<ContentEntryReference | ContentEntryReference[]> & {
+/**
+ * Query-mode configuration, declared by the component author. The editor then
+ * builds a query within these bounds (see `ContentEntryQueryValue`).
+ */
+export interface ContentEntryQueryConfig {
+    /** Fields the editor may sort by. A single field is chosen at a time. */
+    sort?: { fields: string[] };
+    /** Editor-configurable result limit, with an optional default and hard cap. */
+    limit?: { default?: number; max?: number };
+    /** Show a free-text search box (matches fullTextSearch-enabled fields). */
+    search?: boolean;
+    /** Enable "load more" pagination in the rendered component. */
+    pagination?: boolean;
+}
+
+/**
+ * The value stored for a query-mode input: the editor's chosen query. The model
+ * is not stored here — it is fixed on the input via `models`.
+ */
+export interface ContentEntryQueryValue {
+    sort?: { field: string; order: "asc" | "desc" };
+    limit?: number;
+    search?: string;
+}
+
+export type ContentEntryInput = BaseInput<
+    ContentEntryReference | ContentEntryReference[] | ContentEntryQueryValue
+> & {
     type: "contentEntry";
     /**
      * The content model(s) the editor may pick entries from. Author-fixed.
      */
     models: string[];
+    /**
+     * "manual" (default): the editor hand-picks entries (stored as references).
+     * "query": the editor configures a dynamic query on the fixed model.
+     */
+    mode?: "manual" | "query";
+    /**
+     * Query-mode configuration. Only used when `mode` is "query".
+     */
+    query?: ContentEntryQueryConfig;
     // `list` (single vs. multiple selection) is inherited from BaseInput.
 };
 
