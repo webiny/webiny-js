@@ -182,7 +182,12 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
     const config = input.query ?? {};
     const current = (value as ContentEntryQueryValue | undefined) ?? {};
 
-    const sortFields = config.sort?.fields ?? [];
+    const sortFields = (config.sort?.fields ?? []).map(entry =>
+        typeof entry === "string"
+            ? { field: entry, label: entry }
+            : { field: entry.field, label: entry.label ?? entry.field }
+    );
+    const singleSortField = sortFields.length === 1 ? sortFields[0] : null;
     const [searchText, setSearchText] = useState(current.search ?? "");
 
     const update = (patch: Partial<ContentEntryQueryValue>) => {
@@ -193,14 +198,34 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
 
     return (
         <div className={"flex flex-col gap-md"}>
-            {sortFields.length > 0 ? (
+            {singleSortField ? (
+                // Only one sortable field → skip the field picker; just choose direction.
+                <Select
+                    size={"md"}
+                    variant={"secondary"}
+                    label={`Sort by ${singleSortField.label}`}
+                    value={current.sort?.order ?? "asc"}
+                    options={SORT_DIRECTION_OPTIONS}
+                    onChange={order => {
+                        update({
+                            sort: {
+                                field: singleSortField.field,
+                                order: (order as "asc" | "desc") ?? "asc"
+                            }
+                        });
+                    }}
+                />
+            ) : sortFields.length > 1 ? (
                 <>
                     <Select
                         size={"md"}
                         variant={"secondary"}
                         label={"Sort by"}
                         value={current.sort?.field}
-                        options={sortFields.map(field => ({ label: field, value: field }))}
+                        options={sortFields.map(field => ({
+                            label: field.label,
+                            value: field.field
+                        }))}
                         displayResetAction
                         onChange={field => {
                             update({

@@ -553,13 +553,20 @@ export interface ContentEntryReference {
  * Query-mode configuration, declared by the component author. The editor then
  * builds a query within these bounds (see `ContentEntryQueryValue`).
  */
+/**
+ * A field the editor may sort by: a bare read-API sort key, or a key paired with
+ * a display label shown in the editor.
+ */
+export type ContentEntrySortField = string | { field: string; label?: string };
+
 export interface ContentEntryQueryConfig {
     /**
-     * Sort keys the editor may sort by (one at a time), matching the CMS read
-     * API exactly: value fields are `values_<fieldId>` (e.g. `values_title`),
-     * meta fields are bare (e.g. `createdOn`, `savedOn`).
+     * Fields the editor may sort by (one at a time). Each `field` is a CMS read-API
+     * sort key — value fields as `values_<fieldId>` (e.g. `values_title`), meta
+     * fields bare (e.g. `createdOn`). Provide a `label` for a friendlier UI; a bare
+     * string uses the key as its label.
      */
-    sort?: { fields: string[] };
+    sort?: { fields: ContentEntrySortField[] };
     /** Editor-configurable result limit, with an optional default and hard cap. */
     limit?: { default?: number; max?: number };
     /** Show a free-text search box (matches fullTextSearch-enabled fields). */
