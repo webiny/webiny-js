@@ -12,7 +12,7 @@
 
 Add a new **Content Entry input type** to the Website Builder (WB) that lets a page editor either **hand-pick** one or more Headless CMS entries from a fixed content model, or **configure a dynamic query** against that model (sort / limit / search / pagination), and have the WB component render the resulting entries.
 
-Data loading is abstracted behind an **`autoLoad`** flag: by default the framework resolves the input server-side and the component receives a ready-to-render list; opt out and the component gets the raw params and loads the data itself.
+Data loading is **always framework-resolved server-side** (SEO-safe): the component receives ready CMS entries via `props.inputs`. Query mode adds cursor-based `loadMore` through a small client hook.
 
 To reuse rendering logic across components we use **bridge components** — thin, typed containers that adapt a model's entries to a shared presentational renderer.
 
@@ -38,7 +38,7 @@ Today, surfacing CMS data in a WB page means hand-writing a Server Component tha
 - `createContentEntryInput` primitive: author-fixed model, single or `list`, `mode: "manual" | "query"`.
 - **Manual mode**: editor hand-picks entries; stored as **references** (`{ id, modelId }`).
 - **Query mode**: editor configures the query in the sidebar — **sort** (editor chooses field + direction from a dev-declared list), **limit**, **search** (editor-configured term), **pagination** (`none` / `loadMore`).
-- **`autoLoad`** data-loading abstraction (default `true`): framework resolves server-side and hands the component a list; `false` hands the component the params to load itself.
+- **Server-side data loading** (always): the framework resolves the input into CMS entries and hands them to the component; query mode adds `loadMore` pagination via the `useContentEntryList` hook.
 - A **bridge-component pattern** for reuse (shared presentational renderer + typed containers).
 
 **Non-goals (this iteration)**
@@ -78,69 +78,75 @@ The CMS SDK surface we depend on (single unified SDK, `sdk.cms.{method}`):
 
 ### 5.1 The new primitive: `createContentEntryInput`
 
-A new WB input type scoped to an **author-fixed model**, with two modes and an `autoLoad` flag.
+A new WB input type scoped to an **author-fixed model**, with two modes.
 
 ```ts
 // Manual mode — editor hand-picks entries (stored as references)
 createContentEntryInput({
   name: "items",
-  models: ["product"], // author-fixed
-  list: true, // single (omit/false) or multiple (true)
-  autoLoad: true // default — framework resolves server-side
+  models: ["blog"], // author-fixed
+  list: true // single (omit/false) or multiple (true)
 });
 
 // Query mode — editor configures a dynamic query on the fixed model
 createContentEntryInput({
   name: "list",
   mode: "query",
-  models: ["product"],
+  models: ["blog"],
   query: {
-    sort: { fields: ["price", "createdOn", "name"] }, // dev declares options; editor picks ONE field + direction
+    // Read-API sort keys (value fields as values_<fieldId>, meta bare) with optional labels.
+    sort: { fields: [{ field: "values_title", label: "Title" }, "createdOn"] },
     limit: { default: 10, max: 50 },
     search: true, // editor-configured term; matches fullTextSearch-enabled fields
-    pagination: true // none | loadMore
-  },
-  autoLoad: true
+    pagination: true // enable loadMore
+  }
 });
 ```
 
-- **Editor side:** the `"Webiny/ContentEntry"` renderer branches on `mode` — manual shows the CMS reference autocomplete; query shows a query builder (sort field/direction, limit, search box, pagination toggle).
+- **Editor side:** the `"Webiny/ContentEntry"` renderer branches on `mode` — manual shows a search-and-add autocomplete with reorderable rows; query shows a query builder (sort field + segmented direction, limit with validation, search). One sort field → the picker is hidden and it sorts by default.
 - **Stored value:** manual → references (`{ id, modelId }[]`); query → a query spec (`{ sort, limit, search }`; model known from config). No copies of entry data.
+- **The framework always resolves** the stored value into CMS entries server-side (see §5.2). There is no `autoLoad:false` — a component that wants to fetch for itself just uses plain inputs for the params.
 
-### 5.2 Data loading: `autoLoad`
+### 5.2 Data loading & pagination
 
-The single knob that decides who loads the data. **Loading is always server-side** in both cases (SEO-safe) — `autoLoad` only decides _where the code lives_.
-
-- **`autoLoad: true` (default)** — the framework resolves the stored value server-side (fetch-by-id for manual; `listEntries` for query) and passes the component a **ready list**. The component contains **no SDK code**.
-- **`autoLoad: false`** — the component receives the **raw params** (references or query spec) and calls `sdk.cms.*` itself — for custom `where`, joins, post-processing, or bespoke fetch tuning.
-
-**Typing is discriminated by the flag:**
+The framework **always resolves** a content-entry input into CMS entries **server-side** (SEO-safe): fetch-by-id for manual, `listEntries` for query. The component receives ready entries via `props.inputs.<name>` — no SDK code for the common case. The page wires it once:
 
 ```tsx
-// autoLoad: true — component just renders a resolved list
-function ProductListing({ inputs }: ComponentProps<{ items: CmsEntry<Product>[] }>) {
-  return (
-    <EntryListing
-      items={inputs.items.map(p => ({ heading: p.values.name, href: `/products/${p.id}` }))}
-    />
-  );
-}
+// app/(site)/[slug]/page.tsx (RSC)
+const resolvedContentEntries = page ? await resolveAutoLoad(page, componentManifests) : {};
+return <DocumentRenderer document={page} resolvedContentEntries={resolvedContentEntries} />;
+```
 
-// autoLoad: false — component gets params and loads itself
-async function ProductListing({ inputs }: ComponentProps<{ items: EntryQueryValue }>) {
-  const res = await sdk.cms.listEntries<Product>({
-    modelId: "product",
-    ...toQueryArgs(inputs.items)
-  });
+```tsx
+// manual list → the component just renders resolved entries
+function ProductListing({ inputs }: ComponentProps<{ items: CmsEntry<Product>[] }>) {
+  return <EntryListing items={inputs.items.map(p => ({ heading: p.values.name }))} />;
+}
+```
+
+**Pagination (query mode).** With `pagination: true`, the resolved value carries the first page **plus** the continuation query. The component uses the `useContentEntryList` hook to load more on demand:
+
+```tsx
+function ProductList({ inputs }: ComponentProps<{ list: ResolvedContentEntryQuery<Product> }>) {
+  const { items, hasMore, loading, loadMore } = useContentEntryList(inputs.list);
   return (
-    <EntryListing
-      items={res.data.map(p => ({ heading: p.values.name, href: `/products/${p.id}` }))}
-    />
+    <>
+      <ul>
+        {items.map(p => (
+          <li key={p.id}>{p.values.name}</li>
+        ))}
+      </ul>
+      {hasMore && (
+        <button onClick={loadMore} disabled={loading}>
+          Load more
+        </button>
+      )}
+    </>
   );
 }
 ```
 
-**Pagination interaction:** with `loadMore` + `autoLoad: true`, the framework hands the component the first page **plus** `pageInfo` (cursor / `hasMoreItems`) and a load-more handle — i.e. "a list _and a way to get more_", not a bare list. The load-more control is a small client boundary; page one is always server-rendered.
+The first page is server-rendered (in the HTML → SEO); `loadMore` fetches subsequent pages **client-side** via the cursor and appends. The hook re-seeds when the query changes (editor preview). Cursor-based only — no numbered pages, and deep pages aren't in the SSR HTML (not crawled).
 
 ### 5.3 Reuse via bridge components
 
@@ -157,7 +163,7 @@ export function EntryListing({ items, title }: { items: EntryListingItem[]; titl
 }
 ```
 
-A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping differs (`heading: b.values.title`). With `autoLoad: true` the bridge is trivial (map a resolved list); with `autoLoad: false` it also does the fetch.
+A `BlogListing` reuses the same `EntryListing` — only the bridge's mapping differs (`heading: b.values.title`). The bridge just maps the framework-resolved entries to the renderer's props.
 
 ---
 
@@ -230,14 +236,20 @@ _(The earlier validation-gate item is closed: validation is out of v1; when intr
 
 **Rough total:** ~14–19 engineering days, single developer. Estimates firm up after Phase 0. Phases 1–3 deliver the usable feature; Phase 4 (`autoLoad: true`) is the ergonomic/core upgrade and can ship as a fast-follow if needed.
 
-**Progress:** Phases 0–1 complete and committed. Phase 3's core is complete — the SDK `mode`/`query` types (`ContentEntryQueryConfig`, `ContentEntryQueryValue`) plus the editor query-builder UI (editor-chosen sort field + direction from dev-declared options, limit, search). The actual query execution (`sdk.cms.listEntries`) and `loadMore` land with Phase 4 (`autoLoad` resolver) and the app-side bridge (Phase 2).
+**Progress (as-built):** Phases 0, 1, 3, 4 are implemented, unit-tested (the resolver), and committed on `claude/wb-content-entry-input` — typecheck/adio/format/lint clean. Beyond the original plan:
 
-Phase 4's core is complete across three increments: (1) the `autoLoad` flag + the decoupled `resolveContentEntryInput`; (2) the live/SSR server pre-pass — `resolveAutoLoad(document, components)` awaited in the RSC page, threaded via `ContentEntryResolutionProvider` context, read synchronously in `LiveElementRenderer.onResolved` (plus `cms-sdk` forwarding `search` for query mode); and (3) the editor-preview reactive cache (`contentEntryEditorCache`, mirroring the CMS `refCache`) so live edits re-resolve on the client without a server round-trip. All committed and typecheck/adio/format/lint-clean.
+- **Manual mode** — single picker; multi = search-and-add autocomplete (clears on pick) + reorderable rows (move up/down/remove) with an empty state.
+- **Query mode** — editor-configured sort (labelled options, segmented direction, field-picker hidden + default-sort for a single field), limit with inline validation (no silent clamping), search; a section header for the input.
+- **Data loading** — always framework-resolved server-side (`resolveAutoLoad` in the RSC page → context → `LiveElementRenderer.onResolved`), with a client reactive cache for editor preview. The `autoLoad` flag was **removed** (autoLoad:false is redundant with plain inputs).
+- **Pagination** — `useContentEntryList` hook: SSR first page + client `loadMore` via cursor; enabled by `query.pagination`.
+- **Sort keys** — passed through verbatim (read-API format: `values_<fieldId>` / bare meta), documented; no auto-transform.
 
-Remaining across the whole feature: Phase 2 (app-side bridge components + curated E2E in the starter repo), Phase 5 (docs/examples/hardening), the `loadMore` client boundary + discriminated `autoLoad` prop-typing helpers, and a live smoke test in a running admin (everything so far is compile-verified, not yet run).
+**Known limitations:** a `contentEntry` inside a **repeated element** shares one resolution key (not disambiguated per instance); `loadMore` pages are client-fetched (not in the SSR HTML → not crawlable); a **single sort field** is mandatory (always sorts). Editor-selectable model, structured filters, numbered pagination, validation, and DB-sourced manifests remain out of scope (§3). The read API's dot-vs-underscore sort inconsistency is parked (a separate core fix).
+
+**Remaining:** pre-PR preflight (`sync-dependencies`, full test run) + open the PR; a live multi-mode smoke test in a running admin/site. Sample components live in the starter (branch `claude/content-entry-input-test`).
 
 ---
 
 ## 11. Recommendation
 
-Proceed. The design reuses proven infrastructure (WB manifest/input system, CMS reference autocomplete, CMS SDK pagination), isolates novelty into one primitive with two clear modes, keeps data loading server-side for SEO, and offers a low-boilerplate default (`autoLoad: true`) without giving up control (`autoLoad: false`). The two open items in §9 are small and do not put the architecture at risk.
+The design reuses proven infrastructure (WB manifest/input system, CMS reference autocomplete, CMS SDK pagination), isolates novelty into one primitive with two clear modes, keeps data loading server-side for SEO, and hands components ready entries (with a `useContentEntryList` hook for pagination). Implemented, tested, and committed; remaining work is packaging (PR + preflight) and a live smoke test.
