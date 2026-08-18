@@ -554,7 +554,11 @@ export interface ContentEntryReference {
  * builds a query within these bounds (see `ContentEntryQueryValue`).
  */
 export interface ContentEntryQueryConfig {
-    /** Fields the editor may sort by. A single field is chosen at a time. */
+    /**
+     * Sort keys the editor may sort by (one at a time), matching the CMS read
+     * API exactly: value fields are `values_<fieldId>` (e.g. `values_title`),
+     * meta fields are bare (e.g. `createdOn`, `savedOn`).
+     */
     sort?: { fields: string[] };
     /** Editor-configurable result limit, with an optional default and hard cap. */
     limit?: { default?: number; max?: number };

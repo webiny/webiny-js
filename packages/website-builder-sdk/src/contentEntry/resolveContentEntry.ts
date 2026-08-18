@@ -33,30 +33,6 @@ export interface ResolvedContentEntryQuery {
 export type ResolvedContentEntry = unknown | unknown[] | ResolvedContentEntryQuery | null;
 
 /**
- * Entry meta fields that sort by their bare name. Every other field is a model
- * value field and must be prefixed with `values_` for the read API.
- */
-const META_SORT_FIELDS = new Set([
-    "id",
-    "entryId",
-    "createdOn",
-    "modifiedOn",
-    "savedOn",
-    "deletedOn",
-    "restoredOn",
-    "firstPublishedOn",
-    "lastPublishedOn"
-]);
-
-/**
- * Map a field id to the sort key the CMS read API expects: meta fields stay bare
- * (`createdOn`), value fields are prefixed (`title` -> `values_title`). The read
- * API converts, e.g., `{ values_title: "asc" }` into `["values_title_ASC"]`.
- */
-const toSortKey = (field: string): string =>
-    META_SORT_FIELDS.has(field) ? field : `values_${field}`;
-
-/**
  * Resolve a content-entry input's stored value into CMS entries. Used by the
  * server pre-pass (live/SSR) and the editor's reactive cache alike.
  */
@@ -78,7 +54,7 @@ export async function resolveContentEntryInput(
         }
         const result = await loader.listEntries({
             modelId,
-            sort: query.sort ? { [toSortKey(query.sort.field)]: query.sort.order } : undefined,
+            sort: query.sort ? { [query.sort.field]: query.sort.order } : undefined,
             limit: query.limit ?? input.query?.limit?.default,
             search: query.search
         });
