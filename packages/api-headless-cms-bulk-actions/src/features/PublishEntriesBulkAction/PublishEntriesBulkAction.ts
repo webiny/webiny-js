@@ -1,6 +1,5 @@
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
-import { parseIdentifier } from "@webiny/utils";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
 class PublishEntriesBulkActionImpl implements EntriesBulkAction.Interface {
@@ -32,9 +31,7 @@ class PublishEntriesBulkActionImpl implements EntriesBulkAction.Interface {
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
-        const { id: entryId } = parseIdentifier(params.id);
-
-        await this.publishEntry.execute(model, entryId);
+        await this.publishEntry.execute(model, params.id);
     }
 }
 
