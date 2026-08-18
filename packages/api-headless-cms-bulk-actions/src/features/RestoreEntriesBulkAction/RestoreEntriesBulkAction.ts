@@ -1,5 +1,6 @@
 import { ListDeletedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { RestoreEntryFromBinUseCase } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/index.js";
+import { parseIdentifier } from "@webiny/utils";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
 class RestoreEntriesBulkActionImpl implements EntriesBulkAction.Interface {
@@ -23,7 +24,9 @@ class RestoreEntriesBulkActionImpl implements EntriesBulkAction.Interface {
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
-        await this.restoreEntry.execute(model, params.id);
+        const { id: entryId } = parseIdentifier(params.id);
+
+        await this.restoreEntry.execute(model, entryId);
     }
 }
 

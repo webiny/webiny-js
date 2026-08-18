@@ -1,5 +1,6 @@
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { parseIdentifier } from "@webiny/utils";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
 class MoveToTrashBulkActionImpl implements EntriesBulkAction.Interface {
@@ -23,7 +24,9 @@ class MoveToTrashBulkActionImpl implements EntriesBulkAction.Interface {
         model: EntriesBulkAction.Model,
         params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
-        await this.deleteEntry.execute(model, params.id, {
+        const { id: entryId } = parseIdentifier(params.id);
+
+        await this.deleteEntry.execute(model, entryId, {
             permanently: false
         });
     }

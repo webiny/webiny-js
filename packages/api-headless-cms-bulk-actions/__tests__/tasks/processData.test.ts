@@ -23,15 +23,14 @@ const mockListResult = {
 };
 
 /**
- * Regression tests for the version-stripping bug in bulk action processData methods.
+ * Regression tests for bulk action processData methods.
  *
  * Entry IDs stored in background task inputs are full revision IDs (e.g. "abc123#0001").
- * The bug was that processData() called parseIdentifier() which stripped the "#0001" suffix,
- * passing only "abc123" to the underlying use case. For use cases that call getRevisionById(),
- * a bare ID without a version is silently skipped — the entry is never fetched, and the
- * operation silently fails.
+ * Some use cases require the full revision ID (Publish, Unpublish, MoveToFolder — they
+ * call getRevisionById), while others require a plain entryId (Delete, MoveToTrash,
+ * Restore — they call getLatestRevisionByEntryId).
  */
-describe("processData preserves full revision IDs", () => {
+describe("processData passes the correct ID format to each use case", () => {
     it("PublishEntriesBulkAction passes full revision ID to publishEntry", async () => {
         const mockPublishEntry = { execute: vi.fn().mockResolvedValue(mockResult) };
         const mockListEntries = { execute: vi.fn().mockResolvedValue(mockListResult) };
@@ -68,7 +67,7 @@ describe("processData preserves full revision IDs", () => {
         expect(mockMoveEntry.execute).toHaveBeenCalledWith(mockModel, "abc123#0001", "folder-1");
     });
 
-    it("DeleteEntriesBulkAction passes full revision ID to deleteEntry", async () => {
+    it("DeleteEntriesBulkAction strips version and passes plain entryId to deleteEntry", async () => {
         const mockDeleteEntry = { execute: vi.fn().mockResolvedValue(mockResult) };
         const mockListEntries = { execute: vi.fn().mockResolvedValue(mockListResult) };
 
@@ -76,12 +75,12 @@ describe("processData preserves full revision IDs", () => {
 
         await action.processData(mockModel, { id: "abc123#0001" });
 
-        expect(mockDeleteEntry.execute).toHaveBeenCalledWith(mockModel, "abc123#0001", {
+        expect(mockDeleteEntry.execute).toHaveBeenCalledWith(mockModel, "abc123", {
             permanently: true
         });
     });
 
-    it("MoveToTrashBulkAction passes full revision ID to deleteEntry", async () => {
+    it("MoveToTrashBulkAction strips version and passes plain entryId to deleteEntry", async () => {
         const mockDeleteEntry = { execute: vi.fn().mockResolvedValue(mockResult) };
         const mockListEntries = { execute: vi.fn().mockResolvedValue(mockListResult) };
 
@@ -89,12 +88,12 @@ describe("processData preserves full revision IDs", () => {
 
         await action.processData(mockModel, { id: "abc123#0001" });
 
-        expect(mockDeleteEntry.execute).toHaveBeenCalledWith(mockModel, "abc123#0001", {
+        expect(mockDeleteEntry.execute).toHaveBeenCalledWith(mockModel, "abc123", {
             permanently: false
         });
     });
 
-    it("RestoreEntriesBulkAction passes full revision ID to restoreEntry", async () => {
+    it("RestoreEntriesBulkAction strips version and passes plain entryId to restoreEntry", async () => {
         const mockRestoreEntry = { execute: vi.fn().mockResolvedValue(mockResult) };
         const mockListEntries = { execute: vi.fn().mockResolvedValue(mockListResult) };
 
@@ -102,6 +101,6 @@ describe("processData preserves full revision IDs", () => {
 
         await action.processData(mockModel, { id: "abc123#0001" });
 
-        expect(mockRestoreEntry.execute).toHaveBeenCalledWith(mockModel, "abc123#0001");
+        expect(mockRestoreEntry.execute).toHaveBeenCalledWith(mockModel, "abc123");
     });
 });
