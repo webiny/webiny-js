@@ -66,9 +66,22 @@ export async function resolveContentEntryInput(
         if (!modelId) {
             return { items: [], pageInfo: { cursor: null, hasMore: false, totalCount: 0 } };
         }
+        // A single declared sort field sorts by default (ascending), so the editor's
+        // "Ascending" display matches what actually renders.
+        const sortFields = input.query?.sort?.fields ?? [];
+        const defaultSortField =
+            sortFields.length === 1
+                ? typeof sortFields[0] === "string"
+                    ? sortFields[0]
+                    : sortFields[0].field
+                : undefined;
+        const effectiveSort =
+            query.sort ??
+            (defaultSortField ? { field: defaultSortField, order: "asc" as const } : undefined);
+
         const listParams: ContentEntryQuerySpec = {
             modelId,
-            sort: query.sort ? { [query.sort.field]: query.sort.order } : undefined,
+            sort: effectiveSort ? { [effectiveSort.field]: effectiveSort.order } : undefined,
             limit: query.limit ?? input.query?.limit?.default,
             search: query.search
         };

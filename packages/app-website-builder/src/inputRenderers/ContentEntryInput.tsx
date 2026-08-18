@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { AutoComplete, Select, Input, SegmentedControl } from "@webiny/admin-ui";
+import { AutoComplete, Select, Input, SegmentedControl, Text } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import type {
     ContentEntryInput,
@@ -10,8 +10,35 @@ import type {
 } from "@webiny/website-builder-sdk";
 import { RefSingleAutocompletePresenterFeature } from "@webiny/app-headless-cms/presentation/fieldRenderers/ref/autocomplete/single/feature.js";
 import { RefMultiAutocompletePresenterFeature } from "@webiny/app-headless-cms/presentation/fieldRenderers/ref/autocomplete/multi/feature.js";
-import { ObjectRow } from "~/inputRenderers/ObjectInput/ObjectRow.js";
 import { ObjectRowActions } from "~/inputRenderers/ObjectInput/ObjectRowActions.js";
+import { ObjectFieldHeader } from "~/inputRenderers/ObjectInput/ObjectFieldHeader.js";
+
+interface EntryRowProps {
+    title: React.ReactNode;
+    actions?: React.ReactNode;
+}
+
+/**
+ * A non-interactive row for a selected entry: a truncating title with
+ * hover-revealed actions. Mirrors the object-list row look, without click-to-open.
+ */
+const EntryRow = ({ title, actions }: EntryRowProps) => (
+    <div
+        style={{ height: 40 }}
+        className={
+            "group flex items-center justify-between gap-xs rounded-md border border-neutral-dimmed-darker px-sm-extra bg-neutral-base"
+        }
+    >
+        <div className={"flex flex-1 items-center min-w-0"}>
+            <Text size={"sm"} className={"truncate text-neutral-strong"}>
+                {title}
+            </Text>
+        </div>
+        {actions ? (
+            <div className={"hidden group-hover:flex items-center gap-xs shrink-0"}>{actions}</div>
+        ) : null}
+    </div>
+);
 
 /**
  * Editor sidebar renderer for the `contentEntry` input. Supports two modes:
@@ -142,15 +169,14 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
                     }
                 }}
             />
-            {/* Selected entries as reorderable rows (mirrors the object-list input): a
-                truncating title plus hover actions to move up / down / remove. */}
+            {/* Selected entries as reorderable rows: a truncating title plus hover
+                actions to move up / down / remove. */}
             {vm.values.length > 0 ? (
                 <div className={"flex flex-col gap-xs"}>
                     {vm.values.map((entryId, index) => (
-                        <ObjectRow
+                        <EntryRow
                             key={entryId}
                             title={labelFor(entryId)}
-                            onOpen={() => undefined}
                             actions={
                                 <ObjectRowActions
                                     onMoveUp={() => moveItem(index, index - 1)}
@@ -165,7 +191,11 @@ const MultiInner = observer(({ value, onChange, ...props }: ElementInputRenderer
                         />
                     ))}
                 </div>
-            ) : null}
+            ) : (
+                <Text size={"sm"} className={"text-neutral-strong"}>
+                    No entries selected yet.
+                </Text>
+            )}
         </div>
     );
 });
@@ -237,6 +267,9 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
 
     return (
         <div className={"flex flex-col gap-md"}>
+            {input.label ? (
+                <ObjectFieldHeader label={input.label} description={input.description} />
+            ) : null}
             {singleSortField ? (
                 // Only one sortable field → skip the field picker; just choose direction.
                 <SegmentedControl
@@ -310,6 +343,7 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
                     size={"md"}
                     variant={"secondary"}
                     label={"Search"}
+                    placeholder={"Search entries…"}
                     value={searchText}
                     onChange={setSearchText}
                     onBlur={e => update({ search: e.currentTarget.value })}
