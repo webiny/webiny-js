@@ -69,8 +69,7 @@ export async function resolveAutoLoad(
         }
 
         const contentEntryInputs = (manifest.inputs ?? []).filter(
-            (input): input is ContentEntryInput =>
-                input.type === "contentEntry" && (input as ContentEntryInput).autoLoad !== false
+            (input): input is ContentEntryInput => input.type === "contentEntry"
         );
         if (contentEntryInputs.length === 0) {
             continue;

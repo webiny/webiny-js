@@ -19,16 +19,30 @@ export interface ContentEntryLoader {
     }>;
 }
 
-export interface ResolvedContentEntryQuery {
-    items: unknown[];
+/**
+ * The query params used to produce a page. Embedded in the query result so the
+ * client can fetch further pages (loadMore) from `pageInfo.cursor`. Present only
+ * when pagination is enabled on the input.
+ */
+export interface ContentEntryQuerySpec {
+    modelId: string;
+    sort?: Record<string, "asc" | "desc">;
+    limit?: number;
+    search?: string;
+}
+
+export interface ResolvedContentEntryQuery<T = unknown> {
+    items: T[];
     pageInfo: { cursor: string | null; hasMore: boolean; totalCount: number };
+    /** Continuation params for loadMore; present only when pagination is enabled. */
+    query?: ContentEntryQuerySpec;
 }
 
 /**
- * The shape passed to a component for an `autoLoad` content-entry input:
+ * The shape passed to a component for a content-entry input:
  * - manual, single  -> the resolved entry (or null)
  * - manual, list    -> an array of resolved entries
- * - query           -> `{ items, pageInfo }`
+ * - query           -> `{ items, pageInfo, query? }`
  */
 export type ResolvedContentEntry = unknown | unknown[] | ResolvedContentEntryQuery | null;
 
@@ -52,19 +66,23 @@ export async function resolveContentEntryInput(
         if (!modelId) {
             return { items: [], pageInfo: { cursor: null, hasMore: false, totalCount: 0 } };
         }
-        const result = await loader.listEntries({
+        const listParams: ContentEntryQuerySpec = {
             modelId,
             sort: query.sort ? { [query.sort.field]: query.sort.order } : undefined,
             limit: query.limit ?? input.query?.limit?.default,
             search: query.search
-        });
+        };
+        const result = await loader.listEntries(listParams);
         return {
             items: result.data,
             pageInfo: {
                 cursor: result.meta.cursor,
                 hasMore: result.meta.hasMoreItems,
                 totalCount: result.meta.totalCount
-            }
+            },
+            // Embed the query so the client can load further pages — only when
+            // pagination is enabled on the input.
+            ...(input.query?.pagination ? { query: listParams } : {})
         };
     }
 

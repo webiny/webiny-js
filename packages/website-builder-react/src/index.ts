@@ -1,6 +1,7 @@
 export * from "./components/index.js";
 export * from "./contentEntry/resolveAutoLoad.js";
 export * from "./contentEntry/ContentEntryResolutionContext.js";
+export * from "./contentEntry/useContentEntryList.js";
 export { createComponent } from "@webiny/website-builder-sdk";
 
 export {
