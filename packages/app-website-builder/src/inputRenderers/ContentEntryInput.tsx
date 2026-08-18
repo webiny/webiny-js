@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
-import { AutoComplete, Select, Input } from "@webiny/admin-ui";
+import { AutoComplete, Select, Input, SegmentedControl } from "@webiny/admin-ui";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import type {
     ContentEntryInput,
@@ -200,12 +200,11 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
         <div className={"flex flex-col gap-md"}>
             {singleSortField ? (
                 // Only one sortable field → skip the field picker; just choose direction.
-                <Select
-                    size={"md"}
-                    variant={"secondary"}
+                <SegmentedControl
                     label={`Sort by ${singleSortField.label}`}
                     value={current.sort?.order ?? "asc"}
-                    options={SORT_DIRECTION_OPTIONS}
+                    items={SORT_DIRECTION_OPTIONS}
+                    fullWidth
                     onChange={order => {
                         update({
                             sort: {
@@ -236,12 +235,11 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
                         }}
                     />
                     {current.sort?.field ? (
-                        <Select
-                            size={"md"}
-                            variant={"secondary"}
+                        <SegmentedControl
                             label={"Direction"}
                             value={current.sort?.order ?? "asc"}
-                            options={SORT_DIRECTION_OPTIONS}
+                            items={SORT_DIRECTION_OPTIONS}
+                            fullWidth
                             onChange={order => {
                                 update({
                                     sort: {
