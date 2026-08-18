@@ -196,6 +196,45 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
         });
     };
 
+    // Keep the field showing what the editor typed; surface an error when it's out
+    // of range rather than silently rewriting the value.
+    const maxLimit = config.limit?.max;
+    const [limitText, setLimitText] = useState(
+        String(current.limit ?? config.limit?.default ?? "")
+    );
+
+    const limitError = (() => {
+        if (limitText.trim() === "") {
+            return undefined;
+        }
+        const parsed = Number(limitText);
+        if (!Number.isInteger(parsed)) {
+            return "Enter a whole number.";
+        }
+        if (parsed < 1) {
+            return "Must be at least 1.";
+        }
+        if (maxLimit && parsed > maxLimit) {
+            return `Maximum is ${maxLimit}.`;
+        }
+        return undefined;
+    })();
+
+    const onLimitChange = (raw: string) => {
+        setLimitText(raw);
+        const parsed = Number(raw);
+        // Only commit valid values — an out-of-range entry stays visible with the
+        // error until it's corrected.
+        if (
+            raw.trim() !== "" &&
+            Number.isInteger(parsed) &&
+            parsed >= 1 &&
+            (!maxLimit || parsed <= maxLimit)
+        ) {
+            update({ limit: parsed });
+        }
+    };
+
     return (
         <div className={"flex flex-col gap-md"}>
             {singleSortField ? (
@@ -259,15 +298,10 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
                     size={"md"}
                     variant={"secondary"}
                     label={"Limit"}
-                    value={current.limit ?? config.limit.default}
-                    onChange={raw => {
-                        const parsed = parseInt(raw, 10);
-                        if (isNaN(parsed)) {
-                            return;
-                        }
-                        const max = config.limit?.max;
-                        update({ limit: max ? Math.min(parsed, max) : parsed });
-                    }}
+                    description={maxLimit ? `Up to ${maxLimit}.` : undefined}
+                    value={limitText}
+                    validation={limitError ? { isValid: false, message: limitError } : undefined}
+                    onChange={onLimitChange}
                 />
             ) : null}
 
