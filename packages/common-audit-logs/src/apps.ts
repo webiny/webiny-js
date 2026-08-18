@@ -227,6 +227,16 @@ export const apps: App[] = [
                     commonActions.DELETE,
                     commonActions.MOVE
                 ]
+            },
+            {
+                type: "PAGE_FOLDER",
+                displayName: "Page folder",
+                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
+            },
+            {
+                type: "REDIRECT_FOLDER",
+                displayName: "Redirect folder",
+                actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
             }
         ]
     }
