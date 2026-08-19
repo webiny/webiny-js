@@ -164,11 +164,12 @@ jobs:
       - name: Upload build cache
         uses: actions/upload-artifact@v7
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
           path: run-build-cache.tzst
           retention-days: 1
           compression-level: 0
           if-no-files-found: error
+          overwrite: true
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -322,7 +323,7 @@ jobs:
       - name: Download build cache
         uses: actions/download-artifact@v8
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
@@ -489,7 +490,7 @@ jobs:
       - name: Download build cache
         uses: actions/download-artifact@v8
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
@@ -667,7 +668,7 @@ jobs:
       - name: Download build cache
         uses: actions/download-artifact@v8
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
@@ -835,7 +836,7 @@ jobs:
       - name: Download build cache
         uses: actions/download-artifact@v8
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
@@ -1004,7 +1005,7 @@ jobs:
       - name: Download build cache
         uses: actions/download-artifact@v8
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
