@@ -160,6 +160,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             steps: [
                 createMarkRunningStep(rowLabel),
+                // Test discovery reads `packages/` off disk, so it has to run against the PR's
+                // code. Without this the job kept the default `issue_comment` checkout (the
+                // default branch), and a PR that added a package, added the first tests to an
+                // existing one, or changed a package's testing/sharding config would have those
+                // changes silently ignored - while a PR that deleted a package would still get a
+                // test job for it.
+                ...createCheckoutPrSteps(),
                 {
                     id: "list-vitest-test-commands",
                     name: "List Vitest Test Commands",

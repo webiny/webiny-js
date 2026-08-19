@@ -206,6 +206,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -364,6 +371,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -524,6 +538,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -696,6 +717,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -856,6 +884,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
