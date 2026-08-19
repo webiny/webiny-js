@@ -23,6 +23,12 @@ import { createJob } from "./jobs/index.js";
 export const slopCop = createWorkflow({
     name: "Slop Cop",
     on: {
+        // These three are also GitHub's default when `types` is omitted, so
+        // this changes nothing behaviourally - it is spelled out to make the
+        // run triggers explicit: `opened` (PR created), `reopened`, and
+        // `synchronize` (new commits pushed to the head branch, so the analysis
+        // re-runs on every push). `edited` is intentionally left out - a
+        // title/description change alone does not re-run the intent check.
         pull_request: {
             types: ["opened", "reopened", "synchronize"]
         }
