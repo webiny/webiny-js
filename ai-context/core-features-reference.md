@@ -301,6 +301,30 @@ This document provides the correct import paths and type definitions for commonl
 
 ---
 
+### StringFormatter
+
+- **Import:** `import { StringFormatter } from "@webiny/api-core/features/stringFormatter/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/stringFormatter/abstractions.ts`
+- **Usage:** Consumer-facing string transforms for backend code. Exposes `slugify(value)` (URL-friendly slug); more methods will be added over time. Inject via a use case / repository's `dependencies` and call `this.stringFormatter.slugify(...)`. To change slug logic, decorate the fine-grained `Slugify` feature — not this one.
+
+---
+
+### Slugify
+
+- **Import:** `import { Slugify } from "@webiny/api-core/features/slugify/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/slugify/abstractions.ts`
+- **Usage:** Single-method (`execute(value)`) transform holding Webiny's canonical slug options. This is the fine-grained seam behind `StringFormatter.slugify()`. Prefer injecting `StringFormatter`; decorate `Slugify` when a project needs to change slug generation everywhere at once.
+
+---
+
+### DateFormatter
+
+- **Import:** `import { DateFormatter } from "@webiny/api-core/features/dateFormatter/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/dateFormatter/abstractions.ts`
+- **Usage:** Formats an absolute date/time as a string (`format(date)`). Backend output is deterministic (UTC, `YYYY-MM-DD HH:mm`), not viewer-locale dependent. Inject via `dependencies` and decorate the abstraction to change the format everywhere.
+
+---
+
 ## Headless CMS Features
 
 ### Content Entry Features

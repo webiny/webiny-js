@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import {
     CreateEntryRevisionFromDataFactory as FactoryAbstraction,
     type ICreateEntryRevisionFromDataFactory,
@@ -210,8 +209,7 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
     }
 }
 
-export const CreateEntryRevisionFromDataFactory = createImplementation({
-    abstraction: FactoryAbstraction,
+export const CreateEntryRevisionFromDataFactory = FactoryAbstraction.createImplementation({
     implementation: CreateEntryRevisionFromDataFactoryImpl,
     dependencies: [CmsContext, IdentityContext, AccessControl]
 });

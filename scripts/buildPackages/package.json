@@ -7,18 +7,18 @@
   "bin": "./src/index.js",
   "main": "./src/index.js",
   "dependencies": {
-    "@webiny/stdlib": "^0.0.12",
-    "chalk": "^5.6.2",
-    "execa": "^10.0.0",
-    "fs-extra": "^11.3.6",
-    "js-yaml": "^5.2.1",
+    "@webiny/stdlib": "^0.0.17",
+    "chalk": "^6.0.0",
+    "execa": "^10.0.1",
+    "fs-extra": "^11.4.0",
+    "js-yaml": "^5.2.3",
     "listr2": "^11.0.0",
     "load-json-file": "^7.0.1",
     "node-notifier": "^10.0.1",
     "serialize-error": "^13.0.1",
-    "tsx": "4.23.1",
+    "tsx": "4.23.12",
     "write-json-file": "^7.0.0",
-    "yargs": "^18.0.0"
+    "yargs": "^18.1.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",

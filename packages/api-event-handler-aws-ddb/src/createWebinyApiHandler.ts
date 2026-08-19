@@ -16,7 +16,7 @@ import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsDdbFeature } from "@webiny/api-headless-cms-ddb";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
-import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
+import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
 
 export type CreateAwsDdbApiHandlerConfig = Pick<BaseConfig, "extensions" | "documentClient">;
 

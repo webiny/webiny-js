@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useFeature } from "@webiny/app";
 import { Grid } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
-import { useWcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { UsersTeamsMultiAutocomplete } from "@webiny/app-aco";
 import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
 import { ListFolderPermissionsTargetsFeature } from "~/features/listFolderPermissionsTargets/feature.js";
@@ -11,7 +11,7 @@ import { FieldPermissionsSelection } from "./FieldPermissionsSelection.js";
 import { CannotUsePermissions } from "./CannotUsePermissions.js";
 
 export const PermissionsEditor = () => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
     const { useCase } = useFeature(ListFolderPermissionsTargetsFeature);
     const bind = useBind({ name: "rules" });
     const allRules: FieldRule[] = bind.value || [];
@@ -52,7 +52,7 @@ export const PermissionsEditor = () => {
         bind.onChange([...otherRules, ...updatedAccessRules]);
     };
 
-    if (!wcp.canUseHcmsFieldPermissions()) {
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.hcmsFieldPermissions")) {
         return (
             <Grid>
                 <Grid.Column span={12}>

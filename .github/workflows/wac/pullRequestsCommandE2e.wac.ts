@@ -1,15 +1,16 @@
-import { createWorkflow, NormalJob } from "github-actions-wac";
+import { NormalJob } from "github-actions-wac";
 import {
     createDeployWebinySteps,
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createSetupVerdaccioSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
@@ -18,14 +19,24 @@ const DIR_TEST_PROJECT = "new-webiny-project";
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 const createCheckoutPrSteps = () =>
     [
         {
             name: "Checkout Pull Request",
             "working-directory": DIR_WEBINY_JS,
-            run: "gh pr checkout ${{ github.event.issue.number }}",
+            // Detach onto the SHA `baseBranch` resolved, so every job in this run builds and
+            // tests the same commit even if the PR is pushed to mid-run.
+            run: [
+                "gh pr checkout ${{ github.event.issue.number }}",
+                "git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}"
+            ].join("\n"),
             env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
         }
     ] as NonNullable<NormalJob["steps"]>;
@@ -92,7 +103,7 @@ const createCypressJobs = (dbSetup: string) => {
         steps: [
             ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
-            ...runBuildCacheSteps,
+            ...runBuildCacheDownloadSteps,
             ...installBuildSteps,
             ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
             {
@@ -162,7 +173,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "API bundle size limit",
-                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(dbSetup === "ddb-os"
@@ -235,51 +246,25 @@ const createCypressJobs = (dbSetup: string) => {
     };
 };
 
-export const pullRequestsCommandE2e = createWorkflow({
+export const pullRequestsCommandE2e = createSlashCommandWorkflow({
+    command: "e2e",
     name: "Pull Requests Command - E2E",
-    on: "issue_comment",
-    env: {
-        NODE_OPTIONS,
-        AWS_REGION
+    comment:
+        "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:\n\n| Database | Status | Admin URL |\n| --- | --- | --- |\n| DDB | 🔄 Deploying... | - |\n| DDB+OS | 🔄 Deploying... | - |",
+    captureCommentId: true,
+    workflow: {
+        env: {
+            NODE_OPTIONS,
+            AWS_REGION
+        }
     },
     jobs: {
-        checkComment: createJob({
-            name: `Check comment for /e2e`,
-            if: "${{ github.event.issue.pull_request }}",
-            checkout: false,
-            outputs: {
-                "comment-id": "${{ steps.create-comment.outputs.comment-id }}"
-            },
-            steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "e2e",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
-                {
-                    name: "Create comment",
-                    id: "create-comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
-                    with: {
-                        "issue-number": "${{ github.event.issue.number }}",
-                        body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:\n\n| Database | Status | Admin URL |\n| --- | --- | --- |\n| DDB | 🔄 Deploying... | - |\n| DDB+OS | 🔄 Deploying... | - |"
-                    }
-                }
-            ]
-        }),
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",
             outputs: {
-                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
             },
             steps: [
                 {
@@ -287,6 +272,17 @@ export const pullRequestsCommandE2e = createWorkflow({
                     id: "base-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE, here, and have every job check out exactly this
+                    // commit. Jobs in a single run can start tens of minutes apart, and each
+                    // `gh pr checkout` would otherwise resolve the PR head at its own start time -
+                    // so a push mid-run makes the build job produce output from one commit while
+                    // the test jobs run against another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -294,8 +290,7 @@ export const pullRequestsCommandE2e = createWorkflow({
             needs: "baseBranch",
             name: "Create constants",
             outputs: {
-                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}"
             },
             checkout: false,
             steps: [
@@ -303,11 +298,6 @@ export const pullRequestsCommandE2e = createWorkflow({
                     name: "Create global cache key",
                     id: "global-cache-key",
                     run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
-                },
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -321,17 +311,7 @@ export const pullRequestsCommandE2e = createWorkflow({
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps,
-                {
-                    name: "Upload build cache artifact",
-                    uses: "actions/upload-artifact@v6",
-                    with: {
-                        name: "build-cache",
-                        "retention-days": 1,
-                        "include-hidden-files": true,
-                        path: `${DIR_WEBINY_JS}/.webiny/cached-packages`
-                    }
-                }
+                ...runBuildCacheUploadSteps
             ]
         }),
         ...createCypressJobs("ddb"),

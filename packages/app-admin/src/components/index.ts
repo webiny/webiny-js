@@ -18,7 +18,6 @@ export { SingleImageUpload, type SingleImageUploadProps } from "~/components/Sin
 export { LexicalEditor } from "~/components/LexicalEditor/index.js";
 export type { RichTextValueWithHtml } from "~/components/LexicalEditor/index.js";
 export { LexicalLinkForm } from "~/components/LexicalEditor/index.js";
-export { Wcp } from "~/components/Wcp.js";
 export * from "~/components/IconPicker/index.js";
 export * from "~/components/SplitView/index.js";
 export * from "~/components/Permissions/index.js";

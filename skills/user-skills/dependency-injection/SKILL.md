@@ -1,6 +1,5 @@
 ---
 name: webiny-dependency-injection
-context: webiny-extensions
 description: >
   The universal createImplementation DI pattern and all injectable services.
   Use this skill when the developer is writing any Webiny extension and needs to understand
@@ -15,6 +14,19 @@ description: >
 ## TL;DR
 
 Every Webiny extension type uses the same DI pattern: define a class implementing `*.Interface`, declare dependencies in the constructor, and export via `*.createImplementation({ implementation, dependencies })`. The DI container automatically provides the required services, ensures type safety, and validates at compile time. This pattern is the connective tissue across all extension types -- API, Admin, CLI, and Infrastructure.
+
+## Working Context
+
+This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The DI pattern is universal — only the import paths differ.
+
+|                         | Extensions (`extensions/`)                                       | Core (`packages/`)                                                                                |
+| ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **`createAbstraction`** | `from "webiny/api"` or `from "webiny/admin"`                     | `from "@webiny/feature/api"` or `from "@webiny/feature/admin"`                                    |
+| **`createFeature`**     | `from "webiny/api"` or `from "webiny/admin"`                     | `from "@webiny/feature/api"` or `from "@webiny/feature/admin"`                                    |
+| **Factory imports**     | `from "webiny/api/graphql"`, `from "webiny/api/cms/model"`, etc. | Direct package paths: `from "@webiny/handler-graphql/..."`, `from "@webiny/api-headless-cms/..."` |
+| **Catalog paths**       | Use the `Import:` path                                           | Use the `Source:` path                                                                            |
+
+Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode. The `dependencies` array, constructor injection, scoping rules, and all other patterns are identical in both contexts.
 
 ## The Universal Pattern
 

@@ -1,11 +1,11 @@
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/api/testing/until.js";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { FileManagerAppFeature } from "~/FileManagerAppFeature";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -14,7 +14,6 @@ import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import { createFileManagerSdk } from "./createFileManagerSdk";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -34,7 +33,7 @@ export default (params: HandlerParams = {}) => {
     const { identity, permissions, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];

@@ -8,10 +8,9 @@ import { AcoFeature } from "@webiny/api-aco";
 import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { until } from "@webiny/api/testing/until.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -60,7 +59,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = permissions ?? ([{ name: "*" }] as SecurityPermission[]);

@@ -1,31 +1,11 @@
 import type {
     CmsContext,
-    CmsEntry,
-    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsEntryValues,
-    HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
+    CmsModel,
+    CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Client, IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
-import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { ITable } from "@webiny/db-dynamodb";
 
 export { CmsContext };
-/**
- * A definition of the entry that is being prepared for the Elasticsearch.
- *
- * @category Elasticsearch
- * @category CmsEntry
- */
-export interface CmsIndexEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
-    /**
-     * Values that are not going to be indexed.
-     */
-    rawValues: Partial<T>;
-    /**
-     * Dev can add whatever keys they want and need. Just need to be careful not to break the entry.
-     */
-    [key: string]: any;
-}
 
 export enum ENTITIES {
     GROUPS = "CmsGroups",
@@ -34,37 +14,27 @@ export enum ENTITIES {
     ENTRIES_ES = "CmsEntriesElasticsearch"
 }
 
-export interface StorageOperationsFactoryParams {
-    elasticsearch: Client;
-    table?: string;
-    esTable?: string;
-    container: CmsContext["container"];
-}
-
-export interface IGetEntitiesResponse {
-    groups: IGroupEntity;
-    models: IModelEntity;
-    entries: IEntryEntity;
-    entriesEs: IElasticsearchEntity;
-}
-
-export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
-    getTable: () => ITable;
-    getEsTable: () => ITable;
-    getEntities: () => IGetEntitiesResponse;
-}
-
-export interface StorageOperationsFactory {
-    (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
-}
-
-export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: IDataLoadersHandler;
-}
-
 export interface DataLoadersHandlerInterfaceClearAllParams {
     tenant: string;
 }
+
+export interface DataLoadersHandlerDataLoaderParams {
+    model: Pick<CmsModel, "tenant" | "modelId">;
+    ids: readonly string[];
+}
+
 export interface IDataLoadersHandler {
+    getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

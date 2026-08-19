@@ -1,5 +1,4 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { HeadlessCmsEndpointConfig } from "./HeadlessCmsEndpointConfig.js";
@@ -31,6 +30,7 @@ import {
 import {
     QueryCmsResolverImpl,
     MutationCmsResolverImpl,
+    GetModelResolverImpl,
     GetEntryResolverImpl,
     ListEntriesResolverImpl,
     CreateEntryResolverImpl,
@@ -69,10 +69,9 @@ import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
     CmsStorageModelProvider,
-    HeadlessCms,
-    StorageOperations,
-    StorageOperationsFactory
+    HeadlessCms
 } from "~/features/shared/abstractions.js";
+
 import {
     EntryFromStorageTransform,
     EntryToStorageTransform,
@@ -81,27 +80,16 @@ import {
 } from "~/legacy/abstractions.js";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
-import type { IHeadlessCmsStorageOperationsFactory } from "~/features/shared/abstractions.js";
-
 export interface HeadlessCmsConfig {
-    /**
-     * Optional: if provided, registers the factory directly.
-     * If omitted, expects StorageOperationsFactory to be registered externally.
-     */
-    storageOperations?: IHeadlessCmsStorageOperationsFactory<any>;
     type: ApiEndpoint;
     /** Extra plugins (e.g. CmsGraphQLSchemaPlugin) to register in ctx.plugins at runtime. */
     extraPlugins?: any[];
 }
 
-export const HeadlessCmsFeature = createFeature({
+export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
     name: "HeadlessCms",
-    register(container: Container, config: HeadlessCmsConfig) {
+    register(container, config) {
         const { type } = config;
-
-        if (config.storageOperations) {
-            container.registerInstance(StorageOperationsFactory, config.storageOperations);
-        }
 
         // Pre-register the CMS SDK namespace schema (Query.cms / Mutation.cms) so it is
         // available when GraphQLSchemaComposer is constructed (before context enhancement).
@@ -112,6 +100,7 @@ export const HeadlessCmsFeature = createFeature({
         container.register(CmsMutationTypeDefsImpl);
         container.register(QueryCmsResolverImpl);
         container.register(MutationCmsResolverImpl);
+        container.register(GetModelResolverImpl);
         container.register(GetEntryResolverImpl);
         container.register(ListEntriesResolverImpl);
         container.register(CreateEntryResolverImpl);
@@ -211,14 +200,8 @@ export const HeadlessCmsFeature = createFeature({
             )
         );
 
-        // Build the CMS storage stack synchronously, here in register(), so it is available for
-        // EVERY event (GraphQL, background tasks, etc.) — not only inside GraphQL routes via the
-        // request initializer. create()/beforeInit() are sync across all adapters; beforeInit also
-        // registers entities into the global DbRegistry (consumed by search-index-tasks), so
-        // running it for every event closes the previous GraphQL-only gap.
-        const storageOperations = container.resolve(StorageOperationsFactory).create(cmsContext);
-        storageOperations.beforeInit(cmsContext);
-        container.registerInstance(StorageOperations, storageOperations);
+        // Entry storage operations are registered by each adapter's feature at app-scope.
+        // HeadlessCmsFeature no longer manages entry storage registration.
 
         const identityContext = container.resolve(IdentityContext);
         const tenantContext = container.resolve(TenantContext);
@@ -250,8 +233,7 @@ export const HeadlessCmsFeature = createFeature({
         container.registerFactory(AccessControlAbstraction, () => getAccessControl());
 
         // The HeadlessCms facade — a LAZY factory built on first resolve (post-auth), memoised per
-        // request container. StorageOperations is resolved here; it is built eagerly (async) by the
-        // initializer below before resolvers run.
+        // request container.
         let cmsFacade: HeadlessCms.Interface | undefined;
         container.registerFactory(HeadlessCms, () => {
             if (!cmsFacade) {
@@ -260,7 +242,6 @@ export const HeadlessCmsFeature = createFeature({
                     READ: type === "read",
                     PREVIEW: type === "preview",
                     MANAGE: type === "manage",
-                    storageOperations: container.resolve(StorageOperations),
                     accessControl: getAccessControl(),
                     ...createModelGroupsCrud({ context: cmsContext }),
                     ...createModelsCrud({ context: cmsContext }),

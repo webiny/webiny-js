@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import {
     GetUniqueFieldValuesParams,
     GetUniqueFieldValuesRepository,
@@ -86,8 +86,7 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const GetUniqueFieldValuesUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetUniqueFieldValuesUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetUniqueFieldValuesUseCaseImpl,
     dependencies: [GetUniqueFieldValuesRepository, AccessControl, CmsContext, IdentityContext]
 });

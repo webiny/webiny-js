@@ -5,6 +5,8 @@ import type { IValueOption } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
+        select: { fieldType: "text" | "number"; options: true; settings: undefined };
+        /** @deprecated Use "select" instead. */
         dropdown: { fieldType: "text" | "number"; options: true; settings: undefined };
     }
 }

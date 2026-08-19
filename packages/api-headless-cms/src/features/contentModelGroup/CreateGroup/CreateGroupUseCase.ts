@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CreateGroupRepository } from "./abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
@@ -118,8 +117,7 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const CreateGroupUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const CreateGroupUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateGroupUseCaseImpl,
     dependencies: [
         EventPublisher,

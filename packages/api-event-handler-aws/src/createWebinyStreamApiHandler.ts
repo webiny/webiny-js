@@ -32,12 +32,15 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             // shape, so they must never share a container.
             FunctionUrlStreamFeature.register(container);
 
-            // ── Auth + tenant (extract → shared load) ──────────────────
+            // ── Tenant + auth (extract → shared load) ──────────────────
             // registerDecorator applies LATER registrations as the OUTER wrapper (whose execute() runs
-            // first), so register tenant first (inner) and identity last (outer) → identity runs, then
-            // tenant, then the router.
-            container.registerDecorator(FunctionUrlStreamTenantLoaderDecorator);
+            // first). TENANT must be established before IDENTITY: API-key authentication resolves the
+            // key by tenant partition (ApiKeysRepository reads TenantContext.getTenant()), so identity
+            // establishment depends on the tenant. The reverse is not true. So register identity first
+            // (inner) and tenant last (outer) → tenant runs, then identity, then the router. Mirrors
+            // the buffered handler.
             container.registerDecorator(FunctionUrlStreamIdentityLoaderDecorator);
+            container.registerDecorator(FunctionUrlStreamTenantLoaderDecorator);
 
             // Resolved here rather than at factory time: one bundle exports BOTH this handler and the
             // buffered one, so building the client eagerly would open a second DynamoDB client on every

@@ -1,6 +1,5 @@
 ---
 name: webiny-extensions-catalog
-context: webiny-api
 description: >
   extensions — 5 abstractions.
 ---

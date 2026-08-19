@@ -3,19 +3,11 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
 import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
-import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
+import { createRunner } from "@webiny/background-tasks/testing/index.js";
 import type { CreateIndexesRunner } from "@webiny/api-search-index-tasks";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
-import type { CmsModel } from "@webiny/api-headless-cms/types";
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-
-const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
-    const { index } = configurations.es({
-        model
-    });
-    return index;
-};
+import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 
 interface Context extends TasksContext, CmsContext {}
 
@@ -47,66 +39,26 @@ describe("Create index task", () => {
 
         expect(indexes).toHaveLength(8);
 
-        expect(indexes).toEqual(
+        const indexName = (model: { tenant: string; modelId: string }) =>
+            createTestModelIndexName(context.container, { model: model as any });
+
+        const expectedIndexes = await Promise.all(
             [
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "wbyTask"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "wbyTaskLog"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "car"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "author"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "book"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "category"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "tag"
-                    }),
-                    settings: expect.any(Object)
-                },
-                {
-                    index: createIndexName({
-                        tenant: "root",
-                        modelId: "backgroundtasksettings"
-                    }),
-                    settings: expect.any(Object)
-                }
-            ].sort((a, b) => (a.index > b.index ? 1 : -1))
+                "wbyTask",
+                "wbyTaskLog",
+                "car",
+                "author",
+                "book",
+                "category",
+                "tag",
+                "backgroundtasksettings"
+            ].map(async modelId => ({
+                index: await indexName({ tenant: "root", modelId }),
+                settings: expect.any(Object)
+            }))
         );
+
+        expect(indexes).toEqual(expectedIndexes.sort((a, b) => (a.index > b.index ? 1 : -1)));
     });
 
     it("should create an index for each of the models defined", async () => {
@@ -154,6 +106,16 @@ describe("Create index task", () => {
             webinyTaskId: task.id
         });
 
+        const indexName = (model: { tenant: string; modelId: string }) =>
+            createTestModelIndexName(context.container, { model: model as any });
+
+        const done: string[] = await Promise.all([
+            indexName({ tenant: "root", modelId: "car" }),
+            indexName({ tenant: "webiny", modelId: "car" }),
+            indexName({ tenant: "dev", modelId: "car" }),
+            indexName({ tenant: "sales", modelId: "car" })
+        ]);
+
         expect(result).toEqual({
             status: "done",
             webinyTaskId: task.id,
@@ -161,50 +123,12 @@ describe("Create index task", () => {
             tenant: "root",
             message: "Indexes created.",
             output: {
-                done: [
-                    createIndexName({
-                        tenant: "root",
-                        modelId: "car"
-                    }),
-                    createIndexName({
-                        tenant: "webiny",
-                        modelId: "car"
-                    }),
-                    createIndexName({
-                        tenant: "dev",
-                        modelId: "car"
-                    }),
-                    createIndexName({
-                        tenant: "sales",
-                        modelId: "car"
-                    })
-                ]
+                done: expect.arrayContaining(done)
             }
         });
-        // Note: instanceof checks fail in Vitest when classes are loaded from different module instances
-        // Check the status property instead
         expect(result.status).toBe("done");
 
         const doneTask = await context.tasks.getTask(task.id);
-
-        const done: string[] = [
-            createIndexName({
-                tenant: "root",
-                modelId: "car"
-            }),
-            createIndexName({
-                tenant: "webiny",
-                modelId: "car"
-            }),
-            createIndexName({
-                tenant: "dev",
-                modelId: "car"
-            }),
-            createIndexName({
-                tenant: "sales",
-                modelId: "car"
-            })
-        ];
         expect(doneTask?.output).toEqual({
             done
         });

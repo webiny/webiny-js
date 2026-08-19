@@ -1,6 +1,6 @@
 import { StorageWriter as Abstraction } from "@webiny/api-search-index-tasks/abstractions/StorageWriter.js";
 import { createTableWriteBatch, type IEntity, type IPutBatchItem } from "@webiny/db-dynamodb";
-import { createOpenSearchTable, createOpenSearchEntity } from "@webiny/api-opensearch";
+import { createOpenSearchTable, createOpenSearchEntity } from "@webiny/api-opensearch-aws";
 import { DynamoDBClient } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface IBufferedRecord {

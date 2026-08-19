@@ -44,6 +44,7 @@ export interface AiPromptContextParams {
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
     excludedFileIds?: string[] | null;
+    additionalFileIds?: string[] | null;
 }
 
 export interface ProjectFileContent {
@@ -72,6 +73,7 @@ export interface AiPromptContext {
     readerPersona?: ResolvedPersona;
     writerPersona?: ResolvedPersona;
     allProjectFiles: ProjectFileContent[];
+    additionalFiles: ProjectFileContent[];
     excludedFileIds: Set<string>;
     cacheHit: boolean;
     warnings: string[];
@@ -90,4 +92,15 @@ export namespace AiPromptContextBuilder {
     export type Interface = IAiPromptContextBuilder;
     export type Params = AiPromptContextParams;
     export type Context = AiPromptContext;
+}
+
+export function formatAdditionalFilesContext(files: ProjectFileContent[]): string {
+    if (files.length === 0) {
+        return "";
+    }
+    const sections = files.map(f => {
+        const desc = f.description ? ` description="${f.description}"` : "";
+        return `<attached-file name="${f.name}"${desc}>\n${f.content}\n</attached-file>`;
+    });
+    return `\n\nThe user attached the following files as additional context for this generation:\n\n${sections.join("\n\n")}`;
 }

@@ -9,7 +9,10 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
-import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import {
+    AiPromptContextBuilder,
+    formatAdditionalFilesContext
+} from "~/api/features/AiPromptContext/index.js";
 import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { CmsGenerateEntryContentUseCase } from "./abstractions.js";
 import type {
@@ -34,9 +37,9 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         private toolPipelineRunner: AiToolPipelineRunner.Interface
     ) {}
 
-    async execute(
+    async execute<TValues = Record<string, any>>(
         params: CmsGenerateEntryContentParams
-    ): Promise<Result<GenerateEntryContentResult, Error>> {
+    ): Promise<Result<GenerateEntryContentResult<TValues>, Error>> {
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
             return Result.fail(new Error("Failed to load AI PowerUps settings."));
@@ -71,7 +74,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
             projectId: params.projectId,
             readerPersonaId: params.readerPersonaId,
             writerPersonaId: params.writerPersonaId,
-            excludedFileIds: params.excludedFileIds
+            excludedFileIds: params.excludedFileIds,
+            additionalFileIds: params.additionalFileIds
         });
 
         if (context.allProjectFiles.length > 0) {
@@ -110,7 +114,7 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 },
                 system,
                 toolChoice: "auto",
-                prompt: params.prompt,
+                prompt: params.prompt + formatAdditionalFilesContext(context.additionalFiles),
                 ...(Object.keys(sdkTools).length > 0
                     ? { tools: sdkTools, stopWhen: stepCountIs(20) }
                     : {})
@@ -128,8 +132,6 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 resolved = (await this.toolPipelineRunner.resolve(entry)) as Record<string, any>;
                 await injectDynamicZoneTypenames(resolved, modelAst, model.singularApiName);
             }
-
-            const output = JSON.stringify(resolved);
 
             const filesRead = new Set<string>();
             let toolCallsMade = 0;
@@ -154,7 +156,9 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
                 imageTagsInPrompt: imageTags
             };
 
-            return Result.ok({ output, telemetry });
+            // Boundary cast: the AI output is dynamic JSON, so this is the one honest point
+            // where we hand the resolved values to the caller's chosen `TValues` shape.
+            return Result.ok({ values: (resolved ?? {}) as TValues, telemetry });
         } catch (error) {
             return Result.fail(
                 new Error(

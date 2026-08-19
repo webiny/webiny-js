@@ -3,11 +3,10 @@ import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-co
 import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "~/index";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "~/types";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
 import { createPermissions } from "~tests/testHelpers/helpers";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -51,7 +50,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
     ];
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
     const resolvedPermissions = createPermissions(permissions);
 
     const capturedCtx: { value?: Record<string, any> } = {};

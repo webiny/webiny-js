@@ -1,6 +1,6 @@
 import { BeforeDeploy, LoggerService } from "@webiny/project/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
-import { STS } from "@webiny/aws-sdk/client-sts";
+import { STS } from "@webiny/aws-sdk/client-sts/index.js";
 
 class EnsureAwsCredentialsBeforeDeployImpl implements BeforeDeploy.Interface {
     constructor(private loggerService: LoggerService.Interface) {}

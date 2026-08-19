@@ -10,26 +10,38 @@ env:
 jobs:
   checkComment:
     name: Check comment for /vitest
-    if: ${{ github.event.issue.pull_request }}
+    if: >-
+      ${{ github.event.issue.pull_request && (github.event.comment.body ==
+      '/vitest' || startsWith(github.event.comment.body, '/vitest ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     outputs:
       comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - name: Check for Command
-        id: command
-        uses: xt0rted/slash-command-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: vitest
-          reaction: 'true'
-          reaction-type: eyes
-          allow-edits: 'false'
-          permission-level: write
+      - name: Check permission and react to comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{
+          github.event.comment.user.login }}/permission" -q .permission)
+
+          if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then
+            echo "::error::User ${{ github.event.comment.user.login }} does not have write permission (has: $PERMISSION)."
+            exit 1
+          fi
+
+          gh api --silent -X POST "/repos/${{ github.repository
+          }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
+          content=eyes
       - name: Create comment
         id: create-comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
@@ -60,6 +72,7 @@ jobs:
     name: Get base branch
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
+      pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -72,16 +85,25 @@ jobs:
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
+      - name: Get PR head SHA
+        id: pr-sha
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
+          headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   constants:
     needs: baseBranch
     name: Create constants
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -92,15 +114,13 @@ jobs:
           echo "global-cache-key=${{ needs.baseBranch.outputs.base-branch }}-${{
           runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
           }}" >> $GITHUB_OUTPUT
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
@@ -116,7 +136,9 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
@@ -133,15 +155,30 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v5
+      - name: Compress build cache
+        run: >-
+          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}" .webiny/cached-packages
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Upload build cache
+        uses: actions/upload-artifact@v7
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+          path: run-build-cache.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (No storage) - Constants
@@ -170,6 +207,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -181,6 +225,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-result:
     needs:
       - vitest-run
@@ -233,8 +280,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
+      - baseBranch
       - constants
       - vitest-constants
     name: No storage / ${{ matrix.testCommand.title }}
@@ -260,17 +311,25 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -280,8 +339,12 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (DDB) - Constants
@@ -309,6 +372,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -320,6 +390,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-result:
     needs:
       - vitest-ddb-run
@@ -371,8 +444,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
+      - baseBranch
       - constants
       - vitest-ddb-constants
     name: DDB / ${{ matrix.testCommand.title }}
@@ -401,17 +478,25 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -421,8 +506,12 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (DDB+OS) - Constants
@@ -450,6 +539,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -461,6 +557,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-result:
     needs:
       - vitest-ddb-os-run
@@ -512,8 +611,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
+      - baseBranch
       - constants
       - vitest-ddb-os-constants
     name: DDB+OS / ${{ matrix.testCommand.title }}
@@ -553,17 +656,25 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -574,9 +685,12 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-sql-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (SQL) - Constants
@@ -604,6 +718,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -615,6 +736,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-result:
     needs:
       - vitest-sql-run
@@ -666,8 +790,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
+      - baseBranch
       - constants
       - vitest-sql-constants
     name: SQL / ${{ matrix.testCommand.title }}
@@ -696,17 +824,25 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -716,8 +852,12 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (PGlite) - Constants
@@ -745,6 +885,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -756,6 +903,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-result:
     needs:
       - vitest-pglite-run
@@ -807,8 +957,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-run:
     needs:
+      - baseBranch
       - constants
       - vitest-pglite-constants
     name: PGlite / ${{ matrix.testCommand.title }}
@@ -839,17 +993,25 @@ jobs:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -859,6 +1021,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitestStatusSummary:
     name: Vitest status summary
     needs:
@@ -995,3 +1160,6 @@ jobs:
           gh pr edit "$PR_NUMBER" -R ${{ github.repository }} --body-file
           /tmp/pr-body.txt
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

@@ -1,0 +1,47 @@
+{
+  "name": "@webiny/sdk-nextjs",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Next.js integration for Webiny Content SDK.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/cms-nextjs": "0.0.0",
+    "@webiny/sdk-frontend": "0.0.0",
+    "@webiny/website-builder-nextjs": "0.0.0"
+  },
+  "peerDependencies": {
+    "next": ">=15",
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/cms-nextjs",
+        "@webiny/sdk-frontend",
+        "@webiny/website-builder-nextjs"
+      ]
+    }
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

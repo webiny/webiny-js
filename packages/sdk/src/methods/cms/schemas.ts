@@ -54,3 +54,7 @@ export const deleteEntryRevisionSchema = z.object({
     revisionId,
     permanent: z.boolean().optional()
 });
+
+export const getModelSchema = z.object({
+    modelId
+});

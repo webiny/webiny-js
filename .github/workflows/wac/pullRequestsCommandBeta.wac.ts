@@ -1,63 +1,49 @@
-import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
 
 // The HEAD branch of the PR (e.g. "release/6.3.0") — used as checkout path and working dir.
 const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
+// The PR head commit, resolved once by the `prBranch` job. Used as the checkout ref so
+// every job in the run builds and publishes the exact same commit. `PR_BRANCH` stays the
+// checkout PATH (a stable, readable directory name) and the release-version source.
+const PR_SHA = "${{ needs.prBranch.outputs.pr-sha }}";
 const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANCH });
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: PR_BRANCH
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: PR_BRANCH
+});
 
-export const pullRequestsCommandBeta = createWorkflow({
+export const pullRequestsCommandBeta = createSlashCommandWorkflow({
+    command: "beta",
     name: "Pull Requests Command - Beta Release",
-    on: "issue_comment",
-    concurrency: {
-        group: "beta-release-${{ github.event.issue.number }}",
-        "cancel-in-progress": true
+    comment:
+        "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
+    workflow: {
+        concurrency: {
+            group: "beta-release-${{ github.event.issue.number }}",
+            "cancel-in-progress": true
+        }
     },
     jobs: {
-        checkComment: createJob({
-            name: "Check comment for /beta",
-            if: "${{ github.event.issue.pull_request }}",
-            checkout: false,
-            steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "beta",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
-                {
-                    name: "Create comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
-                    with: {
-                        "issue-number": "${{ github.event.issue.number }}",
-                        body: "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
-                    }
-                }
-            ]
-        }),
         prBranch: createJob({
             needs: "checkComment",
             name: "Get PR branch",
             checkout: false,
             outputs: {
                 "pr-branch": "${{ steps.pr-branch.outputs.pr-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
                 "release-version": "${{ steps.release-version.outputs.release-version }}"
             },
             steps: [
@@ -66,6 +52,15 @@ export const pullRequestsCommandBeta = createWorkflow({
                     id: "pr-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefName -q .headRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE so every job checks out the same commit. Checking
+                    // out by branch name re-resolves per job, and these jobs start minutes apart -
+                    // so a push mid-run could have us build one commit and publish another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Parse release version from branch name",
@@ -79,40 +74,25 @@ export const pullRequestsCommandBeta = createWorkflow({
                 }
             ]
         }),
-        constants: createJob({
-            needs: ["checkComment", "prBranch"],
-            name: "Create constants",
-            checkout: false,
-            outputs: {
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
-            },
-            steps: [
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
-                }
-            ]
-        }),
         build: createJob({
             name: "Build",
-            needs: ["prBranch", "constants"],
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH },
+            needs: ["prBranch"],
+            checkout: { path: PR_BRANCH, ref: PR_SHA },
             "runs-on": BUILD_PACKAGES_RUNNER,
-            steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheSteps]
+            steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheUploadSteps]
         }),
         npmReleaseBeta: createJob({
-            needs: ["prBranch", "constants", "build"],
+            needs: ["prBranch", "build"],
             name: 'NPM release ("beta" tag)',
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
+            checkout: { path: PR_BRANCH, ref: PR_SHA, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
                 ...withCommonParams(
                     [
@@ -160,7 +140,7 @@ export const pullRequestsCommandBeta = createWorkflow({
             ]
         }),
         npmReleaseLatest: createJob({
-            needs: ["prBranch", "constants", "npmReleaseBeta"],
+            needs: ["prBranch", "npmReleaseBeta"],
             name: 'NPM release ("latest" tag)',
             environment: "release",
             env: {
@@ -168,10 +148,10 @@ export const pullRequestsCommandBeta = createWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
+            checkout: { path: PR_BRANCH, ref: PR_SHA, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
                 ...withCommonParams(
                     [

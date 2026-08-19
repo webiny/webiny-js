@@ -1,21 +1,22 @@
-import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { registerPgOsStorageOperations } from "../../src/index.js";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
+import { HeadlessCmsPgOsFeature } from "../../src/index.js";
 import { createCmsEntryFieldSortingPlugin } from "@webiny/api-headless-cms-storage/plugins/CmsEntryFieldSortingPlugin.js";
 import { registerSQLCore } from "@webiny/api-core-sql";
 import { createApiCoreSql } from "@webiny/api-core-sql/createApiCoreSql.js";
 import { getSqlTablePrefix } from "@webiny/api-core-sql/getSqlTablePrefix.js";
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
 } from "@webiny/api-opensearch/testing/index.js";
-import { getBaseConfiguration, getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { getBaseConfiguration } from "@webiny/api-opensearch";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createPgToOpenSearchHandler } from "@webiny/api-sync-pg-to-opensearch";
 import { createSyncBridge } from "./syncBridge.js";
+import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 
 const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
@@ -45,17 +46,12 @@ setStorageOps("apiCore", () => {
 });
 
 setStorageOps("cms", () => {
-    const createIndexName = model => {
-        const { index } = configurations.es({ model });
-        return index;
-    };
-
     const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {
         container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 const client = container.resolve(OpenSearchClient);
                 const { model } = event.payload;
-                const index = createIndexName(model);
+                const index = await createTestModelIndexName(container, { model });
                 try {
                     const response = await client.use().indices.exists({ index });
                     if (response.body) {
@@ -100,7 +96,9 @@ setStorageOps("cms", () => {
         plugins: [
             registerSQLCore({ knex }),
             registerOpenSearchCoreForTests(),
-            ...registerPgOsStorageOperations({ knex, tableNamePrefix }),
+            createRegisterExtensionPlugin(context =>
+                HeadlessCmsPgOsFeature.register(context.container, { knex, tableNamePrefix })
+            ),
             createOrRefreshIndexSubscription,
             fruitModifierPlugin,
             createCmsEntryFieldSortingPlugin({

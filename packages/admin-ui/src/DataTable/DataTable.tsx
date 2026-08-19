@@ -427,14 +427,32 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
 
     const getColumnWidth = useCallback(
         (column: Column<T>): number => {
+            // Non-resizable columns (e.g. row-selection, actions) keep their fixed size.
             if (!column.getCanResize()) {
                 return column.getSize();
             }
 
-            const tableSize = table.getTotalSize();
-            const columnSize = column.getSize();
+            /**
+             * Resizable columns share the space left after the fixed columns, proportionally to
+             * their own size. This makes the table always fill the full container width — even when
+             * columns are hidden — so trailing content (e.g. the columns-visibility cog) stays
+             * flush right instead of drifting left as columns are removed.
+             */
+            const visibleColumns = table.getVisibleLeafColumns();
+            const fixedTotal = visibleColumns
+                .filter(col => !col.getCanResize())
+                .reduce((total, col) => total + col.getSize(), 0);
+            const resizableTotal = visibleColumns
+                .filter(col => col.getCanResize())
+                .reduce((total, col) => total + col.getSize(), 0);
 
-            return Math.ceil((columnSize * tableWidth) / tableSize);
+            if (resizableTotal === 0) {
+                return column.getSize();
+            }
+
+            const available = Math.max(tableWidth - fixedTotal, 0);
+
+            return Math.ceil((column.getSize() * available) / resizableTotal);
         },
         [table, tableWidth]
     );

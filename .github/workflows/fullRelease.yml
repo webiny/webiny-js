@@ -51,6 +51,9 @@ jobs:
 
           echo "Inputs OK: version=$VERSION sourceTag=${SOURCE_TAG:-next}"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   createWebinyJsBranch:
     name: Create release branch (webiny-js)
     needs:
@@ -132,6 +135,9 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   createDocsBranch:
     name: Trigger release notes generation (docs.webiny.com)
     needs:
@@ -149,3 +155,6 @@ jobs:
           gh workflow run create-release-branch.yml --repo
           webiny/docs.webiny.com -f version=${{ github.event.inputs.version }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-build-params-catalog
-context: webiny-api
 description: >
   admin/build-params — 3 abstractions.
 ---
