@@ -16,8 +16,8 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
         const transport = this.config.transport ?? noopTransport;
         await transport.bind(child, ...rawArgs);
 
-        if (this.config.request) {
-            await this.config.request(child);
+        if (this.config.child) {
+            await this.config.child(child);
         }
 
         // Per-request async initialization (tenant-agnostic), before the event is dispatched and

@@ -9,8 +9,10 @@ import type { HandlerSetup } from "./types.js";
  * is exactly the config the factories read.
  */
 export interface IHandlerConfig {
+    /** Set up the ROOT container (once per process). */
     root: HandlerSetup;
-    request?: HandlerSetup;
+    /** Set up the per-request CHILD container. */
+    child?: HandlerSetup;
     /**
      * Transport-specific extract step: binds the raw platform arguments (e.g. the AWS Lambda
      * event + context) into the per-request container. Defaults to a no-op, which leaves the

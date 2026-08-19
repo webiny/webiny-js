@@ -5,7 +5,7 @@ import { awsLambdaTransport } from "./AwsLambdaTransport.js";
 
 export interface CreateLambdaHandlerOptions {
     root: HandlerSetup;
-    request?: HandlerSetup;
+    child?: HandlerSetup;
 }
 
 /**
@@ -16,7 +16,7 @@ export interface CreateLambdaHandlerOptions {
 export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
     const app = HandlerApp.init({
         root: options.root,
-        request: options.request,
+        child: options.child,
         transport: awsLambdaTransport
     });
 
