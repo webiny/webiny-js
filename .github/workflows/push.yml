@@ -35,6 +35,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs: constants
@@ -67,6 +70,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   codeAnalysis:
     name: Static code analysis
     needs:
@@ -109,6 +115,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisVerifyDependencies:
     needs:
       - constants
@@ -142,6 +151,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
@@ -165,6 +177,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
       - build
@@ -189,6 +204,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
       - constants
@@ -231,6 +249,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
       - build
@@ -255,6 +276,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
       - constants
@@ -306,6 +330,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-ddb-os-constants:
     needs:
@@ -331,6 +357,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
       - constants
@@ -388,6 +417,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-sql-constants:
     needs:
@@ -413,6 +444,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
       - constants
@@ -464,6 +498,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   e2eTests-ddb-constants:
     name: E2E (DDB) - Constants
@@ -491,6 +527,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2eTests-ddb-setup:
     needs:
       - constants
@@ -592,7 +631,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -620,6 +659,8 @@ jobs:
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   e2eTests-ddb-os-constants:
     name: E2E (DDB+OS) - Constants
@@ -647,6 +688,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2eTests-ddb-os-setup:
     needs:
       - constants
@@ -762,7 +806,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -797,4 +841,6 @@ jobs:
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write

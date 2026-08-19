@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import slugify from "slugify";
+import { StringFormatter } from "@webiny/app-admin/features/stringFormatter/abstractions.js";
 import {
     FolderTreePresenter as Abstraction,
     type IFolderTreeNode,
@@ -40,7 +40,8 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         private deleteFolderUseCase: DeleteFolderUseCase.Interface,
         private getFolderAncestorsUseCase: GetFolderAncestorsUseCase.Interface,
         private getFolderLevelPermissionUseCase: GetFolderLevelPermissionUseCase.Interface,
-        private formModelFactory: FormModelFactory.Interface
+        private formModelFactory: FormModelFactory.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {
         makeAutoObservable<FolderTreePresenterImpl, "callbacks">(
             this,
@@ -158,12 +159,7 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                     .required("Slug is required")
                     .computedUntilDirty(({ form }) => {
                         const title = form.field("title").getValue();
-                        return slugify(String(title ?? ""), {
-                            replacement: "-",
-                            lower: true,
-                            remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
-                            trim: false
-                        });
+                        return this.stringFormatter.slugify(String(title ?? ""));
                     }),
                 parentId: fields
                     .text()
@@ -199,12 +195,7 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                     .required("Slug is required")
                     .computedUntilDirty(({ form }) => {
                         const title = form.field("title").getValue();
-                        return slugify(String(title ?? ""), {
-                            replacement: "-",
-                            lower: true,
-                            remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
-                            trim: false
-                        });
+                        return this.stringFormatter.slugify(String(title ?? ""));
                     })
             }),
             layout: layout => [layout.row("title"), layout.row("slug")]
@@ -371,6 +362,7 @@ export const FolderTreePresenter = Abstraction.createImplementation({
         DeleteFolderUseCase,
         GetFolderAncestorsUseCase,
         GetFolderLevelPermissionUseCase,
-        FormModelFactory
+        FormModelFactory,
+        StringFormatter
     ]
 });

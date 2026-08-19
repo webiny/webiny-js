@@ -35,3 +35,6 @@ jobs:
             echo "No open docs PR found for Release $VERSION — skipping."
           fi
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

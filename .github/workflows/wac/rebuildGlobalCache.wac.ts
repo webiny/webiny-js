@@ -75,4 +75,6 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
 
 export const rebuildGlobalCacheDev = createRebuildGlobalCacheWorkflow("dev");
 export const rebuildGlobalCacheNext = createRebuildGlobalCacheWorkflow("next");
-export const rebuildGlobalCacheV5 = createRebuildGlobalCacheWorkflow("v5-dev");
+
+// The v5 "rebuildGlobalCacheV5" workflow is intentionally not exported: v5 flows
+// are frozen. Its generated `rebuildGlobalCacheV5.yml` is left untouched.

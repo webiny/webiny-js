@@ -19,8 +19,6 @@ class FileModelContextualSchemaImpl implements IRequestContextInitializer {
         }
 
         const container = ctx.container as Container;
-        // Resolved lazily here (build/request time), not as a constructor dep: GetModelUseCase
-        // depends on AccessControl, which the CMS initializer only registers during its own init().
         const getModel = container.resolve(GetModelUseCase);
 
         await this.identityCtx.withoutAuthorization(async () => {

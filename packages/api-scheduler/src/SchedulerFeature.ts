@@ -6,8 +6,6 @@ import { NamespaceHandlerExecutionerFeature } from "~/features/NamespaceHandler/
 import { SchedulerModelContextualSchema } from "./SchedulerModelContextualSchema.js";
 import { SchedulerFeature as SchedulerCoreFeature } from "~/features/SchedulerFeature.js";
 
-export type { ISchedulerFeatureConfig } from "./SchedulerFeature.types.js";
-
 export const SchedulerFeature = createFeature({
     name: "Scheduler",
     register(container: Container) {

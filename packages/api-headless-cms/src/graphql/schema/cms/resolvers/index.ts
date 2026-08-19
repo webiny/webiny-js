@@ -7,3 +7,4 @@ export { UpdateEntryRevisionResolverImpl } from "./updateEntryRevision.js";
 export { DeleteEntryRevisionResolverImpl } from "./deleteEntryRevision.js";
 export { PublishEntryRevisionResolverImpl } from "./publishEntryRevision.js";
 export { UnpublishEntryRevisionResolverImpl } from "./unpublishEntryRevision.js";
+export { GetModelResolverImpl } from "./getModel.js";

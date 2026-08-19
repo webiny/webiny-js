@@ -1,0 +1,75 @@
+name: Dev Branch - Push (self-hosted)
+
+on:
+  push:
+    branches: [dev]
+
+# Ensures only one build+push for the "dev" environment runs at a time.
+concurrency: dev
+
+jobs:
+  build-and-push:
+    name: Build and push images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # push images to the GitHub Container Registry (ghcr.io)
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      # Install and cache dependencies (for the static analysis below).
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # Static code analysis.
+      - name: Check code formatting
+        run: yarn format
+      - name: Lint
+        run: yarn lint
+
+      # Build + push the self-contained images. The multi-stage Dockerfile runs `yarn webiny build`
+      # INSIDE the build, so there is no separate build step here.
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build & push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: api
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/${{ github.repository }}/api:dev
+
+      - name: Build & push Admin image # Admin bakes the public API URL at build time.
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: admin
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/${{ github.repository }}/admin:dev
+          build-args: |
+            WEBINY_API_URL=${{ secrets.DEV_WEBINY_API_URL }}
+
+      # Deploy: tell your container platform to pull the new images. This step is platform-specific;
+      # uncomment/adapt one of the following (or add your own):
+      #   - AWS ECS/Fargate: aws ecs update-service --cluster <c> --service <s> --force-new-deployment
+      #   - Google Cloud Run: gcloud run deploy webiny-api --image ghcr.io/${{ github.repository }}/api:dev
+      #   - Fly.io: flyctl deploy --image ghcr.io/${{ github.repository }}/api:dev
+      #   - Kubernetes: kubectl set image deployment/webiny-api api=ghcr.io/${{ github.repository }}/api:dev

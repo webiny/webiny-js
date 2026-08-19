@@ -7,12 +7,12 @@
     { "path": "../api-headless-cms-utils-os/tsconfig.build.json" },
     { "path": "../api-opensearch/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
-    { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-headless-cms-testing/tsconfig.build.json" },
-    { "path": "../db-dynamodb/tsconfig.build.json" }
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -31,8 +31,6 @@
       "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
@@ -42,7 +40,9 @@
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     }
   }
 }

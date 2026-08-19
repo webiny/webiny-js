@@ -1,22 +1,25 @@
-import { configurations } from "~/configurations.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
-import { isSharedOpenSearchIndex } from "@webiny/api-opensearch";
+import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 import { CmsEntryOpenSearchIndexDelete as CmsEntryOpenSearchIndexDeleteAbstraction } from "./abstractions.js";
+import { createConfigurations } from "~/configurations.js";
 
 class CmsEntryOpenSearchIndexDeleteImpl
     implements CmsEntryOpenSearchIndexDeleteAbstraction.Interface
 {
-    public constructor(private readonly openSearchClient: OpenSearchClient.Interface) {}
+    public constructor(
+        private readonly openSearchClient: OpenSearchClient.Interface,
+        private readonly indexProvider: CmsModelOpenSearchIndexProvider.Interface
+    ) {}
 
     public async execute(params: CmsEntryOpenSearchIndexDeleteAbstraction.Params): Promise<void> {
-        if (isSharedOpenSearchIndex()) {
+        const { model } = params;
+
+        const configurations = createConfigurations(this.indexProvider);
+        const { index, shared } = await configurations.es({ model });
+        if (shared) {
             return;
         }
-
-        const { model } = params;
         const client = this.openSearchClient.use();
-
-        const { index } = configurations.es({ model });
 
         const { body: exists } = await client.indices.exists({ index });
         if (!exists) {
@@ -38,5 +41,5 @@ class CmsEntryOpenSearchIndexDeleteImpl
 export const CmsEntryOpenSearchIndexDelete =
     CmsEntryOpenSearchIndexDeleteAbstraction.createImplementation({
         implementation: CmsEntryOpenSearchIndexDeleteImpl,
-        dependencies: [OpenSearchClient]
+        dependencies: [OpenSearchClient, CmsModelOpenSearchIndexProvider]
     });

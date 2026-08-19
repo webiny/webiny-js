@@ -13,10 +13,12 @@ import { CmsEntryOpenSearchValueSearchFeature } from "./CmsEntryOpenSearchValueS
 import { ModelAfterCreateHandler } from "./CmsEntryOpenSearchIndexCreate/ModelAfterCreateHandler.js";
 import { ModelAfterCreateFromHandler } from "./CmsEntryOpenSearchIndexCreate/ModelAfterCreateFromHandler.js";
 import { ModelAfterDeleteHandler } from "./CmsEntryOpenSearchIndexDelete/ModelAfterDeleteHandler.js";
+import { CmsModelOpenSearchIndexFeature } from "./CmsModelOpenSearchIndex/index.js";
 
 export const CmsEntryOpenSearchUtilsFeature = createFeature({
     name: "Cms/Entry/OpenSearch/UtilsFeature",
     register: container => {
+        CmsModelOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchFieldIndexFeature.register(container);
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);

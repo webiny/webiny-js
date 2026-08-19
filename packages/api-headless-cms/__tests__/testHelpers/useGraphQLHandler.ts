@@ -3,8 +3,8 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { buildSchema } from "graphql";
-import { HeadlessCmsFeature } from "~/index";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { HeadlessCmsFeature } from "~/HeadlessCmsFeature.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";

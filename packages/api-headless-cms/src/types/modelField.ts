@@ -1,11 +1,12 @@
 import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
+import type { IModelSettings } from "~/features/modelBuilder/abstractions.js";
 
 export type FieldRuleAction = "hide" | "disable" | string;
 
 export interface FieldRule {
-    type: "accessControl" | "entryValue";
+    type: "accessControl" | "condition";
     target: string;
     operator: string;
     value: string | number | boolean | null;
@@ -260,6 +261,7 @@ export interface CmsModelUpdateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
+    settings?: IModelSettings | null;
 }
 
 /**

@@ -1,18 +1,21 @@
 import type { FolderPermissionName } from "~/features/folders/abstractions.js";
 import { FoldersCache } from "~/features/folders/abstractions.js";
 import { GetFolderLevelPermissionUseCase as UseCaseAbstraction } from "../abstractions.js";
-import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 
 class GetFolderLevelPermissionWithFlpDecoratorImpl implements UseCaseAbstraction.Interface {
     constructor(
         private cache: FoldersCache.Interface,
-        private wcp: WcpService.Interface,
+        private featureFlagsService: FeatureFlagsService.Interface,
         private decoratee: UseCaseAbstraction.Interface
     ) {}
 
     execute(id: string, permissionName: FolderPermissionName) {
-        // Check if WCP allows folder-level permissions feature
-        if (!this.wcp.getProject().canUseFolderLevelPermissions()) {
+        if (
+            !this.featureFlagsService
+                .getFlags()
+                .isEnabled("advancedAccessControlLayer.folderLevelPermissions")
+        ) {
             return this.decoratee.execute(id, permissionName);
         }
 
@@ -29,5 +32,5 @@ class GetFolderLevelPermissionWithFlpDecoratorImpl implements UseCaseAbstraction
 
 export const GetFolderLevelPermissionWithFlpDecorator = UseCaseAbstraction.createDecorator({
     decorator: GetFolderLevelPermissionWithFlpDecoratorImpl,
-    dependencies: [FoldersCache, WcpService]
+    dependencies: [FoldersCache, FeatureFlagsService]
 });

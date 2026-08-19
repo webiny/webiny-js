@@ -280,19 +280,19 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                     </Heading>
                     <Grid gap="comfortable">
                         <Grid.Column span={6}>
-                            <Text size="sm" className="text-neutral-strong">
+                            <Text as="div" size="sm" className="text-neutral-strong">
                                 Definition
                             </Text>
                             <Text size="sm">{displayTask.definitionId}</Text>
                         </Grid.Column>
                         <Grid.Column span={6}>
-                            <Text size="sm" className="text-neutral-strong">
+                            <Text as="div" size="sm" className="text-neutral-strong">
                                 Created By
                             </Text>
                             <Text size="sm">{displayTask.createdBy?.displayName ?? "—"}</Text>
                         </Grid.Column>
                         <Grid.Column span={6}>
-                            <Text size="sm" className="text-neutral-strong">
+                            <Text as="div" size="sm" className="text-neutral-strong">
                                 Created On
                             </Text>
                             <Text size="sm">
@@ -304,7 +304,7 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                             </Text>
                         </Grid.Column>
                         <Grid.Column span={6}>
-                            <Text size="sm" className="text-neutral-strong">
+                            <Text as="div" size="sm" className="text-neutral-strong">
                                 Started On
                             </Text>
                             <Text size="sm">
@@ -316,7 +316,7 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                             </Text>
                         </Grid.Column>
                         <Grid.Column span={6}>
-                            <Text size="sm" className="text-neutral-strong">
+                            <Text as="div" size="sm" className="text-neutral-strong">
                                 Finished On
                             </Text>
                             <Text size="sm">
@@ -328,7 +328,7 @@ const TaskDetailDrawerInner = observer(function TaskDetailDrawerInner({
                             </Text>
                         </Grid.Column>
                         <Grid.Column span={6}>
-                            <Text size="sm" className="text-neutral-strong">
+                            <Text as="div" size="sm" className="text-neutral-strong">
                                 Iterations
                             </Text>
                             <Text size="sm">{displayTask.iterations ?? 0}</Text>

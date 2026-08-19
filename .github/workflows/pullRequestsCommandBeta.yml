@@ -10,23 +10,36 @@ concurrency:
 jobs:
   checkComment:
     name: Check comment for /beta
-    if: ${{ github.event.issue.pull_request }}
+    if: >-
+      ${{ github.event.issue.pull_request && (github.event.comment.body ==
+      '/beta' || startsWith(github.event.comment.body, '/beta ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - name: Check for Command
-        id: command
-        uses: xt0rted/slash-command-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: beta
-          reaction: 'true'
-          reaction-type: eyes
-          allow-edits: 'false'
-          permission-level: write
+      - name: Check permission and react to comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{
+          github.event.comment.user.login }}/permission" -q .permission)
+
+          if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then
+            echo "::error::User ${{ github.event.comment.user.login }} does not have write permission (has: $PERMISSION)."
+            exit 1
+          fi
+
+          gh api --silent -X POST "/repos/${{ github.repository
+          }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
+          content=eyes
       - name: Create comment
-        uses: peter-evans/create-or-update-comment@v2
+        id: create-comment
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
@@ -42,6 +55,7 @@ jobs:
     name: Get PR branch
     outputs:
       pr-branch: ${{ steps.pr-branch.outputs.pr-branch }}
+      pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
       release-version: ${{ steps.release-version.outputs.release-version }}
     steps:
       - uses: actions/setup-node@v5
@@ -54,6 +68,14 @@ jobs:
         run: >-
           echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo
           ${{ github.repository }} --json headRefName -q .headRefName)" >>
+          $GITHUB_OUTPUT
+      - name: Get PR head SHA
+        id: pr-sha
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --repo ${{
+          github.repository }} --json headRefOid -q .headRefOid)" >>
           $GITHUB_OUTPUT
       - name: Parse release version from branch name
         id: release-version
@@ -70,31 +92,13 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  constants:
-    needs:
-      - checkComment
-      - prBranch
-    name: Create constants
-    outputs:
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
       - prBranch
-      - constants
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5
@@ -103,7 +107,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
-          ref: ${{ needs.prBranch.outputs.pr-branch }}
+          ref: ${{ needs.prBranch.outputs.pr-sha }}
       - uses: actions/cache@v5
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
@@ -114,17 +118,29 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
-      - uses: actions/cache@v5
+      - name: Compress build cache
+        run: >-
+          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}" .webiny/cached-packages
+        env:
+          WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Upload build cache
+        uses: actions/upload-artifact@v7
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+          path: run-build-cache.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   npmReleaseBeta:
     needs:
       - prBranch
-      - constants
       - build
     name: NPM release ("beta" tag)
     env:
@@ -140,16 +156,22 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
-          ref: ${{ needs.prBranch.outputs.pr-branch }}
+          ref: ${{ needs.prBranch.outputs.pr-sha }}
           fetch-depth: 0
       - uses: actions/cache@v5
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -199,10 +221,12 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   npmReleaseLatest:
     needs:
       - prBranch
-      - constants
       - npmReleaseBeta
     name: NPM release ("latest" tag)
     environment: release
@@ -219,16 +243,22 @@ jobs:
       - uses: actions/checkout@v5
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
-          ref: ${{ needs.prBranch.outputs.pr-branch }}
+          ref: ${{ needs.prBranch.outputs.pr-sha }}
           fetch-depth: 0
       - uses: actions/cache@v5
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@v8
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache-${{ github.run_attempt }}
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -276,3 +306,6 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

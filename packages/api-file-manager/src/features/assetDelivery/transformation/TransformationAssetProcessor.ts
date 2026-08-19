@@ -1,18 +1,11 @@
+import type { Container } from "@webiny/di";
 import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import type { AssetRequest } from "~/delivery/AssetDelivery/AssetRequest.js";
-import {
-    AssetProcessor,
-    AssetTransformationStrategy,
-    type IAssetProcessor,
-    type IAssetTransformationStrategy
-} from "../abstractions.js";
+import type { IAssetProcessor } from "../abstractions.js";
+import { AssetType } from "../abstractions/AssetType.js";
 
 export class TransformationAssetProcessor implements IAssetProcessor {
-    private strategy: IAssetTransformationStrategy;
-
-    constructor(strategy: IAssetTransformationStrategy) {
-        this.strategy = strategy;
-    }
+    constructor(private readonly container: Container) {}
 
     async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
         const { original } = assetRequest.getOptions();
@@ -22,11 +15,18 @@ export class TransformationAssetProcessor implements IAssetProcessor {
             return asset;
         }
 
-        return this.strategy.transform(assetRequest, asset);
+        const assetTypes = this.container.resolveAll(AssetType);
+        const match = assetTypes.find(assetType => assetType.canHandle(asset));
+
+        if (!match) {
+            return asset;
+        }
+
+        try {
+            const handler = this.container.resolve(match.getHandlerAbstraction());
+            return handler.handle(assetRequest, asset);
+        } catch {
+            return asset;
+        }
     }
 }
-
-export const TransformationAssetProcessorImpl = AssetProcessor.createImplementation({
-    implementation: TransformationAssetProcessor,
-    dependencies: [AssetTransformationStrategy]
-});

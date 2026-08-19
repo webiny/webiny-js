@@ -16,6 +16,7 @@
     { "path": "../utils" },
     { "path": "../wcp" },
     { "path": "../api-headless-cms-testing" },
+    { "path": "../db-dynamodb" },
     { "path": "../event-handler-core" },
     { "path": "../handler" },
     { "path": "../plugins" }
@@ -55,6 +56,8 @@
       "@webiny/wcp": ["../wcp/src"],
       "@webiny/api-headless-cms-testing/*": ["../api-headless-cms-testing/src/*"],
       "@webiny/api-headless-cms-testing": ["../api-headless-cms-testing/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],

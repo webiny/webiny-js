@@ -17,7 +17,7 @@ import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -26,6 +26,7 @@ import type { CmsContext } from "~/types";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
+import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -88,7 +89,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             { id: "webiny", name: "Webiny", parent: "" },
             { id: "dev", name: "Dev", parent: "" },
             { id: "sales", name: "Sales", parent: "" }
-        ]) {
+        ] as CreateTenantInput[]) {
             try {
                 await createTenantUseCase.execute(tenant);
             } catch {

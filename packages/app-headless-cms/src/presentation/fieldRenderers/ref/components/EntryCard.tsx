@@ -2,9 +2,19 @@ import React, { useCallback, useMemo } from "react";
 import type { CmsReferenceEntry, CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
 import type { CmsModel } from "~/types.js";
 import { EntryImage } from "./EntryImage.js";
-import { Tag, TimeAgo, Text, DropdownMenu, IconButton, Checkbox, cn } from "@webiny/admin-ui";
+import {
+    Tag,
+    TimeAgo,
+    Text,
+    DropdownMenu,
+    IconButton,
+    Checkbox,
+    Tooltip,
+    cn
+} from "@webiny/admin-ui";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
+import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as RemoveIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
@@ -22,6 +32,7 @@ interface DialogEntryCardProps {
     onMoveDown?: never;
     index?: never;
     placement?: string;
+    onEdit?: (entry: CmsReferenceEntry) => void;
 }
 
 interface FieldEntryCardProps {
@@ -35,12 +46,22 @@ interface FieldEntryCardProps {
     onChange?: never;
     selected?: never;
     placement?: string;
+    onEdit?: (entry: CmsReferenceEntry) => void;
 }
 
 type EntryCardProps = DialogEntryCardProps | FieldEntryCardProps;
 
 export const EntryCard = (props: EntryCardProps) => {
-    const { entry, onChange, onRemove, selected, index, placement, disabled = false } = props;
+    const {
+        entry,
+        onChange,
+        onRemove,
+        onEdit,
+        selected,
+        index,
+        placement,
+        disabled = false
+    } = props;
     const onMoveUpClick = props.onMoveUp;
     const onMoveDownClick = props.onMoveDown;
     const { getLink } = useRouter();
@@ -157,6 +178,20 @@ export const EntryCard = (props: EntryCardProps) => {
                                     onClick={onMoveDown}
                                 />
                             </div>
+                        ) : null}
+                        {!disabled && onEdit ? (
+                            <Tooltip
+                                content={"Edit"}
+                                trigger={
+                                    <IconButton
+                                        variant={"ghost"}
+                                        size={"sm"}
+                                        aria-label={"Edit"}
+                                        icon={<EditIcon />}
+                                        onClick={() => onEdit(entry)}
+                                    />
+                                }
+                            />
                         ) : null}
                         {!disabled ? (
                             <DropdownMenu

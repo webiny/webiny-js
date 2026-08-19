@@ -15,6 +15,7 @@ import {
     createLambdaHandler,
     ApiGatewayFeature,
     BackgroundTaskEventType,
+    EventBridgeEventType,
     WebSocketEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
@@ -24,11 +25,11 @@ import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
+import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
@@ -89,11 +90,16 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             container.register(BackgroundTaskEventType);
             BackgroundTasksAwsFeature.register(container);
 
+            // EventBridge invocations (e.g. scheduled empty-trash-bin). Without the event type the
+            // dispatcher can't match an EventBridge-shaped event; without the handler the container
+            // can't resolve EventBridgeEventHandler.
+            container.register(EventBridgeEventType);
+            BulkActionsEventBridgeLambdaHandlerFeature.register(container);
+
             // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
             // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
             // matched") so $connect fails and no connection is ever registered → no server→client push.
             container.register(WebSocketEventType);
-            container.register(WebSocketLambdaHandler);
 
             // ── Database ───────────────────────────────────────────────
             DynamoDBCoreFeature.register(container, {

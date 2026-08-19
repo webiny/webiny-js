@@ -1,6 +1,5 @@
 ---
 name: webiny-api-architect
-context: webiny-extensions
 description: >
   The hub skill for all API/backend architecture in Webiny. Covers architecture overview,
   Services vs UseCases, feature naming and organization, feature structure templates,
@@ -14,6 +13,19 @@ description: >
 ## TL;DR
 
 API extensions use `createFeature` to register features into the DI container. Each feature is a vertical slice with abstractions, implementations, and a `feature.ts` registration file. The key abstractions are **Services** (multi-method, singleton) and **UseCases** (single-method orchestrators, transient). Repositories handle persistence via CMS. Features are named by **business capability**, files inside by **technical responsibility**.
+
+## Working Context
+
+This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are identical — only imports and registration differ.
+
+|                     | Extensions (`extensions/`)                                                                                                                       | Core (`packages/`)                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Imports**         | `webiny/api`, `webiny/api/cms/model`, etc.                                                                                                       | `@webiny/feature/api`, `@webiny/api-headless-cms/...`, etc. |
+| **Catalog paths**   | Use the `Import:` path                                                                                                                           | Use the `Source:` path                                      |
+| **Entry point**     | `export default createFeature(...)` in a file targeted by `<Api.Extension src={...}>`                                                            | `createFeature` registered by the package initializer       |
+| **GraphQL schemas** | `export default GraphQLSchemaFactory.createImplementation(...)` — registered via `container.register()` inside the entry point's `createFeature` | Same pattern, but imported from `@webiny/handler-graphql`   |
+
+Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 
 ## Architecture Overview
 
@@ -456,7 +468,7 @@ Every feature defines domain-specific errors extending `BaseError`:
 
 ```ts
 // domain/errors.ts
-import { BaseError } from "@webiny/feature/api";
+import { BaseError } from "webiny/api";
 
 export class EntityNotFoundError extends BaseError {
   override readonly code = "Entity/NotFound" as const;
@@ -477,7 +489,7 @@ export class EntityPersistenceError extends BaseError<{ error: Error }> {
 
 **Rules:**
 
-- Extend `BaseError` from `@webiny/feature/api`
+- Extend `BaseError` from `webiny/api`
 - Use `override readonly code` with a namespaced string (`"Domain/ErrorType"`)
 - Use `as const` on the code for type narrowing
 - If passing `data`, define a type and pass it as generic: `BaseError<TDataType>`
@@ -519,7 +531,7 @@ export namespace CreateEntityUseCase {
 
 ```ts
 // domain/EntityId.ts
-import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { EntryId } from "webiny/api/cms/entry";
 
 export class EntityId {
   static from(id?: string) {
@@ -610,7 +622,7 @@ export {
 
 ## Code Conventions
 
-- Use `createAbstraction` from `@webiny/feature/api` — never `new Abstraction()`
+- Use `createAbstraction` from `webiny/api` — never `new Abstraction()`
 - All implementations use `createImplementation` with a `dependencies` array matching constructor order
 - Implementation classes are **not exported** — only the `createImplementation` result (as `default`)
 - One class per file. One named import per line.
