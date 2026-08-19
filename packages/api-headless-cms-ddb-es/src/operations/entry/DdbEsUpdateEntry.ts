@@ -11,10 +11,11 @@ import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import {
     CmsEntryOpenSearchFieldIndexRegistry,
-    CmsEntryOpenSearchValuesModifier
+    CmsEntryOpenSearchValuesModifier,
+    CmsModelOpenSearchIndexProvider
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { createTransformer } from "./transformations/index.js";
 import {
     createEntryLatestKeys,
@@ -38,6 +39,7 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
         private storageModelProvider: CmsStorageModelProvider.Interface,
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
         private compressionHandler: CompressionHandler.Interface,
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface,
         private valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[]
     ) {}
 
@@ -103,7 +105,8 @@ class DdbEsUpdateEntryImpl implements UpdateEntryStorageOperation.Interface {
 
         const elasticsearchEntityBatch = this.esEntity.createEntityWriter();
 
-        const { index: esIndex } = configurations.es({
+        const configurations = createConfigurations(this.indexProvider);
+        const { index: esIndex } = await configurations.es({
             model
         });
 
@@ -242,6 +245,7 @@ export const DdbEsUpdateEntry = UpdateEntryStorageOperation.createImplementation
         CmsStorageModelProvider,
         CmsEntryOpenSearchFieldIndexRegistry,
         CompressionHandler,
+        CmsModelOpenSearchIndexProvider,
         [CmsEntryOpenSearchValuesModifier, { multiple: true }]
     ]
 });

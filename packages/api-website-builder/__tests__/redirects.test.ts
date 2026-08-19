@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { useHandler } from "./utils/useHandler.js";
 import { redirectMocks } from "./mocks/redirect.mock.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/api/testing/until.js";
 import { CreateRedirectUseCase } from "~/features/redirects/CreateRedirect/index.js";
 import { UpdateRedirectUseCase } from "~/features/redirects/UpdateRedirect/index.js";
 import { GetRedirectByIdUseCase } from "~/features/redirects/GetRedirectById/index.js";

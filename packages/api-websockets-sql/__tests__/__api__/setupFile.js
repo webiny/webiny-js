@@ -1,4 +1,4 @@
-import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import { KnexClient } from "@webiny/api-core-sql/feature/KnexClient/KnexClient.js";
 import { WebsocketsConnectionRegistry } from "../../src/index.js";
 import { TableName } from "../../src/TableName/TableName.js";

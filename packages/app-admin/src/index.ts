@@ -78,7 +78,7 @@ export type { ISlugify } from "./features/slugify/abstractions.js";
 
 // Hooks
 export * from "./hooks/index.js";
-export { useWcp } from "./presentation/wcp/useWcp.js";
+export { useFeatureFlags } from "./presentation/featureFlags/useFeatureFlags.js";
 export { useTenantContext } from "./presentation/tenancy/useTenantContext.js";
 export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
 export { useAuthentication } from "./presentation/security/hooks/useAuthentication.js";

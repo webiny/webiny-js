@@ -15,7 +15,7 @@ import { ApiCoreDdbFeature } from "@webiny/api-core-ddb";
 import { HeadlessCmsDdbEsFeature } from "@webiny/api-headless-cms-ddb-es";
 import { AuditLogsDdbFeature } from "@webiny/api-audit-logs-ddb";
 import { AcoDdbFeature } from "@webiny/api-aco-ddb";
-import { WebsocketsDdbFeature } from "@webiny/api-websockets-ddb";
+import { WebsocketsDdbFeature } from "@webiny/api-websockets-aws";
 import { DbRegistryFeature } from "@webiny/db/exports/api/db.js";
 import { type OpenSearchClientOptions } from "@webiny/api-opensearch";
 import {

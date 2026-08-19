@@ -21,6 +21,7 @@
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-utils": "0.0.0",
     "@webiny/feature": "0.0.0",
+    "@webiny/feature-flags": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/react-properties": "0.0.0",

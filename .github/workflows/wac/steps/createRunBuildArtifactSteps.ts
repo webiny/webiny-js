@@ -29,11 +29,20 @@ const ARTIFACT_NAME = "run-build-cache-${{ github.run_attempt }}";
 
 const CACHED_PACKAGES = ".webiny/cached-packages";
 
+// The working directory is an expression like `${{ needs.baseBranch.outputs.base-branch }}`, and
+// `needs` only exposes a job's DIRECT dependencies. Some consumer jobs (the /vitest test jobs)
+// depend on that job only transitively, so the expression resolves to an empty string and those
+// jobs check the repository out at the workspace root instead of into a subdirectory. Passing the
+// directory through an env var lets the shell substitute `.` in that case, so `tar -C` always
+// receives an argument and extracts to wherever the checkout actually is.
+const TARGET_DIR = '"${WEBINY_JS_DIR:-.}"';
+
 export const createRunBuildArtifactUploadSteps = (params: CreateRunBuildArtifactStepsParams) => {
     return [
         {
             name: "Compress build cache",
-            run: `tar -cf ${ARCHIVE} --use-compress-program=zstdmt -C ${params.workingDirectory} ${CACHED_PACKAGES}`
+            run: `tar -cf ${ARCHIVE} --use-compress-program=zstdmt -C ${TARGET_DIR} ${CACHED_PACKAGES}`,
+            env: { WEBINY_JS_DIR: params.workingDirectory }
         },
         {
             name: "Upload build cache",
@@ -59,7 +68,8 @@ export const createRunBuildArtifactDownloadSteps = (params: CreateRunBuildArtifa
         },
         {
             name: "Extract build cache",
-            run: `tar -xf ${ARCHIVE} --use-compress-program=zstdmt -C ${params.workingDirectory}`
+            run: `tar -xf ${ARCHIVE} --use-compress-program=zstdmt -C ${TARGET_DIR}`,
+            env: { WEBINY_JS_DIR: params.workingDirectory }
         }
     ] as const;
 };

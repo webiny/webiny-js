@@ -10,7 +10,8 @@
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../api-core" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -36,7 +37,9 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
     }
   }
 }

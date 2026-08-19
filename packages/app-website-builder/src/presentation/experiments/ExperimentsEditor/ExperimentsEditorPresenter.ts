@@ -79,13 +79,11 @@ class ExperimentsEditorPresenterImpl implements IExperimentsEditorPresenter {
     }
 
     private get switcherItems(): SwitcherItem[] {
-        return this.experiments.map(
-            (experiment): SwitcherItem => ({
-                id: experiment.id,
-                name: experiment.name,
-                status: experiment.status === "running" ? "active" : "inactive"
-            })
-        );
+        return this.experiments.map((experiment): SwitcherItem => ({
+            id: experiment.id,
+            name: experiment.name,
+            status: experiment.status === "running" ? "active" : "inactive"
+        }));
     }
 
     get vm(): IExperimentsEditorViewModel {

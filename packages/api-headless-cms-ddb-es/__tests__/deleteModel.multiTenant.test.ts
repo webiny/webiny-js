@@ -8,8 +8,7 @@ import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { DeleteModelStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { CmsModelOpenSearchIndexProvider } from "~/features/CmsModelOpenSearchIndex/index.js";
-import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 import type { Container } from "@webiny/di";
 
 // @ts-expect-error This is enough for tests.
@@ -38,12 +37,8 @@ const productPlugin = createModelPlugin({
 
 process.env.OPENSEARCH_SHARED_INDEXES = "true";
 
-const getIndex = async (container: Container, model: CmsModel) => {
-    const provider = container.resolve(CmsModelOpenSearchIndexProvider);
-    const { index: rawIndex } = await provider.execute({ model });
-    const prefix = getOpenSearchIndexPrefix();
-    return prefix ? prefix + rawIndex : rawIndex;
-};
+const getIndex = (container: Container, model: CmsModel) =>
+    createTestModelIndexName(container, { model });
 
 const resolveUseCases = (container: Container) => ({
     identityCtx: container.resolve(IdentityContext),

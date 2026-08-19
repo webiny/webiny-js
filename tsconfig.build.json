@@ -54,12 +54,5 @@
      */
     "exactOptionalPropertyTypes": false
   },
-  "exclude": [
-    "node_modules",
-    "packages/*/dist",
-    "scripts/**",
-    "**jest**",
-    "packages/cli",
-    "packages/project-utils"
-  ]
+  "exclude": ["node_modules", "packages/*/dist", "scripts/**", "**jest**", "packages/cli"]
 }

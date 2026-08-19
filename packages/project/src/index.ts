@@ -39,8 +39,14 @@ export { GracefulError } from "./GracefulError.js";
 
 export { toImportSpecifier } from "./utils/toImportSpecifier.js";
 
-export { Wcp } from "./components/Wcp.js";
+export { FeatureFlag } from "./components/FeatureFlag.js";
 export {
     WcpProjectLicenseProvider,
     useWcpProjectLicense
 } from "./services/GetProjectConfigService/WcpProjectLicenseContext.js";
+export {
+    FeatureFlagsProvider,
+    FeatureFlagsGate,
+    useProjectFeatureFlags,
+    setProjectFeatureFlags
+} from "./services/GetProjectConfigService/FeatureFlagsContext.js";
