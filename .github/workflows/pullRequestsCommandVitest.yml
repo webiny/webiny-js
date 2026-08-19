@@ -141,9 +141,13 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v5
         with:
@@ -316,9 +320,13 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
         uses: actions/download-artifact@v8
@@ -483,9 +491,13 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
         uses: actions/download-artifact@v8
@@ -661,9 +673,13 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
         uses: actions/download-artifact@v8
@@ -829,9 +845,13 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
         uses: actions/download-artifact@v8
@@ -998,9 +1018,13 @@ jobs:
           git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
         uses: actions/download-artifact@v8

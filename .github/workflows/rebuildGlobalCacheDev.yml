@@ -39,9 +39,13 @@ jobs:
         with:
           path: dev
           ref: dev
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: dev
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: dev/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v5
         with:
