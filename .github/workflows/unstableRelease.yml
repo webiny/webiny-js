@@ -52,9 +52,13 @@ jobs:
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.event.inputs.branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ github.event.inputs.branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v5
         with:
@@ -96,9 +100,13 @@ jobs:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.event.inputs.branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v5
         with:
-          path: ${{ github.event.inputs.branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v5
         with:
