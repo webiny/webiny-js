@@ -1,3 +1,7 @@
+export {
+    CmsModelOpenSearchIndexProvider,
+    CmsModelOpenSearchIndex
+} from "~/features/CmsModelOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchUtilsFeature } from "~/features/CmsEntryOpenSearchUtilsFeature.js";
 export {
     CmsEntryOpenSearchFieldIndexRegistry,

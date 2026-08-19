@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../api-opensearch" },
+    { "path": "../api-opensearch-aws" },
     { "path": "../api-search-index-tasks" },
     { "path": "../api-search-index-tasks-os" },
     { "path": "../db-dynamodb" },
@@ -15,8 +15,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
-      "@webiny/api-opensearch": ["../api-opensearch/src"],
+      "@webiny/api-opensearch-aws/*": ["../api-opensearch-aws/src/*"],
+      "@webiny/api-opensearch-aws": ["../api-opensearch-aws/src"],
       "@webiny/api-search-index-tasks/*": ["../api-search-index-tasks/src/*"],
       "@webiny/api-search-index-tasks": ["../api-search-index-tasks/src"],
       "@webiny/api-search-index-tasks-os/*": ["../api-search-index-tasks-os/src/*"],

@@ -6,7 +6,7 @@ import { CmsDdbEsEntriesEsEntity } from "~/abstractions/CmsDdbEsEntriesEsEntity.
 import { CmsDdbEsDataLoaders } from "~/abstractions/CmsDdbEsDataLoaders.js";
 import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch";
+import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch-aws";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { createLatestSortKey, createPartitionKey, createPublishedSortKey } from "./keys.js";
 

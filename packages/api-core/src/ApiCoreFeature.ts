@@ -25,6 +25,7 @@ import { SecuritySchemaFactory } from "~/graphql/security/SecuritySchemaFactory.
 import { UsersSchemaFactory } from "~/graphql/users/UsersSchemaFactory.js";
 import { SystemSchemaFactory } from "~/graphql/system/SystemSchemaFactory.js";
 import { WcpSchemaFactory } from "~/graphql/wcp/WcpSchemaFactory.js";
+import { FeatureFlagsSchemaFactory } from "~/graphql/featureFlags/FeatureFlagsSchemaFactory.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
@@ -60,5 +61,6 @@ export const ApiCoreFeature = createFeature({
         container.register(UsersSchemaFactory);
         container.register(SystemSchemaFactory);
         container.register(WcpSchemaFactory);
+        container.register(FeatureFlagsSchemaFactory);
     }
 });

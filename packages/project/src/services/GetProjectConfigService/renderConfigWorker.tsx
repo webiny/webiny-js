@@ -10,6 +10,7 @@ import { ProjectModel } from "~/models/ProjectModel.js";
 import { toImportSpecifier } from "~/utils/index.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
+import { FeatureFlagsProvider } from "./FeatureFlagsContext.js";
 import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
 
 const sendError = (err: Error) => {
@@ -88,12 +89,14 @@ const reactRoot = createRoot(root);
 
 reactRoot.render(
     <WcpProjectLicenseProvider>
-        <EnvProvider>
-            <ProductionEnvironmentsCollector>
-                <AsyncProperties onChange={onChange}>
-                    <Extensions />
-                </AsyncProperties>
-            </ProductionEnvironmentsCollector>
-        </EnvProvider>
+        <FeatureFlagsProvider>
+            <EnvProvider>
+                <ProductionEnvironmentsCollector>
+                    <AsyncProperties onChange={onChange}>
+                        <Extensions />
+                    </AsyncProperties>
+                </ProductionEnvironmentsCollector>
+            </EnvProvider>
+        </FeatureFlagsProvider>
     </WcpProjectLicenseProvider>
 );

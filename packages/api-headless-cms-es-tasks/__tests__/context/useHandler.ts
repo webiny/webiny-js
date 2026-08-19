@@ -1,13 +1,13 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { BackgroundTasksFeature, TaskService, TasksCrud } from "@webiny/background-tasks/api";
-import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createMockTaskService } from "@webiny/background-tasks/testing/index.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Context } from "~/types";
 import { HeadlessCmsEsTasksFeature } from "~/index.js";
-import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/feature.js";
+import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/feature.js";
 
 type Params = Omit<CmsTestHandlerParams, "setup"> & { plugins?: any };
 

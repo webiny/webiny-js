@@ -10,12 +10,14 @@ import { contentSdk as cmsContentSdk, environment as cmsEnvironment } from "@web
 import { contentSdk as wbContentSdk } from "@webiny/website-builder-sdk";
 import { CmsSdk } from "./CmsSdk.js";
 import { WbSdk } from "./WbSdk.js";
+import { ComponentsSdk } from "./ComponentsSdk.js";
 import type { ContentSdkConfig } from "./types.js";
 
 interface InitializedSdk {
     webiny: Webiny;
     cms: CmsSdk;
     wb: WbSdk;
+    components: ComponentsSdk;
 }
 
 export class FrontendSdk {
@@ -56,6 +58,10 @@ export class FrontendSdk {
         return this.initialized.webiny.webhooks;
     }
 
+    get components(): ComponentsSdk {
+        return this.initialized.components;
+    }
+
     init(config: ContentSdkConfig): void {
         const webiny = new Webiny({
             endpoint: config.endpoint,
@@ -67,7 +73,13 @@ export class FrontendSdk {
         this.sdk = {
             webiny,
             cms: new CmsSdk(webiny),
-            wb: new WbSdk()
+            wb: new WbSdk(),
+            components: new ComponentsSdk({
+                endpoint: config.endpoint,
+                token: config.token,
+                tenant: config.tenant || "root",
+                fetch: config.fetch
+            })
         };
 
         cmsContentSdk.init(

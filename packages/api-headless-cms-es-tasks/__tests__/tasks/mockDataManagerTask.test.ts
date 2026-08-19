@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MOCK_DATA_MANAGER_TASK_ID } from "~/tasks/MockDataManagerTask.js";
 import { useHandler } from "~tests/context/useHandler";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { createRunner } from "@webiny/background-tasks/testing/index.js";
 import type { Context, IMockDataManagerInput, IMockDataManagerOutput } from "~/types";
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants";
 import {

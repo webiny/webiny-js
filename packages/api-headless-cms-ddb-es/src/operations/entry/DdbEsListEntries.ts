@@ -12,12 +12,13 @@ import type { Client } from "@webiny/api-opensearch";
 import { createLimit, decodeCursor, encodeCursor } from "@webiny/api-opensearch";
 import type { OpenSearchSearchResponse } from "@webiny/api-opensearch/types.js";
 import { getTotalCount } from "@webiny/api-opensearch/types.js";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
+import { createConfigurations } from "@webiny/api-headless-cms-utils-os/configurations.js";
 import { extractEntriesFromIndex } from "@webiny/api-headless-cms-utils-os/helpers/index.js";
 import { shouldIgnoreEsResponseError } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/shouldIgnoreEsResponseError.js";
 import {
     CmsEntryOpenSearchBodyBuilder,
-    CmsEntryOpenSearchFieldIndexRegistry
+    CmsEntryOpenSearchFieldIndexRegistry,
+    CmsModelOpenSearchIndexProvider
 } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import type { CmsIndexEntry } from "@webiny/api-headless-cms-utils-os/types.js";
 import { convertEntryKeysFromStorage } from "./transformations/convertEntryKeys.js";
@@ -30,7 +31,8 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
         private bodyBuilder: CmsEntryOpenSearchBodyBuilder.Interface,
         private fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
         private fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
-        openSearchClient: OpenSearchClient.Interface
+        openSearchClient: OpenSearchClient.Interface,
+        private indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {
         this.elasticsearch = openSearchClient.use();
     }
@@ -42,7 +44,8 @@ class DdbEsListEntriesImpl implements ListEntriesStorageOperation.Interface {
         const model = this.storageModelProvider.getModel<T>(initialModel);
 
         const limit = createLimit(params.limit, 50);
-        const { index } = configurations.es({
+        const configurations = createConfigurations(this.indexProvider);
+        const { index } = await configurations.es({
             model
         });
 
@@ -132,6 +135,7 @@ export const DdbEsListEntries = ListEntriesStorageOperation.createImplementation
         CmsEntryOpenSearchBodyBuilder,
         CmsModelFieldToGraphQLRegistry,
         CmsEntryOpenSearchFieldIndexRegistry,
-        OpenSearchClient
+        OpenSearchClient,
+        CmsModelOpenSearchIndexProvider
     ]
 });
