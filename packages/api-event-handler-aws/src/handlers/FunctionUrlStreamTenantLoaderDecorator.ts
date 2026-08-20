@@ -24,7 +24,11 @@ class FunctionUrlStreamTenantLoaderDecoratorImpl
     ) {}
 
     async execute(ctx: EventContext<any>, next: NextFunction): Promise<void> {
-        this.rawTenantId.set(extractTenantId(headersFromFunctionUrlEvent(ctx.event)));
+        const headers = headersFromFunctionUrlEvent(ctx.event);
+        const tenantId = extractTenantId(headers);
+
+        this.rawTenantId.set(tenantId);
+
         await this.tenantLoader.establish();
         return this.decoratee.execute(ctx, next);
     }

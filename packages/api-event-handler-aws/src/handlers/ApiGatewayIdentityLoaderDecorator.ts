@@ -25,7 +25,11 @@ class ApiGatewayIdentityLoaderDecoratorImpl implements ApiGatewayEventHandler.In
     ) {}
 
     async execute(ctx: EventContext<APIGatewayProxyEvent>, next: NextFunction): Promise<any> {
-        this.rawAuthToken.set(extractAuthToken(ctx.event?.headers as Record<string, string>));
+        const headers = ctx.event?.headers as Record<string, string>;
+        const authToken = extractAuthToken(headers);
+
+        this.rawAuthToken.set(authToken);
+
         await this.identityLoader.establish();
         return this.decoratee.execute(ctx, next);
     }
