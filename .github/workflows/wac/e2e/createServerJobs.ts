@@ -174,7 +174,7 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                 {
                     name: "Create Cypress config",
                     "working-directory": DIR_WEBINY_JS,
-                    run: `yarn setup-cypress --hostingType server --apiUrl ${SERVER_API_URL} --adminUrl ${SERVER_ADMIN_URL}`
+                    run: `yarn setup-cypress:server --apiUrl ${SERVER_API_URL} --adminUrl ${SERVER_ADMIN_URL}`
                 },
                 {
                     name: "Install Cypress binary",
