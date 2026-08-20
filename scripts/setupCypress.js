@@ -11,7 +11,11 @@ const args = {
     env: argv.env || "dev",
     force: argv.force || false,
     localhost: argv.localhost || false,
-    projectFolder: argv.projectFolder || null
+    projectFolder: argv.projectFolder || null,
+    // Self-hosted (server) projects have no Pulumi state and no Cognito, so the URLs cannot be
+    // read from deployment output. Pass them explicitly instead.
+    apiUrl: argv.apiUrl || null,
+    adminUrl: argv.adminUrl || null
 };
 
 /**
@@ -19,6 +23,8 @@ const args = {
  * Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
  * Pass "--force" if you want to allow overwriting existing cypress.config.ts config file.
  * Pass "--project-folder" to specify from which project you'd like to set up configuration against
+ * Pass "--api-url" and "--admin-url" for a self-hosted (server) project, which has no deployment
+ * output to read from. Cognito values are left empty - self-hosted uses its own identity provider.
  */
 (async () => {
     if (args.projectFolder) {
@@ -46,27 +52,37 @@ const args = {
 
     let cypressConfig = fs.readFileSync(cypressConfigPath, "utf8");
 
-    const stdout = execSync(`yarn webiny output api --env ${args.env} --json`, {
-        encoding: "utf-8",
-        stdio: "pipe",
-        cwd: args.projectFolder || process.cwd()
-    });
+    if (args.apiUrl) {
+        // Self-hosted (server): no `webiny output` to read, and no Cognito. The placeholders are
+        // still substituted (with empty strings) so the generated config stays valid TypeScript.
+        cypressConfig = cypressConfig.replaceAll("{API_URL}", args.apiUrl);
+        cypressConfig = cypressConfig.replaceAll("{AWS_COGNITO_USER_POOL_ID}", "");
+        cypressConfig = cypressConfig.replaceAll("{AWS_COGNITO_CLIENT_ID}", "");
+    } else {
+        const stdout = execSync(`yarn webiny output api --env ${args.env} --json`, {
+            encoding: "utf-8",
+            stdio: "pipe",
+            cwd: args.projectFolder || process.cwd()
+        });
 
-    const apiOutput = JSON.parse(stdout);
+        const apiOutput = JSON.parse(stdout);
 
-    cypressConfig = cypressConfig.replaceAll("{API_URL}", apiOutput.apiUrl);
+        cypressConfig = cypressConfig.replaceAll("{API_URL}", apiOutput.apiUrl);
 
-    cypressConfig = cypressConfig.replaceAll(
-        "{AWS_COGNITO_USER_POOL_ID}",
-        apiOutput.cognitoUserPoolId
-    );
-    cypressConfig = cypressConfig.replaceAll(
-        "{AWS_COGNITO_CLIENT_ID}",
-        apiOutput.cognitoAppClientId
-    );
+        cypressConfig = cypressConfig.replaceAll(
+            "{AWS_COGNITO_USER_POOL_ID}",
+            apiOutput.cognitoUserPoolId
+        );
+        cypressConfig = cypressConfig.replaceAll(
+            "{AWS_COGNITO_CLIENT_ID}",
+            apiOutput.cognitoAppClientId
+        );
+    }
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
-    if (args.localhost) {
+    if (args.adminUrl) {
+        cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", args.adminUrl);
+    } else if (args.localhost) {
         const adminUrl = "http://localhost:3001";
         cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminUrl);
     } else {
