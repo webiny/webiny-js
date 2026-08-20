@@ -7,24 +7,77 @@ import { execSync } from "node:child_process";
 
 const { green, red } = chalk;
 const argv = yargs(hideBin(process.argv)).argv;
+
 const args = {
     env: argv.env || "dev",
     force: argv.force || false,
     localhost: argv.localhost || false,
     projectFolder: argv.projectFolder || null,
-    // Self-hosted (server) projects have no Pulumi state and no Cognito, so the URLs cannot be
-    // read from deployment output. Pass them explicitly instead.
+    hostingType: argv.hostingType || "aws",
     apiUrl: argv.apiUrl || null,
     adminUrl: argv.adminUrl || null
 };
 
+const readWebinyOutput = (app, { env, projectFolder }) => {
+    const stdout = execSync(`yarn webiny output ${app} --env ${env} --json`, {
+        encoding: "utf-8",
+        stdio: "pipe",
+        cwd: projectFolder || process.cwd()
+    });
+
+    return JSON.parse(stdout);
+};
+
 /**
- * Prepares cypress.config.ts config by reading values from state files and populating necessary variables.
+ * One factory per hosting type, each returning the full set of values substituted into
+ * example.cypress.config.ts. Adding a hosting type means adding a factory here, rather than
+ * threading another flag through the substitution code.
+ */
+const configValueFactories = {
+    // AWS: everything is read back from the deployed stacks' output.
+    aws: options => {
+        const api = readWebinyOutput("api", options);
+
+        // With a "local" stack the Admin app is served from localhost rather than from a bucket.
+        const adminUrl = options.localhost
+            ? "http://localhost:3001"
+            : readWebinyOutput("admin", options).appUrl;
+
+        return {
+            API_URL: api.apiUrl,
+            ADMIN_URL: adminUrl,
+            AWS_COGNITO_USER_POOL_ID: api.cognitoUserPoolId,
+            AWS_COGNITO_CLIENT_ID: api.cognitoAppClientId
+        };
+    },
+
+    // Self-hosted ("server"): the project is not deployed, so there is no output to read - the URLs
+    // are passed in. It also has its own identity provider, so the Cognito values are blank; they
+    // are still substituted so the generated config stays valid TypeScript.
+    server: options => {
+        if (!options.apiUrl || !options.adminUrl) {
+            console.log(
+                `${red("--api-url")} and ${red("--admin-url")} are required for ${green("--hosting-type server")}.`
+            );
+            process.exit(1);
+        }
+
+        return {
+            API_URL: options.apiUrl,
+            ADMIN_URL: options.adminUrl,
+            AWS_COGNITO_USER_POOL_ID: "",
+            AWS_COGNITO_CLIENT_ID: ""
+        };
+    }
+};
+
+/**
+ * Prepares cypress.config.ts config by populating the necessary variables for a given hosting type.
  * Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
  * Pass "--force" if you want to allow overwriting existing cypress.config.ts config file.
  * Pass "--project-folder" to specify from which project you'd like to set up configuration against
- * Pass "--api-url" and "--admin-url" for a self-hosted (server) project, which has no deployment
- * output to read from. Cognito values are left empty - self-hosted uses its own identity provider.
+ * Pass "--hosting-type" to pick the value factory: "aws" (default) or "server" (self-hosted).
+ * Pass "--api-url" and "--admin-url" with "--hosting-type server", which has no deployment output.
  */
 (async () => {
     if (args.projectFolder) {
@@ -35,6 +88,22 @@ const args = {
             process.exit(1);
         }
     }
+
+    const createConfigValues = configValueFactories[args.hostingType];
+    if (!createConfigValues) {
+        console.log(
+            `Unknown hosting type ${red(args.hostingType)} (expected ${Object.keys(
+                configValueFactories
+            )
+                .map(key => green(key))
+                .join(" or ")}).`
+        );
+        process.exit(1);
+    }
+
+    // Resolved before the config file is touched, so a bad invocation cannot leave a
+    // half-substituted cypress.config.ts behind.
+    const values = createConfigValues(args);
 
     const cypressExampleConfigPath = path.resolve("example.cypress.config.ts");
     const cypressConfigPath = path.resolve("cypress-tests/cypress.config.ts");
@@ -51,50 +120,8 @@ const args = {
     }
 
     let cypressConfig = fs.readFileSync(cypressConfigPath, "utf8");
-
-    if (args.apiUrl) {
-        // Self-hosted (server): no `webiny output` to read, and no Cognito. The placeholders are
-        // still substituted (with empty strings) so the generated config stays valid TypeScript.
-        cypressConfig = cypressConfig.replaceAll("{API_URL}", args.apiUrl);
-        cypressConfig = cypressConfig.replaceAll("{AWS_COGNITO_USER_POOL_ID}", "");
-        cypressConfig = cypressConfig.replaceAll("{AWS_COGNITO_CLIENT_ID}", "");
-    } else {
-        const stdout = execSync(`yarn webiny output api --env ${args.env} --json`, {
-            encoding: "utf-8",
-            stdio: "pipe",
-            cwd: args.projectFolder || process.cwd()
-        });
-
-        const apiOutput = JSON.parse(stdout);
-
-        cypressConfig = cypressConfig.replaceAll("{API_URL}", apiOutput.apiUrl);
-
-        cypressConfig = cypressConfig.replaceAll(
-            "{AWS_COGNITO_USER_POOL_ID}",
-            apiOutput.cognitoUserPoolId
-        );
-        cypressConfig = cypressConfig.replaceAll(
-            "{AWS_COGNITO_CLIENT_ID}",
-            apiOutput.cognitoAppClientId
-        );
-    }
-
-    // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
-    if (args.adminUrl) {
-        cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", args.adminUrl);
-    } else if (args.localhost) {
-        const adminUrl = "http://localhost:3001";
-        cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminUrl);
-    } else {
-        const stdout = execSync(`yarn webiny output admin --env ${args.env} --json`, {
-            encoding: "utf-8",
-            stdio: "pipe",
-            cwd: args.projectFolder || process.cwd()
-        });
-
-        const adminOutput = JSON.parse(stdout);
-
-        cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminOutput.appUrl);
+    for (const [placeholder, value] of Object.entries(values)) {
+        cypressConfig = cypressConfig.replaceAll(`{${placeholder}}`, value);
     }
 
     fs.writeFileSync(cypressConfigPath, cypressConfig, "utf8");

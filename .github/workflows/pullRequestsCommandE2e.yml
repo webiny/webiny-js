@@ -747,8 +747,8 @@ jobs:
       - name: Create Cypress config
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: >-
-          yarn setup-cypress --apiUrl http://localhost:3002 --adminUrl
-          http://localhost:3001
+          yarn setup-cypress --hostingType server --apiUrl http://localhost:3002
+          --adminUrl http://localhost:3001
       - name: Install Cypress binary
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: cd cypress-tests && yarn cypress install
