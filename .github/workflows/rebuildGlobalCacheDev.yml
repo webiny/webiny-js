@@ -13,7 +13,7 @@ jobs:
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Create global cache key
@@ -32,10 +32,10 @@ jobs:
     name: Cache dependencies and packages
     needs: constants
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: dev
           ref: dev
@@ -43,11 +43,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: dev
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: dev/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}

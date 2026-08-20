@@ -1,3 +1,4 @@
+import { ACTION } from "../utils/index.js";
 interface CreateRunBuildArtifactStepsParams {
     workingDirectory: string;
 }
@@ -50,7 +51,7 @@ export const createRunBuildArtifactUploadSteps = (params: CreateRunBuildArtifact
         },
         {
             name: "Upload build cache",
-            uses: "actions/upload-artifact@v7",
+            uses: ACTION.uploadArtifact,
             with: {
                 name: ARTIFACT_NAME,
                 path: ARCHIVE,
@@ -68,7 +69,7 @@ export const createRunBuildArtifactDownloadSteps = (params: CreateRunBuildArtifa
     return [
         {
             name: "Download build cache",
-            uses: "actions/download-artifact@v8",
+            uses: ACTION.downloadArtifact,
             with: { name: ARTIFACT_NAME }
         },
         {

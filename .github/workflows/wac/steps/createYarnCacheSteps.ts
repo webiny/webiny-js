@@ -1,3 +1,4 @@
+import { ACTION } from "../utils/index.js";
 interface CreateYarnCacheStepsParams {
     workingDirectory: string;
 }
@@ -22,7 +23,7 @@ export const createYarnCacheSteps = (params: CreateYarnCacheStepsParams) => {
             run: 'echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT'
         },
         {
-            uses: "actions/cache@v5",
+            uses: ACTION.cache,
             with: {
                 path: "${{ steps.yarn-cache-folder.outputs.path }}",
                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
