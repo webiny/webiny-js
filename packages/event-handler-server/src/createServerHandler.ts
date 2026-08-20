@@ -1,6 +1,6 @@
 import http from "node:http";
 import { Container } from "@webiny/di";
-import { createHandler } from "@webiny/event-handler-core";
+import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 
 export interface CreateServerHandlerOptions {
@@ -17,20 +17,14 @@ export interface CreateServerHandlerOptions {
 export async function createServerHandler(
     options: CreateServerHandlerOptions
 ): Promise<http.Server> {
-    // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
-    // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
-    const rootContainer = new Container();
-    await options.root(rootContainer);
-
-    const handle = createHandler({
+    const app = HandlerApp.init({
         root: options.root,
-        request: options.request,
-        rootContainer
+        request: options.request
     });
 
     const server = http.createServer(async (req, res) => {
         try {
-            const response = (await handle(req)) as IHttpResponse;
+            const response = (await app.handle(req)) as IHttpResponse;
             res.writeHead(response.statusCode, response.headers);
             const { body } = response;
             if (body === undefined || body === null) {
@@ -54,6 +48,9 @@ export async function createServerHandler(
     });
 
     if (options.onServer) {
+        // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
+        // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
+        const rootContainer = await app.getRootContainer();
         await options.onServer(server, rootContainer);
     }
 
