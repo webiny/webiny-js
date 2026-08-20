@@ -9,7 +9,7 @@ interface Params {
 export default ({ setup = [] }: Params = {}) => {
     const handler = createTestHttpHandler({
         root: () => {},
-        request: async container => {
+        child: async container => {
             // DI-native setup callbacks are plain `container => {}` functions (they register features /
             // request-context initializers / schema factories directly).
             for (const cb of [setup].flat(Infinity as 1).filter(Boolean)) {
