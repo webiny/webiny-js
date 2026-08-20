@@ -9,7 +9,7 @@ import {
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
+import { ACTION, AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -118,7 +118,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: ACTION.uploadArtifactV6,
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
@@ -153,7 +153,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: ACTION.uploadArtifactV6,
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
