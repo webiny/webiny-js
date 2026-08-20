@@ -2,7 +2,7 @@ import { FeatureFlags } from "../abstractions.js";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
 import type { FeatureFlagName } from "@webiny/feature-flags";
 import type { ILicense } from "@webiny/wcp/types.js";
-import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
+import { getCachedWcpLicense } from "~/features/wcp/loadWcpLicense.js";
 
 /*
  * Feature flag resolution (license decorator):
@@ -56,18 +56,18 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
 }
 
 class FeatureFlagsWithLicenseDecoratorImpl implements FeatureFlags.Interface {
-    constructor(
-        private licenseProvider: WcpLicenseProvider.Interface,
-        private decoratee: FeatureFlags.Interface
-    ) {}
+    constructor(private decoratee: FeatureFlags.Interface) {}
 
     get(): FeatureFlagsClass {
         const base = this.decoratee.get();
-        return new LicenseDecoratedFeatureFlags(base, this.licenseProvider.get());
+        // Read the license from the process cache (refreshed PRE-register by registerApiRequestStack),
+        // not the per-request WcpLicenseProvider (refreshed post-register) — so register()-time flag
+        // checks see the live license instead of the NullLicense placeholder.
+        return new LicenseDecoratedFeatureFlags(base, getCachedWcpLicense());
     }
 }
 
 export const FeatureFlagsWithLicenseDecorator = FeatureFlags.createDecorator({
     decorator: FeatureFlagsWithLicenseDecoratorImpl,
-    dependencies: [WcpLicenseProvider]
+    dependencies: []
 });

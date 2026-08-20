@@ -48,33 +48,64 @@ const cachedLicense: CachedWcpProjectLicense = {
     license: new NullLicense()
 };
 
+// In-flight fetch, memoized so concurrent cache-miss callers coalesce onto a single WCP request
+// (self-hosted runs many requests in one process; we never want two license fetches at once).
+let inflight: Promise<ILicense> | null = null;
+
+/**
+ * Synchronously read the currently cached WCP license. `loadWcpLicense()` must have been awaited at
+ * least once this request (the pre-register refresh in `registerApiRequestStack` does this), so this
+ * reflects the live license — letting register()-time feature-flag checks read it synchronously.
+ */
+export function getCachedWcpLicense(): ILicense {
+    return cachedLicense.license;
+}
+
 export async function loadWcpLicense(
     testProjectLicense?: DecryptedWcpProjectLicense
 ): Promise<ILicense> {
     if (testProjectLicense) {
         cachedLicense.license = License.fromLicenseDto(testProjectLicense);
-    } else if (wcpProjectEnvironment) {
-        const currentCacheKey = getWcpProjectLicenseCacheKey();
-        if (cachedLicense.cacheKey !== currentCacheKey) {
-            cachedLicense.cacheKey = currentCacheKey;
-            // Pull the project license from the WCP API.
-            const decryptedLicenseDto = await getWcpProjectLicense({
-                orgId: wcpProjectEnvironment.org.id,
-                projectId: wcpProjectEnvironment.project.id,
-                projectEnvironmentApiKey: wcpProjectEnvironment.apiKey
-            });
-
-            if (decryptedLicenseDto) {
-                cachedLicense.project = {
-                    orgId: decryptedLicenseDto.orgId,
-                    projectId: decryptedLicenseDto.projectId,
-                    package: decryptedLicenseDto.package
-                };
-            }
-
-            cachedLicense.license = License.fromLicenseDto(decryptedLicenseDto);
-        }
+        return cachedLicense.license;
     }
 
-    return cachedLicense.license;
+    if (!wcpProjectEnvironment) {
+        return cachedLicense.license;
+    }
+
+    const currentCacheKey = getWcpProjectLicenseCacheKey();
+    if (cachedLicense.cacheKey === currentCacheKey) {
+        return cachedLicense.license;
+    }
+
+    // Cache miss (first load or the ~5-min key rotated). Coalesce concurrent callers onto one fetch.
+    if (inflight) {
+        return inflight;
+    }
+
+    inflight = (async () => {
+        // Pull the project license from the WCP API.
+        const decryptedLicenseDto = await getWcpProjectLicense({
+            orgId: wcpProjectEnvironment.org.id,
+            projectId: wcpProjectEnvironment.project.id,
+            projectEnvironmentApiKey: wcpProjectEnvironment.apiKey
+        });
+
+        if (decryptedLicenseDto) {
+            cachedLicense.project = {
+                orgId: decryptedLicenseDto.orgId,
+                projectId: decryptedLicenseDto.projectId,
+                package: decryptedLicenseDto.package
+            };
+        }
+
+        cachedLicense.license = License.fromLicenseDto(decryptedLicenseDto);
+        // Mark fresh only after a successful fetch — a throw leaves the key unset so the next call retries.
+        cachedLicense.cacheKey = currentCacheKey;
+        return cachedLicense.license;
+    })().finally(() => {
+        inflight = null;
+    });
+
+    return inflight;
 }
