@@ -2,8 +2,7 @@ import os from "os";
 import * as tar from "tar";
 import fs from "fs";
 import path from "path";
-// @ts-expect-error `tar` has no types.
-import decompress from "decompress";
+import AdmZip from "adm-zip";
 import semver from "semver";
 import { findUpSync } from "find-up";
 import { loadJsonFileSync } from "load-json-file";
@@ -33,20 +32,17 @@ export default async (
     }
 
     const platform = os.platform();
-    switch (platform) {
-        case "darwin":
-            await setupDarwin(downloadFolder);
-            break;
-        case "linux":
-            await setupLinux(downloadFolder);
-            break;
-        case "win32":
-            await setupWindows(downloadFolder);
-            break;
-        default:
-            throw Error(
-                `Cannot download Pulumi binaries - platform "${platform}" not supported. Supported ones are "darwin", "linux", and "win32"`
-            );
+    if (platform !== "darwin" && platform !== "linux" && platform !== "win32") {
+        throw Error(
+            `Cannot download Pulumi binaries - platform "${platform}" not supported. Supported ones are "darwin", "linux", and "win32"`
+        );
+    }
+
+    try {
+        await setupPlatform(downloadFolder, platform);
+    } catch (error) {
+        fs.rmSync(downloadFolder, { recursive: true, force: true });
+        throw error;
     }
 
     if (typeof afterInstall === "function") {
@@ -58,50 +54,65 @@ export default async (
 
 const SUPPORTED_ARCHITECTURES = ["x64", "arm64"];
 
-async function setupDarwin(downloadFolder: string) {
-    const version = getPulumiVersion();
-    const arch = SUPPORTED_ARCHITECTURES.includes(process.arch) ? process.arch : "x64";
+type SupportedPlatform = "darwin" | "linux" | "win32";
 
-    const filename = `pulumi-v${version}-darwin-${arch}.tar.gz`;
-    const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
-
-    const absoluteFilename = path.join(downloadFolder, filename);
-    await downloadFile(downloadUrl, absoluteFilename);
-
-    await tar.extract({
-        cwd: downloadFolder,
-        file: absoluteFilename
-    });
-
-    fs.unlinkSync(path.join(downloadFolder, filename));
+function getDownloadFilename(version: string, platform: SupportedPlatform): string {
+    switch (platform) {
+        case "darwin": {
+            const arch = SUPPORTED_ARCHITECTURES.includes(process.arch) ? process.arch : "x64";
+            return `pulumi-v${version}-darwin-${arch}.tar.gz`;
+        }
+        case "linux":
+            return `pulumi-v${version}-linux-x64.tar.gz`;
+        case "win32":
+            return `pulumi-v${version}-windows-x64.zip`;
+    }
 }
 
-async function setupWindows(downloadFolder: string) {
+async function setupPlatform(downloadFolder: string, platform: SupportedPlatform) {
     const version = getPulumiVersion();
-    const filename = `pulumi-v${version}-windows-x64.zip`;
+    const filename = getDownloadFilename(version!, platform);
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     const absoluteFilename = path.join(downloadFolder, filename);
     await downloadFile(downloadUrl, absoluteFilename);
 
-    const destination = path.join(downloadFolder, "pulumi");
-    await decompress(absoluteFilename, destination, { strip: 2 });
+    if (platform === "win32") {
+        extractZip(absoluteFilename, path.join(downloadFolder, "pulumi"));
+    } else {
+        await tar.extract({ cwd: downloadFolder, file: absoluteFilename });
+    }
 
-    fs.unlinkSync(path.join(downloadFolder, filename));
+    fs.unlinkSync(absoluteFilename);
 }
 
-async function setupLinux(downloadFolder: string) {
-    const version = getPulumiVersion();
-    const filename = `pulumi-v${version}-linux-x64.tar.gz`;
-    const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
+function extractZip(zipPath: string, destination: string) {
+    fs.mkdirSync(destination, { recursive: true });
 
-    const absoluteFilename = path.join(downloadFolder, filename);
-    await downloadFile(downloadUrl, absoluteFilename);
+    const zip = new AdmZip(zipPath);
+    const stripComponents = 2;
+    const destinationResolved = path.resolve(destination);
 
-    await tar.extract({
-        cwd: downloadFolder,
-        file: absoluteFilename
-    });
+    for (const entry of zip.getEntries()) {
+        if (entry.isDirectory) {
+            continue;
+        }
 
-    fs.unlinkSync(path.join(downloadFolder, filename));
+        const segments = entry.entryName.split(/[\\/]+/).slice(stripComponents);
+        if (segments.length === 0) {
+            continue;
+        }
+
+        if (segments.some(s => s === ".." || path.isAbsolute(s))) {
+            throw new Error(`Unsafe zip entry: ${entry.entryName}`);
+        }
+
+        const targetPath = path.resolve(destinationResolved, ...segments);
+        if (!targetPath.startsWith(destinationResolved + path.sep)) {
+            throw new Error(`Zip slip detected: ${entry.entryName}`);
+        }
+
+        fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+        fs.writeFileSync(targetPath, entry.getData());
+    }
 }
