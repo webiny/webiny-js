@@ -4,7 +4,7 @@
  * The ROOT container wires the AWS transport (API Gateway HTTP + auth/tenant loaders, background-task
  * and WebSocket Lambda invocations, DynamoDB, Cognito, storage). Everything that is not
  * transport-specific — database, identity providers, storage, and the transport-AGNOSTIC per-request
- * feature stack — lives in `registerWebinyApi.ts`, shared with the response-streaming handler
+ * feature stack — lives in `composition/`, shared with the response-streaming handler
  * (`createWebinyStreamApiHandler`) so the two roots cannot drift. The storage variant is injected via
  * `registerRootStorage` / `registerRequestStorage` by a thin variant package
  * (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring in real packages (not an app
@@ -22,10 +22,10 @@ import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
-import { registerWebinyApiRequest, registerWebinyApiRoot } from "~/registerWebinyApi.js";
-import type { WebinyApiCompositionConfig } from "~/registerWebinyApi.js";
+import { registerWebinyApiRequest, registerWebinyApiRoot } from "~/composition/index.js";
+import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
-export type { RegisterRootStorageContext } from "~/registerWebinyApi.js";
+export type { RegisterRootStorageContext } from "~/composition/index.js";
 
 export type CreateWebinyApiHandlerConfig = WebinyApiCompositionConfig;
 

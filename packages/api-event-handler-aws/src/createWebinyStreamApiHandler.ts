@@ -7,7 +7,7 @@
  * (fronted by CloudFront), because API Gateway buffers the entire Lambda response and therefore cannot
  * stream at all.
  *
- * Root/request registration is shared with `createWebinyApiHandler` via `registerWebinyApi.ts`; only
+ * Root/request registration is shared with `createWebinyApiHandler` via `composition/`; only
  * the transport differs. Notably NOT registered here: the background-task and WebSocket event types
  * plus their Lambda handlers. Those are inbound invocation paths that only ever target the buffered
  * function, so registering them would add cold-start cost for events this function never receives.
@@ -18,8 +18,8 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/event-handler-aws";
 import { FunctionUrlStreamIdentityLoaderDecorator } from "~/handlers/FunctionUrlStreamIdentityLoaderDecorator.js";
 import { FunctionUrlStreamTenantLoaderDecorator } from "~/handlers/FunctionUrlStreamTenantLoaderDecorator.js";
-import { registerWebinyApiRequest, registerWebinyApiRoot } from "~/registerWebinyApi.js";
-import type { WebinyApiCompositionConfig } from "~/registerWebinyApi.js";
+import { registerWebinyApiRequest, registerWebinyApiRoot } from "~/composition/index.js";
+import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type CreateWebinyStreamApiHandlerConfig = WebinyApiCompositionConfig;
 

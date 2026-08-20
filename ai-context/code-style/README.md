@@ -16,5 +16,6 @@ Read every rule in this folder before writing or editing code.
 | [compose-css-class-names.md](./compose-css-class-names.md)                                   | Compose class names with a `cn` helper, never `+` or template literals.    |
 | [no-inline-conditional-spreads.md](./no-inline-conditional-spreads.md)                       | Build objects with `if` statements, not inline conditional spreads/casts.  |
 | [no-nested-call-arguments.md](./no-nested-call-arguments.md)                                 | Name each step; don't nest calls as arguments to other calls.              |
+| [one-public-function-per-file.md](./one-public-function-per-file.md)                         | One exported function per file; composition steps always get their own.    |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.
