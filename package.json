@@ -21,8 +21,8 @@
   },
   "devDependencies": {
     "@babel/code-frame": "^8.0.0",
-    "@commitlint/cli": "^21.2.1",
-    "@commitlint/config-conventional": "^21.2.0",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@grpc/grpc-js": "^1.14.4",
     "@lexical/code": "^0.49.0",
     "@lexical/hashtag": "^0.49.0",
@@ -61,7 +61,7 @@
     "lodash": "^4.18.1",
     "minimatch": "^10.2.6",
     "nanoid": "^6.0.1",
-    "next": "^16.3.0",
+    "next": "^16.3.1",
     "oxfmt": "^0.63.0",
     "oxlint": "^1.78.0",
     "react": "18.3.1",
@@ -72,7 +72,7 @@
     "type-fest": "^5.8.0",
     "typescript": "^7.0.2",
     "validator": "^13.15.35",
-    "verdaccio": "^6.9.2",
+    "verdaccio": "^6.10.0",
     "vitest": "^4.1.10",
     "write-json-file": "^7.0.0",
     "yargs": "^18.1.0"

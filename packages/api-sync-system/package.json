@@ -30,7 +30,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@faker-js/faker": "^10.5.0",
+    "@faker-js/faker": "^10.6.0",
     "@types/lodash": "^4.17.25",
     "@webiny/api-core-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
