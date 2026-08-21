@@ -19,7 +19,7 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Check permission and react to comment
@@ -39,7 +39,8 @@ jobs:
           content=eyes
       - name: Create comment
         id: create-comment
-        uses: peter-evans/create-or-update-comment@v5
+        uses: >-
+          peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
@@ -55,9 +56,10 @@ jobs:
     name: Get PR branch
     outputs:
       pr-branch: ${{ steps.pr-branch.outputs.pr-branch }}
+      pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
       release-version: ${{ steps.release-version.outputs.release-version }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Get PR branch
@@ -67,6 +69,14 @@ jobs:
         run: >-
           echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo
           ${{ github.repository }} --json headRefName -q .headRefName)" >>
+          $GITHUB_OUTPUT
+      - name: Get PR head SHA
+        id: pr-sha
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --repo ${{
+          github.repository }} --json headRefOid -q .headRefOid)" >>
           $GITHUB_OUTPUT
       - name: Parse release version from branch name
         id: release-version
@@ -92,16 +102,20 @@ jobs:
       - prBranch
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
-          ref: ${{ needs.prBranch.outputs.pr-branch }}
-      - uses: actions/cache@v5
+          ref: ${{ needs.prBranch.outputs.pr-sha }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
@@ -116,13 +130,14 @@ jobs:
         env:
           WEBINY_JS_DIR: ${{ needs.prBranch.outputs.pr-branch }}
       - name: Upload build cache
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
           path: run-build-cache.tzst
           retention-days: 1
           compression-level: 0
           if-no-files-found: error
+          overwrite: true
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -141,22 +156,26 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
-          ref: ${{ needs.prBranch.outputs.pr-branch }}
+          ref: ${{ needs.prBranch.outputs.pr-sha }}
           fetch-depth: 0
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
@@ -228,22 +247,26 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}
-          ref: ${{ needs.prBranch.outputs.pr-branch }}
+          ref: ${{ needs.prBranch.outputs.pr-sha }}
           fetch-depth: 0
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Download build cache
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          name: run-build-cache-${{ github.run_attempt }}
+          name: run-build-cache
       - name: Extract build cache
         run: >-
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C

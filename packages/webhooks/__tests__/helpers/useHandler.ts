@@ -66,7 +66,7 @@ export const useHandler = (params?: UseHandlerParams) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
+        child: async container => {
             if (params?.encryptionPassphrase) {
                 container.register(createEncryptionBuildParam(params.encryptionPassphrase));
             }

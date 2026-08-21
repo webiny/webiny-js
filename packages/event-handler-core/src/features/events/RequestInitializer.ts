@@ -2,7 +2,7 @@ import { Abstraction } from "@webiny/di";
 
 /**
  * Per-request async initialization hook. Runs once per request, after the request container is set
- * up (options.request) and BEFORE the event is dispatched to its handler chain — i.e. before
+ * up (options.child) and BEFORE the event is dispatched to its handler chain — i.e. before
  * auth/tenant are established.
  *
  * Use it for async, tenant-agnostic, per-request setup that must be ready before synchronous

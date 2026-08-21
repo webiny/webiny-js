@@ -57,7 +57,6 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.3.1",
     "react-helmet": "^6.1.0",
-    "slugify": "^1.6.9",
     "use-deep-compare-effect": "^1.8.1",
     "zod": "4.4.3"
   },

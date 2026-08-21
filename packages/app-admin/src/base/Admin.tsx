@@ -19,6 +19,7 @@ import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
 import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
 import { DateFormatterFeature } from "~/features/dateFormatter/feature.js";
+import { StringFormatterFeature } from "~/features/stringFormatter/feature.js";
 import { ListPresenterFeature } from "~/presentation/listPresenter/index.js";
 import { SortableFeature } from "~/presentation/sortable/index.js";
 import { NotificationsRenderer } from "~/features/notifications/NotificationsRenderer.js";
@@ -42,6 +43,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
 
     SecurityFeature.register(container);
     DateFormatterFeature.register(container);
+    StringFormatterFeature.register(container);
     FormModelFeature.register(container);
     WebinySdkFeature.register(container);
     ListPresenterFeature.register(container);
