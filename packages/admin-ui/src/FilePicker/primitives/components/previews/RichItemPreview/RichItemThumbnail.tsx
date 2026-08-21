@@ -20,6 +20,11 @@ type RichItemThumbnailProps = Omit<React.HTMLAttributes<HTMLDivElement>, "childr
     FileItemFormatted & {
         preview?: RichItemPreviewProps["preview"];
         disabled?: boolean;
+        /**
+         * `tile` is the fixed square that sits beside the file details; `banner` spans the full
+         * width of a stacked layout, where the panel is too narrow to afford a column for it.
+         */
+        variant?: "tile" | "banner";
     };
 
 type ThumbnailProps = Pick<FileItemFormatted, "url" | "name">;
@@ -79,14 +84,16 @@ const RichItemThumbnail = ({
     className,
     mimeType,
     preview,
-    disabled
+    disabled,
+    variant = "tile"
 }: RichItemThumbnailProps) => {
     const isImage = mimeType?.startsWith("image/");
 
     return (
         <div
             className={cn(
-                "size-[56px] m-xs rounded-sm overflow-hidden relative",
+                "rounded-sm overflow-hidden relative",
+                variant === "banner" ? "w-full h-[96px]" : "size-[56px] m-xs",
                 disabled && "[&_img]:filter [&_img]:grayscale [&_img]:opacity-50",
                 className
             )}

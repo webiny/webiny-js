@@ -111,6 +111,7 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
 
     return (
         <SidebarRow
+            align={"start"}
             label={
                 <InheritanceLabel
                     onReset={onReset}
@@ -130,7 +131,6 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
                         value={pickerValue}
                         onSelectItem={() => showFileManager()}
                         onRemoveItem={onRemove}
-                        onEditItem={() => showFileManager()}
                     />
                 )}
             />

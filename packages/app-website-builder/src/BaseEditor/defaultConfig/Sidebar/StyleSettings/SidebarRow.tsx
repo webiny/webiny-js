@@ -1,20 +1,31 @@
 import React from "react";
-import { Icon, Tooltip } from "@webiny/admin-ui";
+import { Icon, Tooltip, cn } from "@webiny/admin-ui";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 
 interface SidebarRowProps {
     label: React.ReactNode;
     tooltip?: React.ReactNode;
+    /**
+     * Rows whose value is a single control centre the label against it. Pass `start` when the
+     * value is a tall, stacked cell (the file picker's preview) so the label sits beside the top
+     * of it rather than halfway down.
+     */
+    align?: "center" | "start";
     children: React.ReactNode;
 }
 
-export const SidebarRow = ({ label, tooltip, children }: SidebarRowProps) => {
+export const SidebarRow = ({ label, tooltip, align = "center", children }: SidebarRowProps) => {
+    const alignToTop = align === "start";
+
     return (
-        <div className={"flex items-center gap-xxs"}>
+        <div className={cn("flex gap-xxs", alignToTop ? "items-start" : "items-center")}>
             <div
-                className={
-                    "w-[80px] flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong"
-                }
+                className={cn(
+                    "w-[80px] flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong",
+                    // Line the label's text up with the top edge of the preview thumbnail, which
+                    // sits inside the card's `p-xs`.
+                    alignToTop && "pt-xs"
+                )}
             >
                 {label}
 
