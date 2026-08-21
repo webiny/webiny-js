@@ -62,7 +62,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
+        child: async container => {
             const wcpLicense = await loadWcpLicense(
                 params.testProjectLicense ?? createTestWcpLicense()
             );

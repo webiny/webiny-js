@@ -55,7 +55,7 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
+        child: async container => {
             // ApiCoreFeature in child container — TenantContext, IdentityContext etc.
             // registered here become per-request singletons automatically
             const wcpLicense = await loadWcpLicense(opts.wcpLicense);

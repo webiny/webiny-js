@@ -6,7 +6,7 @@ import type { HandlerSetup, IHttpRequest, IHttpResponse } from "~/index.js";
 
 export interface createTestHttpHandlerOptions {
     root: HandlerSetup;
-    request?: HandlerSetup;
+    child?: HandlerSetup;
 }
 
 /**
@@ -22,7 +22,7 @@ export function createTestHttpHandler(options: createTestHttpHandlerOptions) {
             HttpFeature.register(container);
             await options.root(container);
         },
-        request: options.request
+        child: options.child
     });
 
     return async (

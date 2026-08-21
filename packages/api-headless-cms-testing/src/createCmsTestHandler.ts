@@ -127,7 +127,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     const handler = createTestHttpHandler({
         root: setupRoot,
-        request: async container => {
+        child: async container => {
             await setupRequest(container);
             GraphQLEngineFeature.register(container);
         }
@@ -171,7 +171,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
         const ctxHandler = createTestHttpHandler({
             root: setupRoot,
-            request: async container => {
+            child: async container => {
                 await setupRequest(container);
                 container.registerInstance(GraphQLContextualSchema, {
                     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
