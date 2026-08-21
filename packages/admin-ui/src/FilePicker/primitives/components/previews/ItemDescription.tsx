@@ -48,10 +48,7 @@ const ItemDescription = ({ className, disabled, item, small, ...props }: ItemDes
     const details = [formattedSize, item.mimeType].filter(Boolean).join(" - ");
 
     return (
-        <div
-            className={cn("flex flex-col gap-xxs overflow-hidden flex-1 min-w-0", className)}
-            {...props}
-        >
+        <div className={cn("flex flex-col gap-xxs overflow-hidden min-w-0", className)} {...props}>
             <TruncatedLine className={disabled ? "text-neutral-disabled" : "text-neutral-primary"}>
                 {item.name}
             </TruncatedLine>
