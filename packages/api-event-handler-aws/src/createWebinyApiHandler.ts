@@ -115,7 +115,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             await config.registerRootStorage(container, { documentClient });
         },
 
-        request: async container => {
+        child: async container => {
             // The per-request feature stack is transport-agnostic (shared with the server transport).
             // The AWS-specific interleave points are supplied as the `transports` adapters.
             await registerApiRequestStack(container, {

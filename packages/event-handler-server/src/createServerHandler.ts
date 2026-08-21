@@ -5,7 +5,7 @@ import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
-    request?: HandlerSetup;
+    child?: HandlerSetup;
     /**
      * Called once, at startup, after the root container is built and the HTTP server is created —
      * before it starts listening. Lets a transport attach to the raw server (e.g. a WebSockets
@@ -19,7 +19,7 @@ export async function createServerHandler(
 ): Promise<http.Server> {
     const app = HandlerApp.init({
         root: options.root,
-        request: options.request
+        child: options.child
     });
 
     const server = http.createServer(async (req, res) => {
