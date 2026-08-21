@@ -218,6 +218,36 @@ export const CompactFullExample: Story = {
     }
 };
 
+/**
+ * Reproduces the narrow-sidebar case: the name and the size/type line truncate, and hovering
+ * either one reveals the full value in a tooltip.
+ */
+export const CompactWithLongFileNameInNarrowContainer: Story = {
+    args: {
+        ...Compact.args
+    },
+    render: args => {
+        const [selectedFile, setSelectedFile] = useState<FileItemDto | null>({
+            name: "cloudy-sky-with-a-very-long-and-unhelpful-file-name-2026-08-21.jpg",
+            mimeType: "image/jpeg",
+            size: 5920138,
+            url: "https://picsum.photos/1200/800"
+        });
+
+        return (
+            <div style={{ width: 232 }}>
+                <FilePicker
+                    {...args}
+                    value={selectedFile}
+                    onSelectItem={() => setSelectedFile(getFile())}
+                    onRemoveItem={() => setSelectedFile(null)}
+                    onEditItem={() => alert(`Editing File`)}
+                />
+            </div>
+        );
+    }
+};
+
 export const Documentation: Story = {
     render: args => {
         const [selectedFile, setSelectedFile] = useState(args.value);
