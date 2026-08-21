@@ -307,7 +307,7 @@ class ValidationsGroupImpl implements CmsFieldEditorGroup.Interface {
         >
     ) {
         return Object.entries(data)
-            .filter(([_, v]) => v && v.enabled)
+            .filter(([, v]) => v && v.enabled)
             .map(([name, v]) => ({
                 name,
                 message: v.message,

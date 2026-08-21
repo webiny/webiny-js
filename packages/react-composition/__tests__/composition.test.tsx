@@ -20,7 +20,7 @@ interface BaseComponentProps {
 
 describe("Decoration of Hooks and Components", () => {
     it("should decorate components", async () => {
-        const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
+        const BaseComponent = makeDecoratable("BaseComponent", ({}: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });
 
@@ -118,7 +118,7 @@ describe("Decoration of Hooks and Components", () => {
             name: string;
         }
 
-        const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
+        const BaseComponent = makeDecoratable("BaseComponent", ({}: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });
 
