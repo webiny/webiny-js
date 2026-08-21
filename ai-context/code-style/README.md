@@ -15,5 +15,7 @@ Read every rule in this folder before writing or editing code.
 | [no-inline-class-in-create-implementation.md](./no-inline-class-in-create-implementation.md) | Declare implementation classes separately with an `implements` clause.     |
 | [compose-css-class-names.md](./compose-css-class-names.md)                                   | Compose class names with a `cn` helper, never `+` or template literals.    |
 | [no-inline-conditional-spreads.md](./no-inline-conditional-spreads.md)                       | Build objects with `if` statements, not inline conditional spreads/casts.  |
+| [routes-delegate-to-use-cases.md](./routes-delegate-to-use-cases.md)                         | Routes parse and map; feature logic lives in a use case.                   |
+| [inject-dependencies-not-the-container.md](./inject-dependencies-not-the-container.md)       | Declare real dependencies; never inject a container to resolve later.      |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.

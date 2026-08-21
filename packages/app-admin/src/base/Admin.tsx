@@ -25,6 +25,7 @@ import { NotificationsRenderer } from "~/features/notifications/NotificationsRen
 import { ListCustomIconsFeature } from "~/features/iconPicker/listCustomIcons/feature.js";
 import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIcons/feature.js";
 import { CommandPaletteFeature } from "~/presentation/commandPalette/index.js";
+import { AiChatFeature } from "~/features/aiChat/index.js";
 import { AdminCommandsFeature } from "~/presentation/commandPalette/commands/feature.js";
 
 export interface AdminProps {
@@ -46,6 +47,7 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     ListPresenterFeature.register(container);
     ListCustomIconsFeature.register(container);
     CustomIconsPresenterFeature.register(container);
+    AiChatFeature.register(container);
     CommandPaletteFeature.register(container);
     AdminCommandsFeature.register(container);
     SortableFeature.register(container);

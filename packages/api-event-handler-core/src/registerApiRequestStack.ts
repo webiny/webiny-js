@@ -1,6 +1,7 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
+import { AiChatFeature } from "@webiny/api-ai-chat";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseInitializer } from "./WcpLicenseInitializer.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -136,6 +137,11 @@ export async function registerApiRequestStack(
     // code-defined CMS models (ModelFactory), e.g. Languages — are registered before any initializer
     // (e.g. ACO) lists + caches the per-request model set.
     await registerExtensions(container, config.extensions());
+
+    // ── AI chat endpoint (in-admin assistant) ──────────────────
+    // Same tool registry as MCP, but the agent loop runs here instead of in an external harness, so the
+    // browser never needs a model or an API key. After extensions, for the same reason MCP is.
+    AiChatFeature.register(container);
 
     // ── GraphQL engine (always last) ───────────────────────────
     GraphQLEngineFeature.register(container);

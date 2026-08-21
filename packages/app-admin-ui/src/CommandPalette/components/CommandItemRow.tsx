@@ -1,6 +1,8 @@
 import React from "react";
 import { Command, useCommandState } from "cmdk";
-import { Icon, Text } from "@webiny/admin-ui";
+import { cn } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import type { CommandRow } from "../types.js";
 import { Kbd } from "./Kbd.js";
@@ -15,12 +17,12 @@ export const CommandItemRow = ({ row }: { row: CommandRow }) => {
             className="flex cursor-pointer items-center gap-sm rounded-md px-sm py-xs-plus data-[selected=true]:bg-neutral-dimmed"
         >
             <div
-                className={
-                    "grid size-xl shrink-0 place-items-center rounded-md border " +
-                    (selected
+                className={cn(
+                    "grid size-xl shrink-0 place-items-center rounded-md border",
+                    selected
                         ? "border-primary bg-primary-subtle"
-                        : "border-neutral-dimmed bg-neutral-subtle")
-                }
+                        : "border-neutral-dimmed bg-neutral-subtle"
+                )}
             >
                 {row.icon ?? null}
             </div>

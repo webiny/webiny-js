@@ -12,6 +12,7 @@ export type {
     AiModel,
     IAiSdkModel,
     IAiSdkTool,
+    IAiSdkToolAnnotations,
     IAiSdkTools
 } from "./abstractions.js";
 export { AiOutputTool, AiOutputToolRegistry, AiToolPipelineRunner } from "./toolPipeline/index.js";

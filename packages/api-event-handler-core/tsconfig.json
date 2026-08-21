@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-aco" },
+    { "path": "../api-ai-chat" },
     { "path": "../api-audit-logs" },
     { "path": "../api-core" },
     { "path": "../api-file-manager" },
@@ -35,6 +36,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-ai-chat/*": ["../api-ai-chat/src/*"],
+      "@webiny/api-ai-chat": ["../api-ai-chat/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
