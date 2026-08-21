@@ -7,6 +7,9 @@ import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
+const isValidValue = (value: unknown): value is string | number =>
+    typeof value === "string" || typeof value === "number";
+
 const plugin: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-select-box",
@@ -40,8 +43,11 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 options={options}
                                 placeholder={field.placeholder}
                                 data-testid={`fr.input.select.${field.label}`}
-                                value={typeof value !== "undefined" ? String(value) : undefined}
+                                value={isValidValue(value) ? String(value) : undefined}
                                 onChange={value => {
+                                    if (!isValidValue(value)) {
+                                        return onChange(value);
+                                    }
                                     if (field.type === "number") {
                                         onChange(Number(value));
                                     } else {
