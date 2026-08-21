@@ -18,16 +18,19 @@ interface Option {
 }
 
 export const ColumnsVisibility = <T extends RowData>(props: ColumnsVisibilityProps<T>) => {
-    /**
-     * `@tanstack/react-table` does not have a simple method to return the header component.
-     * The only possible way is to use `flexRenderer`, but this is not working with the current implementation
-     * since we don't have access to the header context.
-     */
     const getHeaderName = useCallback((column: Column<Features, T>) => {
         const { header } = column.columnDef;
 
         if (typeof header === "string") {
             return header;
+        }
+
+        if (typeof header === "function") {
+            const flatHeader = column.table.getFlatHeaders().find(h => h.column.id === column.id);
+
+            if (flatHeader) {
+                return header(flatHeader.getContext());
+            }
         }
 
         return column.id;
