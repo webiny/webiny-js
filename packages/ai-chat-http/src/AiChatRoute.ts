@@ -3,9 +3,9 @@ import type { IHttpRequest } from "@webiny/event-handler-core";
 import type { IHttpResponse } from "@webiny/event-handler-core";
 import type { ModelMessage } from "ai";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { AiChatUseCase } from "./abstractions.js";
-import { parseDecisions } from "./approvals.js";
-import type { ApprovalDecision } from "./approvals.js";
+import { AiChatUseCase } from "@webiny/ai-chat/api/index.js";
+import { parseDecisions } from "@webiny/ai-chat/api/index.js";
+import type { ApprovalDecision } from "@webiny/ai-chat/api/index.js";
 
 const BAD_REQUEST_MESSAGE =
     "Provide either a non-empty `prompt` string or a `messages` array of model messages.";

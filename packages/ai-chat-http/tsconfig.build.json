@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../ai-chat/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-chat/*": ["../ai-chat/src/*"],
+      "@webiny/ai-chat": ["../ai-chat/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
+    }
+  }
+}

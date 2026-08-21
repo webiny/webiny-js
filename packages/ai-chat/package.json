@@ -1,0 +1,36 @@
+{
+  "name": "@webiny/ai-chat",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "AI assistant that answers questions about a Webiny project using its registered AI tools",
+  "keywords": [
+    "ai-chat:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/ai-chat"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-core": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "ai": "^7.0.58"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

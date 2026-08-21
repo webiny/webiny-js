@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../ai-chat-http" },
     { "path": "../api-aco" },
-    { "path": "../api-ai-chat" },
     { "path": "../api-audit-logs" },
     { "path": "../api-core" },
     { "path": "../api-file-manager" },
@@ -34,10 +34,10 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-chat-http/*": ["../ai-chat-http/src/*"],
+      "@webiny/ai-chat-http": ["../ai-chat-http/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
-      "@webiny/api-ai-chat/*": ["../api-ai-chat/src/*"],
-      "@webiny/api-ai-chat": ["../api-ai-chat/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],

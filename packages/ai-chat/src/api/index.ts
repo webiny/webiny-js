@@ -1,0 +1,12 @@
+export { AiChatFeature } from "./AiChatFeature.js";
+export { AiChatUseCase } from "./abstractions.js";
+export { AiChatConfig } from "./abstractions.js";
+export type { IAiChatConfig } from "./abstractions.js";
+export type { IAiChatUseCase } from "./abstractions.js";
+export type { AiChatParams } from "./abstractions.js";
+export type { AiChatResult } from "./abstractions.js";
+export { SYSTEM_PROMPT } from "./systemPrompt.js";
+export { isReadOnly } from "./approvals.js";
+export { parseDecisions } from "./approvals.js";
+export type { PendingApproval } from "./approvals.js";
+export type { ApprovalDecision } from "./approvals.js";

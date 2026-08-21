@@ -1,19 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
-import { AiChatRoute } from "./AiChatRoute.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
-
-export { AiChatRoute };
-export { AiChatUseCase };
-export { AiChatConfig };
-export type { IAiChatConfig } from "./abstractions.js";
-export type { IAiChatUseCase } from "./abstractions.js";
-export type { AiChatParams } from "./abstractions.js";
-export type { AiChatResult } from "./abstractions.js";
-export { SYSTEM_PROMPT } from "./systemPrompt.js";
-export { isReadOnly } from "./approvals.js";
-export type { PendingApproval } from "./approvals.js";
-export type { ApprovalDecision } from "./approvals.js";
 
 const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
 
@@ -24,8 +11,10 @@ const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
 const DEFAULT_MAX_STEPS = 12;
 
 /**
- * Registers `POST /ai/chat` and the use case behind it on the per-request container, alongside the
- * tools it will call.
+ * The AI chat feature: a use case and its configuration, and nothing about how it is reached.
+ *
+ * Deliberately transport-free. Registering this gives you `AiChatUseCase` in the container; exposing it
+ * over HTTP, a CLI command or anything else is a separate package's job.
  */
 export const AiChatFeature = createFeature({
     name: "AiChat",
@@ -50,6 +39,5 @@ export const AiChatFeature = createFeature({
 
         container.registerInstance(AiChatConfig, config);
         container.register(AiChatUseCase);
-        container.register(AiChatRoute);
     }
 });
