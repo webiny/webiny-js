@@ -17,7 +17,7 @@
     "@fortawesome/react-fontawesome": "^3.5.0",
     "@minoru/react-dnd-treeview": "^3.5.4",
     "@monaco-editor/react": "^4.7.0",
-    "@radix-ui/react-scroll-area": "^1.2.1\"@tanstack/react-table\": \"^8.21.3\",8",
+    "@radix-ui/react-scroll-area": "^1.2.18",
     "@tanstack/react-table": "^9.1.2",
     "@webiny/icons": "0.0.0",
     "@webiny/react-composition": "0.0.0",
@@ -59,13 +59,13 @@
     "@webiny/build-tools": "0.0.0",
     "@webiny/project": "0.0.0",
     "chalk": "^6.0.0",
-    "oxfmt": "^0.63.0",
+    "oxfmt": "^0.64.0",
     "rimraf": "^6.1.3",
     "sass": "^1.102.0",
     "storybook": "^10.5.9",
     "storybook-react-rsbuild": "^3.4.2",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

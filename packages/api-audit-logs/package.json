@@ -30,7 +30,7 @@
     "@webiny/plugins": "0.0.0",
     "graphql": "^16.14.2",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "@graphql-tools/schema": "10.1.0",
