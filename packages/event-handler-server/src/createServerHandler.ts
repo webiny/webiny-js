@@ -32,7 +32,7 @@ export async function createServerHandler(
 
     const server = http.createServer(async (req, res) => {
         try {
-            const response = (await handle(req)) as IHttpResponse;
+            const response: IHttpResponse = await handle(req);
 
             await writeHttpResponse(res, response);
         } catch (err) {
