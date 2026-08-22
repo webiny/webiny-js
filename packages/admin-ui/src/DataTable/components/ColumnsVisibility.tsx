@@ -43,8 +43,8 @@ export const ColumnsVisibility = <T extends RowData>(props: ColumnsVisibilityPro
                 return {
                     id: column.id,
                     header: getHeaderName(column),
-                    onChange: column.toggleVisibility,
-                    getValue: column.getIsVisible
+                    onChange: (value?: boolean) => column.toggleVisibility(value),
+                    getValue: () => column.getIsVisible()
                 };
             });
     }, [props.columns]);
