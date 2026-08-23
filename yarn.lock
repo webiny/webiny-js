@@ -10076,8 +10076,8 @@ __metadata:
     js-yaml: "npm:^5.3.0"
     listr2: "npm:^11.0.0"
     load-json-file: "npm:^7.0.1"
-    node-notifier: "npm:^10.0.1"
     serialize-error: "npm:^13.0.1"
+    toasted-notifier: "npm:^10.1.0"
     tsx: "npm:4.23.12"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.1.0"
@@ -21622,20 +21622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-notifier@npm:^10.0.1":
-  version: 10.0.1
-  resolution: "node-notifier@npm:10.0.1"
-  dependencies:
-    growly: "npm:^1.3.0"
-    is-wsl: "npm:^2.2.0"
-    semver: "npm:^7.3.5"
-    shellwords: "npm:^0.1.1"
-    uuid: "npm:^8.3.2"
-    which: "npm:^2.0.2"
-  checksum: 10/b238ffe16fd3b14df4c021e7d2a64483a3ac549b22d93e3c0bcfd9557a12d1c370ce6d8889308bc9c31c7464d99b224e7056dbd8cf4fb37b0f6296185972774a
-  languageName: node
-  linkType: hard
-
 "node-releases@npm:^2.0.53":
   version: 2.0.53
   resolution: "node-releases@npm:2.0.53"
@@ -25027,7 +25013,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.8.5, semver@npm:^7.1.1, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3, semver@npm:^7.7.3, semver@npm:^7.8.5":
+"semver@npm:7.8.5, semver@npm:^7.1.1, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3, semver@npm:^7.7.2, semver@npm:^7.7.3, semver@npm:^7.8.5":
   version: 7.8.5
   resolution: "semver@npm:7.8.5"
   bin:
@@ -26511,6 +26497,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"toasted-notifier@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "toasted-notifier@npm:10.1.0"
+  dependencies:
+    growly: "npm:^1.3.0"
+    is-wsl: "npm:^2.2.0"
+    semver: "npm:^7.7.2"
+    shellwords: "npm:^0.1.1"
+    which: "npm:^2.0.2"
+  checksum: 10/c9ffb10041d11f932050cf218aeec6c03e4e9b5817db44fdf8a6af1e7ec17598603a4dd2d4ef96a26ccdb3b922a05cb2acbf1ae9d10168779633572942d5b04e
+  languageName: node
+  linkType: hard
+
 "toidentifier@npm:~1.0.1":
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
@@ -27271,15 +27270,6 @@ __metadata:
   bin:
     uuid: dist/esm/bin/uuid
   checksum: 10/16411d3dc12a08d6691616c09a75e66a7f900ba1beef6628a76fe0602f82fae2ee537b564d0b7bc95c24f58d059ca9b58c75a1e806118efb50e17822ff00ddd2
-  languageName: node
-  linkType: hard
-
-"uuid@npm:^8.3.2":
-  version: 8.3.2
-  resolution: "uuid@npm:8.3.2"
-  bin:
-    uuid: dist/bin/uuid
-  checksum: 10/9a5f7aa1d6f56dd1e8d5f2478f855f25c645e64e26e347a98e98d95781d5ed20062d6cca2eecb58ba7c84bc3910be95c0451ef4161906abaab44f9cb68ffbdd1
   languageName: node
   linkType: hard
 
