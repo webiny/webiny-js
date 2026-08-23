@@ -30,8 +30,8 @@
     "graphql": "^16.14.2",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^7.0.0",
-    "mobx-react-lite": "^5.0.0",
+    "mobx": "^7.0.3",
+    "mobx-react-lite": "^5.0.3",
     "react": "18.3.1",
     "zod": "4.4.3"
   },
