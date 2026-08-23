@@ -2,18 +2,19 @@ import type { ComponentManifest, ContentEntryInput, Document } from "@webiny/web
 import {
     BindingsResolver,
     ComponentManifestToAstConverter,
-    resolveContentEntryInput,
-    type ContentEntryLoader,
-    type ResolvedContentEntry
+    contentEntryCache,
+    resolveContentEntryInput
 } from "@webiny/website-builder-sdk";
 import { contentSdk } from "@webiny/cms-sdk";
 
-const loader: ContentEntryLoader = {
-    getEntry: params => contentSdk.getEntry(params),
-    listEntries: params => contentSdk.listEntries(params)
+const ensureLoader = () => {
+    if (!contentEntryCache.getLoader()) {
+        contentEntryCache.setLoader({
+            getEntry: params => contentSdk.getEntry(params),
+            listEntries: params => contentSdk.listEntries(params)
+        });
+    }
 };
-
-export type ResolvedContentEntries = Record<string, ResolvedContentEntry>;
 
 /**
  * The framework reads only a component's manifest, so callers may pass either
@@ -25,12 +26,12 @@ export type ManifestCarrier = { manifest: Pick<ComponentManifest, "name" | "inpu
 
 /**
  * Server-side (RSC) pre-pass: resolves every `contentEntry` input with
- * `autoLoad !== false` into CMS entries, keyed by `"<elementId>:<inputName>"`.
+ * `autoLoad !== false` into CMS entries and seeds the SDK-level
+ * `contentEntryCache`. The synchronous render loop in `BindingsResolver`
+ * reads from the cache — no React context or props needed.
  *
- * Call it in the Next.js page after fetching the document, then pass the result
- * to `<DocumentRenderer resolvedContentEntries={...}>`. The (synchronous) render
- * loop reads it via `onResolved` — no `useEffect`, SSR-safe — mirroring how the
- * CMS resolves data on the server and hands it to the renderer as props.
+ * Call it in the Next.js page after fetching the document, before rendering
+ * `<DocumentRenderer>`.
  *
  * Note: elements repeated in a loop share one key per input, so a `contentEntry`
  * input inside a repeated element is not yet disambiguated per instance.
@@ -38,10 +39,9 @@ export type ManifestCarrier = { manifest: Pick<ComponentManifest, "name" | "inpu
 export async function resolveAutoLoad(
     document: Document | null,
     components: ManifestCarrier[]
-): Promise<ResolvedContentEntries> {
-    const result: ResolvedContentEntries = {};
+): Promise<void> {
     if (!document) {
-        return result;
+        return;
     }
 
     // Guard against a non-array (e.g. a `"use client"` module reference passed
@@ -59,6 +59,11 @@ export async function resolveAutoLoad(
         }
         manifestMap.set(blueprint.manifest.name, blueprint.manifest);
     }
+
+    // Register the CMS loader on the SDK-level cache so that
+    // `BindingsResolver` can also use it for editor-preview resolution.
+    ensureLoader();
+    const loader = contentEntryCache.getLoader()!;
 
     const tasks: Promise<void>[] = [];
 
@@ -85,12 +90,11 @@ export async function resolveAutoLoad(
             const rawValue = instance?.inputs?.[input.name];
             tasks.push(
                 resolveContentEntryInput(input, rawValue, loader).then(resolved => {
-                    result[`${elementId}:${input.name}`] = resolved;
+                    contentEntryCache.set(`${elementId}:${input.name}`, resolved);
                 })
             );
         }
     }
 
     await Promise.all(tasks);
-    return result;
 }

@@ -7,20 +7,16 @@ import { editorComponents } from "../editorComponents/index.js";
 import type { DocumentFragments } from "./FragmentsProvider.js";
 import { FragmentsProvider } from "./FragmentsProvider.js";
 import type { DocumentFragmentProps } from "~/components/DocumentFragment.js";
-import { ContentEntryResolutionProvider } from "../contentEntry/ContentEntryResolutionContext.js";
-import type { ResolvedContentEntries } from "../contentEntry/resolveAutoLoad.js";
 
 interface DocumentRendererProps {
     document: Document | null;
     components: Component[];
-    resolvedContentEntries?: ResolvedContentEntries;
     children?: React.ReactNode | React.ReactNode[];
 }
 
 export const DocumentRenderer = ({
     document,
     components,
-    resolvedContentEntries,
     children
 }: DocumentRendererProps) => {
     const allComponents = [...editorComponents, ...components];
@@ -56,17 +52,15 @@ export const DocumentRenderer = ({
 
     return (
         <div data-role={"document-renderer"}>
-            <ContentEntryResolutionProvider value={resolvedContentEntries ?? {}}>
-                <FragmentsProvider fragments={fragments ?? {}}>
-                    {contentSdk.isEditing() ? (
-                        <ConnectToEditor document={document} components={components} />
-                    ) : (
-                        <DocumentStoreProvider id={document.properties.id} document={document}>
-                            <ElementRenderer id={"root"} />
-                        </DocumentStoreProvider>
-                    )}
-                </FragmentsProvider>
-            </ContentEntryResolutionProvider>
+            <FragmentsProvider fragments={fragments ?? {}}>
+                {contentSdk.isEditing() ? (
+                    <ConnectToEditor document={document} components={components} />
+                ) : (
+                    <DocumentStoreProvider id={document.properties.id} document={document}>
+                        <ElementRenderer id={"root"} />
+                    </DocumentStoreProvider>
+                )}
+            </FragmentsProvider>
         </div>
     );
 };
