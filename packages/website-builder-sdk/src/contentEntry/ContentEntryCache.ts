@@ -1,6 +1,10 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { ContentEntryInput } from "~/types.js";
-import { resolveContentEntryInput, type ContentEntryLoader, type ResolvedContentEntry } from "./resolveContentEntry.js";
+import {
+    resolveContentEntryInput,
+    type ContentEntryLoader,
+    type ResolvedContentEntry
+} from "./resolveContentEntry.js";
 
 type RawValue = unknown | unknown[] | null | undefined;
 

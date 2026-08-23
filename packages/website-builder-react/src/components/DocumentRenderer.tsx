@@ -14,11 +14,7 @@ interface DocumentRendererProps {
     children?: React.ReactNode | React.ReactNode[];
 }
 
-export const DocumentRenderer = ({
-    document,
-    components,
-    children
-}: DocumentRendererProps) => {
+export const DocumentRenderer = ({ document, components, children }: DocumentRendererProps) => {
     const allComponents = [...editorComponents, ...components];
     allComponents.forEach(blueprint => contentSdk.registerComponent(blueprint));
     const fragments: DocumentFragments = [];

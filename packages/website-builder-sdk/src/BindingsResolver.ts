@@ -59,13 +59,7 @@ export class BindingsResolver {
         }
 
         return [
-            this.resolveSingleInstance(
-                element,
-                elementBindings,
-                undefined,
-                inputAst,
-                onResolved
-            )
+            this.resolveSingleInstance(element, elementBindings, undefined, inputAst, onResolved)
         ];
     }
 
