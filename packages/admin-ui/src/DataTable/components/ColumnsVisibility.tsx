@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
-import type { Column } from "@tanstack/react-table";
+import type { Column, RowData } from "@tanstack/react-table";
 import { IconButton } from "~/Button/index.js";
 import { Checkbox } from "~/Checkbox/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
+import type { Features } from "../DataTable.js";
 
-interface ColumnsVisibilityProps<T> {
-    columns: Column<T>[];
+interface ColumnsVisibilityProps<T extends RowData> {
+    columns: Column<Features, T>[];
 }
 
 interface Option {
@@ -16,13 +17,8 @@ interface Option {
     getValue: () => boolean;
 }
 
-export const ColumnsVisibility = <T,>(props: ColumnsVisibilityProps<T>) => {
-    /**
-     * `@tanstack/react-table` does not have a simple method to return the header component.
-     * The only possible way is to use `flexRenderer`, but this is not working with the current implementation
-     * since we don't have access to the header context.
-     */
-    const getHeaderName = useCallback((column: Column<T>) => {
+export const ColumnsVisibility = <T extends RowData>(props: ColumnsVisibilityProps<T>) => {
+    const getHeaderName = useCallback((column: Column<Features, T>) => {
         const { header } = column.columnDef;
 
         if (typeof header === "string") {
@@ -30,8 +26,11 @@ export const ColumnsVisibility = <T,>(props: ColumnsVisibilityProps<T>) => {
         }
 
         if (typeof header === "function") {
-            // @ts-expect-error
-            return header();
+            const flatHeader = column.table.getFlatHeaders().find(h => h.column.id === column.id);
+
+            if (flatHeader) {
+                return header(flatHeader.getContext());
+            }
         }
 
         return column.id;
@@ -44,8 +43,8 @@ export const ColumnsVisibility = <T,>(props: ColumnsVisibilityProps<T>) => {
                 return {
                     id: column.id,
                     header: getHeaderName(column),
-                    onChange: column.toggleVisibility,
-                    getValue: column.getIsVisible
+                    onChange: (value?: boolean) => column.toggleVisibility(value),
+                    getValue: () => column.getIsVisible()
                 };
             });
     }, [props.columns]);
