@@ -27,12 +27,18 @@ type RichItemThumbnailProps = Omit<React.HTMLAttributes<HTMLDivElement>, "childr
         variant?: "tile" | "banner";
     };
 
-type ThumbnailProps = Pick<FileItemFormatted, "url" | "name">;
+type ThumbnailProps = Pick<FileItemFormatted, "url" | "name"> & {
+    fit: "cover" | "contain";
+};
 
-const Thumbnail = ({ url, name }: ThumbnailProps) => {
+const Thumbnail = ({ url, name, fit }: ThumbnailProps) => {
     return (
         <div className={"size-full bg-neutral-muted"}>
-            <img src={url} alt={name} className="size-full object-cover" />
+            <img
+                src={url}
+                alt={name}
+                className={cn("size-full", fit === "cover" ? "object-cover" : "object-contain")}
+            />
         </div>
     );
 };
@@ -65,7 +71,13 @@ const FileType = ({ mimeType = "", name }: FileTypeProps) => {
         }
     };
 
-    return <img src={getMimeTypeSrc(mimeType)} alt={name} className="size-full p-sm-extra" />;
+    return (
+        <img
+            src={getMimeTypeSrc(mimeType)}
+            alt={name}
+            className="size-full object-contain p-sm-extra"
+        />
+    );
 };
 
 type PlaceholderProps = Pick<FileItemFormatted, "name">;
@@ -99,7 +111,7 @@ const RichItemThumbnail = ({
             )}
         >
             {preview === "thumbnail" || isImage ? (
-                <Thumbnail url={url} name={name} />
+                <Thumbnail url={url} name={name} fit={variant === "banner" ? "contain" : "cover"} />
             ) : preview === "placeholder" ? (
                 <Placeholder name={name} />
             ) : (
