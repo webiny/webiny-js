@@ -17,7 +17,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.42.0",
+    "@pulumi/aws": "^7.43.0",
     "@pulumi/pulumi": "^3.259.0",
     "@pulumi/random": "^4.21.1",
     "@webiny/aws-layers": "0.0.0",
