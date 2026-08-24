@@ -62,6 +62,7 @@ const categoryManagerHelper = async (manager: ReturnType<typeof useCategoryManag
         }
     });
     const vegetables = vegetablesResponse.data.createCategory.data!;
+    await new Promise(resolve => setTimeout(resolve, 10));
     const [animalsResponse] = await manager.createCategory({
         variables: {
             data: {
