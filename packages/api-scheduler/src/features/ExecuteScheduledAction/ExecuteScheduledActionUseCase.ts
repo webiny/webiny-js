@@ -92,11 +92,17 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
+            const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
                 values: {
                     error: error.message
                 }
             });
+            if (updateResult.isFail()) {
+                return Result.fail({
+                    ...updateResult.error,
+                    message: `Failed to update error to a scheduled action (${scheduleId}): ${updateResult.error.message}`,
+                } as unknown as UseCaseAbstraction.Error);
+            }
 
             return Result.fail(error);
         }
@@ -125,11 +131,17 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
+            const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
                 values: {
                     error: executionError.message
                 }
             });
+            if (updateResult.isFail()) {
+                return Result.fail({
+                    ...updateResult.error,
+                    message: `Failed to update error to a scheduled action: ${updateResult.error.message}`,
+                } as unknown as UseCaseAbstraction.Error);
+            }
 
             return Result.fail(executionError);
         }

@@ -2,10 +2,13 @@ import { registry } from "@webiny/handler-aws/registry.js";
 import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
 import { createSourceHandler } from "@webiny/handler-aws/sourceHandler.js";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw/index.js";
-import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER, SCHEDULE_MODEL_ID } from "~/constants.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
+import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetTenantByIdUseCase } from "@webiny/api-core/exports/api/tenancy.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 
 export interface IScheduledActionEventPayload {
     namespace: string;
@@ -64,8 +67,20 @@ export const createScheduledActionEventHandler = () => {
                 throw tenantResult.error;
             }
             const tenant = tenantResult.value;
-
+            
             return tenantContext.withTenant(tenant, async () => {
+                const identityContext = context.container.resolve(IdentityContext);
+                const getModel = context.container.resolve(GetModelUseCase);
+                await identityContext.withoutAuthorization(async () => {
+                    const modelResult = await getModel.execute(SCHEDULE_MODEL_ID);
+                    if (modelResult.isOk()) {
+                        context.container.registerInstance(
+                            ScheduledActionModel,
+                            modelResult.value
+                        );
+                    }
+                });
+
                 const executeScheduledAction = context.container.resolve(
                     ExecuteScheduledActionUseCase
                 );
