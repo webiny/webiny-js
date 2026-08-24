@@ -5,6 +5,7 @@ import { EntryPersistenceError, EntryNotFoundError } from "~/domain/contentEntry
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * GetRevisionByIdRepository - Fetches entry revision from storage and transforms it.
@@ -13,13 +14,16 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
+        initialModel: CmsModel,
         id: string
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             // Fetch from storage
             const storageEntry = await this.storageOperations.entries.getRevisionById<T>(model, {
@@ -43,5 +47,5 @@ class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
 export const GetRevisionByIdRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetRevisionByIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, StorageOperations, RuntimeTenant]
 });

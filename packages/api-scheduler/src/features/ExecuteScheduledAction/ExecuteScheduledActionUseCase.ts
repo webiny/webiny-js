@@ -92,15 +92,19 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
-                values: {
-                    error: error.message
+            const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(
+                this.model,
+                scheduleId,
+                {
+                    values: {
+                        error: error.message
+                    }
                 }
-            });
+            );
             if (updateResult.isFail()) {
                 return Result.fail({
                     ...updateResult.error,
-                    message: `Failed to update error to a scheduled action (${scheduleId}): ${updateResult.error.message}`,
+                    message: `Failed to update error to a scheduled action (${scheduleId}): ${updateResult.error.message}`
                 } as unknown as UseCaseAbstraction.Error);
             }
 
@@ -131,15 +135,19 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
-                values: {
-                    error: executionError.message
+            const updateResult = await this.updateEntryUseCase.execute<IScheduledAction<T>>(
+                this.model,
+                scheduleId,
+                {
+                    values: {
+                        error: executionError.message
+                    }
                 }
-            });
+            );
             if (updateResult.isFail()) {
                 return Result.fail({
                     ...updateResult.error,
-                    message: `Failed to update error to a scheduled action: ${updateResult.error.message}`,
+                    message: `Failed to update error to a scheduled action: ${updateResult.error.message}`
                 } as unknown as UseCaseAbstraction.Error);
             }
 

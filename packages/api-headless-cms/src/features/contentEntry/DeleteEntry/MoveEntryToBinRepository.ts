@@ -5,6 +5,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * MoveEntryToBinRepository - Handles storage operations for soft deleting entries.
@@ -12,14 +13,17 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 class MoveEntryToBinRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute(params: {
         model: CmsModel;
         entry: CmsEntry;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
-        const { model, entry } = params;
+        const { model: initialModel, entry: initialEntry } = params;
+        const model = this.runtimeTenant.assign(initialModel);
+        const entry = this.runtimeTenant.assign(initialEntry);
 
         try {
             const storageEntry = await this.entryToStorageTransform(model, entry);
@@ -39,5 +43,5 @@ class MoveEntryToBinRepositoryImpl implements RepositoryAbstraction.Interface {
 export const MoveEntryToBinRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: MoveEntryToBinRepositoryImpl,
-    dependencies: [EntryToStorageTransform, StorageOperations]
+    dependencies: [EntryToStorageTransform, StorageOperations, RuntimeTenant]
 });

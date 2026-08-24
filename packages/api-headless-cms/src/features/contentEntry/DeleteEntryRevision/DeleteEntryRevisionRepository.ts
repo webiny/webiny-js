@@ -6,6 +6,7 @@ import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteEntryRevisionRepository - Handles storage operations for deleting entry revisions.
@@ -13,7 +14,8 @@ import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js"
 class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryToStorageTransform: EntryToStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute(params: {
@@ -21,7 +23,11 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
         entry: CmsEntry;
         latestEntry: CmsEntry | null;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
-        const { model, entry, latestEntry } = params;
+        const model = this.runtimeTenant.assign(params.model);
+        const entry = this.runtimeTenant.assign(params.entry);
+        const latestEntry = params.latestEntry
+            ? this.runtimeTenant.assign(params.latestEntry)
+            : null;
 
         try {
             const storageEntry = await this.entryToStorageTransform(model, entry);
@@ -59,5 +65,5 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
 export const DeleteEntryRevisionRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: DeleteEntryRevisionRepositoryImpl,
-    dependencies: [EntryToStorageTransform, StorageOperations]
+    dependencies: [EntryToStorageTransform, StorageOperations, RuntimeTenant]
 });

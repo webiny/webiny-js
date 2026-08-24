@@ -7,7 +7,11 @@ import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEnt
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
-import { ScheduledActionHandler, ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
+import {
+    ScheduledActionHandler,
+    ScheduledActionModel,
+    SchedulerService
+} from "~/shared/abstractions.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import { SCHEDULED_ACTION_PUBLISH, SCHEDULE_MODEL_ID } from "~/constants.js";
@@ -85,7 +89,8 @@ describe("ExecuteScheduledActionUseCase - non-root tenant", () => {
     };
 
     it("should execute scheduled action in non-root tenant when model is reloaded", async () => {
-        const { tenantContext, identityContext, getModel, webinyTenant } = await setupWebinyTenant();
+        const { tenantContext, identityContext, getModel, webinyTenant } =
+            await setupWebinyTenant();
         const scheduleId = ScheduledActionId.from({ namespace, actionType, targetId });
 
         await scheduleInWebinyTenant(tenantContext, identityContext, getModel, webinyTenant);
@@ -117,7 +122,8 @@ describe("ExecuteScheduledActionUseCase - non-root tenant", () => {
     });
 
     it("should store error on handler failure in non-root tenant", async () => {
-        const { tenantContext, identityContext, getModel, webinyTenant } = await setupWebinyTenant();
+        const { tenantContext, identityContext, getModel, webinyTenant } =
+            await setupWebinyTenant();
         const scheduleId = ScheduledActionId.from({ namespace, actionType, targetId });
 
         await scheduleInWebinyTenant(tenantContext, identityContext, getModel, webinyTenant);
