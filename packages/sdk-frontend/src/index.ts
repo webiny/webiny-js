@@ -51,5 +51,4 @@ export type {
 
 export { createTheme, createComponent as createWbComponent } from "@webiny/website-builder-sdk";
 
-export { resolveAutoLoad } from "./resolveAutoLoad.js";
-export type { ManifestCarrier } from "./resolveAutoLoad.js";
+export type { GetPageOptions } from "./WbSdk.js";

@@ -8,7 +8,7 @@ import type {
 } from "@webiny/sdk";
 import { contentSdk as cmsContentSdk, environment as cmsEnvironment } from "@webiny/cms-sdk";
 import { contentSdk as wbContentSdk } from "@webiny/website-builder-sdk";
-import { ensureContentEntryLoader } from "./resolveAutoLoad.js";
+import { ensureContentEntryLoader } from "./resolveContentEntries.js";
 import { CmsSdk } from "./CmsSdk.js";
 import { WbSdk } from "./WbSdk.js";
 import type { ContentSdkConfig } from "./types.js";
@@ -99,7 +99,7 @@ export class FrontendSdk {
 
         // Bridge the CMS SDK into the content-entry cache so the
         // BindingsResolver can resolve content-entry inputs on both
-        // server (via resolveAutoLoad) and client (editor preview iframe).
+        // server (via resolveContentEntries) and client (editor preview iframe).
         ensureContentEntryLoader();
     }
 

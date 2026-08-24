@@ -1,4 +1,4 @@
-import type { ComponentManifest, ContentEntryInput, Document } from "@webiny/website-builder-sdk";
+import type { Component, ContentEntryInput, Document } from "@webiny/website-builder-sdk";
 import {
     BindingsResolver,
     ComponentManifestToAstConverter,
@@ -10,7 +10,7 @@ import { contentSdk } from "@webiny/cms-sdk";
 /**
  * Register the CMS data loader on the SDK-level content-entry cache.
  *
- * Called by `resolveAutoLoad` (server pre-pass) AND by `FrontendSdk.init()`
+ * Called by `resolveContentEntries` (server pre-pass) AND by `FrontendSdk.init()`
  * (client bootstrap) so the `BindingsResolver` can resolve content-entry
  * inputs in both environments.
  */
@@ -22,14 +22,6 @@ export const ensureContentEntryLoader = () => {
         });
     }
 };
-
-/**
- * The framework reads only a component's manifest, so callers may pass either
- * full component blueprints or plain `{ manifest }` carriers. A server module
- * should expose the latter, since component modules are `"use client"` (their
- * exports become client references and can't be read on the server).
- */
-export type ManifestCarrier = { manifest: Pick<ComponentManifest, "name" | "inputs"> };
 
 /**
  * Detect whether a content-entry input's raw value (from the document state)
@@ -63,15 +55,15 @@ function isAlreadyResolved(input: ContentEntryInput, value: unknown): boolean {
  * `contentEntryCache`. The synchronous render loop in `BindingsResolver`
  * reads from the cache — no React context or props needed.
  *
- * Call it in the Next.js page after fetching the document, before rendering
- * `<DocumentRenderer>`.
+ * This is an internal function called by `WbSdk.getPage()` when the caller
+ * passes `{ components }`. It should not be called directly.
  *
  * Note: elements repeated in a loop share one key per input, so a `contentEntry`
  * input inside a repeated element is not yet disambiguated per instance.
  */
-export async function resolveAutoLoad(
+export async function resolveContentEntries(
     document: Document | null,
-    components: ManifestCarrier[]
+    components: Component[]
 ): Promise<void> {
     if (!document) {
         return;
@@ -83,9 +75,9 @@ export async function resolveAutoLoad(
     // components (Box, Grid, Root, …) are `"use client"` modules — unreadable on
     // the server — and never contain `contentEntry` inputs, so they're excluded.
     const list = Array.isArray(components) ? components : [];
-    const manifestMap = new Map<string, Pick<ComponentManifest, "name" | "inputs">>();
+    const manifestMap = new Map<string, Component["manifest"]>();
     for (const blueprint of list) {
-        // Skip anything that isn't a real manifest carrier (e.g. a client-module
+        // Skip anything that isn't a real component (e.g. a client-module
         // reference that resolved to a proxy on the server).
         if (!blueprint?.manifest) {
             continue;

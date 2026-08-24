@@ -8,12 +8,25 @@ import type {
     Component as WbComponent,
     ComponentGroup
 } from "@webiny/website-builder-sdk";
+import { resolveContentEntries } from "./resolveContentEntries.js";
+
+export interface GetPageOptions {
+    components?: WbComponent[];
+}
 
 export class WbSdk {
-    getPage(path: string): Promise<Result<PublicPage, Error>> {
-        return wbContentSdk.getPage(path).then(page => {
-            return page ? Result.ok(page) : Result.fail(new Error(`Page "${path}" not found.`));
-        });
+    async getPage(path: string, options?: GetPageOptions): Promise<Result<PublicPage, Error>> {
+        const page = await wbContentSdk.getPage(path);
+
+        if (!page) {
+            return Result.fail(new Error(`Page "${path}" not found.`));
+        }
+
+        if (options?.components) {
+            await resolveContentEntries(page, options.components);
+        }
+
+        return Result.ok(page);
     }
 
     listPages(options?: ListPagesOptions): Promise<Result<ListPagesResult, Error>> {
