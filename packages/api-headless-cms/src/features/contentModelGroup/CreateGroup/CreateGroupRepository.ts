@@ -10,6 +10,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { toSlug } from "~/utils/toSlug.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import type { CmsGroup } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * CreateGroupRepository - Validates and persists a new group.
@@ -26,10 +27,12 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
         private storageOperations: StorageOperations.Interface,
-        private tenantContext: TenantContext.Interface
+        private tenantContext: TenantContext.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialGroup: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const group = this.runtimeTenant.assign(initialGroup);
         try {
             const tenant = this.tenantContext.getTenant();
 
@@ -109,5 +112,11 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 export const CreateGroupRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: CreateGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations, TenantContext]
+    dependencies: [
+        GroupCache,
+        PluginGroupsProvider,
+        StorageOperations,
+        TenantContext,
+        RuntimeTenant
+    ]
 });
