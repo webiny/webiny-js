@@ -1,9 +1,11 @@
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
+import type { ServerStorageOps } from "./e2e/index.js";
 import {
     createCypressJobs,
     createServerJobs,
+    serverVariantCommentRow,
     DIR_WEBINY_JS,
     globalBuildCacheSteps,
     installBuildSteps,
@@ -11,11 +13,24 @@ import {
     yarnCacheSteps
 } from "./e2e/index.js";
 
+// The self-hosted variants that actually run. Drives both the PR status comment and the job list,
+// so enabling Postgres is a one-line change here rather than two edits that can drift apart.
+// Postgres is implemented and renders correctly; it stays off until SQLite is proven green, since
+// the server hosting type is still ALPHA.
+const SERVER_VARIANTS: ServerStorageOps[] = ["sqlite"];
+
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
     name: "Pull Requests Command - E2E",
-    comment:
-        "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:\n\n| Database | Status | Admin URL |\n| --- | --- | --- |\n| DDB | 🔄 Deploying... | - |\n| DDB+OS | 🔄 Deploying... | - |",
+    comment: [
+        "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
+        "",
+        "| Database | Status | Admin URL |",
+        "| --- | --- | --- |",
+        "| DDB | 🔄 Deploying... | - |",
+        "| DDB+OS | 🔄 Deploying... | - |",
+        ...SERVER_VARIANTS.map(serverVariantCommentRow)
+    ].join("\n"),
     captureCommentId: true,
     workflow: {
         env: {
@@ -81,9 +96,9 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
         }),
         ...createCypressJobs("ddb"),
         ...createCypressJobs("ddb-os"),
-        // Only SQLite is wired up for now. `createServerJobs("postgres")` is ready - it adds a
-        // Postgres service container and the WEBINY_PG_* env - but the server hosting type is still
-        // ALPHA, so prove one variant green before doubling the surface.
-        ...createServerJobs("sqlite")
+        ...SERVER_VARIANTS.reduce(
+            (jobs, storageOps) => ({ ...jobs, ...createServerJobs(storageOps) }),
+            {}
+        )
     }
 });

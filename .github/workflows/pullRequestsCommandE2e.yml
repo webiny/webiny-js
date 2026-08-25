@@ -58,6 +58,8 @@ jobs:
             | DDB | 🔄 Deploying... | - |
 
             | DDB+OS | 🔄 Deploying... | - |
+
+            | Server (SQLite) | 🔄 Running... | - |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -626,7 +628,7 @@ jobs:
       - constants
       - build
       - checkComment
-    name: E2E (Server) - SQLite
+    name: E2E - Server (SQLite)
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -757,6 +759,34 @@ jobs:
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
+      - name: Update PR comment - passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i "s@| Server (SQLite) | 🔄 Running... | - |@| Server (SQLite) |
+          ✅ Passed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i "s@| Server (SQLite) | 🔄 Running... | - |@| Server (SQLite) |
+          ❌ Failed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
       - name: Print server logs
         if: failure()
         run: >-

@@ -22,6 +22,16 @@ const STORAGE_DISPLAY_NAME: Record<ServerStorageOps, string> = {
     postgres: "Postgres"
 };
 
+// The label used both for the job name and for this variant's row in the PR status comment. The
+// job seds on exactly this string, so deriving both from one place keeps them from drifting.
+export const serverVariantLabel = (storageOps: ServerStorageOps) =>
+    `Server (${STORAGE_DISPLAY_NAME[storageOps]})`;
+
+// A self-hosted project runs on the runner, so there is no Admin URL anyone outside the job could
+// open - hence "-" in that column, unlike the AWS rows.
+export const serverVariantCommentRow = (storageOps: ServerStorageOps) =>
+    `| ${serverVariantLabel(storageOps)} | 🔄 Running... | - |`;
+
 // Matches the defaults in the server/postgres template's .env.example, so the scaffolded project
 // connects to the service container without any extra configuration.
 const PG = {
@@ -43,7 +53,7 @@ const PG = {
 // GitHub-hosted runner. That makes it far cheaper than the DDB / DDB+OS jobs.
 export const createServerJobs = (storageOps: ServerStorageOps) => {
     const isPostgres = storageOps === "postgres";
-    const displayName = STORAGE_DISPLAY_NAME[storageOps];
+    const label = serverVariantLabel(storageOps);
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -78,7 +88,7 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
     return {
         [`e2e-server-${storageOps}`]: createJob({
             needs: ["baseBranch", "constants", "build", "checkComment"],
-            name: `E2E (Server) - ${displayName}`,
+            name: `E2E - ${label}`,
             checkout: { path: DIR_WEBINY_JS },
             ...(services ? { services } : {}),
             steps: [
@@ -188,6 +198,32 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     name: "Cypress - run installation wizard test",
                     "working-directory": DIR_WEBINY_JS,
                     run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
+                },
+                {
+                    name: "Update PR comment - passed",
+                    if: "success()",
+                    env: {
+                        GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+                        COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
+                    },
+                    run: [
+                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
+                        `sed -i "s@| ${label} | 🔄 Running... | - |@| ${label} | ✅ Passed | - |@" /tmp/comment.txt`,
+                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
+                    ].join("\n")
+                },
+                {
+                    name: "Update PR comment - failed",
+                    if: "failure()",
+                    env: {
+                        GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+                        COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
+                    },
+                    run: [
+                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
+                        `sed -i "s@| ${label} | 🔄 Running... | - |@| ${label} | ❌ Failed | - |@" /tmp/comment.txt`,
+                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
+                    ].join("\n")
                 },
                 {
                     name: "Print server logs",
