@@ -12,6 +12,7 @@ import {
     SERVER_BUILD_DIR
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
+import { createStatusRowUpdateSteps } from "./statusComment.js";
 
 // The storage backends the self-hosted ("server") hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's server project setup.
@@ -21,6 +22,16 @@ const STORAGE_DISPLAY_NAME: Record<ServerStorageOps, string> = {
     sqlite: "SQLite",
     postgres: "Postgres"
 };
+
+// The label used both for the job name and for this variant's row in the PR status comment. The
+// job seds on exactly this string, so deriving both from one place keeps them from drifting.
+export const serverVariantLabel = (storageOps: ServerStorageOps) =>
+    `Server (${STORAGE_DISPLAY_NAME[storageOps]})`;
+
+// A self-hosted project runs on the runner, so there is no Admin URL anyone outside the job could
+// open - hence "-" in that column, unlike the AWS rows.
+export const serverVariantCommentRow = (storageOps: ServerStorageOps) =>
+    `| ${serverVariantLabel(storageOps)} | 🔄 Running... | - |`;
 
 // Matches the defaults in the server/postgres template's .env.example, so the scaffolded project
 // connects to the service container without any extra configuration.
@@ -43,7 +54,7 @@ const PG = {
 // GitHub-hosted runner. That makes it far cheaper than the DDB / DDB+OS jobs.
 export const createServerJobs = (storageOps: ServerStorageOps) => {
     const isPostgres = storageOps === "postgres";
-    const displayName = STORAGE_DISPLAY_NAME[storageOps];
+    const label = serverVariantLabel(storageOps);
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -78,7 +89,7 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
     return {
         [`e2e-server-${storageOps}`]: createJob({
             needs: ["baseBranch", "constants", "build", "checkComment"],
-            name: `E2E (Server) - ${displayName}`,
+            name: `E2E - ${label}`,
             checkout: { path: DIR_WEBINY_JS },
             ...(services ? { services } : {}),
             steps: [
@@ -189,6 +200,7 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     "working-directory": DIR_WEBINY_JS,
                     run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
                 },
+                ...createStatusRowUpdateSteps({ label }),
                 {
                     name: "Print server logs",
                     if: "failure()",
