@@ -72,7 +72,7 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(initialModel: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialModel: CmsModel): Promise<Result<CmsModel, RepositoryAbstraction.Error>> {
         const model = this.runtimeTenant.assign(initialModel);
         try {
             const tenant = this.tenantContext.getTenant();
@@ -176,7 +176,7 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
             // Clear cache
             this.modelCache.clear();
 
-            return Result.ok();
+            return Result.ok(model);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }

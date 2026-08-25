@@ -114,7 +114,7 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
             await this.eventPublisher.publish(
                 new ModelCreateFromErrorEvent({
                     input: data,
-                    model,
+                    model: result.value,
                     original,
                     error: result.error
                 })
@@ -123,7 +123,12 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Publish after event
-        await this.eventPublisher.publish(new ModelAfterCreateFromEvent({ model, original }));
+        await this.eventPublisher.publish(
+            new ModelAfterCreateFromEvent({
+                model: result.value,
+                original
+            })
+        );
 
         return Result.ok(model);
     }

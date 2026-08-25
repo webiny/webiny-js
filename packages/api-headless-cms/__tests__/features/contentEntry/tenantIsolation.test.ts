@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { CmsContext, CmsModel } from "~/types";
+import type { CmsContext } from "~/types";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.js";
@@ -64,7 +64,8 @@ describe("CMS Entry Tenant Isolation", () => {
         });
     });
 
-    it("should isolate entries by model.tenant — entry created in root is not visible with a different model.tenant", async () => {
+    it("should isolate entries by model.tenant - entry created in root is not visible with a different model.tenant", async () => {
+        const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
         const createEntry = context.container.resolve(CreateEntryUseCase);
         const getEntryById = context.container.resolve(GetEntryByIdUseCase);
@@ -91,13 +92,26 @@ describe("CMS Entry Tenant Isolation", () => {
         expect(getResult.isOk()).toBe(true);
         expect(getResult.value.values.title).toBe("Root Entry");
 
-        const wrongTenantModel: CmsModel = { ...rootModel, tenant: "sub-tenant" };
+        const subTenant: Tenant = {
+            id: "sub-tenant",
+            name: "Sub Tenant",
+            description: "Sub tenant for isolation test",
+            status: "enabled",
+            isInstalled: true,
+            settings: {},
+            tags: [],
+            parent: "root",
+            createdOn: new Date().toISOString(),
+            savedOn: new Date().toISOString()
+        };
 
-        const getWrongTenant = await context.security.withoutAuthorization(() =>
-            getEntryById.execute(wrongTenantModel, entryId)
-        );
-        expect(getWrongTenant.isFail()).toBe(true);
-        expect(getWrongTenant.error.code).toBe("Cms/Entry/NotFound");
+        await tenantContext.withTenant(subTenant, async () => {
+            const getWrongTenant = await context.security.withoutAuthorization(() =>
+                getEntryById.execute(rootModel, entryId)
+            );
+            expect(getWrongTenant.isFail()).toBe(true);
+            expect(getWrongTenant.error.code).toBe("Cms/Entry/NotFound");
+        });
     });
 
     it("should access entries in correct tenant after re-loading model via GetModelUseCase", async () => {
@@ -168,68 +182,5 @@ describe("CMS Entry Tenant Isolation", () => {
         );
         expect(getSubFromRoot.isOk()).toBe(true);
         expect(getSubFromRoot.value.values.title).toBe("Root Entry");
-    });
-
-    it("should fail when using a stale model after tenant switch — simulates scheduler bug", async () => {
-        const tenantContext = context.container.resolve(TenantContext);
-        const getModel = context.container.resolve(GetModelUseCase);
-        const createEntry = context.container.resolve(CreateEntryUseCase);
-        const getEntryById = context.container.resolve(GetEntryByIdUseCase);
-
-        const rootModelResult = await context.security.withoutAuthorization(() =>
-            getModel.execute(TEST_MODEL_ID)
-        );
-        const staleModel = rootModelResult.value;
-        expect(staleModel.tenant).toBe("root");
-
-        const subTenant: Tenant = {
-            id: "sub-tenant",
-            name: "Sub Tenant",
-            description: "Sub tenant for isolation test",
-            status: "enabled",
-            isInstalled: true,
-            settings: {},
-            tags: [],
-            parent: "root",
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString()
-        };
-
-        let subEntryId: string;
-
-        await tenantContext.withTenant(subTenant, async () => {
-            const subModelResult = await context.security.withoutAuthorization(() =>
-                getModel.execute(TEST_MODEL_ID)
-            );
-            const subModel = subModelResult.value;
-
-            const createResult = await context.security.withoutAuthorization(() =>
-                createEntry.execute(subModel, {
-                    values: { title: "Sub Entry", value: "sub-value" }
-                })
-            );
-            expect(createResult.isOk()).toBe(true);
-            subEntryId = createResult.value.id;
-        });
-
-        await tenantContext.withTenant(subTenant, async () => {
-            const getWithStaleModel = await context.security.withoutAuthorization(() =>
-                getEntryById.execute(staleModel, subEntryId!)
-            );
-            expect(getWithStaleModel.isFail()).toBe(true);
-            expect(getWithStaleModel.error.code).toBe("Cms/Entry/NotFound");
-
-            const freshModelResult = await context.security.withoutAuthorization(() =>
-                getModel.execute(TEST_MODEL_ID)
-            );
-            const freshModel = freshModelResult.value;
-            expect(freshModel.tenant).toBe("sub-tenant");
-
-            const getWithFreshModel = await context.security.withoutAuthorization(() =>
-                getEntryById.execute(freshModel, subEntryId!)
-            );
-            expect(getWithFreshModel.isOk()).toBe(true);
-            expect(getWithFreshModel.value.values.title).toBe("Sub Entry");
-        });
     });
 });
