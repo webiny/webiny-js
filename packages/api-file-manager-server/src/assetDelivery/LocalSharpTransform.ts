@@ -91,7 +91,7 @@ export class LocalSharpTransform implements IAssetTypeHandler {
             return undefined;
         }
 
-        const imageEdit = result.value.metadata?.imageEdit as AssetImageEdit | undefined;
+        const imageEdit = result.value.metadata?.image as AssetImageEdit | undefined;
         return imageEdit?.crop;
     }
 
