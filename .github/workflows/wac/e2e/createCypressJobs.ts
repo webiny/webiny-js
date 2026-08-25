@@ -1,0 +1,223 @@
+import type { NormalJob } from "github-actions-wac";
+import {
+    createCheckoutPrSteps,
+    createDeployWebinySteps,
+    createSetupVerdaccioSteps,
+    withCommonParams
+} from "../steps/index.js";
+import { ACTION, AWS_REGION } from "../utils/index.js";
+import { createJob } from "../jobs/index.js";
+import { DIR_TEST_PROJECT, DIR_WEBINY_JS } from "./constants.js";
+import {
+    globalBuildCacheSteps,
+    installBuildSteps,
+    runBuildCacheDownloadSteps,
+    yarnCacheSteps
+} from "./sharedSteps.js";
+
+// AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run Cypress against the
+// deployed URLs. One variant per storage setup ("ddb", "ddb-os").
+export const createCypressJobs = (dbSetup: string) => {
+    const jobNames = {
+        constants: `e2e-wby-cms-${dbSetup}-constants`,
+        projectSetup: `e2e-wby-cms-${dbSetup}-project-setup`,
+        cypressTests: `e2e-wby-cms-${dbSetup}-cypress-tests`
+    };
+
+    const dbDisplayName = dbSetup === "ddb-os" ? "DDB+OS" : "DDB";
+
+    const constantsJob: NormalJob = createJob({
+        needs: ["baseBranch", "constants", "build"],
+        name: `Constants - ${dbSetup.toUpperCase()}`,
+        outputs: {
+            "cypress-folders": "${{ steps.list-cypress-folders.outputs.cypress-folders }}",
+            "pulumi-backend-url": "${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}"
+        },
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            {
+                name: "List Cypress tests folders",
+                id: "list-cypress-folders",
+                run: 'echo "cypress-folders=$(node scripts/listCypressTestsFolders.js)" >> $GITHUB_OUTPUT',
+                "working-directory": DIR_WEBINY_JS
+            },
+            {
+                name: "Get Pulumi backend URL",
+                id: "get-pulumi-backend-url",
+                run: `echo "pulumi-backend-url=\${{ secrets.WEBINY_PULUMI_BACKEND }}\${{ github.run_id }}_${dbSetup}" >> $GITHUB_OUTPUT`
+            }
+        ]
+    });
+
+    const env: Record<string, string> = {
+        CYPRESS_MAILOSAUR_API_KEY: "${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}",
+        PULUMI_CONFIG_PASSPHRASE: "${{ secrets.PULUMI_CONFIG_PASSPHRASE }}",
+        PULUMI_SECRETS_PROVIDER: "${{ secrets.PULUMI_SECRETS_PROVIDER }}",
+        WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
+        WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}"
+    };
+
+    if (dbSetup === "ddb-os") {
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+        env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
+        env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+    }
+
+    const projectSetupJob: NormalJob = createJob({
+        needs: ["baseBranch", "constants", jobNames.constants, "checkComment"],
+        name: `E2E (${dbSetup.toUpperCase()}) - Project setup`,
+        outputs: {
+            "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
+        },
+        environment: "next",
+        env,
+        awsAuth: true,
+        checkout: { path: DIR_WEBINY_JS },
+        steps: [
+            ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
+            ...yarnCacheSteps,
+            ...runBuildCacheDownloadSteps,
+            ...installBuildSteps,
+            ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
+            {
+                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                "working-directory": DIR_WEBINY_JS,
+                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+            },
+            {
+                name: "Version and publish to Verdaccio",
+                "working-directory": DIR_WEBINY_JS,
+                run: "yarn release --type=verdaccio"
+            },
+            {
+                name: "Create verdaccio-files artifact",
+                uses: ACTION.uploadArtifactV6,
+                with: {
+                    name: `verdaccio-files-${dbSetup}`,
+                    "retention-days": 1,
+                    "include-hidden-files": true,
+                    path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
+                        "\n"
+                    )
+                }
+            },
+            {
+                name: "Disable Webiny telemetry",
+                run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
+            },
+            {
+                name: "Create a new Webiny project",
+                run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"\${{ env.AWS_REGION }}","storageOps":"${dbSetup}"}'
+`
+            },
+            ...(dbSetup === "ddb-os"
+                ? [
+                      {
+                          name: "Configure OpenSearch domain name and index prefix in webiny.config.tsx",
+                          "working-directory": DIR_TEST_PROJECT,
+                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| "webiny-e2e-os"} indexPrefix={process.env.OPENSEARCH_INDEX_PREFIX \\|\\| ""} endpoint={process.env.OPENSEARCH_ENDPOINT} username={process.env.OPENSEARCH_USERNAME} password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx`
+                      }
+                  ]
+                : []),
+            {
+                name: "Print CLI version",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny --version"
+            },
+            {
+                name: "Create project-files artifact",
+                uses: ACTION.uploadArtifactV6,
+                with: {
+                    name: `project-files-${dbSetup}`,
+                    "retention-days": 1,
+                    "include-hidden-files": true,
+                    path: [
+                        `${DIR_TEST_PROJECT}/`,
+                        `!${DIR_TEST_PROJECT}/node_modules/**/*`,
+                        `!${DIR_TEST_PROJECT}/**/node_modules/**/*`,
+                        `!${DIR_TEST_PROJECT}/.yarn/cache/**/*`
+                    ].join("\n")
+                }
+            },
+            {
+                name: "Enable extension whitelabeling",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny extension whitelabeling"
+            },
+            {
+                name: "API bundle size limit",
+                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
+            },
+            ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
+            ...(dbSetup === "ddb-os"
+                ? [
+                      {
+                          name: "Verify DDB+OS deployment",
+                          "working-directory": DIR_TEST_PROJECT,
+                          run: `OUTPUT=$(yarn webiny output core --env dev --json) && echo "$OUTPUT" && echo "$OUTPUT" | jq -e '.databaseSetup == "ddb+os"' || (echo "ERROR: Expected databaseSetup to be 'ddb+os' but got a different value" && exit 1)`
+                      }
+                  ]
+                : []),
+            {
+                name: "Extract admin app URL",
+                id: "admin-url",
+                "working-directory": DIR_TEST_PROJECT,
+                run: `echo "admin-url=$(yarn webiny output admin --env dev --json 2>/dev/null | jq -r '.appUrl // empty')" >> $GITHUB_OUTPUT`
+            },
+            {
+                name: "Update PR comment with admin URL",
+                env: {
+                    GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
+                    ADMIN_URL: `\${{ steps.admin-url.outputs.admin-url }}`,
+                    COMMENT_ID: `\${{ needs.checkComment.outputs.comment-id }}`
+                },
+                run: [
+                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
+                    `sed -i "s@| ${dbDisplayName} | 🔄 Deploying... | - |@| ${dbDisplayName} | ✅ Ready | $ADMIN_URL |@" /tmp/comment.txt`,
+                    `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
+                ].join("\n")
+            },
+            ...withCommonParams(
+                [
+                    // Commented this out b/c of an issue. Basically, the
+                    // script fails b/c its output is not pure JSON string.
+                    // {
+                    //     name: "Deployment Summary",
+                    //     run: `${runNodeScript(
+                    //         "printDeploymentSummary",
+                    //         `../${DIR_TEST_PROJECT}`
+                    //     )} >> $GITHUB_STEP_SUMMARY`
+                    // },
+                    {
+                        name: "Create Cypress config",
+                        run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
+                    },
+                    {
+                        name: "Save Cypress config",
+                        id: "save-cypress-config",
+                        run: "echo \"cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d '\\t\\n\\r')\" >> $GITHUB_OUTPUT"
+                    },
+                    {
+                        name: "Install Cypress binary",
+                        run: "cd cypress-tests && yarn cypress install"
+                    },
+                    {
+                        name: "Cypress - run installation wizard test",
+                        run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
+                    }
+                ],
+                {
+                    "working-directory": DIR_WEBINY_JS
+                }
+            )
+        ]
+    });
+
+    return {
+        [jobNames.constants]: constantsJob,
+        [jobNames.projectSetup]: projectSetupJob
+    };
+};
