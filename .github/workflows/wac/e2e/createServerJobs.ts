@@ -12,6 +12,7 @@ import {
     SERVER_BUILD_DIR
 } from "./constants.js";
 import { installBuildSteps, runBuildCacheDownloadSteps, yarnCacheSteps } from "./sharedSteps.js";
+import { createStatusRowUpdateSteps } from "./statusComment.js";
 
 // The storage backends the self-hosted ("server") hosting type supports. Mirrors `StorageOps` in
 // create-webiny-project's server project setup.
@@ -199,32 +200,7 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     "working-directory": DIR_WEBINY_JS,
                     run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
                 },
-                {
-                    name: "Update PR comment - passed",
-                    if: "success()",
-                    env: {
-                        GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
-                        COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
-                    },
-                    run: [
-                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-                        `sed -i "s@| ${label} | 🔄 Running... | - |@| ${label} | ✅ Passed | - |@" /tmp/comment.txt`,
-                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
-                    ].join("\n")
-                },
-                {
-                    name: "Update PR comment - failed",
-                    if: "failure()",
-                    env: {
-                        GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
-                        COMMENT_ID: "${{ needs.checkComment.outputs.comment-id }}"
-                    },
-                    run: [
-                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body' > /tmp/comment.txt`,
-                        `sed -i "s@| ${label} | 🔄 Running... | - |@| ${label} | ❌ Failed | - |@" /tmp/comment.txt`,
-                        `gh api repos/\${{ github.repository }}/issues/comments/$COMMENT_ID -X PATCH --field body=@/tmp/comment.txt`
-                    ].join("\n")
-                },
+                ...createStatusRowUpdateSteps({ label }),
                 {
                     name: "Print server logs",
                     if: "failure()",

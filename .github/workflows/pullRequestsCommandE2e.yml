@@ -384,6 +384,36 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Update PR comment - DDB passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB \|.*@| DDB | ✅ Passed | ${ADMIN_URL:--} |@"
+          /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - DDB failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB \|.*@| DDB | ❌ Failed | ${ADMIN_URL:--} |@"
+          /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -617,6 +647,36 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Update PR comment - DDB+OS passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ✅ Passed | ${ADMIN_URL:--}
+          |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - DDB+OS failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ❌ Failed | ${ADMIN_URL:--}
+          |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -759,7 +819,7 @@ jobs:
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
-      - name: Update PR comment - passed
+      - name: Update PR comment - Server (SQLite) passed
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -768,12 +828,12 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
           '.body' > /tmp/comment.txt
 
-          sed -i "s@| Server (SQLite) | 🔄 Running... | - |@| Server (SQLite) |
-          ✅ Passed | - |@" /tmp/comment.txt
+          sed -i -E "s@^\| Server \(SQLite\) \|.*@| Server (SQLite) | ✅ Passed |
+          - |@" /tmp/comment.txt
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
-      - name: Update PR comment - failed
+      - name: Update PR comment - Server (SQLite) failed
         if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -782,8 +842,8 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
           '.body' > /tmp/comment.txt
 
-          sed -i "s@| Server (SQLite) | 🔄 Running... | - |@| Server (SQLite) |
-          ❌ Failed | - |@" /tmp/comment.txt
+          sed -i -E "s@^\| Server \(SQLite\) \|.*@| Server (SQLite) | ❌ Failed |
+          - |@" /tmp/comment.txt
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt

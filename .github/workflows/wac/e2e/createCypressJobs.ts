@@ -8,6 +8,7 @@ import {
 import { ACTION, AWS_REGION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
 import { DIR_TEST_PROJECT, DIR_WEBINY_JS } from "./constants.js";
+import { createStatusRowUpdateSteps } from "./statusComment.js";
 import {
     globalBuildCacheSteps,
     installBuildSteps,
@@ -212,7 +213,15 @@ export const createCypressJobs = (dbSetup: string) => {
                 {
                     "working-directory": DIR_WEBINY_JS
                 }
-            )
+            ),
+            // The row is set to "✅ Ready" with the URL once the deploy succeeds, but that happens
+            // BEFORE Cypress runs - so without these the comment claims the variant is fine even
+            // when its tests failed.
+            ...createStatusRowUpdateSteps({
+                label: dbDisplayName,
+                urlExpression: "${ADMIN_URL:--}",
+                env: { ADMIN_URL: "${{ steps.admin-url.outputs.admin-url }}" }
+            })
         ]
     });
 
