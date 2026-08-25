@@ -7,12 +7,14 @@ import {
 import { Icon } from "@webiny/admin-ui";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useScheduleDialog } from "@webiny/app-scheduler";
+import { usePermissions } from "~/hooks/usePermissions.js";
 import { WB_PAGE_NAMESPACE } from "~/utils/namespace.js";
 
 const { DropdownAction } = PageEditorConfig.Ui.TopBar;
 
 export const PageEditorScheduleMenuItem = () => {
     const documentEditor = useDocumentEditor();
+    const { canPublishPage, canUnpublishPage } = usePermissions();
     const state = documentEditor.getDocumentState().toJson();
     // @ts-expect-error status is not defined in the document interface, but we know it is there
     const status = (state.status || "draft") as string;
@@ -31,6 +33,10 @@ export const PageEditorScheduleMenuItem = () => {
     const showDialog = useCallback(() => {
         showSchedulerDialog();
     }, [showSchedulerDialog]);
+
+    if (!canPublishPage && !canUnpublishPage) {
+        return null;
+    }
 
     return (
         <DropdownAction.MenuItem

@@ -7,6 +7,7 @@ import { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/er
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import type { CmsGroup } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * UpdateGroupRepository - Validates and persists group updates.
@@ -20,10 +21,12 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private storageOperations: StorageOperations.Interface
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialGroup: CmsGroup): Promise<Result<CmsGroup, RepositoryAbstraction.Error>> {
+        const group = this.runtimeTenant.assign(initialGroup);
         try {
             // Check if this is a plugin-based group (cannot be updated)
             const pluginGroups = await this.pluginGroupsProvider.getGroups();
@@ -39,7 +42,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             // Clear cache
             this.groupCache.clear();
 
-            return Result.ok();
+            return Result.ok(group);
         } catch (error) {
             return Result.fail(new GroupPersistenceError(error as Error));
         }
@@ -49,5 +52,5 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 export const UpdateGroupRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: UpdateGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations]
+    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations, RuntimeTenant]
 });

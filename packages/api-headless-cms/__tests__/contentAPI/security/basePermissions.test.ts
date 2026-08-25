@@ -28,7 +28,15 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroupA] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group A", icon: "x", slug: "group-a" }
+            data: {
+                name: "Group A",
+                icon: {
+                    name: "x",
+                    type: "x",
+                    value: "x"
+                },
+                slug: "group-a"
+            }
         });
 
         await manageApiA.createContentModelMutation({
@@ -47,7 +55,15 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroupB] = await manageApiB.createContentModelGroupMutation({
-            data: { name: "Group B", icon: "x", slug: "group-b" }
+            data: {
+                name: "Group B",
+                icon: {
+                    name: "x",
+                    type: "x",
+                    value: "x"
+                },
+                slug: "group-b"
+            }
         });
 
         await manageApiB.createContentModelMutation({
@@ -87,11 +103,27 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroup1] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x", slug: "group-1" }
+            data: {
+                name: "Group 1",
+                icon: {
+                    name: "x",
+                    type: "x",
+                    value: "x"
+                },
+                slug: "group-1"
+            }
         });
 
         const [modelGroup2] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 2", icon: "x", slug: "group-2" }
+            data: {
+                name: "Group 2",
+                icon: {
+                    name: "x",
+                    type: "x",
+                    value: "x"
+                },
+                slug: "group-2"
+            }
         });
 
         await manageApiA.createContentModelMutation({
@@ -182,7 +214,14 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroup] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group", icon: "x" }
+            data: {
+                name: "Group",
+                icon: {
+                    name: "x",
+                    type: "x",
+                    value: "x"
+                }
+            }
         });
 
         await manageApiA.createContentModelMutation({
@@ -237,10 +276,28 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroup] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
+            data: {
+                name: "Group 1",
+                icon: {
+                    name: "x",
+                    type: "x",
+                    value: "x"
+                }
+            }
+        });
+        expect(modelGroup).toMatchObject({
+            data: {
+                createContentModelGroup: {
+                    data: {
+                        name: "Group 1",
+                        slug: "group-1"
+                    },
+                    error: null
+                }
+            }
         });
 
-        await manageApiA.createContentModelMutation({
+        const [createdModelA] = await manageApiA.createContentModelMutation({
             data: {
                 name: "Test Entry 1",
                 singularApiName: "TestEntryOne",
@@ -248,13 +305,35 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 group: modelGroup.data.createContentModelGroup.data.slug
             }
         });
+        expect(createdModelA).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        name: "Test Entry 1",
+                        group: modelGroup.data.createContentModelGroup.data.slug
+                    },
+                    error: null
+                }
+            }
+        });
 
-        await manageApiA.createContentModelMutation({
+        const [createdModelB] = await manageApiA.createContentModelMutation({
             data: {
                 name: "Test Entry 2",
                 singularApiName: "TestEntryTwo",
                 pluralApiName: "TestEntryTwos",
                 group: modelGroup.data.createContentModelGroup.data.slug
+            }
+        });
+        expect(createdModelB).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        name: "Test Entry 2",
+                        group: modelGroup.data.createContentModelGroup.data.slug
+                    },
+                    error: null
+                }
             }
         });
 
@@ -296,20 +375,30 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         expect(contentModelsListB).toMatchObject({
             data: {
                 listContentModels: {
-                    data: [{ modelId: "testEntry1" }],
+                    data: [
+                        {
+                            modelId: "testEntry1"
+                        }
+                    ],
                     error: null
                 }
             }
         });
+        expect(contentModelsListB.data.listContentModels.data).toHaveLength(1);
 
         const [contentModelsListC] = await manageApiC.listContentModelsQuery();
         expect(contentModelsListC).toMatchObject({
             data: {
                 listContentModels: {
-                    data: [{ modelId: "testEntry2" }],
+                    data: [
+                        {
+                            modelId: "testEntry2"
+                        }
+                    ],
                     error: null
                 }
             }
         });
+        expect(contentModelsListC.data.listContentModels.data).toHaveLength(1);
     });
 });

@@ -10,9 +10,11 @@ import { SchedulePublishPageUseCase } from "~/features/SchedulePublishPageUseCas
 import { ScheduleUnpublishPageUseCase } from "~/features/ScheduleUnpublishPageUseCase/ScheduleUnpublishPageUseCase.js";
 import { SchedulePublishRedirectUseCase } from "~/features/SchedulePublishRedirectUseCase/SchedulePublishRedirectUseCase.js";
 import { ScheduleUnpublishRedirectUseCase } from "~/features/ScheduleUnpublishRedirectUseCase/ScheduleUnpublishRedirectUseCase.js";
+import { WbSchedulerPermissions } from "~/features/permissions/WbSchedulerPermissions.js";
 
 export const createWebsiteBuilderScheduleContext = () => {
     return new ContextPlugin(async context => {
+        context.container.register(WbSchedulerPermissions);
         context.container.register(PageNamespaceHandler);
         context.container.register(RedirectNamespaceHandler);
         context.container.register(PublishPageActionHandler);

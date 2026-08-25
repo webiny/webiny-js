@@ -9,7 +9,6 @@ import { GroupCreateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import {
     GroupNotAuthorizedError,
     GroupValidationError
@@ -37,8 +36,7 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: CreateGroupRepository.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface,
-        private cmsContext: CmsContext.Interface
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(input: CmsGroupCreateInput): Promise<Result<CmsGroup, UseCaseAbstraction.Error>> {
@@ -101,9 +99,13 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
             }
 
             // Publish after event
-            await this.eventPublisher.publish(new GroupAfterCreateEvent({ group }));
+            await this.eventPublisher.publish(
+                new GroupAfterCreateEvent({
+                    group: result.value
+                })
+            );
 
-            return Result.ok(group);
+            return Result.ok(result.value);
         } catch (error) {
             // Publish error event for unexpected errors
             await this.eventPublisher.publish(
@@ -126,7 +128,6 @@ export const CreateGroupUseCase = createImplementation({
         CreateGroupRepository,
         AccessControl,
         TenantContext,
-        IdentityContext,
-        CmsContext
+        IdentityContext
     ]
 });

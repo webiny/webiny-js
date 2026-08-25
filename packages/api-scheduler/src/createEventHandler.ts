@@ -65,6 +65,10 @@ export const createScheduledActionEventHandler = () => {
             }
             const tenant = tenantResult.value;
 
+            /**
+             * No need to re-load ScheduledActionModel here. CMS repositories use RuntimeTenant
+             * to stamp the correct tenant on models/entries before passing them to storage operations.
+             */
             return tenantContext.withTenant(tenant, async () => {
                 const executeScheduledAction = context.container.resolve(
                     ExecuteScheduledActionUseCase
