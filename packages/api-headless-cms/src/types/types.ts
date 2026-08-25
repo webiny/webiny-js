@@ -1,5 +1,5 @@
 import type { Context, GenericRecord } from "@webiny/api/types.js";
-import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver } from "@webiny/api-graphql/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
@@ -57,11 +57,6 @@ export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryC
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
-    /**
-     * The storage operations loaded for current context.
-     */
-    storageOperations: HeadlessCmsStorageOperations;
-
     /**
      * Use to ensure perform authorization and ensure identities have access to the groups, models and entries.
      */
@@ -974,34 +969,6 @@ export interface CmsGroupStorageOperationsDeleteParams {
     group: CmsGroup;
 }
 
-/**
- * Description of the CmsGroup CRUD operations.
- * If user wants to add another database to the application, this is how it is done.
- * This is just plain read, update, write, delete and list - no authentication or permission checks.
- */
-export interface CmsGroupStorageOperations {
-    /**
-     * Gets content model group by given id.
-     */
-    get: (params: CmsGroupStorageOperationsGetParams) => Promise<CmsGroup | null>;
-    /**
-     * List all content model groups. Filterable via params.
-     */
-    list: (params: CmsGroupStorageOperationsListParams) => Promise<CmsGroup[]>;
-    /**
-     * Create a new content model group.
-     */
-    create: (params: CmsGroupStorageOperationsCreateParams) => Promise<void>;
-    /**
-     * Update existing content model group.
-     */
-    update: (params: CmsGroupStorageOperationsUpdateParams) => Promise<void>;
-    /**
-     * Delete the content model group.
-     */
-    delete: (params: CmsGroupStorageOperationsDeleteParams) => Promise<void>;
-}
-
 export interface CmsModelStorageOperationsGetParams {
     tenant: string;
     modelId: string;
@@ -1027,34 +994,6 @@ export interface CmsModelStorageOperationsUpdateParams {
 
 export interface CmsModelStorageOperationsDeleteParams {
     model: CmsModel;
-}
-
-/**
- * Description of the CmsModel storage operations.
- * If user wants to add another database to the application, this is how it is done.
- * This is just plain read, update, write, delete and list - no authentication or permission checks.
- */
-export interface CmsModelStorageOperations {
-    /**
-     * Gets content model by given id.
-     */
-    get: (params: CmsModelStorageOperationsGetParams) => Promise<StorageCmsModel | null>;
-    /**
-     * List all content models. Filterable via params.
-     */
-    list: (params: CmsModelStorageOperationsListParams) => Promise<StorageCmsModel[]>;
-    /**
-     * Create a new content model.
-     */
-    create: (params: CmsModelStorageOperationsCreateParams) => Promise<StorageCmsModel>;
-    /**
-     * Update existing content model.
-     */
-    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<StorageCmsModel>;
-    /**
-     * Delete the content model.
-     */
-    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<void>;
 }
 
 export interface CmsEntryStorageOperationsGetParams {
@@ -1248,180 +1187,8 @@ export interface CmsEntryStorageOperationsListResponse<
     totalCount: number;
 }
 
-/**
- * Description of the CmsModel storage operations.
- * If user wants to add another database to the application, this is how it is done.
- * This is just plain read, update, write, delete and list - no authentication or permission checks.
- *
- *
- * @category StorageOperations
- * @category CmsEntry
- */
-export interface CmsEntryStorageOperations {
-    /**
-     * Get all the entries of the ids.
-     */
-    getByIds: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetByIdsParams
-    ) => Promise<CmsEntry<T>[]>;
-    /**
-     * Get all the published entries of the ids.
-     */
-    getPublishedByIds: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetPublishedByIdsParams
-    ) => Promise<CmsEntry<T>[]>;
-    /**
-     * Get all the latest entries of the ids.
-     */
-    getLatestByIds: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetLatestByIdsParams
-    ) => Promise<CmsEntry<T>[]>;
-    /**
-     * Get all revisions of the given entry id.
-     */
-    getRevisions: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetRevisionsParams
-    ) => Promise<CmsEntry<T>[]>;
-    /**
-     * Get the entry by the given revision id.
-     */
-    getRevisionById: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetRevisionParams
-    ) => Promise<CmsEntry<T> | null>;
-    /**
-     * Get the published entry by given entryId.
-     */
-    getPublishedRevisionByEntryId: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetPublishedRevisionParams
-    ) => Promise<CmsEntry<T> | null>;
-    /**
-     * Get the latest entry by given entryId.
-     */
-    getLatestRevisionByEntryId: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetLatestRevisionParams
-    ) => Promise<CmsEntry<T> | null>;
-    /**
-     * Get the revision of the entry before given one.
-     */
-    getPreviousRevision: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetPreviousRevisionParams
-    ) => Promise<CmsEntry<T> | null>;
-    /**
-     * Gets entry by given params.
-     */
-    get: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetParams
-    ) => Promise<CmsEntry<T> | null>;
-    /**
-     * List all entries. Filterable via params.
-     */
-    list: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsListParams
-    ) => Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>>;
-    /**
-     * Create a new entry.
-     */
-    create: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsCreateParams<T>
-    ) => Promise<CmsEntry<T>>;
-    /**
-     * Create a new entry from existing one.
-     */
-    createRevisionFrom: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsCreateRevisionFromParams<T>
-    ) => Promise<CmsEntry<T>>;
-    /**
-     * Update existing entry.
-     */
-    update: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsUpdateParams<T>
-    ) => Promise<CmsEntry<T>>;
-    /**
-     * Move entry and all its entries into a new folder.
-     */
-    move: (model: CmsModel, id: string, folderId: string) => Promise<void>;
-    /**
-     * Delete the entry revision.
-     */
-    deleteRevision: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsDeleteRevisionParams<T>
-    ) => Promise<void>;
-    /**
-     * Delete the entry.
-     */
-    delete: (model: CmsModel, params: CmsEntryStorageOperationsDeleteParams) => Promise<void>;
-    /**
-     * Move the entry to bin.
-     */
-    moveToBin: (model: CmsModel, params: CmsEntryStorageOperationsMoveToBinParams) => Promise<void>;
-    /**
-     * Restore the entry from the bin.
-     */
-    restoreFromBin: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsRestoreFromBinParams<T>
-    ) => Promise<CmsEntry<T>>;
-    /**
-     * Delete multiple entries, with a limit on how much can be deleted in one call.
-     */
-    deleteMultipleEntries: (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsDeleteEntriesParams
-    ) => Promise<void>;
-    /**
-     * Publish the entry.
-     */
-    publish: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsPublishParams<T>
-    ) => Promise<CmsEntry<T>>;
-    /**
-     * Unpublish the entry.
-     */
-    unpublish: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryStorageOperationsUnpublishParams<T>
-    ) => Promise<CmsEntry<T>>;
-    /**
-     * Method to list all the unique values for the given field id.
-     * Simplest use case would be to aggregate tags for some content.
-     * @internal
-     */
-    getUniqueFieldValues: (
-        model: CmsModel,
-        params: CmsEntryStorageOperationsGetUniqueFieldValuesParams
-    ) => Promise<CmsEntryUniqueValue[]>;
-}
-
 export enum CONTENT_ENTRY_STATUS {
     DRAFT = "draft",
     PUBLISHED = "published",
     UNPUBLISHED = "unpublished"
-}
-
-export interface HeadlessCmsStorageOperations<C extends CmsContext = CmsContext> {
-    name: string;
-    groups: CmsGroupStorageOperations;
-    models: CmsModelStorageOperations;
-    entries: CmsEntryStorageOperations;
-    /**
-     * Either attach something from the storage operations or run something in it. Synchronous so
-     * the storage stack can be built inside HeadlessCmsFeature.register() (for every event), not in
-     * a per-request async initializer. All adapters (ddb/ddb-es/sql) have sync bodies.
-     */
-    beforeInit: (context: C) => void;
 }

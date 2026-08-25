@@ -8,18 +8,17 @@
 import { describe, expect, it } from "vitest";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
 import { registerExtensions } from "@webiny/handler";
 import { registerExtension } from "@webiny/project/utils/registerExtension.js";
 import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { Extension } from "~/api/Extension.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -36,7 +35,7 @@ const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 describe("Languages api extension — registered via the app indirection", () => {
     it("registers the wbyLanguage model through registerExtension + RequestContextInitializer", async () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+        const cmsStorage = getStorageOps("cms");
 
         const capturedCtx: { value?: Record<string, any> } = {};
 
@@ -49,7 +48,7 @@ describe("Languages api extension — registered via the app indirection", () =>
                 container.registerDecorator(AuthTriggerHandler);
                 container.registerDecorator(RootTenantInitializer);
             },
-            request: async container => {
+            child: async container => {
                 const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);

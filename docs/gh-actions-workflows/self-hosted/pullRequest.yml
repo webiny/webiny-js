@@ -1,0 +1,49 @@
+name: Pull Requests (self-hosted)
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  build-test-static:
+    name: Build and run static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn --immutable
+      - name: Check code formatting
+        run: yarn format
+      - name: Lint
+        run: yarn lint
+
+  build-images:
+    name: Verify Docker images build
+    needs: build-test-static
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      # Build both images without pushing — a smoke check that the deploy artifacts still build.
+      # (Self-hosted PRs create no infrastructure, so there is no ephemeral environment to deploy or
+      # to tear down afterwards — hence no "pull request closed" workflow.)
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: api
+          push: false
+      - name: Build Admin image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: admin
+          push: false

@@ -1,5 +1,5 @@
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { CmsExport, CmsImport } from "~/export/abstractions.js";
 
 const plugin = createCmsGraphQLSchemaPlugin({

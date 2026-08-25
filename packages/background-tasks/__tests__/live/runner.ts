@@ -1,12 +1,15 @@
 import type { CreateLiveContextParams } from "./context";
 import { createLiveContext } from "./context";
 import { TaskRunner } from "~/api/runner";
-import type { Context as LambdaContext } from "@webiny/aws-sdk/types";
 import type { Context } from "~tests/types";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 
-const defaultLambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis"> = {
+interface RunningContext {
+    getRemainingTimeInMillis: () => number;
+}
+
+const defaultLambdaContext: RunningContext = {
     getRemainingTimeInMillis: () => {
         return 1000000;
     }
@@ -15,7 +18,7 @@ const defaultLambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis"> = {
 export interface CreateLiveRunnerParams<
     C extends Context = Context
 > extends CreateLiveContextParams<C> {
-    lambdaContext?: Pick<LambdaContext, "getRemainingTimeInMillis">;
+    lambdaContext?: RunningContext;
     context?: C;
 }
 

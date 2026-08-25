@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseInitializer } from "./WcpLicenseInitializer.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";

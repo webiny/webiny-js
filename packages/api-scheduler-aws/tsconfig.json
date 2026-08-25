@@ -10,12 +10,12 @@
     { "path": "../error" },
     { "path": "../utils" },
     { "path": "../api-core-testing" },
+    { "path": "../api-graphql" },
     { "path": "../db-dynamodb" },
     { "path": "../event-handler-aws" },
     { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../handler" },
-    { "path": "../handler-graphql" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -41,6 +41,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/event-handler-aws/*": ["../event-handler-aws/src/*"],
@@ -51,8 +53,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

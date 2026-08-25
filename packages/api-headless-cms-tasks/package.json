@@ -18,12 +18,12 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-aco": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-bulk-actions": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
     "graphql": "^16.14.2",
     "zod": "4.4.3"
@@ -36,9 +36,9 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/wcp": "0.0.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

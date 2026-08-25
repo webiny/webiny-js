@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetEntryByIdUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetEntriesByIdsUseCase } from "../GetEntriesByIds/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
@@ -33,8 +32,7 @@ class GetEntryByIdUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const GetEntryByIdUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetEntryByIdUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetEntryByIdUseCaseImpl,
     dependencies: [GetEntriesByIdsUseCase]
 });

@@ -14,7 +14,19 @@ export const ServerExtensions = () => {
         <>
             {/* SQL database. Relative paths resolve against the project root (not the disposable app
                 workspace), so data persists across builds/watch restarts. */}
-            <Infra.Sqlite filename={process.env.WEBINY_SQL_FILENAME || "./.webiny/server.sqlite"} />
+            {process.env.WEBINY_DB === "postgres" ? (
+                <Infra.Postgres
+                    host={process.env.WEBINY_PG_HOST || "localhost"}
+                    port={Number(process.env.WEBINY_PG_PORT) || 5432}
+                    user={process.env.WEBINY_PG_USER || "postgres"}
+                    password={process.env.WEBINY_PG_PASSWORD || "webiny"}
+                    database={process.env.WEBINY_PG_DATABASE || "webiny"}
+                />
+            ) : (
+                <Infra.Sqlite
+                    filename={process.env.WEBINY_SQL_FILENAME || "./.webiny/server.sqlite"}
+                />
+            )}
 
             {/* Local file storage (uploaded files) + upload signing secret. Storage path resolves like
                 the SQLite file — against the project root — so uploads persist across rebuilds. */}

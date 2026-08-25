@@ -1,6 +1,6 @@
 import { Container } from "@webiny/di";
 import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
@@ -11,13 +11,13 @@ import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js"
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
-import { ElasticsearchTasksFeature } from "@webiny/api-elasticsearch-tasks";
+import { SearchIndexTasksFeature } from "@webiny/api-search-index-tasks";
+import { SearchIndexTasksDdbOsFeature } from "@webiny/api-search-index-tasks-ddb-os";
 import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -26,6 +26,7 @@ import type { CmsContext } from "~/types";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
+import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -50,7 +51,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
     const elasticsearchClient = createTestOpenSearchClient();
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = params.identity ?? defaultIdentity;
     const resolvedPermissions = (params.permissions ?? [{ name: "*" }]) as SecurityPermission[];
@@ -88,7 +89,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             { id: "webiny", name: "Webiny", parent: "" },
             { id: "dev", name: "Dev", parent: "" },
             { id: "sales", name: "Sales", parent: "" }
-        ]) {
+        ] as CreateTenantInput[]) {
             try {
                 await createTenantUseCase.execute(tenant);
             } catch {
@@ -96,13 +97,11 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             }
         }
 
-        // Background tasks are DI-native — the feature registers models, TasksCrud, and the GraphQL
-        // contextual schema (built below alongside the other contextual schemas). The OpenSearch
-        // Elasticsearch task definitions come from ElasticsearchTasksFeature.
         ProcessEnvFeature.register(container);
         BackgroundTasksFeature.register(container);
         TimerFeature.register(container, timerFactory());
-        ElasticsearchTasksFeature.register(container);
+        SearchIndexTasksFeature.register(container);
+        SearchIndexTasksDdbOsFeature.register(container);
 
         const tenantCtx = container.resolve(TenantContext);
         tenantCtx.setTenant({

@@ -5,7 +5,7 @@ import {
     isHeadlessCmsReady
 } from "@webiny/api-headless-cms";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
-import { Response } from "@webiny/handler-graphql";
+import { Response } from "@webiny/api-graphql";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";

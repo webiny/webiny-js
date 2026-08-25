@@ -21,6 +21,8 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-event-handler-core": "0.0.0",
     "@webiny/api-file-manager-server": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-headless-cms-bulk-actions-server": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-scheduler-server": "0.0.0",
     "@webiny/api-websockets-server": "0.0.0",
@@ -29,8 +31,7 @@
     "@webiny/event-handler-server": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
-    "@webiny/utils": "0.0.0"
+    "@webiny/stdlib": "^0.0.17"
   },
   "peerDependencies": {
     "@webiny/di": ">=0.2.3"
@@ -40,7 +41,7 @@
     "@webiny/di": "^1.0.2",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

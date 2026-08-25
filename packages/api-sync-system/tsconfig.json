@@ -12,7 +12,8 @@
     { "path": "../handler" },
     { "path": "../plugins" },
     { "path": "../utils" },
-    { "path": "../api-core-ddb" }
+    { "path": "../api-core-ddb" },
+    { "path": "../db-dynamodb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -42,7 +43,9 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"]
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
     }
   }
 }

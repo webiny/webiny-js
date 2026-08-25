@@ -1,13 +1,12 @@
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { ListGroupsStorageOperation } from "~/features/shared/storageOperations/group/ListGroupsStorageOperation.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import { filterAsync } from "~/utils/filterAsync.js";
@@ -28,7 +27,7 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private storageOperations: StorageOperations.Interface,
+        private listGroups: ListGroupsStorageOperation.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
@@ -61,7 +60,7 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         // 2. Fetch database groups (with caching)
         const dbCacheKey = createCacheKey({ tenant });
         const databaseGroups = await this.groupCache.getOrSet(dbCacheKey, async () => {
-            return await this.storageOperations.groups.list({
+            return await this.listGroups.execute({
                 where: { tenant }
             });
         });
@@ -91,13 +90,12 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const GetGroupRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetGroupRepository = RepositoryAbstraction.createImplementation({
     implementation: GetGroupRepositoryImpl,
     dependencies: [
         GroupCache,
         PluginGroupsProvider,
-        StorageOperations,
+        ListGroupsStorageOperation,
         AccessControl,
         TenantContext,
         IdentityContext,

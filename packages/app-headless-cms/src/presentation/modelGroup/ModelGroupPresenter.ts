@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
-import slugify from "slugify";
+import { StringFormatter } from "@webiny/app-admin/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
@@ -46,7 +46,8 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
         private createModelGroupUseCase: CreateModelGroupUseCase.Interface,
         private updateModelGroupUseCase: UpdateModelGroupUseCase.Interface,
         private deleteModelGroupUseCase: DeleteModelGroupUseCase.Interface,
-        private cache: ModelGroupsCache.Interface
+        private cache: ModelGroupsCache.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {
         this.form = this.buildForm(false, false);
         makeAutoObservable<
@@ -58,6 +59,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             | "updateModelGroupUseCase"
             | "deleteModelGroupUseCase"
             | "cache"
+            | "stringFormatter"
         >(this, {
             formModelFactory: false,
             listModelGroupsUseCase: false,
@@ -66,6 +68,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
             updateModelGroupUseCase: false,
             deleteModelGroupUseCase: false,
             cache: false,
+            stringFormatter: false,
             vm: computed
         });
     }
@@ -218,14 +221,7 @@ class ModelGroupPresenterImpl implements IModelGroupPresenter {
                         if (slugValue || !value) {
                             return;
                         }
-                        form.field("slug").setValue(
-                            slugify(String(value), {
-                                replacement: "-",
-                                lower: true,
-                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
-                                trim: false
-                            })
-                        );
+                        form.field("slug").setValue(this.stringFormatter.slugify(String(value)));
                     }),
                 slug: fields
                     .text()
@@ -265,6 +261,7 @@ export const ModelGroupPresenter = Abstraction.createImplementation({
         CreateModelGroupUseCase,
         UpdateModelGroupUseCase,
         DeleteModelGroupUseCase,
-        ModelGroupsCache
+        ModelGroupsCache,
+        StringFormatter
     ]
 });

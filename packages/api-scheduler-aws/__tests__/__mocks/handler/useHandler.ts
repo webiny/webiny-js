@@ -1,10 +1,10 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { SchedulerFeature } from "@webiny/api-scheduler";
 import { processLegacyPlugins } from "./bridgeLegacyPlugins";
 import { buildSchema } from "graphql";
@@ -18,7 +18,6 @@ import type {
     SchedulerClientConfig
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -38,7 +37,7 @@ export const useHandler = (params: UseHandlerParams) => {
     const { permissions, identity } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];
@@ -54,7 +53,7 @@ export const useHandler = (params: UseHandlerParams) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
+        child: async container => {
             const wcpLicense = await loadWcpLicense(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });

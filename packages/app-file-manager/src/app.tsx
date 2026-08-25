@@ -25,6 +25,8 @@ import { FileModelProviderFeature } from "~/features/fileModel/index.js";
 import { FileFieldTypeFeature } from "~/modules/HeadlessCms/fieldType/feature.js";
 import { CmsFilePickerRenderer } from "~/presentation/fieldRenderers/CmsFilePickerRenderer.js";
 import { CmsMultiFilePickerRenderer } from "~/presentation/fieldRenderers/CmsMultiFilePickerRenderer.js";
+import { CmsAssetPickerRenderer } from "~/presentation/fieldRenderers/CmsAssetPickerRenderer.js";
+import { CmsMultiAssetPickerRenderer } from "~/presentation/fieldRenderers/CmsMultiAssetPickerRenderer.js";
 
 export const FileManager = () => {
     return (
@@ -58,6 +60,14 @@ export const FileManager = () => {
                 <AdminConfig.Form.FieldRenderer
                     name={"cmsMultiFilePicker"}
                     component={CmsMultiFilePickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsAssetPicker"}
+                    component={CmsAssetPickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"cmsMultiAssetPicker"}
+                    component={CmsMultiAssetPickerRenderer}
                 />
             </AdminConfig>
             {/* Legacy modules. */}

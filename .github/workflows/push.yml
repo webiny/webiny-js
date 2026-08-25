@@ -16,10 +16,10 @@ jobs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -35,22 +35,29 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -60,30 +67,37 @@ jobs:
       - name: Build packages
         run: yarn build --rebuild-dependents
         working-directory: v6
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   codeAnalysis:
     name: Static code analysis
     needs:
       - constants
       - build
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -109,23 +123,30 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisVerifyDependencies:
     needs:
       - constants
       - build
     name: Static code analysis (verify dependencies)
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -142,19 +163,26 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
@@ -165,6 +193,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
       - build
@@ -172,10 +203,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -189,6 +220,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
       - constants
@@ -208,17 +242,21 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -231,6 +269,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
       - build
@@ -238,10 +279,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -255,6 +296,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
       - constants
@@ -277,22 +321,27 @@ jobs:
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -306,6 +355,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-ddb-os-constants:
     needs:
@@ -314,10 +365,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -331,6 +382,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
       - constants
@@ -359,22 +413,27 @@ jobs:
       OPENSEARCH_PASSWORD: ${{ secrets.OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -388,6 +447,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-sql-constants:
     needs:
@@ -396,10 +457,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -413,6 +474,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
       - constants
@@ -435,22 +499,27 @@ jobs:
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: sql,ddb
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -464,6 +533,8 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   e2eTests-ddb-constants:
     name: E2E (DDB) - Constants
@@ -473,10 +544,10 @@ jobs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
@@ -491,6 +562,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2eTests-ddb-setup:
     needs:
       - constants
@@ -510,23 +584,28 @@ jobs:
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           fetch-depth: 0
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -554,7 +633,7 @@ jobs:
         run: yarn release --type=verdaccio
         working-directory: v6
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: verdaccio-files-ddb
           retention-days: 1
@@ -576,7 +655,7 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: project-files-ddb
           retention-days: 1
@@ -592,7 +671,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -620,6 +699,8 @@ jobs:
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write
   e2eTests-ddb-os-constants:
     name: E2E (DDB+OS) - Constants
@@ -629,10 +710,10 @@ jobs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
@@ -647,6 +728,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   e2eTests-ddb-os-setup:
     needs:
       - constants
@@ -671,23 +755,28 @@ jobs:
       OPENSEARCH_PASSWORD: ${{ secrets.OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           fetch-depth: 0
           path: v6
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: v6
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: v6/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -715,7 +804,7 @@ jobs:
         run: yarn release --type=verdaccio
         working-directory: v6
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
@@ -746,7 +835,7 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: project-files-ddb-os
           retention-days: 1
@@ -762,7 +851,7 @@ jobs:
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
-          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"
+          ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -797,4 +886,6 @@ jobs:
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: v6
     permissions:
+      contents: read
+      actions: write
       id-token: write

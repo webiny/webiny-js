@@ -1,15 +1,13 @@
 import { createFeature, type Container } from "@webiny/feature/api";
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AuditLogsContext, AuditLogsStorage } from "./abstractions.js";
 import type { GraphQLSchema } from "graphql";
 import { createAuditLogsContextValue } from "./context/AuditLogsContextValue.js";
 import { createSubscriptionHooks } from "./subscriptions/index.js";
-import { createGraphQLSchema } from "./graphql/schema.js";
+import { AuditLogsGraphQLSchema } from "./graphql/AuditLogsGraphQLSchema.js";
 
 export interface AuditLogsFeatureConfig {
     deleteLogsAfterDays?: number;
@@ -19,54 +17,10 @@ const getDeleteLogsAfterDays = (days?: number): number => {
     return days && days > 0 ? days : 60;
 };
 
-class AuditLogsSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interface {
-    async execute(builder: IGraphQLSchemaBuilder): CoreGraphQLSchemaFactory.Return {
-        const plugin = createGraphQLSchema() as any;
-        const { typeDefs, resolvers } = plugin.schema ?? {};
-
-        if (typeDefs) {
-            const str = Array.isArray(typeDefs) ? typeDefs.join("\n") : String(typeDefs);
-            builder.addTypeDefs(str);
-        }
-
-        if (resolvers) {
-            registerResolvers(builder, resolvers, "");
-        }
-
-        return builder;
-    }
-}
-
-function registerResolvers(
-    builder: IGraphQLSchemaBuilder,
-    resolvers: Record<string, any>,
-    prefix: string
-): void {
-    for (const [key, value] of Object.entries(resolvers)) {
-        const path = prefix ? `${prefix}.${key}` : key;
-        if (typeof value === "function") {
-            const fn = value;
-            builder.addResolver({
-                path,
-                dependencies: [],
-                resolver: () => (params: any) =>
-                    fn(params.parent, params.args, params.context, params.info)
-            });
-        } else if (value && typeof value === "object") {
-            registerResolvers(builder, value, path);
-        }
-    }
-}
-
-const AuditLogsSchemaFactory = CoreGraphQLSchemaFactory.createImplementation({
-    implementation: AuditLogsSchemaFactoryImpl,
-    dependencies: []
-});
-
 export const AuditLogsFeature = createFeature({
     name: "AuditLogs",
     register(container: Container, config: AuditLogsFeatureConfig = {}) {
-        container.register(AuditLogsSchemaFactory);
+        container.register(AuditLogsGraphQLSchema);
 
         let initialized = false;
 
@@ -82,8 +36,8 @@ export const AuditLogsFeature = createFeature({
                 }
                 initialized = true;
 
-                const wcpContext = container.resolve(WcpContext);
-                if (!wcpContext.canUseFeature("auditLogs")) {
+                const featureFlags = container.resolve(FeatureFlags);
+                if (!featureFlags.get().isEnabled("auditLogs")) {
                     return STUB_SCHEMA;
                 }
 

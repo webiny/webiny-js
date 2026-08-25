@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListEntriesRepository } from "./abstractions.js";
@@ -54,8 +53,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const ListEntriesUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const ListEntriesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListEntriesUseCaseImpl,
     dependencies: [ListEntriesRepository, AccessControl, IdentityContext]
 });

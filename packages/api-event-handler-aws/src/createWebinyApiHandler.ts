@@ -15,6 +15,7 @@ import {
     createLambdaHandler,
     ApiGatewayFeature,
     BackgroundTaskEventType,
+    EventBridgeEventType,
     WebSocketEventType
 } from "@webiny/event-handler-aws";
 import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
@@ -24,11 +25,11 @@ import { registerApiRequestStack } from "@webiny/api-event-handler-core";
 import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
 import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
 import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { WebSocketLambdaHandler } from "@webiny/api-websockets";
 // CognitoIdpFeature must be in the root container so the request auth step
 // (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
 // when it is first instantiated. Extensions register in the child/request container — too late.
 import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
+import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
 
@@ -72,25 +73,33 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
             ApiGatewayFeature.register(container);
 
-            // ── Auth + tenant (extract → shared load) ──────────────────
-            // These decorators depend on api-core (RequestIdentityLoader/RequestTenantLoader), so
+            // ── Tenant + auth (extract → shared load) ──────────────────
+            // These decorators depend on api-core (RequestTenantLoader/RequestIdentityLoader), so
             // they live in this composition layer, not event-handler-aws. registerDecorator applies
-            // LATER registrations as the OUTER wrapper (whose execute() runs first). Identity must be
-            // established before tenant, so register tenant first (inner) and identity last (outer)
-            // → identity runs, then tenant, then the router.
-            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
+            // LATER registrations as the OUTER wrapper (whose execute() runs first). TENANT must be
+            // established before IDENTITY: API-key authentication resolves the key by tenant partition
+            // (ApiKeysRepository reads TenantContext.getTenant()), so identity establishment depends on
+            // the tenant. The reverse is not true — RequestTenantLoader has no identity dependency. So
+            // register identity first (inner) and tenant last (outer) → tenant runs, then identity,
+            // then the router.
             container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
+            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
 
             // Background task invocations (Step Functions → Lambda directly). BackgroundTasksAwsFeature
             // registers the Lambda handler + StepFunctionService (the AWS dispatch transport).
             container.register(BackgroundTaskEventType);
             BackgroundTasksAwsFeature.register(container);
 
+            // EventBridge invocations (e.g. scheduled empty-trash-bin). Without the event type the
+            // dispatcher can't match an EventBridge-shaped event; without the handler the container
+            // can't resolve EventBridgeEventHandler.
+            container.register(EventBridgeEventType);
+            BulkActionsEventBridgeLambdaHandlerFeature.register(container);
+
             // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
             // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
             // matched") so $connect fails and no connection is ever registered → no server→client push.
             container.register(WebSocketEventType);
-            container.register(WebSocketLambdaHandler);
 
             // ── Database ───────────────────────────────────────────────
             DynamoDBCoreFeature.register(container, {
@@ -106,7 +115,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             await config.registerRootStorage(container, { documentClient });
         },
 
-        request: async container => {
+        child: async container => {
             // The per-request feature stack is transport-agnostic (shared with the server transport).
             // The AWS-specific interleave points are supplied as the `transports` adapters.
             await registerApiRequestStack(container, {

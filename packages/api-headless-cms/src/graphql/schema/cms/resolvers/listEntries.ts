@@ -1,4 +1,4 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { createListEntriesResolver } from "../listEntriesResolver.js";
 
 class ListEntriesResolver implements CoreGraphQLSchemaFactory.Interface {

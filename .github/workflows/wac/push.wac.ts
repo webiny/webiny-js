@@ -1,5 +1,11 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_VERSION, runNodeScript } from "./utils/index.js";
+import {
+    ACTION,
+    AWS_REGION,
+    BUILD_PACKAGES_RUNNER,
+    NODE_VERSION,
+    runNodeScript
+} from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 import {
     createDeployWebinySteps,
@@ -113,7 +119,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             ),
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: ACTION.uploadArtifactV6,
                 with: {
                     name: `verdaccio-files-${storageOps.shortId}`,
                     "retention-days": 1,
@@ -148,7 +154,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: ACTION.uploadArtifactV6,
                 with: {
                     name: `project-files-${storageOps.shortId}`,
                     "retention-days": 1,
@@ -168,7 +174,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "API bundle size limit",
-                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(storageOps.shortId === "ddb-os"

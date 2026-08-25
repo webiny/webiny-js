@@ -8,10 +8,10 @@ import {
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 import type { HcmsTasksContext } from "~/types.js";
-import { createResolverDecorator } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
-import { resolve } from "@webiny/handler-graphql";
-import { Response } from "@webiny/handler-graphql";
+import { createResolverDecorator } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
+import { resolve } from "@webiny/api-graphql";
+import { Response } from "@webiny/api-graphql";
 import { createZodError } from "@webiny/utils";
 import type { IDeleteCmsModelTask } from "~/features/DeleteModelTask/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";

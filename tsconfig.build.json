@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node", "static", "vitest"],
+    "types": ["node", "static", "vitest", "webiny-env"],
     "target": "esnext",
     "skipLibCheck": true,
     "allowJs": true,
@@ -54,12 +54,5 @@
      */
     "exactOptionalPropertyTypes": false
   },
-  "exclude": [
-    "node_modules",
-    "packages/*/dist",
-    "scripts/**",
-    "**jest**",
-    "packages/cli",
-    "packages/project-utils"
-  ]
+  "exclude": ["node_modules", "packages/*/dist", "scripts/**", "**jest**", "packages/cli"]
 }

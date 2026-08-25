@@ -1,5 +1,5 @@
 import React from "react";
-import { Wcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import { FileManagerViewConfig as FileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FilterByType } from "~/presentation/FileList/components/Filters/FilterByType.js";
@@ -30,6 +30,19 @@ import { TableItemImageRenderer } from "~/presentation/config/thumbnailRenderers
 import { FilePreviewDefaultRenderer } from "~/presentation/config/thumbnailRenderers/FilePreviewDefaultRenderer.js";
 
 const { Browser, FileDetails } = FileManagerConfig;
+
+const PrivateFilesBulkEditField = () => {
+    const featureFlags = useFeatureFlags();
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.privateFiles")) {
+        return null;
+    }
+    return (
+        <Browser.BulkEditField
+            name={"accessControl"}
+            element={<AccessControl placeholder={"Select privacy settings"} />}
+        />
+    );
+};
 
 export const DefaultFileManagerConfig = () => {
     return (
@@ -92,12 +105,7 @@ export const DefaultFileManagerConfig = () => {
             {/* File Details Actions */}
             <FileActions />
             {/* Access Control */}
-            <Wcp.CanUsePrivateFiles>
-                <Browser.BulkEditField
-                    name={"accessControl"}
-                    element={<AccessControl placeholder={"Select privacy settings"} />}
-                />
-            </Wcp.CanUsePrivateFiles>
+            <PrivateFilesBulkEditField />
             {/* Grid Thumbnail */}
             <Browser.Grid.Item.Thumbnail type={"*/*"} element={<GridItemDefaultRenderer />} />
             <Browser.Grid.Item.Thumbnail type={"image/*"} element={<GridItemImageRenderer />} />

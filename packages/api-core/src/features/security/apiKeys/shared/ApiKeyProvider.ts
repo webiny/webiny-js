@@ -1,16 +1,15 @@
-import { createImplementation } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { ApiKeyFactory } from "./abstractions.js";
 import { ApiKeyProvider as ProviderAbstraction } from "./abstractions.js";
 import type { ApiKey } from "./types.js";
 import { SystemIdentityValue } from "~/domain/identity/SystemIdentityValue.js";
 
-class ApiKeyProviderImpl implements ProviderAbstraction.Interface {
+export class ApiKeyProvider implements ProviderAbstraction.Interface {
     private cache: ApiKey[] | undefined;
 
     constructor(
         private tenantContext: TenantContext.Interface,
-        private apiKeyFactories: ApiKeyFactory.Interface[]
+        private getApiKeyFactories: () => ApiKeyFactory.Interface[]
     ) {}
 
     async getByToken(token: string): Promise<ApiKey | null> {
@@ -31,9 +30,8 @@ class ApiKeyProviderImpl implements ProviderAbstraction.Interface {
 
     private async getCache(): Promise<ApiKey[]> {
         if (this.cache === undefined) {
-            const results = await Promise.all(
-                this.apiKeyFactories.map(factory => factory.execute())
-            );
+            const apiKeyFactories = this.getApiKeyFactories();
+            const results = await Promise.all(apiKeyFactories.map(factory => factory.execute()));
             this.cache = results.flat().map<ApiKey>(codeKey => {
                 return {
                     ...codeKey,
@@ -50,9 +48,3 @@ class ApiKeyProviderImpl implements ProviderAbstraction.Interface {
         return this.cache;
     }
 }
-
-export const ApiKeyProvider = createImplementation({
-    abstraction: ProviderAbstraction,
-    implementation: ApiKeyProviderImpl,
-    dependencies: [TenantContext, [ApiKeyFactory, { multiple: true }]]
-});

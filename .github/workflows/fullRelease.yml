@@ -24,7 +24,7 @@ jobs:
       VERSION: ${{ github.event.inputs.version }}
       SOURCE_TAG: ${{ github.event.inputs.sourceTag }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Validate workflow inputs
@@ -51,6 +51,9 @@ jobs:
 
           echo "Inputs OK: version=$VERSION sourceTag=${SOURCE_TAG:-next}"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   createWebinyJsBranch:
     name: Create release branch (webiny-js)
     needs:
@@ -61,7 +64,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Set git email
@@ -69,7 +72,7 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Checkout source tag
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           ref: ${{ github.event.inputs.sourceTag }}
           fetch-depth: 0
@@ -132,6 +135,9 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   createDocsBranch:
     name: Trigger release notes generation (docs.webiny.com)
     needs:
@@ -141,7 +147,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Trigger generate-release-notes workflow
@@ -149,3 +155,6 @@ jobs:
           gh workflow run create-release-branch.yml --repo
           webiny/docs.webiny.com -f version=${{ github.event.inputs.version }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

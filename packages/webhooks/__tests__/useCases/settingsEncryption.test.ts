@@ -4,7 +4,7 @@ import { useHandler } from "~tests/helpers/useHandler.js";
 import { UpdateWebhookSettingsUseCase } from "~/api/features/UpdateWebhookSettings/abstractions.js";
 import { GetWebhookSettingsRepository } from "~/api/features/GetWebhookSettings/abstractions.js";
 import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { StorageOperations } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { WEBHOOK_SETTINGS_MODEL_ID } from "~/api/domain/constants.js";
 
@@ -21,7 +21,9 @@ describe("Webhook settings signingSecret is encrypted in storage", () => {
 
         const updateSettings = container.resolve(UpdateWebhookSettingsUseCase);
         const getModel = container.resolve(GetModelRepository);
-        const storageOps = container.resolve(StorageOperations);
+        const getLatestRevisionByEntryId = container.resolve(
+            GetLatestRevisionByEntryIdStorageOperation
+        );
         const encryption = container.resolve(Encryption);
 
         const updateResult = await updateSettings.execute({
@@ -36,7 +38,7 @@ describe("Webhook settings signingSecret is encrypted in storage", () => {
         const singletonId = createCacheKey(WEBHOOK_SETTINGS_MODEL_ID);
         const entryId = `${singletonId}#0001`;
 
-        const rawEntry = await storageOps.entries.getLatestRevisionByEntryId(model, {
+        const rawEntry = await getLatestRevisionByEntryId.execute(model, {
             id: entryId
         });
         expect(rawEntry).not.toBeNull();

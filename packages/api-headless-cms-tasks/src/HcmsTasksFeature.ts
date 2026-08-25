@@ -1,4 +1,4 @@
-import { type Container, createFeature } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { HcmsBulkActionsFeature } from "@webiny/api-headless-cms-bulk-actions";
 import { DeleteModelTaskFeature } from "./features/DeleteModelTask/feature.js";
@@ -7,7 +7,7 @@ import { createDeleteModelGraphQl } from "./graphql/deleteModel/index.js";
 
 export const HcmsTasksFeature = createFeature({
     name: "HcmsTasks",
-    register(container: Container) {
+    register(container) {
         // Bulk actions (entries) + the empty-trash-bin task.
         HcmsBulkActionsFeature.register(container, { batchSize: 100 });
 

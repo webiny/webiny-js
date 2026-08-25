@@ -1,41 +1,54 @@
-import type { Container } from "@webiny/feature/api";
-import type { Client as OpenSearchClient } from "@webiny/api-opensearch";
-import { CmsEntryOpenSearchBodyBuilder } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import type { CmsEntryOpenSearchFieldIndexRegistry } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
-import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
-import { createStorageModelAccessor } from "@webiny/api-headless-cms-storage";
+import { EntrySearchOperations as Abstraction } from "./abstractions/EntrySearchOperations.js";
 import type { IEntrySearchOperations } from "./abstractions/EntrySearchOperations.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import {
+    CmsEntryOpenSearchBodyBuilder,
+    CmsEntryOpenSearchFieldIndexRegistry
+} from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { CmsStorageModelProvider } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import type { SearchOperationDeps } from "./search/types.js";
 import { createListOperation } from "./search/list.js";
 import { createGetOperation } from "./search/get.js";
 import { createGetUniqueFieldValuesOperation } from "./search/getUniqueFieldValues.js";
 
-interface CreateEntrySearchOperationsParams {
-    container: Container;
-    elasticsearch: OpenSearchClient;
-    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
-    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
+class EntrySearchOperationsImpl implements IEntrySearchOperations {
+    public readonly list: IEntrySearchOperations["list"];
+    public readonly get: IEntrySearchOperations["get"];
+    public readonly getUniqueFieldValues: IEntrySearchOperations["getUniqueFieldValues"];
+
+    public constructor(
+        openSearchClient: OpenSearchClient.Interface,
+        bodyBuilder: CmsEntryOpenSearchBodyBuilder.Interface,
+        fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
+        fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface,
+        storageModelProvider: CmsStorageModelProvider.Interface,
+        indexProvider: CmsModelOpenSearchIndexProvider.Interface
+    ) {
+        const deps: SearchOperationDeps = {
+            elasticsearch: openSearchClient.use(),
+            bodyBuilder,
+            fieldRegistry,
+            fieldIndexRegistry,
+            getStorageOperationsModel: model => storageModelProvider.getModel(model),
+            indexProvider
+        };
+
+        this.list = createListOperation(deps);
+        this.get = createGetOperation(deps);
+        this.getUniqueFieldValues = createGetUniqueFieldValuesOperation(deps);
+    }
 }
 
-export const createEntrySearchOperations = (
-    params: CreateEntrySearchOperationsParams
-): IEntrySearchOperations => {
-    const { container, elasticsearch, fieldRegistry, fieldIndexRegistry } = params;
-
-    const bodyBuilder = container.resolve(CmsEntryOpenSearchBodyBuilder);
-    const { getModel: getStorageOperationsModel } = createStorageModelAccessor(container);
-
-    const deps: SearchOperationDeps = {
-        elasticsearch,
-        bodyBuilder,
-        fieldRegistry,
-        fieldIndexRegistry,
-        getStorageOperationsModel
-    };
-
-    return {
-        list: createListOperation(deps),
-        get: createGetOperation(deps),
-        getUniqueFieldValues: createGetUniqueFieldValuesOperation(deps)
-    };
-};
+export const EntrySearchOperations = Abstraction.createImplementation({
+    implementation: EntrySearchOperationsImpl,
+    dependencies: [
+        OpenSearchClient,
+        CmsEntryOpenSearchBodyBuilder,
+        CmsModelFieldToGraphQLRegistry,
+        CmsEntryOpenSearchFieldIndexRegistry,
+        CmsStorageModelProvider,
+        CmsModelOpenSearchIndexProvider
+    ]
+});

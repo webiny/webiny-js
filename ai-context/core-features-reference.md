@@ -194,7 +194,7 @@ This document provides the correct import paths and type definitions for commonl
 ### FmGraphQLSchema (File Manager)
 
 - **Import:** `import { FmGraphQLSchema } from "@webiny/api-file-manager/graphql/FmGraphQLSchema.js"`
-- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/api-graphql/graphql/abstractions.js`
 - **Usage:** Single `GraphQLSchemaFactory` implementation for the entire FM GraphQL API (base types, settings, file CRUD, getFileByUrl). Registered in `FileManagerFeature`. Uses `builder.addTypeDefs()` and `builder.addResolver({ path, dependencies, resolver })` — no `context.container.resolve()` in resolvers.
 
 ### GetUploadPayloadUseCase (File Manager)
@@ -218,7 +218,7 @@ This document provides the correct import paths and type definitions for commonl
 ### FmUploadGraphQLSchema (File Manager)
 
 - **Import:** `import { FmUploadGraphQLSchema } from "@webiny/api-file-manager/graphql/FmUploadGraphQLSchema.js"`
-- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/handler-graphql/graphql/abstractions.js`
+- **Interface Type:** `GraphQLSchemaFactory.Interface` from `@webiny/api-graphql/graphql/abstractions.js`
 - **Usage:** Shared `GraphQLSchemaFactory` for FM upload operations (presigned payloads, multipart upload). Resolves `GetUploadPayloadUseCase`, `CreateMultiPartUploadUseCase`, `CompleteMultiPartUploadUseCase` from DI. Registered automatically by `FileManagerFeature`. Provider packages only need to register their implementations of the three abstractions.
 
 ### ExtractMetadataHandler (File Manager)
@@ -298,6 +298,30 @@ This document provides the correct import paths and type definitions for commonl
 - **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
 - **Interface Type:** See `packages/api-core/src/features/encryption/abstractions.ts`
 - **Usage:** Synchronous symmetric encrypt/decrypt backed by AES-GCM. Reads `EncryptionPassphrase`, `EncryptionSalt`, `EncryptionAlgorithm` from `BuildParams` (driven by `<Infra.Encryption>` in `webiny.config.tsx`). When no passphrase is configured, `encrypt`/`decrypt` are no-op passthroughs — callers receive and emit plaintext. Use this wherever a feature needs to protect secrets at rest.
+
+---
+
+### StringFormatter
+
+- **Import:** `import { StringFormatter } from "@webiny/api-core/features/stringFormatter/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/stringFormatter/abstractions.ts`
+- **Usage:** Consumer-facing string transforms for backend code. Exposes `slugify(value)` (URL-friendly slug); more methods will be added over time. Inject via a use case / repository's `dependencies` and call `this.stringFormatter.slugify(...)`. To change slug logic, decorate the fine-grained `Slugify` feature — not this one.
+
+---
+
+### Slugify
+
+- **Import:** `import { Slugify } from "@webiny/api-core/features/slugify/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/slugify/abstractions.ts`
+- **Usage:** Single-method (`execute(value)`) transform holding Webiny's canonical slug options. This is the fine-grained seam behind `StringFormatter.slugify()`. Prefer injecting `StringFormatter`; decorate `Slugify` when a project needs to change slug generation everywhere at once.
+
+---
+
+### DateFormatter
+
+- **Import:** `import { DateFormatter } from "@webiny/api-core/features/dateFormatter/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/dateFormatter/abstractions.ts`
+- **Usage:** Formats an absolute date/time as a string (`format(date)`). Backend output is deterministic (UTC, `YYYY-MM-DD HH:mm`), not viewer-locale dependent. Inject via `dependencies` and decorate the abstraction to change the format everywhere.
 
 ---
 

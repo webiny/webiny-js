@@ -72,6 +72,11 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    autoFocus(value = true): this {
+        this._config.autoFocus = value;
+        return this;
+    }
+
     schema(zodSchema: z.ZodTypeAny): this {
         this._config.schema = zodSchema;
         return this;
@@ -207,7 +212,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
     options(opts: IValueOption[] | ((params: IFieldCallbackParams) => IValueOption[])): this {
         this._config.options = opts;
         if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {
-            this._config.renderer = "dropdown";
+            this._config.renderer = "select";
         }
         return this;
     }

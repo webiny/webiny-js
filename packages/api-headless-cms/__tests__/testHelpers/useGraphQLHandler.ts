@@ -1,14 +1,13 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { buildSchema } from "graphql";
-import { HeadlessCmsFeature } from "~/index";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { HeadlessCmsFeature } from "~/HeadlessCmsFeature.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations, ApiEndpoint } from "~/types";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
 import { createPermissions } from "~tests/testHelpers/helpers";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -109,7 +108,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     ];
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
     const cmsType = extractCmsType(params.path);
     const resolvedPermissions = createPermissions(permissions);
 
@@ -127,7 +126,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
+        child: async container => {
             const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);

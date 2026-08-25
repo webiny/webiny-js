@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { CodeMailerSettings } from "./CodeMailerSettingsImpl.js";
+import { CodeMailerSettings } from "./CodeMailerSettings.js";
 
 export const CodeMailerSettingsFeature = createFeature({
     name: "Mailer/CodeMailerSettings",

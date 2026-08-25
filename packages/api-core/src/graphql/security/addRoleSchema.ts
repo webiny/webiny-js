@@ -3,8 +3,8 @@ import {
     ListErrorResponse,
     ListResponse,
     Response
-} from "@webiny/handler-graphql/responses.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+} from "@webiny/api-graphql/responses.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";

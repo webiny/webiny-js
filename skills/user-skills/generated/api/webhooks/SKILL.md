@@ -1,6 +1,5 @@
 ---
 name: webiny-api-webhooks-catalog
-context: webiny-api
 description: >
   api/webhooks — 15 abstractions.
 ---

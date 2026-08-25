@@ -221,6 +221,15 @@ export class Field implements IField {
         if (all.length === 0) {
             return { visible: true, disabled: false };
         }
+        if (this._parentPath) {
+            const resolved = all.map(rule => {
+                if (rule.target.startsWith("$.")) {
+                    return { ...rule, target: `${this._parentPath}.${rule.target.slice(2)}` };
+                }
+                return rule;
+            });
+            return this._form.evaluateRules(resolved);
+        }
         return this._form.evaluateRules(all);
     }
 
@@ -399,6 +408,7 @@ export class Field implements IField {
             description: this.config.description,
             note: this.config.note,
             placeholder: this.config.placeholder,
+            autoFocus: this.config.autoFocus,
             value: this.getValue(),
             validation: this.visible ? this._validation : { isValid: null },
             validating: this._validating,

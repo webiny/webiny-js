@@ -10,4 +10,3 @@ export type {
 } from "./features/Routes/abstractions.js";
 export type * from "./types.js";
 export { WebsocketsFeature } from "./WebsocketsFeature.js";
-export { WebSocketLambdaHandler } from "./WebSocketLambdaHandler.js";

@@ -4,7 +4,16 @@ import {
     GetProjectConfig,
     InitProjectSdkService
 } from "~/abstractions/index.js";
-import { buildAppWithHooks, watchWithHooks } from "~/decorators/index.js";
+import {
+    buildAppWithHooks,
+    deployAppClearWatchedLambdaFunctions,
+    deployAppRefreshStackOutputCache,
+    deployAppWithHooks,
+    deployAppWithWatchedLambdaReplacement,
+    destroyAppClearStackOutputCache,
+    watchWithHooks,
+    getPulumiServiceWithDownloadInfo
+} from "~/decorators/index.js";
 import { applyEnvVars } from "./applyEnvVars.js";
 import { applyWcpEnvVars } from "./applyWcpEnvVars.js";
 import { registerHooks } from "./registerHooks.js";
@@ -33,12 +42,18 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
         // Register hooks from extensions.
         await registerHooks(container, projectExtensions, project);
 
-        // Register pulumi extensions (Core/Api/Admin `Pulumi` handlers, e.g. SetDatabaseSetupOutput).
+        // Register Pulumi extensions.
         await registerPulumiExtensions(container, projectExtensions, project);
 
         // Decorators that must be applied last on top of potentially custom ones.
         container.registerDecorator(buildAppWithHooks);
+        container.registerDecorator(deployAppWithWatchedLambdaReplacement);
+        container.registerDecorator(deployAppClearWatchedLambdaFunctions);
+        container.registerDecorator(deployAppRefreshStackOutputCache);
+        container.registerDecorator(destroyAppClearStackOutputCache);
+        container.registerDecorator(deployAppWithHooks);
         container.registerDecorator(watchWithHooks);
+        container.registerDecorator(getPulumiServiceWithDownloadInfo);
 
         // Register custom implementations first (they replace existing implementations).
         await registerImplementations(container, projectExtensions, project);

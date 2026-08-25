@@ -6,6 +6,10 @@ const STORAGE_OPTIONS: Record<StorageOps, { value: StorageOps; name: string }> =
     sqlite: {
         value: "sqlite",
         name: "SQLite (single-file local database)"
+    },
+    postgres: {
+        value: "postgres",
+        name: "PostgreSQL (connect to a Postgres server)"
     }
 };
 

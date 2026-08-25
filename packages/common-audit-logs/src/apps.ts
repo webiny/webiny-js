@@ -12,7 +12,8 @@ export enum ActionType {
     EXPORT = "EXPORT",
     MOVE = "MOVE",
     CREATE_REVISION_FROM = "CREATE_REVISION_FROM",
-    DUPLICATE = "DUPLICATE"
+    DUPLICATE = "DUPLICATE",
+    GENERATE = "GENERATE"
 }
 
 const commonActions = {
@@ -24,7 +25,8 @@ const commonActions = {
         type: ActionType.CREATE_REVISION_FROM,
         displayName: "Create revision from"
     },
-    DUPLICATE: { type: ActionType.DUPLICATE, displayName: "Duplicate" }
+    DUPLICATE: { type: ActionType.DUPLICATE, displayName: "Duplicate" },
+    GENERATE: { type: ActionType.GENERATE, displayName: "Generate" }
 };
 
 const publishActions = {
@@ -227,6 +229,17 @@ export const apps: App[] = [
                     commonActions.DELETE,
                     commonActions.MOVE
                 ]
+            }
+        ]
+    },
+    {
+        app: "AI",
+        displayName: "AI",
+        entities: [
+            {
+                type: "TEXT",
+                displayName: "Text",
+                actions: [{ type: "GENERATE", displayName: "Generate", newEntryDelay: 600 }]
             }
         ]
     }

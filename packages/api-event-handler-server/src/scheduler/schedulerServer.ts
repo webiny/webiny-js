@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { mdbid } from "@webiny/utils";
+import { uuid } from "@webiny/stdlib";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { BreeSchedulerService } from "@webiny/api-scheduler-server";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
@@ -44,7 +44,7 @@ const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
  * rebuilds the request context for the action's tenant and executes it (see the route).
  */
 export function registerSchedulerServer(rootContainer: Container): void {
-    const token = mdbid();
+    const token = uuid();
     rootContainer.registerInstance(SchedulerInternalToken, { value: token });
 
     const service = new BreeSchedulerService({

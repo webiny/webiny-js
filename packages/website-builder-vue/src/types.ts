@@ -3,9 +3,12 @@ import type {
     DocumentElement,
     ComponentManifestInput,
     ComponentChangeHandler,
-    DescendantChangeHandler
+    DescendantChangeHandler,
+    ExtractInputs
 } from "@webiny/website-builder-sdk";
 import type { VNode } from "vue";
+
+export type { ExtractInputs } from "@webiny/website-builder-sdk";
 
 /**
  * Props received by every user-defined component registered via createComponent().
@@ -24,10 +27,6 @@ export type ComponentProps<TInputs = unknown> = {
 export type ComponentPropsWithChildren<TInputs = unknown> = ComponentProps<
     TInputs & { children: VNode | null }
 >;
-
-// ---------- TypeScript utility types (mirrors the React package) ----------
-
-export type ExtractInputs<T> = T extends { inputs: infer I } ? I : never;
 
 export type ExtractInputNames<T extends (props: any) => any> = keyof ExtractInputs<
     Parameters<T>[0]
