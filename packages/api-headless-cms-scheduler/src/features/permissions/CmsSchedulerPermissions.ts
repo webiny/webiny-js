@@ -1,8 +1,13 @@
 import { SchedulerPermissions } from "@webiny/api-scheduler/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { CMS_NAMESPACE } from "~/utils/namespace.js";
 
 class CmsSchedulerPermissionsImpl implements SchedulerPermissions.Interface {
     constructor(private identityContext: IdentityContext.Interface) {}
+
+    canHandle(namespace: string): boolean {
+        return namespace.startsWith(CMS_NAMESPACE);
+    }
 
     async canRead(): Promise<boolean> {
         if (await this.identityContext.hasFullAccess()) {

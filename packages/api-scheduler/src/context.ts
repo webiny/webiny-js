@@ -16,6 +16,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { SchedulerGraphQLFactory } from "~/graphql/index.js";
 import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/SchedulerPermissionsResolver.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
@@ -54,6 +55,7 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
 
         context.container.register(SchedulerGraphQLFactory);
         context.container.register(NamespaceHandlerExecutioner);
+        context.container.register(SchedulerPermissionsResolver);
 
         await context.security.withoutAuthorization(async () => {
             const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
