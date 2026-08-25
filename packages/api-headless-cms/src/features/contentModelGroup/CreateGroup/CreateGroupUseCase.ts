@@ -37,8 +37,7 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: CreateGroupRepository.Interface,
         private accessControl: AccessControl.Interface,
         private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface,
-        private cmsContext: CmsContext.Interface
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute(input: CmsGroupCreateInput): Promise<Result<CmsGroup, UseCaseAbstraction.Error>> {
@@ -101,9 +100,13 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
             }
 
             // Publish after event
-            await this.eventPublisher.publish(new GroupAfterCreateEvent({ group }));
+            await this.eventPublisher.publish(
+                new GroupAfterCreateEvent({
+                    group: result.value
+                })
+            );
 
-            return Result.ok(group);
+            return Result.ok(result.value);
         } catch (error) {
             // Publish error event for unexpected errors
             await this.eventPublisher.publish(
@@ -126,7 +129,6 @@ export const CreateGroupUseCase = createImplementation({
         CreateGroupRepository,
         AccessControl,
         TenantContext,
-        IdentityContext,
-        CmsContext
+        IdentityContext
     ]
 });

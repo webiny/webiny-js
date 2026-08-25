@@ -39,7 +39,7 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
     async execute(
         initialModel: CmsModel,
         original: CmsModel
-    ): Promise<Result<void, RepositoryAbstraction.Error>> {
+    ): Promise<Result<CmsModel, RepositoryAbstraction.Error>> {
         const model = this.runtimeTenant.assign(initialModel);
         try {
             // Validate API name endings
@@ -112,7 +112,7 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             // Clear cache
             this.modelCache.clear();
 
-            return Result.ok();
+            return Result.ok(model);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }

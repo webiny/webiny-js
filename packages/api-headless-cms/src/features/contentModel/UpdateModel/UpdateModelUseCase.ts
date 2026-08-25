@@ -131,9 +131,14 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Publish after event
-        await this.eventPublisher.publish(new ModelAfterUpdateEvent({ model, original }));
+        await this.eventPublisher.publish(
+            new ModelAfterUpdateEvent({
+                model: result.value,
+                original
+            })
+        );
 
-        return Result.ok(model);
+        return Result.ok(result.value);
     }
 }
 
