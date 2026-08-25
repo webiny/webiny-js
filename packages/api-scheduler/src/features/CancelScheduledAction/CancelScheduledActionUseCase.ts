@@ -33,7 +33,7 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         params: UseCaseAbstraction.Params
     ): Promise<Result<boolean, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
+        const hasPermission = await this.permissions.canRead();
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
         }

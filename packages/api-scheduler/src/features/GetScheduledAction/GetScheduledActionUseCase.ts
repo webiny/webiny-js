@@ -33,7 +33,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
+        const hasPermission = await this.permissions.canRead();
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
         }
@@ -53,7 +53,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        const ownRecordsOnly = await this.permissions.onlyOwnRecords();
         if (ownRecordsOnly) {
             if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
                 return Result.fail(new NotAuthorizedError());

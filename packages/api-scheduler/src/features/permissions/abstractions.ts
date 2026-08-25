@@ -1,9 +1,13 @@
-import { createPermissionsAbstraction } from "@webiny/api-core/exports/api/security.js";
-import type { Permissions } from "@webiny/api-core/exports/api/security.js";
-import { SCHEDULER_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
+import { createAbstraction } from "@webiny/feature/api";
 
-export const SchedulerPermissions = createPermissionsAbstraction(SCHEDULER_PERMISSIONS_SCHEMA);
+export interface ISchedulerPermissions {
+    canRead(): Promise<boolean>;
+    onlyOwnRecords(): Promise<boolean>;
+}
+
+export const SchedulerPermissions =
+    createAbstraction<ISchedulerPermissions>("Scheduler/Permissions");
 
 export namespace SchedulerPermissions {
-    export type Interface = Permissions<typeof SCHEDULER_PERMISSIONS_SCHEMA>;
+    export type Interface = ISchedulerPermissions;
 }

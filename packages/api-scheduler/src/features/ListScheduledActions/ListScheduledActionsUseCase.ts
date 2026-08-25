@@ -36,12 +36,12 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
+        const hasPermission = await this.permissions.canRead();
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
         }
 
-        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        const ownRecordsOnly = await this.permissions.onlyOwnRecords();
 
         const { where: initialWhere, sort: sortInput, limit, after } = params;
 
