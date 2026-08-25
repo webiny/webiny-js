@@ -10,9 +10,9 @@ const { Browser } = PageListConfig;
 
 const SchedulerFooterElement = () => {
     const client = useApolloClient();
-    const { canAccessScheduler, canPublishPage, canUnpublishPage } = usePermissions();
+    const { canPublishPage, canUnpublishPage } = usePermissions();
 
-    if (!canAccessScheduler || (!canPublishPage && !canUnpublishPage)) {
+    if (!canPublishPage && !canUnpublishPage) {
         return null;
     }
 

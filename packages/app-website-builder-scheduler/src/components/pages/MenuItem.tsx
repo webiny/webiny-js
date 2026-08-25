@@ -8,7 +8,7 @@ import { WB_PAGE_NAMESPACE } from "~/utils/namespace.js";
 
 export const PageMenuItem = () => {
     const { page } = PageListConfig.Browser.Page.Action.usePage();
-    const { canAccessScheduler, canPublishPage, canUnpublishPage } = usePermissions();
+    const { canPublishPage, canUnpublishPage } = usePermissions();
     const client = useApolloClient();
 
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
@@ -27,7 +27,7 @@ export const PageMenuItem = () => {
         showSchedulerDialog();
     }, [showSchedulerDialog]);
 
-    if (!canAccessScheduler || (!canPublishPage && !canUnpublishPage)) {
+    if (!canPublishPage && !canUnpublishPage) {
         return null;
     }
 

@@ -14,7 +14,7 @@ const { DropdownAction } = PageEditorConfig.Ui.TopBar;
 
 export const PageEditorScheduleMenuItem = () => {
     const documentEditor = useDocumentEditor();
-    const { canAccessScheduler, canPublishPage, canUnpublishPage } = usePermissions();
+    const { canPublishPage, canUnpublishPage } = usePermissions();
     const state = documentEditor.getDocumentState().toJson();
     // @ts-expect-error status is not defined in the document interface, but we know it is there
     const status = (state.status || "draft") as string;
@@ -34,7 +34,7 @@ export const PageEditorScheduleMenuItem = () => {
         showSchedulerDialog();
     }, [showSchedulerDialog]);
 
-    if (!canAccessScheduler || (!canPublishPage && !canUnpublishPage)) {
+    if (!canPublishPage && !canUnpublishPage) {
         return null;
     }
 

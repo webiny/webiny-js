@@ -51,12 +51,12 @@ const MenuItemWithId = ({ entry, contentModel, loading }: MenuItemWithIdProps) =
 
 export const MenuItem = () => {
     const { entry, loading, contentModel } = useContentEntryEditor();
-    const { canAccessScheduler, canPublish, canUnpublish } = usePermissions();
+    const { canPublish, canUnpublish } = usePermissions();
 
     const { OptionsMenuItem } =
         ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
-    if (!canAccessScheduler || (!canPublish && !canUnpublish)) {
+    if (!canPublish && !canUnpublish) {
         return null;
     }
 
