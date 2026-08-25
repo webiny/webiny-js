@@ -8,7 +8,7 @@ import { WB_REDIRECT_NAMESPACE } from "~/utils/namespace.js";
 
 export const RedirectMenuItem = () => {
     const { redirect } = RedirectListConfig.Browser.Redirect.Action.useRedirect();
-    const { canWriteRedirect } = usePermissions();
+    const { canAccessScheduler, canWriteRedirect } = usePermissions();
     const client = useApolloClient();
 
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
@@ -27,7 +27,7 @@ export const RedirectMenuItem = () => {
         showSchedulerDialog();
     }, [showSchedulerDialog]);
 
-    if (!canWriteRedirect) {
+    if (!canAccessScheduler || !canWriteRedirect) {
         return null;
     }
 

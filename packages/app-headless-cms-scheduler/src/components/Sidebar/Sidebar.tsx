@@ -11,11 +11,11 @@ export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
     return function ScheduleSidebarFooter({ children }) {
         const client = useApolloClient();
         const { model } = useModel();
-        const { canPublish, canUnpublish } = usePermissions();
+        const { canAccessScheduler, canPublish, canUnpublish } = usePermissions();
 
         const namespace = createNamespace(model);
 
-        if (!canPublish && !canUnpublish) {
+        if (!canAccessScheduler || (!canPublish && !canUnpublish)) {
             return <Original>{children}</Original>;
         }
 

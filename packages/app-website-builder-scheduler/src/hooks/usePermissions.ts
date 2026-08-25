@@ -1,8 +1,14 @@
 import { useMemo } from "react";
 import { usePermissions as useWbPermissions } from "@webiny/app-website-builder/exports/admin/website-builder.js";
+import { usePermissions as useSchedulerPermissions } from "@webiny/app-scheduler/Presentation/security/usePermissions.js";
 
 export const usePermissions = () => {
     const permissions = useWbPermissions();
+    const schedulerPermissions = useSchedulerPermissions();
+
+    const canAccessScheduler = useMemo(() => {
+        return schedulerPermissions.canAccess("action");
+    }, [schedulerPermissions.canAccess]);
 
     const canPublishPage = useMemo(() => {
         return permissions.canPublish("page");
@@ -16,5 +22,5 @@ export const usePermissions = () => {
         return permissions.canEdit("redirect");
     }, [permissions.canEdit]);
 
-    return { canPublishPage, canUnpublishPage, canWriteRedirect };
+    return { canAccessScheduler, canPublishPage, canUnpublishPage, canWriteRedirect };
 };

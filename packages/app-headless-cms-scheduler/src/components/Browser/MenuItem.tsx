@@ -14,7 +14,7 @@ export const MenuItem = () => {
     const { modelId } = useContentEntriesList();
     const { entry } = useEntry();
 
-    const { canPublish, canUnpublish } = usePermissions();
+    const { canAccessScheduler, canPublish, canUnpublish } = usePermissions();
     const client = useApolloClient();
 
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
@@ -35,7 +35,7 @@ export const MenuItem = () => {
         showSchedulerDialog();
     }, [showSchedulerDialog]);
 
-    if (!canPublish && !canUnpublish) {
+    if (!canAccessScheduler || (!canPublish && !canUnpublish)) {
         return null;
     }
 
