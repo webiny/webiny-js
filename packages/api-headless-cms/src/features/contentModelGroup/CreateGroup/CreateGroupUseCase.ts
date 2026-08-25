@@ -9,7 +9,6 @@ import { GroupCreateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import {
     GroupNotAuthorizedError,
     GroupValidationError
