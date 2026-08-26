@@ -1,9 +1,20 @@
 import type { ComponentManifest, Document } from "@webiny/website-builder-sdk";
 import {
     BindingsResolver,
+    ContentEntryBindingsResolver,
     ComponentManifestToAstConverter,
     type InputAstNode
 } from "@webiny/website-builder-sdk";
+
+/**
+ * Build a content-entry decorator around a plain BindingsResolver,
+ * seeding pre-resolved entries from the document cache when available.
+ */
+function createResolver(document: Document) {
+    const embedded = document.__cache?.contentEntries as Record<string, unknown> | undefined;
+    const resolvedEntries = embedded ? new Map(Object.entries(embedded)) : undefined;
+    return new ContentEntryBindingsResolver(new BindingsResolver(document.state), resolvedEntries);
+}
 
 export interface ResolvedElementInputs {
     [key: string]: any;
@@ -27,7 +38,7 @@ function resolveElement(
 
     const elementBindings = document.bindings[elementId] ?? {};
     const inputAst = ComponentManifestToAstConverter.convert(manifest.inputs ?? []);
-    const resolver = new BindingsResolver(document.state);
+    const resolver = createResolver(document);
 
     const [resolved] = resolver.resolveElement({
         element,

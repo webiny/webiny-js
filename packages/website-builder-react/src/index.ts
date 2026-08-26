@@ -1,4 +1,5 @@
 export * from "./components/index.js";
+export * from "./contentEntry/useContentEntryList.js";
 export { createComponent } from "@webiny/website-builder-sdk";
 
 export {
@@ -15,6 +16,7 @@ export {
     createObjectInput,
     createTagsInput,
     createSlotInput,
+    createContentEntryInput,
     createInput,
     createElement,
     createTheme,
@@ -32,6 +34,10 @@ export {
     type ContentSDKConfig,
     type ComponentManifest,
     type ComponentInput,
+    type ContentEntryInput,
+    type ContentEntryReference,
+    type ContentEntryQueryConfig,
+    type ContentEntryQueryValue,
     type ComponentConstraint,
     type WebsiteBuilderThemeInput,
     type AssetCrop,

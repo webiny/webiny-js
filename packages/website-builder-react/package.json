@@ -17,6 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/cms-sdk": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
     "mobx": "^6.16.1",

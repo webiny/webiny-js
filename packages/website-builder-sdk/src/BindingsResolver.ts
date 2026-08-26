@@ -22,7 +22,11 @@ export type ResolveElementParams = {
     onResolved?: OnResolved;
 };
 
-export class BindingsResolver {
+export interface IBindingsResolver {
+    resolveElement(params: ResolveElementParams): ResolvedElement[];
+}
+
+export class BindingsResolver implements IBindingsResolver {
     private readonly state: DocumentState;
 
     constructor(state: DocumentState) {
