@@ -1,8 +1,8 @@
 import http from "node:http";
 import type { HandlerApp } from "@webiny/event-handler-core";
 import type { IHttpResponse } from "@webiny/event-handler-core";
-import { writeHttpResponse } from "~/response/writeHttpResponse.js";
-import { writeErrorResponse } from "~/response/writeErrorResponse.js";
+import { writeHttpResponse } from "./writeHttpResponse.js";
+import { writeErrorResponse } from "./writeErrorResponse.js";
 
 /**
  * Owns the Node HTTP server and the per-request bridge into the DI handler app: dispatch the
