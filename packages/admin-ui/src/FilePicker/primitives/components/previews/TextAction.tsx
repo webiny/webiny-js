@@ -1,17 +1,16 @@
 import React from "react";
+import { linkVariants } from "~/Link/index.js";
 import { cn } from "~/utils.js";
 
 /*
-    The design-system `Link` is an anchor and needs a destination, so these actions are buttons
-    wearing its type ramp and colors: `text-accent-primary` for the primary action,
-    `text-neutral-primary` for the rest, underline on hover.
+    An action that is not navigation cannot be a `Link` - the design-system one is an anchor and
+    needs a destination - so it is a button wearing `Link`'s variants. Borrowing them rather than
+    restating them keeps the type ramp, colors and focus ring in one place; only the button reset
+    and the disabled state below are this component's own.
 */
-const actionClassName = [
-    "font-sans text-sm rounded-xs cursor-pointer bg-transparent border-none p-0",
-    "hover:underline",
-    "focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-primary-dimmed",
-    "disabled:cursor-not-allowed disabled:text-neutral-disabled disabled:no-underline"
-];
+const buttonReset = "cursor-pointer bg-transparent border-none p-0";
+const disabledClassName =
+    "disabled:cursor-not-allowed disabled:text-neutral-disabled disabled:no-underline";
 
 interface TextActionProps {
     onClick: () => void;
@@ -25,7 +24,11 @@ const TextAction = ({ onClick, disabled, accent, children }: TextActionProps) =>
         type={"button"}
         onClick={onClick}
         disabled={disabled}
-        className={cn(actionClassName, accent ? "text-accent-primary" : "text-neutral-primary")}
+        className={cn(
+            linkVariants({ size: "sm", variant: accent ? "primary" : "secondary" }),
+            buttonReset,
+            disabledClassName
+        )}
     >
         {children}
     </button>
