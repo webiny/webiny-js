@@ -30,6 +30,7 @@ const adminUrl = args.localhost ? "http://localhost:3001" : readWebinyOutput("ad
 writeCypressConfig({
     force: args.force,
     values: {
+        HOSTING_TYPE: "aws",
         API_URL: api.apiUrl,
         ADMIN_URL: adminUrl,
         AWS_COGNITO_USER_POOL_ID: api.cognitoUserPoolId,

@@ -221,12 +221,26 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     run: "cd cypress-tests && yarn cypress install"
                 },
                 {
-                    // Only the installation wizard for now. It is pure UI (no cy.login), so it does
-                    // not need the Cognito-based auth helper that the other specs use - porting that
-                    // to the self-hosted identity provider comes next.
+                    // Must run first: it completes the wizard, which is what creates the admin user
+                    // everything below authenticates as. Kept a separate step from the specs below
+                    // because Cypress orders specs alphabetically, and "admin/..." sorts before
+                    // "adminInstallation/..." - a single glob would run them in the wrong order.
                     name: "Cypress - run installation wizard test",
                     "working-directory": DIR_WEBINY_JS,
                     run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
+                },
+                {
+                    // Proves the self-hosted auth seam end to end: this spec authenticates through
+                    // `cy.login()` rather than the UI, so it exercises `authenticateWithSelfHosted`
+                    // and the token it seeds for the Admin app.
+                    //
+                    // Deliberately not the whole suite yet. The remaining specs cover features whose
+                    // behaviour on the server hosting type is simply unknown (file manager against
+                    // local storage, page builder, ...), and turning them all on at once would mix
+                    // real product gaps in with anything wrong here.
+                    name: "Cypress - run account test",
+                    "working-directory": DIR_WEBINY_JS,
+                    run: 'yarn cy:run --browser chrome --spec "cypress/e2e/admin/account/**/*.cy.js"'
                 },
                 ...createStatusRowUpdateSteps({ label }),
                 {

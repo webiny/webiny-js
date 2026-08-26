@@ -11,6 +11,9 @@ export default defineConfig({
         openMode: 0
     },
     env: {
+        // Which identity provider the suite authenticates against: "aws" (Cognito) or "server"
+        // (the self-hosted hosting type's built-in IdP).
+        HOSTING_TYPE: "{HOSTING_TYPE}",
         ADMIN_URL: "{ADMIN_URL}",
         API_URL: "{API_URL}",
         GRAPHQL_API_URL: "{API_URL}/graphql",

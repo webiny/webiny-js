@@ -33,6 +33,7 @@ if (!args.apiUrl || !args.adminUrl) {
 writeCypressConfig({
     force: args.force,
     values: {
+        HOSTING_TYPE: "server",
         API_URL: args.apiUrl,
         ADMIN_URL: args.adminUrl,
         AWS_COGNITO_USER_POOL_ID: "",

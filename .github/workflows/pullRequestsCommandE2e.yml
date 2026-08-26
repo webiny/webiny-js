@@ -825,6 +825,11 @@ jobs:
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
+      - name: Cypress - run account test
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn cy:run --browser chrome --spec
+          "cypress/e2e/admin/account/**/*.cy.js"
       - name: Update PR comment - Server (SQLite) passed
         if: success()
         env:
