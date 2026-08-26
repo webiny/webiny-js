@@ -111,10 +111,10 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
 
     return (
         <SidebarRow
-            // With a file selected the picker is a tall stacked card, so the label belongs beside
-            // the top of it. With none, it is just the "Select from library" trigger - a single
-            // control, which the label should sit level with like every other row.
-            align={pickerValue ? "start" : "center"}
+            // The picker is a tall stacked card once a file is selected, so the label belongs
+            // beside the top of it rather than halfway down. It stays put when there is no file:
+            // `start` reserves a control's height for the label either way.
+            align={"start"}
             label={
                 <InheritanceLabel
                     onReset={onReset}

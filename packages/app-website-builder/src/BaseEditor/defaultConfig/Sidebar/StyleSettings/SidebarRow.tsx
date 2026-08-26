@@ -24,9 +24,12 @@ export const SidebarRow = ({ label, tooltip, align = "center", children }: Sideb
             <div
                 className={cn(
                     "w-[80px] flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong",
-                    // Line the label's text up with the top edge of the preview thumbnail, which
-                    // sits inside the card's `p-xs`.
-                    alignToTop && "pt-xs"
+                    // Reserve exactly one control's height (a compact trigger: a 20px icon plus
+                    // `py-xs`) and center within it, so the label lands where it would if the row
+                    // were centered. Without this the label shifts up the moment the value grows
+                    // taller than one control - which, for the file picker, is whenever a file
+                    // happens to be selected.
+                    alignToTop && "min-h-[28px]"
                 )}
             >
                 {label}
