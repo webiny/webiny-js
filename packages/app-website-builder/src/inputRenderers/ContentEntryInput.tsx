@@ -213,16 +213,6 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
     const modelId = input.models[0];
     const current = (value as ContentEntryQueryValue | undefined) ?? { modelId };
 
-    // Ensure modelId is always stored on the value so the frontend SDK can
-    // resolve the query without component manifests.
-    useEffect(() => {
-        if (!current.modelId && modelId) {
-            onChange(({ value: v }) => {
-                v.set({ ...current, modelId });
-            });
-        }
-    }, [modelId]);
-
     const sortFields = (config.sort?.fields ?? []).map(entry =>
         typeof entry === "string"
             ? { field: entry, label: entry }

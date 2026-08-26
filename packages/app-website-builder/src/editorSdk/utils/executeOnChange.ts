@@ -316,7 +316,7 @@ function getDeepInputsForElement(
         rawBindings,
         elementFactory
     );
-    return structuredClone(processor.toDeepInputs(rawBindings.inputs ?? {}));
+    return JSON.parse(JSON.stringify(processor.toDeepInputs(rawBindings.inputs ?? {})));
 }
 
 /**

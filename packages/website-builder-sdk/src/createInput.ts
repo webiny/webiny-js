@@ -13,7 +13,8 @@ import type {
     ComponentInput,
     TagsInput,
     SlotInput,
-    ContentEntryInput
+    ContentEntryInput,
+    ContentEntryQueryValue
 } from "./types.js";
 import { functionConverter } from "~/FunctionConverter.js";
 
@@ -264,6 +265,28 @@ export function createContentEntryInput<TName extends string>(
 export function createContentEntryInput<TName extends string>(
     input: any
 ): ContentEntryInput & { name: TName } {
+    // For query mode, auto-build a defaultValue from the config so the stored
+    // binding always carries modelId + defaults without needing the manifest at
+    // resolution time.
+    if (input.mode === "query" && !input.defaultValue && input.models?.[0]) {
+        const queryConfig = input.query ?? {};
+        const sortFields = queryConfig.sort?.fields ?? [];
+        const singleSortField =
+            sortFields.length === 1
+                ? typeof sortFields[0] === "string"
+                    ? sortFields[0]
+                    : sortFields[0].field
+                : undefined;
+
+        const defaultValue: ContentEntryQueryValue = {
+            modelId: input.models[0],
+            ...(singleSortField ? { sort: { field: singleSortField, order: "asc" as const } } : {}),
+            ...(queryConfig.limit?.default != null ? { limit: queryConfig.limit.default } : {})
+        };
+
+        input = { ...input, defaultValue };
+    }
+
     return createInput({
         type: "contentEntry",
         renderer: "Webiny/ContentEntry",
