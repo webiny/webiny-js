@@ -11,8 +11,11 @@ type ThumbnailProps = Pick<FileItemFormatted, "url" | "name"> & {
  */
 const Thumbnail = ({ url, name, fit }: ThumbnailProps) => {
     if (fit === "contain") {
+        // No backdrop of its own: a contained image does not fill its box, so a fill here reads as
+        // a second panel inside the preview - and the preview's own hover already shifts the
+        // surface behind it. `cover` keeps one, but only ever sees it while the image loads.
         return (
-            <div className={"size-full p-xs bg-neutral-muted flex items-center justify-center"}>
+            <div className={"size-full p-xs flex items-center justify-center"}>
                 {/*
                     Capping the element with max-width/max-height, rather than stretching it and
                     letting `object-contain` letterbox the picture inside it, keeps the element box
