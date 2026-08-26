@@ -3,7 +3,6 @@ import type { Container } from "@webiny/di";
 import { HttpRoute, HttpStreamBody, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import {
     AI_ENRICHMENT_PROMPT,
     aiEnrichmentSchema,
@@ -62,18 +61,6 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
                 statusCode: 400,
                 headers: JSON_HEADERS,
                 body: { message: "Missing file ID." }
-            };
-        }
-
-        // Same gate as the after-create handler, and for the same reason it lives at request time:
-        // the WCP license is loaded per request, so a registration-time check always reads
-        // NullLicense.
-        const wcp = this.container.resolve(WcpContext);
-        if (!wcp.canUseAiImageEnrichment()) {
-            return {
-                statusCode: 403,
-                headers: JSON_HEADERS,
-                body: { message: "AI image enrichment is not available on this license." }
             };
         }
 

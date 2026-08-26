@@ -4,7 +4,6 @@ import { Result } from "@webiny/feature/api";
 import { HttpRoute, HttpStreamBody, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { AiImageEnrichmentStreamRoute } from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
 import {
     ApplyImageEnrichmentUseCase,
@@ -61,10 +60,8 @@ describe("AiImageEnrichmentStreamRoute", () => {
     let prepare: { execute: ReturnType<typeof vi.fn> };
     let apply: { execute: ReturnType<typeof vi.fn> };
     let ai: { streamText: ReturnType<typeof vi.fn> };
-    let canUse: boolean;
 
     beforeEach(() => {
-        canUse = true;
         prepare = { execute: vi.fn().mockResolvedValue(Result.ok(prepared)) };
         apply = {
             execute: vi.fn().mockImplementation(async (params: any) =>
@@ -87,9 +84,6 @@ describe("AiImageEnrichmentStreamRoute", () => {
 
         container = new Container();
         container.registerInstance(RequestContainer, container);
-        container.registerInstance(WcpContext, {
-            canUseAiImageEnrichment: () => canUse
-        } as any);
         container.registerInstance(PrepareImageEnrichmentUseCase, prepare as any);
         container.registerInstance(ApplyImageEnrichmentUseCase, apply as any);
         container.registerInstance(Ai, ai as any);
@@ -192,15 +186,6 @@ describe("AiImageEnrichmentStreamRoute", () => {
 
             expect(response.statusCode).toBe(500);
             expect(response.body.code).toBe("ENRICHMENT_NO_AI_PROVIDER");
-        });
-
-        it("should answer 403 when the license does not allow enrichment", async () => {
-            canUse = false;
-
-            const response = await route.handle(request());
-
-            expect(response.statusCode).toBe(403);
-            expect(prepare.execute).not.toHaveBeenCalled();
         });
 
         it("should answer 400 when no file ID was matched", async () => {

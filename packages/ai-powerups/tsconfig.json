@@ -22,6 +22,7 @@
     { "path": "../project-aws" },
     { "path": "../utils" },
     { "path": "../api-graphql" },
+    { "path": "../feature-flags" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -71,6 +72,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }
