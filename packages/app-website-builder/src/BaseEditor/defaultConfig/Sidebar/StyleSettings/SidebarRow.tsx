@@ -6,9 +6,11 @@ interface SidebarRowProps {
     label: React.ReactNode;
     tooltip?: React.ReactNode;
     /**
-     * Rows whose value is a single control centre the label against it. Pass `start` when the
-     * value is a tall, stacked cell (the file picker's preview) so the label sits beside the top
-     * of it rather than halfway down.
+     * Where the label sits vertically next to the row's value.
+     *
+     * By default it lines up with the middle of the value, which is what a row holding one
+     * control wants. Pass `start` when the value is tall - the file picker's stacked preview,
+     * for one - so the label sits beside the top of it instead of floating halfway down the row.
      */
     align?: "center" | "start";
     children: React.ReactNode;

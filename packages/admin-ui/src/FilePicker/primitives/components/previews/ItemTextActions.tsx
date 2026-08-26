@@ -3,7 +3,7 @@ import { cn } from "~/utils.js";
 
 /*
     The design-system `Link` is an anchor and needs a destination, so these actions are buttons
-    wearing its type ramp and colours: `text-accent-primary` for the primary action,
+    wearing its type ramp and colors: `text-accent-primary` for the primary action,
     `text-neutral-primary` for the rest, underline on hover.
 */
 const actionClassName = [
