@@ -52,9 +52,27 @@ const PG = {
 //
 // Consequences: no `awsAuth`, no Pulumi backend, no `environment: next` secrets, and it runs on a
 // GitHub-hosted runner. That makes it far cheaper than the DDB / DDB+OS jobs.
-export const createServerJobs = (storageOps: ServerStorageOps) => {
+interface ServerProjectPartsParams {
+    // Where the webiny-js checkout lives: the PR's base branch expression for `/e2e`, a literal
+    // directory for `push`.
+    workingDirectory: string;
+    // When set, the variant reports its result into the PR status comment under this label. `push`
+    // has no PR to report into, so it omits this.
+    statusLabel?: string;
+}
+
+/**
+ * The self-hosted project lifecycle, shared by the `/e2e` and `push` workflows: publish to
+ * Verdaccio, scaffold, build, start, wait for readiness, run Cypress, dump logs on failure.
+ *
+ * The wrapping job supplies what differs between the two - how the repository is checked out, and
+ * how the build output arrives (an artifact on `issue_comment`, the run cache on `push`).
+ */
+export const createServerProjectParts = (
+    storageOps: ServerStorageOps,
+    { workingDirectory, statusLabel }: ServerProjectPartsParams
+) => {
     const isPostgres = storageOps === "postgres";
-    const label = serverVariantLabel(storageOps);
 
     // Postgres runs as a service container; SQLite needs nothing (the template writes a file).
     const services: NormalJob["services"] = isPostgres
@@ -107,147 +125,166 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
     };
 
     return {
+        services,
+        steps: [
+            ...createSetupVerdaccioSteps({ workingDirectory }),
+            {
+                name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+                "working-directory": workingDirectory,
+                run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+            },
+            {
+                name: "Version and publish to Verdaccio",
+                "working-directory": workingDirectory,
+                run: "yarn release --type=verdaccio"
+            },
+            {
+                name: "Disable Webiny telemetry",
+                run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
+            },
+            {
+                name: "Create a new self-hosted Webiny project",
+                run: `npx create-webiny-project@local-npm ${DIR_SERVER_PROJECT} --tag local-npm --no-interactive --hosting-type server --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
+            },
+            {
+                name: "Print CLI version",
+                "working-directory": DIR_SERVER_PROJECT,
+                run: "yarn webiny --version"
+            },
+            {
+                // The Admin bundle bakes its API origin at build time, so WEBINY_API_URL has to
+                // be set here and match where the API is actually started below.
+                name: "Build API and Admin",
+                "working-directory": DIR_SERVER_PROJECT,
+                // Only what the build actually bakes in: the hosting type, and the API origin,
+                // which the Admin bundle embeds. Database configuration is NOT needed here -
+                // `<Infra.Sqlite>` / `<Infra.Postgres>` in webiny.config.tsx already bake their
+                // own values, and the standalone handler we run below ignores those anyway (see
+                // the runtime env on "Start API").
+                env: {
+                    WEBINY_HOSTING_TYPE: "server",
+                    WEBINY_API_URL: SERVER_API_URL
+                },
+                run: "yarn webiny build api && yarn webiny build admin"
+            },
+            {
+                // Backgrounded so the job can continue; the process lives for the rest of the
+                // job. Logs go to a file so the failure handler below can surface them.
+                name: "Start API",
+                env: { PORT: `${SERVER_API_PORT}`, ...runtimeEnv },
+                run: [
+                    // SQLite will not create missing parent directories for its file, and the
+                    // local file storage folder does not exist until something writes to it.
+                    'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
+                    'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
+                    `cd ${SERVER_BUILD_DIR}/api/graphql/build`,
+                    "nohup node start.mjs > /tmp/webiny-api.log 2>&1 &",
+                    `echo "API starting on port ${SERVER_API_PORT}"`
+                ].join("\n")
+            },
+            {
+                // `serve -s` gives the SPA fallback the Admin app needs (a hard refresh on a
+                // client-side route must not 404) - the same thing nginx-spa.conf does for the
+                // documented Docker setup. `serve` itself is not published to Verdaccio, but
+                // .verdaccio.yaml proxies `**` to the npmjs uplink, so npx resolves it even
+                // though the registry is pointed at localhost:4873 at this point.
+                name: "Serve Admin",
+                run: [
+                    `nohup npx --yes serve -s ${SERVER_BUILD_DIR}/admin/build -l ${SERVER_ADMIN_PORT} > /tmp/webiny-admin.log 2>&1 &`,
+                    `echo "Admin starting on port ${SERVER_ADMIN_PORT}"`
+                ].join("\n")
+            },
+            {
+                name: "Wait for API and Admin",
+                run: [
+                    "set -euo pipefail",
+                    "",
+                    "wait_for_port() {",
+                    "  for _ in $(seq 1 90); do",
+                    '    if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then',
+                    '      echo "port $1 is accepting connections"',
+                    "      return 0",
+                    "    fi",
+                    "    sleep 2",
+                    "  done",
+                    '  echo "::error::Timed out waiting for port $1."',
+                    "  return 1",
+                    "}",
+                    "",
+                    `wait_for_port ${SERVER_API_PORT}`,
+                    `wait_for_port ${SERVER_ADMIN_PORT}`,
+                    "",
+                    "# A listening socket is not the same as a working GraphQL endpoint.",
+                    `curl -fsS -X POST ${SERVER_API_URL}/graphql -H 'content-type: application/json' \\`,
+                    `  -d '{"query":"{__typename}"}' > /dev/null`,
+                    'echo "GraphQL API responded."'
+                ].join("\n")
+            },
+            {
+                name: "Create Cypress config",
+                "working-directory": workingDirectory,
+                run: `yarn setup-cypress:server --apiUrl ${SERVER_API_URL} --adminUrl ${SERVER_ADMIN_URL}`
+            },
+            {
+                name: "Install Cypress binary",
+                "working-directory": workingDirectory,
+                run: "cd cypress-tests && yarn cypress install"
+            },
+            {
+                // The same single spec the AWS variants run. /e2e is a smoke test - a freshly
+                // created project installs and the user lands in the dashboard - so every
+                // variant runs exactly this, and none tests more than its counterparts.
+                name: "Cypress - run installation wizard test",
+                "working-directory": workingDirectory,
+                run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
+            },
+            ...(statusLabel ? createStatusRowUpdateSteps({ label: statusLabel }) : []),
+            {
+                name: "Print server logs",
+                if: "failure()",
+                run: [
+                    'echo "::group::API log"; cat /tmp/webiny-api.log || true; echo "::endgroup::"',
+                    'echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo "::endgroup::"'
+                ].join("\n")
+            },
+            {
+                name: "Upload Cypress screenshots",
+                if: "failure()",
+                uses: ACTION.uploadArtifactV6,
+                with: {
+                    name: `cypress-screenshots-server-${storageOps}`,
+                    "retention-days": 1,
+                    "if-no-files-found": "ignore",
+                    path: `${workingDirectory}/cypress-tests/cypress/screenshots`
+                }
+            }
+        ]
+    };
+};
+
+/**
+ * The `/e2e` command's server jobs: PR checkout, build output from the run artifact, and a row in
+ * the PR status comment.
+ */
+export const createServerJobs = (storageOps: ServerStorageOps) => {
+    const label = serverVariantLabel(storageOps);
+    const parts = createServerProjectParts(storageOps, {
+        workingDirectory: DIR_WEBINY_JS,
+        statusLabel: label
+    });
+
+    return {
         [`e2e-server-${storageOps}`]: createJob({
             needs: ["baseBranch", "constants", "build", "checkComment"],
             name: `E2E - ${label}`,
             checkout: { path: DIR_WEBINY_JS },
-            ...(services ? { services } : {}),
+            ...(parts.services ? { services: parts.services } : {}),
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
-                ...createSetupVerdaccioSteps({ workingDirectory: DIR_WEBINY_JS }),
-                {
-                    name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                    "working-directory": DIR_WEBINY_JS,
-                    run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                },
-                {
-                    name: "Version and publish to Verdaccio",
-                    "working-directory": DIR_WEBINY_JS,
-                    run: "yarn release --type=verdaccio"
-                },
-                {
-                    name: "Disable Webiny telemetry",
-                    run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
-                },
-                {
-                    name: "Create a new self-hosted Webiny project",
-                    run: `npx create-webiny-project@local-npm ${DIR_SERVER_PROJECT} --tag local-npm --no-interactive --hosting-type server --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
-                },
-                {
-                    name: "Print CLI version",
-                    "working-directory": DIR_SERVER_PROJECT,
-                    run: "yarn webiny --version"
-                },
-                {
-                    // The Admin bundle bakes its API origin at build time, so WEBINY_API_URL has to
-                    // be set here and match where the API is actually started below.
-                    name: "Build API and Admin",
-                    "working-directory": DIR_SERVER_PROJECT,
-                    // Only what the build actually bakes in: the hosting type, and the API origin,
-                    // which the Admin bundle embeds. Database configuration is NOT needed here -
-                    // `<Infra.Sqlite>` / `<Infra.Postgres>` in webiny.config.tsx already bake their
-                    // own values, and the standalone handler we run below ignores those anyway (see
-                    // the runtime env on "Start API").
-                    env: {
-                        WEBINY_HOSTING_TYPE: "server",
-                        WEBINY_API_URL: SERVER_API_URL
-                    },
-                    run: "yarn webiny build api && yarn webiny build admin"
-                },
-                {
-                    // Backgrounded so the job can continue; the process lives for the rest of the
-                    // job. Logs go to a file so the failure handler below can surface them.
-                    name: "Start API",
-                    env: { PORT: `${SERVER_API_PORT}`, ...runtimeEnv },
-                    run: [
-                        // SQLite will not create missing parent directories for its file, and the
-                        // local file storage folder does not exist until something writes to it.
-                        'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
-                        'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
-                        `cd ${SERVER_BUILD_DIR}/api/graphql/build`,
-                        "nohup node start.mjs > /tmp/webiny-api.log 2>&1 &",
-                        `echo "API starting on port ${SERVER_API_PORT}"`
-                    ].join("\n")
-                },
-                {
-                    // `serve -s` gives the SPA fallback the Admin app needs (a hard refresh on a
-                    // client-side route must not 404) - the same thing nginx-spa.conf does for the
-                    // documented Docker setup. `serve` itself is not published to Verdaccio, but
-                    // .verdaccio.yaml proxies `**` to the npmjs uplink, so npx resolves it even
-                    // though the registry is pointed at localhost:4873 at this point.
-                    name: "Serve Admin",
-                    run: [
-                        `nohup npx --yes serve -s ${SERVER_BUILD_DIR}/admin/build -l ${SERVER_ADMIN_PORT} > /tmp/webiny-admin.log 2>&1 &`,
-                        `echo "Admin starting on port ${SERVER_ADMIN_PORT}"`
-                    ].join("\n")
-                },
-                {
-                    name: "Wait for API and Admin",
-                    run: [
-                        "set -euo pipefail",
-                        "",
-                        "wait_for_port() {",
-                        "  for _ in $(seq 1 90); do",
-                        '    if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then',
-                        '      echo "port $1 is accepting connections"',
-                        "      return 0",
-                        "    fi",
-                        "    sleep 2",
-                        "  done",
-                        '  echo "::error::Timed out waiting for port $1."',
-                        "  return 1",
-                        "}",
-                        "",
-                        `wait_for_port ${SERVER_API_PORT}`,
-                        `wait_for_port ${SERVER_ADMIN_PORT}`,
-                        "",
-                        "# A listening socket is not the same as a working GraphQL endpoint.",
-                        `curl -fsS -X POST ${SERVER_API_URL}/graphql -H 'content-type: application/json' \\`,
-                        `  -d '{"query":"{__typename}"}' > /dev/null`,
-                        'echo "GraphQL API responded."'
-                    ].join("\n")
-                },
-                {
-                    name: "Create Cypress config",
-                    "working-directory": DIR_WEBINY_JS,
-                    run: `yarn setup-cypress:server --apiUrl ${SERVER_API_URL} --adminUrl ${SERVER_ADMIN_URL}`
-                },
-                {
-                    name: "Install Cypress binary",
-                    "working-directory": DIR_WEBINY_JS,
-                    run: "cd cypress-tests && yarn cypress install"
-                },
-                {
-                    // Only the installation wizard for now. It is pure UI (no cy.login), so it does
-                    // not need the Cognito-based auth helper that the other specs use - porting that
-                    // to the self-hosted identity provider comes next.
-                    name: "Cypress - run installation wizard test",
-                    "working-directory": DIR_WEBINY_JS,
-                    run: 'yarn cy:run --browser chrome --spec "cypress/e2e/adminInstallation/**/*.cy.js"'
-                },
-                ...createStatusRowUpdateSteps({ label }),
-                {
-                    name: "Print server logs",
-                    if: "failure()",
-                    run: [
-                        'echo "::group::API log"; cat /tmp/webiny-api.log || true; echo "::endgroup::"',
-                        'echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo "::endgroup::"'
-                    ].join("\n")
-                },
-                {
-                    name: "Upload Cypress screenshots",
-                    if: "failure()",
-                    uses: ACTION.uploadArtifactV6,
-                    with: {
-                        name: `cypress-screenshots-server-${storageOps}`,
-                        "retention-days": 1,
-                        "if-no-files-found": "ignore",
-                        path: `${DIR_WEBINY_JS}/cypress-tests/cypress/screenshots`
-                    }
-                }
+                ...parts.steps
             ]
         })
     };
