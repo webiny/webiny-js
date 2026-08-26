@@ -2,7 +2,7 @@ import type http from "node:http";
 import { Container } from "@webiny/di";
 import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
-import { HttpServer } from "~/server/HttpServer.js";
+import { createNodeHttpServer } from "~/server/createNodeHttpServer.js";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
@@ -23,7 +23,7 @@ export async function createServerHandler(
         child: options.child
     });
 
-    const server = new HttpServer(app).getServer();
+    const server = createNodeHttpServer(app);
 
     if (options.onServer) {
         // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
