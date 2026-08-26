@@ -76,6 +76,18 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
         : undefined;
 
     // Supplied to every step that builds or runs the project, so the API talks to the right database.
+    //
+    // Why this is needed even though webiny.config.tsx already configures the database:
+    // `<Infra.Sqlite>` renders an `EnvVar` that is BAKED for the api runtime, and `runApiServer`
+    // (what `yarn webiny watch` uses) hands that baked env to the API process. Running the
+    // standalone handler directly - `node start.mjs`, which is what the documented Docker setup
+    // does too - bypasses that entirely, so the process sees none of it and exits immediately:
+    //
+    //   Error: WEBINY_SQL_FILENAME is not set. Configure the database via
+    //   <Infra.Sqlite filename="..." /> in webiny.config.
+    //
+    // Absolute paths, because the API is started from inside its build folder rather than from the
+    // project root.
     const storageEnv: Record<string, string> = isPostgres
         ? {
               WEBINY_PG_HOST: PG.host,
@@ -84,7 +96,15 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
               WEBINY_PG_PASSWORD: PG.password,
               WEBINY_PG_DATABASE: PG.database
           }
-        : {};
+        : {
+              WEBINY_SQL_FILENAME: `\${{ github.workspace }}/${DIR_SERVER_PROJECT}/.webiny/server.sqlite`
+          };
+
+    // Uploaded files land on disk rather than in a bucket. Also absolute, for the same reason.
+    const runtimeEnv: Record<string, string> = {
+        ...storageEnv,
+        WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_SERVER_PROJECT}/.webiny/storage`
+    };
 
     return {
         [`e2e-server-${storageOps}`]: createJob({
@@ -126,10 +146,14 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     // be set here and match where the API is actually started below.
                     name: "Build API and Admin",
                     "working-directory": DIR_SERVER_PROJECT,
+                    // Only what the build actually bakes in: the hosting type, and the API origin,
+                    // which the Admin bundle embeds. Database configuration is NOT needed here -
+                    // `<Infra.Sqlite>` / `<Infra.Postgres>` in webiny.config.tsx already bake their
+                    // own values, and the standalone handler we run below ignores those anyway (see
+                    // the runtime env on "Start API").
                     env: {
                         WEBINY_HOSTING_TYPE: "server",
-                        WEBINY_API_URL: SERVER_API_URL,
-                        ...storageEnv
+                        WEBINY_API_URL: SERVER_API_URL
                     },
                     run: "yarn webiny build api && yarn webiny build admin"
                 },
@@ -137,8 +161,12 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     // Backgrounded so the job can continue; the process lives for the rest of the
                     // job. Logs go to a file so the failure handler below can surface them.
                     name: "Start API",
-                    env: { PORT: `${SERVER_API_PORT}`, ...storageEnv },
+                    env: { PORT: `${SERVER_API_PORT}`, ...runtimeEnv },
                     run: [
+                        // SQLite will not create missing parent directories for its file, and the
+                        // local file storage folder does not exist until something writes to it.
+                        'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
+                        'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
                         `cd ${SERVER_BUILD_DIR}/api/graphql/build`,
                         "nohup node start.mjs > /tmp/webiny-api.log 2>&1 &",
                         `echo "API starting on port ${SERVER_API_PORT}"`
