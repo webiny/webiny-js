@@ -6,7 +6,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { until } from "@webiny/api/testing/until.js";
@@ -81,7 +81,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.registerDecorator(RootTenantInitializer);
         },
         child: async container => {
-            const wcpLicense = await loadWcpLicense(
+            const wcpLicense = await WcpLicenseLoader.load(
                 params.testProjectLicense ?? createTestWcpLicense()
             );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);

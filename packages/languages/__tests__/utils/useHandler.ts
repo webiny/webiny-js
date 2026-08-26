@@ -5,7 +5,7 @@ import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { Extension } from "~/api/Extension.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -40,7 +40,7 @@ export const useHandler = () => {
             container.registerDecorator(RootTenantInitializer);
         },
         child: async container => {
-            const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+            const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
