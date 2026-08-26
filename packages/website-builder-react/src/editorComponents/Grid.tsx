@@ -1,5 +1,6 @@
 import React from "react";
 import type { ComponentProps, ComponentPropsWithChildren } from "~/types.js";
+import { createGridClass, createGridStackingCss } from "./gridStyles.js";
 
 export const GridColumnComponent = ({
     inputs
@@ -23,7 +24,7 @@ type GridProps = ComponentProps<{
     reverseWhenStacked?: boolean;
 }>;
 
-export const GridComponent = ({ inputs, styles, breakpoint }: GridProps) => {
+export const GridComponent = ({ inputs, styles, element }: GridProps) => {
     const { gridLayout = "12", columns, columnGap, stackAtBreakpoint, reverseWhenStacked } = inputs;
     const rowConfig = gridLayout.split("-").map(size => parseInt(size));
     const rows: Column[][] = [];
@@ -36,22 +37,17 @@ export const GridComponent = ({ inputs, styles, breakpoint }: GridProps) => {
     // Number of pixels we need to subtract from each cell to ensure they fit in the grid with column gap
     const cellWidthReduction = columnGap ? columnGap - columnGap / rowConfig.length : 0;
 
-    const stackColumns = breakpoint === stackAtBreakpoint;
+    const gridClass = createGridClass(element.id);
 
-    if (stackColumns) {
-        styles.flexDirection = reverseWhenStacked ? "column-reverse" : "column";
-    }
+    // Columns stack via a CSS media query (see createGridStackingCss).
+    const stackCss = createGridStackingCss({ gridClass, stackAtBreakpoint, reverseWhenStacked });
 
     return (
-        <div style={styles}>
+        <div className={gridClass} style={styles}>
+            {stackCss ? <style dangerouslySetInnerHTML={{ __html: stackCss }} /> : null}
             {rows.map(columns => {
                 return columns.map((column, i) => (
-                    <Span
-                        key={i}
-                        stackColumns={stackColumns}
-                        size={rowConfig[i]}
-                        reductionInPx={cellWidthReduction}
-                    >
+                    <Span key={i} size={rowConfig[i]} reductionInPx={cellWidthReduction}>
                         <GridColumnComponent key={i} inputs={{ children: column.children }} />
                     </Span>
                 ));
@@ -63,15 +59,16 @@ export const GridComponent = ({ inputs, styles, breakpoint }: GridProps) => {
 interface SpanProps {
     size: number;
     reductionInPx: number;
-    stackColumns: boolean;
     children: React.ReactNode;
 }
 
-const Span = ({ size, children, reductionInPx, stackColumns }: SpanProps) => {
-    const width = stackColumns ? "100%" : `calc(${(size / 12) * 100}% - ${reductionInPx}px)`;
+const Span = ({ size, children, reductionInPx }: SpanProps) => {
+    // Base (row) width. The Grid's media query overrides this to 100% when stacked.
+    const width = `calc(${(size / 12) * 100}% - ${reductionInPx}px)`;
 
     return (
         <div
+            className="wb-grid-col"
             style={{
                 flex: `0 0 ${width}`,
                 maxWidth: width,
