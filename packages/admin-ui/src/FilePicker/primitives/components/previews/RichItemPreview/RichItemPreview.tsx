@@ -6,7 +6,6 @@ import { RichItemThumbnail } from "./RichItemThumbnail.js";
 import { ThumbnailActions } from "./ThumbnailActions.js";
 import { ItemDescription } from "../ItemDescription.js";
 import { ItemActions } from "~/FilePicker/primitives/components/previews/ItemActions.js";
-import { ItemTextActions } from "../ItemTextActions.js";
 import { TruncatedFileName } from "../TruncatedFileName.js";
 import { previewVariants } from "../variants.js";
 import type { FilePreviewDefaultProps } from "../../types.js";
@@ -48,7 +47,8 @@ const DecoratableRichItemPreview = ({
             {/* Two layouts, chosen by the preview's own width rather than the viewport's, because
                 the same component renders in a ~200px sidebar and in a wide form field. Below
                 280px a side-by-side row cannot give the file name a readable share of the width,
-                so everything stacks and the actions spell themselves out instead. */}
+                so the thumbnail goes full width with the name and details beneath it, and the
+                actions move onto the thumbnail rather than costing a row of their own. */}
             <div data-role="select-image" className={"@min-[280px]:hidden"}>
                 <div className={"flex flex-col gap-xs p-xs"}>
                     <div className={"group relative cursor-pointer"} onClick={onReplaceItem}>
@@ -61,7 +61,7 @@ const DecoratableRichItemPreview = ({
                         <ThumbnailActions {...actions} />
                     </div>
 
-                    <div className={"flex flex-col gap-xxs min-w-0 px-xxs"}>
+                    <div className={"flex flex-col gap-xxs min-w-0 px-xxs pb-xxs"}>
                         <TruncatedFileName
                             name={value.name}
                             className={disabled ? "text-neutral-disabled" : "text-neutral-primary"}
@@ -78,8 +78,6 @@ const DecoratableRichItemPreview = ({
                             </Text>
                         ) : null}
                     </div>
-
-                    <ItemTextActions {...actions} className={"mt-xs px-xxs pb-xxs"} />
                 </div>
             </div>
 
