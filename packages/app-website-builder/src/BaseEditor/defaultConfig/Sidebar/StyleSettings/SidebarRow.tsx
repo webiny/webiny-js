@@ -1,36 +1,26 @@
 import React from "react";
-import { Icon, Tooltip, cn } from "@webiny/admin-ui";
+import { Icon, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 
 interface SidebarRowProps {
     label: React.ReactNode;
     tooltip?: React.ReactNode;
-    /**
-     * Where the label sits vertically next to the row's value.
-     *
-     * By default it lines up with the middle of the value, which is what a row holding one
-     * control wants. Pass `start` when the value is tall - the file picker's stacked preview,
-     * for one - so the label sits beside the top of it instead of floating halfway down the row.
-     */
-    align?: "center" | "start";
     children: React.ReactNode;
 }
 
-export const SidebarRow = ({ label, tooltip, align = "center", children }: SidebarRowProps) => {
-    const alignToTop = align === "start";
-
+export const SidebarRow = ({ label, tooltip, children }: SidebarRowProps) => {
     return (
-        <div className={cn("flex gap-xxs", alignToTop ? "items-start" : "items-center")}>
+        // The label sits at the top of the row rather than centered against the value, so that a
+        // row is free to render something taller than one control - the file picker's stacked
+        // preview, say - without the label drifting to the middle of it.
+        <div className={"flex items-start gap-xxs"}>
+            {/* `pt-sm` is half the difference between a standard control (a `size="md"` Select is
+                32px) and this label's 16px line, which puts the label exactly where centering
+                would for the ordinary single-control row, and leaves it there for taller ones. */}
             <div
-                className={cn(
-                    "w-[80px] flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong",
-                    // Reserve exactly one control's height (a compact trigger: a 20px icon plus
-                    // `py-xs`) and center within it, so the label lands where it would if the row
-                    // were centered. Without this the label shifts up the moment the value grows
-                    // taller than one control - which, for the file picker, is whenever a file
-                    // happens to be selected.
-                    alignToTop && "min-h-[28px]"
-                )}
+                className={
+                    "w-[80px] pt-sm flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong"
+                }
             >
                 {label}
 

@@ -111,10 +111,6 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
 
     return (
         <SidebarRow
-            // The picker is a tall stacked card once a file is selected, so the label belongs
-            // beside the top of it rather than halfway down. It stays put when there is no file:
-            // `start` reserves a control's height for the label either way.
-            align={"start"}
             label={
                 <InheritanceLabel
                     onReset={onReset}
