@@ -1,11 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { NullLicense } from "@webiny/wcp";
 import type { ILicense } from "@webiny/wcp/types.js";
-import { loadWcpLicense } from "~/features/wcp/loadWcpLicense.js";
+import { getCachedWcpLicense, seedWcpLicenseCache } from "~/features/wcp/loadWcpLicense.js";
 
 export interface IWcpLicenseProvider {
     get(): ILicense;
-    refresh(): Promise<void>;
 }
 
 export const WcpLicenseProvider = createAbstraction<IWcpLicenseProvider>("WcpLicenseProvider");
@@ -15,31 +13,22 @@ export namespace WcpLicenseProvider {
 }
 
 /**
- * Holds the current WCP license. `get()` is synchronous so the canUse* consumers (IdentityContext,
- * GroupsTeamsAuthorizer, the WCP GraphQL query) stay sync. `refresh()` is driven once per request
- * by WcpLicenseInitializer (a RequestInitializer), BEFORE resolvers run:
+ * Synchronous read-through to the process-cached WCP license. `get()` stays sync so the canUse*
+ * consumers (WcpContext, IdentityContext, the WCP GraphQL query) do too. The license is refreshed
+ * once per request BEFORE any feature registers — `registerApiRequestStack` awaits `loadWcpLicense()`
+ * (process-cached, ~5-min TTL, single-flighted) — so `get()` reflects the live license at both
+ * register() time (feature-flag gates) and resolver time.
  *
- * - It re-reads `loadWcpLicense()`, whose process-global cache rotates ~every 5 minutes, so a
- *   license change (upgrade/downgrade/expiry) takes effect mid-Lambda-lifetime instead of only on
- *   the next cold start.
- * - Awaiting it per request before resolvers closes the NullLicense race (no window where a
- *   resolver sees the placeholder).
- *
- * An optional initial license can be supplied (tests pass the pre-resolved license); otherwise it
- * starts as NullLicense and the first refresh() (before resolvers) installs the real one.
+ * An optional initial license can be supplied (tests pass a pre-resolved one); it seeds the cache.
  */
 export class WcpLicenseProviderImpl implements IWcpLicenseProvider {
-    private current: ILicense;
-
     constructor(initialLicense?: ILicense) {
-        this.current = initialLicense ?? new NullLicense();
+        if (initialLicense) {
+            seedWcpLicenseCache(initialLicense);
+        }
     }
 
     get(): ILicense {
-        return this.current;
-    }
-
-    async refresh(): Promise<void> {
-        this.current = await loadWcpLicense();
+        return getCachedWcpLicense();
     }
 }

@@ -2,7 +2,6 @@ import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { WcpLicenseInitializer } from "./WcpLicenseInitializer.js";
 import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
@@ -83,21 +82,16 @@ export async function registerApiRequestStack(
     container: Container,
     config: RegisterApiRequestStackConfig
 ): Promise<void> {
-    // Refresh the WCP license BEFORE any feature registers, so register()-time feature-flag checks
-    // (e.g. the private-files gate) read the live license via the process cache
-    // (`getCachedWcpLicense`). Runs here — the shared request stack both hosting types call — so no
-    // handler wires it. Process-cached (~5-min TTL) + single-flighted → cheap no-op on warm requests.
+    // Refresh the WCP license BEFORE any feature registers — this is the single per-request refresh.
+    // register()-time feature-flag checks (e.g. the private-files gate) and WcpContext.canUse* both
+    // read it via the process cache (`WcpLicenseProvider.get()` / `getCachedWcpLicense()`). Runs here
+    // — the shared request stack both hosting types call — so no handler wires it. Process-cached
+    // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
     await loadWcpLicense();
 
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // Per-request license refresh for the WcpLicenseProvider (a RequestInitializer, runs post-register)
-    // — keeps WcpContext.canUse* consumers current. FeatureFlags reads the pre-register process cache
-    // above, not the provider. Lives here (the shared request stack), not api-core, so the domain
-    // layer has no transport dependency.
-    container.register(WcpLicenseInitializer);
 
     // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
     await config.registerRequestStorage?.(container);
