@@ -8,6 +8,14 @@ import { cn } from "~/utils.js";
     restating them keeps the type ramp, colors and focus ring in one place; only the button reset
     and the disabled state below are this component's own.
 */
+/*
+    TODO: fold this into the design system as `Button variant="link"` - a button that looks like a
+    link is a general need, not a file-picker one. Left out of the patch release because it is not
+    a one-line variant: `buttonVariants` carries `no-underline!` in its base, every `size` re-adds
+    the padding, border and radius a link variant has to strip, and the size x contentLayout
+    compounds re-add padding for icon layouts. Retiring this component afterwards is a one-file
+    change - it already renders the same classes.
+*/
 const buttonReset = "cursor-pointer bg-transparent border-none p-0";
 const disabledClassName =
     "disabled:cursor-not-allowed disabled:text-neutral-disabled disabled:no-underline";
