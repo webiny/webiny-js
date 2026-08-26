@@ -91,7 +91,7 @@ export class SharpTransform implements ImageAssetTypeHandler.Interface {
             return undefined;
         }
 
-        const imageEdit = result.value.metadata?.imageEdit as AssetImageEdit | undefined;
+        const imageEdit = result.value.metadata?.image as AssetImageEdit | undefined;
         return imageEdit?.crop;
     }
 
