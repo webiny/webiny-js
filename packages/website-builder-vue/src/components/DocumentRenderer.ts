@@ -51,13 +51,11 @@ export const DocumentRenderer = defineComponent({
         const slotFragments = computed((): DocumentFragmentConfig[] =>
             Object.entries(slots)
                 .filter(([name]) => name.startsWith("fragment:"))
-                .map(
-                    ([name, slot]): DocumentFragmentConfig => ({
-                        type: "fixed",
-                        name: name.slice("fragment:".length),
-                        element: slot!
-                    })
-                )
+                .map(([name, slot]): DocumentFragmentConfig => ({
+                    type: "fixed",
+                    name: name.slice("fragment:".length),
+                    element: slot!
+                }))
         );
 
         const allFragments = computed(() => [...slotFragments.value, ...props.fragments]);

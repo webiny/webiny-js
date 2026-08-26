@@ -1,4 +1,4 @@
-import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createApiCoreSql } from "~/createApiCoreSql.js";
 import { getSqlTablePrefix } from "~/getSqlTablePrefix.js";
 import knexLib from "knex";

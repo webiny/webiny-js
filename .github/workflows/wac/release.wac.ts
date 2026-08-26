@@ -116,7 +116,8 @@ export const release = createWorkflow({
             checkout: {
                 path: BRANCH_NAME,
                 ref: BRANCH_NAME,
-                "fetch-depth": 0
+                "fetch-depth": 0,
+                token: "${{ secrets.GH_TOKEN }}"
             },
             steps: [
                 ...yarnCacheSteps,

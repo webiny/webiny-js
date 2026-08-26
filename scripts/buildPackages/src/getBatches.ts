@@ -43,7 +43,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     const useCache = options.cache ?? false;
 
     const workspaceGraph = new WorkspaceGraph({
-        ignore: ["@webiny/project-utils"]
+        ignore: []
     });
 
     // Build key per package. Default: own-source hash (original behavior).

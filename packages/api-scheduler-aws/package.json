@@ -39,7 +39,6 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^16.14.2",

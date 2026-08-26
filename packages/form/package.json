@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
+    "@testing-library/user-event": "^14.6.3",
     "@types/invariant": "^2.2.37",
     "@types/lodash": "^4.17.25",
     "@webiny/build-tools": "0.0.0",

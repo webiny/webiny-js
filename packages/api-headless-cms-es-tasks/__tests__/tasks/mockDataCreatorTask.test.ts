@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
-import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
+import { createRunner } from "@webiny/background-tasks/testing/index.js";
 import type { IMockDataCreatorInput, IMockDataCreatorOutput } from "~/tasks/MockDataCreator/types";
 import type { ICreateModelAndGroupResultSuccess } from "~/tasks/MockDataManager/createModelAndGroup";
 import { createModelAndGroup } from "~/tasks/MockDataManager/createModelAndGroup";

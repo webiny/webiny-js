@@ -15,7 +15,7 @@
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/mcp": "0.0.0",
-    "@webiny/stdlib": "^0.0.15",
+    "@webiny/stdlib": "^0.0.17",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^6.0.0",

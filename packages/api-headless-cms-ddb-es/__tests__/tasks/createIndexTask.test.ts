@@ -3,7 +3,7 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
 import type { Context as TasksContext } from "@webiny/background-tasks/api/types";
 import type { CmsContext } from "~/types";
-import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
+import { createRunner } from "@webiny/background-tasks/testing/index.js";
 import type { CreateIndexesRunner } from "@webiny/api-search-index-tasks";
 import { TenantIndexFactory } from "@webiny/api-search-index-tasks";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";

@@ -1,0 +1,12 @@
+@import "@webiny/app-admin/lexical.css";
+
+:root {
+  --wa-theme-color1: #fa5723;
+  --wa-theme-color2: #00ccb0;
+  --wa-theme-color-text-base: #0a0a0a;
+  --wa-theme-font-family: "Inter", sans-serif;
+}
+
+.pnlm-interaction-msg {
+  display: none !important;
+}

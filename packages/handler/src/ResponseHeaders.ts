@@ -11,11 +11,9 @@ export type StandardHeaderValue = http.OutgoingHttpHeader | undefined;
 
 // Extract known standard headers, and remove all non-string keys.
 export type StandardHeaders = {
-    [K in keyof AllHeaders as string extends K
-        ? never
-        : number extends K
-          ? never
-          : K]: http.OutgoingHttpHeaders[K];
+    [
+        K in keyof AllHeaders as string extends K ? never : number extends K ? never : K
+    ]: http.OutgoingHttpHeaders[K];
 } & {
     [name: string]: StandardHeaderValue;
 };

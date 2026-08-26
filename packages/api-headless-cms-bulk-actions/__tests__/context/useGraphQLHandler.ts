@@ -1,7 +1,7 @@
 import { getIntrospectionQuery } from "graphql";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { until } from "@webiny/api/testing/until.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";

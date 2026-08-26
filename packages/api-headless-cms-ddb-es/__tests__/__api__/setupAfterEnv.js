@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import { setupDynalite } from "@webiny/project-utils/testing/dynalite/index.js";
+import { setupDynalite } from "@webiny/db-dynamodb/testing/setupDynalite.js";
 import { setupTestIndexManager } from "@webiny/api-opensearch/testing";
 
 setupTestIndexManager({ global });

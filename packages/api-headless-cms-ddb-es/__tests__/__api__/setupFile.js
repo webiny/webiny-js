@@ -1,11 +1,12 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
+import { simulateStream } from "@webiny/api-opensearch-aws/testing/simulateStream.js";
 import { HeadlessCmsDdbEsFeature } from "../../src/index";
 import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { setStorageOps } from "@webiny/project-utils/testing/environment";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests

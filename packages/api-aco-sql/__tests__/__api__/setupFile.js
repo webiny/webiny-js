@@ -1,4 +1,4 @@
-import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import { registerAcoSqlStorageOperations } from "../../src/index.js";
 
 setStorageOps("aco", () => {

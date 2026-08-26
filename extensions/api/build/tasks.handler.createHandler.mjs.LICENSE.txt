@@ -1,0 +1,26 @@
+/**
+ * @name codsen-utils
+ * @fileoverview Various utility functions
+ * @version 1.7.3
+ * @author Roy Revelt
+ * @license MIT
+ * {@link https://codsen.com/os/codsen-utils/}
+ */
+
+/**
+ * @name object-merge-advanced
+ * @fileoverview Deeply merge JSON-like data structures
+ * @version 14.1.3
+ * @author Roy Revelt
+ * @license MIT
+ * {@link https://codsen.com/os/object-merge-advanced/}
+ */
+
+/**
+ * @name util-nonempty
+ * @fileoverview Is the input (plain object, array, string or whatever) not empty?
+ * @version 5.1.3
+ * @author Roy Revelt
+ * @license MIT
+ * {@link https://codsen.com/os/util-nonempty/}
+ */

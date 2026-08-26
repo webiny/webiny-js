@@ -5,8 +5,7 @@ const defaultExclude = [
     "cli-plugin-dependencies",
     "cli",
     "create-webiny-project",
-    "cwp-template-aws",
-    "project-utils"
+    "cwp-template-aws"
 ];
 
 export const getPackages = (exclude: string[] = defaultExclude) => {

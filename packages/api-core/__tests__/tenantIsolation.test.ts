@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "~/testing/environment.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import type { AdminUsersStorageOperations } from "~/types/users.js";
 import type { SecurityStorageOperations } from "~/types/security.js";

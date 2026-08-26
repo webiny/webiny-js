@@ -1,7 +1,7 @@
 import { getIntrospectionQuery } from "graphql";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { until } from "@webiny/api/testing/until.js";
 import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
-import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createMockTaskService } from "@webiny/background-tasks/testing/index.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { Container } from "@webiny/di";

@@ -1,7 +1,7 @@
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { DdbServiceManifestLoader } from "@webiny/api-core-ddb";
 import { getManifest } from "~/sync/utils/manifest.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 

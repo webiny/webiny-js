@@ -109,8 +109,8 @@ Background Tasks viewer.
 
 **A11 — Failures / per-item.** Whole-task: `controller.response.error(message)` → status `FAILED`, surfaced via
 websocket + persisted `task.output.error.message` + DB logs. **Per-page partial failure is supported:** an
-unreadable *interior* page is logged and skipped, crawl continues (`CrawlSiteUseCase.ts:266-281`); only the
-**entry page** is fatal (`:205-208`); per-screenshot failures recorded in `failedScreenshots` as *degraded*,
+unreadable _interior_ page is logged and skipped, crawl continues (`CrawlSiteUseCase.ts:266-281`); only the
+**entry page** is fatal (`:205-208`); per-screenshot failures recorded in `failedScreenshots` as _degraded_,
 not fatal (`ChromiumBrowserProvider.ts:352-358`); dark-mode + mobile crops degrade silently. Task still
 returns `done` with partial results reflected in `sampledUrls`/`failedScreenshots`.
 
@@ -180,7 +180,7 @@ additionalFileIds?: string[] }`.
 
 **C20 — Structured spec vs prompt.** **Prompt-only.** No prop-list / token-binding / contract field in the
 input. The prop-list + token catalog live only inside the **system prompt** (`buildComponentPrompt.ts`,
-`tokenCatalogSection.ts`); the model is told to *emit* a manifest, never *given* one. **A structured contract
+`tokenCatalogSection.ts`); the model is told to _emit_ a manifest, never _given_ one. **A structured contract
 requires a new input type + prompt assembly.**
 
 **C21 — Image / multimodal.** **Already multimodal and wired.** `buildUserContent`
@@ -225,12 +225,13 @@ directly, no AI.**
 
 **D27 — Storage pattern for own entities.** Theme uses two stores by shape: (1) **private CMS model** for the
 entity itself — `wbyTheme` (`theme.model.ts:3-43`, `builder.private`), giving revisions + publish/live pointer
-+ locking + tenant isolation "for free"; repositories wrap CMS use-cases (`CreateEntryUseCase`,
-`ListLatestEntriesUseCase`), `searchableJson` for filterable fields, plain `json` for large read-by-id blobs;
-model registered as a plugin + resolved per-request into DI (`ThemeFeature.ts:29,58-68`). (2)
-**tenant KeyValueStore** for the singleton active pointer (`ActiveThemeStore.ts:8-52`). **Recommendation:**
-jobs/runs/stage-artifacts/overrides = **private CMS models** (one per entity); "current run per tenant"
-singleton = KeyValueStore. Do not hand-roll DynamoDB storage ops — nothing in Theme does.
+
+- locking + tenant isolation "for free"; repositories wrap CMS use-cases (`CreateEntryUseCase`,
+  `ListLatestEntriesUseCase`), `searchableJson` for filterable fields, plain `json` for large read-by-id blobs;
+  model registered as a plugin + resolved per-request into DI (`ThemeFeature.ts:29,58-68`). (2)
+  **tenant KeyValueStore** for the singleton active pointer (`ActiveThemeStore.ts:8-52`). **Recommendation:**
+  jobs/runs/stage-artifacts/overrides = **private CMS models** (one per entity); "current run per tenant"
+  singleton = KeyValueStore. Do not hand-roll DynamoDB storage ops — nothing in Theme does.
 
 **D28 — Tenant scoping.** KeyValueStore is **automatically per-tenant** (`KeyValueStore.ts:12-25` passes
 `{ scope: tenant.id }`, callers never see tenant). CMS entries are inherently tenant-scoped; the private model
@@ -271,16 +272,16 @@ screen exists** — build your own list over CMS-backed job entities (like `Them
 
 ### E. Constraints and risks
 
-**E33 — Storage footprint per page + binding constraint.** *Theme extraction's own footprint is tiny and not
-representative:* per crawl ≈ one capped low-KB DynamoDB `CachedCrawl` item (`PAYLOAD_CAPS`: colors ≤40,
+**E33 — Storage footprint per page + binding constraint.** _Theme extraction's own footprint is tiny and not
+representative:_ per crawl ≈ one capped low-KB DynamoDB `CachedCrawl` item (`PAYLOAD_CAPS`: colors ≤40,
 fontSizes ≤20, spacing/radii/shadows ≤15, each `{value, share, occurrences, properties[]}`) + ≤8 PNGs in S3
-(screenshot **keys+labels** in DynamoDB, **bytes only in S3**). *But the Component-Extraction design intends far
-more per page* — serialized DOM + computed styles + geometry + a full-page screenshot for up to a few hundred
+(screenshot **keys+labels** in DynamoDB, **bytes only in S3**). _But the Component-Extraction design intends far
+more per page_ — serialized DOM + computed styles + geometry + a full-page screenshot for up to a few hundred
 pages. Rough per-page estimate: DOM+styles+geometry JSON ≈ 0.5–5 MB (uncapped, vs theme extraction's hard caps),
 full-page PNG ≈ 0.2–3 MB (theme extraction applies **no downscale** — `screenshotLongestEdge` is only a plan
 hint, actual PNG is unbounded by document height). Few hundred pages → **hundreds of MB to a few GB** total.
 **Binding constraint is NOT S3** (handles GBs trivially, and it's the established sink). It is **the shared
-2 GB / 512 MB-`/tmp` `background-task` Lambda**, and only *if capture accumulates in memory*: Chromium alone
+2 GB / 512 MB-`/tmp` `background-task` Lambda**, and only _if capture accumulates in memory_: Chromium alone
 wants most of 2 GB, and a single very tall full-page PNG buffer can spike memory; `/tmp` is 512 MB with
 Chromium already unpacking into it. **Mitigation (mandatory): stream each page's artifact to S3/CMS immediately
 (as theme extraction already does for screenshots), never accumulate; downscale/cap screenshots (sharp is on
@@ -302,6 +303,7 @@ handling** — Promote needs a policy + code. None of these are blockers; each i
 
 **E35 — Capture code coupled to token extraction + refactor size.** The capture stack in
 `packages/api-theme-extraction` splits cleanly:
+
 - **Generic, reusable (belongs in a shared package):** `browser/ChromiumBrowserProvider.ts` (launch, layer
   discovery, AL2023 `LD_LIBRARY_PATH` workaround, screenshot capture, scroll/settle), `browser/launchConfig.ts`
   (UA, `DEFAULT_TIMEOUTS`, executable/pack discovery), `dismissBanners` (consent overlays), bot-wall detection
@@ -317,7 +319,7 @@ handling** — Promote needs a policy + code. None of these are blockers; each i
   package (e.g. `@webiny/site-capture`), repoint theme-extraction imports, parameterize the S3 prefix, and make
   the in-page sampler pluggable." Infra is already shared (the layer is attached to the common background-task
   Lambda), so **no infra change is needed merely to reuse the browser** — infra changes are only for capture
-  *at scale* (E34). Estimate: ~1 new package, a handful of moved files, one seam (pluggable sampler) to add.
+  _at scale_ (E34). Estimate: ~1 new package, a handful of moved files, one seam (pluggable sampler) to add.
 
 ---
 
@@ -325,7 +327,7 @@ handling** — Promote needs a policy + code. None of these are blockers; each i
 
 **Verdict: reusable after extraction into a shared package. Not as-is; not a rewrite.**
 
-- **Not reusable as-is:** the crawl orchestrator's *output contract* is token histograms (`ModelPayload` with
+- **Not reusable as-is:** the crawl orchestrator's _output contract_ is token histograms (`ModelPayload` with
   hard caps, dark-mode probe, role signals) and only ≤8 screenshots for a single model call — the wrong shape
   and scale for per-page segmentation of hundreds of pages.
 - **Not a rewrite:** the genuinely hard parts — headless Chromium on a 2 GB Lambda, the region-mapped layer,
@@ -344,15 +346,15 @@ handling** — Promote needs a policy + code. None of these are blockers; each i
 
 Following the Theme precedent (private-CMS-for-entities + KV-for-pointers + raw-S3-for-binaries):
 
-| Data | Store | Precedent |
-|---|---|---|
-| **Job / Run** (one per extraction run) | private CMS model (`builder.private`) | `wbyTheme` (`theme.model.ts`), `wbyRemoteComponent` |
-| **Stage state + artifact refs** (per run, 9 stages) | fields on the Run entity (`searchableJson` for status/filter, plain `json` for small blobs) + **artifact bodies by ref** | Theme `searchableJson`/`json` split |
-| **Large stage artifacts** (per-page DOM/geometry, cluster data) | raw S3 under a feature prefix, keys stored on the Run | `S3ScreenshotStore` |
-| **Screenshots** (full-page + per-segment) | raw S3 (feature prefix, lifecycle TTL), served via an auth-gated route | `S3ScreenshotStore` + `ThemePreviewRoute` auth pattern |
-| **Generated components (pre-promote)** | private CMS entities held "inside the job" (a job-scoped status), promoted via `CreateRemoteComponentUseCase` | `wbyRemoteComponent` create-from-code |
-| **"Current run per tenant" pointer / lock** | tenant KeyValueStore | `ActiveThemeStore`, `ExtractionLock` |
-| **Overrides** (user edits to a stage's artifact) | a field/child entity on the Run, versioned so re-run staleness is detectable | Theme revisions |
+| Data                                                            | Store                                                                                                                    | Precedent                                              |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| **Job / Run** (one per extraction run)                          | private CMS model (`builder.private`)                                                                                    | `wbyTheme` (`theme.model.ts`), `wbyRemoteComponent`    |
+| **Stage state + artifact refs** (per run, 9 stages)             | fields on the Run entity (`searchableJson` for status/filter, plain `json` for small blobs) + **artifact bodies by ref** | Theme `searchableJson`/`json` split                    |
+| **Large stage artifacts** (per-page DOM/geometry, cluster data) | raw S3 under a feature prefix, keys stored on the Run                                                                    | `S3ScreenshotStore`                                    |
+| **Screenshots** (full-page + per-segment)                       | raw S3 (feature prefix, lifecycle TTL), served via an auth-gated route                                                   | `S3ScreenshotStore` + `ThemePreviewRoute` auth pattern |
+| **Generated components (pre-promote)**                          | private CMS entities held "inside the job" (a job-scoped status), promoted via `CreateRemoteComponentUseCase`            | `wbyRemoteComponent` create-from-code                  |
+| **"Current run per tenant" pointer / lock**                     | tenant KeyValueStore                                                                                                     | `ActiveThemeStore`, `ExtractionLock`                   |
+| **Overrides** (user edits to a stage's artifact)                | a field/child entity on the Run, versioned so re-run staleness is detectable                                             | Theme revisions                                        |
 
 **Staleness:** stamp each stage artifact with a monotonic `stageVersion` (or content digest) on the Run;
 re-running stage N bumps N and marks N+1…9 stale. Deterministic KV/S3 keys embed `{ runId, stage, version }`.
@@ -374,7 +376,7 @@ Each stage is an independently re-runnable gate, so:
 
 1. **Run entity** (private CMS) holds per-stage status (`pending|running|done|stale|failed`) + artifact refs.
 2. A GraphQL mutation `runStage(runId, stage)` calls `TaskService.trigger({ definition: stageTaskId, input:
-   { runId }, parent })`. The stage task reads the prior stage's artifact by ref, writes its own, updates the
+{ runId }, parent })`. The stage task reads the prior stage's artifact by ref, writes its own, updates the
    Run's stage status, and pushes websocket progress. **Stages do not auto-advance** by default (gate model);
    an optional "auto-run to completion" can chain triggers on `onDone`.
 3. Re-running a stage bumps its `stageVersion` and marks downstream stale (plain repository logic, no task
@@ -407,9 +409,10 @@ Each stage is an independently re-runnable gate, so:
   Library (apply the name-collision policy here).
 
 **Artifact handoff:** every stage reads prior artifacts by ref (S3 key / KV key / Run field) and writes its own
-+ updates the Run. No stage holds another's data in memory. **Capture and Generate are the only heavy fan-out
-stages; the model stages reuse the one `Ai` abstraction** (extract a shared provider-selection helper so
-classify/plan/generate don't each re-read `presets[0]`).
+
+- updates the Run. No stage holds another's data in memory. **Capture and Generate are the only heavy fan-out
+  stages; the model stages reuse the one `Ai` abstraction** (extract a shared provider-selection helper so
+  classify/plan/generate don't each re-read `presets[0]`).
 
 ---
 

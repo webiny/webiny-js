@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import { setupDynalite } from "@webiny/project-utils/testing/dynalite/index.js";
+import { setupDynalite } from "../../dist/testing/setupDynalite.js";
 
 (async () => {
     const setupPath = resolve(import.meta.dirname, "../../");
