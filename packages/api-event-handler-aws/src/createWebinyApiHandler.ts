@@ -74,7 +74,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             );
         },
 
-        request: async container => {
+        child: async container => {
             await registerWebinyApiRequest(container, config);
         }
     });

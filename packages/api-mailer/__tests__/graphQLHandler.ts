@@ -56,7 +56,7 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
         root: container => {
             container.register(createTestAuthorizer(permissions));
         },
-        request: async container => {
+        child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, {});
             GraphQLEngineFeature.register(container);

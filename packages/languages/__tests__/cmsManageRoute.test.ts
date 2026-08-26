@@ -60,7 +60,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 container.registerDecorator(AuthTriggerHandler);
                 container.registerDecorator(RootTenantInitializer);
             },
-            request: async container => {
+            child: async container => {
                 const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
@@ -110,7 +110,7 @@ describe("Languages model via the CMS manage route (createCmsRoute)", () => {
                 container.registerDecorator(AuthTriggerHandler);
                 container.registerDecorator(RootTenantInitializer);
             },
-            request: async container => {
+            child: async container => {
                 const wcpLicense = await loadWcpLicense(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);

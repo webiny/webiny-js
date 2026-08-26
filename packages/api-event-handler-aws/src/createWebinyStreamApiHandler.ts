@@ -52,7 +52,7 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             );
         },
 
-        request: async container => {
+        child: async container => {
             await registerWebinyApiRequest(container, config);
         }
     });

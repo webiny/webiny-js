@@ -1,13 +1,13 @@
 import http from "node:http";
 import { Container } from "@webiny/di";
-import { createHandler } from "@webiny/event-handler-core";
+import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
 import { writeHttpResponse } from "~/response/writeHttpResponse.js";
 import { writeErrorResponse } from "~/response/writeErrorResponse.js";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
-    request?: HandlerSetup;
+    child?: HandlerSetup;
     /**
      * Called once, at startup, after the root container is built and the HTTP server is created —
      * before it starts listening. Lets a transport attach to the raw server (e.g. a WebSockets
@@ -19,20 +19,14 @@ export interface CreateServerHandlerOptions {
 export async function createServerHandler(
     options: CreateServerHandlerOptions
 ): Promise<http.Server> {
-    // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
-    // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
-    const rootContainer = new Container();
-    await options.root(rootContainer);
-
-    const handle = createHandler({
+    const app = HandlerApp.init({
         root: options.root,
-        request: options.request,
-        rootContainer
+        child: options.child
     });
 
     const server = http.createServer(async (req, res) => {
         try {
-            const response: IHttpResponse = await handle(req);
+            const response: IHttpResponse = await app.handle(req);
 
             await writeHttpResponse(res, response);
         } catch (err) {
@@ -41,6 +35,9 @@ export async function createServerHandler(
     });
 
     if (options.onServer) {
+        // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
+        // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
+        const rootContainer = await app.getRootContainer();
         await options.onServer(server, rootContainer);
     }
 

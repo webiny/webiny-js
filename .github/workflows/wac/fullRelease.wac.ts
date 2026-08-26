@@ -1,3 +1,4 @@
+import { ACTION } from "./utils/index.js";
 import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 
@@ -73,7 +74,7 @@ export const fullRelease = createWorkflow({
                 },
                 {
                     name: "Checkout source tag",
-                    uses: "actions/checkout@v5",
+                    uses: ACTION.checkout,
                     with: {
                         ref: SOURCE_TAG,
                         "fetch-depth": 0,

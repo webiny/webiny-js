@@ -1,5 +1,11 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
-import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_VERSION, runNodeScript } from "./utils/index.js";
+import {
+    ACTION,
+    AWS_REGION,
+    BUILD_PACKAGES_RUNNER,
+    NODE_VERSION,
+    runNodeScript
+} from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 import {
     createDeployWebinySteps,
@@ -113,7 +119,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             ),
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: ACTION.uploadArtifactV6,
                 with: {
                     name: `verdaccio-files-${storageOps.shortId}`,
                     "retention-days": 1,
@@ -148,7 +154,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: ACTION.uploadArtifactV6,
                 with: {
                     name: `project-files-${storageOps.shortId}`,
                     "retention-days": 1,
