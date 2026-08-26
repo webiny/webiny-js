@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
-import { resolveContentEntryInput, type ContentEntryLoader } from "./resolveContentEntry.js";
-import type { ContentEntryInput } from "~/types.js";
+import {
+    resolveContentEntryValue,
+    isQueryValue,
+    isAlreadyResolved,
+    type ContentEntryLoader
+} from "./resolveContentEntry.js";
 
 const entry = (id: string) => ({ id, entryId: id, values: { title: `T${id}` } });
 
@@ -15,37 +19,29 @@ function makeLoader(over: Partial<ContentEntryLoader> = {}): ContentEntryLoader 
     };
 }
 
-function makeInput(over: Partial<ContentEntryInput> = {}): ContentEntryInput {
-    return { type: "contentEntry", name: "items", models: ["blog"], ...over } as ContentEntryInput;
-}
-
-describe("resolveContentEntryInput — manual mode", () => {
+describe("resolveContentEntryValue — manual mode", () => {
     it("resolves a single reference", async () => {
         const loader = makeLoader();
-        const result = await resolveContentEntryInput(
-            makeInput(),
-            { id: "42", modelId: "blog" },
-            loader
-        );
+        const result = await resolveContentEntryValue({ id: "42", modelId: "blog" }, false, loader);
         expect(loader.getEntry).toHaveBeenCalledWith({ modelId: "blog", entryId: "42" });
         expect(result).toEqual(entry("42"));
     });
 
-    it("returns null for an empty single value", async () => {
+    it("returns null for a null single value", async () => {
         const loader = makeLoader();
-        const result = await resolveContentEntryInput(makeInput(), null, loader);
+        const result = await resolveContentEntryValue(null, false, loader);
         expect(result).toBeNull();
         expect(loader.getEntry).not.toHaveBeenCalled();
     });
 
     it("resolves a list of references, preserving order", async () => {
         const loader = makeLoader();
-        const result = await resolveContentEntryInput(
-            makeInput({ list: true }),
+        const result = await resolveContentEntryValue(
             [
                 { id: "1", modelId: "blog" },
                 { id: "2", modelId: "blog" }
             ],
+            true,
             loader
         );
         expect(loader.getEntry).toHaveBeenCalledTimes(2);
@@ -58,31 +54,36 @@ describe("resolveContentEntryInput — manual mode", () => {
                 entryId === "2" ? null : entry(entryId)
             )
         });
-        const result = await resolveContentEntryInput(
-            makeInput({ list: true }),
+        const result = await resolveContentEntryValue(
             [
                 { id: "1", modelId: "blog" },
                 { id: "2", modelId: "blog" }
             ],
+            true,
             loader
         );
         expect(result).toEqual([entry("1")]);
     });
 
-    it("returns an empty array for an empty list", async () => {
+    it("returns an empty array for a null list value", async () => {
         const loader = makeLoader();
-        const result = await resolveContentEntryInput(makeInput({ list: true }), null, loader);
+        const result = await resolveContentEntryValue(null, true, loader);
         expect(result).toEqual([]);
         expect(loader.getEntry).not.toHaveBeenCalled();
     });
 });
 
-describe("resolveContentEntryInput — query mode", () => {
-    it("runs the editor's query and returns items + pageInfo", async () => {
+describe("resolveContentEntryValue — query mode", () => {
+    it("runs the query and returns items + pageInfo", async () => {
         const loader = makeLoader();
-        const result = await resolveContentEntryInput(
-            makeInput({ mode: "query", query: { limit: { default: 3 } } }),
-            { sort: { field: "values_title", order: "asc" }, limit: 5, search: "cat" },
+        const result = await resolveContentEntryValue(
+            {
+                modelId: "blog",
+                sort: { field: "values_title", order: "asc" },
+                limit: 5,
+                search: "cat"
+            },
+            false,
             loader
         );
         expect(loader.listEntries).toHaveBeenCalledWith({
@@ -97,21 +98,11 @@ describe("resolveContentEntryInput — query mode", () => {
         });
     });
 
-    it("does not embed the continuation query when pagination is off", async () => {
+    it("always embeds the continuation query", async () => {
         const loader = makeLoader();
-        const result = (await resolveContentEntryInput(
-            makeInput({ mode: "query" }),
-            {},
-            loader
-        )) as Record<string, unknown>;
-        expect(result.query).toBeUndefined();
-    });
-
-    it("embeds the continuation query when pagination is on", async () => {
-        const loader = makeLoader();
-        const result = (await resolveContentEntryInput(
-            makeInput({ mode: "query", query: { pagination: true } }),
-            { limit: 4 },
+        const result = (await resolveContentEntryValue(
+            { modelId: "blog", limit: 4 },
+            false,
             loader
         )) as Record<string, unknown>;
         expect(result.query).toEqual({
@@ -122,51 +113,54 @@ describe("resolveContentEntryInput — query mode", () => {
         });
     });
 
-    it("falls back to the configured default limit", async () => {
+    it("runs a minimal query (modelId only)", async () => {
         const loader = makeLoader();
-        await resolveContentEntryInput(
-            makeInput({ mode: "query", query: { limit: { default: 12 } } }),
-            {},
-            loader
-        );
-        expect(loader.listEntries).toHaveBeenCalledWith(expect.objectContaining({ limit: 12 }));
-    });
-
-    it("sorts by a single declared field ascending by default", async () => {
-        const loader = makeLoader();
-        await resolveContentEntryInput(
-            makeInput({ mode: "query", query: { sort: { fields: ["values_title"] } } }),
-            {},
-            loader
-        );
-        expect(loader.listEntries).toHaveBeenCalledWith(
-            expect.objectContaining({ sort: { values_title: "asc" } })
-        );
-    });
-
-    it("does not default sorting when several fields are configured", async () => {
-        const loader = makeLoader();
-        await resolveContentEntryInput(
-            makeInput({ mode: "query", query: { sort: { fields: ["a", "b"] } } }),
-            {},
-            loader
-        );
-        expect(loader.listEntries).toHaveBeenCalledWith(
-            expect.objectContaining({ sort: undefined })
-        );
-    });
-
-    it("returns an empty result when the input has no model", async () => {
-        const loader = makeLoader();
-        const result = await resolveContentEntryInput(
-            makeInput({ mode: "query", models: [] }),
-            {},
-            loader
-        );
-        expect(loader.listEntries).not.toHaveBeenCalled();
-        expect(result).toEqual({
-            items: [],
-            pageInfo: { cursor: null, hasMore: false, totalCount: 0 }
+        await resolveContentEntryValue({ modelId: "blog" }, false, loader);
+        expect(loader.listEntries).toHaveBeenCalledWith({
+            modelId: "blog",
+            sort: undefined,
+            limit: undefined,
+            search: undefined
         });
+    });
+});
+
+describe("isQueryValue", () => {
+    it("returns true for { modelId } without id", () => {
+        expect(isQueryValue({ modelId: "blog" })).toBe(true);
+        expect(isQueryValue({ modelId: "blog", sort: { field: "a", order: "asc" } })).toBe(true);
+    });
+
+    it("returns false for a manual reference { id, modelId }", () => {
+        expect(isQueryValue({ id: "42", modelId: "blog" })).toBe(false);
+    });
+
+    it("returns false for arrays and non-objects", () => {
+        expect(isQueryValue([{ modelId: "blog" }])).toBe(false);
+        expect(isQueryValue(null)).toBe(false);
+        expect(isQueryValue("string")).toBe(false);
+    });
+});
+
+describe("isAlreadyResolved", () => {
+    it("returns true for a query result with items", () => {
+        expect(isAlreadyResolved({ items: [], pageInfo: {} }, false)).toBe(true);
+    });
+
+    it("returns true for a list of resolved entries", () => {
+        expect(isAlreadyResolved([{ values: { title: "x" } }], true)).toBe(true);
+    });
+
+    it("returns false for a list of bare references", () => {
+        expect(isAlreadyResolved([{ id: "1", modelId: "blog" }], true)).toBe(false);
+    });
+
+    it("returns true for a single resolved entry", () => {
+        expect(isAlreadyResolved({ values: { title: "x" } }, false)).toBe(true);
+    });
+
+    it("returns false for null", () => {
+        expect(isAlreadyResolved(null, false)).toBe(false);
+        expect(isAlreadyResolved(null, true)).toBe(false);
     });
 });

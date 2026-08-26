@@ -1,4 +1,4 @@
-import type { ContentEntryInput, ContentEntryReference, ContentEntryQueryValue } from "~/types.js";
+import type { ContentEntryReference, ContentEntryQueryValue } from "~/types.js";
 
 /**
  * Minimal CMS data loader the content-entry resolver depends on. Injected by the
@@ -21,8 +21,7 @@ export interface ContentEntryLoader {
 
 /**
  * The query params used to produce a page. Embedded in the query result so the
- * client can fetch further pages (loadMore) from `pageInfo.cursor`. Present only
- * when pagination is enabled on the input.
+ * client can fetch further pages (loadMore) from `pageInfo.cursor`.
  */
 export interface ContentEntryQuerySpec {
     modelId: string;
@@ -34,7 +33,7 @@ export interface ContentEntryQuerySpec {
 export interface ResolvedContentEntryQuery<T = unknown> {
     items: T[];
     pageInfo: { cursor: string | null; hasMore: boolean; totalCount: number };
-    /** Continuation params for loadMore; present only when pagination is enabled. */
+    /** Continuation params for loadMore. */
     query?: ContentEntryQuerySpec;
 }
 
@@ -47,42 +46,74 @@ export interface ResolvedContentEntryQuery<T = unknown> {
 export type ResolvedContentEntry = unknown | unknown[] | ResolvedContentEntryQuery | null;
 
 /**
- * Resolve a content-entry input's stored value into CMS entries. Used by the
- * server pre-pass (live/SSR) and the editor's reactive cache alike.
+ * Detect whether a raw binding value is a `ContentEntryQueryValue` (query mode)
+ * rather than a manual `ContentEntryReference`.
+ *
+ * Query values carry `modelId` but NOT `id`; manual references carry both.
  */
-export async function resolveContentEntryInput(
-    input: ContentEntryInput,
+export function isQueryValue(value: unknown): value is ContentEntryQueryValue {
+    return (
+        typeof value === "object" &&
+        value !== null &&
+        "modelId" in value &&
+        !("id" in value) &&
+        !Array.isArray(value)
+    );
+}
+
+/**
+ * Detect whether a content-entry input's value is already a resolved CMS entry
+ * rather than a bare reference that needs fetching.
+ */
+export function isAlreadyResolved(value: unknown, list: boolean): boolean {
+    if (value == null) {
+        return false;
+    }
+    // Query result — already resolved if it has `items`.
+    if (typeof value === "object" && "items" in (value as any)) {
+        return true;
+    }
+    // List of resolved entries — each has `values` (CMS entry shape).
+    if (list && Array.isArray(value) && value.length > 0) {
+        const first = value[0];
+        return typeof first === "object" && first !== null && "values" in first;
+    }
+    // Single resolved entry.
+    if (!list && typeof value === "object" && "values" in (value as any)) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Resolve a content-entry binding value into CMS entries. Works entirely from
+ * the value shape — no component manifest needed.
+ *
+ * - `{ id, modelId }` → fetch single entry
+ * - `[{ id, modelId }, ...]` → fetch multiple entries
+ * - `{ modelId, sort?, limit?, search? }` → list query
+ */
+export async function resolveContentEntryValue(
     value:
         | ContentEntryReference
         | ContentEntryReference[]
         | ContentEntryQueryValue
         | null
         | undefined,
+    list: boolean,
     loader: ContentEntryLoader
 ): Promise<ResolvedContentEntry> {
-    if (input.mode === "query") {
-        const query = (value as ContentEntryQueryValue | undefined) ?? {};
-        const modelId = input.models[0];
-        if (!modelId) {
-            return { items: [], pageInfo: { cursor: null, hasMore: false, totalCount: 0 } };
-        }
-        // A single declared sort field sorts by default (ascending), so the editor's
-        // "Ascending" display matches what actually renders.
-        const sortFields = input.query?.sort?.fields ?? [];
-        const defaultSortField =
-            sortFields.length === 1
-                ? typeof sortFields[0] === "string"
-                    ? sortFields[0]
-                    : sortFields[0].field
-                : undefined;
-        const effectiveSort =
-            query.sort ??
-            (defaultSortField ? { field: defaultSortField, order: "asc" as const } : undefined);
+    if (value == null) {
+        return list ? [] : null;
+    }
 
+    // Query mode: value is `{ modelId, sort?, limit?, search? }`.
+    if (isQueryValue(value)) {
+        const query = value;
         const listParams: ContentEntryQuerySpec = {
-            modelId,
-            sort: effectiveSort ? { [effectiveSort.field]: effectiveSort.order } : undefined,
-            limit: query.limit ?? input.query?.limit?.default,
+            modelId: query.modelId,
+            sort: query.sort ? { [query.sort.field]: query.sort.order } : undefined,
+            limit: query.limit,
             search: query.search
         };
         const result = await loader.listEntries(listParams);
@@ -93,24 +124,20 @@ export async function resolveContentEntryInput(
                 hasMore: result.meta.hasMoreItems,
                 totalCount: result.meta.totalCount
             },
-            // Embed the query so the client can load further pages — only when
-            // pagination is enabled on the input.
-            ...(input.query?.pagination ? { query: listParams } : {})
+            query: listParams
         };
     }
 
-    // Manual mode — resolve stored references into entries.
-    if (input.list) {
-        const refs = Array.isArray(value) ? (value as ContentEntryReference[]) : [];
+    // Manual list: value is `[{ id, modelId }, ...]`.
+    if (Array.isArray(value)) {
+        const refs = value as ContentEntryReference[];
         const entries = await Promise.all(
             refs.map(ref => loader.getEntry({ modelId: ref.modelId, entryId: ref.id }))
         );
         return entries.filter(entry => entry !== null);
     }
 
-    const ref = value as ContentEntryReference | null | undefined;
-    if (!ref) {
-        return null;
-    }
+    // Manual single: value is `{ id, modelId }`.
+    const ref = value as ContentEntryReference;
     return loader.getEntry({ modelId: ref.modelId, entryId: ref.id });
 }

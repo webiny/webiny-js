@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { ContentEntryInput } from "~/types.js";
 import {
-    resolveContentEntryInput,
+    resolveContentEntryValue,
     type ContentEntryLoader,
     type ResolvedContentEntry
 } from "./resolveContentEntry.js";
@@ -70,18 +69,18 @@ class ContentEntryCacheImpl {
     }
 
     /**
-     * Lazily resolve `value` for `input` under `key`. Idempotent and safe to
-     * call during render: the observable write happens later, inside an action.
+     * Lazily resolve `value` under `key`. Idempotent and safe to call during
+     * render: the observable write happens later, inside an action.
      *
      * Uses the loader registered via `setLoader()`. If no loader is registered,
      * the call is a no-op (the raw value will be used instead).
      */
-    resolve(key: string, input: ContentEntryInput, value: RawValue): void {
+    resolve(key: string, value: RawValue, list: boolean): void {
         if (this.cache.has(key) || pending.has(key) || !this.loader) {
             return;
         }
         pending.add(key);
-        resolveContentEntryInput(input, value as any, this.loader)
+        resolveContentEntryValue(value as any, list, this.loader)
             .then(resolved => {
                 runInAction(() => {
                     this.cache.set(key, resolved);

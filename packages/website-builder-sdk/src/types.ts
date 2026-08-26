@@ -574,10 +574,12 @@ export interface ContentEntryQueryConfig {
 }
 
 /**
- * The value stored for a query-mode input: the editor's chosen query. The model
- * is not stored here — it is fixed on the input via `models`.
+ * The value stored for a query-mode input: the editor's chosen query.
+ * `modelId` identifies the CMS model so the frontend SDK can resolve the
+ * query without component manifests.
  */
 export interface ContentEntryQueryValue {
+    modelId: string;
     sort?: { field: string; order: "asc" | "desc" };
     limit?: number;
     search?: string;
@@ -604,19 +606,6 @@ export type ContentEntryInput = BaseInput<
     // The framework always resolves the selection into CMS entries server-side
     // and passes them to the component.
 };
-
-/**
- * Subset of `ContentEntryInput` config persisted to element bindings metadata
- * so the frontend SDK can resolve content-entry inputs without component manifests.
- */
-export interface ContentEntryInputMeta {
-    /** The manifest input name (e.g. "featuredArticle"). */
-    inputName: string;
-    models: string[];
-    mode: "manual" | "query";
-    list: boolean;
-    query?: ContentEntryQueryConfig;
-}
 
 export type ObjectInput = BaseInput<Record<string, any>> & {
     type: "object";

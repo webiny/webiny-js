@@ -1,4 +1,4 @@
-import type { ContentEntryInput, ResolvedElement } from "~/types.js";
+import type { ResolvedElement } from "~/types.js";
 import type { IBindingsResolver, ResolveElementParams } from "~/BindingsResolver.js";
 import type { InputAstNode } from "~/ComponentManifestToAstConverter.js";
 import { contentEntryCache } from "./ContentEntryCache.js";
@@ -50,6 +50,7 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
             if (node.input.type === "contentEntry") {
                 const key = `${elementId}:${node.name}`;
                 const rawValue = inputs[node.name];
+                const list = node.input.list ?? false;
 
                 // 1. Pre-resolved entries map (seeded by server pre-pass).
                 if (this.resolvedEntries.has(key)) {
@@ -68,7 +69,7 @@ export class ContentEntryBindingsResolver implements IBindingsResolver {
                 //    The observable cache write will cause a re-render.
                 if (environment.isClient() && contentEntryCache.getLoader()) {
                     const cacheKey = `${key}:${JSON.stringify(rawValue ?? null)}`;
-                    contentEntryCache.resolve(cacheKey, node.input as ContentEntryInput, rawValue);
+                    contentEntryCache.resolve(cacheKey, rawValue, list);
                     const cached = contentEntryCache.get(cacheKey);
                     if (cached !== undefined) {
                         inputs[node.name] = cached;

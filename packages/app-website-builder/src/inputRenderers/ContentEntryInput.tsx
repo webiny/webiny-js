@@ -5,7 +5,6 @@ import { AutoComplete, Select, Input, SegmentedControl, Text } from "@webiny/adm
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import type {
     ContentEntryInput,
-    ContentEntryInputMeta,
     ContentEntryReference,
     ContentEntryQueryValue
 } from "@webiny/website-builder-sdk";
@@ -52,26 +51,6 @@ const EntryRow = ({ title, actions }: EntryRowProps) => (
  */
 export const ContentEntryInputRenderer = (props: ElementInputRendererProps) => {
     const input = props.input as ContentEntryInput;
-
-    // Persist input config to element metadata so the frontend SDK can resolve
-    // content-entry inputs without requiring component manifests at render time.
-    useEffect(() => {
-        const existing = props.metadata.get<ContentEntryInputMeta>("config");
-        const config: ContentEntryInputMeta = {
-            inputName: input.name,
-            models: input.models,
-            mode: input.mode ?? "manual",
-            list: input.list ?? false,
-            ...(input.query ? { query: input.query } : {})
-        };
-
-        // Only write if not already present or if config changed.
-        if (!existing || JSON.stringify(existing) !== JSON.stringify(config)) {
-            props.onChange(({ metadata }) => {
-                metadata.set("config", config);
-            });
-        }
-    }, [input.models, input.mode, input.list, input.query]);
 
     if (input.mode === "query") {
         return <QueryInner {...props} />;
@@ -231,7 +210,18 @@ const SORT_DIRECTION_OPTIONS = [
 const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) => {
     const input = props.input as ContentEntryInput;
     const config = input.query ?? {};
-    const current = (value as ContentEntryQueryValue | undefined) ?? {};
+    const modelId = input.models[0];
+    const current = (value as ContentEntryQueryValue | undefined) ?? { modelId };
+
+    // Ensure modelId is always stored on the value so the frontend SDK can
+    // resolve the query without component manifests.
+    useEffect(() => {
+        if (!current.modelId && modelId) {
+            onChange(({ value: v }) => {
+                v.set({ ...current, modelId });
+            });
+        }
+    }, [modelId]);
 
     const sortFields = (config.sort?.fields ?? []).map(entry =>
         typeof entry === "string"
@@ -243,7 +233,7 @@ const QueryInner = ({ value, onChange, ...props }: ElementInputRendererProps) =>
 
     const update = (patch: Partial<ContentEntryQueryValue>) => {
         onChange(({ value }) => {
-            value.set({ ...current, ...patch });
+            value.set({ ...current, modelId, ...patch });
         });
     };
 

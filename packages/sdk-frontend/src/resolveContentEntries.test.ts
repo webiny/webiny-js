@@ -43,13 +43,13 @@ beforeEach(() => {
     }));
 });
 
-describe("resolveContentEntries — metadata-based resolution", () => {
+describe("resolveContentEntries — binding-type-based resolution", () => {
     it("does nothing for a null document", async () => {
         await resolveContentEntries(null);
         expect(mockGetEntry).not.toHaveBeenCalled();
     });
 
-    it("does nothing when no elements have content-entry config metadata", async () => {
+    it("does nothing when no elements have content-entry bindings", async () => {
         const doc = makeDocument({
             elements: {
                 el1: {
@@ -59,7 +59,11 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                 }
             },
             bindings: {
-                el1: { inputs: {} }
+                el1: {
+                    inputs: {
+                        text: { id: "text", type: "text", static: "hello" }
+                    }
+                }
             }
         });
 
@@ -68,7 +72,7 @@ describe("resolveContentEntries — metadata-based resolution", () => {
         expect(doc.__cache).toBeUndefined();
     });
 
-    it("resolves a manual single content-entry input from metadata", async () => {
+    it("resolves a manual single content-entry input", async () => {
         const doc = makeDocument({
             elements: {
                 el1: {
@@ -85,18 +89,9 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                             type: "contentEntry",
                             static: { id: "42", modelId: "blog" }
                         }
-                    },
-                    metadata: {
-                        "inputs/article/config": {
-                            inputName: "article",
-                            models: ["blog"],
-                            mode: "manual",
-                            list: false
-                        }
                     }
                 }
-            },
-            state: {}
+            }
         });
 
         await resolveContentEntries(doc);
@@ -108,7 +103,7 @@ describe("resolveContentEntries — metadata-based resolution", () => {
         );
     });
 
-    it("resolves a manual list content-entry input from metadata", async () => {
+    it("resolves a manual list content-entry input", async () => {
         const doc = makeDocument({
             elements: {
                 el1: {
@@ -123,23 +118,15 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                         articles: {
                             id: "articles",
                             type: "contentEntry",
+                            list: true,
                             static: [
                                 { id: "1", modelId: "blog" },
                                 { id: "2", modelId: "blog" }
                             ]
                         }
-                    },
-                    metadata: {
-                        "inputs/articles/config": {
-                            inputName: "articles",
-                            models: ["blog"],
-                            mode: "manual",
-                            list: true
-                        }
                     }
                 }
-            },
-            state: {}
+            }
         });
 
         await resolveContentEntries(doc);
@@ -149,7 +136,7 @@ describe("resolveContentEntries — metadata-based resolution", () => {
         expect(resolved).toEqual([entry("1"), entry("2")]);
     });
 
-    it("resolves a query-mode content-entry input from metadata", async () => {
+    it("resolves a query-mode content-entry input (modelId in value)", async () => {
         const doc = makeDocument({
             elements: {
                 el1: {
@@ -164,21 +151,11 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                         posts: {
                             id: "posts",
                             type: "contentEntry",
-                            static: { limit: 5 }
-                        }
-                    },
-                    metadata: {
-                        "inputs/posts/config": {
-                            inputName: "posts",
-                            models: ["blog"],
-                            mode: "query",
-                            list: false,
-                            query: { limit: { default: 10 } }
+                            static: { modelId: "blog", limit: 5 }
                         }
                     }
                 }
-            },
-            state: {}
+            }
         });
 
         await resolveContentEntries(doc);
@@ -194,8 +171,6 @@ describe("resolveContentEntries — metadata-based resolution", () => {
     });
 
     it("passes through already-resolved entries without re-fetching", async () => {
-        // When document state already contains resolved entries (full objects
-        // with `values`), they should be passed through without calling the loader.
         const resolvedEntry = { id: "42", entryId: "42", values: { title: "Already resolved" } };
         const doc = makeDocument({
             elements: {
@@ -213,23 +188,13 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                             type: "contentEntry",
                             static: resolvedEntry
                         }
-                    },
-                    metadata: {
-                        "inputs/article/config": {
-                            inputName: "article",
-                            models: ["blog"],
-                            mode: "manual",
-                            list: false
-                        }
                     }
                 }
-            },
-            state: {}
+            }
         });
 
         await resolveContentEntries(doc);
 
-        // Should NOT call getEntry since the value is already resolved.
         expect(mockGetEntry).not.toHaveBeenCalled();
         expect((doc.__cache!.contentEntries as Record<string, unknown>)["el1:article"]).toEqual(
             resolvedEntry
@@ -258,14 +223,6 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                             type: "contentEntry",
                             static: { id: "10", modelId: "article" }
                         }
-                    },
-                    metadata: {
-                        "inputs/featured/config": {
-                            inputName: "featured",
-                            models: ["article"],
-                            mode: "manual",
-                            list: false
-                        }
                     }
                 },
                 el2: {
@@ -275,18 +232,9 @@ describe("resolveContentEntries — metadata-based resolution", () => {
                             type: "contentEntry",
                             static: { id: "20", modelId: "article" }
                         }
-                    },
-                    metadata: {
-                        "inputs/related/config": {
-                            inputName: "related",
-                            models: ["article"],
-                            mode: "manual",
-                            list: false
-                        }
                     }
                 }
-            },
-            state: {}
+            }
         });
 
         await resolveContentEntries(doc);
@@ -297,50 +245,33 @@ describe("resolveContentEntries — metadata-based resolution", () => {
         expect(resolved["el2:related"]).toEqual(entry("20"));
     });
 
-    it("skips elements without metadata", async () => {
+    it("skips non-contentEntry bindings", async () => {
         const doc = makeDocument({
             elements: {
                 el1: {
                     id: "el1",
                     type: "Webiny/Element",
-                    component: { name: "Plain" }
-                },
-                el2: {
-                    id: "el2",
-                    type: "Webiny/Element",
-                    component: { name: "WithEntry" }
+                    component: { name: "Mixed" }
                 }
             },
             bindings: {
                 el1: {
                     inputs: {
-                        text: { id: "text", type: "text", static: "hello" }
-                    }
-                },
-                el2: {
-                    inputs: {
+                        text: { id: "text", type: "text", static: "hello" },
+                        number: { id: "number", type: "number", static: 42 },
                         item: {
                             id: "item",
                             type: "contentEntry",
                             static: { id: "5", modelId: "blog" }
                         }
-                    },
-                    metadata: {
-                        "inputs/item/config": {
-                            inputName: "item",
-                            models: ["blog"],
-                            mode: "manual",
-                            list: false
-                        }
                     }
                 }
-            },
-            state: {}
+            }
         });
 
         await resolveContentEntries(doc);
 
-        // Only el2's entry should be resolved.
+        // Only the contentEntry input should be resolved.
         expect(mockGetEntry).toHaveBeenCalledTimes(1);
         expect(mockGetEntry).toHaveBeenCalledWith({ modelId: "blog", entryId: "5" });
     });
