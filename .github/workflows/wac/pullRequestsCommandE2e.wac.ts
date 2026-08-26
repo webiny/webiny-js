@@ -14,10 +14,8 @@ import {
 } from "./e2e/index.js";
 
 // The self-hosted variants that actually run. Drives both the PR status comment and the job list,
-// so enabling Postgres is a one-line change here rather than two edits that can drift apart.
-// Postgres is implemented and renders correctly; it stays off until SQLite is proven green, since
-// the server hosting type is still ALPHA.
-const SERVER_VARIANTS: ServerStorageOps[] = ["sqlite"];
+// so the two cannot drift apart.
+const SERVER_VARIANTS: ServerStorageOps[] = ["sqlite", "postgres"];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
