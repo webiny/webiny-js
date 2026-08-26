@@ -766,7 +766,13 @@ jobs:
       - name: Start API
         env:
           PORT: '3002'
+          WEBINY_SQL_FILENAME: >-
+            ${{ github.workspace
+            }}/new-webiny-project-server/.webiny/server.sqlite
+          WEBINY_LOCAL_STORAGE_PATH: ${{ github.workspace }}/new-webiny-project-server/.webiny/storage
         run: |-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
           cd new-webiny-project-server/.webiny/workspace/apps/api/graphql/build
           nohup node start.mjs > /tmp/webiny-api.log 2>&1 &
           echo "API starting on port 3002"
