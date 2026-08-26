@@ -1,4 +1,7 @@
 import React from "react";
+import { ReactComponent as ReplaceIcon } from "@webiny/icons/file_upload.svg";
+import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
+import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 import { cn } from "~/utils.js";
 import { TextAction } from "./TextAction.js";
 
@@ -25,17 +28,22 @@ const ItemTextActions = ({
     return (
         <div {...props} className={cn("flex items-center gap-sm-extra", className)}>
             {onReplaceItem && (
-                <TextAction onClick={onReplaceItem} disabled={disabled} accent>
+                <TextAction
+                    onClick={onReplaceItem}
+                    disabled={disabled}
+                    icon={<ReplaceIcon />}
+                    accent
+                >
                     Replace
                 </TextAction>
             )}
             {onEditItem && (
-                <TextAction onClick={onEditItem} disabled={disabled}>
+                <TextAction onClick={onEditItem} disabled={disabled} icon={<EditIcon />}>
                     Edit
                 </TextAction>
             )}
             {onRemoveItem && (
-                <TextAction onClick={onRemoveItem} disabled={disabled}>
+                <TextAction onClick={onRemoveItem} disabled={disabled} icon={<TrashIcon />}>
                     Remove
                 </TextAction>
             )}

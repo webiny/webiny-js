@@ -1,4 +1,5 @@
 import React from "react";
+import { Icon } from "~/Icon/index.js";
 import { linkVariants } from "~/Link/index.js";
 import { cn } from "~/utils.js";
 
@@ -16,7 +17,7 @@ import { cn } from "~/utils.js";
     compounds re-add padding for icon layouts. Retiring this component afterwards is a one-file
     change - it already renders the same classes.
 */
-const buttonReset = "cursor-pointer bg-transparent border-none p-0";
+const buttonReset = "inline-flex items-center gap-xs cursor-pointer bg-transparent border-none p-0";
 const disabledClassName =
     "disabled:cursor-not-allowed disabled:text-neutral-disabled disabled:no-underline";
 
@@ -24,10 +25,15 @@ interface TextActionProps {
     onClick: () => void;
     disabled?: boolean;
     accent?: boolean;
+    /**
+     * Drawn before the label. `fill-current` below makes it follow the label's color, so it picks
+     * up the accent and the disabled state without being told about either.
+     */
+    icon?: React.ReactNode;
     children: React.ReactNode;
 }
 
-const TextAction = ({ onClick, disabled, accent, children }: TextActionProps) => (
+const TextAction = ({ onClick, disabled, accent, icon, children }: TextActionProps) => (
     <button
         type={"button"}
         onClick={onClick}
@@ -38,6 +44,7 @@ const TextAction = ({ onClick, disabled, accent, children }: TextActionProps) =>
             disabledClassName
         )}
     >
+        {icon ? <Icon icon={icon} label={""} size={"sm"} className={"fill-current"} /> : null}
         {children}
     </button>
 );
