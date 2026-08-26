@@ -14,10 +14,7 @@ const ItemDescription = ({ className, disabled, item, small, ...props }: ItemDes
     const formattedSize = item.size && bytes.format(item.size, { unitSeparator: " " });
 
     return (
-        <div
-            className={cn("flex flex-col gap-xxs overflow-hidden flex-1 min-w-0", className)}
-            {...props}
-        >
+        <div className={cn("flex flex-col gap-xxs overflow-hidden min-w-0", className)} {...props}>
             <Text
                 size="sm"
                 as="div"

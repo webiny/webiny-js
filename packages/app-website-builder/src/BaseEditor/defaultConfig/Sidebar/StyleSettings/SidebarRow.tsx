@@ -10,10 +10,16 @@ interface SidebarRowProps {
 
 export const SidebarRow = ({ label, tooltip, children }: SidebarRowProps) => {
     return (
-        <div className={"flex items-center gap-xxs"}>
+        // The label sits at the top of the row rather than centered against the value, so that a
+        // row is free to render something taller than one control - the file picker's stacked
+        // preview, say - without the label drifting to the middle of it.
+        <div className={"flex items-start gap-xxs"}>
+            {/* `pt-sm` is half the difference between a standard control (a `size="md"` Select is
+                32px) and this label's 16px line, which puts the label exactly where centering
+                would for the ordinary single-control row, and leaves it there for taller ones. */}
             <div
                 className={
-                    "w-[80px] flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong"
+                    "w-[80px] pt-sm flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong"
                 }
             >
                 {label}

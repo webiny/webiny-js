@@ -10,7 +10,7 @@ import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { NotAuthorizedError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
@@ -29,19 +29,26 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         private model: ScheduledActionModel.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface,
         private cmsSortMapper: CmsSortMapper.Interface,
-        private permissions: SchedulerPermissions.Interface,
+        private permissionsResolver: SchedulerPermissionsResolver.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
-        if (!hasPermission) {
-            return Result.fail(new NotAuthorizedError());
+        const namespace = params.where?.namespace || params.where?.namespace_startsWith;
+        const permissions = namespace
+            ? this.permissionsResolver.forNamespace(namespace)
+            : undefined;
+
+        if (permissions) {
+            const hasPermission = await permissions.canRead();
+            if (!hasPermission) {
+                return Result.fail(new NotAuthorizedError());
+            }
         }
 
-        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        const ownRecordsOnly = permissions ? await permissions.onlyOwnRecords() : false;
 
         const { where: initialWhere, sort: sortInput, limit, after } = params;
 
@@ -90,7 +97,7 @@ export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementati
         ScheduledActionModel,
         CmsWhereMapper,
         CmsSortMapper,
-        SchedulerPermissions,
+        SchedulerPermissionsResolver,
         IdentityContext
     ]
 });

@@ -10,7 +10,7 @@ import {
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
-import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/abstractions.js";
 
 /**
  * Cancels a scheduled action
@@ -27,17 +27,20 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private schedulerService: SchedulerService.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private model: ScheduledActionModel.Interface,
-        private permissions: SchedulerPermissions.Interface
+        private permissionsResolver: SchedulerPermissionsResolver.Interface
     ) {}
 
     async execute(
         params: UseCaseAbstraction.Params
     ): Promise<Result<boolean, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
-        if (!hasPermission) {
-            return Result.fail(new NotAuthorizedError());
+        const { id, namespace } = params;
+        const permissions = this.permissionsResolver.forNamespace(namespace);
+        if (permissions) {
+            const hasPermission = await permissions.canRead();
+            if (!hasPermission) {
+                return Result.fail(new NotAuthorizedError());
+            }
         }
-        const { id } = params;
         // Check if scheduled action exists
         const getResult = await this.getScheduledActionUseCase.execute(params);
 
@@ -99,6 +102,6 @@ export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementat
         SchedulerService,
         DeleteEntryUseCase,
         ScheduledActionModel,
-        SchedulerPermissions
+        SchedulerPermissionsResolver
     ]
 });

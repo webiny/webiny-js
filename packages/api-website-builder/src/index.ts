@@ -40,6 +40,8 @@ import { GetDeletedPageByIdFeature } from "~/features/pages/GetDeletedPageById/f
 import { GetPageLanguagePathsFeature } from "~/features/pages/GetPageLanguagePaths/feature.js";
 import { UpdatePageRevisionDescriptionFeature } from "./features/pages/UpdatePageRevisionDescription/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
+import { EnsureWbPageFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbPageFolderIsEmptyOnDelete/feature.js";
+import { EnsureWbRedirectFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbRedirectFolderIsEmptyOnDelete/feature.js";
 // import { TenantModelExtensionFeature } from "~/features/tenantManager/feature.js";
 
 const createContext = () => {
@@ -99,6 +101,8 @@ const createContext = () => {
             ApiKeyInstallerFeature.register(container);
             NextjsFeature.register(container);
             WbWebhooksFeature.register(container);
+            EnsureWbPageFolderIsEmptyOnDeleteFeature.register(container);
+            EnsureWbRedirectFolderIsEmptyOnDeleteFeature.register(container);
             // TenantModelExtensionFeature.register(container);
 
             // Register GraphQL

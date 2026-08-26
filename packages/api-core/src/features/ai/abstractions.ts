@@ -100,6 +100,19 @@ export namespace Ai {
     export type StreamTextParams = AiStreamTextParams;
 }
 
+// AiModelRegistry
+
+export interface IAiModelRegistry {
+    listModels(): Promise<AiModel[]>;
+}
+
+/** Single source of truth for available AI models. Decoratable to restrict the model list. */
+export const AiModelRegistry = createAbstraction<IAiModelRegistry>("AiModelRegistry");
+
+export namespace AiModelRegistry {
+    export type Interface = IAiModelRegistry;
+}
+
 // AiSdkTool
 
 export interface IAiSdkTool<TInput = any> {

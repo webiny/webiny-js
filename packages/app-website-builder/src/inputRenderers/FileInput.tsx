@@ -45,7 +45,6 @@ export const FileInputRenderer = ({
                     value={value}
                     onSelectItem={() => showFileManager()}
                     onRemoveItem={onRemove}
-                    onEditItem={() => showFileManager()}
                 />
             )}
         />

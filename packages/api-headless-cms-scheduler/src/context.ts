@@ -5,9 +5,11 @@ import { PublishEntryActionHandler } from "~/features/PublishActionHandler/Publi
 import { UnpublishEntryActionHandler } from "~/features/UnpublishActionHandler/UnpublishEntryActionHandler.js";
 import { SchedulePublishEntryUseCase } from "~/features/SchedulePublishEntryUseCase/SchedulePublishEntryUseCase.js";
 import { ScheduleUnpublishEntryUseCase } from "~/features/ScheduleUnpublishEntryUseCase/ScheduleUnpublishEntryUseCase.js";
+import { CmsSchedulerPermissions } from "~/features/permissions/CmsSchedulerPermissions.js";
 
 export const createHeadlessCmsScheduleContext = () => {
     return new ContextPlugin(async context => {
+        context.container.register(CmsSchedulerPermissions);
         context.container.register(NamespaceHandler);
         context.container.register(PublishEntryActionHandler);
         context.container.register(UnpublishEntryActionHandler);

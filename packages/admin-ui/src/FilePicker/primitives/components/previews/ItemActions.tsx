@@ -28,7 +28,9 @@ const ItemActions = ({
 
     return (
         <div {...props} className={cn("flex justify-center items-center gap-xs", className)}>
-            {small && onReplaceItem && (
+            {/* Replace is the action a populated picker mainly exists for, and it was only ever
+                shown in the `small` layout - elsewhere it hid behind clicking the thumbnail. */}
+            {onReplaceItem && (
                 <IconButton
                     icon={
                         <Icon

@@ -50,7 +50,7 @@ export namespace CreateModelFromUseCase {
  * CreateModelFromRepository - Validates domain rules and persists cloned model.
  */
 export interface ICreateModelFromRepository {
-    execute(model: CmsModel): Promise<Result<void, RepositoryError>>;
+    execute(model: CmsModel): Promise<Result<CmsModel, RepositoryError>>;
 }
 
 export interface ICreateModelFromRepositoryErrors {
