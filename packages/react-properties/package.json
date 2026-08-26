@@ -23,8 +23,8 @@
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
     "@webiny/build-tools": "0.0.0",
-    "oxfmt": "^0.63.0",
-    "vitest": "^4.1.10"
+    "oxfmt": "^0.64.0",
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"
