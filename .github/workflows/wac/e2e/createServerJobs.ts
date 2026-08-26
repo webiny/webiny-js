@@ -76,6 +76,17 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
         : undefined;
 
     // Supplied to every step that builds or runs the project, so the API talks to the right database.
+    //
+    // SQLite needs WEBINY_SQL_FILENAME even though the template's .env.example calls every variable
+    // optional: that promise holds for `yarn webiny watch`, which reads webiny.config.tsx, but the
+    // standalone handler we run here (`node start.mjs`) is configured purely from the environment
+    // and exits immediately without it:
+    //
+    //   Error: WEBINY_SQL_FILENAME is not set. Configure the database via
+    //   <Infra.Sqlite filename="..." /> in webiny.config.
+    //
+    // Absolute paths, because the API is started from inside its build folder rather than from the
+    // project root.
     const storageEnv: Record<string, string> = isPostgres
         ? {
               WEBINY_PG_HOST: PG.host,
@@ -84,7 +95,15 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
               WEBINY_PG_PASSWORD: PG.password,
               WEBINY_PG_DATABASE: PG.database
           }
-        : {};
+        : {
+              WEBINY_SQL_FILENAME: `\${{ github.workspace }}/${DIR_SERVER_PROJECT}/.webiny/server.sqlite`
+          };
+
+    // Uploaded files land on disk rather than in a bucket. Also absolute, for the same reason.
+    const runtimeEnv: Record<string, string> = {
+        ...storageEnv,
+        WEBINY_LOCAL_STORAGE_PATH: `\${{ github.workspace }}/${DIR_SERVER_PROJECT}/.webiny/storage`
+    };
 
     return {
         [`e2e-server-${storageOps}`]: createJob({
@@ -137,8 +156,12 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     // Backgrounded so the job can continue; the process lives for the rest of the
                     // job. Logs go to a file so the failure handler below can surface them.
                     name: "Start API",
-                    env: { PORT: `${SERVER_API_PORT}`, ...storageEnv },
+                    env: { PORT: `${SERVER_API_PORT}`, ...runtimeEnv },
                     run: [
+                        // SQLite will not create missing parent directories for its file, and the
+                        // local file storage folder does not exist until something writes to it.
+                        'mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"',
+                        'mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"',
                         `cd ${SERVER_BUILD_DIR}/api/graphql/build`,
                         "nohup node start.mjs > /tmp/webiny-api.log 2>&1 &",
                         `echo "API starting on port ${SERVER_API_PORT}"`
