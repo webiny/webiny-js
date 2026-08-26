@@ -4,6 +4,7 @@ import type { FileItemFormatted } from "~/FilePicker/index.js";
 import { Icon } from "~/Icon/index.js";
 import { cn } from "~/utils.js";
 import type { RichItemPreviewProps } from "~/FilePicker/primitives/components/index.js";
+import { Thumbnail } from "./Thumbnail.js";
 
 import csvThumb from "../assets/csv.svg";
 import docThumb from "../assets/doc.svg";
@@ -26,33 +27,6 @@ type RichItemThumbnailProps = Omit<React.HTMLAttributes<HTMLDivElement>, "childr
          */
         variant?: "tile" | "banner";
     };
-
-type ThumbnailProps = Pick<FileItemFormatted, "url" | "name"> & {
-    fit: "cover" | "contain";
-};
-
-const Thumbnail = ({ url, name, fit }: ThumbnailProps) => {
-    if (fit === "contain") {
-        return (
-            <div className={"size-full p-xs bg-neutral-muted flex items-center justify-center"}>
-                {/*
-                    Capping the element with max-width/max-height, rather than stretching it and
-                    letting `object-contain` letterbox the picture inside it, keeps the element box
-                    and the visible picture the same rectangle. That is what lets the corners round
-                    at all: `border-radius` clips the element, so on a letterboxed image it would
-                    trim empty space and leave the picture square.
-                */}
-                <img src={url} alt={name} className={"max-h-full max-w-full rounded-xs"} />
-            </div>
-        );
-    }
-
-    return (
-        <div className={"size-full bg-neutral-muted"}>
-            <img src={url} alt={name} className={"size-full object-cover"} />
-        </div>
-    );
-};
 
 type FileTypeProps = Pick<FileItemFormatted, "mimeType" | "name">;
 
