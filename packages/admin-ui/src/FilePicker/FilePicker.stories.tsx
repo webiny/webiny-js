@@ -219,8 +219,9 @@ export const CompactFullExample: Story = {
 };
 
 /**
- * Reproduces the narrow-sidebar case: the name and the size/type line truncate, and hovering
- * either one reveals the full value in a tooltip.
+ * Reproduces the Website Builder style sidebar at its 206px value column: the preview stacks,
+ * the file name truncates in the middle so the extension and version suffix survive, and the
+ * actions spell themselves out instead of costing a fixed block of the row.
  */
 export const CompactWithLongFileNameInNarrowContainer: Story = {
     args: {
@@ -228,20 +229,19 @@ export const CompactWithLongFileNameInNarrowContainer: Story = {
     },
     render: args => {
         const [selectedFile, setSelectedFile] = useState<FileItemDto | null>({
-            name: "cloudy-sky-with-a-very-long-and-unhelpful-file-name-2026-08-21.jpg",
-            mimeType: "image/jpeg",
-            size: 5920138,
+            name: "tide-cc-statuses-2026-08-21-final-v2.png",
+            mimeType: "image/png",
+            size: 674161,
             url: "https://picsum.photos/1200/800"
         });
 
         return (
-            <div style={{ width: 232 }}>
+            <div style={{ width: 206 }}>
                 <FilePicker
                     {...args}
                     value={selectedFile}
                     onSelectItem={() => setSelectedFile(getFile())}
                     onRemoveItem={() => setSelectedFile(null)}
-                    onEditItem={() => alert(`Editing File`)}
                 />
             </div>
         );
