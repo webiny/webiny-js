@@ -121,6 +121,10 @@ export default /* GraphQL */ `
         dateTimeWithoutTimezone_gte: DateTime
     }
 
+    extend type PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject {
+        _id: ID
+    }
+
     type PageModelApiName_Content_Objecting_NestedObject {
         objectTitle: String
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
@@ -148,6 +152,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
         _templateId: ID!
+        _id: ID
     }
 
     type PageModelApiName_Content_Objecting {
@@ -162,18 +167,22 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Content_Hero {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Content_SimpleText {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Content_Objecting {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Content_Author {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_Header =
@@ -191,10 +200,12 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Header_TextHeader {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Header_ImageHeader {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_Objective = PageModelApiName_Objective_Objecting
@@ -254,6 +265,10 @@ export default /* GraphQL */ `
         dateTimeWithoutTimezone_gte: DateTime
     }
 
+    extend type PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject {
+        _id: ID
+    }
+
     type PageModelApiName_Objective_Objecting_NestedObject {
         objectTitle: String
         objectBody(format: String): JSON
@@ -279,6 +294,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Objective_Objecting {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_Reference = PageModelApiName_Reference_Author
@@ -289,6 +305,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Reference_Author {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_References1 = PageModelApiName_References1_Authors
@@ -299,6 +316,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_References1_Authors {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_References2 = PageModelApiName_References2_Author
@@ -309,6 +327,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_References2_Author {
         _templateId: ID!
+        _id: ID
     }
 
     type PageModelApiName_GhostObject {

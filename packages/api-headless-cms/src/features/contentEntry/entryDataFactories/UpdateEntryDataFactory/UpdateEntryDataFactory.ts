@@ -21,6 +21,8 @@ import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMappi
 import { mapAndCleanUpdatedInputData } from "../mapAndCleanUpdatedInputData.js";
 import { getSystem } from "../system.js";
 import { getExpiresAt } from "../expiresAt.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/abstractions.js";
+import { ensureItemIds } from "../../ensureItemIds.js";
 
 const allowedEntryStatus: string[] = ["draft", "published", "unpublished"];
 
@@ -31,7 +33,8 @@ const transformEntryStatus = (status: CmsEntryStatus | string): CmsEntryStatus =
 class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
     public constructor(
         private readonly cmsContext: CmsContext.Interface,
-        private readonly identityContext: IdentityContext.Interface
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly modelToAstConverter: ModelToAstConverter.Interface
     ) {}
 
     public async create<TValues extends CmsEntryValues = CmsEntryValues>(
@@ -57,6 +60,9 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
             ...originalEntry.values,
             ...cleanedValues
         };
+
+        const modelAst = this.modelToAstConverter.toAst(model);
+        await ensureItemIds(modelAst, mergedValues);
 
         const values = await referenceFieldsMapping<TValues>({
             context: this.cmsContext,
@@ -146,5 +152,5 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
 export const UpdateEntryDataFactory = createImplementation({
     abstraction: FactoryAbstraction,
     implementation: UpdateEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext]
+    dependencies: [CmsContext, IdentityContext, ModelToAstConverter]
 });

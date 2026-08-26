@@ -37,6 +37,7 @@ describe("ValuesSelectionGenerator", () => {
         // Hero template
         expect(selection).toContain("...on Article_Content_Hero {");
         expect(selection).toContain("_templateId");
+        expect(selection).toContain("_id");
         expect(selection).toContain("__typename");
 
         // SimpleText template

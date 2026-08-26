@@ -75,7 +75,7 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             return null;
         }
 
-        return `${field.fieldId} { ${childSelection} }`;
+        return `${field.fieldId} { _id ${childSelection} }`;
     }
 
     private walkCollectionNode(
@@ -95,7 +95,7 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             .filter(Boolean)
             .join("\n");
 
-        return `...on ${templateType} { ${childSelection} _templateId __typename }`;
+        return `...on ${templateType} { ${childSelection} _templateId _id __typename }`;
     }
 }
 

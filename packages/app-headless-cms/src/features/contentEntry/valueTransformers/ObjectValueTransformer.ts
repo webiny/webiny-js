@@ -17,7 +17,9 @@ class ObjectValueTransformerImpl implements ICmsEntryValueTransformer {
         if (field.list && Array.isArray(value)) {
             return value.map(item => {
                 if (item && typeof item === "object") {
-                    return this.preparer.prepare(item as Record<string, unknown>, childFields);
+                    const { _id, ...rest } = item as Record<string, unknown>;
+                    const prepared = this.preparer.prepare(rest, childFields);
+                    return _id !== undefined ? { _id, ...prepared } : prepared;
                 }
                 return item;
             });

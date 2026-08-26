@@ -114,6 +114,10 @@ export default /* GraphQL */ `
         longText_not_contains: String
     }
 
+    extend type ProductApiSingular_Variant_Options {
+        _id: ID
+    }
+
     type ProductApiSingular_Variant {
         name: String
         price: Number
@@ -172,6 +176,10 @@ export default /* GraphQL */ `
         category: RefFieldInput
         categories: [RefFieldInput]
         longText: [String]
+    }
+
+    extend input ProductApiSingular_Variant_OptionsInput {
+        _id: ID
     }
 
     input ProductApiSingular_VariantInput {

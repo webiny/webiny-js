@@ -93,6 +93,10 @@ export default /* GraphQL */ `
         longText_not_contains: String
     }
 
+    extend type ProductApiSingular_Variant_Options {
+        _id: ID
+    }
+
     type ProductApiSingular_Variant {
         name: String
         price: Number

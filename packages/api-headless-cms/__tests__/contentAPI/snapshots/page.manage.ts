@@ -142,6 +142,10 @@ export default /* GraphQL */ `
         dateTimeWithoutTimezone_gte: DateTime
     }
 
+    extend type PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject {
+        _id: ID
+    }
+
     type PageModelApiName_Content_Objecting_NestedObject {
         objectTitle: String
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
@@ -169,6 +173,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
         _templateId: ID!
+        _id: ID
     }
 
     type PageModelApiName_Content_Objecting {
@@ -183,18 +188,22 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Content_Hero {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Content_SimpleText {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Content_Objecting {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Content_Author {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_Header =
@@ -212,10 +221,12 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Header_TextHeader {
         _templateId: ID!
+        _id: ID
     }
 
     extend type PageModelApiName_Header_ImageHeader {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_Objective = PageModelApiName_Objective_Objecting
@@ -275,6 +286,10 @@ export default /* GraphQL */ `
         dateTimeWithoutTimezone_gte: DateTime
     }
 
+    extend type PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject {
+        _id: ID
+    }
+
     type PageModelApiName_Objective_Objecting_NestedObject {
         objectTitle: String
         objectBody: JSON
@@ -300,6 +315,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Objective_Objecting {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_Reference = PageModelApiName_Reference_Author
@@ -310,6 +326,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_Reference_Author {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_References1 = PageModelApiName_References1_Authors
@@ -320,6 +337,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_References1_Authors {
         _templateId: ID!
+        _id: ID
     }
 
     union PageModelApiName_References2 = PageModelApiName_References2_Author
@@ -330,6 +348,7 @@ export default /* GraphQL */ `
 
     extend type PageModelApiName_References2_Author {
         _templateId: ID!
+        _id: ID
     }
 
     type PageModelApiName_GhostObject {
@@ -360,6 +379,10 @@ export default /* GraphQL */ `
         dateTimeWithoutTimezone: DateTime
     }
 
+    extend input PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectInput {
+        _id: ID
+    }
+
     input PageModelApiName_Content_Objecting_NestedObjectInput {
         objectTitle: String
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectInput!]
@@ -371,6 +394,9 @@ export default /* GraphQL */ `
 
     input PageModelApiName_Content_Objecting_DynamicZoneInput {
         SuperNestedObject: PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObjectInput
+    }
+    extend input PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObjectInput {
+        _id: ID
     }
 
     input PageModelApiName_Content_ObjectingInput {
@@ -389,6 +415,21 @@ export default /* GraphQL */ `
         Objecting: PageModelApiName_Content_ObjectingInput
         Author: PageModelApiName_Content_AuthorInput
     }
+    extend input PageModelApiName_Content_HeroInput {
+        _id: ID
+    }
+
+    extend input PageModelApiName_Content_SimpleTextInput {
+        _id: ID
+    }
+
+    extend input PageModelApiName_Content_ObjectingInput {
+        _id: ID
+    }
+
+    extend input PageModelApiName_Content_AuthorInput {
+        _id: ID
+    }
 
     input PageModelApiName_Header_TextHeaderInput {
         title: String
@@ -403,6 +444,13 @@ export default /* GraphQL */ `
         TextHeader: PageModelApiName_Header_TextHeaderInput
         ImageHeader: PageModelApiName_Header_ImageHeaderInput
     }
+    extend input PageModelApiName_Header_TextHeaderInput {
+        _id: ID
+    }
+
+    extend input PageModelApiName_Header_ImageHeaderInput {
+        _id: ID
+    }
 
     input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectInput {
         nestedObjectNestedTitle: String
@@ -410,6 +458,10 @@ export default /* GraphQL */ `
         time: Time
         dateTimeWithTimezone: DateTimeZ
         dateTimeWithoutTimezone: DateTime
+    }
+
+    extend input PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectInput {
+        _id: ID
     }
 
     input PageModelApiName_Objective_Objecting_NestedObjectInput {
@@ -425,6 +477,9 @@ export default /* GraphQL */ `
     input PageModelApiName_ObjectiveInput {
         Objecting: PageModelApiName_Objective_ObjectingInput
     }
+    extend input PageModelApiName_Objective_ObjectingInput {
+        _id: ID
+    }
 
     input PageModelApiName_Reference_AuthorInput {
         author: RefFieldInput
@@ -432,6 +487,9 @@ export default /* GraphQL */ `
 
     input PageModelApiName_ReferenceInput {
         Author: PageModelApiName_Reference_AuthorInput
+    }
+    extend input PageModelApiName_Reference_AuthorInput {
+        _id: ID
     }
 
     input PageModelApiName_References1_AuthorsInput {
@@ -441,6 +499,9 @@ export default /* GraphQL */ `
     input PageModelApiName_References1Input {
         Authors: PageModelApiName_References1_AuthorsInput
     }
+    extend input PageModelApiName_References1_AuthorsInput {
+        _id: ID
+    }
 
     input PageModelApiName_References2_AuthorInput {
         author: RefFieldInput
@@ -448,6 +509,9 @@ export default /* GraphQL */ `
 
     input PageModelApiName_References2Input {
         Author: PageModelApiName_References2_AuthorInput
+    }
+    extend input PageModelApiName_References2_AuthorInput {
+        _id: ID
     }
 
     input PageModelApiName_GhostObjectInput {
