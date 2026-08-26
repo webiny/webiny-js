@@ -22,7 +22,7 @@ import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
-import { registerWebinyApiRequest, registerWebinyApiRoot } from "~/composition/index.js";
+import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type { RegisterRootStorageContext } from "~/composition/index.js";
@@ -75,7 +75,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
         },
 
         child: async container => {
-            await registerWebinyApiRequest(container, config);
+            await registerWebinyApiChild(container, config);
         }
     });
 }

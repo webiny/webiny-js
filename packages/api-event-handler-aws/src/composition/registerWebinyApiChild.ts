@@ -6,10 +6,13 @@ import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
 import type { WebinyApiCompositionConfig } from "./types.js";
 
 /**
- * The per-request feature stack, which is transport-agnostic (shared with the server transport).
- * The AWS-specific interleave points are supplied as the `transports` adapters.
+ * Sets up the per-request CHILD container: the transport-agnostic feature stack (shared with the
+ * server transport), with the AWS-specific interleave points supplied as the `transports` adapters.
+ *
+ * Named for the `child` lifecycle step of `HandlerConfig`, not "request", so it matches the contract
+ * it implements.
  */
-export async function registerWebinyApiRequest(
+export async function registerWebinyApiChild(
     container: Container,
     config: WebinyApiCompositionConfig
 ): Promise<void> {

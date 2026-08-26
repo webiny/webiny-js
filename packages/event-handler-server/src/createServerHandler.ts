@@ -1,9 +1,8 @@
-import http from "node:http";
+import type http from "node:http";
 import { Container } from "@webiny/di";
 import { HandlerApp } from "@webiny/event-handler-core";
-import type { HandlerSetup, IHttpResponse } from "@webiny/event-handler-core";
-import { writeHttpResponse } from "~/response/writeHttpResponse.js";
-import { writeErrorResponse } from "~/response/writeErrorResponse.js";
+import type { HandlerSetup } from "@webiny/event-handler-core";
+import { HttpServer } from "~/server/HttpServer.js";
 
 export interface CreateServerHandlerOptions {
     root: HandlerSetup;
@@ -24,20 +23,13 @@ export async function createServerHandler(
         child: options.child
     });
 
-    const server = http.createServer(async (req, res) => {
-        try {
-            const response: IHttpResponse = await app.handle(req);
-
-            await writeHttpResponse(res, response);
-        } catch (err) {
-            writeErrorResponse(res, err);
-        }
-    });
+    const server = new HttpServer(app).getServer();
 
     if (options.onServer) {
         // Build the root container eagerly (rather than lazily on the first request) so `onServer` can
         // hand it — and the running HTTP server — to transport add-ons like WebSockets at startup.
         const rootContainer = await app.getRootContainer();
+
         await options.onServer(server, rootContainer);
     }
 

@@ -18,7 +18,7 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/event-handler-aws";
 import { FunctionUrlStreamIdentityLoaderDecorator } from "~/handlers/FunctionUrlStreamIdentityLoaderDecorator.js";
 import { FunctionUrlStreamTenantLoaderDecorator } from "~/handlers/FunctionUrlStreamTenantLoaderDecorator.js";
-import { registerWebinyApiRequest, registerWebinyApiRoot } from "~/composition/index.js";
+import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type CreateWebinyStreamApiHandlerConfig = WebinyApiCompositionConfig;
@@ -53,7 +53,7 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
         },
 
         child: async container => {
-            await registerWebinyApiRequest(container, config);
+            await registerWebinyApiChild(container, config);
         }
     });
 }
