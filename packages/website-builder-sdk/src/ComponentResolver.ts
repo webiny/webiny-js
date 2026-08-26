@@ -1,5 +1,6 @@
 import type { ComponentRegistry } from "~/ComponentRegistry.js";
 import type {
+    DocumentCache,
     DocumentElement,
     DocumentElementBindings,
     DocumentState,
@@ -8,11 +9,13 @@ import type {
 import { logger } from "./Logger.js";
 import type { OnResolved } from "./BindingsResolver.js";
 import { BindingsResolver } from "./BindingsResolver.js";
+import { ContentEntryBindingsResolver } from "./contentEntry/ContentEntryBindingsResolver.js";
 import { ComponentManifestToAstConverter } from "~/ComponentManifestToAstConverter.js";
 export type ResolveElementParams = {
     element: DocumentElement;
     elementBindings: DocumentElementBindings;
     state: DocumentState;
+    cache?: DocumentCache;
     onResolved?: OnResolved;
 };
 
@@ -27,7 +30,8 @@ export class ComponentResolver {
         element,
         elementBindings = {},
         onResolved,
-        state
+        state,
+        cache
     }: ResolveElementParams): ResolvedComponent[] | null {
         const componentName = element.component.name;
         const blueprint = this.components.get(componentName);
@@ -37,8 +41,17 @@ export class ComponentResolver {
             return null;
         }
 
-        const bindingsResolver = new BindingsResolver(state);
-        const instances = bindingsResolver.resolveElement({
+        // Build the pre-resolved entries map from the document cache
+        // (populated by `resolveContentEntries` on the server).
+        const embedded = cache?.contentEntries as Record<string, unknown> | undefined;
+        const resolvedEntries = embedded ? new Map(Object.entries(embedded)) : undefined;
+
+        const resolver = new ContentEntryBindingsResolver(
+            new BindingsResolver(state),
+            resolvedEntries
+        );
+
+        const instances = resolver.resolveElement({
             element,
             elementBindings,
             inputAst: ComponentManifestToAstConverter.convert(blueprint.manifest.inputs ?? []),

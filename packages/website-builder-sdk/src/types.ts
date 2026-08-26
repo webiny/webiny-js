@@ -283,6 +283,8 @@ export type SerializableCSSStyleDeclaration = {
     [K in keyof CssProperties]?: CssProperties[K];
 };
 
+export type DocumentCache = Record<string, unknown>;
+
 export type Document = {
     id: string;
     state: DocumentState;
@@ -292,6 +294,7 @@ export type Document = {
     metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;
+    __cache?: DocumentCache;
 };
 
 export type PublicPage = Pick<
@@ -601,6 +604,19 @@ export type ContentEntryInput = BaseInput<
     // The framework always resolves the selection into CMS entries server-side
     // and passes them to the component.
 };
+
+/**
+ * Subset of `ContentEntryInput` config persisted to element bindings metadata
+ * so the frontend SDK can resolve content-entry inputs without component manifests.
+ */
+export interface ContentEntryInputMeta {
+    /** The manifest input name (e.g. "featuredArticle"). */
+    inputName: string;
+    models: string[];
+    mode: "manual" | "query";
+    list: boolean;
+    query?: ContentEntryQueryConfig;
+}
 
 export type ObjectInput = BaseInput<Record<string, any>> & {
     type: "object";

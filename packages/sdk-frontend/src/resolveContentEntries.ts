@@ -1,4 +1,8 @@
-import type { Component, ContentEntryInput, Document } from "@webiny/website-builder-sdk";
+import type {
+    ContentEntryInput,
+    ContentEntryInputMeta,
+    Document
+} from "@webiny/website-builder-sdk";
 import {
     BindingsResolver,
     ComponentManifestToAstConverter,
@@ -22,6 +26,81 @@ export const ensureContentEntryLoader = () => {
         });
     }
 };
+
+/**
+ * Metadata key pattern used by `InputMetadata` to store content-entry config.
+ * The editor stores config under an opaque key segment (the binding value's
+ * `id`), so we can't derive the input name from the key alone.
+ *
+ * New configs carry an explicit `inputName` field. For backward compatibility
+ * with documents saved before that field was added, we fall back to
+ * reverse-mapping the opaque key segment via the flat input bindings.
+ */
+const METADATA_KEY_PATTERN = /^inputs\/([^/]+)\/config$/;
+
+/**
+ * Extract content-entry input configs from element bindings metadata.
+ * Returns a map of **input name** → config.
+ */
+function extractContentEntryConfigs(
+    metadata: Record<string, any> | undefined,
+    inputBindings: Record<string, any> | undefined
+): Map<string, ContentEntryInputMeta> {
+    const configs = new Map<string, ContentEntryInputMeta>();
+    if (!metadata) {
+        return configs;
+    }
+
+    // Reverse map for backward compatibility: find which input name has a
+    // binding whose resolved value's `id` (or whose own `id`) matches the
+    // opaque key segment stored in metadata.
+    const idToInputName = new Map<string, string>();
+    if (inputBindings) {
+        for (const [inputName, binding] of Object.entries(inputBindings)) {
+            if (binding && typeof binding === "object") {
+                // The binding's own `id` field (the binding identifier).
+                if ("id" in binding) {
+                    idToInputName.set(binding.id, inputName);
+                }
+                // The resolved static value's `id` (e.g. a CMS entry ID) —
+                // this is what `useInputValue` passes to `InputMetadata`.
+                if (
+                    binding.static &&
+                    typeof binding.static === "object" &&
+                    "id" in binding.static
+                ) {
+                    idToInputName.set(binding.static.id, inputName);
+                }
+            }
+        }
+    }
+
+    for (const [key, value] of Object.entries(metadata)) {
+        const match = key.match(METADATA_KEY_PATTERN);
+        if (match && value && typeof value === "object") {
+            const keySegment = match[1];
+            // Prefer explicit inputName (new format).
+            const inputName = value.inputName ?? idToInputName.get(keySegment) ?? keySegment;
+            configs.set(inputName, value as ContentEntryInputMeta);
+        }
+    }
+
+    return configs;
+}
+
+/**
+ * Build a synthetic `ContentEntryInput` from metadata config and input name.
+ */
+function metaToInput(name: string, meta: ContentEntryInputMeta): ContentEntryInput {
+    return {
+        type: "contentEntry" as const,
+        name,
+        models: meta.models,
+        mode: meta.mode,
+        list: meta.list,
+        ...(meta.query ? { query: meta.query } : {})
+    };
+}
 
 /**
  * Detect whether a content-entry input's raw value (from the document state)
@@ -50,39 +129,22 @@ function isAlreadyResolved(input: ContentEntryInput, value: unknown): boolean {
 }
 
 /**
- * Server-side (RSC) pre-pass: resolves every `contentEntry` input with
- * `autoLoad !== false` into CMS entries and seeds the SDK-level
- * `contentEntryCache`. The synchronous render loop in `BindingsResolver`
- * reads from the cache — no React context or props needed.
+ * Server-side (RSC) pre-pass: resolves every `contentEntry` input into CMS
+ * entries and seeds the SDK-level `contentEntryCache`. The synchronous render
+ * loop in `BindingsResolver` reads from the cache — no React context or
+ * props needed.
  *
- * This is an internal function called by `WbSdk.getPage()` when the caller
- * passes `{ components }`. It should not be called directly.
+ * Content-entry input configs are read from element bindings **metadata**
+ * (written by the editor's `ContentEntryInputRenderer` on mount), so
+ * component manifests are not required.
  *
- * Note: elements repeated in a loop share one key per input, so a `contentEntry`
- * input inside a repeated element is not yet disambiguated per instance.
+ * Note: elements repeated in a loop share one key per input, so a
+ * `contentEntry` input inside a repeated element is not yet disambiguated
+ * per instance.
  */
-export async function resolveContentEntries(
-    document: Document | null,
-    components: Component[]
-): Promise<void> {
+export async function resolveContentEntries(document: Document | null): Promise<void> {
     if (!document) {
         return;
-    }
-
-    // Guard against a non-array (e.g. a `"use client"` module reference passed
-    // in from a server component).
-    // Only the passed manifests are considered. The framework's own built-in
-    // components (Box, Grid, Root, …) are `"use client"` modules — unreadable on
-    // the server — and never contain `contentEntry` inputs, so they're excluded.
-    const list = Array.isArray(components) ? components : [];
-    const manifestMap = new Map<string, Component["manifest"]>();
-    for (const blueprint of list) {
-        // Skip anything that isn't a real component (e.g. a client-module
-        // reference that resolved to a proxy on the server).
-        if (!blueprint?.manifest) {
-            continue;
-        }
-        manifestMap.set(blueprint.manifest.name, blueprint.manifest);
     }
 
     // Register the CMS loader on the SDK-level cache so that
@@ -96,27 +158,35 @@ export async function resolveContentEntries(
     const tasks: Promise<void>[] = [];
 
     for (const [elementId, element] of Object.entries(document.elements)) {
-        const manifest = manifestMap.get(element.component.name);
-        if (!manifest) {
-            continue;
-        }
+        const elementBindings = document.bindings[elementId] ?? {};
 
-        const contentEntryInputs = (manifest.inputs ?? []).filter(
-            (input): input is ContentEntryInput => input.type === "contentEntry"
+        const configs = extractContentEntryConfigs(
+            elementBindings.metadata,
+            elementBindings.inputs
         );
-        if (contentEntryInputs.length === 0) {
+
+        if (configs.size === 0) {
             continue;
         }
 
+        // Build a minimal AST from the metadata configs so BindingsResolver
+        // can extract raw values from document state for these inputs.
+        const syntheticInputs: ContentEntryInput[] = [];
+        for (const [inputName, meta] of configs) {
+            syntheticInputs.push(metaToInput(inputName, meta));
+        }
+
+        const inputAst = ComponentManifestToAstConverter.convert(syntheticInputs);
         const [instance] = new BindingsResolver(document.state).resolveElement({
             element,
-            elementBindings: document.bindings[elementId] ?? {},
-            inputAst: ComponentManifestToAstConverter.convert(manifest.inputs ?? [])
+            elementBindings,
+            inputAst
         });
 
-        for (const input of contentEntryInputs) {
-            const rawValue = instance?.inputs?.[input.name];
-            const cacheKey = `${elementId}:${input.name}`;
+        for (const [inputName, meta] of configs) {
+            const input = metaToInput(inputName, meta);
+            const rawValue = instance?.inputs?.[inputName];
+            const cacheKey = `${elementId}:${inputName}`;
 
             // The document state stores the full resolved entry (not a bare
             // { id, modelId } reference). Pass it through directly.
@@ -137,17 +207,14 @@ export async function resolveContentEntries(
 
     await Promise.all(tasks);
 
-    // Embed resolved entries on the document state so the client
+    // Embed resolved entries on the document cache so the client
     // `BindingsResolver` can hydrate from them (the module-level
     // `contentEntryCache` singleton does not cross the server→client
-    // boundary). We attach to `state` because that's what
-    // `BindingsResolver` receives as `this.state`.
+    // boundary).
     if (Object.keys(resolved).length > 0) {
-        if (!document.state) {
-            (document as any).state = {};
+        if (!document.__cache) {
+            document.__cache = {};
         }
-        // Strip mobx observables — RSC serialisation rejects objects with
-        // symbol properties (mobx administration).
-        (document.state as any).__resolvedContentEntries = JSON.parse(JSON.stringify(resolved));
+        document.__cache.contentEntries = resolved;
     }
 }

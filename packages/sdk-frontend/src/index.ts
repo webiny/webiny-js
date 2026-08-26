@@ -50,5 +50,3 @@ export type {
 } from "@webiny/website-builder-sdk";
 
 export { createTheme, createComponent as createWbComponent } from "@webiny/website-builder-sdk";
-
-export type { GetPageOptions } from "./WbSdk.js";

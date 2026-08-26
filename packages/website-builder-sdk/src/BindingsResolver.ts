@@ -1,7 +1,6 @@
 import { toJS } from "mobx";
 import type {
     ComponentInput,
-    ContentEntryInput,
     DocumentElement,
     DocumentElementBindings,
     DocumentElementStyleBindings,
@@ -11,8 +10,6 @@ import type {
     ValueBinding
 } from "~/types.js";
 import type { InputAstNode } from "./ComponentManifestToAstConverter.js";
-import { contentEntryCache } from "./contentEntry/ContentEntryCache.js";
-import { environment } from "./Environment.js";
 
 export interface OnResolved {
     (value: any, input: ComponentInput): any;
@@ -25,7 +22,11 @@ export type ResolveElementParams = {
     onResolved?: OnResolved;
 };
 
-export class BindingsResolver {
+export interface IBindingsResolver {
+    resolveElement(params: ResolveElementParams): ResolvedElement[];
+}
+
+export class BindingsResolver implements IBindingsResolver {
     private readonly state: DocumentState;
 
     constructor(state: DocumentState) {
@@ -88,19 +89,7 @@ export class BindingsResolver {
                 const pathParts = [...prefix, node.name];
                 const path = pathParts.join("/");
                 const binding = bindings[path];
-                let value = this.resolveBinding(binding, context) ?? node.input.defaultValue;
-
-                // Content-entry resolution: read from the SDK-level cache
-                // (seeded by resolveAutoLoad on the server, or lazily resolved
-                // in the editor). This keeps CMS-specific logic in the SDK
-                // instead of leaking it into React components.
-                if (node.input.type === "contentEntry") {
-                    value = this.resolveContentEntryValue(
-                        element.id,
-                        node.input as ContentEntryInput,
-                        value
-                    );
-                }
+                const value = this.resolveBinding(binding, context) ?? node.input.defaultValue;
 
                 const finalValue = onResolved ? onResolved(value, node.input) : value;
 
@@ -164,60 +153,6 @@ export class BindingsResolver {
             ...resolvedElement,
             styles: resolvedStyles
         };
-    }
-
-    /**
-     * Resolve a content-entry input via the SDK-level cache. Server pre-pass
-     * values are already seeded; in the editor the loader triggers an async
-     * fetch whose result lands via a mobx action (re-render).
-     */
-    private resolveContentEntryValue(
-        elementId: string,
-        input: ContentEntryInput,
-        rawValue: any
-    ): any {
-        const baseKey = `${elementId}:${input.name}`;
-
-        // 1. Module-level cache (seeded by resolveAutoLoad on the server,
-        //    or by previous async resolves on the client).
-        if (contentEntryCache.has(baseKey)) {
-            return contentEntryCache.get(baseKey);
-        }
-
-        // 2. Document-embedded resolved entries: resolveAutoLoad attaches
-        //    these to the document so they survive React's server→client
-        //    serialisation. Seed the module-level cache on first read so
-        //    subsequent renders are fast.
-        const embedded = (this.state as any)?.__resolvedContentEntries;
-        if (embedded && baseKey in embedded) {
-            contentEntryCache.set(baseKey, embedded[baseKey]);
-            return embedded[baseKey];
-        }
-
-        // 3. Client-side async resolution (editing or preview): the loader
-        //    registered by FrontendSdk.init() fetches the entry in the
-        //    background; observer components re-render when it lands.
-        if (environment.isClient() && contentEntryCache.getLoader()) {
-            const cacheKey = `${baseKey}:${JSON.stringify(rawValue ?? null)}`;
-            contentEntryCache.resolve(cacheKey, input, rawValue);
-            const cached = contentEntryCache.get(cacheKey);
-            if (cached !== undefined) {
-                return cached;
-            }
-        }
-
-        // 4. Fallback: return the raw binding value.
-        return rawValue;
-    }
-
-    /**
-     * Return the empty shape for a content-entry input until the cache resolves.
-     */
-    private emptyContentEntryValue(input: ContentEntryInput): any {
-        if (input.mode === "query") {
-            return { items: [], pageInfo: { cursor: null, hasMore: false, totalCount: 0 } };
-        }
-        return input.list ? [] : null;
     }
 
     private getUniqueIndexesFromPath(flatKey: string, bindings: DocumentElementBindings) {

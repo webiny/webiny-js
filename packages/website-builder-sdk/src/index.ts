@@ -10,6 +10,7 @@ export * from "./FunctionConverter.js";
 export * from "./createInput.js";
 export * from "./contentEntry/resolveContentEntry.js";
 export * from "./contentEntry/ContentEntryCache.js";
+export * from "./contentEntry/ContentEntryBindingsResolver.js";
 export * from "./createComponent.js";
 export * from "./image/index.js";
 export * from "./asset/index.js";
