@@ -27,6 +27,13 @@ const DecoratableRichItemPreview = ({
 }: RichItemPreviewProps) => {
     const actions = { onRemoveItem, onReplaceItem, onEditItem, disabled };
 
+    // Type and size share a line of their own beneath the name, so the name gets the full width
+    // and the two secondary facts read as one group rather than crowding it.
+    const formattedSize = value.size
+        ? bytes.format(value.size, { unitSeparator: " ", decimalPlaces: 0 })
+        : "";
+    const details = [value.mimeType, formattedSize].filter(Boolean).join(" - ");
+
     return (
         <div
             data-testid="image-preview"
@@ -52,20 +59,20 @@ const DecoratableRichItemPreview = ({
                         />
                     </div>
 
-                    <div className={"flex items-baseline gap-xs min-w-0 px-xxs"}>
+                    <div className={"flex flex-col gap-xxs min-w-0 px-xxs"}>
                         <TruncatedFileName
                             name={value.name}
                             className={disabled ? "text-neutral-disabled" : "text-neutral-primary"}
                         />
-                        {value.size ? (
+                        {details ? (
                             <Text
                                 size="sm"
                                 className={cn(
-                                    "shrink-0",
+                                    "truncate",
                                     disabled ? "text-neutral-disabled" : "text-neutral-muted"
                                 )}
                             >
-                                {bytes.format(value.size, { unitSeparator: " ", decimalPlaces: 0 })}
+                                {details}
                             </Text>
                         ) : null}
                     </div>
