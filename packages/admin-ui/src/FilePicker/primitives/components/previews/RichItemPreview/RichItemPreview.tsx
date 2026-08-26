@@ -77,7 +77,7 @@ const DecoratableRichItemPreview = ({
                         ) : null}
                     </div>
 
-                    <ItemTextActions {...actions} className={"px-xxs pb-xxs"} />
+                    <ItemTextActions {...actions} className={"mt-xs px-xxs pb-xxs"} />
                 </div>
             </div>
 

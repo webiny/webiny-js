@@ -26,7 +26,7 @@ const ItemTextActions = ({
     ...props
 }: ItemTextActionsProps) => {
     return (
-        <div {...props} className={cn("flex items-center gap-sm-extra", className)}>
+        <div {...props} className={cn("flex items-center gap-md", className)}>
             {onReplaceItem && (
                 <TextAction
                     onClick={onReplaceItem}
