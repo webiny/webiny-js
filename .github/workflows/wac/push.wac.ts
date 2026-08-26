@@ -59,7 +59,7 @@ const createServerE2EJobs = (storageOps: ServerStorageOps) => {
     };
 };
 
-const createE2EJobs = (storageOps: AbstractStorageOps) => {
+const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
     const jobNames = {
         constants: `e2eTests-${storageOps.shortId}-constants`,
         projectSetup: `e2eTests-${storageOps.shortId}-setup`,
@@ -452,8 +452,8 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps),
         ...createVitestTestsJobs(sqlStorageOps),
-        ...createE2EJobs(ddbStorageOps),
-        ...createE2EJobs(ddbOsStorageOps),
+        ...createAwsE2EJobs(ddbStorageOps),
+        ...createAwsE2EJobs(ddbOsStorageOps),
         ...createServerE2EJobs("sqlite"),
         ...createServerE2EJobs("postgres")
     }

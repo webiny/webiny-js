@@ -3,7 +3,7 @@ import { createCheckoutPrSteps } from "./steps/index.js";
 import { AWS_REGION, BUILD_PACKAGES_RUNNER, NODE_OPTIONS } from "./utils/index.js";
 import type { ServerStorageOps } from "./e2e/index.js";
 import {
-    createCypressJobs,
+    createAwsJobs,
     createServerJobs,
     serverVariantCommentRow,
     DIR_WEBINY_JS,
@@ -92,8 +92,8 @@ export const pullRequestsCommandE2e = createSlashCommandWorkflow({
                 ...runBuildCacheUploadSteps
             ]
         }),
-        ...createCypressJobs("ddb"),
-        ...createCypressJobs("ddb-os"),
+        ...createAwsJobs("ddb"),
+        ...createAwsJobs("ddb-os"),
         ...SERVER_VARIANTS.reduce(
             (jobs, storageOps) => ({ ...jobs, ...createServerJobs(storageOps) }),
             {}
