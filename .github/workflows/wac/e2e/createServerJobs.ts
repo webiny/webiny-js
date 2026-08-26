@@ -77,10 +77,11 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
 
     // Supplied to every step that builds or runs the project, so the API talks to the right database.
     //
-    // SQLite needs WEBINY_SQL_FILENAME even though the template's .env.example calls every variable
-    // optional: that promise holds for `yarn webiny watch`, which reads webiny.config.tsx, but the
-    // standalone handler we run here (`node start.mjs`) is configured purely from the environment
-    // and exits immediately without it:
+    // Why this is needed even though webiny.config.tsx already configures the database:
+    // `<Infra.Sqlite>` renders an `EnvVar` that is BAKED for the api runtime, and `runApiServer`
+    // (what `yarn webiny watch` uses) hands that baked env to the API process. Running the
+    // standalone handler directly - `node start.mjs`, which is what the documented Docker setup
+    // does too - bypasses that entirely, so the process sees none of it and exits immediately:
     //
     //   Error: WEBINY_SQL_FILENAME is not set. Configure the database via
     //   <Infra.Sqlite filename="..." /> in webiny.config.
@@ -145,10 +146,14 @@ export const createServerJobs = (storageOps: ServerStorageOps) => {
                     // be set here and match where the API is actually started below.
                     name: "Build API and Admin",
                     "working-directory": DIR_SERVER_PROJECT,
+                    // Only what the build actually bakes in: the hosting type, and the API origin,
+                    // which the Admin bundle embeds. Database configuration is NOT needed here -
+                    // `<Infra.Sqlite>` / `<Infra.Postgres>` in webiny.config.tsx already bake their
+                    // own values, and the standalone handler we run below ignores those anyway (see
+                    // the runtime env on "Start API").
                     env: {
                         WEBINY_HOSTING_TYPE: "server",
-                        WEBINY_API_URL: SERVER_API_URL,
-                        ...storageEnv
+                        WEBINY_API_URL: SERVER_API_URL
                     },
                     run: "yarn webiny build api && yarn webiny build admin"
                 },

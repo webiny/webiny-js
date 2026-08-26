@@ -762,9 +762,6 @@ jobs:
         env:
           WEBINY_HOSTING_TYPE: server
           WEBINY_API_URL: http://localhost:3002
-          WEBINY_SQL_FILENAME: >-
-            ${{ github.workspace
-            }}/new-webiny-project-server/.webiny/server.sqlite
         run: yarn webiny build api && yarn webiny build admin
       - name: Start API
         env:
