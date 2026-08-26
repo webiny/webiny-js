@@ -2,7 +2,7 @@ import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { WcpLicenseInitializer } from "./WcpLicenseInitializer.js";
+import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
 import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
@@ -82,14 +82,16 @@ export async function registerApiRequestStack(
     container: Container,
     config: RegisterApiRequestStackConfig
 ): Promise<void> {
+    // Refresh the WCP license BEFORE any feature registers — this is the single per-request refresh.
+    // register()-time feature-flag checks (e.g. the private-files gate) and WcpContext.canUse* both
+    // read it via the process cache (`WcpLicenseProvider.get()` / `getCachedWcpLicense()`). Runs here
+    // — the shared request stack both hosting types call — so no handler wires it. Process-cached
+    // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
+    await loadWcpLicense();
+
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // Refresh the WCP license once per request (RequestInitializer). Lives here (the shared request
-    // stack) rather than api-core, so the domain layer has no transport dependency; runs for all
-    // hosting types. Registered after ApiCoreFeature (which provides WcpLicenseProvider).
-    container.register(WcpLicenseInitializer);
 
     // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
     await config.registerRequestStorage?.(container);
