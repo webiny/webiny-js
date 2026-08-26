@@ -3,6 +3,7 @@ import bytes from "bytes";
 import { cn, makeDecoratable } from "~/utils.js";
 import { Text } from "~/Text/index.js";
 import { RichItemThumbnail } from "./RichItemThumbnail.js";
+import { ThumbnailActions } from "./ThumbnailActions.js";
 import { ItemDescription } from "../ItemDescription.js";
 import { ItemActions } from "~/FilePicker/primitives/components/previews/ItemActions.js";
 import { ItemTextActions } from "../ItemTextActions.js";
@@ -50,13 +51,14 @@ const DecoratableRichItemPreview = ({
                 so everything stacks and the actions spell themselves out instead. */}
             <div data-role="select-image" className={"@min-[280px]:hidden"}>
                 <div className={"flex flex-col gap-xs p-xs"}>
-                    <div className={"cursor-pointer"} onClick={onReplaceItem}>
+                    <div className={"group relative cursor-pointer"} onClick={onReplaceItem}>
                         <RichItemThumbnail
                             {...value}
                             variant={"banner"}
                             disabled={disabled}
                             preview={preview}
                         />
+                        <ThumbnailActions {...actions} />
                     </div>
 
                     <div className={"flex flex-col gap-xxs min-w-0 px-xxs"}>
