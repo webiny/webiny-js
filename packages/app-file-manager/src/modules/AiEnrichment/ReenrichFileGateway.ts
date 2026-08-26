@@ -11,7 +11,6 @@ class ReenrichFileGatewayImpl implements GatewayAbstraction.Interface {
     ): AsyncGenerator<EnrichmentStreamEvent> {
         const response = await this.client.execute({
             path: `/stream/fm/files/${encodeURIComponent(fileId)}/enrich`,
-            method: "POST",
             signal: options.signal
         });
 

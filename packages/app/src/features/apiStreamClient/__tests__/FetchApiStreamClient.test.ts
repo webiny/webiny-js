@@ -76,10 +76,10 @@ describe("FetchApiStreamClient", () => {
         expect("x-skip" in headers).toBe(false);
     });
 
-    it("should omit a body on GET", async () => {
+    it("should omit the body and its content-type when there is no body", async () => {
         global.fetch = vi.fn().mockResolvedValue(okResponse());
 
-        await client.execute({ path: "/stream/x", method: "GET", body: { ignored: true } });
+        await client.execute({ path: "/stream/x" });
 
         const init = (global.fetch as any).mock.calls[0][1];
         expect(init.body).toBeUndefined();

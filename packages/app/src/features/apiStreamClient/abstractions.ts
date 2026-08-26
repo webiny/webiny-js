@@ -5,10 +5,14 @@ type IHeaders = Record<string, string | number | undefined>;
 export interface IApiStreamRequest {
     /** Path relative to the API root, e.g. `/stream/fm/files/abc/enrich`. */
     path: string;
-    method?: "GET" | "POST";
     /** Serialized as JSON when present. */
     body?: unknown;
     headers?: IHeaders;
+    /**
+     * Aborts the request AND the caller's read loop. Streaming responses stay open for as long as the
+     * producer runs, so without this a caller that navigates away or closes its UI would leave the
+     * connection open and keep consuming events into a component that no longer exists.
+     */
     signal?: AbortSignal;
 }
 

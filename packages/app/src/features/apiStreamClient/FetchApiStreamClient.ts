@@ -25,19 +25,25 @@ class ApiStreamClientImpl implements ApiStreamClient.Interface {
     }
 
     async execute(params: ApiStreamClient.Request): Promise<Response> {
-        const method = params.method ?? "POST";
-        const hasBody = params.body !== undefined && method !== "GET";
+        const hasBody = params.body !== undefined;
+
+        const headers: Record<string, string> = { accept: "text/event-stream" };
+        if (hasBody) {
+            headers["content-type"] = "application/json";
+        }
+        Object.assign(headers, toFetchHeaders(params.headers));
+
+        const body = hasBody ? JSON.stringify(params.body) : undefined;
+        const url = joinUrl(this.apiUrl, params.path);
 
         let response: Response;
         try {
-            response = await fetch(joinUrl(this.apiUrl, params.path), {
-                method,
-                headers: {
-                    accept: "text/event-stream",
-                    ...(hasBody ? { "content-type": "application/json" } : {}),
-                    ...toFetchHeaders(params.headers)
-                },
-                body: hasBody ? JSON.stringify(params.body) : undefined,
+            // Always POST. A streaming route is an action, and POST keeps the parameters in a body
+            // rather than a cacheable URL — CloudFront caches GET/HEAD.
+            response = await fetch(url, {
+                method: "POST",
+                headers,
+                body,
                 signal: params.signal
             });
         } catch (err) {
