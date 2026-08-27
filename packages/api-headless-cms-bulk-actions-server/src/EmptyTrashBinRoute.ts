@@ -15,7 +15,7 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: BulkActionsInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
+    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }

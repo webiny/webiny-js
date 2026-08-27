@@ -11,7 +11,7 @@ class UploadSingleFileRouteImpl implements HttpRoute.Interface {
 
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
 
-    public async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
+    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
         const storagePath = this.config.storagePath;
         const secret = this.config.uploadSecret;
 

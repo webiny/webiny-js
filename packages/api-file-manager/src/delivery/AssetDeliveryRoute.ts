@@ -15,7 +15,7 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
 
     constructor(private container: Container) {}
 
-    async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
+    async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
         // Resolve asset-delivery collaborators lazily (request time), not as constructor deps.
         // HttpRouter eagerly constructs every route to match paths, and AssetProcessor's
         // PrivateFilesAssetProcessor decorator pulls in GetFileUseCase -> CMS entry repositories

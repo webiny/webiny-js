@@ -10,7 +10,7 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
 
     constructor(private container: Container) {}
 
-    async handle(_request: HttpRoute.Req, response: HttpRoute.Res) {
+    async handle(_request: HttpRoute.Request, response: HttpRoute.Response) {
         // Resolve collaborators lazily (request time), not as constructor deps. HttpRouter eagerly
         // constructs every route on each request to path-match (see TODO in HttpRouter), and
         // GetActiveRedirectsUseCase's chain pulls request-time CMS tokens (RedirectModel,
