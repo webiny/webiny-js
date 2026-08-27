@@ -65,7 +65,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
@@ -154,7 +154,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
@@ -264,7 +264,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -349,7 +349,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -441,7 +441,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -527,7 +527,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -613,7 +613,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
@@ -784,7 +784,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6

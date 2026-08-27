@@ -9,14 +9,13 @@ import { getBuildOutputFolder } from "./getBuildOutputFolder";
 import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
 import { distMatchesCache, recordCacheHash } from "./distContentHash";
-import { getEffectiveHashes, getOwnHashes, isDepAwareKeyEnabled } from "./getEffectiveHashes";
+import { getEffectiveHashes } from "./getEffectiveHashes";
 
 const { green } = chalk;
 
 interface GetBatchesOptions {
     cache?: boolean;
     packagesWhitelist?: string[];
-    rebuildDependents?: boolean;
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -46,13 +45,11 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         ignore: []
     });
 
-    // Build key per package. Default: own-source hash (original behavior).
-    // Experimental (WEBINY_EXPERIMENTAL_DEP_AWARE_CACHE): a dependency-aware key
-    // that also changes when any transitive dependency changes, so dependents of
-    // a changed package are detected as misses without `--rebuild-dependents`.
-    const buildKeys = isDepAwareKeyEnabled()
-        ? await getEffectiveHashes(allWorkspacePackages)
-        : await getOwnHashes(allWorkspacePackages);
+    // Dependency-aware build key per package: changes when the package's own
+    // source, any transitive workspace dependency, or any resolved third-party
+    // dependency changes — so dependents of a changed package are detected as
+    // misses on a plain build.
+    const buildKeys = await getEffectiveHashes(allWorkspacePackages);
 
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
     if (!useCache) {
@@ -77,36 +74,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         }
     }
 
-    // 1.5 When using cache and --rebuild-dependents, also rebuild any package that depends on a changed package.
-    if (options.rebuildDependents && packagesNoCache.length > 0 && useCache) {
-        const dependents = workspaceGraph.getDependents();
-
-        const tainted = new Set(packagesNoCache.map(p => p.packageJson.name));
-        const queue = [...tainted];
-        while (queue.length > 0) {
-            const name = queue.pop()!;
-            for (const dependent of dependents.get(name) || []) {
-                if (!tainted.has(dependent)) {
-                    tainted.add(dependent);
-                    queue.push(dependent);
-                }
-            }
-        }
-
-        for (const name of tainted) {
-            if (packagesNoCache.some(p => p.packageJson.name === name)) continue;
-            const pkg = workspacesPackages.find(p => p.packageJson.name === name);
-            if (pkg) {
-                packagesNoCache.push(pkg);
-            }
-        }
-
-        for (let i = packagesUseCache.length - 1; i >= 0; i--) {
-            if (tainted.has(packagesUseCache[i].packageJson.name)) {
-                packagesUseCache.splice(i, 1);
-            }
-        }
-    }
+    // Dependents of a changed package no longer need explicit tainting: the
+    // dependency-aware key folds in dependency keys, so any dependent of a
+    // changed package is already a cache miss above.
 
     // 2. Let's use cached built code where possible.
     if (packagesUseCache.length) {
