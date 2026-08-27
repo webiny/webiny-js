@@ -28,7 +28,7 @@ export const AssetDeliveryFeature = createFeature({
         container.registerDecorator(PrivateFileAssetRequestResolverDecorator);
 
         // Register-time gate on the effective feature flags (userFlag && live WCP license). Valid at
-        // register() time because the license is refreshed PRE-register (loadWcpLicense in
+        // register() time because the license is refreshed PRE-register (WcpLicenseLoader.load in
         // registerApiRequestStack) and FeatureFlags reads that process cache — and it re-evaluates per
         // request since the child re-registers, so a license change takes effect on the next request.
         if (

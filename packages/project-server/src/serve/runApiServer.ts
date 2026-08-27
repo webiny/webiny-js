@@ -64,7 +64,7 @@ export async function runApiServer(
     // the same app vars the AWS Lambda forwards, no arbitrary leakage — PLUS the system vars a spawned
     // process needs to run (PATH / HOME / NODE_EXTRA_CA_CERTS for portless TLS / temp / locale).
     // `WCP_PROJECT_LICENSE` is absent (not allowlisted), so the handler's per-request license refresh
-    // (`loadWcpLicense`) fetches a fresh license rather than reading the build-time plaintext value.
+    // (`WcpLicenseLoader.load`) fetches a fresh license rather than reading the build-time plaintext value.
     const runtimeEnv = pickServerRuntimeEnvVariables();
 
     // The database is driver-agnostic here: the DB infra extension in webiny.config (<Infra.Sqlite> /

@@ -34,7 +34,6 @@ interface BuildOptions {
     p?: string | string[];
     debug?: boolean;
     cache?: boolean;
-    rebuildDependents?: boolean;
     buildOverrides?: string;
     safeReplace?: boolean;
 }
@@ -65,8 +64,7 @@ export const buildPackages = async () => {
 
     const { batches, packagesNoCache, allPackages, buildKeys } = await getBatches({
         cache: options.cache ?? true,
-        packagesWhitelist,
-        rebuildDependents: options.rebuildDependents
+        packagesWhitelist
     });
 
     if (!packagesNoCache.length) {
