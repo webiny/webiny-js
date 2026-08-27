@@ -38,13 +38,14 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
         if (preparedResult.isFail()) {
             const error = preparedResult.error;
 
-            return jsonResponse(imageEnrichmentErrorStatusCode(error), {
-                message: error.message,
-                code: error.code
-            });
+            const statusCode = imageEnrichmentErrorStatusCode(error);
+
+            return jsonResponse(statusCode, { message: error.message, code: error.code });
         }
 
-        return sseResponse(this.enrich(preparedResult.value));
+        const events = this.enrich(preparedResult.value);
+
+        return sseResponse(events);
     }
 
     private async *enrich(prepared: IPreparedImageEnrichment): AsyncGenerator<string> {
@@ -53,7 +54,8 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
         let output = { tags: [] as string[], description: "" };
 
         try {
-            const stream = await this.ai.streamText(buildEnrichmentAiRequest(prepared));
+            const request = buildEnrichmentAiRequest(prepared);
+            const stream = await this.ai.streamText(request);
 
             for await (const partial of stream.partialOutputStream) {
                 output = readEnrichmentPartial(partial);

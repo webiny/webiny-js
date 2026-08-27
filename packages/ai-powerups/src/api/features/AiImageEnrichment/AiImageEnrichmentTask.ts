@@ -56,7 +56,8 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         let tags: string[];
         let description: string;
         try {
-            const aiResult = await this.ai.generateText(buildEnrichmentAiRequest(prepared));
+            const request = buildEnrichmentAiRequest(prepared);
+            const aiResult = await this.ai.generateText(request);
 
             tags = aiResult.output.tags;
             description = aiResult.output.description;
