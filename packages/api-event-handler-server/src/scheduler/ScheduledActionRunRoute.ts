@@ -1,4 +1,3 @@
-import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import {
     HttpRoute,
     RequestContainer,
@@ -31,7 +30,7 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
+    public async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }

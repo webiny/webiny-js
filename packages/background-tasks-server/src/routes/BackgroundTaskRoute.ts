@@ -1,4 +1,3 @@
-import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import {
     HttpRoute,
     RequestContainer,
@@ -28,7 +27,7 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: InternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
+    public async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
         /* Reject requests without a matching internal token. */
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });

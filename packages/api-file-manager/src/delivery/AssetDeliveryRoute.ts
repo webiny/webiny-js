@@ -1,5 +1,4 @@
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import {
     AssetRequestResolver,
@@ -16,7 +15,7 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
 
     constructor(private container: Container) {}
 
-    async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
+    async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
         // Resolve asset-delivery collaborators lazily (request time), not as constructor deps.
         // HttpRouter eagerly constructs every route to match paths, and AssetProcessor's
         // PrivateFilesAssetProcessor decorator pulls in GetFileUseCase -> CMS entry repositories

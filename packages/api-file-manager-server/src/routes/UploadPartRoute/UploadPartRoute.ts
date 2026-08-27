@@ -2,7 +2,6 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { HttpRoute } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import { isPathContained, toBuffer } from "../utils.js";
@@ -13,7 +12,7 @@ class UploadPartRouteImpl implements HttpRoute.Interface {
 
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
 
-    public async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
+    public async handle(request: HttpRoute.Req, response: HttpRoute.Res) {
         const storagePath = this.config.storagePath;
         const secret = this.config.uploadSecret;
 

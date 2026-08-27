@@ -112,6 +112,10 @@ export const HttpRouter = new Abstraction<IHttpRouter>("HttpRouter");
 
 export namespace HttpRoute {
     export type Interface = IHttpRoute;
+    /** The request handed to `handle()`. Shorthand for {@link IHttpRequest}. */
+    export type Req = IHttpRequest;
+    /** The response builder handed to `handle()`. Shorthand for {@link IHttpResponseBuilder}. */
+    export type Res = IHttpResponseBuilder;
 }
 
 export namespace HttpRouter {

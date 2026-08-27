@@ -1,5 +1,4 @@
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpResponseBuilder } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
@@ -11,7 +10,7 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
 
     constructor(private container: Container) {}
 
-    async handle(_request: unknown, response: IHttpResponseBuilder) {
+    async handle(_request: HttpRoute.Req, response: HttpRoute.Res) {
         // Resolve collaborators lazily (request time), not as constructor deps. HttpRouter eagerly
         // constructs every route on each request to path-match (see TODO in HttpRouter), and
         // GetActiveRedirectsUseCase's chain pulls request-time CMS tokens (RedirectModel,
