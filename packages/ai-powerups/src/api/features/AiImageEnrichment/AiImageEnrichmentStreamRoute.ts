@@ -1,4 +1,4 @@
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
@@ -6,7 +6,6 @@ import type { IPreparedImageEnrichment } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { readEnrichmentPartial } from "./readEnrichmentPartial.js";
 import { imageEnrichmentErrorStatusCode } from "./imageEnrichmentErrorStatusCode.js";
-import { toSseFrame } from "./streamEvents.js";
 
 /**
  * Re-runs AI enrichment for a single file, streaming progress to the caller as server-sent events.
