@@ -6,7 +6,7 @@ const VERSION = "${{ github.event.inputs.version }}";
 const SOURCE_TAG = "${{ github.event.inputs.sourceTag }}";
 
 export const fullRelease = createWorkflow({
-    name: `🚀 Full Release`,
+    name: `📦 Release`,
     on: {
         workflow_dispatch: {
             inputs: {

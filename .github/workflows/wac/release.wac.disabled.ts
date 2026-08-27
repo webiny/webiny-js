@@ -1,3 +1,18 @@
+// DISABLED - this workflow is not built and has no .yml in the repo.
+//
+// It published packages to NPM by hand: `yarn release --type=beta --tag=<dist-tag>` followed by
+// `--type=latest`, from a chosen branch. The /beta slash command runs that same beta-then-latest
+// pair, but versioned and driven from a release PR - this was the manual, branch-driven variant of
+// it. Disabled as unused; its name also collided with the workflow that actually starts a release
+// (now "📦 Release", formerly "🚀 Full Release").
+//
+// Kept as source rather than deleted so the steps are still readable if this ever needs to come
+// back. `ghawac` globs `**/*.wac.ts`, so the `.wac.disabled.ts` suffix is what keeps it out of the
+// build - the same trick the frozen v5 workflows use with `.wac.frozen.ts`, except those still have
+// their generated .yml checked in and this one does not.
+//
+// To re-enable: rename back to `release.wac.ts` and run `yarn ci-workflows:build`.
+
 import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils";
 import { createJob } from "./jobs";
