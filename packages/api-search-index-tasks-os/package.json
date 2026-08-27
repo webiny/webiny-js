@@ -1,0 +1,35 @@
+{
+  "name": "@webiny/api-search-index-tasks-os",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-search-index-tasks-os"
+  },
+  "description": "OpenSearch bridge for @webiny/api-search-index-tasks.",
+  "license": "MIT",
+  "author": "Webiny Ltd.",
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
+    "@webiny/api-search-index-tasks": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/utils": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

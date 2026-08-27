@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { DeleteMultipleEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteMultipleEntriesRepository } from "./abstractions.js";
@@ -145,8 +144,7 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const DeleteMultipleEntriesUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const DeleteMultipleEntriesUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeleteMultipleEntriesUseCaseImpl,
     dependencies: [
         DeleteMultipleEntriesRepository,

@@ -1,0 +1,39 @@
+{
+  "name": "@webiny/api-sync-pg-to-opensearch",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-sync-pg-to-opensearch"
+  },
+  "description": "PostgreSQL to OpenSearch synchronization adapter via WAL.",
+  "license": "MIT",
+  "author": "Webiny Ltd.",
+  "dependencies": {
+    "@webiny/api-opensearch": "0.0.0",
+    "@webiny/api-sync-to-opensearch": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/stdlib": "^0.0.17",
+    "@webiny/utils": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "adio": {
+    "ignoreDirs": [
+      "__tests__"
+    ]
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

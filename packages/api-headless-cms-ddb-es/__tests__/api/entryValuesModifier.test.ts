@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/graphql/handler";
 import { createMockPlugins } from "~tests/converters/mocks";
 import { createEntryRawData } from "~tests/converters/mocks/data";
-import { configurations } from "~/configurations";
+import { getOpenSearchIndexPrefix, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import {
     createGlobalModifierPlugin,
     createGlobalModifierValues,
@@ -24,11 +24,16 @@ import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 
 describe("entry values modifier", () => {
-    const { index: indexName } = configurations.es({
-        model: {
-            tenant: "root",
-            modelId: "converter"
-        }
+    const getEsIndex = (m: { tenant: string; modelId: string }) => {
+        const shared = isSharedOpenSearchIndex();
+        const idx = [shared ? "root" : m.tenant, "headless-cms", m.modelId].join("-").toLowerCase();
+        const prefix = getOpenSearchIndexPrefix();
+        return { index: prefix ? prefix + idx : idx };
+    };
+
+    const { index: indexName } = getEsIndex({
+        tenant: "root",
+        modelId: "converter"
     });
 
     it("should modify the audit log entry values which are stored into the Elasticsearch - global", async () => {

@@ -20,17 +20,13 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
-    "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
-    "@webiny/feature": "0.0.0",
     "bree": "^9.2.9"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

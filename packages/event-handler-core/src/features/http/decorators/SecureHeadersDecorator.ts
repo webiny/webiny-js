@@ -7,9 +7,7 @@ const ALLOWED_HEADERS = [
     "cache-control",
     "content-type",
     "x-i18n-locale",
-    "x-tenant",
-    "x-apollo-tracing",
-    "apollo-query-plan-experimental"
+    "x-tenant"
 ].join(", ");
 
 class SecureHeadersDecoratorImpl implements IHttpRouter {

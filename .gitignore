@@ -1,3 +1,4 @@
+.caveman.json
 .idea
 .caveman.json
 .claude/skills/handoff
@@ -7,6 +8,9 @@
 .webiny
 .artifacts
 .env*
+# But do track the checked-in `.env.example` templates create-webiny-project scaffolds from
+# (safe example config — all vars commented, no secrets).
+!/packages/create-webiny-project/_templates/**/.env.example
 .npmrc
 .kiro
 .vscode
@@ -68,7 +72,6 @@ CLAUDE.local.md
 .claude/worktrees/
 .claire/**
 .codegraph
-.mcp.json
 docs/.reports
 tsconfig.check-tests.json
 tsconfig.build.tmp-*.json

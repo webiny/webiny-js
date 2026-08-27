@@ -8,6 +8,7 @@ export { Accordion } from "@webiny/admin-ui/Accordion/index.js";
 export { Alert } from "@webiny/admin-ui/Alert/index.js";
 export { AutoComplete } from "@webiny/admin-ui/AutoComplete/index.js";
 export { Avatar } from "@webiny/admin-ui/Avatar/index.js";
+export { BetaBadge } from "@webiny/admin-ui/BetaBadge/BetaBadge.js";
 export { Button, CopyButton, IconButton } from "@webiny/admin-ui/Button/index.js";
 export { Card } from "@webiny/admin-ui/Card/index.js";
 export { Checkbox } from "@webiny/admin-ui/Checkbox/index.js";
@@ -39,6 +40,7 @@ export { Dialog } from "@webiny/admin-ui/Dialog/index.js";
 export { Drawer } from "@webiny/admin-ui/Drawer/index.js";
 export { DropdownMenu } from "@webiny/admin-ui/DropdownMenu/index.js";
 export { DynamicFieldset } from "@webiny/admin-ui/DynamicFieldset/index.js";
+export { EmptyState } from "@webiny/admin-ui/EmptyState/index.js";
 export { FilePicker } from "@webiny/admin-ui/FilePicker/index.js";
 export {
     FillViewportHeight,

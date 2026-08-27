@@ -1,13 +1,9 @@
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import {
-    GraphQLEngineFeature,
-    GraphQLContextualSchema,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/api-graphql";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { buildSchema, getIntrospectionQuery } from "graphql";
 import type { GraphQLSchema } from "graphql";
@@ -16,7 +12,6 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms/HeadlessCmsFeature.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types/types.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
@@ -41,20 +36,21 @@ export interface CmsTestHandlerParams {
     /** Plugins forwarded to `HeadlessCmsFeature.register` as `extraPlugins` (e.g. CMS model plugins). */
     extraCmsPlugins?: any[];
     /**
-     * Legacy plugins, dispatched exactly like the legacy `useContextHandler`:
+     * Legacy escape hatch (being retired — prefer `setup`). A mixed array, dispatched like the old
+     * `useContextHandler`:
      * - RegisterExtensionPlugins are applied at register() time (DI registration);
      * - static plugins (CmsModelPlugin, GraphQLSchemaPlugin, …) are forwarded to HeadlessCmsFeature
      *   as extraPlugins so their models reach the container before any initializer caches them;
-     * - ContextPlugins (`.apply(ctx)`) run post-auth via a per-request initializer.
+     * - plain `container => {}` functions run LAST (after `setup`), so they can override defaults.
      */
-    plugins?: any;
+    legacyPlugins?: any;
     /**
      * Register the consuming package's own features here (e.g. AcoFeature, FileModel, plus its own
      * getStorageOps presets via processLegacyPlugins). Runs in the request phase AFTER ApiCore + CMS
      * storage + HeadlessCmsFeature, and BEFORE the GraphQL engine — i.e. before any initializer or
      * resolver, the same window the real app handler uses.
      */
-    features?: (container: Container) => void | Promise<void>;
+    setup?: (container: Container) => void | Promise<void>;
 }
 
 export interface InvokeParams {
@@ -68,12 +64,12 @@ export interface InvokeParams {
  * Shared integration test handler that wires the real CMS base (ApiCore + HeadlessCms + GraphQL
  * engine + the CMS manage route) the same way the AWS app handler does — auth via Test
  * authenticator/authorizer, root tenant seeded, storage via getStorageOps. Consuming packages add
- * their own features through `params.features` and build their SDKs on top of `invoke`/`invokeCms`,
+ * their own features through `params.setup` and build their SDKs on top of `invoke`/`invokeCms`,
  * or grab the fully-initialized request context via `getContext()`.
  */
 export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const identity = params.identity === undefined ? DEFAULT_IDENTITY : params.identity;
     const permissions = params.permissions === undefined ? [{ name: "*" }] : params.permissions;
@@ -91,39 +87,47 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
     // Everything up to (but not including) the GraphQL engine — shared by the HTTP handler and the
     // context-capture handler.
     const setupRequest = async (container: Container) => {
-        const wcpLicense = await loadWcpLicense(
+        const wcpLicense = await WcpLicenseLoader.load(
             params.testProjectLicense ?? createTestWcpLicense()
         );
 
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
 
-        // CMS storage preset. RegisterExtensionPlugins must be applied before HeadlessCmsFeature
-        // builds storage; the preset's ContextPlugins (e.g. the ddb-es OpenSearchClient registration
-        // and dbPlugins → ctx.db) run as a per-request initializer, mirroring the real app's storage
-        // features and what the legacy useContextHandler does.
+        // CMS storage preset. All storage presets are RegisterExtensionPlugins (registerDynamoDBCore,
+        // registerCmsOpenSearchStorageOperations, dbPlugins, ...); processLegacyPlugins runs them at
+        // register() time — before HeadlessCmsFeature builds storage, mirroring the real app's
+        // registerExtensions.
         processLegacyPlugins(container, cmsStorage.plugins);
-        registerLegacyPluginsViaGqlContextualSchema(container, cmsStorage.plugins);
 
-        // User-supplied legacy plugins (dual-dispatched, mirroring useContextHandler).
-        const userPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
-        processLegacyPlugins(container, userPlugins);
-        const staticUserPlugins = userPlugins.filter(
+        // `legacyPlugins` is a mixed bag: plain `container => {}` functions (called last, after
+        // `setup`) plus legacy plugin objects — RegisterExtensionPlugins (register-time) or static
+        // Plugins (extraPlugins).
+        const legacyItems = [params.legacyPlugins].flat(Infinity as 1).filter(Boolean);
+        const isFn = (p: any) => typeof p === "function" && !p.prototype;
+
+        const legacyObjects = legacyItems.filter(p => !isFn(p));
+        processLegacyPlugins(container, legacyObjects);
+        const staticPlugins = legacyObjects.filter(
             p => typeof (p as any).apply !== "function" && typeof p !== "function"
         );
         HeadlessCmsFeature.register(container, {
             type: cmsType,
-            extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticUserPlugins]
+            extraPlugins: [...(params.extraCmsPlugins ?? []), ...staticPlugins]
         });
 
-        registerLegacyPluginsViaGqlContextualSchema(container, userPlugins);
+        await params.setup?.(container);
 
-        await params.features?.(container);
+        // Function plugins in `legacyPlugins` run LAST — after the consuming package's own `setup` —
+        // so they can override defaults it registered (last-wins).
+        for (const plugin of legacyItems.filter(isFn)) {
+            (plugin as (container: any) => void)(container);
+        }
     };
 
     const handler = createTestHttpHandler({
         root: setupRoot,
-        request: async container => {
+        child: async container => {
             await setupRequest(container);
             GraphQLEngineFeature.register(container);
         }
@@ -167,7 +171,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
         const ctxHandler = createTestHttpHandler({
             root: setupRoot,
-            request: async container => {
+            child: async container => {
                 await setupRequest(container);
                 container.registerInstance(GraphQLContextualSchema, {
                     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {

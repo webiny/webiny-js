@@ -28,6 +28,8 @@ export type {
 
 export type { GetEntryParams, GetEntryWhere } from "./methods/cms/getEntry.js";
 
+export type { GetModelParams, CmsModelData, CmsModelField } from "./methods/cms/getModel.js";
+
 export type { ListEntriesParams, ListEntriesResult } from "./methods/cms/listEntries.js";
 
 export type { DeleteEntryRevisionParams } from "./methods/cms/deleteEntryRevision.js";
@@ -47,6 +49,16 @@ export type { InstallTenantParams } from "./methods/tenantManager/installTenant.
 export type { DisableTenantParams } from "./methods/tenantManager/disableTenant.js";
 
 export type { EnableTenantParams } from "./methods/tenantManager/enableTenant.js";
+
+// Export Asset types (shared by CMS asset field and WB file input).
+export type {
+    Asset,
+    AssetImage,
+    AssetCrop,
+    AssetFocalPoint,
+    AssetDocument,
+    AssetVideo
+} from "./asset.js";
 
 // Export FileManager types.
 export type {

@@ -1,6 +1,5 @@
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils";
 import { UnpublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UnpublishEntryRepository } from "./abstractions.js";
@@ -95,8 +94,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const UnpublishEntryUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const UnpublishEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: UnpublishEntryUseCaseImpl,
     dependencies: [
         EventPublisher,

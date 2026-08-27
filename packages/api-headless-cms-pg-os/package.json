@@ -1,0 +1,73 @@
+{
+  "name": "@webiny/api-headless-cms-pg-os",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "keywords": [
+    "@webiny/api-headless-cms",
+    "storage-operations",
+    "postgresql",
+    "opensearch",
+    "pg-os",
+    "cms:pg-os"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-headless-cms-pg-os"
+  },
+  "description": "PostgreSQL + OpenSearch storage operations for Headless CMS API.",
+  "license": "MIT",
+  "author": "Webiny Ltd.",
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-core-sql": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-sql": "0.0.0",
+    "@webiny/api-headless-cms-storage": "0.0.0",
+    "@webiny/api-headless-cms-utils-os": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
+    "@webiny/api-sync-to-opensearch": "0.0.0",
+    "@webiny/db-utils": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "knex": "^3.3.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.5",
+    "@electric-sql/pglite-socket": "^0.2.8",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-sync-pg-to-opensearch": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "@webiny/stdlib": "^0.0.17",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/api-headless-cms-storage",
+        "@webiny/api-headless-cms-utils-os",
+        "@webiny/api-opensearch",
+        "@webiny/db-utils",
+        "@webiny/error",
+        "@webiny/handler",
+        "@webiny/plugins",
+        "@webiny/utils"
+      ]
+    }
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

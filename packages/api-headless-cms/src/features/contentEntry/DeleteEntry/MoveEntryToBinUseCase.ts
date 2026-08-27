@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { MoveEntryToBinUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { MoveEntryToBinRepository } from "./abstractions.js";
@@ -136,8 +135,7 @@ class MoveEntryToBinUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const MoveEntryToBinUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const MoveEntryToBinUseCase = UseCaseAbstraction.createImplementation({
     implementation: MoveEntryToBinUseCaseImpl,
     dependencies: [
         MoveEntryToBinRepository,

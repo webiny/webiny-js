@@ -8,12 +8,9 @@ When new backend features are discovered, update `ai-context/core-features-refer
 
 ## Code
 
-- When writing comments, use `//` for single-line comments and `/* ... */` for multi-line comments. Always end comments with a period
-- Use ES modules (import/export) syntax, not CommonJS (require)
-- When generating code, once done, run `git add .` to stage all changes
-- Only import one named import per line
-- when generating code, one file MUST only contain one class
-- When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
+Code-style rules live in `ai-context/code-style/`, one rule per file (ESLint-style `do this / don't do this`). Read every rule in that folder before writing or editing code; see `ai-context/code-style/README.md` for the index. When adding a new rule, create a new `*.md` file there and add it to the index.
+
+- When generating code, once done, run `git add .` to stage all changes.
 
 ## Building
 

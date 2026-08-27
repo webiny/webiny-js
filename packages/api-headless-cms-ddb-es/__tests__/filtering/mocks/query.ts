@@ -1,4 +1,4 @@
-import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
+import { createBaseQuery } from "@webiny/api-headless-cms-utils-os/operations/entry/elasticsearch/initialQuery";
 import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 
 export type { OpenSearchBoolQueryConfig as Query };

@@ -123,7 +123,7 @@ Run `yarn test` for each package below, sequentially. Count active tests first a
 - `form`
 - `handler`
 - `handler-aws`
-- `handler-graphql`
+- `api-graphql`
 - `lexical-converter`
 - `plugins`
 - `react-composition`

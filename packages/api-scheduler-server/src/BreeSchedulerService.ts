@@ -1,5 +1,4 @@
 import Bree from "bree";
-import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebinyError } from "@webiny/error";
 import {
@@ -9,24 +8,38 @@ import {
 } from "@webiny/api-scheduler/shared/abstractions.js";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 
-const jobsDir = join(dirname(fileURLToPath(import.meta.url)), "jobs");
-const workerPath = join(jobsDir, "pollWorker.js");
+// bree loads this file at runtime via `new Worker(path)`. Referencing it through `new URL` (rather
+// than path.join) makes the app bundler emit pollWorker into build/ as an asset, resolved relative
+// to this module (the server build sets assetPrefix "auto"); fileURLToPath then hands bree a plain
+// path string. Un-bundled (dev), import.meta.url is real and it resolves to the dist/jobs file.
+const workerPath = fileURLToPath(new URL("./jobs/pollWorker.js", import.meta.url));
 
 export interface IPendingAction {
     id: string;
     namespace: string;
+    tenant: string;
     scheduledFor: Date;
+}
+
+interface IScheduledJob {
+    namespace: string;
+    tenant: string;
 }
 
 export interface IBreeSchedulerServiceParams {
     logger: Logger.Interface;
-    onTrigger: (id: string, namespace: string) => Promise<void>;
+    onTrigger: (id: string, namespace: string, tenant: string) => Promise<void>;
 }
 
-/* One-shot bree job per scheduled action — mirrors EventBridge behavior. */
+/**
+ * One-shot bree job per scheduled action — mirrors EventBridge behaviour. This is a single-process,
+ * long-lived root SINGLETON (started once at boot): it holds the live timers for ALL tenants, so each
+ * job records its own tenant and `onTrigger` is fired with it (the trigger runs outside any request,
+ * so the tenant can't be read from a request context).
+ */
 export class BreeSchedulerService implements SchedulerService.Interface {
     private readonly bree;
-    private readonly namespaces = new Map<string, string>();
+    private readonly jobs = new Map<string, IScheduledJob>();
     private readonly logger;
     private readonly onTrigger;
 
@@ -39,23 +52,19 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             jobs: [],
             logger: false,
             workerMessageHandler: async ({ name }) => {
-                const namespace = this.namespaces.get(name);
-                if (!namespace) {
+                const job = this.jobs.get(name);
+                if (!job) {
                     return;
                 }
 
-                this.namespaces.delete(name);
-                await this.onTrigger(name, namespace);
+                this.jobs.delete(name);
+                await this.onTrigger(name, job.namespace, job.tenant);
             }
         });
     }
 
-    public async start(pendingActions?: IPendingAction[]): Promise<void> {
+    public async start(): Promise<void> {
         await this.bree.start();
-
-        if (pendingActions) {
-            await this.recover(pendingActions);
-        }
     }
 
     public async stop(): Promise<void> {
@@ -82,7 +91,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
             return this.update(params);
         }
 
-        this.namespaces.set(id, namespace);
+        this.jobs.set(id, { namespace, tenant });
 
         await this.bree.add({
             name: id,
@@ -120,20 +129,24 @@ export class BreeSchedulerService implements SchedulerService.Interface {
 
     public async exists(params: SchedulerService.ExistsParams): Promise<boolean> {
         const { id } = params;
-        return this.namespaces.has(id);
+        return this.jobs.has(id);
     }
 
-    private async recover(pendingActions: IPendingAction[]): Promise<void> {
+    /**
+     * (Re)arm timers for a batch of persisted pending actions — called at boot (per tenant) to restore
+     * schedules after a restart. Overdue actions fire immediately.
+     */
+    public async recover(pendingActions: IPendingAction[]): Promise<void> {
         const now = new Date();
 
         for (const action of pendingActions) {
             if (action.scheduledFor <= now) {
                 /* Overdue — execute immediately. */
-                await this.onTrigger(action.id, action.namespace);
+                await this.onTrigger(action.id, action.namespace, action.tenant);
                 continue;
             }
 
-            this.namespaces.set(action.id, action.namespace);
+            this.jobs.set(action.id, { namespace: action.namespace, tenant: action.tenant });
 
             await this.bree.add({
                 name: action.id,
@@ -146,7 +159,7 @@ export class BreeSchedulerService implements SchedulerService.Interface {
     }
 
     private async safeRemove(id: string): Promise<void> {
-        this.namespaces.delete(id);
+        this.jobs.delete(id);
 
         try {
             await this.bree.stop(id);

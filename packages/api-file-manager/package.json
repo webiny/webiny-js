@@ -24,6 +24,7 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/build-tools": "0.0.0",
@@ -32,7 +33,6 @@
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "cache-control-parser": "^2.2.0",
@@ -46,8 +46,6 @@
   "devDependencies": {
     "@types/object-hash": "^3.0.6",
     "@webiny/api-core-testing": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "rimraf": "^6.1.3",

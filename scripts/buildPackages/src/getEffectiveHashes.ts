@@ -90,7 +90,7 @@ function thirdPartyDepsHash(
  * derived exactly once. Own-source hashes are computed in parallel.
  */
 export async function getEffectiveHashes(allPackages: Package[]): Promise<Map<string, string>> {
-    const graph = new WorkspaceGraph({ ignore: ["@webiny/project-utils"] });
+    const graph = new WorkspaceGraph({ ignore: [] });
     // name -> direct workspace deps, insertion order = topological (deps first).
     const sorted = graph.toposort() as Record<string, string[]>;
 

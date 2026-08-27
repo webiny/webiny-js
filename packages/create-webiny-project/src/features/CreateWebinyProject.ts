@@ -10,6 +10,11 @@ import { configureMcp } from "@webiny/mcp";
 import type { IUi } from "@webiny/mcp";
 import { SetupBaseWebinyProject } from "./CreateWebinyProject/projects/base/SetupBaseWebinyProject.js";
 import { SetupAwsWebinyProject } from "./CreateWebinyProject/projects/aws/SetupAwsWebinyProject.js";
+import { SetupServerWebinyProject } from "./CreateWebinyProject/projects/server/SetupServerWebinyProject.js";
+import {
+    runHostingTypePrompt,
+    type HostingType
+} from "./CreateWebinyProject/projects/runHostingTypePrompt.js";
 import {
     Analytics,
     EnsureNoGlobalWebinyCli,
@@ -25,7 +30,6 @@ import {
     SetWebinyPackageVersions
 } from "../services/index.js";
 import { CliParams } from "../types.js";
-import { AwsProjectParams } from "./CreateWebinyProject/projects/aws/types.js";
 import ora from "ora";
 
 const { green, bold, cyan, gray, yellow } = chalk;
@@ -88,11 +92,12 @@ export class CreateWebinyProject {
         const analytics = new Analytics();
         await analytics.track("start");
 
-        let awsProjectParams: AwsProjectParams = {
-            region: "us-east-1",
-            storageOps: "ddb",
-            aiAgent: "other"
-        };
+        // AI agent selected during the hosting-type prompt (used for MCP setup + final messages).
+        let aiAgent: string = "other";
+
+        // Hosting type. Resolved interactively below, or taken from `--hosting-type` in non-interactive
+        // mode (defaults to "aws").
+        let hostingType: HostingType = cliArgs.hostingType === "server" ? "server" : "aws";
 
         try {
             const taskItems: ListrTask[] = [
@@ -129,11 +134,24 @@ export class CreateWebinyProject {
 
             console.log();
 
+            // Ask which hosting type to scaffold before anything hosting-specific is copied.
+            if (cliArgs.interactive !== false) {
+                hostingType = await runHostingTypePrompt();
+                console.log();
+            }
+
             const setupBaseWebinyProject = new SetupBaseWebinyProject();
             setupBaseWebinyProject.execute(cliArgs);
 
-            const setupAwsWebinyProject = new SetupAwsWebinyProject();
-            awsProjectParams = await setupAwsWebinyProject.execute(cliArgs);
+            if (hostingType === "server") {
+                const setupServerWebinyProject = new SetupServerWebinyProject();
+                const serverProjectParams = await setupServerWebinyProject.execute(cliArgs);
+                aiAgent = serverProjectParams.aiAgent;
+            } else {
+                const setupAwsWebinyProject = new SetupAwsWebinyProject();
+                const awsProjectParams = await setupAwsWebinyProject.execute(cliArgs);
+                aiAgent = awsProjectParams.aiAgent;
+            }
 
             const setWebinyPackageVersions = new SetWebinyPackageVersions();
             await setWebinyPackageVersions.execute(cliArgs);
@@ -160,14 +178,12 @@ export class CreateWebinyProject {
             }
 
             // Configure MCP server for the selected AI agent.
-            if (awsProjectParams.aiAgent !== "other") {
+            if (aiAgent !== "other") {
                 console.log();
-                console.log(
-                    bold(`Configuring MCP server for ${cyan(awsProjectParams.aiAgent)}...`)
-                );
+                console.log(bold(`Configuring MCP server for ${cyan(aiAgent)}...`));
                 console.log();
                 await configureMcp({
-                    agent: awsProjectParams.aiAgent,
+                    agent: aiAgent,
                     ui: new CwpUi(),
                     cwd: projectRootPath
                 });
@@ -207,6 +223,52 @@ export class CreateWebinyProject {
         }
 
         console.log();
+
+        // Self-hosted (server) hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
+        if (hostingType === "server") {
+            console.log(
+                `🎉 Your new self-hosted Webiny project ${green(projectName)} has been created!`
+            );
+            console.log();
+            console.log(
+                yellow(
+                    "⚠ The self-hosted (server) hosting type is in ALPHA. It's for local\n" +
+                        "  development and testing with `webiny watch api` / `webiny watch admin`.\n" +
+                        "  It's still maturing, so expect some rough edges."
+                )
+            );
+            console.log();
+
+            // For "other" agents, show manual MCP setup instructions.
+            if (aiAgent === "other") {
+                await configureMcp({ instructions: true });
+            }
+
+            console.log(
+                [
+                    `First, enter the project directory: ${green(`cd ${projectName}`)}`,
+                    "",
+                    "Then start development mode. Watching all apps at once isn't supported yet,",
+                    `so run the API and Admin apps separately, each in its own terminal: ${green(
+                        "yarn webiny watch api"
+                    )} and ${green("yarn webiny watch admin")}.`,
+                    "",
+                    `To see all of the available CLI commands, run ${green(
+                        "yarn webiny --help"
+                    )} in your ${green(projectName)} directory.`,
+                    "",
+                    "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
+                    "Like the project? Star us on https://github.com/webiny/webiny-js!",
+                    "",
+                    "Need help? Join our Slack community! https://www.webiny.com/slack",
+                    "",
+                    "🚀 Happy coding!"
+                ].join("\n")
+            );
+
+            return;
+        }
+
         console.log(
             `🎉 Your new Webiny project ${green(
                 projectName
@@ -242,7 +304,7 @@ export class CreateWebinyProject {
             }
 
             // For "other" agents, show manual MCP setup instructions after deploy has finished.
-            if (awsProjectParams.aiAgent === "other") {
+            if (aiAgent === "other") {
                 await configureMcp({ instructions: true });
             }
 
@@ -250,7 +312,7 @@ export class CreateWebinyProject {
         }
 
         // For "other" agents, show manual MCP setup instructions instead of blocking the deploy step.
-        if (awsProjectParams.aiAgent === "other") {
+        if (aiAgent === "other") {
             await configureMcp({ instructions: true });
         }
 

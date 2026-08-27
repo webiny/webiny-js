@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { IntrospectionField, IntrospectionInterfaceType } from "graphql";
 import { useGraphQlHandler } from "~tests/context/useGraphQLHandler";
 import { createMockModels, createPrivateMockModels } from "~tests/mocks";
-import { createContextPlugin } from "@webiny/api";
+import type { Container } from "@webiny/di";
 import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
 interface GraphQlType {
@@ -92,9 +92,9 @@ describe("createBulkAction", () => {
         const { introspect } = useGraphQlHandler({
             plugins: [
                 ...createMockModels(),
-                createContextPlugin(context => {
-                    context.container.registerInstance(EntriesBulkAction, new PrintBulkAction());
-                })
+                (container: Container) => {
+                    container.registerInstance(EntriesBulkAction, new PrintBulkAction());
+                }
             ]
         });
 

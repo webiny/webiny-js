@@ -4,7 +4,10 @@ import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js"
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
-const DEFAULT_SERVER_PORT = 3000;
+// Matches findFreePort's search base in runApiServer (and the scheduler's self-callback default), so
+// every self-callback in the server hosting type agrees on the same fallback. In practice never used:
+// runApiServer always injects the resolved port as process.env.PORT.
+const DEFAULT_SERVER_PORT = 3002;
 const DEFAULT_MAX_DURATION_MS = 86_400_000;
 
 interface WorkerHandle {
@@ -23,7 +26,7 @@ class WorkerServiceImpl implements TaskService.Interface {
         private readonly tenantContext: TenantContext.Interface,
         private readonly internalToken: InternalToken.Interface
     ) {
-        // Single-process server flavour: the worker POSTs the task back to THIS server's
+        // Single-process server hosting type: the worker POSTs the task back to THIS server's
         // `/background-task` route. The port is the one the server actually listens on — injected at
         // runtime as `process.env.PORT` by `runApiServer` (dynamic, chosen via findFreePort), NOT a
         // build-time value. It cannot be a build param: the port isn't known until the process starts.
@@ -38,8 +41,12 @@ class WorkerServiceImpl implements TaskService.Interface {
             return null;
         }
 
-        const workerPath = new URL("../worker/workerEntry.js", import.meta.url);
-        const worker = new Worker(workerPath);
+        // Resolved relative to this module (import.meta.url), not the process cwd, so it works no
+        // matter where the server is launched. The app bundler recognizes this exact shape and emits
+        // the worker as its own chunk into build/ (the server build sets assetPrefix "auto" so the
+        // chunk URL resolves relative to the running handler — see createRsbuildConfig). Un-bundled
+        // (dev), import.meta.url is the real dist file and this resolves to dist/worker/workerEntry.js.
+        const worker = new Worker(new URL("../worker/workerEntry.js", import.meta.url));
 
         const handle: WorkerHandle = {
             worker,
@@ -56,6 +63,11 @@ class WorkerServiceImpl implements TaskService.Interface {
                 handle.status = "done";
             } else if (msg.type === "error") {
                 handle.status = "error";
+                // Surface the worker's error — otherwise a failed task shows only as a stuck record.
+                console.error(
+                    `Background task "${task.id}" (${task.definitionId}) failed:`,
+                    msg.error
+                );
             }
         });
 
@@ -81,7 +93,13 @@ class WorkerServiceImpl implements TaskService.Interface {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: tenant.id,
-                delay
+                delay,
+                // Satisfy the shared runner's AWS-Step-Functions-shaped validation. No SFN in a single
+                // process: executionName is a stable run id (the task id); endpoint/stateMachineId are
+                // validate-only off-AWS.
+                endpoint: this.serverUrl,
+                executionName: task.id,
+                stateMachineId: ""
             },
             serverUrl: this.serverUrl,
             maxDurationMs: DEFAULT_MAX_DURATION_MS,

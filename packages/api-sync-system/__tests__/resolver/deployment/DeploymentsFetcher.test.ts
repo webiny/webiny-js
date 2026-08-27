@@ -1,5 +1,5 @@
 import { createDeploymentsFetcher } from "~/resolver/deployment/DeploymentsFetcher.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createMockDeploymentData, storeDeployment } from "~tests/mocks/deployments.js";
 import { describe, expect, it, vi } from "vitest";
 

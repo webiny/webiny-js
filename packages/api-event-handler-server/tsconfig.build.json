@@ -5,11 +5,15 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-event-handler-core/tsconfig.build.json" },
     { "path": "../api-file-manager-server/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-headless-cms-bulk-actions-server/tsconfig.build.json" },
+    { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../api-scheduler-server/tsconfig.build.json" },
     { "path": "../api-websockets-server/tsconfig.build.json" },
     { "path": "../background-tasks-server/tsconfig.build.json" },
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../event-handler-server/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -25,6 +29,16 @@
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/api-file-manager-server/*": ["../api-file-manager-server/src/*"],
       "@webiny/api-file-manager-server": ["../api-file-manager-server/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms-bulk-actions-server/*": [
+        "../api-headless-cms-bulk-actions-server/src/*"
+      ],
+      "@webiny/api-headless-cms-bulk-actions-server": [
+        "../api-headless-cms-bulk-actions-server/src"
+      ],
+      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
+      "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-scheduler-server/*": ["../api-scheduler-server/src/*"],
       "@webiny/api-scheduler-server": ["../api-scheduler-server/src"],
       "@webiny/api-websockets-server/*": ["../api-websockets-server/src/*"],
@@ -35,6 +49,8 @@
       "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/event-handler-server/*": ["../event-handler-server/src/*"],
       "@webiny/event-handler-server": ["../event-handler-server/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
     }

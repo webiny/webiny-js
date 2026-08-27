@@ -1,8 +1,8 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { ErrorResponse } from "@webiny/handler-graphql";
-import { ListResponse } from "@webiny/handler-graphql";
-import { NotFoundResponse } from "@webiny/handler-graphql";
-import { Response } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { ErrorResponse } from "@webiny/api-graphql";
+import { ListResponse } from "@webiny/api-graphql";
+import { NotFoundResponse } from "@webiny/api-graphql";
+import { Response } from "@webiny/api-graphql";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";

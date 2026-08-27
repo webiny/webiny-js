@@ -45,6 +45,7 @@ export interface IFieldConfig {
     note?: string;
     placeholder?: string;
     defaultValue?: unknown;
+    autoFocus?: boolean;
     renderer?: string;
     rendererSettings?: Record<string, unknown>;
     isList?: boolean;
@@ -148,6 +149,7 @@ export interface IFieldVM {
     description?: string;
     note?: string;
     placeholder?: string;
+    autoFocus?: boolean;
     value: unknown;
     validation: IFieldValidation;
     validating: boolean;
@@ -874,6 +876,7 @@ export interface IFieldBuilder<
     description(text: string): this;
     note(text: string): this;
     placeholder(text: string): this;
+    autoFocus(value?: boolean): this;
     schema(zodSchema: z.ZodTypeAny): this;
     defaultValue(value: unknown): this;
     renderer<TName extends FieldRendererName<TType, TOptions>>(

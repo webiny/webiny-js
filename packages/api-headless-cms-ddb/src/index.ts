@@ -1,100 +1,22 @@
-import dynamoDbPlugins from "./dynamoDb/index.js";
-import type { CmsContext, StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import { createGroupsStorageOperations } from "~/operations/group/index.js";
-import { createModelsStorageOperations } from "~/operations/model/index.js";
-import { createEntriesStorageOperations } from "./operations/entry/index.js";
-import { createFilterCreatePlugins } from "@webiny/api-headless-cms-storage";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
 import { createTable } from "~/definitions/table.js";
-import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
-import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import { DynamoDBClient } from "@webiny/db-dynamodb";
-
-export * from "./plugins/index.js";
-
-const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
-    const { table, plugins, container } = params;
-
-    const db = container.resolve(DynamoDBClient);
-    const documentClient = db.client;
-
-    const tableInstance = createTable({
-        name: table,
-        documentClient
-    });
-
-    const entities = {
-        groups: createGroupEntity({
-            entityName: ENTITIES.GROUPS,
-            table: tableInstance
-        }),
-        models: createModelEntity({
-            entityName: ENTITIES.MODELS,
-            table: tableInstance
-        }),
-        entries: createEntryEntity({
-            entityName: ENTITIES.ENTRIES,
-            table: tableInstance
-        })
-    };
-
-    plugins.register([
-        /**
-         * Field plugins for DynamoDB.
-         */
-        dynamoDbPlugins(),
-        /**
-         * Filter create plugins.
-         */
-        createFilterCreatePlugins()
-    ]);
-
-    const entries = createEntriesStorageOperations({
-        entity: entities.entries,
-        container,
-        plugins
-    });
-
-    return {
-        name: "dynamodb",
-        beforeInit: () => {
-            entries.dataLoaders.clearAll();
-        },
-        getEntities: () => entities,
-        getTable: () => tableInstance,
-        groups: createGroupsStorageOperations({
-            entity: entities.groups,
-            container
-        }),
-        models: createModelsStorageOperations({
-            entity: entities.models
-        }),
-        entries
-    };
-};
-
-class DynamoDbStorageOperationsFactoryImpl
-    implements StorageOperationsFactoryAbstraction.Interface
-{
-    public create(context: CmsContext) {
-        return createDynamoDbStorageOperations({
-            plugins: context.plugins,
-            container: context.container
-        });
-    }
-}
-
-const DynamoDbStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation({
-    implementation: DynamoDbStorageOperationsFactoryImpl,
-    dependencies: []
-});
+import { FilterUtilFeature } from "@webiny/db-dynamodb/feature/FilterUtil/feature.js";
+import { CmsDdbTable } from "~/abstractions/CmsDdbTable.js";
+import { CmsDdbGroupEntity } from "~/abstractions/CmsDdbGroupEntity.js";
+import { CmsDdbModelEntity } from "~/abstractions/CmsDdbModelEntity.js";
+import { CmsDdbEntryEntity } from "~/abstractions/CmsDdbEntryEntity.js";
+import { DdbGroupStorageOpsFeature } from "~/operations/group/feature.js";
+import { DdbModelStorageOpsFeature } from "~/operations/model/feature.js";
+import { DdbEntryStorageOpsFeature } from "~/operations/entry/feature.js";
 
 /**
- * DI-native feature — registers the DynamoDB CMS storage operations factory.
+ * DI-native feature — registers the DynamoDB CMS storage operations directly via the DI container.
  * Requires DynamoDBClient to be registered in the container first (via DbFeature).
  *
  * Usage:
@@ -105,15 +27,40 @@ const DynamoDbStorageOperationsFactory = StorageOperationsFactoryAbstraction.cre
 export const HeadlessCmsDdbFeature = createFeature({
     name: "cms.storageOperations.ddb",
     register: container => {
-        container.register(DynamoDbStorageOperationsFactory).inSingletonScope();
+        FilterRegistriesFeature.register(container);
+        FilterUtilFeature.register(container);
+
+        const db = container.resolve(DynamoDBClient);
+        const documentClient = db.client;
+
+        const tableInstance = createTable({ documentClient });
+
+        // Register infrastructure instances (app-scoped)
+        container.registerInstance(CmsDdbTable, tableInstance);
+        container.registerInstance(
+            CmsDdbGroupEntity,
+            createGroupEntity({
+                entityName: ENTITIES.GROUPS,
+                table: tableInstance
+            })
+        );
+        container.registerInstance(
+            CmsDdbModelEntity,
+            createModelEntity({
+                entityName: ENTITIES.MODELS,
+                table: tableInstance
+            })
+        );
+        container.registerInstance(
+            CmsDdbEntryEntity,
+            createEntryEntity({
+                entityName: ENTITIES.ENTRIES,
+                table: tableInstance
+            })
+        );
+
+        DdbGroupStorageOpsFeature.register(container);
+        DdbModelStorageOpsFeature.register(container);
+        DdbEntryStorageOpsFeature.register(container);
     }
 });
-
-/** @deprecated use HeadlessCmsDdbFeature instead */
-export const registerDynamoDbStorageOperations = () => {
-    return [
-        createRegisterExtensionPlugin(context => {
-            return HeadlessCmsDdbFeature.register(context.container);
-        })
-    ];
-};

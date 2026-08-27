@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useFeature, useTenantContext } from "@webiny/app-admin";
 import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
+import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
 import { WebsocketEvent } from "./events/WebsocketEvent.js";
 import type {
     IncomingGenericData,
@@ -20,7 +21,6 @@ import {
 } from "./domain/index.js";
 import type { IGenericData, IWebsocketsManager } from "./domain/types.js";
 import type { IWebsocketsSubscription } from "./domain/abstractions/IWebsocketsSubscriptionManager.js";
-import { getUrl } from "./utils/getUrl.js";
 
 // No-op subscription returned when WS isn't connected (no URL configured).
 const noopSubscription = (): IWebsocketsSubscription<any> => ({
@@ -46,6 +46,12 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     const { tenant } = useTenantContext();
     const { authenticationContext } = useFeature(AuthenticationContextFeature);
     const { eventPublisher } = useFeature(EventPublisherFeature);
+
+    // The WebSocket URL is resolved once, at the admin composition root, into EnvConfig (the only
+    // place that reads process.env). Empty string = not configured → real-time updates are disabled.
+    const envConfig = useFeature(EnvConfigFeature);
+    const configuredWsUrl = envConfig.get("websocketUrl");
+    const wsUrl = configuredWsUrl ? configuredWsUrl : undefined;
 
     const socketsRef = useRef<IWebsocketsManager | null>(null);
 
@@ -130,10 +136,10 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             } else if (socketsRef.current) {
                 await socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Changing tenant.");
             }
-            const url = getUrl();
+            const url = wsUrl;
 
             if (!url) {
-                // No WS URL configured (e.g. self-hosted server flavour) — skip WS, run app anyway.
+                // No WS URL configured (e.g. self-hosted server hosting type) — skip WS, run app anyway.
                 console.warn("WebSocket URL not configured; real-time updates are disabled.");
                 return;
             }
@@ -151,7 +157,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
 
             setCurrent({ tenant });
         })();
-    }, [tenant, subscriptionManager, getToken]);
+    }, [tenant, subscriptionManager, getToken, wsUrl]);
 
     /**
      * Bridge: subscribe once to ALL incoming websocket messages and re-publish each one through
@@ -242,8 +248,8 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     );
 
     // Only block the app on the WS connection when WS is actually configured. Without a URL
-    // (e.g. the self-hosted server flavour), skip WS and render the app anyway.
-    if (getUrl() && !socketsRef.current) {
+    // (e.g. the self-hosted server hosting type), skip WS and render the app anyway.
+    if (wsUrl && !socketsRef.current) {
         return props.loader || null;
     }
 

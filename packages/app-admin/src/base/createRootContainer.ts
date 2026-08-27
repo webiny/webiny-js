@@ -10,7 +10,7 @@ import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
-import { WcpFeature } from "~/features/wcp/feature.js";
+import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { TelemetryFeature } from "~/features/telemetry/feature.js";
@@ -19,7 +19,7 @@ import { ToolsFeature } from "~/features/tools/feature.js";
 import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 import { ConfirmationFeature } from "~/features/confirmation/feature.js";
 import { ClipboardFeature } from "~/features/clipboard/feature.js";
-import { resolveApiUrl, resolveGraphqlUrl } from "./resolveApiUrl.js";
+import { resolveApiUrl, resolveGraphqlUrl, resolveWebsocketUrl } from "./resolveApiUrl.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -40,7 +40,7 @@ export function createRootContainer() {
         trashBinRetentionPeriodDays: trashBinRetention,
         wcpProjectId:
             process.env.REACT_APP_WEBINY_PROJECT_ID || process.env.REACT_APP_WCP_PROJECT_ID,
-        websocketUrl: String(process.env.REACT_APP_WEBSOCKET_URL)
+        websocketUrl: resolveWebsocketUrl()
     });
 
     // Router
@@ -62,7 +62,7 @@ export function createRootContainer() {
 
     TenancyFeature.register(container);
 
-    WcpFeature.register(container);
+    FeatureFlagsFeature.register(container);
 
     SystemInstallerFeature.register(container);
 

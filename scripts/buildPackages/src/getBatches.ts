@@ -42,7 +42,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     const useCache = options.cache ?? false;
 
     const workspaceGraph = new WorkspaceGraph({
-        ignore: ["@webiny/project-utils"]
+        ignore: []
     });
 
     // Dependency-aware build key per package: changes when the package's own

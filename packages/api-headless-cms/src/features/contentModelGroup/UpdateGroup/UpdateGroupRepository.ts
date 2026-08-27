@@ -1,11 +1,10 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { UpdateGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { UpdateGroupStorageOperation } from "~/features/shared/storageOperations/group/UpdateGroupStorageOperation.js";
 import type { CmsGroup } from "~/types/index.js";
 
 /**
@@ -20,7 +19,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private storageOperations: StorageOperations.Interface
+        private updateGroup: UpdateGroupStorageOperation.Interface
     ) {}
 
     async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -34,7 +33,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Persist updates
-            await this.storageOperations.groups.update({ group });
+            await this.updateGroup.execute({ group });
 
             // Clear cache
             this.groupCache.clear();
@@ -46,8 +45,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const UpdateGroupRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const UpdateGroupRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations]
+    dependencies: [GroupCache, PluginGroupsProvider, UpdateGroupStorageOperation]
 });

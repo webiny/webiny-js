@@ -1,0 +1,49 @@
+import { createFeature } from "@webiny/feature/api/index.js";
+import { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os";
+import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/tableNameResolver/abstractions.js";
+import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
+import { ValueFilterFeature } from "@webiny/db-utils";
+import { GroupSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features/groupSchemaManager/feature.js";
+import { ModelSchemaManagerFeature } from "@webiny/api-headless-cms-sql/features/modelSchemaManager/feature.js";
+import { EntryTableManagerFeature } from "@webiny/api-headless-cms-sql/features/entryTableManager/feature.js";
+import { SyncTableManagerFeature } from "./syncTableManager/feature.js";
+import { SyncWriterFeature } from "./SyncWriter/feature.js";
+import { FilterRegistriesFeature } from "@webiny/api-headless-cms-storage";
+import { SqlGroupStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/group/feature.js";
+import { SqlModelStorageOpsFeature } from "@webiny/api-headless-cms-sql/operations/model/feature.js";
+import { PgOsEntryStorageOpsFeature } from "~/operations/entry/feature.js";
+
+export interface IPgOsStorageOperationsConfig {
+    knex: any;
+    tableNamePrefix?: string;
+    tableNameSuffix?: string;
+}
+
+export const HeadlessCmsPgOsFeature = createFeature<IPgOsStorageOperationsConfig>({
+    name: "cms.storageOperations.pgOs",
+    register: (container, config) => {
+        const sharedTables = process.env.WEBINY_SHARED_TABLES === "true";
+
+        container.registerInstance(TableNameResolverConfig, {
+            sharedTables,
+            tableNamePrefix: config.tableNamePrefix,
+            tableNameSuffix: config.tableNameSuffix
+        });
+
+        TableNameResolverFeature.register(container);
+        ValueFilterFeature.register(container);
+        FilterRegistriesFeature.register(container);
+        GroupSchemaManagerFeature.register(container);
+        ModelSchemaManagerFeature.register(container);
+        EntryTableManagerFeature.register(container);
+        SyncTableManagerFeature.register(container);
+        SyncWriterFeature.register(container);
+
+        CmsEntryOpenSearchUtilsFeature.register(container);
+
+        SqlGroupStorageOpsFeature.register(container);
+        SqlModelStorageOpsFeature.register(container);
+
+        PgOsEntryStorageOpsFeature.register(container);
+    }
+});

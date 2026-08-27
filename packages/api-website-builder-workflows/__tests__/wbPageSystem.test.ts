@@ -17,7 +17,7 @@ describe("WbPage.system workflow extension", () => {
     it("exposes `system` on WbPage when the workflows license is active", async () => {
         const { invoke } = createCmsTestHandler({
             // WebsiteBuilderFeature defines WbPage + CmsEntrySystem on the base /graphql schema.
-            features: container => {
+            setup: container => {
                 WebsiteBuilderFeature.register(container);
                 WebsiteBuilderWorkflowsFeature.register(container);
             }

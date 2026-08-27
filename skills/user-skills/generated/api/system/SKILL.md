@@ -1,6 +1,5 @@
 ---
 name: webiny-api-system-catalog
-context: webiny-api
 description: >
   API — System — 2 abstractions.
   System installation event handlers and use cases.

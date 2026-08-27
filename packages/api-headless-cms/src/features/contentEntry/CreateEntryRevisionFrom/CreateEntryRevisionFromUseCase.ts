@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     CreateEntryRevisionFromRepository,
@@ -132,8 +132,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
     }
 }
 
-export const CreateEntryRevisionFromUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const CreateEntryRevisionFromUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateEntryRevisionFromUseCaseImpl,
     dependencies: [
         CreateEntryRevisionFromRepository,

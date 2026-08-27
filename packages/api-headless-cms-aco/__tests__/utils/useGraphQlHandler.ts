@@ -1,17 +1,16 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { until } from "@webiny/api/testing/until.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -60,12 +59,17 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const apiAcoStorage = getStorageOps<ApiCoreStorageOperations>("aco");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = permissions ?? ([{ name: "*" }] as SecurityPermission[]);
 
-    const extraCmsPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
+    const allPlugins = ([plugins] as any[]).flat(Infinity as 1).filter(Boolean);
+    // DI-native plugins are plain `container => {}` functions; call them after features (below).
+    // Everything else (static CMS plugins) is forwarded to HeadlessCmsFeature.extraPlugins.
+    const isFn = (p: any) => typeof p === "function" && !p.prototype;
+    const fnPlugins = allPlugins.filter(isFn);
+    const extraCmsPlugins = allPlugins.filter(p => !isFn(p));
 
     const handler = createTestHttpHandler({
         root: container => {
@@ -76,8 +80,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(
+        child: async container => {
+            const wcpLicense = await WcpLicenseLoader.load(
                 params.testProjectLicense ?? createTestWcpLicense()
             );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
@@ -91,6 +95,11 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.register(HeadlessCmsContextualSchema);
             AcoFeature.register(container);
             AcoHcmsFeature.register(container);
+            // DI-native function plugins run after the package's features so they can override
+            // defaults (last-wins), mirroring the legacy ContextPlugin timing.
+            for (const plugin of fnPlugins) {
+                (plugin as (c: any) => void)(container);
+            }
             GraphQLEngineFeature.register(container);
         }
     });

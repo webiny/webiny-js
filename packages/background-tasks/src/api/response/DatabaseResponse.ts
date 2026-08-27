@@ -1,5 +1,5 @@
 import { TaskDataStatus } from "~/api/types.js";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/api-graphql";
 import type {
     IResponse,
     IResponseAsync,

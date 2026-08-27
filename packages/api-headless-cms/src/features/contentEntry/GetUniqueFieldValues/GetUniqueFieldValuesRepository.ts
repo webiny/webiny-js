@@ -1,15 +1,16 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import {
     GetUniqueFieldValuesRepository as RepositoryAbstraction,
     GetUniqueFieldValuesParams
 } from "./abstractions.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetUniqueFieldValuesStorageOperation } from "~/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
 
 class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interface {
-    public constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(
+        private getUniqueFieldValuesStorage: GetUniqueFieldValuesStorageOperation.Interface
+    ) {}
 
     async execute(
         model: CmsModel,
@@ -18,7 +19,7 @@ class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interf
         const { where, fieldId } = params;
 
         try {
-            const values = await this.storageOperations.entries.getUniqueFieldValues(model, {
+            const values = await this.getUniqueFieldValuesStorage.execute(model, {
                 where,
                 fieldId
             });
@@ -30,8 +31,7 @@ class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interf
     }
 }
 
-export const GetUniqueFieldValuesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetUniqueFieldValuesRepository = RepositoryAbstraction.createImplementation({
     implementation: GetUniqueFieldValuesRepositoryImpl,
-    dependencies: [StorageOperations]
+    dependencies: [GetUniqueFieldValuesStorageOperation]
 });

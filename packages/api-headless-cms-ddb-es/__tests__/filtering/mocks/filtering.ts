@@ -1,26 +1,21 @@
-import {
-    createExecFiltering as baseCreateExecFiltering,
-    type CreateExecFilteringResponse
-} from "~/operations/entry/elasticsearch/filtering";
+import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 import { createFields, createModel } from "./fields";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
-import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch";
-import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter";
-import { OpenSearchQueryBuilderOperatorRegistry } from "@webiny/api-opensearch/exports/api/opensearch";
+import { CmsEntryOpenSearchExecFiltering } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchExecFiltering";
 
-export type { CreateExecFilteringResponse };
+export interface CreateExecFilteringResponse {
+    (params: { where: CmsEntryListWhere; query: OpenSearchBoolQueryConfig }): void;
+}
 
-export const createExecFiltering = () => {
+export const createExecFiltering = (): CreateExecFilteringResponse => {
     const testContainer = createTestContainer();
-    const operatorRegistry = testContainer.resolve(OpenSearchQueryBuilderOperatorRegistry);
-    const valueSearchRegistry = testContainer.resolve(CmsEntryOpenSearchValueSearchRegistry);
-    const filterRegistry = testContainer.resolve(CmsEntryOpenSearchFilterRegistry);
+    const impl = testContainer.resolve(CmsEntryOpenSearchExecFiltering);
 
-    return baseCreateExecFiltering({
-        operatorRegistry,
-        fields: createFields(),
-        model: createModel(),
-        valueSearchRegistry,
-        filterRegistry
-    });
+    const model = createModel();
+    const fields = createFields();
+
+    return ({ where, query }) => {
+        impl.execute({ model, fields, where, query });
+    };
 };

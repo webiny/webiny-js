@@ -10,26 +10,39 @@ env:
 jobs:
   checkComment:
     name: Check comment for /vitest
-    if: ${{ github.event.issue.pull_request }}
+    if: >-
+      ${{ github.event.issue.pull_request && (github.event.comment.body ==
+      '/vitest' || startsWith(github.event.comment.body, '/vitest ')) }}
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+      issues: write
     outputs:
       comment-id: ${{ steps.create-comment.outputs.comment-id }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - name: Check for Command
-        id: command
-        uses: xt0rted/slash-command-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: vitest
-          reaction: 'true'
-          reaction-type: eyes
-          allow-edits: 'false'
-          permission-level: write
+      - name: Check permission and react to comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          PERMISSION=$(gh api "/repos/${{ github.repository }}/collaborators/${{
+          github.event.comment.user.login }}/permission" -q .permission)
+
+          if [ "$PERMISSION" != "write" ] && [ "$PERMISSION" != "admin" ]; then
+            echo "::error::User ${{ github.event.comment.user.login }} does not have write permission (has: $PERMISSION)."
+            exit 1
+          fi
+
+          gh api --silent -X POST "/repos/${{ github.repository
+          }}/issues/comments/${{ github.event.comment.id }}/reactions" -f
+          content=eyes
       - name: Create comment
         id: create-comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: >-
+          peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9
         with:
           issue-number: ${{ github.event.issue.number }}
           body: >-
@@ -60,11 +73,12 @@ jobs:
     name: Get base branch
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
+      pr-sha: ${{ steps.pr-sha.outputs.pr-sha }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Get base branch
         id: base-branch
         env:
@@ -72,18 +86,27 @@ jobs:
         run: >-
           echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json
           baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT
+      - name: Get PR head SHA
+        id: pr-sha
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json
+          headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   constants:
     needs: baseBranch
     name: Create constants
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
-      run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Create global cache key
@@ -92,15 +115,13 @@ jobs:
           echo "global-cache-key=${{ needs.baseBranch.outputs.base-branch }}-${{
           runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
           }}" >> $GITHUB_OUTPUT
-      - name: Create workflow run cache key
-        id: run-cache-key
-        run: >-
-          echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs:
@@ -108,22 +129,28 @@ jobs:
       - constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -133,25 +160,40 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v5
+      - name: Compress build cache
+        run: >-
+          tar -cf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}" .webiny/cached-packages
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Upload build cache
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+          path: run-build-cache.tzst
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (No storage) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "No storage" as running
@@ -170,6 +212,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -181,6 +230,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-result:
     needs:
       - vitest-run
@@ -188,7 +240,7 @@ jobs:
     name: Vitest (No storage) - Report status
     if: always() && needs.checkComment.result == 'success'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Report "No storage" result
@@ -233,8 +285,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-run:
     needs:
+      - baseBranch
       - constants
       - vitest-constants
     name: No storage / ${{ matrix.testCommand.title }}
@@ -252,25 +308,37 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -280,18 +348,22 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (DDB) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "DDB" as running
@@ -309,6 +381,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -320,6 +399,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-result:
     needs:
       - vitest-ddb-run
@@ -327,7 +409,7 @@ jobs:
     name: Vitest (DDB) - Report status
     if: always() && needs.checkComment.result == 'success'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Report "DDB" result
@@ -371,8 +453,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-run:
     needs:
+      - baseBranch
       - constants
       - vitest-ddb-constants
     name: DDB / ${{ matrix.testCommand.title }}
@@ -393,25 +479,37 @@ jobs:
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -421,18 +519,22 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (DDB+OS) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "DDB+OS" as running
@@ -450,6 +552,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -461,6 +570,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-result:
     needs:
       - vitest-ddb-os-run
@@ -468,7 +580,7 @@ jobs:
     name: Vitest (DDB+OS) - Report status
     if: always() && needs.checkComment.result == 'success'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Report "DDB+OS" result
@@ -512,8 +624,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-ddb-os-run:
     needs:
+      - baseBranch
       - constants
       - vitest-ddb-os-constants
     name: DDB+OS / ${{ matrix.testCommand.title }}
@@ -540,30 +656,43 @@ jobs:
       OPENSEARCH_PASSWORD: ${{ secrets.OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -574,19 +703,22 @@ jobs:
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     permissions:
+      contents: read
+      actions: write
       id-token: write
   vitest-sql-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (SQL) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "SQL" as running
@@ -604,6 +736,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -615,6 +754,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-result:
     needs:
       - vitest-sql-run
@@ -622,7 +764,7 @@ jobs:
     name: Vitest (SQL) - Report status
     if: always() && needs.checkComment.result == 'success'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Report "SQL" result
@@ -666,8 +808,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-sql-run:
     needs:
+      - baseBranch
       - constants
       - vitest-sql-constants
     name: SQL / ${{ matrix.testCommand.title }}
@@ -688,25 +834,37 @@ jobs:
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: sql,ddb
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -716,18 +874,22 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-constants:
     needs:
+      - baseBranch
       - build
       - checkComment
     name: Vitest (PGlite) - Constants
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Mark "PGlite" as running
@@ -745,6 +907,13 @@ jobs:
 
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/vitest-comment.txt
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -756,6 +925,9 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-result:
     needs:
       - vitest-pglite-run
@@ -763,7 +935,7 @@ jobs:
     name: Vitest (PGlite) - Report status
     if: always() && needs.checkComment.result == 'success'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Report "PGlite" result
@@ -807,8 +979,12 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   vitest-pglite-run:
     needs:
+      - baseBranch
       - constants
       - vitest-pglite-constants
     name: PGlite / ${{ matrix.testCommand.title }}
@@ -831,25 +1007,37 @@ jobs:
       WEBINY_STORAGE: sql,ddb
       WEBINY_SQL_CLIENT: pglite
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-        run: gh pr checkout ${{ github.event.issue.number }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
-          path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -859,6 +1047,9 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+    permissions:
+      contents: read
+      actions: write
   vitestStatusSummary:
     name: Vitest status summary
     needs:
@@ -885,7 +1076,7 @@ jobs:
       R_SQL: ${{ needs.vitest-sql-run.result }}
       R_PGLITE: ${{ needs.vitest-pglite-run.result }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Heal PR comment and update PR description
@@ -995,3 +1186,6 @@ jobs:
           gh pr edit "$PR_NUMBER" -R ${{ github.repository }} --body-file
           /tmp/pr-body.txt
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

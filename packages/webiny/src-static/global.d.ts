@@ -5,6 +5,8 @@
  * This file ensures all type augmentations are loaded without requiring explicit imports.
  */
 
+/// <reference types="node" />
+
 // Import module augmentations from other packages
 import "@webiny/background-tasks/api/global.js";
 

@@ -13,17 +13,6 @@ const p = createPathResolver(import.meta.dirname);
 
 const HTTP_METHODS = ["DELETE", "GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS", "ANY"] as const;
 
-const METHOD_HANDLER: Record<string, string> = {
-    DELETE: "onDelete",
-    GET: "onGet",
-    HEAD: "onHead",
-    PATCH: "onPatch",
-    POST: "onPost",
-    PUT: "onPut",
-    OPTIONS: "onOptions",
-    ANY: "onAll"
-};
-
 export const ApiRoute = defineExtension({
     type: "Api/Route",
     tags: { runtimeContext: "app-build", appName: "api" },
@@ -33,7 +22,10 @@ export const ApiRoute = defineExtension({
         return z.object({
             path: z.string().startsWith("/"),
             method: z.enum(HTTP_METHODS),
-            // TODO: add zodSrcPath abstraction validation once Route abstraction is wired to zodSrcPath.
+            // The `src` file must default-export an HttpRoute implementation
+            // (HttpRoute.createImplementation from @webiny/event-handler-core), the same shape as
+            // the framework's own routes (e.g. createCmsRoute). Its `method`/`path` must match the
+            // `method`/`path` params here (used to configure the API Gateway route).
             src: zodSrcPath({ project }),
             routeName: z.string().optional()
         });
@@ -74,63 +66,28 @@ export const ApiRoute = defineExtension({
             moduleSpecifier: importPath
         });
 
-        // Ensure createContextPlugin import exists.
-        const ctxPluginPath = "@webiny/api/plugins/ContextPlugin.js";
-        if (!source.getImportDeclaration(ctxPluginPath)) {
+        // Ensure createRegisterExtensionPlugin import exists.
+        const registerExtensionPluginPath = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
+        if (!source.getImportDeclaration(registerExtensionPluginPath)) {
             const lastIdx =
                 source
                     .getImportDeclarations()
                     [source.getImportDeclarations().length - 1].getChildIndex() + 1;
             source.insertImportDeclaration(lastIdx, {
-                namedImports: ["createContextPlugin"],
-                moduleSpecifier: ctxPluginPath
+                namedImports: ["createRegisterExtensionPlugin"],
+                moduleSpecifier: registerExtensionPluginPath
             });
         }
-
-        // Ensure createRoute and Route are imported from @webiny/handler.
-        const handlerImportPath = "@webiny/handler";
-        const existingHandlerImport = source.getImportDeclaration(handlerImportPath);
-        const requiredHandlerImports = ["createRoute", "Route"];
-        if (!existingHandlerImport) {
-            const lastIdx =
-                source
-                    .getImportDeclarations()
-                    [source.getImportDeclarations().length - 1].getChildIndex() + 1;
-            source.insertImportDeclaration(lastIdx, {
-                namedImports: requiredHandlerImports,
-                moduleSpecifier: handlerImportPath
-            });
-        } else {
-            const present = existingHandlerImport.getNamedImports().map(i => i.getName());
-            for (const name of requiredHandlerImports) {
-                if (!present.includes(name)) {
-                    existingHandlerImport.addNamedImport(name);
-                }
-            }
-        }
-
-        const onMethod = METHOD_HANDLER[params.method];
-        const routePath = params.path as `/${string}`;
 
         const pluginsArray = source.getFirstDescendant(node =>
             Node.isArrayLiteralExpression(node)
         ) as ArrayLiteralExpression;
 
-        // Register factory in DI container.
+        // Register the route's HttpRoute implementation in the DI container. The DI HttpRouter
+        // resolves every registered HttpRoute and dispatches by matching the request method/path
+        // against each route's own `method`/`path` — no explicit route wiring needed.
         pluginsArray.addElement(
-            `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${alias});\n})`
-        );
-
-        // Register Fastify route with hardcoded path/method.
-        // We use resolveAll(Route) + instanceof to find the correct handler when multiple
-        // Api.Route extensions are registered.
-        pluginsArray.addElement(
-            `\ncreateRoute(({ ${onMethod}, context }) => {\n` +
-                `\t${onMethod}("${routePath}", async (request, reply) => {\n` +
-                `\t\tconst instance = context.container.resolveAll(Route).find(i => i instanceof ${alias})!;\n` +
-                `\t\treturn instance.execute(request, reply);\n` +
-                `\t});\n` +
-                `})`
+            `\ncreateRegisterExtensionPlugin(ctx => {\n\tregisterExtension(ctx.container, ${alias});\n})`
         );
 
         await source.save();

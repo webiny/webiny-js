@@ -24,7 +24,7 @@ interface IRunApiServerOptions {
  * Run the built api handler as a live HTTP server.
  *
  * The api workspace compiles to `<workspace>/apps/api/graphql/build/handler.mjs`, which (for the
- * server flavour) exports the Node `http.Server` from `createServerHandler`. We copy a tiny runner
+ * server hosting type) exports the Node `http.Server` from `createServerHandler`. We copy a tiny runner
  * (`apiServerRunner.mjs`) next to it that imports the handler and calls `.listen(PORT)`, then spawn
  * it in an isolated child process. In watch mode we add `--watch-path <buildDir>` so every rebuild
  * restarts that child (a server crash never kills the watcher).
@@ -63,29 +63,23 @@ export async function runApiServer(
     // Hybrid runtime env: the api allowlist (WEBINY_/WCP_PROJECT_ENVIRONMENT/OKTA_/AUTH0_ + DEBUG) —
     // the same app vars the AWS Lambda forwards, no arbitrary leakage — PLUS the system vars a spawned
     // process needs to run (PATH / HOME / NODE_EXTRA_CA_CERTS for portless TLS / temp / locale).
-    // `WCP_PROJECT_LICENSE` is absent (not allowlisted), so the handler's WcpLicenseInitializer
-    // fetches a fresh license rather than reading the build-time plaintext value.
+    // `WCP_PROJECT_LICENSE` is absent (not allowlisted), so the handler's per-request license refresh
+    // (`WcpLicenseLoader.load`) fetches a fresh license rather than reading the build-time plaintext value.
     const runtimeEnv = pickServerRuntimeEnvVariables();
 
-    // The database is mandatory and must be configured via `<Infra.Sqlite filename="..." />` in
-    // webiny.config (which bakes WEBINY_SQL_FILENAME). No implicit default: the child runs from the
-    // disposable app workspace, so a cwd-relative fallback would silently put the DB somewhere that's
-    // wiped on the next build and lose all data. Fail loudly instead.
-    const sqlFilename = process.env.WEBINY_SQL_FILENAME;
-    if (!sqlFilename) {
-        throw new Error(
-            `No database configured for the server flavour. Add ${'`<Infra.Sqlite filename="./.webiny/server.sqlite" />`'} ` +
-                `to your webiny.config (or set WEBINY_SQL_FILENAME).`
-        );
-    }
-
+    // The database is driver-agnostic here: the DB infra extension in webiny.config (<Infra.Sqlite> /
+    // <Infra.Postgres>) emits its own connection env — an absolute WEBINY_SQL_FILENAME, or the
+    // WEBINY_PG_* set — which is forwarded via the runtime allowlist above. The connection factory the
+    // api build wired in (createSqliteConnection / createPostgresConnection) validates that env at boot
+    // and fails loud if the database is missing or misconfigured, so there's no driver-specific check
+    // in the runner.
     const args = watch ? ["--watch-path", buildDir.toString(), runnerPath] : [runnerPath];
 
     const child = spawn(process.execPath, args, {
         cwd: workspaceApi.toString(),
         // Piped so the caller can prefix/filter + render the output.
         stdio: ["ignore", "pipe", "pipe"],
-        env: { ...runtimeEnv, PORT: port, WEBINY_SQL_FILENAME: sqlFilename }
+        env: { ...runtimeEnv, PORT: port }
     });
 
     const cleanup = () => {

@@ -1,8 +1,10 @@
-import { createWorkflow, NormalJob } from "github-actions-wac";
+import { NormalJob } from "github-actions-wac";
 import {
+    createCheckoutPrSteps,
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
-    createRunBuildCacheSteps,
+    createRunBuildArtifactDownloadSteps,
+    createRunBuildArtifactUploadSteps,
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
@@ -13,7 +15,7 @@ import {
     NODE_VERSION,
     runNodeScript
 } from "./utils/index.js";
-import { createJob } from "./jobs/index.js";
+import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     DdbStorageOps,
     DdbOsStorageOps,
@@ -33,17 +35,12 @@ const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-
-const createCheckoutPrSteps = () =>
-    [
-        {
-            name: "Checkout Pull Request",
-            "working-directory": DIR_WEBINY_JS,
-            run: "gh pr checkout ${{ github.event.issue.number }}",
-            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
-        }
-    ] as NonNullable<NormalJob["steps"]>;
+const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 // Live status table shown in the PR comment. Rows are updated in place as each
 // group progresses (Queued -> Running -> Passed/Failed) by the per-group jobs,
@@ -140,7 +137,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     return {
         [jobNames.constants]: createJob({
-            needs: ["build", "checkComment"],
+            needs: ["baseBranch", "build", "checkComment"],
             name: `Vitest (${rowLabel}) - Constants`,
             checkout: { path: DIR_WEBINY_JS },
             outputs: {
@@ -149,6 +146,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             steps: [
                 createMarkRunningStep(rowLabel),
+                // Test discovery reads `packages/` off disk, so it has to run against the PR's
+                // code. Without this the job kept the default `issue_comment` checkout (the
+                // default branch), and a PR that added a package, added the first tests to an
+                // existing one, or changed a package's testing/sharding config would have those
+                // changes silently ignored - while a PR that deleted a package would still get a
+                // test job for it.
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 {
                     id: "list-vitest-test-commands",
                     name: "List Vitest Test Commands",
@@ -167,7 +171,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             steps: [createReportResultStep(rowLabel, jobNames.tests)]
         }),
         [jobNames.tests]: createJob({
-            needs: ["constants", jobNames.constants],
+            needs: ["baseBranch", "constants", jobNames.constants],
             // The group prefix lets `vitest-*-result` / `vitestStatusSummary`
             // filter this group's matrix legs out of the run's jobs API.
             name: `${rowLabel} / \${{ matrix.testCommand.title }}`,
@@ -184,9 +188,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             awsAuth: storageOps && storageOps.id === "ddb-os,ddb",
             checkout: { path: DIR_WEBINY_JS },
             steps: [
-                ...createCheckoutPrSteps(),
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
+                ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
                 ...withCommonParams([{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }], {
                     "working-directory": DIR_WEBINY_JS
@@ -196,51 +200,24 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     };
 };
 
-export const pullRequestsCommandVitest = createWorkflow({
+export const pullRequestsCommandVitest = createSlashCommandWorkflow({
+    command: "vitest",
     name: "Pull Requests Command - Vitest",
-    on: "issue_comment",
-    env: {
-        NODE_OPTIONS,
-        AWS_REGION
+    comment: INITIAL_COMMENT_BODY,
+    captureCommentId: true,
+    workflow: {
+        env: {
+            NODE_OPTIONS,
+            AWS_REGION
+        }
     },
     jobs: {
-        checkComment: createJob({
-            name: `Check comment for /vitest`,
-            if: "${{ github.event.issue.pull_request }}",
-            checkout: false,
-            outputs: {
-                "comment-id": "${{ steps.create-comment.outputs.comment-id }}"
-            },
-            steps: [
-                {
-                    name: "Check for Command",
-                    id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
-                    with: {
-                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "vitest",
-                        reaction: "true",
-                        "reaction-type": "eyes",
-                        "allow-edits": "false",
-                        "permission-level": "write"
-                    }
-                },
-                {
-                    name: "Create comment",
-                    id: "create-comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
-                    with: {
-                        "issue-number": "${{ github.event.issue.number }}",
-                        body: INITIAL_COMMENT_BODY
-                    }
-                }
-            ]
-        }),
         baseBranch: createJob({
             needs: "checkComment",
             name: "Get base branch",
             outputs: {
-                "base-branch": "${{ steps.base-branch.outputs.base-branch }}"
+                "base-branch": "${{ steps.base-branch.outputs.base-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}"
             },
             steps: [
                 {
@@ -248,6 +225,17 @@ export const pullRequestsCommandVitest = createWorkflow({
                     id: "base-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "base-branch=$(gh pr view ${{ github.event.issue.number }} --json baseRefName -q .baseRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE, here, and have every job check out exactly this
+                    // commit. Jobs in a single run can start tens of minutes apart, and each
+                    // `gh pr checkout` would otherwise resolve the PR head at its own start time -
+                    // so a push mid-run makes the build job produce output from one commit while
+                    // the test jobs run against another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -255,8 +243,7 @@ export const pullRequestsCommandVitest = createWorkflow({
             needs: "baseBranch",
             name: "Create constants",
             outputs: {
-                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
-                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}"
             },
             checkout: false,
             steps: [
@@ -264,11 +251,6 @@ export const pullRequestsCommandVitest = createWorkflow({
                     name: "Create global cache key",
                     id: "global-cache-key",
                     run: `echo "global-cache-key=\${{ needs.baseBranch.outputs.base-branch }}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
-                },
-                {
-                    name: "Create workflow run cache key",
-                    id: "run-cache-key",
-                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
                 }
             ]
         }),
@@ -278,11 +260,11 @@ export const pullRequestsCommandVitest = createWorkflow({
             checkout: { path: DIR_WEBINY_JS },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
-                ...createCheckoutPrSteps(),
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,
-                ...runBuildCacheSteps
+                ...runBuildCacheUploadSteps
             ]
         }),
         ...createVitestTestsJobs(),

@@ -1,16 +1,10 @@
-import {
-    ErrorResponse,
-    GraphQLSchemaPlugin,
-    ListResponse,
-    NotFoundError,
-    Response
-} from "@webiny/handler-graphql";
+import { ErrorResponse, ListResponse, NotFoundError, Response } from "@webiny/api-graphql";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { PageModel, type WbPageRevision } from "~/domain/page/abstractions.js";
+import { PageModel } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
@@ -31,347 +25,441 @@ import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 import { GetPageLanguagePathsUseCase } from "~/features/pages/GetPageLanguagePaths/index.js";
 import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";
 
-export const createPagesSchema = () => {
-    const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
-        typeDefs: pagesTypeDefs,
-        resolvers: {
-            WbQuery: {
-                getPageModel: async (_, __, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        return context.container.resolve(PageModel);
-                    });
-                },
-                getPageByPath: async (_, { path }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
+export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(pagesTypeDefs);
 
-                        const getPageByPath = context.container.resolve(GetPageByPathUseCase);
-                        const result = await getPageByPath.execute(path);
-
-                        if (result.isFail()) {
-                            throw new NotFoundError(`Page ${path} was not found!`);
-                        }
-
-                        const page = result.value;
-                        return {
-                            id: page.id,
-                            entryId: page.entryId,
-                            properties: page.properties,
-                            bindings: page.bindings,
-                            elements: page.elements
-                        };
-                    });
-                },
-                getPageById: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const getPageById = context.container.resolve(GetPageByIdUseCase);
-                        const result = await getPageById.execute(id);
-
-                        if (result.isFail()) {
-                            throw new NotFoundError(`Page with id "${id}" was not found!`);
-                        }
-
-                        return result.value;
-                    });
-                },
-                getPageRevisions: async (_, { entryId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const getPageRevisions = context.container.resolve(GetPageRevisionsUseCase);
-                        const result = await getPageRevisions.execute(entryId);
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        const revisions = result.value;
-                        return revisions.map<WbPageRevision>(page => {
-                            return {
-                                id: page.id,
-                                entryId: page.entryId,
-                                version: page.version,
-                                title: page.properties.title,
-                                status: page.status,
-                                locked: page.locked,
-                                savedOn: page.savedOn,
-                                createdOn: page.createdOn,
-                                createdBy: page.createdBy,
-                                revisionDescription: page.revisionDescription
-                            };
-                        });
-                    });
-                },
-                listPages: async (_, args: any, context) => {
-                    try {
-                        ensureAuthentication(context);
-                        const listPages = context.container.resolve(ListPagesUseCase);
-                        const result = await listPages.execute(args);
-
-                        if (result.isFail()) {
-                            throw result.error;
-                        }
-
-                        const { pages, meta } = result.value;
-                        return new ListResponse(pages, meta);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
-                },
-                listDeletedPages: async (_, args: any, context) => {
-                    try {
-                        ensureAuthentication(context);
-                        const listPages = context.container.resolve(ListDeletedPagesUseCase);
-                        const result = await listPages.execute(args);
-
-                        if (result.isFail()) {
-                            throw result.error;
-                        }
-
-                        const { pages, meta } = result.value;
-                        return new ListResponse(pages, meta);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
-                },
-                getSettings: async (_, __, context) => {
+    builder.addResolver({
+        path: "WbQuery.getPageModel",
+        dependencies: [PageModel],
+        resolver(pageModel) {
+            return ({ context }) =>
+                resolve(async () => {
                     ensureAuthentication(context);
-
-                    const keyValueStore = context.container.resolve(KeyValueStore);
-                    const result = await keyValueStore.get<{ previewDomain: string | undefined }>(
-                        WEBSITE_BUILDER_SETTINGS
-                    );
-
-                    if (result.isFail()) {
-                        return new Response({
-                            // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                            previewDomain: "http://localhost:3000"
-                        });
-                    }
-
-                    const settings = result.value;
-
-                    return new Response({
-                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                        previewDomain: settings.previewDomain ?? "http://localhost:3000"
-                    });
-                },
-                getIntegrations: async (_, __, context) => {
-                    ensureAuthentication(context);
-                    const keyValueStore = context.container.resolve(KeyValueStore);
-                    const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
-                    if (settings.isFail()) {
-                        return new Response({});
-                    }
-
-                    return new Response(settings.value);
-                }
-            },
-            WbMutation: {
-                createPage: async (_, { data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const createPage = context.container.resolve(CreatePageUseCase);
-                        const result = await createPage.execute(data);
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                updatePage: async (_, { id, data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const updatePage = context.container.resolve(UpdatePageUseCase);
-                        const result = await updatePage.execute(id, data);
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                updatePageRevisionDescription: async (_, { id, revisionDescription }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const updatePageRevisionDescription = context.container.resolve(
-                            UpdatePageRevisionDescriptionUseCase
-                        );
-                        const result = await updatePageRevisionDescription.execute(
-                            id,
-                            revisionDescription
-                        );
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                duplicatePage: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const duplicatePage = context.container.resolve(DuplicatePageUseCase);
-                        const result = await duplicatePage.execute({ id });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                translatePage: async (_, { pageId, languageCode, folderId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const translatePage = context.container.resolve(TranslatePageUseCase);
-                        const result = await translatePage.execute({
-                            pageId,
-                            languageCode,
-                            folderId
-                        });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                publishPage: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const publishPage = context.container.resolve(PublishPageUseCase);
-                        const result = await publishPage.execute({ id });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                unpublishPage: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const unpublishPage = context.container.resolve(UnpublishPageUseCase);
-                        const result = await unpublishPage.execute({ id });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                movePage: async (_, { id, folderId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const movePage = context.container.resolve(MovePageUseCase);
-                        const result = await movePage.execute({ id, folderId });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return true;
-                    });
-                },
-                createPageRevisionFrom: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const createRevision = context.container.resolve(
-                            CreatePageRevisionFromUseCase
-                        );
-                        const result = await createRevision.execute({ id });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                deletePage: async (_, { id, permanently }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const deletePage = context.container.resolve(
-                            /**
-                             * If "permanent" flag is set, we want to permanently delete the page. Otherwise, we just want to trash it.
-                             * This allows us to have a two-step deletion process, where pages are first moved to trash and can be restored from there, before being permanently deleted.
-                             */
-                            permanently ? DeletePageUseCase : TrashPageUseCase
-                        );
-                        const result = await deletePage.execute({
-                            id
-                        });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return true;
-                    });
-                },
-                restorePage: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const restorePage = context.container.resolve(RestorePageUseCase);
-                        const result = await restorePage.execute({
-                            id
-                        });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                // TODO: move these settings updates into dedicated use cases
-                updateSettings: async (_, args, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context, { permission: "wb.settings" });
-                        const keyValueStore = context.container.resolve(KeyValueStore);
-                        await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
-
-                        return true;
-                    });
-                },
-                updateIntegrations: async (_, args, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context, { permission: "wb.settings" });
-                        const keyValueStore = context.container.resolve(KeyValueStore);
-                        await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
-
-                        return true;
-                    });
-                }
-            },
-            WbPage: {
-                languagePaths: async (page: any, _: any, context: ApiCoreContext) => {
-                    const properties = page.properties ?? {};
-                    const rootEntryId: string | undefined = properties.sourcePage ?? page.entryId;
-
-                    if (!rootEntryId) {
-                        return {};
-                    }
-
-                    const getLanguagePaths = context.container.resolve(GetPageLanguagePathsUseCase);
-                    const result = await getLanguagePaths.execute(rootEntryId);
-
-                    return result.isFail() ? {} : result.value;
-                }
-            }
+                    return pageModel;
+                });
         }
     });
 
-    pageGraphQL.name = "wb.graphql.pages";
+    builder.addResolver({
+        path: "WbQuery.getPageByPath",
+        dependencies: [GetPageByPathUseCase],
+        resolver(getPageByPath) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
 
-    return pageGraphQL;
+                    const result = await getPageByPath.execute(args.path);
+
+                    if (result.isFail()) {
+                        throw new NotFoundError(`Page ${args.path} was not found!`);
+                    }
+
+                    const page = result.value;
+                    return {
+                        id: page.id,
+                        entryId: page.entryId,
+                        properties: page.properties,
+                        bindings: page.bindings,
+                        elements: page.elements
+                    };
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getPageById",
+        dependencies: [GetPageByIdUseCase],
+        resolver(getPageById) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getPageById.execute(args.id);
+
+                    if (result.isFail()) {
+                        throw new NotFoundError(`Page with id "${args.id}" was not found!`);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getPageRevisions",
+        dependencies: [GetPageRevisionsUseCase],
+        resolver(getPageRevisions) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await getPageRevisions.execute(args.entryId);
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    const revisions = result.value;
+                    return revisions.map((page: any) => {
+                        return {
+                            id: page.id,
+                            entryId: page.entryId,
+                            version: page.version,
+                            title: page.properties.title,
+                            status: page.status,
+                            locked: page.locked,
+                            savedOn: page.savedOn,
+                            createdOn: page.createdOn,
+                            createdBy: page.createdBy,
+                            revisionDescription: page.revisionDescription
+                        };
+                    });
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.listPages",
+        dependencies: [ListPagesUseCase],
+        resolver(listPages) {
+            return async ({ args, context }) => {
+                try {
+                    ensureAuthentication(context);
+                    const result = await listPages.execute(args);
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    const { pages, meta } = result.value;
+                    return new ListResponse(pages, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            };
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.listDeletedPages",
+        dependencies: [ListDeletedPagesUseCase],
+        resolver(listDeletedPages) {
+            return async ({ args, context }) => {
+                try {
+                    ensureAuthentication(context);
+                    const result = await listDeletedPages.execute(args);
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    const { pages, meta } = result.value;
+                    return new ListResponse(pages, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            };
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getSettings",
+        dependencies: [KeyValueStore],
+        resolver(keyValueStore) {
+            return async ({ context }) => {
+                ensureAuthentication(context);
+
+                const result = await keyValueStore.get(WEBSITE_BUILDER_SETTINGS);
+
+                if (result.isFail()) {
+                    return new Response({
+                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
+                        previewDomain: "http://localhost:3000"
+                    });
+                }
+
+                const settings = result.value;
+
+                return new Response({
+                    // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
+                    previewDomain: settings.previewDomain ?? "http://localhost:3000"
+                });
+            };
+        }
+    });
+
+    builder.addResolver({
+        path: "WbQuery.getIntegrations",
+        dependencies: [KeyValueStore],
+        resolver(keyValueStore) {
+            return async ({ context }) => {
+                ensureAuthentication(context);
+                const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
+                if (settings.isFail()) {
+                    return new Response({});
+                }
+
+                return new Response(settings.value);
+            };
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.createPage",
+        dependencies: [CreatePageUseCase],
+        resolver(createPage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await createPage.execute(args.data);
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.updatePage",
+        dependencies: [UpdatePageUseCase],
+        resolver(updatePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await updatePage.execute(args.id, args.data);
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.updatePageRevisionDescription",
+        dependencies: [UpdatePageRevisionDescriptionUseCase],
+        resolver(updatePageRevisionDescription) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await updatePageRevisionDescription.execute(
+                        args.id,
+                        args.revisionDescription
+                    );
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.duplicatePage",
+        dependencies: [DuplicatePageUseCase],
+        resolver(duplicatePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await duplicatePage.execute({ id: args.id });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.translatePage",
+        dependencies: [TranslatePageUseCase],
+        resolver(translatePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await translatePage.execute({
+                        pageId: args.pageId,
+                        languageCode: args.languageCode,
+                        folderId: args.folderId
+                    });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.publishPage",
+        dependencies: [PublishPageUseCase],
+        resolver(publishPage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await publishPage.execute({ id: args.id });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.unpublishPage",
+        dependencies: [UnpublishPageUseCase],
+        resolver(unpublishPage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await unpublishPage.execute({ id: args.id });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.movePage",
+        dependencies: [MovePageUseCase],
+        resolver(movePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await movePage.execute({ id: args.id, folderId: args.folderId });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.createPageRevisionFrom",
+        dependencies: [CreatePageRevisionFromUseCase],
+        resolver(createRevision) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await createRevision.execute({ id: args.id });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deletePage",
+        // If the "permanently" flag is set we permanently delete the page; otherwise we trash it
+        // (a two-step deletion where pages first go to trash and can be restored). Both use-cases are
+        // declared as dependencies and the right one is picked per request from `args.permanently`.
+        dependencies: [DeletePageUseCase, TrashPageUseCase],
+        resolver(deletePageUseCase, trashPageUseCase) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const deletePage = args.permanently ? deletePageUseCase : trashPageUseCase;
+                    const result = await deletePage.execute({
+                        id: args.id
+                    });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.restorePage",
+        dependencies: [RestorePageUseCase],
+        resolver(restorePage) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await restorePage.execute({
+                        id: args.id
+                    });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    // TODO: move these settings updates into dedicated use cases
+    builder.addResolver({
+        path: "WbMutation.updateSettings",
+        dependencies: [KeyValueStore],
+        resolver(keyValueStore) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context, { permission: "wb.settings" });
+                    await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.updateIntegrations",
+        dependencies: [KeyValueStore],
+        resolver(keyValueStore) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context, { permission: "wb.settings" });
+                    await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver<unknown, any>({
+        path: "WbPage.languagePaths",
+        dependencies: [GetPageLanguagePathsUseCase],
+        resolver(getLanguagePaths) {
+            return async ({ parent }) => {
+                const properties = parent.properties ?? {};
+                const rootEntryId: string | undefined = properties.sourcePage ?? parent.entryId;
+
+                if (!rootEntryId) {
+                    return {};
+                }
+
+                const result = await getLanguagePaths.execute(rootEntryId);
+
+                return result.isFail() ? {} : result.value;
+            };
+        }
+    });
 };

@@ -2,10 +2,8 @@ import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js"
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ListFoldersUseCase } from "@webiny/api-aco/features/folder/ListFolders/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
-import {
-    CmsContext,
-    StorageOperations
-} from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { ListEntriesStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
@@ -54,8 +52,8 @@ export class DeleteModel implements IDeleteModel {
             if (lastDeletedId) {
                 where.entryId_gte = lastDeletedId;
             }
-            const storageOps = this.context.container.resolve(StorageOperations);
-            const { items, hasMoreItems: metaHasMoreItems } = await storageOps.entries.list(model, {
+            const listEntries = this.context.container.resolve(ListEntriesStorageOperation);
+            const { items, hasMoreItems: metaHasMoreItems } = await listEntries.execute(model, {
                 limit: 1000,
                 where,
                 sort: ["entryId_ASC"]
@@ -88,8 +86,8 @@ export class DeleteModel implements IDeleteModel {
         /**
          * Let's do one more check. If there are items, continue the task with 5 seconds delay.
          */
-        const storageOps = this.context.container.resolve(StorageOperations);
-        const { items } = await storageOps.entries.list(model, {
+        const listEntries = this.context.container.resolve(ListEntriesStorageOperation);
+        const { items } = await listEntries.execute(model, {
             limit: 1,
             where: {
                 latest: true

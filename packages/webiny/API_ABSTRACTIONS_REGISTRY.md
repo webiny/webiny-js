@@ -76,9 +76,9 @@ Format: `ImportPath | AbstractionName | SourcePackage | SourceFile`
 
 ### webiny/api/graphql
 
-| Abstraction            | Source                                            |
-| ---------------------- | ------------------------------------------------- |
-| `GraphQLSchemaFactory` | `@webiny/handler-graphql/graphql/abstractions.js` |
+| Abstraction            | Source                                        |
+| ---------------------- | --------------------------------------------- |
+| `GraphQLSchemaFactory` | `@webiny/api-graphql/graphql/abstractions.js` |
 
 ### webiny/api/tasks
 

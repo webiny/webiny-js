@@ -1,4 +1,3 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     createPersonEntries,
@@ -6,32 +5,33 @@ import {
     deletePersonModel
 } from "~tests/storageOperations/helpers";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import type { HeadlessCmsStorageOperations } from "~/types";
+import type { Container } from "@webiny/di";
+import { GetUniqueFieldValuesStorageOperation } from "~/features/shared/storageOperations/entry/GetUniqueFieldValuesStorageOperation.js";
 
 describe("field unique values listing", () => {
     const handler = useGraphQLHandler({
         path: "manage"
     });
 
-    let storageOperations: HeadlessCmsStorageOperations;
+    let container: Container;
 
     /**
      * Storage operations are created by a DI factory during context initialization.
-     * We invoke a query to trigger context init, then capture the storage operations.
+     * We invoke a query to trigger context init, then capture the container.
      */
     beforeEach(async () => {
         await handler.isInstalledQuery();
         const context = handler.getContext();
-        storageOperations = context.container.resolve(HeadlessCms).storageOperations;
+        container = context.container;
 
         await deletePersonModel({
-            storageOperations
+            container
         });
     });
 
     afterEach(async () => {
         await deletePersonModel({
-            storageOperations
+            container
         });
     });
 
@@ -40,17 +40,17 @@ describe("field unique values listing", () => {
         const amount = 17;
         const results = await createPersonEntries({
             amount,
-            storageOperations,
+            container,
             maxRevisions: 0
         });
         const moreResults = await createPersonEntries({
             amount,
-            storageOperations,
+            container,
             maxRevisions: 0
         });
         const evenMoreResults = await createPersonEntries({
             amount,
-            storageOperations,
+            container,
             maxRevisions: 0
         });
         for (const entryId in moreResults) {
@@ -65,8 +65,9 @@ describe("field unique values listing", () => {
          */
         expect(Object.values(results)).toHaveLength(amount * 3);
 
+        const getUniqueFieldValues = container.resolve(GetUniqueFieldValuesStorageOperation);
         const values = (
-            await storageOperations.entries.getUniqueFieldValues(personModel, {
+            await getUniqueFieldValues.execute(personModel, {
                 where: {
                     latest: true
                 },

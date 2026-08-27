@@ -1,22 +1,21 @@
-import { getBaseConfiguration } from "@webiny/api-opensearch";
-import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
-import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { CmsModelOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 
-class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
-    public readonly body: OpenSearchIndexRequestBody;
+class CustomOpenSearchIndex implements CmsModelOpenSearchIndex.Interface {
+    constructor(private original: CmsModelOpenSearchIndex.Interface) {}
 
-    public constructor() {
-        this.body = getBaseConfiguration(body => {
-            return {
-                ...body,
+    async execute(params: CmsModelOpenSearchIndex.Params): Promise<CmsModelOpenSearchIndex.Result> {
+        const result = await this.original.execute(params);
+        const settings = result.settings;
+
+        return {
+            ...result,
+            settings: {
+                ...settings,
                 mappings: {
-                    ...body.mappings,
-                    dynamic_templates: (body.mappings?.dynamic_templates || [])
+                    ...settings.mappings,
+                    dynamic_templates: (settings.mappings?.dynamic_templates || [])
                         .map(template => {
-                            /**
-                             * This part replaces the default numbers mapping with the one containing keyword field.
-                             */
                             const numbers = template["numbers"];
                             if (numbers) {
                                 return {
@@ -27,7 +26,7 @@ class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
                                             ...numbers.mapping,
                                             fields: {
                                                 keyword: {
-                                                    type: "keyword",
+                                                    type: "keyword" as const,
                                                     ignore_above: 256
                                                 }
                                             }
@@ -42,32 +41,24 @@ class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
                                 bytes: {
                                     match: "byte@*",
                                     mapping: {
-                                        type: "byte"
+                                        type: "byte" as const
                                     }
                                 }
                             }
                         ])
                 }
-            };
-        });
-    }
-
-    public canUse(): boolean {
-        return true;
+            }
+        };
     }
 }
 
 export const createIndexConfigurationPlugin = () => {
-    const plugin = createRegisterExtensionPlugin(({ container }) => {
-        container.register(
-            CmsEntryOpenSearchIndex.createImplementation({
-                implementation: CustomOpenSearchIndex,
+    return createRegisterExtensionPlugin(({ container }) => {
+        container.registerDecorator(
+            CmsModelOpenSearchIndex.createDecorator({
+                decorator: CustomOpenSearchIndex,
                 dependencies: []
             })
         );
     });
-
-    plugin.name = "test-cms-entry-opensearch-index-plugin";
-
-    return plugin;
 };

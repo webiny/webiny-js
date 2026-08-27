@@ -1,6 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { configurations } from "~/configurations";
-import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
+import { getOpenSearchIndexPrefix, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
+
+const getEsIndex = (model: { tenant: string; modelId: string }) => {
+    if (!model.tenant) {
+        throw new Error(
+            `Missing "tenant" parameter when trying to create Elasticsearch index name.`
+        );
+    }
+    const shared = isSharedOpenSearchIndex();
+    const index = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
+        .join("-")
+        .toLowerCase();
+    const prefix = getOpenSearchIndexPrefix();
+    return { index: prefix ? prefix + index : index };
+};
 
 describe("Elasticsearch index", () => {
     const tenants = [["root"], ["admin"], ["unknown"]];
@@ -8,11 +21,9 @@ describe("Elasticsearch index", () => {
     it.each(tenants)("should create index with tenant id as part of the name", async tenant => {
         const prefix = getOpenSearchIndexPrefix();
 
-        const { index } = configurations.es({
-            model: {
-                tenant,
-                modelId: "testModel"
-            }
+        const { index } = getEsIndex({
+            tenant,
+            modelId: "testModel"
         });
 
         expect(index).toEqual(`${prefix}${tenant}-headless-cms-testModel`.toLowerCase());
@@ -20,15 +31,13 @@ describe("Elasticsearch index", () => {
 
     it("should throw error when missing tenant but it is required", async () => {
         expect(() => {
-            configurations.es({
-                model: {
-                    /**
-                     * We expect error because we are testing the case when tenant is missing.
-                     */
-                    // @ts-expect-error
-                    tenant: null,
-                    modelId: "testModel"
-                }
+            getEsIndex({
+                /**
+                 * We expect error because we are testing the case when tenant is missing.
+                 */
+                // @ts-expect-error
+                tenant: null,
+                modelId: "testModel"
             });
         }).toThrowError(
             `Missing "tenant" parameter when trying to create Elasticsearch index name.`
@@ -42,11 +51,9 @@ describe("Elasticsearch index", () => {
 
             const prefix = getOpenSearchIndexPrefix();
 
-            const { index: noLocaleIndex } = configurations.es({
-                model: {
-                    tenant,
-                    modelId: "testModel"
-                }
+            const { index: noLocaleIndex } = getEsIndex({
+                tenant,
+                modelId: "testModel"
             });
             expect(noLocaleIndex).toEqual(`${prefix}root-headless-cms-testModel`.toLowerCase());
         }

@@ -7,11 +7,13 @@ import { cn } from "~/utils.js";
 interface AccordionItemDragHandleProps extends Omit<IconButtonProps, "icon"> {
     icon?: React.ReactElement;
     label?: string;
+    dragHandleRef?: (element: HTMLElement | null) => void;
 }
 
 const AccordionItemDragHandle = ({
     onClick,
     className,
+    dragHandleRef,
     ...props
 }: AccordionItemDragHandleProps) => {
     // We need to stop the event propagation to prevent the accordion from opening/closing when the handle is clicked.
@@ -28,6 +30,7 @@ const AccordionItemDragHandle = ({
 
     return (
         <span
+            ref={dragHandleRef as React.Ref<HTMLSpanElement>}
             className={cn(
                 [
                     "absolute top-1/2 -left-sm -translate-y-sm",

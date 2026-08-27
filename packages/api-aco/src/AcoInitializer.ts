@@ -1,15 +1,15 @@
 import type { Container } from "@webiny/di";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql";
 import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import type { IRequestContextInitializer } from "@webiny/event-handler-core";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins.js";
@@ -59,10 +59,15 @@ class AcoInitializerImpl implements IRequestContextInitializer {
             this.container.registerInstance(FolderModelAbstraction, folderModel.value);
         });
 
-        // CMS-entry folder-level-permission decorators (WCP-gated). Must be registered before any
-        // CMS-entry resolver runs, so this stays in the (pre-resolver) initializer rather than a
+        // CMS-entry folder-level-permission decorators (feature-flag gated). Must be registered before
+        // any CMS-entry resolver runs, so this stays in the (pre-resolver) initializer rather than a
         // lazy factory.
-        if (this.container.resolve(WcpContext).canUseFolderLevelPermissions()) {
+        if (
+            this.container
+                .resolve(FeatureFlags)
+                .get()
+                .isEnabled("advancedAccessControlLayer.folderLevelPermissions")
+        ) {
             CmsFlpFeature.register(this.container);
         }
 

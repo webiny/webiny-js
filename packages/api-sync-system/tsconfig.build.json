@@ -10,10 +10,10 @@
     { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-core-ddb/tsconfig.build.json" }
+    { "path": "../api-core-ddb/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -38,14 +38,14 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"]
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
     }
   }
 }

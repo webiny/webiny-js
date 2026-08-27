@@ -7,7 +7,7 @@ import { TenantContext } from "~/features/tenancy/abstractions.js";
 // Authenticated SDK singleton that configures the Webiny SDK with
 // the API endpoint, current tenant, and a token provider that
 // delegates to AuthenticationContext.getIdToken().
-class WebinySdkImpl extends Webiny {
+class WebinySdkImpl extends Webiny implements Abstraction.Interface {
     constructor(
         authContext: AuthenticationContext.Interface,
         envConfig: EnvConfig.Interface,

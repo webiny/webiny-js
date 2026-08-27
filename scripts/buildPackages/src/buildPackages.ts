@@ -8,7 +8,8 @@ import { getBuildMeta } from "./getBuildMeta";
 import { buildPackage } from "./buildSinglePackage";
 import { getHardwareInfo } from "./getHardwareInfo";
 import { execa } from "execa";
-import notifier from "node-notifier";
+// @ts-expect-error
+import notifier from "toasted-notifier";
 
 import path from "path";
 import { hideBin } from "yargs/helpers";
@@ -146,26 +147,24 @@ export const buildPackages = async () => {
                                         });
                                     } catch (err) {
                                         ctx.skip = true;
-                                        throw new PackageBuildError(pkg, err);
+                                        throw new PackageBuildError(pkg, err as Error);
                                     }
                                 }
                             };
                         });
 
-                        const batchTasks = task.newListr(subtasks, {
+                        return task.newListr(subtasks, {
                             concurrent: buildInParallel,
                             exitOnError: false,
-                            collectErrors: "minimal",
+                            collectErrors: true,
                             rendererOptions: { showErrorMessage: false }
                         });
-
-                        return batchTasks;
                     }
                 };
             }),
             {
                 concurrent: false,
-                collectErrors: "minimal",
+                collectErrors: true,
                 rendererOptions: {
                     timer: {
                         condition: true,
@@ -187,7 +186,7 @@ export const buildPackages = async () => {
 
         const duration = (Date.now() - start) / 1000;
 
-        if (tasks.errors.length) {
+        if (tasks.errors?.length) {
             console.log();
             console.log(
                 `Error building ${red(tasks.errors.length)} package(s). Check the logs below.`

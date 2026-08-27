@@ -1,25 +1,10 @@
-import type { IWebsocketsEventValidator } from "~/validator/index.js";
-import type { IWebsocketsResponse } from "~/response/index.js";
-import type {
-    APIGatewayProxyResult,
-    Context as LambdaContext
-} from "@webiny/aws-sdk/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { PartialDeep } from "type-fest";
 
-export interface HandlerCallable {
-    (event: IWebsocketsIncomingEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
-}
-
-export interface HandlerParams {
-    validator?: IWebsocketsEventValidator;
-    response?: IWebsocketsResponse;
-}
-
 export enum WebsocketsEventRoute {
-    "connect" = "$connect",
-    "disconnect" = "$disconnect",
-    "default" = "$default"
+    connect = "$connect",
+    disconnect = "$disconnect",
+    default = "$default"
 }
 
 export interface IWebsocketsEventData {
@@ -31,9 +16,9 @@ export interface IWebsocketsEventData {
 }
 
 export enum WebsocketsEventRequestContextEventType {
-    "message" = "MESSAGE",
-    "connect" = "CONNECT",
-    "disconnect" = "DISCONNECT"
+    message = "MESSAGE",
+    connect = "CONNECT",
+    disconnect = "DISCONNECT"
 }
 
 export interface IWebsocketsEventRequestContext {

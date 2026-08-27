@@ -5,14 +5,18 @@ import { mdbid } from "@webiny/utils";
 import type { WebsocketsServerAdapter } from "~/adapter/abstractions.js";
 import type { WebsocketsUpgradeHandler } from "~/upgradeHandler/abstractions.js";
 import type { WebsocketsConnectionManager } from "~/connectionManager/abstractions.js";
+import type { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { NodeWsAdapterImpl } from "~/adapter/NodeWsAdapter.js";
 import { DefaultUpgradeHandlerImpl } from "~/upgradeHandler/DefaultUpgradeHandler.js";
 import { HeartbeatManager } from "~/heartbeat/HeartbeatManager.js";
 import type {
     CreateWebsocketsServerParams,
     AttachWebsocketsServerParams,
-    IWebsocketsServer
+    IWebsocketsServer,
+    WebsocketsConnectionAuthenticator
 } from "./types.js";
+
+const ANONYMOUS_IDENTITY: ConnectionRegistry.Identity = { id: "", displayName: "", type: "" };
 
 const toHeaders = (raw: IncomingMessage["headers"]): Record<string, string> => {
     const headers: Record<string, string> = {};
@@ -30,6 +34,7 @@ interface WebsocketsServerParams {
     adapter: WebsocketsServerAdapter.Interface<unknown>;
     upgradeHandler: WebsocketsUpgradeHandler.Interface;
     connectionManager?: WebsocketsConnectionManager.Interface<unknown>;
+    authenticate?: WebsocketsConnectionAuthenticator;
     heartbeatInterval: number;
     debug: boolean;
     port: number;
@@ -42,6 +47,7 @@ class WebsocketsServer implements IWebsocketsServer {
     private readonly adapter: WebsocketsServerAdapter.Interface<unknown>;
     private readonly upgradeHandler: WebsocketsUpgradeHandler.Interface;
     private readonly connectionManager: WebsocketsConnectionManager.Interface<unknown> | undefined;
+    private readonly authenticate: WebsocketsConnectionAuthenticator | undefined;
     private readonly heartbeat: HeartbeatManager | undefined;
     private readonly debug: boolean;
     private readonly requestedPort: number;
@@ -57,6 +63,7 @@ class WebsocketsServer implements IWebsocketsServer {
         this.adapter = params.adapter;
         this.upgradeHandler = params.upgradeHandler;
         this.connectionManager = params.connectionManager;
+        this.authenticate = params.authenticate;
         this.debug = params.debug;
         this.requestedPort = params.port;
         this.requestedHost = params.host;
@@ -145,12 +152,16 @@ class WebsocketsServer implements IWebsocketsServer {
             const host = request.headers.host || "localhost";
             const headers = toHeaders(request.headers);
 
-            this.connectionManager?.add({
+            // Register the connection under its real identity, decoded from the `?token` JWT. Both
+            // the authentication and the registry write are async, so we kick this off without
+            // awaiting it and wire the socket handlers below synchronously — that way we don't miss a
+            // close or message that arrives during the gap. If a message does arrive before
+            // registration finishes, the `getMetadata` guard below just drops it, which is fine since
+            // the client doesn't send anything meaningful right at connect time.
+            void this.registerConnection({
                 connectionId,
                 socket,
-                endpoint: this.endpoint,
-                identity: { id: "", displayName: "", type: "" },
-                tenant: "",
+                request,
                 connectedAt,
                 host,
                 headers
@@ -186,6 +197,57 @@ class WebsocketsServer implements IWebsocketsServer {
                 console.error(`WebSocket error for connection "${connectionId}":`, error.message);
             });
         });
+    }
+
+    /**
+     * Authenticates the upgrade using the `?token`/`?tenant` query the app-websockets client sends,
+     * then registers the live socket in the shared connection manager under the resolved identity and
+     * tenant. Getting both right matters for targeted server→client sends: `SendToIdentity` finds
+     * connections by identity id in the registry, so a connection that's anonymous (or never made it
+     * into the registry) can't be reached. Everything here is guarded — if something goes wrong we
+     * don't crash the server or the upgrade, the connection just ends up unaddressable.
+     */
+    private async registerConnection(params: {
+        connectionId: string;
+        socket: unknown;
+        request: IncomingMessage;
+        connectedAt: number;
+        host: string;
+        headers: Record<string, string>;
+    }): Promise<void> {
+        const { connectionId, socket, request, connectedAt, host, headers } = params;
+
+        let identity: ConnectionRegistry.Identity = ANONYMOUS_IDENTITY;
+        let tenant = "";
+
+        try {
+            const url = new URL(request.url ?? "", `http://${host}`);
+            tenant = url.searchParams.get("tenant") ?? "";
+            const token = url.searchParams.get("token") ?? "";
+
+            if (this.authenticate && token) {
+                const authenticated = await this.authenticate(token);
+                if (authenticated?.id) {
+                    identity = authenticated;
+                }
+            }
+
+            await this.connectionManager?.add({
+                connectionId,
+                socket,
+                endpoint: this.endpoint,
+                identity,
+                tenant,
+                connectedAt,
+                host,
+                headers
+            });
+        } catch (error) {
+            console.error(
+                `Failed to register WebSocket connection "${connectionId}":`,
+                error instanceof Error ? error.message : String(error)
+            );
+        }
     }
 
     private resolvePortFromExistingServer(): void {
@@ -234,6 +296,7 @@ export const createWebsocketsServer = (params: CreateWebsocketsServerParams): IW
         adapter: new NodeWsAdapterImpl(),
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
+        authenticate: params.authenticate,
         heartbeatInterval: params.heartbeatInterval ?? 60_000,
         debug: params.debug ?? false,
         port: params.port ?? 0,
@@ -249,6 +312,7 @@ export const attachWebsocketsServer = (params: AttachWebsocketsServerParams): IW
         adapter: new NodeWsAdapterImpl(),
         upgradeHandler: new DefaultUpgradeHandlerImpl(),
         connectionManager: params.connectionManager,
+        authenticate: params.authenticate,
         heartbeatInterval: params.heartbeatInterval ?? 60_000,
         debug: params.debug ?? false,
         port: 0,

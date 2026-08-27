@@ -1,6 +1,6 @@
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
@@ -30,9 +30,9 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         // preserve the legacy behavior: null identity → default admin (this harness has no anon path)
         identity: identity ?? undefined,
         // aco storage plugins are processed during setup (before HeadlessCmsFeature)
-        plugins: apiAcoStorage.plugins,
+        legacyPlugins: apiAcoStorage.plugins,
         testProjectLicense,
-        features: container => {
+        setup: container => {
             // CompressionFeature must be registered before the audit logs DDB legacy plugin runs,
             // because that plugin eagerly resolves CompressionHandler from the container.
             CompressionFeature.register(container);

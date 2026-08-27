@@ -56,6 +56,7 @@ import {
     projectInfoService,
     projectSdkParamsService,
     setProjectIdService,
+    stackOutputCacheService,
     stdioService,
     uiService,
     validateProjectConfigService,
@@ -105,6 +106,7 @@ export const createProjectSdkContainer = async (
     container.register(projectInfoService).inSingletonScope();
     container.register(projectSdkParamsService).inSingletonScope();
     container.register(setProjectIdService).inSingletonScope();
+    container.register(stackOutputCacheService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
     container.register(validateProjectConfigService).inSingletonScope();
@@ -146,7 +148,7 @@ export const createProjectSdkContainer = async (
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
 
-    // Allow flavour-specific registrations (e.g. project-aws, project-server).
+    // Allow hosting-specific registrations (e.g. project-aws, project-server).
     // Must run before workspace services execute so decorators are in place.
     register?.(container);
 

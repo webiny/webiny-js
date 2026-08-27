@@ -1,28 +1,24 @@
 /**
  * Real-app integration guard for the Languages api extension registration path: the generated
  * extensions.ts wraps it in createRegisterExtensionPlugin(ctx => registerExtension(ctx.container,
- * Extension)) funnelled through registerLegacyPluginsViaGqlContextualSchema, i.e. registration
- * happens inside a RequestContextInitializer at request time, NOT a direct Extension.register(
- * container). If the wbyLanguage model resolves, the indirection works.
+ * Extension)) dispatched via registerExtensions (how the real app handler applies generated
+ * extensions, at register time), NOT a direct Extension.register(container). If the wbyLanguage
+ * model resolves, the indirection works.
  */
 import { describe, expect, it } from "vitest";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
-import {
-    GraphQLContextualSchema,
-    GraphQLEngineFeature,
-    registerLegacyPluginsViaGqlContextualSchema
-} from "@webiny/handler-graphql";
+import { GraphQLContextualSchema, GraphQLEngineFeature } from "@webiny/api-graphql";
 import { createRegisterExtensionPlugin } from "@webiny/handler/plugins/RegisterExtensionPlugin.js";
+import { registerExtensions } from "@webiny/handler";
 import { registerExtension } from "@webiny/project/utils/registerExtension.js";
 import { buildSchema } from "graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { Extension } from "~/api/Extension.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
@@ -39,7 +35,7 @@ const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 describe("Languages api extension — registered via the app indirection", () => {
     it("registers the wbyLanguage model through registerExtension + RequestContextInitializer", async () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-        const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+        const cmsStorage = getStorageOps("cms");
 
         const capturedCtx: { value?: Record<string, any> } = {};
 
@@ -52,8 +48,8 @@ describe("Languages api extension — registered via the app indirection", () =>
                 container.registerDecorator(AuthTriggerHandler);
                 container.registerDecorator(RootTenantInitializer);
             },
-            request: async container => {
-                const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+            child: async container => {
+                const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
                 ApiCoreFeature.register(container, { wcpLicense });
@@ -62,8 +58,9 @@ describe("Languages api extension — registered via the app indirection", () =>
 
                 HeadlessCmsFeature.register(container, { type: "manage" });
 
-                // The app path: NOT Extension.register(container) directly.
-                registerLegacyPluginsViaGqlContextualSchema(container, [
+                // The app path: NOT Extension.register(container) directly. registerExtensions is
+                // how the real app handler dispatches generated extensions (register-time).
+                await registerExtensions(container, [
                     createRegisterExtensionPlugin(ctx => {
                         registerExtension(ctx.container, Extension);
                     })

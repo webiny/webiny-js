@@ -1,13 +1,13 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { CreateGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupSlugTakenError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { ListGroupsStorageOperation } from "~/features/shared/storageOperations/group/ListGroupsStorageOperation.js";
+import { CreateGroupStorageOperation } from "~/features/shared/storageOperations/group/CreateGroupStorageOperation.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { toSlug } from "~/utils/toSlug.js";
+import { StringFormatter } from "@webiny/api-core/features/stringFormatter/index.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import type { CmsGroup } from "~/types/index.js";
 
@@ -25,8 +25,10 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private storageOperations: StorageOperations.Interface,
-        private tenantContext: TenantContext.Interface
+        private listGroups: ListGroupsStorageOperation.Interface,
+        private createGroup: CreateGroupStorageOperation.Interface,
+        private tenantContext: TenantContext.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {}
 
     async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -35,7 +37,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 
             // 1. Validate ID uniqueness (if provided)
             if (group.id) {
-                const existingById = await this.storageOperations.groups.list({
+                const existingById = await this.listGroups.execute({
                     where: {
                         tenant: tenant.id,
                         id: group.id
@@ -61,7 +63,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // 4. Persist to storage
-            await this.storageOperations.groups.create({ group });
+            await this.createGroup.execute({ group });
 
             // 5. Clear cache
             this.groupCache.clear();
@@ -75,7 +77,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     private async isSlugTaken(group: CmsGroup, tenant: string): Promise<boolean> {
         // If slug is provided and not empty, validate it
         if (group.slug && group.slug.trim()) {
-            const existingBySlug = await this.storageOperations.groups.list({
+            const existingBySlug = await this.listGroups.execute({
                 where: {
                     tenant,
                     slug: group.slug
@@ -86,8 +88,8 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Generate slug from name
-        const baseSlug = toSlug(group.name);
-        const existingBySlug = await this.storageOperations.groups.list({
+        const baseSlug = this.stringFormatter.slugify(group.name);
+        const existingBySlug = await this.listGroups.execute({
             where: {
                 tenant,
                 slug: baseSlug
@@ -106,8 +108,14 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const CreateGroupRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const CreateGroupRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations, TenantContext]
+    dependencies: [
+        GroupCache,
+        PluginGroupsProvider,
+        ListGroupsStorageOperation,
+        CreateGroupStorageOperation,
+        TenantContext,
+        StringFormatter
+    ]
 });

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node"],
     "target": "esnext",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
@@ -7,7 +8,6 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "lib": ["esnext", "dom", "dom.iterable"],
-    "types": ["node"],
     "esModuleInterop": true,
     "declaration": true,
     "composite": true,
@@ -21,7 +21,6 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": false,
-    "noStrictGenericChecks": false,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "strictBindCallApply": true,

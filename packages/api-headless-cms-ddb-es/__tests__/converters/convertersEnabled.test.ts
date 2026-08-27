@@ -7,7 +7,7 @@ import {
     createEntryExpectedTransformedDatesData,
     createEntryRawData
 } from "./mocks/data";
-import { configurations } from "~/configurations";
+import { getOpenSearchIndexPrefix, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import { createPartitionKey } from "~/operations/entry/keys";
 import lodashMerge from "lodash/merge";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
@@ -18,11 +18,16 @@ import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/cont
 describe("storage field path converters enabled", () => {
     const { elasticsearch, entryEntity } = useHandler();
 
-    const { index: indexName } = configurations.es({
-        model: {
-            tenant: "root",
-            modelId: "converter"
-        }
+    const getEsIndex = (m: { tenant: string; modelId: string }) => {
+        const shared = isSharedOpenSearchIndex();
+        const idx = [shared ? "root" : m.tenant, "headless-cms", m.modelId].join("-").toLowerCase();
+        const prefix = getOpenSearchIndexPrefix();
+        return { index: prefix ? prefix + idx : idx };
+    };
+
+    const { index: indexName } = getEsIndex({
+        tenant: "root",
+        modelId: "converter"
     });
 
     beforeEach(async () => {
@@ -102,7 +107,7 @@ describe("storage field path converters enabled", () => {
                 }
             }
         };
-        const { index } = configurations.es({ model });
+        const { index } = getEsIndex(model);
         const esResponse = await elasticsearch.search({
             index,
             body

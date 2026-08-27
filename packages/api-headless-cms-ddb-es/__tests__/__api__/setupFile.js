@@ -1,12 +1,12 @@
 import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { dbPlugins } from "@webiny/db-dynamodb/testing.js";
 import { registerDynamoDBCore } from "@webiny/db-dynamodb";
-import { getDocumentClient, simulateStream } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { registerCmsOpenSearchStorageOperations } from "../../src/index";
-import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
+import { simulateStream } from "@webiny/api-opensearch-aws/testing/simulateStream.js";
+import { HeadlessCmsDdbEsFeature } from "../../src/index";
+import { CmsEntryOpenSearchBodyModifier } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
-import { configurations } from "../../src/configurations";
-import { setStorageOps } from "@webiny/project-utils/testing/environment";
+import { setStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
     getTestOpenSearchClient,
     registerOpenSearchCoreForTests
@@ -15,10 +15,7 @@ import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 import { createDdbToOpenSearchStreamHandler } from "@webiny/api-sync-ddb-to-opensearch";
-
-if (typeof registerCmsOpenSearchStorageOperations !== "function") {
-    throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
-}
+import { createTestModelIndexName } from "@webiny/api-headless-cms-utils-os/testing/index.js";
 
 const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
@@ -31,25 +28,12 @@ const opensearchClient = getTestOpenSearchClient();
 simulateStream(documentClient, createDdbToOpenSearchStreamHandler(opensearchClient));
 
 setStorageOps("cms", () => {
-    const createIndexName = model => {
-        const { index } = configurations.es({
-            model
-        });
-        return index;
-    };
-
-    /**
-     * We need to create model index before entry create because of the direct storage operations tests.
-     * When running direct storage ops tests, index is created on the fly otherwise and then it is not cleaned up afterwards.
-     *
-     * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
-     */
     const createOrRefreshIndexSubscription = createRegisterExtensionPlugin(({ container }) => {
         container.registerFactory(EntryBeforeCreateEventHandler, () => ({
             async handle(event) {
                 const client = container.resolve(OpenSearchClient);
                 const { model } = event.payload;
-                const index = createIndexName(model);
+                const index = await createTestModelIndexName(container, { model });
                 try {
                     const response = await client.use().indices.exists({
                         index
@@ -76,23 +60,25 @@ setStorageOps("cms", () => {
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     const fruitModifierPlugin = createRegisterExtensionPlugin(({ container }) => {
-        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
-            implementation: class {
-                modelId = "fruit";
-                modifyBody({ body }) {
-                    if (!body.sort.customSorter) {
-                        return;
-                    }
-                    const order = body.sort.customSorter.order;
-                    delete body.sort.customSorter;
-                    body.sort = {
-                        createdOn: {
-                            order,
-                            unmapped_type: "date"
-                        }
-                    };
+        // eslint-disable-next-line webiny/require-implements-on-create-implementation -- plain JS file: TypeScript `implements` is invalid syntax here.
+        class FruitBodyModifierImplementation {
+            modelId = "fruit";
+            modifyBody({ body }) {
+                if (!body.sort.customSorter) {
+                    return;
                 }
-            },
+                const order = body.sort.customSorter.order;
+                delete body.sort.customSorter;
+                body.sort = {
+                    createdOn: {
+                        order,
+                        unmapped_type: "date"
+                    }
+                };
+            }
+        }
+        const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+            implementation: FruitBodyModifierImplementation,
             dependencies: []
         });
         container.register(FruitBodyModifier);
@@ -107,7 +93,9 @@ setStorageOps("cms", () => {
                 documentClient
             }),
             registerOpenSearchCoreForTests(),
-            registerCmsOpenSearchStorageOperations(),
+            createRegisterExtensionPlugin(context =>
+                HeadlessCmsDdbEsFeature.register(context.container)
+            ),
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
             fruitModifierPlugin

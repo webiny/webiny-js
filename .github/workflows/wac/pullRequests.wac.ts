@@ -1,11 +1,12 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 import {
-    NODE_VERSION,
-    BUILD_PACKAGES_RUNNER,
+    ACTION,
     AWS_REGION,
-    runNodeScript,
-    addToOutputs
+    BUILD_PACKAGES_RUNNER,
+    NODE_VERSION,
+    addToOutputs,
+    runNodeScript
 } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
@@ -129,26 +130,6 @@ export const pullRequests = createWorkflow({
         "cancel-in-progress": true
     },
     jobs: {
-        validateCommits: createJob({
-            name: "Validate commit messages",
-            if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.4.2" }]
-        }),
-        // Don't allow "feat" commits to be merged into "dev" branch.
-        validateCommitsDev: createJob({
-            name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
-            if: "github.base_ref == 'dev'",
-            steps: [
-                {
-                    uses: "webiny/action-conventional-commits@v1.4.2",
-                    with: {
-                        // If dev, use "dev" commit types, otherwise use "next" commit types.
-                        "allowed-commit-types":
-                            "fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip"
-                    }
-                }
-            ]
-        }),
         constants: createJob({
             name: "Create constants",
             outputs: {
@@ -187,7 +168,7 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed files",
                     id: "detect-changed-files",
-                    uses: "dorny/paths-filter@v4",
+                    uses: ACTION.pathsFilter,
                     with: {
                         filters: "changed:\n  - 'packages/**/*'\n",
                         "list-files": "json"
@@ -242,7 +223,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "API bundle size limit",
-                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
                 },
                 {
                     name: "Build api",

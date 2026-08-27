@@ -1,6 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ReactComponent as GlobeIcon } from "@webiny/icons/language.svg";
-import { Button, DropdownMenu, IconButton, Separator, Input, cn } from "@webiny/admin-ui";
+import {
+    Button,
+    DropdownMenu,
+    IconButton,
+    Separator,
+    Input,
+    Text,
+    Tooltip,
+    cn
+} from "@webiny/admin-ui";
 import { usePreviewDomain } from "../usePreviewDomain.js";
 import type { GenericFormData } from "@webiny/form";
 import { Bind, Form } from "@webiny/form";
@@ -38,7 +47,7 @@ export const PreviewDomain = () => {
         editor.executeCommand(Commands.RefreshPreview);
     }, [previewDomain]);
 
-    const classNames = cn("absolute left-0 top-0", isOverridden ? "fill-accent-default" : "");
+    const classNames = cn(isOverridden ? "fill-accent-default" : "");
 
     return (
         <DropdownMenu
@@ -48,13 +57,24 @@ export const PreviewDomain = () => {
             className={"shadow-lg"}
             onOpenChange={setIsOpen}
             trigger={
-                <IconButton
-                    icon={<GlobeIcon />}
-                    size="md"
-                    onClick={() => {}}
-                    variant={"ghost"}
-                    className={classNames}
-                />
+                // The button is absolutely positioned to overlay the address bar's left
+                // padding. The `absolute` lives on this wrapper (not the button) so the
+                // Tooltip trigger keeps a non-zero box to anchor to.
+                <span className={"absolute left-0 top-0"}>
+                    <Tooltip
+                        content={<Text size="md">Change preview domain</Text>}
+                        side="bottom"
+                        trigger={
+                            <IconButton
+                                icon={<GlobeIcon />}
+                                size="md"
+                                onClick={() => {}}
+                                variant={"ghost"}
+                                className={classNames}
+                            />
+                        }
+                    />
+                </span>
             }
         >
             <div className={"p-sm text-sm"} style={{ width: 300 }}>

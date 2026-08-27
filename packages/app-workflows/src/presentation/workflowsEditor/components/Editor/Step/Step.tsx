@@ -4,6 +4,7 @@ import type { IWorkflowNotificationType, IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { observer } from "mobx-react-lite";
+import { useSnackbar } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
 import { StepFormTitle } from "./Form/StepFormTitle.js";
 import { StepFormColor } from "./Form/StepFormColor.js";
@@ -57,6 +58,7 @@ export const Step = observer(
         // notifications
     }: IStepProps) => {
         const { editing, stopEditing, startEditing } = useEditing(open);
+        const { showSnackbar } = useSnackbar();
 
         const onCancel = useCallback(() => {
             stopEditing();
@@ -99,6 +101,7 @@ export const Step = observer(
             (input: IWorkflowStep) => {
                 initialOnSave(input);
                 stopEditing();
+                showSnackbar("Workflow saved successfully.");
             },
             [initialOnSave, step]
         );

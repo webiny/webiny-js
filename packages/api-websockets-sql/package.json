@@ -27,13 +27,13 @@
     "knex": "^3.3.0"
   },
   "devDependencies": {
+    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
-    "@webiny/project-utils": "0.0.0",
-    "better-sqlite3": "^12.11.1",
+    "better-sqlite3": "^13.0.3",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

@@ -1,12 +1,12 @@
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
 import { BackgroundTasksFeature, TaskService } from "@webiny/background-tasks/api";
-import { createMockTaskService } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createMockTaskService } from "@webiny/background-tasks/testing/index.js";
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import type { HcmsTasksContext } from "~/types";
 import { HcmsTasksFeature } from "~/HcmsTasksFeature.js";
 
-type Params = Omit<CmsTestHandlerParams, "features">;
+type Params = Omit<CmsTestHandlerParams, "setup">;
 
 const identity = {
     id: "id-12345678",
@@ -20,7 +20,7 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
     const { getContext } = createCmsTestHandler({
         identity,
         ...params,
-        features: container => {
+        setup: container => {
             // The delete-model store is backed by the api-core key-value store, which the shared
             // cms-ddb preset already registers — no extra storage wiring needed here.
             HcmsTasksFeature.register(container);

@@ -1,13 +1,12 @@
 import { getIntrospectionQuery } from "graphql";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { until } from "@webiny/api/testing/until.js";
 import { createCmsTestHandler, processLegacyPlugins } from "@webiny/api-headless-cms-testing";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { ContextPlugin } from "@webiny/api";
 import { AcoFeature } from "~/index";
 import { createIdentity } from "@webiny/api-core-testing";
 import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
@@ -51,19 +50,23 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         identity: resolvedIdentity,
         permissions,
         testProjectLicense: params.testProjectLicense,
-        features: async container => {
+        setup: async container => {
             // ACO storage operations + any test-supplied extensions, then the ACO feature itself.
             // Mirrors the app: registered after HeadlessCmsFeature, before the GraphQL engine.
             processLegacyPlugins(container, apiAcoStorage.plugins);
 
             if (params.plugins) {
-                const extraPlugins = [params.plugins].flat(Infinity as 1);
-                for (const plugin of extraPlugins) {
-                    if (plugin instanceof ContextPlugin) {
-                        await plugin.apply({ container } as any);
-                    }
+                const extraPlugins = [params.plugins].flat(Infinity as 1).filter(Boolean);
+                // DI-native plugins are plain `container => {}` functions; call them directly.
+                // Everything else (storage RegisterExtension presets) goes via processLegacyPlugins.
+                const isFn = (p: any) => typeof p === "function" && !p.prototype;
+                for (const plugin of extraPlugins.filter(isFn)) {
+                    (plugin as (c: any) => void)(container);
                 }
-                processLegacyPlugins(container, extraPlugins);
+                processLegacyPlugins(
+                    container,
+                    extraPlugins.filter(p => !isFn(p))
+                );
             }
 
             container.register(FileModel);

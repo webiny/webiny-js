@@ -7,6 +7,7 @@
     { "path": "../api-core" },
     { "path": "../api-file-manager" },
     { "path": "../api-file-manager-aco" },
+    { "path": "../api-graphql" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-aco" },
     { "path": "../api-headless-cms-scheduler" },
@@ -21,9 +22,7 @@
     { "path": "../api-websockets" },
     { "path": "../api-workflows" },
     { "path": "../background-tasks" },
-    { "path": "../event-handler-core" },
     { "path": "../handler" },
-    { "path": "../handler-graphql" },
     { "path": "../webhooks" }
   ],
   "compilerOptions": {
@@ -43,6 +42,8 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-file-manager-aco/*": ["../api-file-manager-aco/src/*"],
       "@webiny/api-file-manager-aco": ["../api-file-manager-aco/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-headless-cms-aco/*": ["../api-headless-cms-aco/src/*"],
@@ -71,12 +72,8 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/webhooks/*": ["../webhooks/src/*"],
       "@webiny/webhooks": ["../webhooks/src"]
     }

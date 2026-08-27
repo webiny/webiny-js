@@ -1,6 +1,6 @@
 import { resolve, resolveList } from "./resolve.js";
-import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import type { IGraphQLSchemaPlugin } from "@webiny/api-graphql";
+import { createGraphQLSchemaPlugin } from "@webiny/api-graphql";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";

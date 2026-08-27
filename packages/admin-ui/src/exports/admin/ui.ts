@@ -17,6 +17,9 @@ export { AutoComplete } from "~/AutoComplete/index.js";
 // Avatar
 export { Avatar } from "~/Avatar/index.js";
 
+// Beta Badge
+export { BetaBadge } from "~/BetaBadge/BetaBadge.js";
+
 // Button
 export { Button, CopyButton, IconButton } from "~/Button/index.js";
 
@@ -73,6 +76,9 @@ export { DropdownMenu } from "~/DropdownMenu/index.js";
 
 // DynamicFieldset
 export { DynamicFieldset } from "~/DynamicFieldset/index.js";
+
+// EmptyState
+export { EmptyState } from "~/EmptyState/index.js";
 
 // FilePicker
 export { FilePicker } from "~/FilePicker/index.js";

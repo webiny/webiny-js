@@ -1,8 +1,33 @@
 import fs from "fs-extra";
-import getPackages from "get-yarn-workspaces";
+import path from "path";
 import yargs from "yargs";
 
-const isMissingPackageJson = p => !fs.existsSync(p + "/package.json");
+const rootDir = path.resolve(import.meta.dirname, "..");
+
+const getWorkspaceGlobs = () => {
+    const rootPkg = fs.readJsonSync(path.join(rootDir, "package.json"));
+    const globs = rootPkg.workspaces?.packages || rootPkg.workspaces || [];
+    return globs.filter(g => g.endsWith("/*"));
+};
+
+const scanWorkspaceDirs = () => {
+    const globs = getWorkspaceGlobs();
+    const dirs = [];
+    for (const glob of globs) {
+        const parent = path.join(rootDir, glob.replace("/*", ""));
+        if (!fs.existsSync(parent)) {
+            continue;
+        }
+        for (const entry of fs.readdirSync(parent, { withFileTypes: true })) {
+            if (entry.isDirectory()) {
+                dirs.push(path.join(parent, entry.name));
+            }
+        }
+    }
+    return dirs;
+};
+
+const isMissingPackageJson = p => !fs.existsSync(path.join(p, "package.json"));
 
 /**
  * Deletes empty package folders. Useful when switching branches and when left with empty package folders.
@@ -10,7 +35,7 @@ const isMissingPackageJson = p => !fs.existsSync(p + "/package.json");
  */
 
 const { argv } = yargs(process.argv);
-const packagesWithoutPackageJson = getPackages().filter(isMissingPackageJson);
+const packagesWithoutPackageJson = scanWorkspaceDirs().filter(isMissingPackageJson);
 
 if (packagesWithoutPackageJson.length) {
     console.log(`Found ${packagesWithoutPackageJson.length} empty package folder(s).`);

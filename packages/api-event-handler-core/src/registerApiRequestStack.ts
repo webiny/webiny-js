@@ -1,8 +1,8 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { WcpLicenseInitializer } from "./WcpLicenseInitializer.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
 import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
@@ -23,7 +23,7 @@ import { WebsocketsFeature } from "@webiny/api-websockets";
 import { WorkflowsFeature } from "@webiny/api-workflows";
 import { SchedulerFeature } from "@webiny/api-scheduler";
 
-/** Installs a flavour-specific transport adapter into the per-request container at its interleave point. */
+/** Installs a hosting-specific transport adapter into the per-request container at its interleave point. */
 export type TransportRegistrar = (container: Container) => void | Promise<void>;
 
 export interface RegisterApiRequestStackConfig {
@@ -38,7 +38,7 @@ export interface RegisterApiRequestStackConfig {
      */
     registerRequestStorage?: (container: Container) => void | Promise<void>;
     /**
-     * Flavour-specific transport adapters, each installed at its exact interleave point in the stack.
+     * Hosting-specific transport adapters, each installed at its exact interleave point in the stack.
      * Every entry follows the same shape: it runs immediately AFTER the transport-agnostic domain
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
      * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
@@ -82,14 +82,16 @@ export async function registerApiRequestStack(
     container: Container,
     config: RegisterApiRequestStackConfig
 ): Promise<void> {
+    // Refresh the WCP license BEFORE any feature registers — this is the single per-request refresh.
+    // register()-time feature-flag checks (e.g. the private-files gate) and WcpContext.canUse* both
+    // read it via the process cache (`WcpLicenseProvider.get()` / `WcpLicenseLoader.getCached()`). Runs here
+    // — the shared request stack both hosting types call — so no handler wires it. Process-cached
+    // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
+    await WcpLicenseLoader.load();
+
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // Refresh the WCP license once per request (RequestInitializer). Lives here (the shared request
-    // stack) rather than api-core, so the domain layer has no transport dependency; runs for all
-    // flavours. Registered after ApiCoreFeature (which provides WcpLicenseProvider).
-    container.register(WcpLicenseInitializer);
 
     // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
     await config.registerRequestStorage?.(container);

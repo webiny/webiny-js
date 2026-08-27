@@ -3,7 +3,7 @@ import { useHandler } from "~tests/graphql/handler";
 import { createMockPlugins } from "~tests/converters/mocks";
 import { createGlobalModifierPlugin } from "~tests/api/mocks/plugins";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { configurations } from "~/configurations";
+import { getOpenSearchIndexPrefix, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
@@ -20,9 +20,12 @@ describe("missing index", () => {
         const modelResult = await context.container.resolve(GetModelUseCase).execute("converter");
         const model = modelResult.value as CmsModel;
 
-        const config = configurations.es({
-            model
-        });
+        const shared = isSharedOpenSearchIndex();
+        const idx = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
+            .join("-")
+            .toLowerCase();
+        const prefix = getOpenSearchIndexPrefix();
+        const config = { index: prefix ? prefix + idx : idx };
 
         const indexExistsResponse = await opensearch.use().indices.exists({
             index: config.index

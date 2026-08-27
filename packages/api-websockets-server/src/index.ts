@@ -1,5 +1,5 @@
 export { createWebsocketsServer, attachWebsocketsServer } from "~/server/WebsocketsServer.js";
-export type { IWebsocketsServer } from "~/server/types.js";
+export type { IWebsocketsServer, WebsocketsConnectionAuthenticator } from "~/server/types.js";
 export * from "~/adapter/abstractions.js";
 export * from "~/upgradeHandler/abstractions.js";
 export * from "~/connectionManager/abstractions.js";

@@ -1,0 +1,61 @@
+{
+  "name": "@webiny/remote-components",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "description": "Remote component management for Webiny.",
+  "author": "Webiny Ltd.",
+  "license": "Webiny Enterprise",
+  "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/ai-powerups": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-website-builder": "0.0.0",
+    "@webiny/app-websockets": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/project": "0.0.0",
+    "@webiny/project-aws": "0.0.0",
+    "@webiny/website-builder-sdk": "0.0.0",
+    "acorn": "^8.18.0",
+    "acorn-jsx": "^5.3.2",
+    "css-tree": "^3.2.1",
+    "esbuild-wasm": "^0.28.2",
+    "front-matter": "^4.0.2",
+    "mobx": "^7.0.3",
+    "mobx-react-lite": "^5.0.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/sdk-nextjs": "0.0.0",
+    "@webiny/website-builder-nextjs": "0.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

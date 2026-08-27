@@ -11,21 +11,24 @@ export interface IFileManagerFeatureFlags {
 
 export interface IAiPowerupsWebsiteBuilderOptions {
     pageGeneration?: boolean;
+    pageTranslation?: boolean;
 }
 
 export interface IAiPowerupsFileManagerOptions {
     imageEnrichment?: boolean;
 }
 
+export interface IAiPowerupsCmsOptions {
+    entryGeneration?: boolean;
+    entryComparison?: boolean;
+    entryTranslation?: boolean;
+}
+
 export interface IAiPowerupsOptions {
     websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
     fileManager?: IAiPowerupsFileManagerOptions;
     lexicalGeneration?: boolean;
-}
-
-export interface IAiPowerupsFeatureFlags {
-    enabled?: boolean;
-    options?: IAiPowerupsOptions;
+    cms?: IAiPowerupsCmsOptions;
 }
 
 /**
@@ -41,5 +44,7 @@ export interface IFeatureFlagsDto {
     auditLogs?: boolean;
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
-    aiPowerups?: IAiPowerupsFeatureFlags;
+    aiPowerups?: boolean | IAiPowerupsOptions;
+    abTesting?: boolean;
+    remoteComponents?: boolean;
 }

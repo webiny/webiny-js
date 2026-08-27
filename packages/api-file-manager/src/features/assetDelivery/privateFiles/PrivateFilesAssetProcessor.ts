@@ -38,6 +38,8 @@ export class PrivateFilesAssetProcessor implements IAssetProcessor {
     }
 
     async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
+        // Only registered when private files are licensed (register-time gate in AssetDeliveryFeature),
+        // so no per-request license guard is needed here.
         const id = asset.getId();
 
         const file = await this.identityContext.withoutAuthorization(async () => {

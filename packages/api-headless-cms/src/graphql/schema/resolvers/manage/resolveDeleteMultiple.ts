@@ -1,4 +1,4 @@
-import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses.js";
+import { ErrorResponse, ListResponse } from "@webiny/api-graphql/responses.js";
 import type { CmsEntryResolverFactory as ResolverFactory } from "~/types/index.js";
 import { DeleteMultipleEntriesUseCase } from "~/features/contentEntry/DeleteMultipleEntries/index.js";
 

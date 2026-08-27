@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig } from "@webiny/app-admin";
+import { AdminConfig, useFeatureFlags } from "@webiny/app-admin";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TranslatePageAction } from "./TranslatePageAction.js";
 import { TranslatePageDialog, TRANSLATE_PAGE_DIALOG } from "./TranslatePageDialog.js";
@@ -8,6 +8,12 @@ import { PageListConfig } from "~/exports/admin/website-builder/page/list.js";
 const { Browser } = PageListConfig;
 
 export const TranslatePageConfig = () => {
+    const featureFlags = useFeatureFlags();
+
+    if (!featureFlags.isEnabled("aiPowerups.websiteBuilder.pageTranslation")) {
+        return null;
+    }
+
     return (
         <>
             <AdminConfig>

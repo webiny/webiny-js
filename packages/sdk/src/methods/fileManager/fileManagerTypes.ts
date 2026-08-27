@@ -14,6 +14,10 @@ export interface FmFile_Metadata {
         height?: number;
         format?: string;
         orientation?: number;
+        crop?: { top: number; left: number; bottom: number; right: number };
+        focalPoint?: { x: number; y: number };
+        alt?: string;
+        caption?: string;
     };
     exif?: Record<string, any>;
     iptc?: Record<string, any>;
