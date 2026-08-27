@@ -242,12 +242,16 @@ export const ApiCloudfront = createAppModule({
                             httpsPort: 443,
                             originProtocolPolicy: "https-only",
                             originSslProtocols: ["TLSv1.2"],
-                            // How long CloudFront waits between packets of the response before giving
-                            // up. The default is 30s, which is SHORTER than a slow model can take to
-                            // produce its first token — CloudFront would abandon the stream while the
-                            // Lambda (300s timeout) kept working. 60s is the ceiling without an AWS
-                            // quota increase; a route whose gaps can exceed that must emit SSE
-                            // heartbeat comments (`: ping\n\n`), which clients ignore by spec.
+                            // NOT a cap on how long a response may stream. It is an IDLE timeout,
+                            // applied twice: to time-to-first-byte, and to the gap between any two
+                            // subsequent packets. A stream that keeps emitting can run as long as the
+                            // Lambda lives (300s here); only silence longer than this kills it.
+                            //
+                            // Raised from the 30s default because that is shorter than a slow model's
+                            // time to first token: CloudFront would abandon the stream while the Lambda
+                            // kept working. 60s is the ceiling without an AWS quota increase — a route
+                            // whose quiet gaps could exceed it must emit SSE heartbeat comments
+                            // (`: ping\n\n`), which clients ignore by spec, resetting the timer.
                             originReadTimeout: 60
                         }
                     }
