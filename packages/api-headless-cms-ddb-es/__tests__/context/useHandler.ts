@@ -7,7 +7,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/a
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
@@ -72,7 +72,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const container = rootContainer.createChildContainer();
         container.registerInstance(RequestContainer, container);
 
-        const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+        const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, cmsStorage.plugins);

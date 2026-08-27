@@ -3,7 +3,7 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import {
@@ -95,7 +95,9 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
             container.registerDecorator(RootTenantInitializer);
         },
         child: async container => {
-            const wcpLicense = await loadWcpLicense(createTestWcpLicense({ recordLocking: true }));
+            const wcpLicense = await WcpLicenseLoader.load(
+                createTestWcpLicense({ recordLocking: true })
+            );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);

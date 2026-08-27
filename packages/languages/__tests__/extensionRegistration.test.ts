@@ -17,7 +17,7 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { Extension } from "~/api/Extension.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
@@ -49,7 +49,7 @@ describe("Languages api extension — registered via the app indirection", () =>
                 container.registerDecorator(RootTenantInitializer);
             },
             child: async container => {
-                const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+                const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
 
                 registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
                 ApiCoreFeature.register(container, { wcpLicense });
