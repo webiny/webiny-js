@@ -138,10 +138,10 @@ describe("getFieldBuilders with CMS model", () => {
             visited.push({ fieldType: builder.getType(), tags: builder.getTags() });
         });
         // top-level: textSingle, objectMultiple, dynamicZoneList = 3
-        // objectMultiple children: uuid, name = 2
-        // dynamicZoneList template "textBlock" children: uuid, title = 2
-        // Total = 7
-        expect(visited.length).toBe(7);
+        // objectMultiple children: _id, uuid, name = 3
+        // dynamicZoneList template "textBlock" children: _id, uuid, title = 3
+        // Total = 9
+        expect(visited.length).toBe(9);
     });
 
     it("traverse should find builders tagged 'uuid'", () => {
@@ -213,8 +213,8 @@ describe("getFieldBuilders with CMS model", () => {
                 textBuilders.push(builder.getName());
             }
         });
-        // textSingle + objectMultiple.uuid + objectMultiple.name + dz.textBlock.uuid + dz.textBlock.title = 5
-        expect(textBuilders.length).toBe(5);
+        // textSingle + objectMultiple._id + objectMultiple.uuid + objectMultiple.name + dz.textBlock._id + dz.textBlock.uuid + dz.textBlock.title = 7
+        expect(textBuilders.length).toBe(7);
     });
 
     it("should combine getName, getType, and getTags for precise filtering", () => {

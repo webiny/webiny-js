@@ -114,6 +114,10 @@ export default /* GraphQL */ `
         longText_not_contains: String
     }
 
+    extend type ProductApiSingular_Variant_Options {
+        _id: ID
+    }
+
     type ProductApiSingular_Variant {
         name: String
         price: Number
@@ -150,6 +154,10 @@ export default /* GraphQL */ `
         options: ProductApiSingular_Variant_OptionsWhereInput
     }
 
+    extend type ProductApiSingular_Variant {
+        _id: ID
+    }
+
     type ProductApiSingular_FieldsObject {
         text: String
     }
@@ -165,6 +173,10 @@ export default /* GraphQL */ `
         text_not_startsWith: String
     }
 
+    extend type ProductApiSingular_FieldsObject {
+        _id: ID
+    }
+
     input ProductApiSingular_Variant_OptionsInput {
         name: String
         price: Number
@@ -172,6 +184,10 @@ export default /* GraphQL */ `
         category: RefFieldInput
         categories: [RefFieldInput]
         longText: [String]
+    }
+
+    extend input ProductApiSingular_Variant_OptionsInput {
+        _id: ID
     }
 
     input ProductApiSingular_VariantInput {
@@ -182,8 +198,16 @@ export default /* GraphQL */ `
         options: [ProductApiSingular_Variant_OptionsInput!]
     }
 
+    extend input ProductApiSingular_VariantInput {
+        _id: ID
+    }
+
     input ProductApiSingular_FieldsObjectInput {
         text: String
+    }
+
+    extend input ProductApiSingular_FieldsObjectInput {
+        _id: ID
     }
 
     input ProductApiSingularInputValues {
