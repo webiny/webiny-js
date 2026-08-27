@@ -10,11 +10,29 @@ interface ConnectionRow {
     identityType: string;
     tenant: string;
     endpoint: string;
-    connectedOn: string;
-    lastSeen: string | null;
+    // `connectedOn` is written as a UTC ISO string, but `datetime` columns are read back in a
+    // driver-specific shape — a `Date` (node-postgres / some sqlite clients) or a `T`/`Z`-less
+    // "2026-08-04 17:02:06". `toData` normalizes it back to a canonical ISO string.
+    connectedOn: string | Date;
+    lastSeen: string | Date | null;
 }
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
+
+/**
+ * Normalize a stored `datetime` value back to a canonical UTC ISO string. Drivers return this column
+ * either as a `Date` or as a `T`/`Z`-less string; both represent a UTC wall-clock (that's how it was
+ * written), so a `Date` maps straight through `toISOString()` and the space form is read as UTC.
+ */
+const toIsoString = (value: string | Date): string => {
+    if (value instanceof Date) {
+        return value.toISOString();
+    }
+    const normalized =
+        value.includes(" ") && !value.includes("T") ? `${value.replace(" ", "T")}Z` : value;
+    const parsed = new Date(normalized);
+    return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString();
+};
 
 class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
     private readonly knex;
@@ -268,7 +286,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
             },
             tenant: row.tenant,
             endpoint: row.endpoint,
-            connectedOn: row.connectedOn
+            connectedOn: toIsoString(row.connectedOn)
         };
     }
 }
