@@ -4,7 +4,6 @@ import type { IRequestContextInitializer } from "@webiny/event-handler-core";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WORKFLOW_MODEL_ID } from "./domain/workflow/workflowModel.js";
 import { WORKFLOW_STATE_MODEL_ID } from "./domain/workflowState/stateModel.js";
@@ -45,18 +44,16 @@ class WorkflowsInitializerImpl implements IRequestContextInitializer {
     constructor(
         private container: Container,
         private tenantCtx: TenantContext.Interface,
-        private identityCtx: IdentityContext.Interface,
-        private featureFlags: FeatureFlags.Interface
+        private identityCtx: IdentityContext.Interface
     ) {}
 
     async init(_ctx: Record<string, any>): Promise<void> {
         if (!this.initialized) {
             this.initialized = true;
 
-            if (
-                this.tenantCtx.getTenant() &&
-                this.featureFlags.get().isEnabled("advancedPublishingWorkflow")
-            ) {
+            // The feature is only registered when licensed (WorkflowsFeature gates on the flag), so
+            // here we only wait for the tenant to be known before the per-tenant model registration.
+            if (this.tenantCtx.getTenant()) {
                 await this.registerWorkflowFeatures();
             }
         }
@@ -115,5 +112,5 @@ class WorkflowsInitializerImpl implements IRequestContextInitializer {
 
 export const WorkflowsInitializer = RequestContextInitializer.createImplementation({
     implementation: WorkflowsInitializerImpl,
-    dependencies: [RequestContainer, TenantContext, IdentityContext, FeatureFlags]
+    dependencies: [RequestContainer, TenantContext, IdentityContext]
 });
