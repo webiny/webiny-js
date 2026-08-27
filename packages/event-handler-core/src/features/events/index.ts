@@ -3,6 +3,8 @@ export * from "./EventType.js";
 export * from "./RequestContainer.js";
 export * from "./RequestContextInitializer.js";
 export * from "./RequestInitializer.js";
+export * from "./Module.js";
+export * from "./runModules.js";
 export * from "./chain.js";
 export * from "./abstractions.js";
 export * from "./HandlerApp.js";
