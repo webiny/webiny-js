@@ -22,12 +22,11 @@ export class ObjectFieldMapper implements ICmsFieldTypeMapper {
         if (childFields && childFields.length > 0) {
             builder.fields(childRegistry => {
                 const result: Record<string, IFieldBuilder> = {};
-                if (field.list) {
-                    result["_id"] = childRegistry
-                        .text()
-                        .hidden()
-                        .defaultValue(() => generateAlphaNumericLowerCaseId(12));
-                }
+                result["_id"] = childRegistry
+                    .text()
+                    .hidden()
+                    .defaultValue(() => generateAlphaNumericLowerCaseId(12))
+                    .cloneValue(() => generateAlphaNumericLowerCaseId(12));
                 for (const child of childFields) {
                     result[child.fieldId] = context.mapField(child, childRegistry);
                 }

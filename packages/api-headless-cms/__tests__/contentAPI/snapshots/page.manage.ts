@@ -151,6 +151,10 @@ export default /* GraphQL */ `
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
     }
 
+    extend type PageModelApiName_Content_Objecting_NestedObject {
+        _id: ID
+    }
+
     input PageModelApiName_Content_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -296,6 +300,10 @@ export default /* GraphQL */ `
         objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
 
+    extend type PageModelApiName_Objective_Objecting_NestedObject {
+        _id: ID
+    }
+
     input PageModelApiName_Objective_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -388,6 +396,10 @@ export default /* GraphQL */ `
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectInput!]
     }
 
+    extend input PageModelApiName_Content_Objecting_NestedObjectInput {
+        _id: ID
+    }
+
     input PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObjectInput {
         authors: [RefFieldInput]
     }
@@ -468,6 +480,10 @@ export default /* GraphQL */ `
         objectTitle: String
         objectBody: JSON
         objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectInput!]
+    }
+
+    extend input PageModelApiName_Objective_Objecting_NestedObjectInput {
+        _id: ID
     }
 
     input PageModelApiName_Objective_ObjectingInput {

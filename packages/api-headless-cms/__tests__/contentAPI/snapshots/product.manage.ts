@@ -126,6 +126,10 @@ export default /* GraphQL */ `
         options: [ProductApiSingular_Variant_Options!]
     }
 
+    extend type ProductApiSingular_Variant {
+        _id: ID
+    }
+
     input ProductApiSingular_VariantWhereInput {
         name: String
         name_not: String
@@ -156,6 +160,10 @@ export default /* GraphQL */ `
 
     type ProductApiSingular_FieldsObject {
         text: String
+    }
+
+    extend type ProductApiSingular_FieldsObject {
+        _id: ID
     }
 
     input ProductApiSingular_FieldsObjectWhereInput {
@@ -190,8 +198,16 @@ export default /* GraphQL */ `
         options: [ProductApiSingular_Variant_OptionsInput!]
     }
 
+    extend input ProductApiSingular_VariantInput {
+        _id: ID
+    }
+
     input ProductApiSingular_FieldsObjectInput {
         text: String
+    }
+
+    extend input ProductApiSingular_FieldsObjectInput {
+        _id: ID
     }
 
     input ProductApiSingularInputValues {

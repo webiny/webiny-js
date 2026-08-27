@@ -75,8 +75,7 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             return null;
         }
 
-        const idSelection = field.list && field.type === "object" ? "_id " : "";
-        return `${field.fieldId} { ${idSelection}${childSelection} }`;
+        return `${field.fieldId} { _id ${childSelection} }`;
     }
 
     private walkCollectionNode(

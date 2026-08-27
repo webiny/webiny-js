@@ -65,13 +65,14 @@ class StorageTransformImpl implements StorageTransform.Interface {
             });
         }
 
-        return await processValue({
+        const processed = await processValue({
             sourceValue: value,
             getStorageTransform,
             model,
             operation: "toStorage",
             fields
         });
+        return value._id ? { _id: value._id, ...processed } : processed;
     }
 
     public async fromStorage(
@@ -101,13 +102,14 @@ class StorageTransformImpl implements StorageTransform.Interface {
             );
         }
 
-        return await processValue({
+        const processed = await processValue({
             sourceValue: input,
             getStorageTransform,
             model,
             operation: "fromStorage",
             fields
         });
+        return input._id ? { _id: input._id, ...processed } : processed;
     }
 }
 

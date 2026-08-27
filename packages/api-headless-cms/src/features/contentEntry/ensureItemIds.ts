@@ -3,12 +3,12 @@ import type { CmsModelAst, CmsEntryValues } from "~/types/index.js";
 import { ContentEntryTraverser } from "./ContentEntryTraverser/ContentEntryTraverser.js";
 
 /**
- * Walk entry values using the model AST and assign a stable `_id` to every item
- * in multi-value (list) object and dynamic-zone arrays.
+ * Walk entry values using the model AST and assign a stable `_id` to every
+ * object and dynamic-zone value — both list items and single values.
  *
- * - Items that already carry an `_id` keep it.
- * - Items without `_id` get a newly generated one.
- * - Duplicate `_id` values within the same array are silently regenerated.
+ * - Values that already carry an `_id` keep it.
+ * - Values without `_id` get a newly generated one.
+ * - Duplicate `_id` values within a list array are silently regenerated.
  *
  * Uses `ContentEntryTraverser` so nested objects / dynamic zones are handled
  * automatically — no manual recursion needed.
@@ -39,12 +39,10 @@ export async function ensureItemIds(modelAst: CmsModelAst, values: CmsEntryValue
             return;
         }
 
-        // Single-value dynamic zone: assign _id to the value object.
-        if (!field.list && field.type === "dynamicZone") {
-            if (value != null && typeof value === "object" && !Array.isArray(value)) {
-                if (!value._id) {
-                    value._id = generateAlphaNumericLowerCaseId(12);
-                }
+        // Single-value: assign _id to the value object.
+        if (!field.list && value != null && typeof value === "object" && !Array.isArray(value)) {
+            if (!value._id) {
+                value._id = generateAlphaNumericLowerCaseId(12);
             }
         }
     });

@@ -127,7 +127,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             endpointType: "read"
         });
 
-        const itemIdTypeDef = field.list ? `\nextend type ${fieldType} {\n    _id: ID\n}\n` : "";
+        const itemIdTypeDef = `\nextend type ${fieldType} {\n    _id: ID\n}\n`;
 
         return {
             fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
@@ -196,7 +196,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
             endpointType: "manage"
         });
 
-        const itemIdTypeDef = field.list ? `\nextend type ${fieldType} {\n    _id: ID\n}\n` : "";
+        const itemIdTypeDef = `\nextend type ${fieldType} {\n    _id: ID\n}\n`;
 
         return {
             fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
@@ -228,7 +228,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
         }
         const { fieldType, typeDefs } = result;
 
-        const itemIdTypeDef = field.list ? `\nextend input ${fieldType} {\n    _id: ID\n}\n` : "";
+        const itemIdTypeDef = `\nextend input ${fieldType} {\n    _id: ID\n}\n`;
 
         return {
             fields: `${field.fieldId}: ${field.list ? `[${fieldType}!]` : fieldType}`,
