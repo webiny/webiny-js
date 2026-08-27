@@ -34,12 +34,10 @@ export class DynamicZoneFieldMapper implements ICmsFieldTypeMapper {
                     }
                     t.fields(childRegistry => {
                         const result: Record<string, IFieldBuilder> = {};
-                        if (field.list) {
-                            result["_id"] = childRegistry
-                                .text()
-                                .hidden()
-                                .defaultValue(() => generateAlphaNumericLowerCaseId(12));
-                        }
+                        result["_id"] = childRegistry
+                            .text()
+                            .hidden()
+                            .defaultValue(() => generateAlphaNumericLowerCaseId(12));
                         if (template.fields && template.fields.length > 0) {
                             for (const child of template.fields) {
                                 result[child.fieldId] = context.mapField(child, childRegistry);

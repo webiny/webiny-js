@@ -17,31 +17,35 @@ export async function ensureItemIds(modelAst: CmsModelAst, values: CmsEntryValue
     const traverser = new ContentEntryTraverser(modelAst);
 
     await traverser.traverse(values, async ({ field, value }) => {
-        if (!field.list) {
-            return;
-        }
-
         if (field.type !== "object" && field.type !== "dynamicZone") {
             return;
         }
 
-        if (!Array.isArray(value)) {
+        // List fields: assign _id to every array item.
+        if (field.list && Array.isArray(value)) {
+            const seen = new Set<string>();
+
+            for (const item of value) {
+                if (item == null || typeof item !== "object") {
+                    continue;
+                }
+
+                if (!item._id || seen.has(item._id)) {
+                    item._id = generateAlphaNumericLowerCaseId(12);
+                }
+
+                seen.add(item._id);
+            }
             return;
         }
 
-        const seen = new Set<string>();
-
-        for (const item of value) {
-            if (item == null || typeof item !== "object") {
-                continue;
+        // Single-value dynamic zone: assign _id to the value object.
+        if (!field.list && field.type === "dynamicZone") {
+            if (value != null && typeof value === "object" && !Array.isArray(value)) {
+                if (!value._id) {
+                    value._id = generateAlphaNumericLowerCaseId(12);
+                }
             }
-
-            // Assign _id if missing or if it's a duplicate within this array.
-            if (!item._id || seen.has(item._id)) {
-                item._id = generateAlphaNumericLowerCaseId(12);
-            }
-
-            seen.add(item._id);
         }
     });
 }
