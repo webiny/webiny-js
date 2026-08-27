@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { invokeHttpRoute } from "@webiny/event-handler-core";
 import { createUploadToken } from "~/utils/uploadToken.js";
 import { UploadSingleFileRoute } from "~/routes/UploadSingleFileRoute/UploadSingleFileRoute.js";
 import { UploadPartRoute } from "~/routes/UploadPartRoute/UploadPartRoute.js";
@@ -37,7 +38,7 @@ describe("upload + read round trip", () => {
             filename: "test.txt"
         });
 
-        const uploadResponse = await route.handle(request);
+        const uploadResponse = await invokeHttpRoute(route, request);
 
         expect(uploadResponse.statusCode).toBe(204);
 
@@ -76,7 +77,7 @@ describe("upload + read round trip", () => {
                 SECRET
             );
 
-            const response = await partRoute.handle({
+            const response = await invokeHttpRoute(partRoute, {
                 method: "PUT",
                 path: "/webiny-file-upload/parts",
                 headers: {},

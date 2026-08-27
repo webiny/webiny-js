@@ -1,4 +1,3 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import {
     HttpRoute,
     RequestContainer,
@@ -28,26 +27,16 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: InternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
         /* Reject requests without a matching internal token. */
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return {
-                statusCode: 403,
-                body: {
-                    error: "Forbidden."
-                }
-            };
+            return response.status(403).json({ error: "Forbidden." });
         }
 
         const taskEvent = request.body;
 
         if (!taskEvent || !taskEvent.webinyTaskId) {
-            return {
-                statusCode: 400,
-                body: {
-                    error: "Missing webinyTaskId in request body."
-                }
-            };
+            return response.status(400).json({ error: "Missing webinyTaskId in request body." });
         }
 
         try {
@@ -71,23 +60,11 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
             const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());
             const result = await runner.run(taskEvent);
 
-            return {
-                statusCode: 200,
-                headers: { "content-type": "application/json" },
-                body: result
-            };
+            return response.json(result);
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             console.error(`Background task route error: ${message}`);
-            return {
-                statusCode: 500,
-                body: {
-                    status: "error",
-                    error: {
-                        message
-                    }
-                }
-            };
+            return response.status(500).json({ status: "error", error: { message } });
         }
     }
 }

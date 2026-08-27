@@ -1,4 +1,6 @@
 import { HttpRouter, HttpRoute, RouteNotFoundError } from "~/features/http/abstractions.js";
+import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
+import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
 import type { IHttpRoute, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 function matchPath(pattern: string, path: string): Record<string, string> | null {
@@ -46,7 +48,9 @@ class HttpRouterImplClass implements HttpRouter.Interface {
         for (const route of this.routes) {
             const params = this.match(route, request);
             if (params !== null) {
-                return route.handle({ ...request, pathParameters: params });
+                const response = new HttpResponseBuilder();
+                const result = await route.handle({ ...request, pathParameters: params }, response);
+                return toHttpResponse(result, response);
             }
         }
         throw new RouteNotFoundError(request.method, request.path);
