@@ -6,67 +6,6 @@ import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/a
 const gzip = promisify(zlib.gzip);
 const brotli = promisify(zlib.brotliCompress);
 
-// Don't compress tiny payloads — the gzip/br framing overhead can make them LARGER, and the CPU cost
-// isn't worth it. Matches the threshold used by the old Fastify (@fastify/compress) setup.
-const THRESHOLD_BYTES = 1024;
-
-// Case-insensitive header lookup. Header casing isn't guaranteed across transports (Node lowercases
-// them, API Gateway payload formats vary), so we can't index by a fixed key.
-function getHeader(headers: Record<string, string> | undefined, name: string): string | undefined {
-    if (!headers) {
-        return undefined;
-    }
-    const lower = name.toLowerCase();
-    for (const key in headers) {
-        if (key.toLowerCase() === lower) {
-            return headers[key];
-        }
-    }
-    return undefined;
-}
-
-// Serialize the response body to the exact bytes the terminal transport would have written, so the
-// size check and the compressed output match what the client receives. Binary bodies (Buffer /
-// Uint8Array — e.g. asset delivery images) are returned as `null`: they're already in a compressed
-// media format, so gzipping them wastes CPU and can even enlarge them.
-function serializeBody(body: any): Buffer | null {
-    if (body === undefined || body === null) {
-        return null;
-    }
-    if (typeof body === "string") {
-        return Buffer.from(body, "utf8");
-    }
-    if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
-        return null;
-    }
-    return Buffer.from(JSON.stringify(body), "utf8");
-}
-
-// Pick the best encoding the client accepts. Prefer brotli (better ratio → more headroom under the
-// API Gateway response-size limit) and fall back to gzip. Only encodings the client explicitly lists
-// are used, so non-browser clients that send `accept-encoding: gzip` still get a body they can read.
-function negotiateEncoding(acceptEncoding: string): "br" | "gzip" | null {
-    const value = acceptEncoding.toLowerCase();
-    if (value.includes("br")) {
-        return "br";
-    }
-    if (value.includes("gzip")) {
-        return "gzip";
-    }
-    return null;
-}
-
-function mergeVary(existing: string | undefined): string {
-    const parts = new Set(
-        (existing || "")
-            .split(",")
-            .map(part => part.trim().toLowerCase())
-            .filter(Boolean)
-    );
-    parts.add("accept-encoding");
-    return [...parts].join(", ");
-}
-
 /**
  * Compresses HTTP response bodies with brotli/gzip when the client accepts it.
  *
@@ -81,23 +20,29 @@ function mergeVary(existing: string | undefined): string {
  * and other headers are set).
  */
 class CompressionDecoratorImpl implements IHttpRouter {
+    // Don't compress tiny payloads — the gzip/br framing overhead can make them LARGER, and the CPU
+    // cost isn't worth it. Matches the threshold used by the old Fastify (@fastify/compress) setup.
+    private static readonly THRESHOLD_BYTES = 1024;
+
     constructor(private decoratee: IHttpRouter) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
         const response = await this.decoratee.route(request);
 
         // Never double-encode a body a route already compressed itself.
-        if (getHeader(response.headers, "content-encoding")) {
+        if (CompressionDecoratorImpl.getHeader(response.headers, "content-encoding")) {
             return response;
         }
 
-        const encoding = negotiateEncoding(getHeader(request.headers, "accept-encoding") || "");
+        const acceptEncoding =
+            CompressionDecoratorImpl.getHeader(request.headers, "accept-encoding") || "";
+        const encoding = CompressionDecoratorImpl.negotiateEncoding(acceptEncoding);
         if (!encoding) {
             return response;
         }
 
-        const serialized = serializeBody(response.body);
-        if (!serialized || serialized.length < THRESHOLD_BYTES) {
+        const serialized = CompressionDecoratorImpl.serializeBody(response.body);
+        if (!serialized || serialized.length < CompressionDecoratorImpl.THRESHOLD_BYTES) {
             return response;
         }
 
@@ -110,9 +55,72 @@ class CompressionDecoratorImpl implements IHttpRouter {
                 ...response.headers,
                 "content-encoding": encoding,
                 "content-length": String(compressed.length),
-                vary: mergeVary(getHeader(response.headers, "vary"))
+                vary: CompressionDecoratorImpl.mergeVary(
+                    CompressionDecoratorImpl.getHeader(response.headers, "vary")
+                )
             }
         };
+    }
+
+    // Case-insensitive header lookup. Header casing isn't guaranteed across transports (Node
+    // lowercases them, API Gateway payload formats vary), so we can't index by a fixed key.
+    private static getHeader(
+        headers: Record<string, string> | undefined,
+        name: string
+    ): string | undefined {
+        if (!headers) {
+            return undefined;
+        }
+        const lower = name.toLowerCase();
+        for (const key in headers) {
+            if (key.toLowerCase() === lower) {
+                return headers[key];
+            }
+        }
+        return undefined;
+    }
+
+    // Serialize the response body to the exact bytes the terminal transport would have written, so
+    // the size check and the compressed output match what the client receives. Binary bodies (Buffer
+    // / Uint8Array — e.g. asset delivery images) are returned as `null`: they're already in a
+    // compressed media format, so gzipping them wastes CPU and can even enlarge them.
+    private static serializeBody(body: any): Buffer | null {
+        if (body === undefined || body === null) {
+            return null;
+        }
+        if (typeof body === "string") {
+            return Buffer.from(body, "utf8");
+        }
+        if (Buffer.isBuffer(body) || body instanceof Uint8Array) {
+            return null;
+        }
+        return Buffer.from(JSON.stringify(body), "utf8");
+    }
+
+    // Pick the best encoding the client accepts. Prefer brotli (better ratio → more headroom under
+    // the API Gateway response-size limit) and fall back to gzip. Only encodings the client
+    // explicitly lists are used, so non-browser clients that send `accept-encoding: gzip` still get a
+    // body they can read.
+    private static negotiateEncoding(acceptEncoding: string): "br" | "gzip" | null {
+        const value = acceptEncoding.toLowerCase();
+        if (value.includes("br")) {
+            return "br";
+        }
+        if (value.includes("gzip")) {
+            return "gzip";
+        }
+        return null;
+    }
+
+    private static mergeVary(existing: string | undefined): string {
+        const parts = new Set(
+            (existing || "")
+                .split(",")
+                .map(part => part.trim().toLowerCase())
+                .filter(Boolean)
+        );
+        parts.add("accept-encoding");
+        return [...parts].join(", ");
     }
 }
 
