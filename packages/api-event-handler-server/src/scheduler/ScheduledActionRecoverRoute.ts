@@ -1,4 +1,4 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import {
     HttpRoute,
     RequestContainer,
@@ -36,9 +36,9 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return { statusCode: 403, body: { error: "Forbidden." } };
+            return response.status(403).json({ error: "Forbidden." });
         }
 
         try {
@@ -46,7 +46,7 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
             if (!tenant) {
                 const rootResult = await this.container.resolve(GetRootTenantUseCase).execute();
                 if (rootResult.isFail()) {
-                    return { statusCode: 200, body: { status: "ok", recovered: 0 } };
+                    return response.json({ status: "ok", recovered: 0 });
                 }
                 tenant = rootResult.value.id;
             }
@@ -77,10 +77,9 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
                 );
 
             if (listResult.isFail()) {
-                return {
-                    statusCode: 500,
-                    body: { status: "error", error: { message: listResult.error.message } }
-                };
+                return response
+                    .status(500)
+                    .json({ status: "error", error: { message: listResult.error.message } });
             }
 
             const pending = listResult.value.items.map(action => ({
@@ -92,15 +91,11 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
 
             await this.container.resolve(SchedulerSingleton).recover(pending);
 
-            return {
-                statusCode: 200,
-                headers: { "content-type": "application/json" },
-                body: { status: "ok", recovered: pending.length }
-            };
+            return response.json({ status: "ok", recovered: pending.length });
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             console.error(`Scheduled action recover route error: ${message}`);
-            return { statusCode: 500, body: { status: "error", error: { message } } };
+            return response.status(500).json({ status: "error", error: { message } });
         }
     }
 }

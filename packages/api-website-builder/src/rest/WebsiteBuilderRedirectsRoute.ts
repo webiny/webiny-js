@@ -1,5 +1,5 @@
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpResponseBuilder } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
@@ -11,7 +11,7 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
 
     constructor(private container: Container) {}
 
-    async handle(_request: IHttpRequest): Promise<IHttpResponse> {
+    async handle(_request: unknown, response: IHttpResponseBuilder) {
         // Resolve collaborators lazily (request time), not as constructor deps. HttpRouter eagerly
         // constructs every route on each request to path-match (see TODO in HttpRouter), and
         // GetActiveRedirectsUseCase's chain pulls request-time CMS tokens (RedirectModel,
@@ -23,24 +23,13 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
 
         const identity = identityCtx.getIdentity();
         if (identity.isAnonymous()) {
-            return {
-                statusCode: 401,
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ message: "Not authorized." })
-            };
+            return response.status(401).json({ message: "Not authorized." });
         }
 
         const result = await getActiveRedirects.execute();
         const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 
-        return {
-            statusCode: 200,
-            headers: {
-                "content-type": "application/json",
-                "cache-control": "public, max-age=31536000"
-            },
-            body: JSON.stringify(redirectsDto)
-        };
+        return response.header("cache-control", "public, max-age=31536000").json(redirectsDto);
     }
 }
 

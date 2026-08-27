@@ -1,4 +1,4 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { HttpRoute } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
@@ -16,14 +16,9 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: BulkActionsInternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return {
-                statusCode: 403,
-                body: {
-                    error: "Forbidden."
-                }
-            };
+            return response.status(403).json({ error: "Forbidden." });
         }
 
         try {
@@ -31,15 +26,11 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
                 await this.taskService.trigger({ definition: "hcmsEntriesEmptyTrashBins" });
             });
 
-            return {
-                statusCode: 200,
-                headers: { "content-type": "application/json" },
-                body: { status: "ok" }
-            };
+            return response.json({ status: "ok" });
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             console.error(`Empty trash bin route error: ${message}`);
-            return { statusCode: 500, body: { status: "error", error: { message } } };
+            return response.status(500).json({ status: "error", error: { message } });
         }
     }
 }

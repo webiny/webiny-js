@@ -25,7 +25,13 @@ export async function createServerHandler(
     const server = http.createServer(async (req, res) => {
         try {
             const response = (await app.handle(req)) as IHttpResponse;
-            res.writeHead(response.statusCode, response.headers);
+            // `Set-Cookie` is carried separately from `headers` (it's the one header that can
+            // repeat). Node's writeHead accepts an array value for exactly that case.
+            const headers: Record<string, string | string[]> = { ...response.headers };
+            if (response.cookies && response.cookies.length > 0) {
+                headers["set-cookie"] = response.cookies;
+            }
+            res.writeHead(response.statusCode, headers);
             const { body } = response;
             if (body === undefined || body === null) {
                 res.end();

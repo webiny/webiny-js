@@ -1,4 +1,4 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import {
     HttpRoute,
     RequestContainer,
@@ -31,14 +31,14 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return { statusCode: 403, body: { error: "Forbidden." } };
+            return response.status(403).json({ error: "Forbidden." });
         }
 
         const { id, namespace, tenant } = request.body ?? {};
         if (!id || !namespace || !tenant) {
-            return { statusCode: 400, body: { error: "Missing id, namespace or tenant." } };
+            return response.status(400).json({ error: "Missing id, namespace or tenant." });
         }
 
         try {
@@ -61,21 +61,16 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
                 .execute({ id, namespace, tenant });
 
             if (result.isFail()) {
-                return {
-                    statusCode: 500,
-                    body: { status: "error", error: { message: result.error.message } }
-                };
+                return response
+                    .status(500)
+                    .json({ status: "error", error: { message: result.error.message } });
             }
 
-            return {
-                statusCode: 200,
-                headers: { "content-type": "application/json" },
-                body: { status: "ok" }
-            };
+            return response.json({ status: "ok" });
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             console.error(`Scheduled action run route error: ${message}`);
-            return { statusCode: 500, body: { status: "error", error: { message } } };
+            return response.status(500).json({ status: "error", error: { message } });
         }
     }
 }

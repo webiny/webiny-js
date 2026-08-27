@@ -1,5 +1,5 @@
 import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import {
     AssetRequestResolver,
@@ -8,10 +8,7 @@ import {
     AssetOutputStrategy
 } from "~/features/assetDelivery/abstractions.js";
 
-const NO_CACHE_HEADERS = {
-    "content-type": "application/json",
-    "cache-control": "no-cache, no-store, must-revalidate"
-};
+const NO_CACHE = "no-cache, no-store, must-revalidate";
 
 class AssetDeliveryRouteImpl implements HttpRoute.Interface {
     readonly method = "GET";
@@ -19,7 +16,7 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
 
     constructor(private container: Container) {}
 
-    async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    async handle(request: IHttpRequest, response: IHttpResponseBuilder) {
         // Resolve asset-delivery collaborators lazily (request time), not as constructor deps.
         // HttpRouter eagerly constructs every route to match paths, and AssetProcessor's
         // PrivateFilesAssetProcessor decorator pulls in GetFileUseCase -> CMS entry repositories
@@ -41,20 +38,18 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
 
         const resolvedRequest = await requestResolver.resolve(fakeRequest as any);
         if (!resolvedRequest) {
-            return {
-                statusCode: 404,
-                headers: NO_CACHE_HEADERS,
-                body: JSON.stringify({ error: "Unable to resolve the request!" })
-            };
+            return response
+                .status(404)
+                .header("cache-control", NO_CACHE)
+                .json({ error: "Unable to resolve the request!" });
         }
 
         const resolvedAsset = await assetResolver.resolve(resolvedRequest);
         if (!resolvedAsset) {
-            return {
-                statusCode: 404,
-                headers: NO_CACHE_HEADERS,
-                body: JSON.stringify({ error: "Asset not found!" })
-            };
+            return response
+                .status(404)
+                .header("cache-control", NO_CACHE)
+                .json({ error: "Asset not found!" });
         }
 
         resolvedAsset.setOutputStrategy(outputStrategy);
@@ -63,25 +58,20 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
         const assetReply = await processedAsset.output();
 
         const rawHeaders = assetReply.getHeaders().getHeaders();
-        const headers: Record<string, string> = {};
         for (const [k, v] of Object.entries(rawHeaders)) {
             if (v !== undefined) {
-                headers[k] = String(v);
+                response.header(k, String(v));
             }
         }
 
         const body = await assetReply.getBody();
-        const statusCode = assetReply.getCode();
 
-        // Return the raw body (a Buffer for binary assets). The transport translator
+        // `end()` (not `send()`) so the raw body passes through untouched and the asset's OWN
+        // Content-Type — set from `rawHeaders` above — is preserved. The transport translator
         // (e.g. httpResponseToApiGatewayResult) base64-encodes Buffers and sets isBase64Encoded so
         // API Gateway returns proper binary. Pre-encoding to a base64 STRING here defeated that —
         // the string passed through undecoded and browsers received base64 text, not an image.
-        return {
-            statusCode,
-            headers,
-            body: body ?? ""
-        };
+        return response.status(assetReply.getCode()).end(body ?? "");
     }
 }
 
