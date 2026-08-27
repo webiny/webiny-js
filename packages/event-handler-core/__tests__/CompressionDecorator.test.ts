@@ -5,7 +5,12 @@ import { HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
 import { HttpRoute } from "~/features/http/abstractions.js";
-import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/features/http/abstractions.js";
+import type {
+    IHttpRequest,
+    IHttpResponse,
+    IHttpResponseBuilder,
+    IHttpRoute
+} from "~/features/http/abstractions.js";
 
 const req = (acceptEncoding?: string): IHttpRequest => ({
     method: "GET",
@@ -16,20 +21,17 @@ const req = (acceptEncoding?: string): IHttpRequest => ({
     body: undefined
 });
 
-const routerFor = (response: IHttpResponse) => {
+const routerForRoute = (handle: IHttpRoute["handle"]) => {
     const container = new Container();
-    const route: IHttpRoute = {
-        method: "GET",
-        path: "/test",
-        async handle(): Promise<IHttpResponse> {
-            return response;
-        }
-    };
+    const route: IHttpRoute = { method: "GET", path: "/test", handle };
     container.registerInstance(HttpRoute, route);
     container.register(HttpRouterImpl).inSingletonScope();
     container.registerDecorator(CompressionDecorator);
     return container.resolve(HttpRouter);
 };
+
+// A route that returns a plain IHttpResponse — the pre-builder style.
+const routerFor = (response: IHttpResponse) => routerForRoute(async () => response);
 
 // A body comfortably above the 1024-byte compression threshold.
 const largeBody = () => ({ data: "x".repeat(5000) });
@@ -122,5 +124,35 @@ describe("CompressionDecorator", () => {
         const result = await router.route(req("gzip"));
 
         expect(result.headers?.["vary"]).toBe("origin, accept-encoding");
+    });
+
+    // The router now hands routes a mutable IHttpResponseBuilder; `.json()` serializes the body to a
+    // string before it reaches the decorator. Verify compression works through that materialized path.
+    it("should compress a response produced via the response builder", async () => {
+        const router = routerForRoute(
+            async (_request: IHttpRequest, response: IHttpResponseBuilder) =>
+                response.json(largeBody())
+        );
+
+        const result = await router.route(req("gzip"));
+
+        expect(result.headers?.["content-encoding"]).toBe("gzip");
+        expect(result.headers?.["content-type"]).toBe("application/json");
+        const decompressed = zlib.gunzipSync(result.body as Buffer).toString("utf8");
+        expect(JSON.parse(decompressed)).toEqual(largeBody());
+    });
+
+    it("should preserve Set-Cookie when compressing", async () => {
+        const router = routerFor({
+            statusCode: 200,
+            headers: {},
+            cookies: ["sid=abc; Path=/; HttpOnly"],
+            body: largeBody()
+        });
+
+        const result = await router.route(req("gzip"));
+
+        expect(result.headers?.["content-encoding"]).toBe("gzip");
+        expect(result.cookies).toEqual(["sid=abc; Path=/; HttpOnly"]);
     });
 });
