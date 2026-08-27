@@ -1,6 +1,5 @@
 import { Output } from "ai";
-import type { Container } from "@webiny/di";
-import { HttpRoute, HttpStreamBody, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import {
@@ -48,10 +47,11 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
     readonly method = "POST";
     readonly path = "/stream/fm/files/:fileId/enrich";
 
-    // Collaborators are resolved lazily in handle(), not injected: HttpRouter constructs EVERY
-    // registered route on every request just to path-match, and the file-manager use cases pull in
-    // repositories that aren't registered outside a file-manager request. See the TODO in HttpRouter.
-    constructor(private container: Container) {}
+    constructor(
+        private prepare: PrepareImageEnrichmentUseCase.Interface,
+        private apply: ApplyImageEnrichmentUseCase.Interface,
+        private ai: Ai.Interface
+    ) {}
 
     async handle(request: IHttpRequest): Promise<IHttpResponse> {
         const fileId = request.pathParameters.fileId;
@@ -64,8 +64,7 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
             };
         }
 
-        const prepare = this.container.resolve(PrepareImageEnrichmentUseCase);
-        const preparedResult = await prepare.execute(fileId);
+        const preparedResult = await this.prepare.execute(fileId);
 
         if (preparedResult.isFail()) {
             const error = preparedResult.error;
@@ -76,28 +75,21 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
             };
         }
 
-        const ai = this.container.resolve(Ai);
-        const apply = this.container.resolve(ApplyImageEnrichmentUseCase);
-
         return {
             statusCode: 200,
             headers: SSE_HEADERS,
-            body: new HttpStreamBody(this.enrich(preparedResult.value, ai, apply))
+            body: new HttpStreamBody(this.enrich(preparedResult.value))
         };
     }
 
-    private async *enrich(
-        prepared: IPreparedImageEnrichment,
-        ai: Ai.Interface,
-        apply: ApplyImageEnrichmentUseCase.Interface
-    ): AsyncGenerator<string> {
+    private async *enrich(prepared: IPreparedImageEnrichment): AsyncGenerator<string> {
         yield toSseFrame({ type: "start", fileId: prepared.fileId, model: prepared.model });
 
         let tags: string[] = [];
         let description = "";
 
         try {
-            const stream = await ai.streamText({
+            const stream = await this.ai.streamText({
                 model: prepared.model,
                 output: Output.object({ schema: aiEnrichmentSchema }),
                 connection: prepared.connection,
@@ -138,7 +130,7 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
             return;
         }
 
-        const appliedResult = await apply.execute({
+        const appliedResult = await this.apply.execute({
             fileId: prepared.fileId,
             existingTags: prepared.existingTags,
             tags,
@@ -162,5 +154,5 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
 
 export const AiImageEnrichmentStreamRoute = HttpRoute.createImplementation({
     implementation: AiImageEnrichmentStreamRouteImpl,
-    dependencies: [RequestContainer]
+    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
 });

@@ -1,46 +1,42 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
 import { AiImageEnrichmentFeature } from "~/api/features/AiImageEnrichment/feature.js";
+import { AiImageEnrichmentStreamRoute } from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
+import { AiImageEnrichmentTask } from "~/api/features/AiImageEnrichment/AiImageEnrichmentTask.js";
 
-const FLAG = "aiPowerups.fileManager.imageEnrichment";
-
-function containerWithFlag(enabled: boolean): Container {
+/**
+ * Asserts what the gate DECIDES, by spying on `register`, rather than resolving the registrations.
+ * Resolving would construct the route and pull its whole dependency graph (GetFileUseCase and
+ * everything under it), which belongs to the real request stack, not to a test about a flag.
+ */
+function registerWithFlag(enabled: boolean) {
     const container = new Container();
-    container.registerInstance(RequestContainer, container);
     container.registerInstance(FeatureFlags, {
         get: () =>
-            FeatureFlagsClass.fromDto({ aiPowerups: { fileManager: { imageEnrichment: enabled } } })
+            FeatureFlagsClass.fromDto({
+                aiPowerups: { fileManager: { imageEnrichment: enabled } }
+            })
     } as any);
-    return container;
+
+    const register = vi.spyOn(container, "register");
+    AiImageEnrichmentFeature.register(container);
+
+    return register.mock.calls.map(call => call[0]);
 }
 
 describe("AiImageEnrichmentFeature registration gate", () => {
-    let enabledFlags: FeatureFlagsClass;
+    it("should register the route and the task when the flag is enabled", () => {
+        const registered = registerWithFlag(true);
 
-    beforeEach(() => {
-        enabledFlags = FeatureFlagsClass.fromDto({
-            aiPowerups: { fileManager: { imageEnrichment: true } }
-        });
-    });
-
-    it("should register the streaming route when the flag is enabled", () => {
-        expect(enabledFlags.isEnabled(FLAG)).toBe(true);
-
-        const container = containerWithFlag(true);
-        AiImageEnrichmentFeature.register(container);
-
-        expect(container.resolveAll(HttpRoute)).toHaveLength(1);
+        expect(registered).toContain(AiImageEnrichmentStreamRoute);
+        expect(registered).toContain(AiImageEnrichmentTask);
     });
 
     it("should register nothing when the flag is disabled", () => {
         // The gate replaced a request-time 403: with the flag off the route does not exist at all, so
         // an unlicensed caller gets a router 404 instead of reaching route code.
-        const container = containerWithFlag(false);
-        AiImageEnrichmentFeature.register(container);
-
-        expect(container.resolveAll(HttpRoute)).toHaveLength(0);
+        expect(registerWithFlag(false)).toHaveLength(0);
     });
 });
