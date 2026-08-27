@@ -917,7 +917,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
@@ -1080,7 +1080,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: v6
       - name: Start Verdaccio local server
         working-directory: v6
