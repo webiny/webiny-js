@@ -1,39 +1,12 @@
-import { Output } from "ai";
-import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
+import { HttpRoute, jsonResponse, sseResponse } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import {
-    AI_ENRICHMENT_PROMPT,
-    aiEnrichmentSchema,
-    ApplyImageEnrichmentUseCase,
-    PrepareImageEnrichmentUseCase
-} from "./abstractions.js";
+import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import type { IPreparedImageEnrichment } from "./abstractions.js";
-import { EnrichmentFileNotFoundError, EnrichmentNotAnImageError } from "./errors.js";
-import type { ImageEnrichmentError } from "./errors.js";
+import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
+import { readEnrichmentPartial } from "./readEnrichmentPartial.js";
+import { imageEnrichmentErrorStatusCode } from "./imageEnrichmentErrorStatusCode.js";
 import { toSseFrame } from "./streamEvents.js";
-
-const SSE_HEADERS = {
-    "content-type": "text/event-stream",
-    // `no-transform` matters as much as `no-cache`: it tells CloudFront (and any other proxy) not to
-    // compress or otherwise buffer the body, which would defeat incremental delivery.
-    "cache-control": "no-cache, no-transform",
-    connection: "keep-alive",
-    // Nginx-family proxies buffer responses by default; this opts out. Harmless elsewhere.
-    "x-accel-buffering": "no"
-};
-
-const JSON_HEADERS = { "content-type": "application/json" };
-
-function errorStatusCode(error: ImageEnrichmentError): number {
-    if (error instanceof EnrichmentFileNotFoundError) {
-        return 404;
-    }
-    if (error instanceof EnrichmentNotAnImageError) {
-        return 400;
-    }
-    return 500;
-}
 
 /**
  * Re-runs AI enrichment for a single file, streaming progress to the caller as server-sent events.
@@ -57,68 +30,34 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
         const fileId = request.pathParameters.fileId;
 
         if (!fileId) {
-            return {
-                statusCode: 400,
-                headers: JSON_HEADERS,
-                body: { message: "Missing file ID." }
-            };
+            return jsonResponse(400, { message: "Missing file ID." });
         }
 
         const preparedResult = await this.prepare.execute(fileId);
 
         if (preparedResult.isFail()) {
             const error = preparedResult.error;
-            return {
-                statusCode: errorStatusCode(error),
-                headers: JSON_HEADERS,
-                body: { message: error.message, code: error.code }
-            };
+
+            return jsonResponse(imageEnrichmentErrorStatusCode(error), {
+                message: error.message,
+                code: error.code
+            });
         }
 
-        return {
-            statusCode: 200,
-            headers: SSE_HEADERS,
-            body: new HttpStreamBody(this.enrich(preparedResult.value))
-        };
+        return sseResponse(this.enrich(preparedResult.value));
     }
 
     private async *enrich(prepared: IPreparedImageEnrichment): AsyncGenerator<string> {
         yield toSseFrame({ type: "start", fileId: prepared.fileId, model: prepared.model });
 
-        let tags: string[] = [];
-        let description = "";
+        let output = { tags: [] as string[], description: "" };
 
         try {
-            const stream = await this.ai.streamText({
-                model: prepared.model,
-                output: Output.object({ schema: aiEnrichmentSchema }),
-                connection: prepared.connection,
-                messages: [
-                    {
-                        role: "user",
-                        content: [
-                            {
-                                type: "file",
-                                data: prepared.imageBase64,
-                                mediaType: prepared.imageMediaType
-                            },
-                            {
-                                type: "text",
-                                text: AI_ENRICHMENT_PROMPT
-                            }
-                        ]
-                    }
-                ]
-            });
+            const stream = await this.ai.streamText(buildEnrichmentAiRequest(prepared));
 
             for await (const partial of stream.partialOutputStream) {
-                // Partial output is exactly that — mid-stream the array can hold holes/undefined
-                // entries, so filter to the strings that have actually arrived.
-                tags = (partial?.tags ?? []).filter(
-                    (tag: unknown): tag is string => typeof tag === "string"
-                );
-                description = partial?.description ?? "";
-                yield toSseFrame({ type: "partial", tags, description });
+                output = readEnrichmentPartial(partial);
+                yield toSseFrame({ type: "partial", ...output });
             }
         } catch (error) {
             yield toSseFrame({
@@ -133,8 +72,7 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
         const appliedResult = await this.apply.execute({
             fileId: prepared.fileId,
             existingTags: prepared.existingTags,
-            tags,
-            description
+            ...output
         });
 
         if (appliedResult.isFail()) {

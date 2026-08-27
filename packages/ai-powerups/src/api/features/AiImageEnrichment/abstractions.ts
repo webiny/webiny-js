@@ -15,6 +15,12 @@ export const aiEnrichmentSchema = z.object({
     description: z.string()
 });
 
+/** The enrichment result: what the model produces and what gets persisted. */
+export interface IEnrichmentOutput {
+    tags: string[];
+    description: string;
+}
+
 /**
  * Everything needed to run the AI call, gathered up front: the image bytes, the resolved provider,
  * and the file's current tags (needed to merge rather than overwrite).

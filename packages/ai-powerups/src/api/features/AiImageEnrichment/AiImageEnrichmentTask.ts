@@ -1,12 +1,7 @@
-import { Output } from "ai";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import {
-    AI_ENRICHMENT_PROMPT,
-    aiEnrichmentSchema,
-    ApplyImageEnrichmentUseCase,
-    PrepareImageEnrichmentUseCase
-} from "./abstractions.js";
+import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
+import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { EnrichmentNotAnImageError } from "./errors.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
@@ -61,27 +56,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         let tags: string[];
         let description: string;
         try {
-            const aiResult = await this.ai.generateText({
-                model: prepared.model,
-                output: Output.object({ schema: aiEnrichmentSchema }),
-                connection: prepared.connection,
-                messages: [
-                    {
-                        role: "user",
-                        content: [
-                            {
-                                type: "file",
-                                data: prepared.imageBase64,
-                                mediaType: prepared.imageMediaType
-                            },
-                            {
-                                type: "text",
-                                text: AI_ENRICHMENT_PROMPT
-                            }
-                        ]
-                    }
-                ]
-            });
+            const aiResult = await this.ai.generateText(buildEnrichmentAiRequest(prepared));
 
             tags = aiResult.output.tags;
             description = aiResult.output.description;
