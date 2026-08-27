@@ -130,10 +130,6 @@ export default /* GraphQL */ `
         objectNestedObject: [PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObject!]
     }
 
-    extend type PageModelApiName_Content_Objecting_NestedObject {
-        _id: ID
-    }
-
     input PageModelApiName_Content_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -145,6 +141,10 @@ export default /* GraphQL */ `
         objectTitle_not_startsWith: String
 
         objectNestedObject: PageModelApiName_Content_Objecting_NestedObject_ObjectNestedObjectWhereInput
+    }
+
+    extend type PageModelApiName_Content_Objecting_NestedObject {
+        _id: ID
     }
 
     union PageModelApiName_Content_Objecting_DynamicZone =
@@ -279,10 +279,6 @@ export default /* GraphQL */ `
         objectNestedObject: [PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObject!]
     }
 
-    extend type PageModelApiName_Objective_Objecting_NestedObject {
-        _id: ID
-    }
-
     input PageModelApiName_Objective_Objecting_NestedObjectWhereInput {
         objectTitle: String
         objectTitle_not: String
@@ -294,6 +290,10 @@ export default /* GraphQL */ `
         objectTitle_not_startsWith: String
 
         objectNestedObject: PageModelApiName_Objective_Objecting_NestedObject_ObjectNestedObjectWhereInput
+    }
+
+    extend type PageModelApiName_Objective_Objecting_NestedObject {
+        _id: ID
     }
 
     type PageModelApiName_Objective_Objecting {
@@ -344,6 +344,10 @@ export default /* GraphQL */ `
 
     input PageModelApiName_GhostObjectWhereInput {
         _empty: String
+    }
+
+    extend type PageModelApiName_GhostObject {
+        _id: ID
     }
 
     input PageModelApiNameGetWhereInputValues {
