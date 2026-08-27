@@ -3,61 +3,101 @@ import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 
 const VERSION = "${{ github.event.inputs.version }}";
-const SOURCE_TAG = "${{ github.event.inputs.sourceTag }}";
+
+// The ref the release branches off, worked out from the version alone (see the `resolveSource`
+// job). Consumed by every job after it.
+const SOURCE_REF = "${{ needs.resolveSource.outputs.source-ref }}";
+const BASE_BRANCH = "${{ needs.resolveSource.outputs.base-branch }}";
 
 export const fullRelease = createWorkflow({
     name: `🚀 Full Release`,
     on: {
         workflow_dispatch: {
+            // Version only. What a release branches off is not a free choice - it follows from
+            // the version - and asking for it separately only created ways to get the two out of
+            // step. Most damaging was the old `sourceTag` default of "next": a patch entered
+            // without changing it would branch off unreleased code.
             inputs: {
                 version: {
-                    description: "Release version (e.g. 6.3.0)",
+                    description: "Release version (e.g. 6.3.0 for a minor, 6.3.1 for a patch)",
                     required: true,
-                    type: "string"
-                },
-                sourceTag: {
-                    description: "Git tag or branch to branch off from",
-                    required: false,
-                    default: "next",
                     type: "string"
                 }
             }
         }
     },
     jobs: {
-        validateInputs: createJob({
-            name: "Validate inputs",
-            checkout: false,
-            env: {
-                VERSION,
-                SOURCE_TAG
+        // Validates the version and derives everything else from it. Runs before anything is
+        // pushed, so a bad input costs nothing.
+        resolveSource: createJob({
+            name: "Resolve release source",
+            // Needs the tags to check that a patch's predecessor actually exists.
+            checkout: { "fetch-depth": 0 },
+            outputs: {
+                "source-ref": "${{ steps.resolve.outputs.source-ref }}",
+                "base-branch": "${{ steps.resolve.outputs.base-branch }}"
             },
+            env: { VERSION },
             steps: [
                 {
-                    name: "Validate workflow inputs",
+                    name: "Resolve source ref and base branch",
+                    id: "resolve",
                     run: [
-                        "set -e",
-                        "ok=1",
+                        "set -euo pipefail",
+                        "",
                         'if ! printf "%s" "$VERSION" | grep -Eq "^6\\.[0-9]+\\.[0-9]+$"; then',
                         '  echo "::error::Invalid version [$VERSION]. Expected 6.x.y, e.g. 6.3.0 (three numbers, no alpha/beta)."',
-                        "  ok=0",
-                        "fi",
-                        'if [ -n "$SOURCE_TAG" ] && ! printf "%s" "$SOURCE_TAG" | grep -Eq "^[A-Za-z0-9._/-]+$"; then',
-                        '  echo "::error::Invalid sourceTag [$SOURCE_TAG]. Use a valid branch or tag name (letters, digits, . _ / -)."',
-                        "  ok=0",
-                        "fi",
-                        'if [ "$ok" -ne 1 ]; then',
-                        '  echo "Input validation failed. Fix the inputs above and re-run the workflow."',
                         "  exit 1",
                         "fi",
-                        'echo "Inputs OK: version=$VERSION sourceTag=${SOURCE_TAG:-next}"'
+                        "",
+                        'MINOR="${VERSION%.*}"',
+                        'PATCH="${VERSION##*.}"',
+                        "",
+                        'if [ "$PATCH" = "0" ]; then',
+                        "  # A minor release opens the next line, so it branches off next.",
+                        '  SOURCE_REF="next"',
+                        '  BASE_BRANCH="next"',
+                        "else",
+                        "  # A patch continues an existing line: it must build on the release before",
+                        "  # it. That predecessor is not optional - `yarn release` generates the",
+                        "  # changelog as `git log v<previous>..v<this>` using npm's latest dist-tag,",
+                        "  # so releasing out of order produces a changelog spanning two releases and",
+                        "  # publishes a version whose predecessor never existed.",
+                        '  PREVIOUS="${MINOR}.$((PATCH - 1))"',
+                        '  SOURCE_REF="v${PREVIOUS}"',
+                        "",
+                        '  if ! git rev-parse -q --verify "refs/tags/${SOURCE_REF}" > /dev/null; then',
+                        '    echo "::error::Cannot release ${VERSION}: tag ${SOURCE_REF} does not exist, so ${PREVIOUS} has not been released yet. Release it first."',
+                        "    exit 1",
+                        "  fi",
+                        "",
+                        "  # Source is a tag, so the release gets a base branch cut from it - that way",
+                        "  # the PR diff shows only release-specific work.",
+                        '  BASE_BRANCH="release/${VERSION}-base"',
+                        "fi",
+                        "",
+                        'echo "source-ref=$SOURCE_REF" >> "$GITHUB_OUTPUT"',
+                        'echo "base-branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"',
+                        "",
+                        "# Echoed before anything is created, so a wrong derivation is visible up front",
+                        "# rather than only in the resulting PR.",
+                        "{",
+                        '  echo "### 🚀 Release plan"',
+                        '  echo ""',
+                        '  echo "| | |"',
+                        '  echo "| --- | --- |"',
+                        '  echo "| Version | \\`$VERSION\\` |"',
+                        '  echo "| Branches off | \\`$SOURCE_REF\\` |"',
+                        '  echo "| Release branch | \\`release/$VERSION\\` |"',
+                        '  echo "| PR base | \\`$BASE_BRANCH\\` |"',
+                        '} >> "$GITHUB_STEP_SUMMARY"'
                     ].join("\n")
                 }
             ]
         }),
         createWebinyJsBranch: createJob({
             name: "Create release branch (webiny-js)",
-            needs: ["validateInputs"],
+            needs: ["resolveSource"],
             checkout: false,
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
@@ -76,7 +116,7 @@ export const fullRelease = createWorkflow({
                     name: "Checkout source tag",
                     uses: ACTION.checkout,
                     with: {
-                        ref: SOURCE_TAG,
+                        ref: SOURCE_REF,
                         "fetch-depth": 0,
                         token: "${{ secrets.GH_TOKEN }}"
                     }
@@ -86,24 +126,21 @@ export const fullRelease = createWorkflow({
                     id: "branch",
                     env: {
                         VERSION,
-                        SOURCE_TAG
+                        SOURCE_REF,
+                        BASE_BRANCH
                     },
                     run: [
-                        "set -e",
-                        "# If the source is a tag, create a base branch off it so the PR diff",
-                        "# shows only release-specific work. Otherwise (a branch, e.g. next),",
-                        "# the source branch itself is the PR base.",
-                        'if git show-ref --verify --quiet "refs/tags/${SOURCE_TAG}"; then',
-                        '  BASE_BRANCH="release/${VERSION}-base"',
+                        "set -euo pipefail",
+                        "# For a patch the base branch is cut from the source tag, so the PR diff",
+                        "# shows only release-specific work. For a minor it is `next` itself, which",
+                        "# already exists.",
+                        'if [ "$BASE_BRANCH" != "$SOURCE_REF" ]; then',
                         '  git checkout -b "$BASE_BRANCH"',
                         '  git push origin "$BASE_BRANCH"',
-                        "else",
-                        '  BASE_BRANCH="${SOURCE_TAG}"',
                         "fi",
                         'git checkout -b "release/${VERSION}"',
                         'git commit --allow-empty -m "chore: start release ${VERSION} [skip ci]" -m "Empty commit to allow PR creation."',
-                        'git push origin "release/${VERSION}"',
-                        'echo "base-branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"'
+                        'git push origin "release/${VERSION}"'
                     ].join("\n")
                 },
                 {
@@ -111,7 +148,7 @@ export const fullRelease = createWorkflow({
                     id: "pr",
                     env: {
                         GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}",
-                        BASE_BRANCH: "${{ steps.branch.outputs.base-branch }}"
+                        BASE_BRANCH
                     },
                     run: `PR_URL=$(gh pr create --title "📦  Release ${VERSION}" --body "Release ${VERSION}\n\n**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}" --base "$BASE_BRANCH" --head "release/${VERSION}") && echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT`
                 },
