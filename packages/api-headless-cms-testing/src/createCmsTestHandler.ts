@@ -2,7 +2,7 @@ import { createTestHttpHandler } from "@webiny/event-handler-core/features/testi
 import type { Container } from "@webiny/di";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/api-graphql";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { buildSchema, getIntrospectionQuery } from "graphql";
@@ -87,7 +87,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
     // Everything up to (but not including) the GraphQL engine — shared by the HTTP handler and the
     // context-capture handler.
     const setupRequest = async (container: Container) => {
-        const wcpLicense = await loadWcpLicense(
+        const wcpLicense = await WcpLicenseLoader.load(
             params.testProjectLicense ?? createTestWcpLicense()
         );
 
@@ -127,7 +127,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
     const handler = createTestHttpHandler({
         root: setupRoot,
-        request: async container => {
+        child: async container => {
             await setupRequest(container);
             GraphQLEngineFeature.register(container);
         }
@@ -171,7 +171,7 @@ export const createCmsTestHandler = (params: CmsTestHandlerParams = {}) => {
 
         const ctxHandler = createTestHttpHandler({
             root: setupRoot,
-            request: async container => {
+            child: async container => {
                 await setupRequest(container);
                 container.registerInstance(GraphQLContextualSchema, {
                     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {

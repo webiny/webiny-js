@@ -1,3 +1,4 @@
+import { ACTION } from "../utils/index.js";
 interface CreateGlobalBuildCacheStepsParams {
     workingDirectory: string;
 }
@@ -5,7 +6,7 @@ interface CreateGlobalBuildCacheStepsParams {
 export const createGlobalBuildCacheSteps = (params: CreateGlobalBuildCacheStepsParams) => {
     return [
         {
-            uses: "actions/cache@v5",
+            uses: ACTION.cache,
             with: {
                 path: [params.workingDirectory, ".webiny/cached-packages"]
                     .filter(Boolean)

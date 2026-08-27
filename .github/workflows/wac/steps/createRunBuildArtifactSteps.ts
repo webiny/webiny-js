@@ -1,3 +1,4 @@
+import { ACTION } from "../utils/index.js";
 interface CreateRunBuildArtifactStepsParams {
     workingDirectory: string;
 }
@@ -23,9 +24,13 @@ interface CreateRunBuildArtifactStepsParams {
 // both ways.
 const ARCHIVE = "run-build-cache.tzst";
 
-// Artifacts are already scoped to a single workflow run, so the attempt number is all that is
-// needed to keep re-runs from colliding with the previous attempt's upload.
-const ARTIFACT_NAME = "run-build-cache-${{ github.run_attempt }}";
+// Deliberately does NOT include `github.run_attempt`. Artifacts are scoped to a workflow run and
+// survive across its attempts, but "Re-run failed jobs" does NOT re-run the successful `build`
+// job - so an attempt-numbered name has the consumers looking for an artifact that was never
+// produced ("Artifact not found for name: run-build-cache-2"). A stable name lets a re-run of
+// failed jobs pick up the artifact the first attempt uploaded, and `overwrite: true` on the
+// upload lets a full re-run replace it instead of failing on the duplicate name.
+const ARTIFACT_NAME = "run-build-cache";
 
 const CACHED_PACKAGES = ".webiny/cached-packages";
 
@@ -46,14 +51,15 @@ export const createRunBuildArtifactUploadSteps = (params: CreateRunBuildArtifact
         },
         {
             name: "Upload build cache",
-            uses: "actions/upload-artifact@v7",
+            uses: ACTION.uploadArtifact,
             with: {
                 name: ARTIFACT_NAME,
                 path: ARCHIVE,
                 "retention-days": 1,
                 // The tarball is already zstd-compressed; re-deflating it only burns CPU.
                 "compression-level": 0,
-                "if-no-files-found": "error"
+                "if-no-files-found": "error",
+                overwrite: true
             }
         }
     ] as const;
@@ -63,7 +69,7 @@ export const createRunBuildArtifactDownloadSteps = (params: CreateRunBuildArtifa
     return [
         {
             name: "Download build cache",
-            uses: "actions/download-artifact@v8",
+            uses: ACTION.downloadArtifact,
             with: { name: ARTIFACT_NAME }
         },
         {

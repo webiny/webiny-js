@@ -17,10 +17,10 @@ jobs:
       changed-packages: ${{ steps.detect-changed-packages.outputs.changed-packages }}
       latest-webiny-version: ${{ steps.latest-webiny-version.outputs.latest-webiny-version }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -39,7 +39,7 @@ jobs:
           "$GITHUB_OUTPUT"
       - name: Detect changed files
         id: detect-changed-files
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d
         with:
           filters: |
             changed:
@@ -69,17 +69,21 @@ jobs:
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -89,7 +93,7 @@ jobs:
       - name: Build packages
         run: yarn build --rebuild-dependents
         working-directory: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -109,17 +113,21 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -151,17 +159,21 @@ jobs:
       - constants
     name: Static code analysis
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -199,17 +211,21 @@ jobs:
       - build
     name: Static code analysis (verify dependencies)
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -233,15 +249,19 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
@@ -263,10 +283,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -310,17 +330,21 @@ jobs:
       AWS_REGION: eu-central-1
     if: needs.vitest-constants.outputs.vitest-test-commands != '[]'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -344,10 +368,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -394,22 +418,27 @@ jobs:
       WEBINY_STORAGE: ddb
     if: needs.vitest-ddb-constants.outputs.vitest-test-commands != '[]'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -434,10 +463,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -492,22 +521,27 @@ jobs:
       needs.vitest-ddb-os-constants.outputs.vitest-test-commands != '[]' &&
       needs.constants.outputs.is-fork-pr != 'true'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -532,10 +566,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -582,22 +616,27 @@ jobs:
       WEBINY_STORAGE: sql,ddb
     if: needs.vitest-sql-constants.outputs.vitest-test-commands != '[]'
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: >-
+          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.base_ref }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.base_ref }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}

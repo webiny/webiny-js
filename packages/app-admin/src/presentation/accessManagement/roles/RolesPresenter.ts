@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
-import slugify from "slugify";
+import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import { FormModelFactory } from "~/features/formModel/abstractions.js";
 import type { IFormModel } from "~/features/formModel/abstractions.js";
@@ -34,7 +34,8 @@ class RolesPresenterImpl implements IRolesPresenter {
         private createRoleUseCase: CreateRoleUseCase.Interface,
         private updateRoleUseCase: UpdateRoleUseCase.Interface,
         private deleteRoleUseCase: DeleteRoleUseCase.Interface,
-        private cache: RolesListCache.Interface
+        private cache: RolesListCache.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {
         this._form = this.buildForm(false, false);
         makeAutoObservable<
@@ -46,6 +47,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             | "updateRoleUseCase"
             | "deleteRoleUseCase"
             | "cache"
+            | "stringFormatter"
         >(this, {
             formModelFactory: false,
             listRolesUseCase: false,
@@ -54,6 +56,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             updateRoleUseCase: false,
             deleteRoleUseCase: false,
             cache: false,
+            stringFormatter: false,
             vm: computed
         });
     }
@@ -203,14 +206,7 @@ class RolesPresenterImpl implements IRolesPresenter {
                         if (slugValue || !value) {
                             return;
                         }
-                        form.field("slug").setValue(
-                            slugify(String(value), {
-                                replacement: "-",
-                                lower: true,
-                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
-                                trim: false
-                            })
-                        );
+                        form.field("slug").setValue(this.stringFormatter.slugify(String(value)));
                     }),
                 slug: fields
                     .text()
@@ -253,6 +249,7 @@ export const RolesPresenter = Abstraction.createImplementation({
         CreateRoleUseCase,
         UpdateRoleUseCase,
         DeleteRoleUseCase,
-        RolesListCache
+        RolesListCache,
+        StringFormatter
     ]
 });

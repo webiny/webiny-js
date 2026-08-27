@@ -21,7 +21,7 @@
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^6.0.0",
-    "open": "^11.0.0",
+    "open": "^11.0.1",
     "ora": "9.4.1",
     "tsx": "4.23.12"
   },

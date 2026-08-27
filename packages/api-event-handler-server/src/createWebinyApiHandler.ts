@@ -103,7 +103,7 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             EmptyTrashBinRouteFeature.register(rootContainer);
         },
 
-        request: async container => {
+        child: async container => {
             // The transport-agnostic per-request stack. The realtime hook installs the server
             // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
             // shared connection manager + adapter from the root. Scheduler is NOT a per-request

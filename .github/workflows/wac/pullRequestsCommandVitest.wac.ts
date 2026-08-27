@@ -1,5 +1,6 @@
 import { NormalJob } from "github-actions-wac";
 import {
+    createCheckoutPrSteps,
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
     createRunBuildArtifactDownloadSteps,
@@ -40,21 +41,6 @@ const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
 const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
     workingDirectory: DIR_WEBINY_JS
 });
-
-const createCheckoutPrSteps = () =>
-    [
-        {
-            name: "Checkout Pull Request",
-            "working-directory": DIR_WEBINY_JS,
-            // Detach onto the SHA `baseBranch` resolved, so every job in this run builds and
-            // tests the same commit even if the PR is pushed to mid-run.
-            run: [
-                "gh pr checkout ${{ github.event.issue.number }}",
-                "git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}"
-            ].join("\n"),
-            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
-        }
-    ] as NonNullable<NormalJob["steps"]>;
 
 // Live status table shown in the PR comment. Rows are updated in place as each
 // group progresses (Queued -> Running -> Passed/Failed) by the per-group jobs,
@@ -160,6 +146,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             steps: [
                 createMarkRunningStep(rowLabel),
+                // Test discovery reads `packages/` off disk, so it has to run against the PR's
+                // code. Without this the job kept the default `issue_comment` checkout (the
+                // default branch), and a PR that added a package, added the first tests to an
+                // existing one, or changed a package's testing/sharding config would have those
+                // changes silently ignored - while a PR that deleted a package would still get a
+                // test job for it.
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 {
                     id: "list-vitest-test-commands",
                     name: "List Vitest Test Commands",
@@ -195,7 +188,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             awsAuth: storageOps && storageOps.id === "ddb-os,ddb",
             checkout: { path: DIR_WEBINY_JS },
             steps: [
-                ...createCheckoutPrSteps(),
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
@@ -267,7 +260,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             checkout: { path: DIR_WEBINY_JS },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
-                ...createCheckoutPrSteps(),
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,

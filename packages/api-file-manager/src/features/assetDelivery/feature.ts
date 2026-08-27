@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AssetProcessor } from "./abstractions.js";
 import { FilesAssetRequestResolverImpl } from "./FilesAssetRequestResolver.js";
 import { NullAssetResolverImpl } from "./NullAssetResolver.js";
@@ -26,11 +27,18 @@ export const AssetDeliveryFeature = createFeature({
 
         container.registerDecorator(PrivateFileAssetRequestResolverDecorator);
 
-        // Private files are WCP-gated, but the license is per-request (loaded post-register,
-        // refreshed on a 5-min TTL), so a canUsePrivateFiles() check here would always read the
-        // NullLicense and never register. Register unconditionally; PrivateFilesAssetProcessor
-        // guards on the license at request time.
-        container.register(PrivateAuthenticatedAuthorizerImpl);
-        container.registerDecorator(PrivateFilesAssetProcessorDecorator);
+        // Register-time gate on the effective feature flags (userFlag && live WCP license). Valid at
+        // register() time because the license is refreshed PRE-register (WcpLicenseLoader.load in
+        // registerApiRequestStack) and FeatureFlags reads that process cache — and it re-evaluates per
+        // request since the child re-registers, so a license change takes effect on the next request.
+        if (
+            container
+                .resolve(FeatureFlags)
+                .get()
+                .isEnabled("advancedAccessControlLayer.privateFiles")
+        ) {
+            container.register(PrivateAuthenticatedAuthorizerImpl);
+            container.registerDecorator(PrivateFilesAssetProcessorDecorator);
+        }
     }
 });

@@ -32,15 +32,15 @@
     "knex": "^3.3.0"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.4",
-    "@electric-sql/pglite-socket": "^0.2.7",
+    "@electric-sql/pglite": "^0.5.5",
+    "@electric-sql/pglite-socket": "^0.2.8",
     "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
     "better-sqlite3": "^13.0.3",
     "pg": "^8.23.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"
