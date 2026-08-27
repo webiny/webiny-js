@@ -42,10 +42,15 @@ export const ApiCloudfront = createAppModule({
         });
 
         // The streaming behavior uses a cache policy + origin request policy instead of the legacy
-        // `forwardedValues` the other behaviors use. That is not cosmetic: legacy forwarded values are
-        // deprecated and do not compose with OAC request signing — with them in place, Lambda rejected
-        // every signed request from CloudFront with `AccessDeniedException` and the function was never
-        // invoked.
+        // `forwardedValues` the other behaviors use, because legacy forwarded values are deprecated
+        // and this policy also has to forward the two CORS preflight headers (see below).
+        //
+        // It is NOT what fixed the `AccessDeniedException` that made Lambda reject every signed
+        // CloudFront request — that was a missing `lambda:InvokeFunction` permission (see the two
+        // permissions at the bottom of this file). Recorded because the wrong cause was assumed first.
+        //
+        // Do NOT switch this to the managed `AllViewer` policy: it forwards `Host`, which breaks OAC
+        // signing against a Function URL origin.
         const streamOriginRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
             name: "api-stream-origin-request-policy",
             config: {
@@ -118,12 +123,13 @@ export const ApiCloudfront = createAppModule({
                             "DELETE"
                         ],
                         cachedMethods: ["GET", "HEAD"],
-                        // Managed-CachingDisabled. Nothing on a streaming route is cacheable, and a
-                        // cache policy is also what replaces the legacy `forwardedValues` that OAC
-                        // signing can't live with. TTLs must NOT be set alongside a cache policy.
+                        // Managed-CachingDisabled — nothing on a streaming route is cacheable.
+                        // TTLs must NOT be set alongside a cache policy.
                         cachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
                         originRequestPolicyId: streamOriginRequestPolicy.output.id,
                         pathPattern: "/stream/*",
+                        // Stricter than the other behaviors' `allow-all` on purpose: a streaming route
+                        // carries an auth token in a header, so plain HTTP is never acceptable here.
                         viewerProtocolPolicy: "https-only",
                         targetOriginId: STREAM_ORIGIN_ID
                     },
@@ -235,7 +241,14 @@ export const ApiCloudfront = createAppModule({
                             httpPort: 80,
                             httpsPort: 443,
                             originProtocolPolicy: "https-only",
-                            originSslProtocols: ["TLSv1.2"]
+                            originSslProtocols: ["TLSv1.2"],
+                            // How long CloudFront waits between packets of the response before giving
+                            // up. The default is 30s, which is SHORTER than a slow model can take to
+                            // produce its first token — CloudFront would abandon the stream while the
+                            // Lambda (300s timeout) kept working. 60s is the ceiling without an AWS
+                            // quota increase; a route whose gaps can exceed that must emit SSE
+                            // heartbeat comments (`: ping\n\n`), which clients ignore by spec.
+                            originReadTimeout: 60
                         }
                     }
                 ],
