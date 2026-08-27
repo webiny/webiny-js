@@ -1,11 +1,12 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 import {
-    NODE_VERSION,
-    BUILD_PACKAGES_RUNNER,
+    ACTION,
     AWS_REGION,
-    runNodeScript,
-    addToOutputs
+    BUILD_PACKAGES_RUNNER,
+    NODE_VERSION,
+    addToOutputs,
+    runNodeScript
 } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
@@ -25,8 +26,7 @@ import {
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
 const installBuildSteps = createInstallBuildSteps({
-    workingDirectory: DIR_WEBINY_JS,
-    rebuildDependents: true
+    workingDirectory: DIR_WEBINY_JS
 });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -168,7 +168,7 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed files",
                     id: "detect-changed-files",
-                    uses: "dorny/paths-filter@v4",
+                    uses: ACTION.pathsFilter,
                     with: {
                         filters: "changed:\n  - 'packages/**/*'\n",
                         "list-files": "json"

@@ -3,7 +3,7 @@ import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-co
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { GraphQLEngineFeature, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { buildSchema } from "graphql";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -49,8 +49,8 @@ export const useRawHandler = <C = any>(params?: UseRawHandlerParams) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(TenantFromHeaderInitializer);
         },
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+        child: async container => {
+            const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
             processLegacyPlugins(container, cmsStorage.plugins);
