@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { HttpRoute, HttpStreamBody, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRoute, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiImageEnrichmentStreamRoute } from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
@@ -54,6 +54,11 @@ async function collectEvents(response: IHttpResponse) {
         .map(record => JSON.parse(record.replace(/^data: /, "")));
 }
 
+/** Error responses go through the builder's `json()`, which serializes eagerly. */
+function errorBody(response: IHttpResponse) {
+    return JSON.parse(response.body as string);
+}
+
 describe("AiImageEnrichmentStreamRoute", () => {
     let container: Container;
     let route: HttpRoute.Interface;
@@ -83,7 +88,6 @@ describe("AiImageEnrichmentStreamRoute", () => {
         };
 
         container = new Container();
-        container.registerInstance(RequestContainer, container);
         container.registerInstance(PrepareImageEnrichmentUseCase, prepare as any);
         container.registerInstance(ApplyImageEnrichmentUseCase, apply as any);
         container.registerInstance(Ai, ai as any);
@@ -98,7 +102,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
     });
 
     it("should respond with SSE headers that defeat proxy buffering", async () => {
-        const response = await route.handle(request());
+        const response = await invokeHttpRoute(route, request());
 
         expect(response.statusCode).toBe(200);
         expect(response.headers?.["content-type"]).toBe("text/event-stream");
@@ -108,7 +112,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
     });
 
     it("should stream start, each partial, and done", async () => {
-        const events = await collectEvents(await route.handle(request()));
+        const events = await collectEvents(await invokeHttpRoute(route, request()));
 
         expect(events[0]).toEqual({
             type: "start",
@@ -129,7 +133,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
     });
 
     it("should persist the final output merged with the file's existing tags", async () => {
-        await collectEvents(await route.handle(request()));
+        await collectEvents(await invokeHttpRoute(route, request()));
 
         expect(apply.execute).toHaveBeenCalledWith({
             fileId: "file-1",
@@ -144,7 +148,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
             partialOutputStream: partials([{ tags: ["cat", undefined] }, { tags: ["cat", "sofa"] }])
         });
 
-        const events = await collectEvents(await route.handle(request()));
+        const events = await collectEvents(await invokeHttpRoute(route, request()));
 
         expect(events[1]).toEqual({ type: "partial", tags: ["cat"], description: "" });
     });
@@ -152,7 +156,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
     it("should not start the AI call until preparation succeeded", async () => {
         prepare.execute.mockResolvedValue(Result.fail(new EnrichmentFileNotFoundError("nope")));
 
-        await route.handle(request("nope"));
+        await invokeHttpRoute(route, request("nope"));
 
         expect(ai.streamText).not.toHaveBeenCalled();
     });
@@ -161,11 +165,11 @@ describe("AiImageEnrichmentStreamRoute", () => {
         it("should answer 404 for a missing file", async () => {
             prepare.execute.mockResolvedValue(Result.fail(new EnrichmentFileNotFoundError("nope")));
 
-            const response = await route.handle(request("nope"));
+            const response = await invokeHttpRoute(route, request("nope"));
 
             expect(response.statusCode).toBe(404);
             expect(HttpStreamBody.is(response.body)).toBe(false);
-            expect(response.body.code).toBe("ENRICHMENT_FILE_NOT_FOUND");
+            expect(errorBody(response).code).toBe("ENRICHMENT_FILE_NOT_FOUND");
         });
 
         it("should answer 400 for a non-image", async () => {
@@ -173,23 +177,23 @@ describe("AiImageEnrichmentStreamRoute", () => {
                 Result.fail(new EnrichmentNotAnImageError("application/pdf"))
             );
 
-            const response = await route.handle(request());
+            const response = await invokeHttpRoute(route, request());
 
             expect(response.statusCode).toBe(400);
-            expect(response.body.code).toBe("ENRICHMENT_NOT_AN_IMAGE");
+            expect(errorBody(response).code).toBe("ENRICHMENT_NOT_AN_IMAGE");
         });
 
         it("should answer 500 when no AI provider is configured", async () => {
             prepare.execute.mockResolvedValue(Result.fail(new EnrichmentNoProviderError()));
 
-            const response = await route.handle(request());
+            const response = await invokeHttpRoute(route, request());
 
             expect(response.statusCode).toBe(500);
-            expect(response.body.code).toBe("ENRICHMENT_NO_AI_PROVIDER");
+            expect(errorBody(response).code).toBe("ENRICHMENT_NO_AI_PROVIDER");
         });
 
         it("should answer 400 when no file ID was matched", async () => {
-            const response = await route.handle({ ...request(), pathParameters: {} });
+            const response = await invokeHttpRoute(route, { ...request(), pathParameters: {} });
 
             expect(response.statusCode).toBe(400);
         });
@@ -199,7 +203,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
         it("should emit an error event when the AI call throws", async () => {
             ai.streamText.mockRejectedValue(new Error("rate limited"));
 
-            const events = await collectEvents(await route.handle(request()));
+            const events = await collectEvents(await invokeHttpRoute(route, request()));
 
             expect(events[0].type).toBe("start");
             expect(events[1]).toEqual({
@@ -212,7 +216,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
         it("should emit an error event when persisting fails", async () => {
             apply.execute.mockResolvedValue(Result.fail(new EnrichmentPersistError("no access")));
 
-            const events = await collectEvents(await route.handle(request()));
+            const events = await collectEvents(await invokeHttpRoute(route, request()));
 
             expect(events[events.length - 1]).toEqual({
                 type: "error",
@@ -223,7 +227,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
         it("should emit no done event after an error", async () => {
             ai.streamText.mockRejectedValue(new Error("boom"));
 
-            const events = await collectEvents(await route.handle(request()));
+            const events = await collectEvents(await invokeHttpRoute(route, request()));
 
             expect(events.some(e => e.type === "done")).toBe(false);
         });

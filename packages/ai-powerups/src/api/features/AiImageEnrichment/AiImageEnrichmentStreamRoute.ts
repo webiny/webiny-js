@@ -1,5 +1,5 @@
-import { HttpRoute, jsonResponse, sseResponse } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import { HttpRoute } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import type { IPreparedImageEnrichment } from "./abstractions.js";
@@ -26,11 +26,14 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
         private ai: Ai.Interface
     ) {}
 
-    async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    async handle(
+        request: IHttpRequest,
+        response: IHttpResponseBuilder
+    ): Promise<IHttpResponseBuilder> {
         const fileId = request.pathParameters.fileId;
 
         if (!fileId) {
-            return jsonResponse(400, { message: "Missing file ID." });
+            return response.status(400).json({ message: "Missing file ID." });
         }
 
         const preparedResult = await this.prepare.execute(fileId);
@@ -40,12 +43,12 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
 
             const statusCode = imageEnrichmentErrorStatusCode(error);
 
-            return jsonResponse(statusCode, { message: error.message, code: error.code });
+            return response.status(statusCode).json({ message: error.message, code: error.code });
         }
 
         const events = this.enrich(preparedResult.value);
 
-        return sseResponse(events);
+        return response.sse(events);
     }
 
     private async *enrich(prepared: IPreparedImageEnrichment): AsyncGenerator<string> {

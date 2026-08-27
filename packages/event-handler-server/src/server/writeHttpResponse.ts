@@ -12,7 +12,15 @@ export async function writeHttpResponse(
     res: ServerResponse,
     response: IHttpResponse
 ): Promise<void> {
-    res.writeHead(response.statusCode, response.headers);
+    // `Set-Cookie` travels in its own field, not in `headers` — it is the one response header that
+    // can legally repeat, which `Record<string, string>` cannot express. Node's `writeHead` takes an
+    // array value for exactly that case.
+    const headers: Record<string, string | string[]> = { ...response.headers };
+    if (response.cookies && response.cookies.length > 0) {
+        headers["set-cookie"] = response.cookies;
+    }
+
+    res.writeHead(response.statusCode, headers);
 
     const { body } = response;
 

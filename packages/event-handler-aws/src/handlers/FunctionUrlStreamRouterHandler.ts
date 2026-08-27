@@ -77,9 +77,12 @@ class FunctionUrlStreamRouterHandlerImpl implements FunctionUrlStreamEventHandle
         const { HttpResponseStream } = getAwsLambdaGlobal();
 
         // Sends the status code and headers as the stream prelude. Must happen before any write.
+        // Cookies ride in their own prelude field, not in `headers`: `Set-Cookie` is the one response
+        // header that can repeat, which `Record<string, string>` cannot express.
         const stream = HttpResponseStream.from(raw, {
             statusCode: response.statusCode,
-            headers: response.headers
+            headers: response.headers,
+            cookies: response.cookies
         });
 
         const { body } = response;
