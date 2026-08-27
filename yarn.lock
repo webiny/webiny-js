@@ -10577,7 +10577,6 @@ __metadata:
     "@webiny/background-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
-    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/webhooks": "npm:0.0.0"
     rimraf: "npm:^6.1.3"

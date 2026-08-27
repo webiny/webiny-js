@@ -318,6 +318,18 @@ const main = async () => {
     const result = await callClaude(buildPrompt(loadPr()));
     fs.writeFileSync(outputPath, renderReport(result), "utf8");
     console.log(`Slop cop report written (verdict: ${result.verdict}).`);
+
+    // Machine-readable signal for the workflow, which uses it to decide whether to fail the job for
+    // authors who have opted into blocking. Mirrors what renderReport treats as "worth a look", so
+    // the comment and the exit status can never disagree.
+    const findingsCount =
+        result.verdict === "warnings" && Array.isArray(result.findings)
+            ? result.findings.length
+            : 0;
+
+    if (process.env.GITHUB_OUTPUT) {
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `findings-count=${findingsCount}\n`);
+    }
 };
 
 main().catch(err => {

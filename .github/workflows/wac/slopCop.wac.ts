@@ -20,6 +20,14 @@ import { createJob } from "./jobs/index.js";
 // workflow with a writable token against untrusted head code) just to cover
 // forks, we skip fork PRs cleanly - the near-totality of PRs here come from
 // in-repo branches. The job is gated on `!head.repo.fork`.
+// Authors who have opted into slop cop BLOCKING their PRs. For everyone else the job stays
+// advisory - it comments and succeeds - which is the phase-1 behaviour described above.
+//
+// Opting in is per-author on purpose: the signal comes from an LLM and can be wrong, so making it a
+// hard gate is a choice each author makes for their own PRs rather than something imposed on
+// everyone at once.
+const BLOCKING_AUTHORS = ["adrians5j"];
+
 export const slopCop = createWorkflow({
     name: "Slop Cop",
     on: {
@@ -82,6 +90,7 @@ export const slopCop = createWorkflow({
                 },
                 {
                     name: "Run slop cop analysis",
+                    id: "slop-cop",
                     // Skip entirely when no key is configured (e.g. on forks of the repo
                     // that never set the secret) so the workflow stays green.
                     if: "${{ env.ANTHROPIC_API_KEY != '' }}",
@@ -125,6 +134,22 @@ export const slopCop = createWorkflow({
                         '    -F "body=@$REPORT"',
                         '  echo "::notice::Posted new slop cop comment."',
                         "fi"
+                    ].join("\n")
+                },
+                {
+                    // Runs AFTER the comment step so the findings are always visible on the PR,
+                    // whether or not the job then fails.
+                    //
+                    // An empty count means the analysis was skipped or errored (both deliberately
+                    // non-blocking), so only a real, non-zero count fails the job.
+                    name: "Fail if slop cop found something",
+                    if: `\${{ always() && contains(fromJSON('${JSON.stringify(BLOCKING_AUTHORS)}'), github.event.pull_request.user.login) && steps.slop-cop.outputs.findings-count != '' && steps.slop-cop.outputs.findings-count != '0' }}`,
+                    env: {
+                        FINDINGS_COUNT: "${{ steps.slop-cop.outputs.findings-count }}"
+                    },
+                    run: [
+                        'echo "::error::Slop cop reported $FINDINGS_COUNT finding(s). See the slop cop comment on this PR."',
+                        "exit 1"
                     ].join("\n")
                 }
             ]
