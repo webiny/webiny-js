@@ -115,11 +115,11 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
             await this.eventPublisher.publish(
                 new GroupAfterUpdateEvent({
                     original,
-                    group
+                    group: result.value
                 })
             );
 
-            return Result.ok(group);
+            return Result.ok(result.value);
         } catch (error) {
             // Publish error event for unexpected errors
             await this.eventPublisher.publish(
