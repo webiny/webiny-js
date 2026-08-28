@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpResponseBuilder, serializeCookie } from "~/features/http/HttpResponseBuilder.js";
 import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
 import type {
@@ -23,6 +24,7 @@ function makeRouter(route: HttpRoute.Interface): HttpRouter.Interface {
     const container = new Container();
     container.registerInstance(HttpRoute, route);
     container.register(HttpRouterImpl);
+    container.registerInstance(RequestContainer, container);
     return container.resolve(HttpRouter);
 }
 

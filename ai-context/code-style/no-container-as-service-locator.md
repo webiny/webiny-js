@@ -44,6 +44,11 @@ export const MyRoute = HttpRoute.createImplementation({
 `container.resolve(...)` IS correct in a `createFeature` `resolve()` hook — that hook exists to hand
 resolved instances to callers. This rule is about implementation classes.
 
-Some existing routes (`AssetDeliveryRoute`, `WebsiteBuilderRedirectsRoute`) still resolve lazily to
-work around `HttpRouter` constructing every registered route on each request just to path-match. That
-is a documented TODO on `HttpRouterImplClass`, not a pattern to copy — the fix belongs in the router.
+`HttpRouter` itself takes the container, and that is deliberate: it resolves routes inside `route()`
+so route construction happens AFTER the request-context initializers have run. Injecting the routes
+instead constructed every one of them before any initializer, so a route reaching a request-time
+token (`FileModel`, a per-request `CmsModel`) threw "No registration found" on every request. Routes
+can declare their dependencies precisely because the router does this.
+
+Some routes (`AssetDeliveryRoute`, `WebsiteBuilderRedirectsRoute`) still resolve lazily inside
+`handle()` as a leftover of that old constraint. They no longer need to — don't copy them.
