@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { Masker } from "@webiny/api-core/features/masker/index.js";
+import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
 import type { PersistedProviderPreset, PersistedProviders, ProvidersSettings } from "./types.js";
 
@@ -22,7 +23,8 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
 
     constructor(
         private encryption: Encryption.Interface,
-        private masker: Masker.Interface
+        private masker: Masker.Interface,
+        private modelRegistry: AiModelRegistry.Interface
     ) {}
 
     mapFromStorage(persisted: unknown): ProvidersSettings {
@@ -47,6 +49,29 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
         const input = internal as ProvidersSettings;
         const existingData = existing as ProvidersSettings | null;
         const existingPresets = existingData?.presets ?? [];
+
+        const availableModels = await this.modelRegistry.listModels();
+        for (const preset of input.presets) {
+            if (!preset.model) {
+                continue;
+            }
+            const slashIndex = preset.model.indexOf("/");
+            if (slashIndex === -1) {
+                throw new Error(
+                    `Invalid model ID "${preset.model}" in preset "${preset.name}". Expected format: "<providerId>/<modelId>".`
+                );
+            }
+            const providerId = preset.model.slice(0, slashIndex);
+            const modelId = preset.model.slice(slashIndex + 1);
+            const found = availableModels.some(
+                m => m.providerId === providerId && m.modelId === modelId
+            );
+            if (!found) {
+                throw new Error(
+                    `Model "${preset.model}" in preset "${preset.name}" is not available. Use listModels() to see available models.`
+                );
+            }
+        }
 
         const presets: PersistedProviderPreset[] = await Promise.all(
             input.presets.map(async preset => {
@@ -82,5 +107,5 @@ class ProvidersHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
 
 export default AiPowerUpsSettingsGroupHandler.createImplementation({
     implementation: ProvidersHandlerImpl,
-    dependencies: [Encryption, Masker]
+    dependencies: [Encryption, Masker, AiModelRegistry]
 });
