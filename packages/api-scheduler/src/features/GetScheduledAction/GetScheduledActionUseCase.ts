@@ -10,36 +10,30 @@ import {
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
-/**
- * Retrieves a scheduled action by its ID
- *
- * Flow:
- * 1. Fetch schedule entry from CMS storage by ID
- * 2. Return null if not found
- * 3. Transform CMS entry to IScheduledAction format
- */
 class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
         private modelProvider: ScheduledActionModelProvider.Interface,
-        private permissions: SchedulerPermissions.Interface,
+        private permissionsResolver: SchedulerPermissionsResolver.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
         params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
-        const hasPermission = await this.permissions.canRead("action");
-        if (!hasPermission) {
-            return Result.fail(new NotAuthorizedError());
-        }
         const { id, namespace } = params;
+        const permissions = this.permissionsResolver.forNamespace(namespace);
+        if (permissions) {
+            const hasPermission = await permissions.canRead();
+            if (!hasPermission) {
+                return Result.fail(new NotAuthorizedError());
+            }
+        }
         const model = await this.modelProvider.get();
-        // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
         const entryResult = await this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
             model,
@@ -54,7 +48,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        const ownRecordsOnly = permissions ? await permissions.onlyOwnRecords() : false;
         if (ownRecordsOnly) {
             if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
                 return Result.fail(new NotAuthorizedError());
@@ -62,9 +56,6 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const entry = entryResult.value;
-        /**
-         * Always check if the namespace is correct because entry is loaded directly, not via filtering.
-         */
         if (entry.values.namespace !== namespace) {
             return Result.fail(new ScheduledActionNotFoundError(scheduleId));
         }
@@ -79,7 +70,7 @@ export const GetScheduledActionUseCase = UseCaseAbstraction.createImplementation
     dependencies: [
         GetEntryByIdUseCase,
         ScheduledActionModelProvider,
-        SchedulerPermissions,
+        SchedulerPermissionsResolver,
         IdentityContext
     ]
 });
