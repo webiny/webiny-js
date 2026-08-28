@@ -11,6 +11,9 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
+const isValidValue = (value: unknown): value is string | number =>
+    typeof value === "string" || typeof value === "number";
+
 export const SelectRenderer = createFieldRenderer(({ field }) => {
     const options: IValueOption[] = field.options ?? [];
 
@@ -21,7 +24,7 @@ export const SelectRenderer = createFieldRenderer(({ field }) => {
             placeholder={field.placeholder}
             description={field.description}
             note={field.note}
-            value={field.value != null ? String(field.value) : ""}
+            value={isValidValue(field.value) ? String(field.value) : ""}
             onChange={value => {
                 field.onChange(value);
                 field.onBlur();
@@ -31,7 +34,7 @@ export const SelectRenderer = createFieldRenderer(({ field }) => {
             validation={field.validation}
             options={options.map(opt => ({
                 label: opt.label,
-                value: String(opt.value),
+                value: isValidValue(opt.value) ? String(opt.value) : opt.value,
                 disabled: opt.disabled
             }))}
         />
