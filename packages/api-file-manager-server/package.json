@@ -24,7 +24,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "exifreader": "^4.41.0",
+    "exifreader": "^4.41.3",
     "fastify": "5.10.0",
     "sharp": "^0.35.3"
   },

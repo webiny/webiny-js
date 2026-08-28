@@ -46,7 +46,11 @@ const createMockWcpContext = (privateFiles = false): WcpContext.Interface => ({
     canUseHcmsFieldPermissions: () => false,
     canUseAiImageEnrichment: () => false,
     canUseAiPageGeneration: () => false,
-    canUseAiLexicalGeneration: () => false
+    canUseAiPageTranslation: () => false,
+    canUseAiLexicalGeneration: () => false,
+    canUseAiEntryGeneration: () => false,
+    canUseAiEntryComparison: () => false,
+    canUseAiEntryTranslation: () => false
 });
 
 describe("AssetDelivery DI integration", () => {

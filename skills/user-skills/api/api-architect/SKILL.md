@@ -1,6 +1,5 @@
 ---
 name: webiny-api-architect
-context: webiny-extensions
 description: >
   The hub skill for all API/backend architecture in Webiny. Covers architecture overview,
   Services vs UseCases, feature naming and organization, feature structure templates,
@@ -14,6 +13,19 @@ description: >
 ## TL;DR
 
 API extensions use `createFeature` to register features into the DI container. Each feature is a vertical slice with abstractions, implementations, and a `feature.ts` registration file. The key abstractions are **Services** (multi-method, singleton) and **UseCases** (single-method orchestrators, transient). Repositories handle persistence via CMS. Features are named by **business capability**, files inside by **technical responsibility**.
+
+## Working Context
+
+This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are identical — only imports and registration differ.
+
+|                     | Extensions (`extensions/`)                                                                                                                       | Core (`packages/`)                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Imports**         | `webiny/api`, `webiny/api/cms/model`, etc.                                                                                                       | `@webiny/feature/api`, `@webiny/api-headless-cms/...`, etc. |
+| **Catalog paths**   | Use the `Import:` path                                                                                                                           | Use the `Source:` path                                      |
+| **Entry point**     | `export default createFeature(...)` in a file targeted by `<Api.Extension src={...}>`                                                            | `createFeature` registered by the package initializer       |
+| **GraphQL schemas** | `export default GraphQLSchemaFactory.createImplementation(...)` — registered via `container.register()` inside the entry point's `createFeature` | Same pattern, but imported from `@webiny/handler-graphql`   |
+
+Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 
 ## Architecture Overview
 

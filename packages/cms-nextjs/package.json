@@ -38,5 +38,8 @@
   },
   "webiny": {
     "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

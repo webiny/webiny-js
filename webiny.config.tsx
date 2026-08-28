@@ -4,12 +4,15 @@ import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
+
 // import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
     return (
         <>
+            <Api.Extension src={"@/extensions/tenantTheme/TenantThemeExtension.ts"} />
+            <Api.Extension src={"/extensions/WebsiteBuilderApiKey.ts"} />
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
@@ -25,6 +28,7 @@ export const Extensions = () => {
             <ApplyDiscountExtension />
             {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
             <AiContentExtension />
+            <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -39,7 +43,7 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
-            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
+            <Infra.Api.MaxBundleSize size={6291456} />
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />

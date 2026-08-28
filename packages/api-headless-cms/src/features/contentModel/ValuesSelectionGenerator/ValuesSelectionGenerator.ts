@@ -75,7 +75,8 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             return null;
         }
 
-        return `${field.fieldId} { ${childSelection} }`;
+        const idSelection = field.type === "object" ? "_id " : "";
+        return `${field.fieldId} { ${idSelection}${childSelection} }`;
     }
 
     private walkCollectionNode(
@@ -95,7 +96,7 @@ class ValuesSelectionGeneratorImpl implements IValuesSelectionGenerator {
             .filter(Boolean)
             .join("\n");
 
-        return `...on ${templateType} { ${childSelection} _templateId __typename }`;
+        return `...on ${templateType} { ${childSelection} _templateId _id __typename }`;
     }
 }
 

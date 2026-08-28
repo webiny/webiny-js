@@ -1,8 +1,7 @@
 ---
 name: webiny-admin-catalog
-context: webiny-api
 description: >
-  admin — 22 abstractions.
+  admin — 28 abstractions.
 ---
 
 # admin
@@ -41,6 +40,24 @@ description: >
 
 ---
 
+**Name:** `BulkActionButton`
+**Import:** `import { BulkActionButton } from "webiny/admin"`
+**Source:** `@webiny/app-admin/components/BulkActions/index.ts`
+
+---
+
+**Name:** `Command`
+**Import:** `import { Command } from "webiny/admin"`
+**Source:** `@webiny/app-admin/presentation/commandPalette/index.ts`
+
+---
+
+**Name:** `CommandPalettePresenter`
+**Import:** `import { CommandPalettePresenter } from "webiny/admin"`
+**Source:** `@webiny/app-admin/presentation/commandPalette/index.ts`
+
+---
+
 **Name:** `createAbstraction`
 **Import:** `import { createAbstraction } from "webiny/admin"`
 **Source:** `@webiny/feature/admin/index.ts`
@@ -67,6 +84,12 @@ This is mostly useful for adding React Context providers.
 **Description:** Creates a component, which, when mounted, will register an app provider.
 This is particularly useful for wrapping the entire app with custom React Context providers.
 For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
+
+---
+
+**Name:** `createReactiveComponent`
+**Import:** `import { createReactiveComponent } from "webiny/admin"`
+**Source:** `@webiny/app-admin/index.ts`
 
 ---
 
@@ -102,6 +125,12 @@ is automatically removed from DevTools.
 **Name:** `NetworkErrorEventHandler`
 **Import:** `import { NetworkErrorEventHandler } from "webiny/admin"`
 **Source:** `@webiny/app/errors/index.ts`
+
+---
+
+**Name:** `Notifications`
+**Import:** `import { Notifications } from "webiny/admin"`
+**Source:** `@webiny/app-admin/features/notifications/abstractions.ts`
 
 ---
 
@@ -151,6 +180,12 @@ is automatically removed from DevTools.
 **Name:** `useBuildParams`
 **Import:** `import { useBuildParams } from "webiny/admin"`
 **Source:** `@webiny/app-admin/presentation/buildParams/useBuildParams.ts`
+
+---
+
+**Name:** `useBulkActionDialog`
+**Import:** `import { useBulkActionDialog } from "webiny/admin"`
+**Source:** `@webiny/app-admin/components/BulkActions/index.ts`
 
 ---
 

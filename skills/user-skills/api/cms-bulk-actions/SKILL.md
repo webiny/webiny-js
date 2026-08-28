@@ -1,6 +1,5 @@
 ---
 name: webiny-cms-bulk-actions
-context: webiny-extensions
 description: >
   Authoring a custom Headless CMS bulk action (EntriesBulkAction) that Webiny runs as a
   background task, plus the Admin-side button that triggers it. Use this skill when the

@@ -99,7 +99,8 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
                 return values;
             },
             {
-                _templateId: template.id
+                _templateId: template.id,
+                ...(value._id ? { _id: value._id } : {})
             }
         );
     }
@@ -181,7 +182,8 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
                 return values;
             },
             {
-                _templateId: template.id
+                _templateId: template.id,
+                ...(value._id ? { _id: value._id } : {})
             }
         );
     }

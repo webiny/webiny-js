@@ -11,16 +11,24 @@ export interface IFileManagerFeatureFlags {
 
 export interface IAiPowerupsWebsiteBuilderOptions {
     pageGeneration?: boolean;
+    pageTranslation?: boolean;
 }
 
 export interface IAiPowerupsFileManagerOptions {
     imageEnrichment?: boolean;
 }
 
+export interface IAiPowerupsCmsOptions {
+    entryGeneration?: boolean;
+    entryComparison?: boolean;
+    entryTranslation?: boolean;
+}
+
 export interface IAiPowerupsOptions {
     websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
     fileManager?: IAiPowerupsFileManagerOptions;
     lexicalGeneration?: boolean;
+    cms?: IAiPowerupsCmsOptions;
 }
 
 export interface IAiPowerupsFeatureFlags {

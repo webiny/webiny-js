@@ -1,5 +1,6 @@
 export * from "./components/index.js";
-export * from "./createComponent.js";
+export * from "./contentEntry/useContentEntryList.js";
+export { createComponent } from "@webiny/website-builder-sdk";
 
 export {
     createTextInput,
@@ -15,6 +16,7 @@ export {
     createObjectInput,
     createTagsInput,
     createSlotInput,
+    createContentEntryInput,
     createInput,
     createElement,
     createTheme,
@@ -23,30 +25,7 @@ export {
     setHeadersProvider,
     getHeadersProvider,
     registerComponentGroup,
-    // A/B experiments — server-side variant serving.
-    getPageWithExperiment,
-    resolveVisitorContext,
-    assignVariant,
-    forcedAssignment,
-    registerAnalyticsProvider,
-    getAnalyticsProvider,
     ASPECT_RATIO_PRESETS,
-    FORCED_VARIANT_PARAM,
-    DEFAULT_VISITOR_COOKIE,
-    CONTROL_VARIANT_ID,
-    type ActiveExperiment,
-    type ActiveExperimentVariant,
-    type VariantContent,
-    type VariantAssignment,
-    type VisitorContext,
-    type DeviceType,
-    type ExperimentTrafficSplit,
-    type ExperimentTargeting,
-    type ExperimentAnalyticsConfig,
-    type ExperimentSdk,
-    type ExperimentRenderResult,
-    type GetPageWithExperimentOptions,
-    type ExperimentCookie,
     type CssProperties,
     type Document,
     type DocumentElement,
@@ -55,6 +34,10 @@ export {
     type ContentSDKConfig,
     type ComponentManifest,
     type ComponentInput,
+    type ContentEntryInput,
+    type ContentEntryReference,
+    type ContentEntryQueryConfig,
+    type ContentEntryQueryValue,
     type ComponentConstraint,
     type WebsiteBuilderThemeInput,
     type AssetCrop,

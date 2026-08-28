@@ -12,7 +12,7 @@
   "dependencies": {
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "fuse.js": "7.4.2"
+    "fuse.js": "7.5.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
@@ -20,5 +20,11 @@
     "@webiny/project-utils": "0.0.0",
     "typescript": "7.0.2",
     "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

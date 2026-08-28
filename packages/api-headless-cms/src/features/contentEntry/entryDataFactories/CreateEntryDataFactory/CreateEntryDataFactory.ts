@@ -26,6 +26,8 @@ import { getIdentity } from "~/utils/identity.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
 import { getExpiresAt } from "../expiresAt.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/abstractions.js";
+import { ensureItemIds } from "../../ensureItemIds.js";
 
 type DefaultValue = boolean | number | string | null;
 
@@ -116,7 +118,8 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
         private readonly cmsContext: CmsContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly tenantContext: TenantContext.Interface,
-        private readonly accessControl: AccessControl.Interface
+        private readonly accessControl: AccessControl.Interface,
+        private readonly modelToAstConverter: ModelToAstConverter.Interface
     ) {}
 
     public async create<TValues extends CmsEntryValues = CmsEntryValues>(
@@ -125,6 +128,9 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
         options?: CreateCmsEntryOptionsInput
     ): Promise<ICreateEntryDataResponse<TValues>> {
         const initialValues = cleanInputValues<TValues>(model, rawInput.values || ({} as TValues));
+
+        const modelAst = this.modelToAstConverter.toAst(model);
+        await ensureItemIds(modelAst, initialValues);
 
         await validateModelEntryDataOrThrow({
             context: this.cmsContext,
@@ -297,5 +303,5 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
 export const CreateEntryDataFactory = createImplementation({
     abstraction: FactoryAbstraction,
     implementation: CreateEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext, AccessControl]
+    dependencies: [CmsContext, IdentityContext, TenantContext, AccessControl, ModelToAstConverter]
 });

@@ -1,6 +1,5 @@
 ---
 name: webiny-api-event-publisher-catalog
-context: webiny-api
 description: >
   api/event-publisher — 2 abstractions.
 ---

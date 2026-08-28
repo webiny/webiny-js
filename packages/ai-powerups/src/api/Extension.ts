@@ -15,6 +15,9 @@ import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.j
 import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
 import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
+import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
+import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
+import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -38,7 +41,11 @@ export const Extension = createFeature({
             AiImageEnrichmentFeature.register(container);
         }
 
+        CmsCompareEntryRevisionsFeature.register(container);
+        WbTranslatePageFeature.register(container);
+
         container.register(AiPowerUpsSettingsGraphQLMapperImpl).inSingletonScope();
         container.register(BaseGraphQLSchema);
+        container.register(CmsCompareEntryRevisionsSchema);
     }
 });

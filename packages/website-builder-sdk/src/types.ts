@@ -3,7 +3,6 @@ import type { BindingsApi } from "~/BindingsApi.js";
 import type { ShorthandCssProperties } from "./types/ShorthandCssProperties.js";
 import type { InputFactory } from "~/createInput.js";
 import type { Breakpoint } from "~/types/WebsiteBuilderTheme.js";
-import type { ActiveExperiment, VariantContent } from "~/experiments/types.js";
 export type { WebsiteBuilderTheme, Breakpoint } from "./types/WebsiteBuilderTheme.js";
 
 type CSSProperties = CSS.Properties<string | number>;
@@ -284,6 +283,8 @@ export type SerializableCSSStyleDeclaration = {
     [K in keyof CssProperties]?: CssProperties[K];
 };
 
+export type DocumentCache = Record<string, unknown>;
+
 export type Document = {
     id: string;
     state: DocumentState;
@@ -293,6 +294,7 @@ export type Document = {
     metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;
+    __cache?: DocumentCache;
 };
 
 export type PublicPage = Pick<
@@ -450,9 +452,6 @@ export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
-    getPageExperiment(path: string): Promise<ActiveExperiment | null>;
-    getVariantContent(variantId: string): Promise<VariantContent | null>;
-    getExperimentPaused(experimentId: string): Promise<boolean>;
 }
 
 export interface IEnvironment {
@@ -543,6 +542,71 @@ export type RadioInput = BaseInput<string> & {
     options: { label: string; value: string }[];
 };
 
+export interface ContentEntryReference {
+    id: string;
+    modelId: string;
+}
+
+/**
+ * Query-mode configuration, declared by the component author. The editor then
+ * builds a query within these bounds (see `ContentEntryQueryValue`).
+ */
+/**
+ * A field the editor may sort by: a bare read-API sort key, or a key paired with
+ * a display label shown in the editor.
+ */
+export type ContentEntrySortField = string | { field: string; label?: string };
+
+export interface ContentEntryQueryConfig {
+    /**
+     * Fields the editor may sort by (one at a time). Each `field` is a CMS read-API
+     * sort key — value fields as `values_<fieldId>` (e.g. `values_title`), meta
+     * fields bare (e.g. `createdOn`). Provide a `label` for a friendlier UI; a bare
+     * string uses the key as its label.
+     */
+    sort?: { fields: ContentEntrySortField[] };
+    /** Editor-configurable result limit, with an optional default and hard cap. */
+    limit?: { default?: number; max?: number };
+    /** Show a free-text search box (matches fullTextSearch-enabled fields). */
+    search?: boolean;
+    /** Enable "load more" pagination in the rendered component. */
+    pagination?: boolean;
+}
+
+/**
+ * The value stored for a query-mode input: the editor's chosen query.
+ * `modelId` identifies the CMS model so the frontend SDK can resolve the
+ * query without component manifests.
+ */
+export interface ContentEntryQueryValue {
+    modelId: string;
+    sort?: { field: string; order: "asc" | "desc" };
+    limit?: number;
+    search?: string;
+}
+
+export type ContentEntryInput = BaseInput<
+    ContentEntryReference | ContentEntryReference[] | ContentEntryQueryValue
+> & {
+    type: "contentEntry";
+    /**
+     * The content model(s) the editor may pick entries from. Author-fixed.
+     */
+    models: string[];
+    /**
+     * "manual" (default): the editor hand-picks entries (stored as references).
+     * "query": the editor configures a dynamic query on the fixed model.
+     */
+    mode?: "manual" | "query";
+    /**
+     * Query-mode configuration. Only used when `mode` is "query".
+     */
+    query?: ContentEntryQueryConfig;
+    // `list` (single vs. multiple selection) is inherited from BaseInput.
+    // The framework always resolves the selection into CMS entries server-side
+    // and passes them to the component.
+};
+
 export type ObjectInput = BaseInput<Record<string, any>> & {
     type: "object";
     fields: ComponentInput[];
@@ -568,6 +632,7 @@ export type ComponentInput =
     | TagsInput
     | ObjectInput
     | SlotInput
+    | ContentEntryInput
     | CustomInput;
 
 export type ManifestInputsArray<

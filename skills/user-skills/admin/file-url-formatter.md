@@ -1,6 +1,5 @@
 ---
 name: file-url-formatter
-context: webiny-extensions
 description: >
   Covers the FileUrlFormatter extension point introduced in Webiny 6.4.0.
   Explains how to register a custom URL formatter that transforms file/image

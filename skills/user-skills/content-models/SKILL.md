@@ -1,6 +1,5 @@
 ---
 name: webiny-api-cms-content-models
-context: webiny-extensions
 description: >
   Creating Headless CMS content models via code using the ModelFactory pattern.
   Use this skill when the developer wants to create, modify, or understand content model
@@ -69,18 +68,18 @@ Register in `webiny.config.tsx`:
 
 ## Model Configuration Methods
 
-| Method                                        | Purpose                                                                                                                               |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar. |
-| `.description("...")`                         | Model description shown in Admin UI                                                                                                   |
-| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                      |
-| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                              |
-| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                       |
-| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                         |
-| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                |
-| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                |
-| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                   |
-| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                        |
+| Method                                        | Purpose                                                                                                                                                                                                                       |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                                         |
+| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                                           |
+| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                              |
+| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                                      |
+| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                               |
+| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                                 |
+| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                                        |
+| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                                        |
+| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                                           |
+| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                                |
 | `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPrefix` (string — base URL for live preview, e.g. `"https://example.com/articles"`), `previewSlug` (string — slug template, e.g. `"{values.slug}"`). |
 
 ## Layout
@@ -194,19 +193,19 @@ boolean fields.
 
 The authoritative source for these field types is the `webiny/api/cms/model` barrel export — if you're unsure, check the catalog skill `webiny-api-cms-catalog`.
 
-| Builder Method         | Description                              | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
-| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `fields.text()`        | Single-line text                         | `"textInput"`                                                       | `"textInputs"`                                                        |
-| `fields.longText()`    | Multi-line text                          | `"textarea"`                                                        | `"textareas"`                                                         |
-| `fields.richText()`    | Rich text (Lexical)                      | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
-| `fields.number()`      | Numeric value                            | `"numberInput"`                                                     | `"numberInputs"`                                                      |
-| `fields.boolean()`     | True/false toggle                        | `"switch"`                                                          | — (not supported)                                                     |
-| `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| Builder Method         | Description                                                    | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
+| ---------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `fields.text()`        | Single-line text                                               | `"textInput"`                                                       | `"textInputs"`                                                        |
+| `fields.longText()`    | Multi-line text                                                | `"textarea"`                                                        | `"textareas"`                                                         |
+| `fields.richText()`    | Rich text (Lexical)                                            | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
+| `fields.number()`      | Numeric value                                                  | `"numberInput"`                                                     | `"numberInputs"`                                                      |
+| `fields.boolean()`     | True/false toggle                                              | `"switch"`                                                          | — (not supported)                                                     |
+| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
 | `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
-| `fields.file()`        | File/image attachment (deprecated, use `asset`) | `"file"`                                                            | `"files"`                                                             |
-| `fields.ref()`         | Reference to another model               | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
-| `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
-| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
+| `fields.file()`        | File/image attachment (deprecated, use `asset`)                | `"file"`                                                            | `"files"`                                                             |
+| `fields.ref()`         | Reference to another model                                     | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
+| `fields.object()`      | Nested object with sub-fields                                  | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
+| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates)                       | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
 
 ### Renderer Settings
 
@@ -218,23 +217,23 @@ Some renderers accept a `settings` object as the second argument to `.renderer()
 .renderer("objectAccordionMultiple", { itemTitle: "title", addItemLabel: "Add section" })
 ```
 
-| Renderer                   | Setting           | Type                | Default              | Description                                                   |
-| -------------------------- | ----------------- | ------------------- | -------------------- | ------------------------------------------------------------- |
-| `dynamicZone`              | `open`            | `boolean`           | `true`               | Whether the accordion is expanded by default                  |
-| `dynamicZone`              | `container`       | `boolean`           | `true`               | Wrap in a container panel; `false` for flat inline layout      |
-| `dynamicZone`              | `addItemLabel`    | `string`            | `"Add Item"`         | Label for the add-item button                                 |
-| `objectAccordionSingle`    | `open`            | `boolean`           | `true`               | Whether the accordion is expanded by default                  |
-| `objectAccordionSingle`    | `container`       | `boolean`           | `true`               | Wrap in a container panel; `false` for flat inline layout      |
-| `objectAccordionSingle`    | `itemTitle`       | `string`            | field label          | Field ID whose value is used as the accordion title           |
-| `objectAccordionSingle`    | `itemDescription` | `string`            | —                    | Field ID whose value is used as the accordion description     |
-| `objectAccordionMultiple`  | `open`            | `boolean`           | `true`               | Whether each accordion item is expanded by default            |
-| `objectAccordionMultiple`  | `container`       | `boolean`           | `true`               | Wrap in a container panel; `false` for flat inline layout      |
-| `objectAccordionMultiple`  | `itemTitle`       | `string`            | field label          | Field ID whose value is used as each item's title             |
-| `objectAccordionMultiple`  | `itemDescription` | `string`            | —                    | Field ID whose value is used as each item's description       |
-| `objectAccordionMultiple`  | `addItemLabel`    | `string`            | `"Add {label}"`      | Label for the add-item button                                 |
-| `assetField` / `assetFields` | `imagesOnly`   | `boolean`           | `false`              | Only allow image files                                        |
-| `assetField` / `assetFields` | `accept`       | `string[]`          | all types            | MIME types to allow (e.g. `["image/png", "application/pdf"]`) |
-| `refDialogMultiple`        | `newItemPosition` | `"first" \| "last"` | `"last"`             | Where newly picked references are inserted                    |
+| Renderer                     | Setting           | Type                | Default         | Description                                                   |
+| ---------------------------- | ----------------- | ------------------- | --------------- | ------------------------------------------------------------- |
+| `dynamicZone`                | `open`            | `boolean`           | `true`          | Whether the accordion is expanded by default                  |
+| `dynamicZone`                | `container`       | `boolean`           | `true`          | Wrap in a container panel; `false` for flat inline layout     |
+| `dynamicZone`                | `addItemLabel`    | `string`            | `"Add Item"`    | Label for the add-item button                                 |
+| `objectAccordionSingle`      | `open`            | `boolean`           | `true`          | Whether the accordion is expanded by default                  |
+| `objectAccordionSingle`      | `container`       | `boolean`           | `true`          | Wrap in a container panel; `false` for flat inline layout     |
+| `objectAccordionSingle`      | `itemTitle`       | `string`            | field label     | Field ID whose value is used as the accordion title           |
+| `objectAccordionSingle`      | `itemDescription` | `string`            | —               | Field ID whose value is used as the accordion description     |
+| `objectAccordionMultiple`    | `open`            | `boolean`           | `true`          | Whether each accordion item is expanded by default            |
+| `objectAccordionMultiple`    | `container`       | `boolean`           | `true`          | Wrap in a container panel; `false` for flat inline layout     |
+| `objectAccordionMultiple`    | `itemTitle`       | `string`            | field label     | Field ID whose value is used as each item's title             |
+| `objectAccordionMultiple`    | `itemDescription` | `string`            | —               | Field ID whose value is used as each item's description       |
+| `objectAccordionMultiple`    | `addItemLabel`    | `string`            | `"Add {label}"` | Label for the add-item button                                 |
+| `assetField` / `assetFields` | `imagesOnly`      | `boolean`           | `false`         | Only allow image files                                        |
+| `assetField` / `assetFields` | `accept`          | `string[]`          | all types       | MIME types to allow (e.g. `["image/png", "application/pdf"]`) |
+| `refDialogMultiple`          | `newItemPosition` | `"first" \| "last"` | `"last"`        | Where newly picked references are inserted                    |
 
 ### Ref renderer families
 

@@ -91,6 +91,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                                 pageGeneration: flags.isAiPageGenerationEnabled()
                                     ? project.package.features.aiPowerups?.options?.websiteBuilder
                                           ?.pageGeneration
+                                    : false,
+                                pageTranslation: flags.isAiPageTranslationEnabled()
+                                    ? project.package.features.aiPowerups?.options?.websiteBuilder
+                                          ?.pageTranslation
                                     : false
                             },
                             fileManager: {
@@ -101,7 +105,21 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             },
                             lexicalGeneration: flags.isAiLexicalGenerationEnabled()
                                 ? project.package.features.aiPowerups?.options?.lexicalGeneration
-                                : false
+                                : false,
+                            cms: {
+                                entryGeneration: flags.isAiEntryGenerationEnabled()
+                                    ? project.package.features.aiPowerups?.options?.cms
+                                          ?.entryGeneration
+                                    : false,
+                                entryComparison: flags.isAiEntryComparisonEnabled()
+                                    ? project.package.features.aiPowerups?.options?.cms
+                                          ?.entryComparison
+                                    : false,
+                                entryTranslation: flags.isAiEntryTranslationEnabled()
+                                    ? project.package.features.aiPowerups?.options?.cms
+                                          ?.entryTranslation
+                                    : false
+                            }
                         }
                     }
                 }
@@ -184,10 +202,38 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseAiPageTranslation() {
+        return (
+            this.decoratee.canUseAiPageTranslation() &&
+            this.featureFlags.get().isAiPageTranslationEnabled()
+        );
+    }
+
     canUseAiLexicalGeneration() {
         return (
             this.decoratee.canUseAiLexicalGeneration() &&
             this.featureFlags.get().isAiLexicalGenerationEnabled()
+        );
+    }
+
+    canUseAiEntryGeneration() {
+        return (
+            this.decoratee.canUseAiEntryGeneration() &&
+            this.featureFlags.get().isAiEntryGenerationEnabled()
+        );
+    }
+
+    canUseAiEntryComparison() {
+        return (
+            this.decoratee.canUseAiEntryComparison() &&
+            this.featureFlags.get().isAiEntryComparisonEnabled()
+        );
+    }
+
+    canUseAiEntryTranslation() {
+        return (
+            this.decoratee.canUseAiEntryTranslation() &&
+            this.featureFlags.get().isAiEntryTranslationEnabled()
         );
     }
 

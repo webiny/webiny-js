@@ -38,7 +38,8 @@ export const FeatureFlags = defineExtension({
                         .object({
                             websiteBuilder: z
                                 .object({
-                                    pageGeneration: z.boolean().optional()
+                                    pageGeneration: z.boolean().optional(),
+                                    pageTranslation: z.boolean().optional()
                                 })
                                 .optional(),
                             fileManager: z
@@ -46,7 +47,14 @@ export const FeatureFlags = defineExtension({
                                     imageEnrichment: z.boolean().optional()
                                 })
                                 .optional(),
-                            lexicalGeneration: z.boolean().optional()
+                            lexicalGeneration: z.boolean().optional(),
+                            cms: z
+                                .object({
+                                    entryGeneration: z.boolean().optional(),
+                                    entryComparison: z.boolean().optional(),
+                                    entryTranslation: z.boolean().optional()
+                                })
+                                .optional()
                         })
                         .optional()
                 })

@@ -1,6 +1,5 @@
 ---
 name: webiny-websocket-notifications
-context: webiny-extensions
 description: >
   Sending real-time notifications from the API to the Admin app over websockets, and
   reacting to them on the client. Use this skill when the developer wants to push a
