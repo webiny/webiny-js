@@ -371,6 +371,45 @@ export const createEntriesStorageOperations = (
         }
     };
 
+    const updateRevision: CmsEntryStorageOperations["updateRevision"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const storageEntry = convertToStorageEntry({
+            model,
+            storageEntry: initialStorageEntry
+        });
+
+        const entityBatch = entity.createEntityWriter({
+            put: [
+                {
+                    ...createEntryRevisionKeys(storageEntry),
+                    data: storageEntry
+                }
+            ]
+        });
+
+        try {
+            await entityBatch.execute();
+            dataLoaders.clearAll({
+                tenant: entry.tenant
+            });
+            return initialStorageEntry;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not update revision.",
+                ex.code || "UPDATE_REVISION_ERROR",
+                {
+                    error: ex,
+                    entry
+                }
+            );
+        }
+    };
+
     const move: CmsEntryStorageOperations["move"] = async (initialModel, id, folderId) => {
         /**
          * We need to:
@@ -1387,6 +1426,7 @@ export const createEntriesStorageOperations = (
         create,
         createRevisionFrom,
         update,
+        updateRevision,
         move,
         delete: deleteEntry,
         moveToBin,
