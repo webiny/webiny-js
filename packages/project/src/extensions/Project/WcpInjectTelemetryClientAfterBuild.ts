@@ -67,6 +67,13 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
             //    native there, with no Lambda involved), and a named re-export of a missing binding is
             //    a hard ESM error that would break the whole handler. A namespace access just yields
             //    `undefined`, which nothing on that path reads.
+            //
+            // BACKLOGGED, not settled. String-appending to an artifact downloaded from another repo
+            // means a change to the shape of `clients/latest.mjs` breaks the build on customers'
+            // machines. The agreed fix is one line on the WCP side — `export * from "./_handler.mjs"`
+            // right after that file's own import, which passes through every bundle export unwrapped
+            // (the explicit `export { handler }` still shadows the star, and `export *` re-exports
+            // nothing on the self-hosted bundle). When that ships, this whole append goes away.
             const wrapperCode =
                 telemetryCodeAsString +
                 '\nimport * as _webinyBuiltHandlers from "./_handler.mjs";\n' +
