@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useSecurity } from "@webiny/app-admin";
-import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
+import { Avatar, Button, Tag } from "@webiny/admin-ui";
 import type { CommentsPresenter } from "../abstractions.js";
 import { avatarColor, initials } from "../styles.js";
 import { MentionTextarea } from "./MentionTextarea.js";
@@ -21,37 +21,32 @@ export const Composer = observer((props: Props) => {
     return (
         <div className="wby-collab-composer">
             {activeLocator ? (
-                <span
-                    className="wby-collab-chip wby-collab-chip--active"
+                <Tag
                     style={{ alignSelf: "flex-start" }}
-                >
-                    <span className="wby-collab-dot" />
-                    <span className="wby-collab-chip__label">{resolveLabel(activeLocator)}</span>
-                    <button
-                        className="wby-collab-chip__x"
-                        title="Comment on the whole entry instead"
-                        onClick={() => presenter.setActiveLocator(null)}
-                    >
-                        <CloseIcon />
-                    </button>
-                </span>
+                    content={resolveLabel(activeLocator)}
+                    swatchColor="var(--color-primary)"
+                    onDismiss={() => presenter.setActiveLocator(null)}
+                    dismissIconLabel="Comment on the whole entry instead"
+                />
             ) : (
-                <span
-                    className="wby-collab-chip wby-collab-chip--entry"
-                    style={{ alignSelf: "flex-start" }}
-                >
-                    Whole entry
-                </span>
+                <Tag style={{ alignSelf: "flex-start" }} content="Whole entry" />
             )}
 
             <div className="wby-collab-composer__box">
                 <div className="wby-collab-composer__row">
-                    <span
-                        className="wby-collab-avatar"
-                        style={{ background: avatarColor(authorName) }}
-                    >
-                        {initials(authorName)}
-                    </span>
+                    <Avatar
+                        size="sm"
+                        fallback={
+                            <Avatar.Fallback
+                                style={{
+                                    backgroundColor: avatarColor(authorName),
+                                    color: "#fff"
+                                }}
+                            >
+                                {initials(authorName)}
+                            </Avatar.Fallback>
+                        }
+                    />
                     <MentionTextarea
                         className="wby-collab-textarea"
                         value={body}
@@ -71,20 +66,20 @@ export const Composer = observer((props: Props) => {
                     />
                 </div>
                 <div className="wby-collab-composer__actions">
-                    <button
-                        className="wby-collab-btn wby-collab-btn--ghost"
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        text="Cancel"
                         onClick={() => presenter.resetComposer()}
                         disabled={submitting || !body}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="wby-collab-btn wby-collab-btn--primary"
+                    />
+                    <Button
+                        variant="primary"
+                        size="sm"
+                        text="Comment"
                         onClick={() => void presenter.submitComposer()}
                         disabled={submitting || !body.trim()}
-                    >
-                        Comment
-                    </button>
+                    />
                 </div>
             </div>
         </div>

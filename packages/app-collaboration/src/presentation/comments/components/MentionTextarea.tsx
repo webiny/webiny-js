@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
-import { TextareaPrimitive } from "@webiny/admin-ui";
+import { Avatar, TextareaPrimitive } from "@webiny/admin-ui";
 import { avatarColor, initials } from "../styles.js";
 import type { CollabUser } from "~/types.js";
 
@@ -193,12 +193,19 @@ export const MentionTextarea = ({
                                 accept(user);
                             }}
                         >
-                            <span
-                                className="wby-collab-avatar wby-collab-avatar--sm"
-                                style={{ background: avatarColor(user.displayName) }}
-                            >
-                                {initials(user.displayName)}
-                            </span>
+                            <Avatar
+                                size="sm"
+                                fallback={
+                                    <Avatar.Fallback
+                                        style={{
+                                            backgroundColor: avatarColor(user.displayName),
+                                            color: "#fff"
+                                        }}
+                                    >
+                                        {initials(user.displayName)}
+                                    </Avatar.Fallback>
+                                }
+                            />
                             <span className="wby-collab-mention-item__main">
                                 <span className="wby-collab-mention-item__name">
                                     {user.displayName}

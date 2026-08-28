@@ -1,10 +1,11 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
+import { Checkbox, EmptyState, IconButton, SegmentedControl } from "@webiny/admin-ui";
 import { ReactComponent as DoneAllIcon } from "@webiny/icons/done_all.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as InboxIcon } from "@webiny/icons/inbox.svg";
-import type { NotificationsPresenter } from "../abstractions.js";
+import type { NotificationsPresenter, NotificationsTab } from "../abstractions.js";
 import { groupByTime } from "../styles.js";
 import { NotificationItem } from "./NotificationItem.js";
 import "../styles.js";
@@ -31,62 +32,68 @@ export const NotificationsPanel = observer(({ presenter }: Props) => {
                         ) : null}
                     </div>
                     <div className="wby-notif-actions">
-                        <button
-                            className="wby-notif-iconbtn wby-notif-iconbtn--primary"
+                        <IconButton
+                            variant="ghost"
+                            size="sm"
                             title="Mark all as read"
+                            aria-label="Mark all as read"
                             disabled={vm.counts.unread === 0}
                             onClick={() => presenter.markAllRead()}
-                        >
-                            <DoneAllIcon />
-                        </button>
-                        <button
-                            className="wby-notif-iconbtn"
+                            icon={<DoneAllIcon />}
+                        />
+                        <IconButton
+                            variant="ghost"
+                            size="sm"
                             title="Refresh"
+                            aria-label="Refresh"
                             disabled={vm.loading}
                             onClick={() => void presenter.refresh()}
-                        >
-                            <RefreshIcon className={vm.loading ? "wby-notif-spin" : undefined} />
-                        </button>
-                        <button
-                            className="wby-notif-iconbtn"
+                            icon={
+                                <RefreshIcon
+                                    className={vm.loading ? "wby-notif-spin" : undefined}
+                                />
+                            }
+                        />
+                        <IconButton
+                            variant="ghost"
+                            size="sm"
                             title="Close"
+                            aria-label="Close"
                             onClick={() => presenter.closePanel()}
-                        >
-                            <CloseIcon />
-                        </button>
+                            icon={<CloseIcon />}
+                        />
                     </div>
                 </div>
 
                 <div className="wby-notif-tabs">
-                    <button
-                        className={vm.tab === "inbox" ? "wby-notif-tab is-active" : "wby-notif-tab"}
-                        onClick={() => presenter.setTab("inbox")}
-                    >
-                        Inbox <span className="wby-notif-tab__count">{vm.counts.inbox}</span>
-                    </button>
-                    <button
-                        className={
-                            vm.tab === "archive" ? "wby-notif-tab is-active" : "wby-notif-tab"
-                        }
-                        onClick={() => presenter.setTab("archive")}
-                    >
-                        Archive <span className="wby-notif-tab__count">{vm.counts.archive}</span>
-                    </button>
-                    <label className="wby-notif-unreadonly">
-                        <input
-                            type="checkbox"
+                    <SegmentedControl
+                        value={vm.tab}
+                        onChange={value => presenter.setTab(value as NotificationsTab)}
+                        items={[
+                            {
+                                value: "inbox",
+                                label: vm.counts.inbox ? `Inbox (${vm.counts.inbox})` : "Inbox"
+                            },
+                            {
+                                value: "archive",
+                                label: vm.counts.archive
+                                    ? `Archive (${vm.counts.archive})`
+                                    : "Archive"
+                            }
+                        ]}
+                    />
+                    <div style={{ marginLeft: "auto" }}>
+                        <Checkbox
+                            label="Unread only"
                             checked={vm.unreadOnly}
-                            onChange={event => presenter.setUnreadOnly(event.target.checked)}
+                            onChange={checked => presenter.setUnreadOnly(checked)}
                         />
-                        Unread only
-                    </label>
+                    </div>
                 </div>
 
                 <div className="wby-notif-list">
                     {vm.error ? <div className="wby-notif-empty">{vm.error}</div> : null}
-                    {isEmpty ? (
-                        <div className="wby-notif-empty">{"You're all caught up."}</div>
-                    ) : null}
+                    {isEmpty ? <EmptyState size="sm" description="You're all caught up." /> : null}
                     {groups.map(group => (
                         <div key={group.label}>
                             <div className="wby-notif-group__label">{group.label}</div>

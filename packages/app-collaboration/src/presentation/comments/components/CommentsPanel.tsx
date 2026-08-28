@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
+import { Button, EmptyState, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
@@ -97,21 +98,25 @@ export const CommentsPanel = observer((props: Props) => {
                     <span className="wby-collab-count">{total}</span>
                 </div>
                 <div className="wby-collab-actions">
-                    <button
-                        className="wby-collab-iconbtn"
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
                         title="Refresh comments"
+                        aria-label="Refresh comments"
                         disabled={vm.loading}
                         onClick={() => void presenter.reload()}
-                    >
-                        <RefreshIcon className={vm.loading ? "wby-collab-spin" : undefined} />
-                    </button>
-                    <button
-                        className="wby-collab-iconbtn"
+                        icon={
+                            <RefreshIcon className={vm.loading ? "wby-collab-spin" : undefined} />
+                        }
+                    />
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
                         title="Close"
+                        aria-label="Close"
                         onClick={() => presenter.closePanel()}
-                    >
-                        <CloseIcon />
-                    </button>
+                        icon={<CloseIcon />}
+                    />
                 </div>
             </div>
 
@@ -120,12 +125,12 @@ export const CommentsPanel = observer((props: Props) => {
                     <span className="wby-collab-filter__label">
                         Showing comments on <strong>{resolveLabel(filter)}</strong>
                     </span>
-                    <button
-                        className="wby-collab-filter__clear"
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        text="Show all"
                         onClick={() => presenter.clearFieldFilter()}
-                    >
-                        Show all
-                    </button>
+                    />
                 </div>
             ) : (
                 <div className="wby-collab-overview">
@@ -156,11 +161,15 @@ export const CommentsPanel = observer((props: Props) => {
                 />
 
                 {total === 0 && !vm.loading ? (
-                    <div className="wby-collab-empty">
-                        {filter
-                            ? "No comments on this field yet. Add the first one above."
-                            : "No comments yet. Add the first one above."}
-                    </div>
+                    <EmptyState
+                        size="sm"
+                        illustration={false}
+                        description={
+                            filter
+                                ? "No comments on this field yet. Add the first one above."
+                                : "No comments yet. Add the first one above."
+                        }
+                    />
                 ) : null}
 
                 <CollapsibleSection

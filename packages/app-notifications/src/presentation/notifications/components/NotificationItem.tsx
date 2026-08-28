@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Route, useRouter } from "@webiny/app-admin";
+import { Avatar, IconButton, TimeAgo } from "@webiny/admin-ui";
 import { ReactComponent as MentionIcon } from "@webiny/icons/alternate_email.svg";
 import { ReactComponent as ReplyIcon } from "@webiny/icons/reply.svg";
 import { ReactComponent as ReviewIcon } from "@webiny/icons/rate_review.svg";
@@ -9,7 +10,7 @@ import { ReactComponent as RejectedIcon } from "@webiny/icons/cancel.svg";
 import { ReactComponent as ArchiveIcon } from "@webiny/icons/archive.svg";
 import { ReactComponent as UnarchiveIcon } from "@webiny/icons/unarchive.svg";
 import type { NotificationsPresenter } from "../abstractions.js";
-import { avatarColor, formatTimestamp, initials } from "../styles.js";
+import { avatarColor, initials } from "../styles.js";
 import type { Notification, NotificationLink, NotificationType } from "~/types.js";
 
 // Mirrors the Headless CMS "content entries" route so we can navigate without depending on
@@ -115,9 +116,16 @@ export const NotificationItem = observer(({ presenter, notification }: Props) =>
             }
             onClick={open}
         >
-            <span className="wby-notif-avatar" style={{ background: avatarColor(actorName) }}>
-                {initials(actorName)}
-            </span>
+            <Avatar
+                size="lg"
+                fallback={
+                    <Avatar.Fallback
+                        style={{ backgroundColor: avatarColor(actorName), color: "#fff" }}
+                    >
+                        {initials(actorName)}
+                    </Avatar.Fallback>
+                }
+            />
             <div className="wby-notif-item__body">
                 <div className="wby-notif-item__text">
                     <span className="wby-notif-item__strong">{actorName}</span>{" "}
@@ -133,21 +141,24 @@ export const NotificationItem = observer(({ presenter, notification }: Props) =>
                 ) : null}
                 <div className="wby-notif-item__meta">
                     <span className="wby-notif-item__typeicon">{TYPE_ICON[notification.type]}</span>
-                    <span>{formatTimestamp(notification.createdOn)}</span>
+                    <TimeAgo datetime={notification.createdOn} />
                 </div>
             </div>
 
             {notification.read ? null : <span className="wby-notif-dot" />}
-            <button
-                className="wby-notif-iconbtn wby-notif-archive"
-                title={notification.archived ? "Move to inbox" : "Archive"}
-                onClick={event => {
-                    event.stopPropagation();
-                    void presenter.archive(notification.id);
-                }}
-            >
-                {notification.archived ? <UnarchiveIcon /> : <ArchiveIcon />}
-            </button>
+            <span className="wby-notif-archive">
+                <IconButton
+                    variant="ghost"
+                    size="sm"
+                    title={notification.archived ? "Move to inbox" : "Archive"}
+                    aria-label={notification.archived ? "Move to inbox" : "Archive"}
+                    onClick={event => {
+                        event.stopPropagation();
+                        void presenter.archive(notification.id);
+                    }}
+                    icon={notification.archived ? <UnarchiveIcon /> : <ArchiveIcon />}
+                />
+            </span>
         </div>
     );
 });

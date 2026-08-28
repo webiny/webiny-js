@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useSecurity } from "@webiny/app-admin";
+import { Avatar, Button, DropdownMenu, IconButton, TimeAgo } from "@webiny/admin-ui";
 import { ReactComponent as ArrowOutwardIcon } from "@webiny/icons/arrow_outward.svg";
 import { ReactComponent as CheckCircleIcon } from "@webiny/icons/check_circle.svg";
 import { ReactComponent as MoreHorizIcon } from "@webiny/icons/more_horiz.svg";
@@ -8,7 +9,7 @@ import { ReactComponent as LinkIcon } from "@webiny/icons/link.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import type { CommentsPresenter } from "../abstractions.js";
-import { avatarColor, formatTimestamp, initials } from "../styles.js";
+import { avatarColor, initials } from "../styles.js";
 import { AutoTextarea } from "./AutoTextarea.js";
 import { MentionTextarea } from "./MentionTextarea.js";
 import { COLLAB_THREAD_PARAM, COLLAB_FIELD_PARAM } from "~/constants.js";
@@ -86,6 +87,8 @@ const Message = ({
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(message.body);
     const [busy, setBusy] = useState(false);
+    // Tracks the per-message menu's open state purely so the "…" trigger stays visible
+    // (its anchor is otherwise revealed on row hover only). DropdownMenu owns open/close.
     const [menuOpen, setMenuOpen] = useState(false);
 
     const rootClassName = [
@@ -117,64 +120,57 @@ const Message = ({
 
     return (
         <div className={rootClassName}>
-            <span
-                className={nested ? "wby-collab-avatar wby-collab-avatar--sm" : "wby-collab-avatar"}
-                style={{ background: avatarColor(message.createdBy.displayName) }}
-            >
-                {initials(message.createdBy.displayName)}
-            </span>
+            <Avatar
+                size="sm"
+                fallback={
+                    <Avatar.Fallback
+                        style={{
+                            backgroundColor: avatarColor(message.createdBy.displayName),
+                            color: "#fff"
+                        }}
+                    >
+                        {initials(message.createdBy.displayName)}
+                    </Avatar.Fallback>
+                }
+            />
             <div className="wby-collab-msg__main">
                 <div className="wby-collab-msg__meta">
                     <span className="wby-collab-msg__name">{message.createdBy.displayName}</span>
                     <span className="wby-collab-msg__right">
-                        <span
+                        <TimeAgo
                             className="wby-collab-msg__time"
+                            datetime={message.createdOn}
                             title={new Date(message.createdOn).toLocaleString()}
-                        >
-                            {formatTimestamp(message.createdOn)}
-                        </span>
+                        />
                         {canManage && !editing ? (
                             <span className="wby-collab-msg__menu-anchor">
-                                <button
-                                    className="wby-collab-msgbtn"
-                                    title="More"
-                                    onClick={() => setMenuOpen(current => !current)}
-                                >
-                                    <MoreHorizIcon />
-                                </button>
-                                {menuOpen ? (
-                                    <>
-                                        <div
-                                            className="wby-collab-backdrop"
-                                            onClick={() => setMenuOpen(false)}
+                                <DropdownMenu
+                                    open={menuOpen}
+                                    onOpenChange={setMenuOpen}
+                                    trigger={
+                                        <IconButton
+                                            variant="ghost"
+                                            size="xs"
+                                            icon={<MoreHorizIcon />}
+                                            title="More"
+                                            aria-label="More actions"
                                         />
-                                        <div className="wby-collab-menu wby-collab-menu--compact">
-                                            <button
-                                                className="wby-collab-menuitem"
-                                                onClick={() => {
-                                                    setMenuOpen(false);
-                                                    startEdit();
-                                                }}
-                                            >
-                                                <EditIcon />
-                                                Edit
-                                            </button>
-                                            <button
-                                                className="wby-collab-menuitem wby-collab-menuitem--danger"
-                                                onClick={() => {
-                                                    setMenuOpen(false);
-                                                    void presenter.deleteMessage(
-                                                        threadId,
-                                                        message.id
-                                                    );
-                                                }}
-                                            >
-                                                <DeleteIcon />
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </>
-                                ) : null}
+                                    }
+                                >
+                                    <DropdownMenu.Item
+                                        icon={<EditIcon />}
+                                        text="Edit"
+                                        onClick={startEdit}
+                                    />
+                                    <DropdownMenu.Item
+                                        variant="destructive"
+                                        icon={<DeleteIcon />}
+                                        text="Delete"
+                                        onClick={() =>
+                                            void presenter.deleteMessage(threadId, message.id)
+                                        }
+                                    />
+                                </DropdownMenu>
                             </span>
                         ) : null}
                     </span>
@@ -199,20 +195,20 @@ const Message = ({
                             }}
                         />
                         <div className="wby-collab-msg__edit-actions">
-                            <button
-                                className="wby-collab-btn wby-collab-btn--ghost"
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                text="Cancel"
                                 onClick={() => setEditing(false)}
                                 disabled={busy}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="wby-collab-btn wby-collab-btn--primary"
+                            />
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                text="Save"
                                 onClick={saveEdit}
                                 disabled={busy || !draft.trim()}
-                            >
-                                Save
-                            </button>
+                            />
                         </div>
                     </div>
                 ) : (
@@ -232,7 +228,6 @@ export const ThreadCard = observer((props: Props) => {
     const [reply, setReply] = useState("");
     const [replyMentions, setReplyMentions] = useState<string[]>([]);
     const [busy, setBusy] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
     const [copied, setCopied] = useState(false);
 
     const messages = thread.messages.filter(message => !message.deleted);
@@ -270,10 +265,7 @@ export const ThreadCard = observer((props: Props) => {
         }
         const done = () => {
             setCopied(true);
-            window.setTimeout(() => {
-                setCopied(false);
-                setMenuOpen(false);
-            }, 1200);
+            window.setTimeout(() => setCopied(false), 1200);
         };
         if (typeof navigator !== "undefined" && navigator.clipboard) {
             navigator.clipboard.writeText(url.toString()).then(done, done);
@@ -315,63 +307,52 @@ export const ThreadCard = observer((props: Props) => {
                 )}
 
                 <div className="wby-collab-thread__head-actions">
-                    <button
-                        className="wby-collab-pillbtn"
+                    <Button
+                        variant="tertiary"
+                        size="sm"
+                        icon={<CheckCircleIcon />}
+                        text={thread.resolved ? "Reopen" : "Resolve"}
                         title={thread.resolved ? "Reopen thread" : "Resolve thread"}
                         onClick={() =>
                             thread.resolved
                                 ? presenter.reopen(thread.id)
                                 : presenter.resolve(thread.id)
                         }
-                    >
-                        <CheckCircleIcon className="wby-collab-ok" />
-                        {thread.resolved ? "Reopen" : "Resolve"}
-                    </button>
-                    <button
-                        className="wby-collab-iconbtn"
-                        title="More"
-                        onClick={() => setMenuOpen(current => !current)}
-                    >
-                        <MoreHorizIcon />
-                    </button>
-
-                    {menuOpen ? (
-                        <>
-                            <div
-                                className="wby-collab-backdrop"
-                                onClick={() => setMenuOpen(false)}
+                    />
+                    <DropdownMenu
+                        trigger={
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                icon={<MoreHorizIcon />}
+                                title="More"
+                                aria-label="More actions"
                             />
-                            <div className="wby-collab-menu">
-                                <button
-                                    className="wby-collab-menuitem"
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        thread.resolved
-                                            ? presenter.reopen(thread.id)
-                                            : presenter.resolve(thread.id);
-                                    }}
-                                >
-                                    <CheckCircleIcon className="wby-collab-ok" />
-                                    {thread.resolved ? "Reopen thread" : "Resolve thread"}
-                                </button>
-                                <button className="wby-collab-menuitem" onClick={copyThreadLink}>
-                                    <LinkIcon />
-                                    {copied ? "Copied!" : "Copy link to thread"}
-                                </button>
-                                <div className="wby-collab-menu__divider" />
-                                <button
-                                    className="wby-collab-menuitem wby-collab-menuitem--danger"
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        presenter.remove(thread.id);
-                                    }}
-                                >
-                                    <DeleteIcon />
-                                    Delete thread
-                                </button>
-                            </div>
-                        </>
-                    ) : null}
+                        }
+                    >
+                        <DropdownMenu.Item
+                            icon={<CheckCircleIcon />}
+                            text={thread.resolved ? "Reopen thread" : "Resolve thread"}
+                            onClick={() =>
+                                thread.resolved
+                                    ? presenter.reopen(thread.id)
+                                    : presenter.resolve(thread.id)
+                            }
+                        />
+                        <DropdownMenu.Item
+                            icon={<LinkIcon />}
+                            text={copied ? "Copied!" : "Copy link to thread"}
+                            onClick={copyThreadLink}
+                            preventClose
+                        />
+                        <DropdownMenu.Separator />
+                        <DropdownMenu.Item
+                            variant="destructive"
+                            icon={<DeleteIcon />}
+                            text="Delete thread"
+                            onClick={() => presenter.remove(thread.id)}
+                        />
+                    </DropdownMenu>
                 </div>
             </div>
 
