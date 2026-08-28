@@ -1,4 +1,11 @@
-export { AiSdk, AiSdkFactory, AiSdkTool, AiConnectionFactory, Ai, AiModelRegistry } from "~/features/ai/index.js";
+export {
+    AiSdk,
+    AiSdkFactory,
+    AiSdkTool,
+    AiConnectionFactory,
+    Ai,
+    AiModelRegistry
+} from "~/features/ai/index.js";
 export type { IAiConnection, IAiConnectionInline } from "~/features/ai/index.js";
 export { Logger } from "~/features/logger/index.js";
 export { Encryption } from "~/features/encryption/index.js";
