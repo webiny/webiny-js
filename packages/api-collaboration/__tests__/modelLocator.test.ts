@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import { walkModelLocator } from "~/features/cms/CmsLocatorResolver/modelLocator.js";
+import {
+    itemStillExists,
+    walkModelLocator
+} from "~/features/cms/CmsLocatorResolver/modelLocator.js";
 import { formatCmsContentId, parseCmsContentId } from "~/utils/cmsContentId.js";
 
 // A minimal model exercising top-level, nested object, list, and dynamic-zone fields.
@@ -33,6 +36,34 @@ const model = {
                     {
                         id: "hero",
                         fields: [{ fieldId: "heading", label: "Heading", type: "text" }]
+                    }
+                ]
+            }
+        },
+        {
+            fieldId: "phone",
+            label: "Phone",
+            type: "object",
+            list: true,
+            settings: {
+                fields: [{ fieldId: "type", label: "Type", type: "text" }]
+            }
+        },
+        {
+            fieldId: "sections",
+            label: "Sections",
+            type: "object",
+            list: true,
+            settings: {
+                fields: [
+                    {
+                        fieldId: "items",
+                        label: "Items",
+                        type: "object",
+                        list: true,
+                        settings: {
+                            fields: [{ fieldId: "text", label: "Text", type: "text" }]
+                        }
                     }
                 ]
             }
@@ -79,6 +110,69 @@ describe("walkModelLocator", () => {
 
     it("reports a removed nested field as non-existent", () => {
         expect(walkModelLocator(model, "author.unknown")).toEqual({ exists: false });
+    });
+
+    it("resolves an id-anchored list-nested field, skipping the item id", () => {
+        expect(walkModelLocator(model, "phone.abc123.type")).toEqual({
+            exists: true,
+            label: "Type",
+            path: ["Phone"]
+        });
+    });
+
+    it("still resolves a legacy numeric list index for a list field", () => {
+        expect(walkModelLocator(model, "phone.2.type")).toEqual({
+            exists: true,
+            label: "Type",
+            path: ["Phone"]
+        });
+    });
+
+    it("resolves a comment anchored on a single list item to the list field", () => {
+        expect(walkModelLocator(model, "phone.abc123")).toEqual({
+            exists: true,
+            label: "Phone",
+            path: undefined
+        });
+    });
+
+    it("interleaves an id after every list ancestor for nested lists", () => {
+        expect(walkModelLocator(model, "sections.aaa111.items.bbb222.text")).toEqual({
+            exists: true,
+            label: "Text",
+            path: ["Sections", "Items"]
+        });
+    });
+});
+
+describe("itemStillExists", () => {
+    it("returns true when the referenced list item is present", () => {
+        const values = { phone: [{ _id: "abc123", type: "mobile" }] };
+        expect(itemStillExists(model, values, "phone.abc123.type")).toBe(true);
+    });
+
+    it("returns false when the referenced list item was removed", () => {
+        const values = { phone: [{ _id: "kept", type: "mobile" }] };
+        expect(itemStillExists(model, values, "phone.gone.type")).toBe(false);
+    });
+
+    it("returns true (undetermined) when values are missing", () => {
+        expect(itemStillExists(model, undefined, "phone.abc123.type")).toBe(true);
+        expect(itemStillExists(model, {}, "phone.abc123.type")).toBe(true);
+    });
+
+    it("verifies items across nested lists", () => {
+        const values = {
+            sections: [{ _id: "aaa111", items: [{ _id: "bbb222", text: "hi" }] }]
+        };
+        expect(itemStillExists(model, values, "sections.aaa111.items.bbb222.text")).toBe(true);
+        expect(itemStillExists(model, values, "sections.aaa111.items.zzz.text")).toBe(false);
+    });
+
+    it("resolves a legacy numeric index against the array", () => {
+        const values = { phone: [{ _id: "abc123", type: "mobile" }] };
+        expect(itemStillExists(model, values, "phone.0.type")).toBe(true);
+        expect(itemStillExists(model, values, "phone.5.type")).toBe(false);
     });
 });
 

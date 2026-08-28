@@ -4,7 +4,7 @@ import { getEntryTitle } from "@webiny/api-headless-cms/utils/getEntryTitle.js";
 import { CollabLocatorResolver } from "~/domain/locator/abstractions.js";
 import { CONTENT_TYPE_CMS_ENTRY } from "~/constants.js";
 import { parseCmsContentId } from "~/utils/cmsContentId.js";
-import { walkModelLocator } from "./modelLocator.js";
+import { itemStillExists, walkModelLocator } from "./modelLocator.js";
 
 class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
     public readonly contentType = CONTENT_TYPE_CMS_ENTRY;
@@ -49,8 +49,14 @@ class CmsLocatorResolverImpl implements CollabLocatorResolver.Interface {
 
         const walk = walkModelLocator(model, params.locator);
 
+        // For an id-anchored locator, also confirm the referenced array item still exists in the
+        // loaded values — a deleted list element makes the thread gracefully "outdated". The check
+        // is conservative and only downgrades `exists` on a confirmed-missing item.
+        const exists =
+            walk.exists && itemStillExists(model, entryResult.value.values, params.locator);
+
         return {
-            exists: walk.exists,
+            exists,
             authorized: true,
             label: walk.label,
             path: walk.path,

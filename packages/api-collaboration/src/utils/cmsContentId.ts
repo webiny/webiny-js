@@ -14,7 +14,9 @@ export interface ParsedCmsContentId {
 }
 
 export const parseCmsContentId = (contentId: string): ParsedCmsContentId => {
-    const [modelId, entryId] = contentId.split(":");
+    // Split on the first ":" only — the entry id may itself contain ":".
+    const [modelId, ...rest] = contentId.split(":");
+    const entryId = rest.join(":");
     if (!modelId || !entryId) {
         return { modelId: null, entryId: null };
     }

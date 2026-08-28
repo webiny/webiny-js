@@ -1,4 +1,6 @@
 import { createContext, useContext } from "react";
+import type { IFieldVM } from "@webiny/app-admin/features/formModel/abstractions.js";
+import type { ItemLocator } from "~/cms/listItemLocators.js";
 
 /**
  * Scopes the per-field comment markers to the entry form they belong to.
@@ -16,16 +18,17 @@ export interface CommentMarkersContextValue {
     /** DI container the main entry form renders in. Typed loosely to avoid a @webiny/di dep. */
     container: unknown;
     /**
-     * Locators of fields nested inside an array/list field. Markers are hidden for these because
-     * their locator can't uniquely anchor a thread to one array element yet.
+     * Per-item locators for fields nested inside array/list fields, keyed by the exact rendered
+     * `IFieldVM`. A hit means the field lives inside a list item and its marker must anchor on the
+     * id-based `locator` (unique per element) instead of the shared `qualifiedName`.
      */
-    listLocators: Set<string>;
+    itemLocators: Map<IFieldVM, ItemLocator>;
 }
 
 const CommentMarkersContext = createContext<CommentMarkersContextValue>({
     contentId: null,
     container: null,
-    listLocators: new Set()
+    itemLocators: new Map()
 });
 
 export const CommentMarkersProvider = CommentMarkersContext.Provider;

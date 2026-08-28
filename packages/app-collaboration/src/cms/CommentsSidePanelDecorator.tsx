@@ -6,7 +6,7 @@ import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentat
 import { useCommentsPresenter } from "~/presentation/comments/useComments.js";
 import { CommentsPanel } from "~/presentation/comments/components/CommentsPanel.js";
 import { CommentMarkersProvider } from "~/cms/CommentMarkersContext.js";
-import { collectListFieldLocators } from "~/cms/listFieldLocators.js";
+import { collectItemLocators } from "~/cms/listItemLocators.js";
 import { buildLocatorLabel } from "~/cms/fieldLabels.js";
 import { cmsContentId, COLLAB_THREAD_PARAM, COLLAB_FIELD_PARAM } from "~/constants.js";
 
@@ -25,13 +25,14 @@ export const CommentsSidePanelDecorator = ContentEntryFormContent.createDecorato
 
         // Scope the per-field markers to this form's container so they don't leak into a nested
         // referenced-entry drawer (which renders in a child container). See CommentMarkersContext.
-        // `listLocators` marks fields nested in array/list fields, whose markers are suppressed
-        // (their locator can't uniquely anchor to a single array element yet). Recomputed each
-        // render so it stays in sync as list items are added/removed.
+        // `itemLocators` maps every field nested inside a list item to its id-based locator (unique
+        // per array element), so markers on those fields anchor to a single item. Recomputed each
+        // render so it stays in sync as list items are added / removed / reordered.
+        const itemLocatorMaps = collectItemLocators(vm.form);
         const markersContext = {
             contentId,
             container,
-            listLocators: collectListFieldLocators(vm.form)
+            itemLocators: itemLocatorMaps.byField
         };
 
         // Deep-link params (from a notification click or a copied thread link). `params` merges
@@ -80,7 +81,11 @@ export const CommentsSidePanelDecorator = ContentEntryFormContent.createDecorato
         const open = presenter.vm.isOpen;
 
         const modelFields = vm.model.fields || [];
-        const resolveLabel = (locator: string) => buildLocatorLabel(modelFields, locator);
+        // Id-based locators (list-nested fields) carry alphanumeric `_id` segments that
+        // `buildLocatorLabel` can't resolve against the model, so prefer the label precomputed
+        // during the form-VM walk; non-list locators fall back to the model-driven breadcrumb.
+        const resolveLabel = (locator: string) =>
+            itemLocatorMaps.byLocator.get(locator) ?? buildLocatorLabel(modelFields, locator);
 
         const jumpToField = (locator: string) => {
             vm.form?.focusField(locator);

@@ -8,6 +8,11 @@ import "~/presentation/comments/styles.js";
 
 interface CommentFieldMarkerProps {
     field: IFieldVM;
+    /**
+     * Locator this marker anchors on. For list-nested fields this is the id-based locator (unique
+     * per array item) resolved by the decorator; defaults to the field's `qualifiedName`.
+     */
+    locator?: string;
 }
 
 /**
@@ -15,38 +20,40 @@ interface CommentFieldMarkerProps {
  * threads, otherwise a hover-revealed "Comment" pill. Clicking opens the panel focused on this
  * field. Renders nothing outside the entry editor (no contentId loaded).
  */
-export const CommentFieldMarker = observer(({ field }: CommentFieldMarkerProps) => {
-    const presenter = useCommentsPresenter();
-    const { vm } = presenter;
+export const CommentFieldMarker = observer(
+    ({ field, locator: locatorProp }: CommentFieldMarkerProps) => {
+        const presenter = useCommentsPresenter();
+        const { vm } = presenter;
 
-    if (!vm.contentId) {
-        return null;
-    }
+        if (!vm.contentId) {
+            return null;
+        }
 
-    const locator = field.qualifiedName;
-    const count = vm.threads.filter(thread => thread.locator === locator).length;
+        const locator = locatorProp ?? field.qualifiedName;
+        const count = vm.threads.filter(thread => thread.locator === locator).length;
 
-    if (count > 0) {
+        if (count > 0) {
+            return (
+                <span
+                    className="wby-collab-marker wby-collab-marker--count"
+                    title={`Show ${count} comment${count === 1 ? "" : "s"} on this field`}
+                    onClick={() => presenter.openForField(locator)}
+                >
+                    <ChatBubbleIcon />
+                    <span className="wby-collab-marker__badge">{count}</span>
+                </span>
+            );
+        }
+
         return (
             <span
-                className="wby-collab-marker wby-collab-marker--count"
-                title={`Show ${count} comment${count === 1 ? "" : "s"} on this field`}
-                onClick={() => presenter.openForField(locator)}
+                className="wby-collab-marker wby-collab-marker--add"
+                title="Add comment"
+                onClick={() => presenter.openPanel(locator)}
             >
-                <ChatBubbleIcon />
-                <span className="wby-collab-marker__badge">{count}</span>
+                <AddCommentIcon />
+                Comment
             </span>
         );
     }
-
-    return (
-        <span
-            className="wby-collab-marker wby-collab-marker--add"
-            title="Add comment"
-            onClick={() => presenter.openPanel(locator)}
-        >
-            <AddCommentIcon />
-            Comment
-        </span>
-    );
-});
+);

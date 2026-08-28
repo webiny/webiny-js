@@ -20,23 +20,26 @@ interface WrapperProps {
  */
 export const FieldMarkerDecorator = FormFieldWrapper.createDecorator(Original => {
     return observer(function FieldMarkerWrapper(props: WrapperProps) {
-        const { contentId, container, listLocators } = useCommentMarkersContext();
+        const { contentId, container, itemLocators } = useCommentMarkersContext();
         const currentContainer = useContainer();
 
         // Active only inside the entry form that owns the comments panel — not in a nested
         // referenced-entry drawer (rendered in a child container) or any unrelated form.
         const active = !!contentId && container === currentContainer;
 
-        // Fields nested inside an array/list field can't uniquely anchor a thread yet (their
-        // locator is shared across all array items), so no marker there.
-        if (!active || listLocators.has(props.field.qualifiedName)) {
+        if (!active) {
             return <Original {...props} />;
         }
+
+        // Fields nested inside a list item resolve to an id-based locator (unique per array
+        // element); every other field anchors on its plain `qualifiedName`. The map is keyed by the
+        // exact rendered `IFieldVM`, so a list item's leaf matches this render's instance.
+        const locator = itemLocators.get(props.field)?.locator ?? props.field.qualifiedName;
 
         return (
             <div className="wby-collab-field" style={{ position: "relative" }}>
                 <Original {...props} />
-                <CommentFieldMarker field={props.field} />
+                <CommentFieldMarker field={props.field} locator={locator} />
             </div>
         );
     });
