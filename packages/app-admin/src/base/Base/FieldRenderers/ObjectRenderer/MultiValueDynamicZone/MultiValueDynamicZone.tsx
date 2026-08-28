@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, Tooltip, useToast } from "@webiny/admin-ui";
 import { useFeature, useContainer } from "@webiny/app";
+import { hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
 import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
@@ -43,6 +44,16 @@ export const MultiValueDynamicZone = observer(
         useEffect(() => {
             return () => presenter.dispose();
         }, [presenter]);
+
+        // Force the DZ list container open when a focus request lands anywhere
+        // in its subtree, so "jump to field" can cascade through collapsed levels.
+        const focusInside = hasSubtreeFocusRequest(field.items.flatMap(i => i.fields));
+        const [containerOpen, setContainerOpen] = useState(true);
+        useEffect(() => {
+            if (focusInside) {
+                setContainerOpen(true);
+            }
+        }, [focusInside]);
 
         const itemCount = field.items.length;
 
@@ -129,7 +140,8 @@ export const MultiValueDynamicZone = observer(
                         />
                     }
                     title={label}
-                    defaultOpen={true}
+                    open={containerOpen}
+                    onOpenChange={setContainerOpen}
                 >
                     {content}
                 </Accordion.Item>
@@ -160,6 +172,15 @@ const TemplatedListItem = observer(
 
         const template = templates.find(t => t.id === item.templateId);
         const title = template?.label || `Item #${index + 1}`;
+
+        // Force this item open when a focus request lands anywhere in its subtree.
+        const focusInside = hasSubtreeFocusRequest(item.fields);
+        const [open, setOpen] = useState(false);
+        useEffect(() => {
+            if (focusInside) {
+                setOpen(true);
+            }
+        }, [focusInside]);
 
         const onDelete = () => {
             showConfirmation(() => {
@@ -211,7 +232,8 @@ const TemplatedListItem = observer(
                 <Accordion.Item
                     title={title}
                     actions={disabled ? null : actions}
-                    defaultOpen={false}
+                    open={open}
+                    onOpenChange={setOpen}
                     draggable={!disabled}
                     dragHandleRef={sortable.handleRef}
                 >

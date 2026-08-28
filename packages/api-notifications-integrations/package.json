@@ -1,0 +1,38 @@
+{
+  "name": "@webiny/api-notifications-integrations",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Notification integrations: feeds the notifications inbox from Workflows and Collaboration",
+  "keywords": [
+    "api-notifications-integrations:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-notifications-integrations"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-collaboration": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-notifications": "0.0.0",
+    "@webiny/api-workflows": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "typescript": "7.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

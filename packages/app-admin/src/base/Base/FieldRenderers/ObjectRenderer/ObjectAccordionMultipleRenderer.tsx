@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion } from "@webiny/admin-ui";
 import { useContainer } from "@webiny/app";
@@ -6,6 +6,7 @@ import { createObjectFieldRenderer } from "~/features/formModel/createFieldRende
 import { ListItemRenderer, AddItemButton } from "./ObjectFieldComponents.js";
 import { SortablePresenter } from "~/presentation/sortable/index.js";
 import type { IObjectFieldVM } from "~/features/formModel/index.js";
+import { hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -26,6 +27,16 @@ declare module "../../../../features/formModel/abstractions.js" {
 
 export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"objectAccordionMultiple">(
     ({ field }) => {
+        // Force the list container open when a focus request lands anywhere in
+        // its subtree, so "jump to field" can cascade through collapsed levels.
+        const focusInside = hasSubtreeFocusRequest(field.items.flatMap(i => i.fields));
+        const [open, setOpen] = useState(true);
+        useEffect(() => {
+            if (focusInside) {
+                setOpen(true);
+            }
+        }, [focusInside]);
+
         if (!field.isList) {
             return null;
         }
@@ -54,7 +65,12 @@ export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"object
 
         return (
             <Accordion background={"base"} variant={"container"}>
-                <Accordion.Item title={label} description={field.description} defaultOpen={true}>
+                <Accordion.Item
+                    title={label}
+                    description={field.description}
+                    open={open}
+                    onOpenChange={setOpen}
+                >
                     <div className={"flex flex-col gap-lg"}>
                         <ListItems field={field} />
                         {addButton}

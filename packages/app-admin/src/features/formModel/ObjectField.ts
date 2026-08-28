@@ -764,6 +764,7 @@ export class ObjectField implements IObjectField {
         const baseVm = this._base.vm;
         return {
             name: baseVm.name,
+            qualifiedName: baseVm.qualifiedName,
             type: "object",
             label: baseVm.label,
             help: baseVm.help,

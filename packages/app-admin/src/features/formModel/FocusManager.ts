@@ -111,14 +111,23 @@ export class FocusManager {
     ): { segments: string[]; children: Map<string, IField> } | null {
         const nextSegment = segments[1];
         if (field.isList) {
-            const index = parseInt(nextSegment, 10);
-            if (!isNaN(index)) {
-                const item = field.items[index];
+            // A list field is followed by an item selector: a numeric index, or a stable
+            // alphanumeric `_id` (matched against each item's hidden `_id` child value).
+            if (/^\d+$/.test(nextSegment)) {
+                const item = field.items[parseInt(nextSegment, 10)];
                 if (!item) {
                     return null;
                 }
                 return { segments: segments.slice(2), children: item.children };
             }
+            const item = field.items.find(candidate => {
+                const idField = candidate.children.get("_id");
+                return idField ? idField.getValue() === nextSegment : false;
+            });
+            if (!item) {
+                return null;
+            }
+            return { segments: segments.slice(2), children: item.children };
         }
         return { segments: segments.slice(1), children: field.children };
     }
