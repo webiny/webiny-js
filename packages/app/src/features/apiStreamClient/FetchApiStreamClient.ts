@@ -16,6 +16,30 @@ function joinUrl(base: string, path: string): string {
     return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 }
 
+/**
+ * Streaming routes answer with a normal JSON error for anything they detect BEFORE opening the
+ * stream (unknown file, no permission, bad input), which is why those arrive here as a non-2xx
+ * rather than as an in-stream event.
+ */
+async function toRequestError(response: Response): Promise<ApiStreamRequestError> {
+    let message = `Request failed with status ${response.status}.`;
+    let code: string | undefined;
+
+    try {
+        const json = await response.json();
+        if (json?.message) {
+            message = json.message;
+        }
+        if (json?.code) {
+            code = json.code;
+        }
+    } catch {
+        // Non-JSON error body — keep the status-based message.
+    }
+
+    return new ApiStreamRequestError(message, response.status, code);
+}
+
 class ApiStreamClientImpl implements ApiStreamClient.Interface {
     private readonly apiUrl: string;
 
@@ -55,7 +79,7 @@ class ApiStreamClientImpl implements ApiStreamClient.Interface {
         }
 
         if (!response.ok) {
-            throw await this.toError(response);
+            throw await toRequestError(response);
         }
 
         if (!response.body) {
@@ -66,30 +90,6 @@ class ApiStreamClientImpl implements ApiStreamClient.Interface {
         }
 
         return response;
-    }
-
-    /**
-     * Streaming routes answer with a normal JSON error for anything they detect BEFORE opening the
-     * stream (unknown file, no permission, bad input), which is why those arrive here as a non-2xx
-     * rather than as an in-stream event.
-     */
-    private async toError(response: Response): Promise<ApiStreamRequestError> {
-        let message = `Request failed with status ${response.status}.`;
-        let code: string | undefined;
-
-        try {
-            const json = await response.json();
-            if (json?.message) {
-                message = json.message;
-            }
-            if (json?.code) {
-                code = json.code;
-            }
-        } catch {
-            // Non-JSON error body — keep the status-based message.
-        }
-
-        return new ApiStreamRequestError(message, response.status, code);
     }
 }
 

@@ -19,5 +19,6 @@ Read every rule in this folder before writing or editing code.
 | [one-public-function-per-file.md](./one-public-function-per-file.md)                         | One exported function per file; composition steps always get their own.    |
 | [prefer-type-annotation-over-cast.md](./prefer-type-annotation-over-cast.md)                 | Annotate the variable; never add parens just to cast an expression.        |
 | [no-container-as-service-locator.md](./no-container-as-service-locator.md)                   | Declare dependencies; don't inject a Container and resolve inside methods. |
+| [no-stateless-private-methods.md](./no-stateless-private-methods.md)                         | A private method that never reads `this` becomes a module-level function.  |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.
