@@ -120,7 +120,13 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     return (
         <List.Item
             icon={<Tooltip content={tooltipText} trigger={icon} />}
-            title={revision.meta.title || t`N/A`}
+            title={
+                <>
+                    <span className={"text-neutral-strong"}>#{revision.meta.version}</span>
+                    {" · "}
+                    {revision.meta.title || t`N/A`}
+                </>
+            }
             description={
                 <>
                     {revision.revisionDescription ? (
@@ -129,10 +135,9 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                         </Text>
                     ) : null}
                     <Text as={"div"} size={"sm"}>
-                        {t`Last modified by {author} on {time} (#{version})`({
+                        {t`Last modified by {author} on {time}`({
                             author: revision.revisionCreatedBy?.displayName,
-                            time: <DateDisplay date={revision.revisionSavedOn} />,
-                            version: revision.meta.version
+                            time: <DateDisplay date={revision.revisionSavedOn} />
                         })}
                     </Text>
                 </>
