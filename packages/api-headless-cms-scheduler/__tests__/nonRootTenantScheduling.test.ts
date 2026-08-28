@@ -10,7 +10,6 @@ import {
     ExecuteScheduledActionUseCase,
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CMS_NAMESPACE } from "~/utils/namespace.js";
 import {
@@ -47,7 +46,6 @@ describe("Non-root tenant scheduling", () => {
 
     it("should publish an entry when scheduled from a non-root tenant", async () => {
         const container = context.container;
-        const tenantContext = container.resolve(TenantContext);
         const identityContext = container.resolve(IdentityContext);
         const schedulePublish = container.resolve(SchedulePublishEntryUseCase);
         const listScheduledActions = container.resolve(ListScheduledActionsUseCase);
