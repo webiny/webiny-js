@@ -9,6 +9,14 @@ export type ApiCloudfront = PulumiAppModule<typeof ApiCloudfront>;
 
 const STREAM_ORIGIN_ID = "graphql-stream-function-url";
 
+// AWS's `Managed-CachingDisabled` cache policy. Managed policy IDs are global constants — the same
+// value in every account and region — so this is hardcoded rather than resolved via
+// `aws.cloudfront.getCachePolicyOutput({ name: "Managed-CachingDisabled" })` the way
+// `createCloudFrontDefaultCacheBehaviorPolicies` does. The lookup would need
+// `cloudfront:ListCachePolicies` on the deploy role, and that is not worth adding to every
+// project's default deployment path just to avoid a constant AWS itself documents.
+const MANAGED_CACHING_DISABLED_POLICY_ID = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad";
+
 export const ApiCloudfront = createAppModule({
     name: "ApiCloudfront",
     config(app: PulumiApp) {
@@ -49,8 +57,10 @@ export const ApiCloudfront = createAppModule({
         // CloudFront request — that was a missing `lambda:InvokeFunction` permission (see the two
         // permissions at the bottom of this file). Recorded because the wrong cause was assumed first.
         //
-        // Do NOT switch this to the managed `AllViewer` policy: it forwards `Host`, which breaks OAC
-        // signing against a Function URL origin.
+        // Do NOT replace this with a managed origin request policy. `Managed-AllViewer` forwards
+        // `Host`, which breaks OAC signing against a Function URL origin.
+        // `Managed-AllViewerExceptHostHeader` (used for the blue/green router in this same package)
+        // fixes `Host` but still forwards `Authorization`, which OAC signing owns here — see below.
         const streamOriginRequestPolicy = app.addResource(aws.cloudfront.OriginRequestPolicy, {
             name: "api-stream-origin-request-policy",
             config: {
@@ -123,9 +133,9 @@ export const ApiCloudfront = createAppModule({
                             "DELETE"
                         ],
                         cachedMethods: ["GET", "HEAD"],
-                        // Managed-CachingDisabled — nothing on a streaming route is cacheable.
-                        // TTLs must NOT be set alongside a cache policy.
-                        cachePolicyId: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                        // Nothing on a streaming route is cacheable. TTLs must NOT be set
+                        // alongside a cache policy.
+                        cachePolicyId: MANAGED_CACHING_DISABLED_POLICY_ID,
                         originRequestPolicyId: streamOriginRequestPolicy.output.id,
                         pathPattern: "/stream/*",
                         // Stricter than the other behaviors' `allow-all` on purpose: a streaming route
