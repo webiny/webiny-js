@@ -132,11 +132,19 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                         </Text>
                     ) : null}
                     <Text as={"div"} size={"sm"}>
-                        {t`Last modified by {author} on {time}`({
+                        {t`Created by {author} on {time}`({
                             author: revision.revisionCreatedBy?.displayName,
-                            time: <DateDisplay date={revision.revisionSavedOn} />
+                            time: <DateDisplay date={revision.revisionCreatedOn} />
                         })}
                     </Text>
+                    {revision.revisionFirstPublishedBy && revision.revisionFirstPublishedOn ? (
+                        <Text as={"div"} size={"sm"}>
+                            {t`Published by {author} on {time}`({
+                                author: revision.revisionFirstPublishedBy.displayName,
+                                time: <DateDisplay date={revision.revisionFirstPublishedOn} />
+                            })}
+                        </Text>
+                    ) : null}
                 </>
             }
             actions={
