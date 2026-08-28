@@ -31,7 +31,8 @@ export const ReenrichWithAi = () => {
 ```
 
 ```ts
-// Good — presenter: private state, commands, one `vm` getter.
+// Good — presenter: private state, commands, one `vm` getter. Registered as an implementation of
+// the abstraction, so DI supplies its dependencies.
 class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
   private open = false;
   private status: Status = "idle";
@@ -49,17 +50,30 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
   }
 }
 
-export function createReenrichWithAiPresenter(
-  gateway: IReenrichFileGateway
-): IReenrichWithAiPresenter {
-  return new ReenrichWithAiPresenterImpl(gateway);
-}
+export const ReenrichWithAiPresenter = PresenterAbstraction.createImplementation({
+  implementation: ReenrichWithAiPresenterImpl,
+  dependencies: [ReenrichFileGateway]
+});
+```
+
+```ts
+// Good — feature.ts: register the presenter, hand it out from `resolve`.
+export const AiEnrichmentFeature = createFeature({
+  name: "FileManager/AiEnrichment",
+  register(container) {
+    // Singleton so the state survives re-renders of the view that reads it.
+    container.register(ReenrichWithAiPresenter).inSingletonScope();
+  },
+  resolve(container) {
+    return { presenter: container.resolve(PresenterAbstraction) };
+  }
+});
 ```
 
 ```tsx
-// Good — component: observer, no state.
-export const ReenrichWithAi = observer(function ReenrichWithAi() {
-  const presenter = useMemo(() => createReenrichWithAiPresenter(gateway), [gateway]);
+// Good — component: reactive, no state, presenter via useFeature.
+export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() {
+  const { presenter } = useFeature(AiEnrichmentFeature);
   const { vm } = presenter;
 
   return <Dialog open={vm.open} onOpenChange={open => presenter.setOpen(open)} />;
@@ -68,15 +82,28 @@ export const ReenrichWithAi = observer(function ReenrichWithAi() {
 
 ## Shape
 
-Mirror the presenters already in the codebase (`SettingsPresenter`, `FileDetailsPresenter`,
-`ActionEditPresenter`, `FileManagerPresenter`):
+Mirror `AiPowerUpsSettings` in `@webiny/ai-powerups`, which has the full shape:
 
-- `interface IXViewModel` — the render-ready values. No domain objects, no callbacks.
-- `interface IXPresenter` — the commands plus `get vm(): IXViewModel`.
-- `class XPresenterImpl implements IXPresenter` with `makeAutoObservable(this)` in the constructor.
-- `export function createXPresenter(deps): IXPresenter` — the component never calls `new`.
-- Dependencies arrive through the constructor, not resolved inside; see
+- `abstractions.ts` — `IXViewModel` (render-ready values; no domain objects, no callbacks),
+  `IXPresenter` (the commands plus `readonly vm: IXViewModel`), and the `createAbstraction` token.
+- `XPresenter.ts` — `class XPresenterImpl implements IXPresenter` with `makeAutoObservable(this)` in
+  the constructor, exported through `PresenterAbstraction.createImplementation({ ... })`.
+- `feature.ts` — `container.register(XPresenter).inSingletonScope()` in `register`, and
+  `{ presenter: container.resolve(PresenterAbstraction) }` from `resolve`.
+- Dependencies arrive through `dependencies` and the constructor, never resolved inside; see
   [no-container-as-service-locator.md](./no-container-as-service-locator.md).
+
+## Wiring: `createReactiveComponent` and `useFeature`
+
+- Wrap the component in `createReactiveComponent` from `@webiny/app-admin`, NOT `observer` from
+  `mobx-react-lite`. It is the same thing behind our own export, so components don't each import a
+  third-party package directly. Older components still import `observer`; don't copy them.
+- Get the presenter from `useFeature(SomeFeature)`. Don't hand-roll one with
+  `useMemo(() => createXPresenter(...))` — reserve manual instantiation for something genuinely
+  one-off that has no feature to hang off.
+- A singleton presenter outlives the component, so `dispose()` must RESET state, not only cancel
+  work. Otherwise the next mount inherits the last one's view model — e.g. a dialog that springs
+  open on its own.
 
 ## MobX details worth knowing up front
 

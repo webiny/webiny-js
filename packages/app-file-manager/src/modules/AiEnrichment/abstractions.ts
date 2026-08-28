@@ -55,3 +55,27 @@ export namespace ReenrichFileGateway {
     export type Interface = IReenrichFileGateway;
     export type Event = EnrichmentStreamEvent;
 }
+
+export interface IReenrichWithAiViewModel {
+    open: boolean;
+    /** What the dialog says under its title: the error when there is one, else the status. */
+    message: string;
+    tags: string[];
+    description: string;
+}
+
+export interface IReenrichWithAiPresenter {
+    readonly vm: IReenrichWithAiViewModel;
+    start(fileId: string): Promise<void>;
+    setOpen(open: boolean): void;
+    dispose(): void;
+}
+
+export const ReenrichWithAiPresenter = createAbstraction<IReenrichWithAiPresenter>(
+    "FileManager/ReenrichWithAiPresenter"
+);
+
+export namespace ReenrichWithAiPresenter {
+    export type Interface = IReenrichWithAiPresenter;
+    export type ViewModel = IReenrichWithAiViewModel;
+}

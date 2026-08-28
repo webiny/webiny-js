@@ -1,5 +1,13 @@
 import { makeAutoObservable } from "mobx";
-import type { IReenrichFileGateway } from "./abstractions.js";
+import {
+    ReenrichFileGateway,
+    ReenrichWithAiPresenter as PresenterAbstraction
+} from "./abstractions.js";
+import type {
+    IReenrichFileGateway,
+    IReenrichWithAiPresenter,
+    IReenrichWithAiViewModel
+} from "./abstractions.js";
 
 type Status = "idle" | "running" | "done" | "error";
 
@@ -9,21 +17,6 @@ const STATUS_LABEL: Record<Status, string> = {
     done: "Saved.",
     error: "Failed."
 };
-
-export interface IReenrichWithAiViewModel {
-    open: boolean;
-    /** What the dialog says under its title: the error when there is one, else the status. */
-    message: string;
-    tags: string[];
-    description: string;
-}
-
-export interface IReenrichWithAiPresenter {
-    start(fileId: string): Promise<void>;
-    setOpen(open: boolean): void;
-    dispose(): void;
-    get vm(): IReenrichWithAiViewModel;
-}
 
 class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
     private open = false;
@@ -88,8 +81,17 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
         this.open = open;
     }
 
+    /**
+     * Called when the view unmounts. Resets, not just aborts: the presenter is a DI singleton, so a
+     * left-over `open` would pop the dialog straight back up the next time the view mounts.
+     */
     dispose() {
         this.abort();
+        this.open = false;
+        this.status = "idle";
+        this.tags = [];
+        this.description = "";
+        this.error = null;
     }
 
     /** Aborts any previous run, clears the last result, and opens the dialog on a fresh one. */
@@ -128,8 +130,7 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
     }
 }
 
-export function createReenrichWithAiPresenter(
-    gateway: IReenrichFileGateway
-): IReenrichWithAiPresenter {
-    return new ReenrichWithAiPresenterImpl(gateway);
-}
+export const ReenrichWithAiPresenter = PresenterAbstraction.createImplementation({
+    implementation: ReenrichWithAiPresenterImpl,
+    dependencies: [ReenrichFileGateway]
+});

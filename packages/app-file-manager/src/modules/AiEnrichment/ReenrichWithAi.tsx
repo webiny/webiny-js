@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo } from "react";
-import { observer } from "mobx-react-lite";
+import React, { useEffect } from "react";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { Dialog } from "@webiny/admin-ui";
+import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { FileManagerViewConfig, useFile } from "~/index.js";
 import { AiEnrichmentFeature } from "./feature.js";
-import { createReenrichWithAiPresenter } from "./ReenrichWithAiPresenter.js";
 
 const { FileDetails } = FileManagerViewConfig;
 
@@ -17,11 +16,9 @@ const { FileDetails } = FileManagerViewConfig;
  * `fm.file.enrichment` websocket message on completion, which `AiImageEnrichmentEventHandler`
  * already reacts to. This component only shows the live progress.
  */
-export const ReenrichWithAi = observer(function ReenrichWithAi() {
+export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() {
     const { file } = useFile();
-    const { reenrichFile } = useFeature(AiEnrichmentFeature);
-
-    const presenter = useMemo(() => createReenrichWithAiPresenter(reenrichFile), [reenrichFile]);
+    const { presenter } = useFeature(AiEnrichmentFeature);
     const { vm } = presenter;
 
     // Abandon an in-flight stream when this view goes away, so the read loop doesn't keep running
