@@ -147,8 +147,10 @@ export const itemStillExists = (
             i++;
 
             if (!Array.isArray(fieldValue)) {
-                // Values not loaded / not an array — nothing reliable to check against.
-                return true;
+                // We resolved this list field in the model and walked into the entry's (loaded,
+                // domain-form) values, but there is no array here — the list is empty / null (e.g.
+                // the last item was deleted). The referenced item therefore no longer exists.
+                return false;
             }
 
             let next: unknown;

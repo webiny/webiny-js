@@ -156,9 +156,13 @@ describe("itemStillExists", () => {
         expect(itemStillExists(model, values, "phone.gone.type")).toBe(false);
     });
 
-    it("returns true (undetermined) when values are missing", () => {
+    it("returns true (undetermined) only when values could not be loaded", () => {
         expect(itemStillExists(model, undefined, "phone.abc123.type")).toBe(true);
-        expect(itemStillExists(model, {}, "phone.abc123.type")).toBe(true);
+    });
+
+    it("returns false when the list is loaded but empty/absent (item deleted)", () => {
+        // Values loaded, but the `phone` list has no array here — the referenced item is gone.
+        expect(itemStillExists(model, {}, "phone.abc123.type")).toBe(false);
     });
 
     it("verifies items across nested lists", () => {

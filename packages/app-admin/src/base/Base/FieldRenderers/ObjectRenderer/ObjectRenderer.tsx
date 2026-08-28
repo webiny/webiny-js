@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import type { IObjectFieldVM } from "~/features/formModel/index.js";
+import { hasSubtreeFocusRequest } from "~/features/formModel/index.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -61,6 +62,16 @@ function resolveDescription(
 export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">(({ field }) => {
     const settings = field.rendererSettings;
 
+    // Force the object accordion open when a focus request lands anywhere in
+    // its subtree, so "jump to field" can cascade through collapsed levels.
+    const focusInside = hasSubtreeFocusRequest(field.fields);
+    const [open, setOpen] = useState(settings?.open ?? true);
+    useEffect(() => {
+        if (focusInside) {
+            setOpen(true);
+        }
+    }, [focusInside]);
+
     if (settings?.container === false) {
         return <NestedLayout layout={field.layout} />;
     }
@@ -70,7 +81,8 @@ export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">
             <Accordion.Item
                 title={resolveTitle(field, settings?.itemTitle)}
                 description={resolveDescription(field, settings?.itemDescription)}
-                defaultOpen={settings?.open ?? true}
+                open={open}
+                onOpenChange={setOpen}
                 className={"pl-sm"}
             >
                 <NestedLayout layout={field.layout} />
