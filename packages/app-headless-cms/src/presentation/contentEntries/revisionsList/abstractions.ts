@@ -14,6 +14,7 @@ export interface IRevisionsListPresenter {
     hide(): void;
     createRevision(revisionId: string): Promise<CmsContentEntry | null>;
     unpublishRevision(revisionId: string): Promise<boolean>;
+    updateRevisionNote(revisionId: string, currentDescription: string): Promise<boolean>;
     deleteRevision(revisionId: string): Promise<boolean>;
     dispose(): void;
 }

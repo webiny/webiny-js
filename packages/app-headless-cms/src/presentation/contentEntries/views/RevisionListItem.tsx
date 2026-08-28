@@ -8,6 +8,7 @@ import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/icons/gesture.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
+import { ReactComponent as EditNoteIcon } from "@webiny/icons/edit_note.svg";
 import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
@@ -113,6 +114,13 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
         revisionsPresenter.hide();
     };
 
+    const handleEditNote = async () => {
+        await revisionsPresenter.updateRevisionNote(
+            revision.id,
+            revision.revisionDescription ?? ""
+        );
+    };
+
     const handleUnpublishRevision = async () => {
         await revisionsPresenter.unpublishRevision(revision.id);
     };
@@ -191,6 +199,14 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                 onClick={handleEditRevision}
                                 icon={<EditIcon />}
                                 text={t`Edit revision`}
+                            />
+                        )}
+
+                        {canEdit(revision, "cms.contentEntry") && (
+                            <DropdownMenu.Item
+                                onClick={handleEditNote}
+                                icon={<EditNoteIcon />}
+                                text={revision.revisionDescription ? t`Edit note` : t`Add note`}
                             />
                         )}
 

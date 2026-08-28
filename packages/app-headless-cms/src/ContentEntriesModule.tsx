@@ -41,7 +41,11 @@ import { TrashEntryConfirmDialog } from "~/admin/components/Dialogs/TrashEntryCo
 import { PublishEntryConfirmDialog } from "~/admin/components/Dialogs/PublishEntryConfirmDialog.js";
 import { UnpublishEntryConfirmDialog } from "~/admin/components/Dialogs/UnpublishEntryConfirmDialog.js";
 import { DeleteRevisionConfirmDialog } from "~/admin/components/Dialogs/DeleteRevisionConfirmDialog.js";
-import { DELETE_REVISION_DIALOG } from "~/presentation/contentEntries/revisionsList/RevisionsListPresenter.js";
+import { EditRevisionNoteDialog } from "~/admin/components/Dialogs/EditRevisionNoteDialog.js";
+import {
+    DELETE_REVISION_DIALOG,
+    EDIT_REVISION_NOTE_DIALOG
+} from "~/presentation/contentEntries/revisionsList/RevisionsListPresenter.js";
 import { RevisionSelector } from "~/presentation/contentEntries/views/actions/RevisionSelector.js";
 import { ContentFormOptionsMenu } from "~/presentation/contentEntries/views/actions/ContentFormOptionsMenu.js";
 import { SaveContentButton } from "~/presentation/contentEntries/views/actions/SaveContentButton.js";
@@ -73,6 +77,10 @@ export const ContentEntriesModule = () => {
                 <AdminConfig.Dialog
                     name={DELETE_REVISION_DIALOG}
                     element={<DeleteRevisionConfirmDialog />}
+                />
+                <AdminConfig.Dialog
+                    name={EDIT_REVISION_NOTE_DIALOG}
+                    element={<EditRevisionNoteDialog />}
                 />
             </AdminConfig>
             <InternalContentEntryListConfig>
