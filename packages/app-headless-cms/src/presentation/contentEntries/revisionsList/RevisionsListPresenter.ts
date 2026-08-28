@@ -17,6 +17,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
     private loading = false;
     private revisions: CmsContentEntryRevision[] = [];
     private visible = false;
+    private entryId: string | null = null;
 
     constructor(
         private modelAccessor: CmsModelContext.Interface,
@@ -32,12 +33,14 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             | "createRevisionFromUseCase"
             | "deleteEntryRevisionUseCase"
             | "confirmation"
+            | "entryId"
         >(this, {
             modelAccessor: false,
             listRevisionsUseCase: false,
             createRevisionFromUseCase: false,
             deleteEntryRevisionUseCase: false,
             confirmation: false,
+            entryId: false,
             vm: computed
         });
     }
@@ -56,6 +59,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
 
     async init(entryId: string): Promise<void> {
         this.loading = true;
+        this.entryId = entryId;
 
         try {
             const revisions = await this.listRevisionsUseCase.execute({
@@ -87,10 +91,14 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         this.loading = true;
 
         try {
-            return await this.createRevisionFromUseCase.execute({
+            const entry = await this.createRevisionFromUseCase.execute({
                 model: this.model,
                 revisionId
             });
+
+            await this.refreshRevisions(revisionId);
+
+            return entry;
         } catch {
             return null;
         } finally {
@@ -103,7 +111,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
     async deleteRevision(revisionId: string): Promise<boolean> {
         const confirmed = await this.confirmation.confirm(DELETE_REVISION_DIALOG, { revisionId });
 
-        if (!confirmed) {
+        if (confirmed === false) {
             return false;
         }
 
@@ -117,6 +125,8 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
                 revisionId
             });
 
+            await this.refreshRevisions(revisionId);
+
             return true;
         } catch {
             return false;
@@ -127,10 +137,28 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         }
     }
 
+    private async refreshRevisions(revisionId: string): Promise<void> {
+        const entryId = this.entryId ?? revisionId.split("#")[0];
+
+        try {
+            const revisions = await this.listRevisionsUseCase.execute({
+                model: this.model,
+                entryId
+            });
+
+            runInAction(() => {
+                this.revisions = revisions;
+            });
+        } catch {
+            // Silently fail — revisions are supplementary.
+        }
+    }
+
     dispose(): void {
         this.revisions = [];
         this.visible = false;
         this.loading = false;
+        this.entryId = null;
     }
 }
 
