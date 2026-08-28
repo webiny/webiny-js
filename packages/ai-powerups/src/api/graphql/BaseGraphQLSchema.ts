@@ -1,6 +1,6 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { Response, ErrorResponse } from "@webiny/api-graphql/responses.js";
-import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
@@ -97,9 +97,9 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "AiPowerUpsQuery.listModels",
-            dependencies: [Ai],
-            resolver: (ai: Ai.Interface) => {
-                return async () => ai.listModels();
+            dependencies: [AiModelRegistry],
+            resolver: (registry: AiModelRegistry.Interface) => {
+                return async () => registry.listModels();
             }
         });
 
