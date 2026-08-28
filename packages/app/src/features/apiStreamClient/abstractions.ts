@@ -2,6 +2,13 @@ import { createAbstraction } from "@webiny/feature/admin";
 
 type IHeaders = Record<string, string | number | undefined>;
 
+/**
+ * The raw `fetch` response, handed to the caller unread so it owns the read loop. Aliased through
+ * the abstraction so consumers name the contract rather than the DOM type it currently happens to
+ * be — and so `ApiStreamClient.Response` reads as the counterpart to `ApiStreamClient.Request`.
+ */
+type IApiStreamResponse = globalThis.Response;
+
 export interface IApiStreamRequest {
     /** Path relative to the API root, e.g. `/stream/fm/files/abc/enrich`. */
     path: string;
@@ -25,7 +32,7 @@ export interface IApiStreamRequest {
  * caller owns the read loop and can hand `response.body` to any stream consumer.
  */
 export interface IApiStreamClient {
-    execute(params: IApiStreamRequest): Promise<Response>;
+    execute(params: IApiStreamRequest): Promise<IApiStreamResponse>;
 }
 
 export const ApiStreamClient = createAbstraction<IApiStreamClient>("ApiStreamClient");
@@ -34,6 +41,7 @@ export namespace ApiStreamClient {
     export type Headers = IHeaders;
     export type Interface = IApiStreamClient;
     export type Request = IApiStreamRequest;
+    export type Response = IApiStreamResponse;
 }
 
 export class ApiStreamRequestError extends Error {

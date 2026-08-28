@@ -11,7 +11,7 @@ class ApiStreamClientWithTenantId implements ApiStreamClient.Interface {
         private decoratee: ApiStreamClient.Interface
     ) {}
 
-    async execute(params: ApiStreamClient.Request): Promise<Response> {
+    async execute(params: ApiStreamClient.Request): Promise<ApiStreamClient.Response> {
         const tenant = this.context.getCurrentTenant();
 
         const tenantHeaders = tenant ? { "x-tenant": tenant } : {};

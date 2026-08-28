@@ -24,7 +24,7 @@ class ApiStreamClientImpl implements ApiStreamClient.Interface {
         this.apiUrl = envConfig.get("apiUrl");
     }
 
-    async execute(params: ApiStreamClient.Request): Promise<Response> {
+    async execute(params: ApiStreamClient.Request): Promise<ApiStreamClient.Response> {
         const hasBody = params.body !== undefined;
 
         const headers: Record<string, string> = { accept: "text/event-stream" };

@@ -18,7 +18,7 @@ class ApiStreamClientWithIdToken implements ApiStreamClient.Interface {
         private decoratee: ApiStreamClient.Interface
     ) {}
 
-    async execute(params: ApiStreamClient.Request): Promise<Response> {
+    async execute(params: ApiStreamClient.Request): Promise<ApiStreamClient.Response> {
         if (params.headers?.[WEBINY_AUTHORIZATION_HEADER]) {
             return this.decoratee.execute(params);
         }
