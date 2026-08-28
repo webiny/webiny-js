@@ -14,7 +14,6 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
-import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { Routes } from "~/routes.js";
 
@@ -79,8 +78,6 @@ interface RevisionListItemProps {
 }
 
 export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
-    const presenter = useContentEntryFormPresenter();
-    const formVm = presenter.vm;
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
@@ -150,7 +147,7 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                     data-testid={"cms.content-form.revisions.more-options"}
                 >
                     <>
-                        {formVm.entry && canEdit(formVm.entry, "cms.contentEntry") && (
+                        {canEdit(revision, "cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handleCreateRevision}
                                 data-testid={"cms.revision.create-revision"}
@@ -159,47 +156,25 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {!revision.meta.locked &&
-                            formVm.entry &&
-                            canEdit(formVm.entry, "cms.contentEntry") && (
-                                <DropdownMenu.Item
-                                    onClick={handleEditRevision}
-                                    icon={<EditIcon />}
-                                    text={t`Edit revision`}
-                                />
-                            )}
-
-                        {/*{revision.meta.status !== "published" && canPublish("cms.contentEntry") && (
+                        {!revision.meta.locked && canEdit(revision, "cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handleEditRevision}
-                                icon={<PublishIcon />}
-                                text={t`Publish revision`}
+                                icon={<EditIcon />}
+                                text={t`Edit revision`}
                             />
                         )}
 
-                        {revision.meta.status === "published" &&
-                            canUnpublish("cms.contentEntry") && (
+                        {canDelete(revision, "cms.contentEntry") && (
+                            <>
+                                <DropdownMenu.Separator />
                                 <DropdownMenu.Item
-                                    onClick={}
-                                    data-testid={"cms.revision.unpublish"}
-                                    icon={<UnpublishIcon />}
-                                    text={t`Unpublish revision`}
+                                    onClick={handleDeleteRevision}
+                                    icon={<DeleteIcon />}
+                                    text={t`Delete revision`}
+                                    variant={"destructive"}
                                 />
-                            )}*/}
-
-                        {!revision.meta.locked &&
-                            formVm.entry &&
-                            canDelete(formVm.entry, "cms.contentEntry") && (
-                                <>
-                                    <DropdownMenu.Separator />
-                                    <DropdownMenu.Item
-                                        onClick={handleDeleteRevision}
-                                        icon={<DeleteIcon />}
-                                        text={t`Delete revision`}
-                                        variant={"destructive"}
-                                    />
-                                </>
-                            )}
+                            </>
+                        )}
                     </>
                 </DropdownMenu>
             }
