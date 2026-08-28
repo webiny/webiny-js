@@ -22,7 +22,8 @@ export const NotificationsHeaderDecorator = UserMenu.createDecorator(Original =>
         return (
             <>
                 <NotificationsBell presenter={presenter} />
-                {presenter.vm.open ? <NotificationsPanel presenter={presenter} /> : null}
+                {/* Always mounted — the Drawer inside handles its own open/close animation. */}
+                <NotificationsPanel presenter={presenter} />
                 <Original />
             </>
         );

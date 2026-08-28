@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Checkbox, EmptyState, IconButton, SegmentedControl } from "@webiny/admin-ui";
+import { Checkbox, Drawer, EmptyState, IconButton, SegmentedControl } from "@webiny/admin-ui";
 import { ReactComponent as DoneAllIcon } from "@webiny/icons/done_all.svg";
 import { ReactComponent as RefreshIcon } from "@webiny/icons/refresh.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
@@ -20,9 +20,19 @@ export const NotificationsPanel = observer(({ presenter }: Props) => {
     const isEmpty = !vm.loading && !vm.error && vm.items.length === 0;
 
     return (
-        <>
-            <div className="wby-notif-scrim" onClick={() => presenter.closePanel()} />
-            <aside className="wby-notif-panel">
+        <Drawer
+            open={vm.open}
+            onOpenChange={open => {
+                if (!open) {
+                    presenter.closePanel();
+                }
+            }}
+            modal
+            width={440}
+            showCloseButton={false}
+            bodyPadding={false}
+        >
+            <div className="wby-notif-panel-inner">
                 <div className="wby-notif-header">
                     <div className="wby-notif-title">
                         <InboxIcon className="wby-notif-title__icon" />
@@ -107,7 +117,7 @@ export const NotificationsPanel = observer(({ presenter }: Props) => {
                         </div>
                     ))}
                 </div>
-            </aside>
-        </>
+            </div>
+        </Drawer>
     );
 });

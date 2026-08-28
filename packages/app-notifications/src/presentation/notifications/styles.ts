@@ -2,10 +2,9 @@ const CSS = `
 .wby-notif-bell-wrap { position:relative; display:inline-flex; }
 .wby-notif-bell__badge { position:absolute; top:-2px; right:-2px; min-width:16px; height:16px; padding:0 4px; background:var(--color-primary); color:#fff; border-radius:8px; font-size:10px; font-weight:700; line-height:1; display:flex; align-items:center; justify-content:center; box-sizing:border-box; box-shadow:0 0 0 2px var(--color-neutral-0); pointer-events:none; }
 
-.wby-notif-scrim { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:50; opacity:0; animation:wby-notif-fade .18s ease forwards; }
-@keyframes wby-notif-fade { to { opacity:1; } }
-.wby-notif-panel { position:fixed; top:0; right:0; height:100vh; width:440px; max-width:100vw; background:var(--color-neutral-0); box-shadow:var(--shadow-xl); z-index:51; display:flex; flex-direction:column; font-family:var(--font-sans); color:var(--text-color-neutral-primary); transform:translateX(100%); animation:wby-notif-slide .22s ease forwards; }
-@keyframes wby-notif-slide { to { transform:translateX(0); } }
+/* The slide-in shell (overlay, positioning, animation, focus) is the admin-ui Drawer; this is the
+   full-height flex column inside its body so the header/tabs stay put and the list scrolls. */
+.wby-notif-panel-inner { display:flex; flex-direction:column; height:100%; font-family:var(--font-sans); color:var(--text-color-neutral-primary); }
 
 .wby-notif-header { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; padding:16px 16px 10px; }
 .wby-notif-title { display:flex; align-items:center; gap:8px; font-size:20px; font-weight:600; }
