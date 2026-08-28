@@ -8,8 +8,7 @@ import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/icons/gesture.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-// import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
-// import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
+import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -81,7 +80,7 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
-    const { canEdit, canDelete } = usePermission();
+    const { canEdit, canDelete, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
     const navigateToRevision = (id: string) => {
@@ -99,6 +98,10 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     const handleEditRevision = () => {
         navigateToRevision(revision.id);
         revisionsPresenter.hide();
+    };
+
+    const handleUnpublishRevision = async () => {
+        await revisionsPresenter.unpublishRevision(revision.id);
     };
 
     const handleDeleteRevision = async () => {
@@ -176,6 +179,16 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                 text={t`Edit revision`}
                             />
                         )}
+
+                        {revision.meta.status === "published" &&
+                            canUnpublish("cms.contentEntry") && (
+                                <DropdownMenu.Item
+                                    onClick={handleUnpublishRevision}
+                                    data-testid={"cms.revision.unpublish"}
+                                    icon={<UnpublishIcon />}
+                                    text={t`Unpublish`}
+                                />
+                            )}
 
                         {canDelete(revision, "cms.contentEntry") && (
                             <>

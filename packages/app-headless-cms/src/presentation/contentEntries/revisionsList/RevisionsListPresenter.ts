@@ -4,6 +4,7 @@ import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractio
 import { ListRevisionsUseCase } from "~/features/contentEntry/listRevisions/abstractions.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/deleteEntryRevision/abstractions.js";
+import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
 import {
     RevisionsListPresenter as Abstraction,
@@ -11,6 +12,7 @@ import {
     type IRevisionsListViewModel
 } from "./abstractions.js";
 
+export const UNPUBLISH_REVISION_DIALOG = "unpublish-entry";
 export const DELETE_REVISION_DIALOG = "delete-revision";
 
 class RevisionsListPresenterImpl implements IRevisionsListPresenter {
@@ -24,6 +26,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         private listRevisionsUseCase: ListRevisionsUseCase.Interface,
         private createRevisionFromUseCase: CreateRevisionFromUseCase.Interface,
         private deleteEntryRevisionUseCase: DeleteEntryRevisionUseCase.Interface,
+        private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private confirmation: Confirmation.Interface
     ) {
         makeAutoObservable<
@@ -32,6 +35,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             | "listRevisionsUseCase"
             | "createRevisionFromUseCase"
             | "deleteEntryRevisionUseCase"
+            | "unpublishEntryUseCase"
             | "confirmation"
             | "entryId"
         >(this, {
@@ -39,6 +43,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             listRevisionsUseCase: false,
             createRevisionFromUseCase: false,
             deleteEntryRevisionUseCase: false,
+            unpublishEntryUseCase: false,
             confirmation: false,
             entryId: false,
             vm: computed
@@ -108,6 +113,37 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         }
     }
 
+    async unpublishRevision(revisionId: string): Promise<boolean> {
+        const confirmed = await this.confirmation.confirm(UNPUBLISH_REVISION_DIALOG, {
+            revisionId
+        });
+
+        if (confirmed === false) {
+            return false;
+        }
+
+        runInAction(() => {
+            this.loading = true;
+        });
+
+        try {
+            await this.unpublishEntryUseCase.execute({
+                model: this.model,
+                revisionId
+            });
+
+            await this.refreshRevisions(revisionId);
+
+            return true;
+        } catch {
+            return false;
+        } finally {
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
+    }
+
     async deleteRevision(revisionId: string): Promise<boolean> {
         const confirmed = await this.confirmation.confirm(DELETE_REVISION_DIALOG, { revisionId });
 
@@ -169,6 +205,7 @@ export const RevisionsListPresenter = Abstraction.createImplementation({
         ListRevisionsUseCase,
         CreateRevisionFromUseCase,
         DeleteEntryRevisionUseCase,
+        UnpublishEntryUseCase,
         Confirmation
     ]
 });
