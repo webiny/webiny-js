@@ -1,7 +1,7 @@
 import React from "react";
 import { useFeature } from "@webiny/app";
 import { useRoute, useRouter } from "@webiny/app-admin";
-import { DropdownMenu, Icon, IconButton, List, Text, Tooltip } from "@webiny/admin-ui";
+import { DropdownMenu, Icon, IconButton, List, Tag, Text, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
@@ -31,6 +31,18 @@ const DateDisplay = ({ date }: { date: string }) => {
         }).format(d);
     }, [date]);
     return <>{formatted}</>;
+};
+
+const getStatusTag = (rev: CmsContentEntryRevision) => {
+    if (rev.meta.status === "published") {
+        return { label: "Published", variant: "accent" as const };
+    }
+
+    if (rev.meta.locked) {
+        return { label: "Previously published", variant: "warning" as const };
+    }
+
+    return { label: "Draft", variant: "neutral-light" as const };
 };
 
 const getIcon = (rev: CmsContentEntryRevision) => {
@@ -82,6 +94,7 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     const { route } = useRoute(Routes.ContentEntries.List);
     const { canEdit, canDelete, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
+    const statusTag = getStatusTag(revision);
 
     const navigateToRevision = (id: string) => {
         goToRoute(Routes.ContentEntries.List, { ...route.params, id });
@@ -121,11 +134,12 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
         <List.Item
             icon={<Tooltip content={tooltipText} trigger={icon} />}
             title={
-                <>
+                <span className={"flex items-center gap-xs"}>
                     <span className={"text-neutral-strong"}>#{revision.meta.version}</span>
                     {" · "}
                     {revision.meta.title || t`N/A`}
-                </>
+                    <Tag content={statusTag.label} variant={statusTag.variant} />
+                </span>
             }
             description={
                 <>
