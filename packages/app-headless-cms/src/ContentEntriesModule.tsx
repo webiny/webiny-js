@@ -131,9 +131,10 @@ export const ContentEntriesModule = () => {
                         truncate={false}
                     />
                     <Browser.Table.Column
-                        name={"live"}
+                        name={"lastPublishedOn"}
                         header={"Live"}
                         truncate={false}
+                        sortable={true}
                         cell={<CellLive />}
                     />
                 </IsModelPublishable>
