@@ -27,6 +27,7 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     auditLogs: l => l.canUseAuditLogs(),
     recordLocking: l => l.canUseRecordLocking(),
     "fileManager.threatDetection": l => l.canUseFileManagerThreatDetection(),
+    "aiPowerups.fileManager.imageEnrichment": l => l.canUseAiImageEnrichment(),
     abTesting: l => l.canUseAbTesting()
 };
 

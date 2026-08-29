@@ -39,7 +39,6 @@
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
-    "@webiny/event-handler-core": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/webhooks": "0.0.0"
   },
@@ -51,7 +50,7 @@
     "@webiny/di": "^1.0.2",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

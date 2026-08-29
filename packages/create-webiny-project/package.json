@@ -22,8 +22,8 @@
     "execa": "^10.0.1",
     "find-up": "^8.0.0",
     "fs-extra": "^11.4.0",
-    "inquirer": "^14.0.2",
-    "js-yaml": "^5.2.3",
+    "inquirer": "^14.1.0",
+    "js-yaml": "^5.3.0",
     "listr2": "^11.0.0",
     "load-json-file": "^7.0.1",
     "ora": "9.4.1",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/validate-npm-package-name": "^4.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

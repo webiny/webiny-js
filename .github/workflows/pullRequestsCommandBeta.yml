@@ -255,6 +255,7 @@ jobs:
           path: ${{ needs.prBranch.outputs.pr-branch }}
           ref: ${{ needs.prBranch.outputs.pr-sha }}
           fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
       - name: Resolve Yarn cache folder
         id: yarn-cache-folder
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}

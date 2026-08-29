@@ -58,6 +58,10 @@ jobs:
             | DDB | 🔄 Deploying... | - |
 
             | DDB+OS | 🔄 Deploying... | - |
+
+            | Server (SQLite) | 🔄 Running... | - |
+
+            | Server (Postgres) | 🔄 Running... | - |
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -382,6 +386,36 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Update PR comment - DDB passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB \|.*@| DDB | ✅ Passed | ${ADMIN_URL:--} |@"
+          /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - DDB failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB \|.*@| DDB | ❌ Failed | ${ADMIN_URL:--} |@"
+          /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -615,8 +649,444 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Update PR comment - DDB+OS passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ✅ Passed | ${ADMIN_URL:--}
+          |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - DDB+OS failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+          ADMIN_URL: ${{ steps.admin-url.outputs.admin-url }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| DDB\+OS \|.*@| DDB+OS | ❌ Failed | ${ADMIN_URL:--}
+          |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
     runs-on: ubuntu-latest
     permissions:
       contents: read
       actions: write
       id-token: write
+  e2e-server-sqlite:
+    needs:
+      - baseBranch
+      - constants
+      - build
+      - checkComment
+    name: E2E - Server (SQLite)
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+      - name: Version and publish to Verdaccio
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn release --type=verdaccio
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new self-hosted Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-server --tag
+          local-npm --no-interactive --hosting-type server --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"sqlite"}'
+      - name: Print CLI version
+        working-directory: new-webiny-project-server
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-server
+        env:
+          WEBINY_HOSTING_TYPE: server
+          WEBINY_API_URL: http://localhost:3002
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Start API
+        env:
+          PORT: '3002'
+          WEBINY_SQL_FILENAME: >-
+            ${{ github.workspace
+            }}/new-webiny-project-server/.webiny/server.sqlite
+          WEBINY_LOCAL_STORAGE_PATH: ${{ github.workspace }}/new-webiny-project-server/.webiny/storage
+        run: |-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+          cd new-webiny-project-server/.webiny/workspace/apps/api/graphql/build
+          nohup node start.mjs > /tmp/webiny-api.log 2>&1 &
+          echo "API starting on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-server/.webiny/workspace/apps/admin/build -l 3001 >
+          /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: Create Cypress config
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn setup-cypress:server --apiUrl http://localhost:3002 --adminUrl
+          http://localhost:3001
+      - name: Install Cypress binary
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: cd cypress-tests && yarn cypress install
+      - name: Cypress - run installation wizard test
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn cy:run --browser chrome --spec
+          "cypress/e2e/adminInstallation/**/*.cy.js"
+      - name: Update PR comment - Server (SQLite) passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Server \(SQLite\) \|.*@| Server (SQLite) | ✅ Passed |
+          - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - Server (SQLite) failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Server \(SQLite\) \|.*@| Server (SQLite) | ❌ Failed |
+          - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: cypress-screenshots-server-sqlite
+          retention-days: 1
+          if-no-files-found: ignore
+          path: >-
+            ${{ needs.baseBranch.outputs.base-branch
+            }}/cypress-tests/cypress/screenshots
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
+  e2e-server-postgres:
+    needs:
+      - baseBranch
+      - constants
+      - build
+      - checkComment
+    name: E2E - Server (Postgres)
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: webiny
+        ports:
+          - '5432:5432'
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: |-
+          gh pr checkout ${{ github.event.issue.number }}
+          git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Download build cache
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: run-build-cache
+      - name: Extract build cache
+        run: >-
+          tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
+          "${WEBINY_JS_DIR:-.}"
+        env:
+          WEBINY_JS_DIR: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Start Verdaccio local server
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
+          .verdaccio.yaml
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+      - name: Version and publish to Verdaccio
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: yarn release --type=verdaccio
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
+          ~/.webiny/config
+      - name: Create a new self-hosted Webiny project
+        run: >-
+          npx create-webiny-project@local-npm new-webiny-project-server --tag
+          local-npm --no-interactive --hosting-type server --assign-to-yarnrc
+          '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"storageOps":"postgres"}'
+      - name: Print CLI version
+        working-directory: new-webiny-project-server
+        run: yarn webiny --version
+      - name: Build API and Admin
+        working-directory: new-webiny-project-server
+        env:
+          WEBINY_HOSTING_TYPE: server
+          WEBINY_API_URL: http://localhost:3002
+        run: yarn webiny build api && yarn webiny build admin
+      - name: Start API
+        env:
+          PORT: '3002'
+          WEBINY_PG_HOST: localhost
+          WEBINY_PG_PORT: '5432'
+          WEBINY_PG_USER: postgres
+          WEBINY_PG_PASSWORD: postgres
+          WEBINY_PG_DATABASE: webiny
+          WEBINY_LOCAL_STORAGE_PATH: ${{ github.workspace }}/new-webiny-project-server/.webiny/storage
+        run: |-
+          mkdir -p "$(dirname "${WEBINY_SQL_FILENAME:-/tmp/unused}")"
+          mkdir -p "${WEBINY_LOCAL_STORAGE_PATH:-/tmp/unused}"
+          cd new-webiny-project-server/.webiny/workspace/apps/api/graphql/build
+          nohup node start.mjs > /tmp/webiny-api.log 2>&1 &
+          echo "API starting on port 3002"
+      - name: Serve Admin
+        run: >-
+          nohup npx --yes serve -s
+          new-webiny-project-server/.webiny/workspace/apps/admin/build -l 3001 >
+          /tmp/webiny-admin.log 2>&1 &
+
+          echo "Admin starting on port 3001"
+      - name: Wait for API and Admin
+        run: >-
+          set -euo pipefail
+
+
+          wait_for_port() {
+            for _ in $(seq 1 90); do
+              if (echo > /dev/tcp/127.0.0.1/"$1") >/dev/null 2>&1; then
+                echo "port $1 is accepting connections"
+                return 0
+              fi
+              sleep 2
+            done
+            echo "::error::Timed out waiting for port $1."
+            return 1
+          }
+
+
+          wait_for_port 3002
+
+          wait_for_port 3001
+
+
+          # A listening socket is not the same as a working GraphQL endpoint.
+
+          curl -fsS -X POST http://localhost:3002/graphql -H 'content-type:
+          application/json' \
+            -d '{"query":"{__typename}"}' > /dev/null
+          echo "GraphQL API responded."
+      - name: Create Cypress config
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn setup-cypress:server --apiUrl http://localhost:3002 --adminUrl
+          http://localhost:3001
+      - name: Install Cypress binary
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: cd cypress-tests && yarn cypress install
+      - name: Cypress - run installation wizard test
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: >-
+          yarn cy:run --browser chrome --spec
+          "cypress/e2e/adminInstallation/**/*.cy.js"
+      - name: Update PR comment - Server (Postgres) passed
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Server \(Postgres\) \|.*@| Server (Postgres) | ✅
+          Passed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Update PR comment - Server (Postgres) failed
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          COMMENT_ID: ${{ needs.checkComment.outputs.comment-id }}
+        run: >-
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq
+          '.body' > /tmp/comment.txt
+
+          sed -i -E "s@^\| Server \(Postgres\) \|.*@| Server (Postgres) | ❌
+          Failed | - |@" /tmp/comment.txt
+
+          gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
+          PATCH --field body=@/tmp/comment.txt
+      - name: Print server logs
+        if: failure()
+        run: >-
+          echo "::group::API log"; cat /tmp/webiny-api.log || true; echo
+          "::endgroup::"
+
+          echo "::group::Admin log"; cat /tmp/webiny-admin.log || true; echo
+          "::endgroup::"
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        with:
+          name: cypress-screenshots-server-postgres
+          retention-days: 1
+          if-no-files-found: ignore
+          path: >-
+            ${{ needs.baseBranch.outputs.base-branch
+            }}/cypress-tests/cypress/screenshots
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write

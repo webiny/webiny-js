@@ -205,6 +205,14 @@ Pass "--force" if you want to allow overwriting existing cypress.json config fil
 Pass "--localhost" to run Cypress tests against locally run apps. Ideal for development. Default: `false`.
 ```
 
+Note that `yarn setup-cypress` is the AWS hosting type (it reads the values back from your deployment
+state files). For a self-hosted ("server" hosting type) project there is nothing deployed to read
+from, so use `yarn setup-cypress:server` and pass the URLs directly:
+
+```
+yarn setup-cypress:server --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
+```
+
 #### Opening the Cypress app
 
 Once you've configured all the variables, you can run the following command in the project root: `cypress open`. This will open the Cypress app, which will enable you to choose the test you wish to execute. You can run only your test, which is ideal if you're in the process of creating it.

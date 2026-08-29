@@ -16,6 +16,11 @@ Read every rule in this folder before writing or editing code.
 | [compose-css-class-names.md](./compose-css-class-names.md)                                   | Compose class names with a `cn` helper, never `+` or template literals.    |
 | [no-inline-conditional-spreads.md](./no-inline-conditional-spreads.md)                       | Build objects with `if` statements, not inline conditional spreads/casts.  |
 | [routes-delegate-to-use-cases.md](./routes-delegate-to-use-cases.md)                         | Routes parse and map; feature logic lives in a use case.                   |
-| [inject-dependencies-not-the-container.md](./inject-dependencies-not-the-container.md)       | Declare real dependencies; never inject a container to resolve later.      |
+| [no-nested-call-arguments.md](./no-nested-call-arguments.md)                                 | Name each step; don't nest calls as arguments to other calls.              |
+| [one-public-function-per-file.md](./one-public-function-per-file.md)                         | One exported function per file; composition steps always get their own.    |
+| [prefer-type-annotation-over-cast.md](./prefer-type-annotation-over-cast.md)                 | Annotate the variable; never add parens just to cast an expression.        |
+| [no-container-as-service-locator.md](./no-container-as-service-locator.md)                   | Declare dependencies; don't inject a Container and resolve inside methods. |
+| [no-stateless-private-methods.md](./no-stateless-private-methods.md)                         | A private method that never reads `this` becomes a module-level function.  |
+| [presenter-owns-component-state.md](./presenter-owns-component-state.md)                     | Non-trivial component state goes in a presenter, reached via `useFeature`. |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.
