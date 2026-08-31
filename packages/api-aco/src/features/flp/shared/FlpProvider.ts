@@ -5,6 +5,7 @@ import {
     type GetCodePermissionsParams
 } from "./abstractions.js";
 import { CodeFlpPath } from "./CodeFlpPath.js";
+import { CodeFlpTarget } from "./CodeFlpTarget.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 
 class FlpProviderImpl implements FlpsProvider.Interface {
@@ -18,10 +19,7 @@ class FlpProviderImpl implements FlpsProvider.Interface {
         return flps
             .filter(flp => flp.type === type && CodeFlpPath.matches(flp.path, path))
             .flatMap<FolderPermission>(flp => {
-                return flp.permissions.map(permission => ({
-                    ...permission,
-                    plugin: true
-                }));
+                return flp.permissions.map(permission => CodeFlpTarget.resolve(permission));
             });
     }
 

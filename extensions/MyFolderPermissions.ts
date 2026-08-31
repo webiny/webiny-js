@@ -11,7 +11,8 @@ import { FlpFactory } from "webiny/api/aco/flp";
  * - `path` is the folder's slug path. The leading `root` segment is optional, so `/marketing` and
  *   `root/marketing` both work. A trailing `/*` matches the folder plus its whole subtree.
  *
- * Prefer `team:` targets over `admin:` ones — team slugs are stable, user IDs are not.
+ * Each permission targets either a `team` (by slug) or a `user` (by ID). Prefer teams — slugs are
+ * authored by hand and stable, while user IDs are generated at runtime and differ per environment.
  *
  * Requires folder-level permissions to be enabled for the project. Without that entitlement these
  * rules are never registered and never enforced.
@@ -23,13 +24,13 @@ class MyFolderPermissionsImpl implements FlpFactory.Interface {
                 // Everything under /marketing is editable by the content team.
                 type: "cms:article",
                 path: "/marketing/*",
-                permissions: [{ target: "team:content-team", level: "editor" }]
+                permissions: [{ team: "content-team", level: "editor" }]
             },
             {
                 // The finance folder itself — not its children — is read-only for the same team.
                 type: "cms:article",
                 path: "/finance",
-                permissions: [{ target: "team:content-team", level: "viewer" }]
+                permissions: [{ team: "content-team", level: "viewer" }]
             },
             {
                 // A hard denial. `no-access` always wins: it cannot be overridden by a permission
@@ -37,7 +38,7 @@ class MyFolderPermissionsImpl implements FlpFactory.Interface {
                 // Full-access users are still unaffected, same as with regular FLPs.
                 type: "cms:article",
                 path: "/legal-hold/*",
-                permissions: [{ target: "team:content-team", level: "no-access" }]
+                permissions: [{ team: "content-team", level: "no-access" }]
             },
             {
                 // Folder types are independent — this rule applies to File Manager folders only.
@@ -45,7 +46,14 @@ class MyFolderPermissionsImpl implements FlpFactory.Interface {
                 // simply never applied, so keep these in sync.
                 type: "FmFile",
                 path: "/brand-assets/*",
-                permissions: [{ target: "team:content-team", level: "viewer" }]
+                permissions: [{ team: "content-team", level: "viewer" }]
+            },
+            {
+                // A single admin user, by ID. Works, but ties the rule to one environment — reach
+                // for a team unless you specifically mean one person.
+                type: "FmFile",
+                path: "/brand-assets/originals/*",
+                permissions: [{ user: "6835a2c2b4a1f30008f4d9e1", level: "owner" }]
             }
         ];
     }

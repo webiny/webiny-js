@@ -35,19 +35,25 @@ class TestFlpFactory implements FlpFactory.Interface {
                 type: FOLDER_TYPE,
                 // Exact match: this folder only, not its children.
                 path: "/folder-a",
-                permissions: [{ target: "team:editors", level: "editor" }]
+                permissions: [{ team: "editors", level: "editor" }]
             },
             {
                 type: FOLDER_TYPE,
                 // Subtree match: the folder itself plus everything below it.
                 path: "/folder-locked/*",
-                permissions: [{ target: "team:editors", level: "no-access" }]
+                permissions: [{ team: "editors", level: "no-access" }]
             },
             {
                 // Same path, different folder type — must not leak across types.
                 type: OTHER_FOLDER_TYPE,
                 path: "/folder-a",
-                permissions: [{ target: "team:editors", level: "no-access" }]
+                permissions: [{ team: "editors", level: "no-access" }]
+            },
+            {
+                // Targeted directly at identity B, bypassing teams entirely.
+                type: FOLDER_TYPE,
+                path: "/folder-by-user",
+                permissions: [{ user: "2", level: "viewer" }]
             }
         ];
     }
@@ -125,6 +131,23 @@ describe("Folder Level Permissions - code-defined FLPs", () => {
                     inheritedFrom: "team:editors",
                     plugin: null
                 }
+            ])
+        );
+    });
+
+    it("should support targeting a single user by id", async () => {
+        const folder = await createFolder({
+            title: "Folder By User",
+            slug: "folder-by-user",
+            type: FOLDER_TYPE
+        });
+
+        const { data } = await getFolder(acoIdentityB, folder.id);
+
+        // `{ user: "2" }` becomes the `admin:2` target, with no team involved.
+        expect(data.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "admin:2", level: "viewer", inheritedFrom: null, plugin: true }
             ])
         );
     });

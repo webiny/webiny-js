@@ -1,10 +1,28 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { FolderAccessLevel, FolderPermission } from "~/flp/flp.types.js";
 
-export interface CodeFolderPermission {
-    target: `admin:${string}` | `team:${string}`;
+interface CodeTeamPermission {
+    /** Slug of the team the permission is granted to. */
+    team: string;
+    user?: never;
     level: FolderAccessLevel;
 }
+
+interface CodeUserPermission {
+    /** ID of the admin user the permission is granted to. */
+    user: string;
+    team?: never;
+    level: FolderAccessLevel;
+}
+
+/**
+ * A permission grants a level to exactly one target: either a team or a single admin user. The
+ * `team:` / `admin:` target strings used internally are generated from these.
+ *
+ * Prefer `team` — team slugs are authored by hand and stable, while user IDs are generated at
+ * runtime and differ per environment.
+ */
+export type CodeFolderPermission = CodeTeamPermission | CodeUserPermission;
 
 export type CodeFlp = {
     /**
