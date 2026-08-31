@@ -22,8 +22,10 @@ class ApplyImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute(
         params: IApplyImageEnrichmentParams
     ): Promise<Result<IAppliedImageEnrichment, ImageEnrichmentError>> {
-        const tags = [...new Set([...params.existingTags, ...params.tags])];
-        const { description, fileId } = params;
+        // Enrichment REPLACES both fields. Tags used to be merged into the file's existing ones while
+        // the description was overwritten, which is an odd split: re-running would accumulate tags
+        // forever, so a wrong tag from an earlier run could never be dropped by re-running.
+        const { tags, description, fileId } = params;
 
         const updateResult = await this.updateFile.execute({
             id: fileId,

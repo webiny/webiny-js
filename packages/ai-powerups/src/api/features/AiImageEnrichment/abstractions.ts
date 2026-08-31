@@ -31,7 +31,6 @@ export interface IEnrichmentOutput {
  */
 export interface IPreparedImageEnrichment {
     fileId: string;
-    existingTags: string[];
     imageBase64: string;
     imageMediaType: string;
     model: string;
@@ -55,8 +54,6 @@ export namespace PrepareImageEnrichmentUseCase {
 
 export interface IApplyImageEnrichmentParams {
     fileId: string;
-    /** The file's tags before enrichment; AI tags are merged into these, never replacing them. */
-    existingTags: string[];
     tags: string[];
     description: string;
 }

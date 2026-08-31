@@ -41,7 +41,12 @@ export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() 
                 title={"Re-enrich with AI"}
                 description={vm.message}
             >
-                <div className={"flex flex-col gap-md"}>
+                {/*
+                 * `pb` because DialogBody only applies horizontal padding — vertical breathing
+                 * room at the bottom normally comes from DialogFooter, and this dialog has no
+                 * actions, so without it the description sits flush against the dialog edge.
+                 */}
+                <div className={"flex flex-col gap-md pb-md-extra"}>
                     <div>
                         <div className={"text-sm font-semibold mb-xs"}>{"Tags"}</div>
                         {vm.tags.length ? (
