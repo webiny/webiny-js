@@ -34,9 +34,26 @@ A feature declares its pieces and **which phase** each runs in; the framework ru
 
 So the two efforts are orthogonal: **Slice-1 fixes the trigger; `Module` defines the phase structure.**
 
+## Who executes the phases (resolved)
+
+**event-handler-core owns it** — it's the DI-native request kernel and already runs a per-request `resolveAll(X) → init()` loop. So the mechanism has precedent, not novelty:
+
+| Phase | Executed by | When |
+|---|---|---|
+| **register** | `registerApiRequestStack` (api-event-handler-core) calls each `Feature.register()` | eager, at child-container build — **today, unchanged** |
+| **setup / afterSetup** | `runModules(child, { context })` — mechanism in event-handler-core | once per request, **post-tenant**, before dispatch |
+
+- **Mechanism** in `event-handler-core` (`runModules`, transport/domain-agnostic — knows only `container`).
+- **Composition** in `api-event-handler-core` (`registerApiRequestStack` — the ordered module set).
+- **`ctx`** = `ModuleContext { container, ...context }`. The kernel only guarantees `container`; the api layer passes tenant / FeatureFlags / identity through `runModules`' `context` option, so core never imports api-core types. Runner wraps the whole pass in `withoutAuthorization` once.
+
+**Trigger placement — one kernel lifecycle step (preferred).** A fixed step in `HandlerApp.handle()` right after tenant is established and before the matched event dispatches. All 5 transport paths hit it for free → kills the double-fire and centralizes. Rejected alternative: hooking `RequestTenantLoader.establish()` — it fires at multiple sites and ~20 test harnesses set tenant via header/`setTenant` not `establish()`, so it would break them and flatten the per-path error mode (`continueOnError` vs fail-fast).
+
+**Precedent, now vacated.** The pre-auth `RequestInitializer` loop (child-build, pre-tenant) proved this exact shape — but it has zero implementations left (its only user, the WCP refresh, moved to a pre-register eager load), so it's being deleted. `Module` doesn't just replace `RequestContextInitializer`; it also absorbs that empty pre-tenant slot. One post-tenant `runModules` step is the whole per-request lifecycle.
+
 ## Open questions for Pavel
 
-1. **Phase contract** — names + how a feature declares which phase a piece belongs to. Is it methods on a `Module` (`register` / `setup` / `afterSetup`), or declarative entries?
+1. **Phase contract** — names + how a feature declares which phase a piece belongs to. Is it methods on a `Module` (`register` / `setup` / `afterSetup`), or declarative entries? *(Prototype: methods. `ModuleContext` is the phase argument; `runModules` runs the phase barrier — see #5613.)*
 2. **Relationship to `createFeature`** — is `Module` a superset of the current Feature, or a new abstraction Features opt into?
 3. **Scope** — does a Module piece also declare *where* (root / child / per-tenant) it registers, or only *when* (phase)?
 4. **Naming** — `RequestContextInitializer` → becomes the `setup` phase of a Module? (If so, the standalone rename to `TenantFeature` is moot — the phase name wins.)

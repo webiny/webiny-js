@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { Module } from "./Module.js";
+import { Module, type ModuleContext } from "./Module.js";
 
 export interface RunModulesOptions {
     /**
@@ -8,6 +8,12 @@ export interface RunModulesOptions {
      * background tasks — that register the full module set but don't need every one.)
      */
     continueOnError?: boolean;
+    /**
+     * Extra per-request state merged into the {@link ModuleContext} handed to each phase — the seam
+     * for the composition layer (api-event-handler-core) to pass the established tenant, the resolved
+     * FeatureFlags, the identity, etc., without event-handler-core depending on those api-core types.
+     */
+    context?: Record<string, unknown>;
 }
 
 /**
@@ -23,7 +29,7 @@ export const runModules = async (
     container: Container,
     options: RunModulesOptions = {}
 ): Promise<void> => {
-    const ctx: Record<string, any> = { container };
+    const ctx: ModuleContext = { container, ...options.context };
     const modules = container.resolveAll(Module);
 
     const runPhase = async (phase: "setup" | "afterSetup"): Promise<void> => {

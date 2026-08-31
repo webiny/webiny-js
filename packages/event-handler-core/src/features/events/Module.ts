@@ -1,4 +1,18 @@
-import { Abstraction } from "@webiny/di";
+import { Abstraction, type Container } from "@webiny/di";
+
+/**
+ * The per-request context handed to a module's phases. `container` (the child container) is always
+ * present. Everything else is supplied by the composition layer (api-event-handler-core) when it
+ * calls `runModules` — the established tenant, the resolved FeatureFlags, the identity, etc.
+ *
+ * It stays open here on purpose: event-handler-core is the transport/domain-agnostic request kernel
+ * and must not depend on api-core types (tenant, FeatureFlags, identity live there). The api layer
+ * narrows this shape for its own modules.
+ */
+export interface ModuleContext {
+    container: Container;
+    [key: string]: unknown;
+}
 
 /**
  * A per-request, POST-auth lifecycle unit with ORDERED PHASES. Prototype of the `Module` concept:
@@ -22,8 +36,8 @@ import { Abstraction } from "@webiny/di";
  * order within a phase.
  */
 export interface IModule {
-    setup?(ctx: Record<string, any>): void | Promise<void>;
-    afterSetup?(ctx: Record<string, any>): void | Promise<void>;
+    setup?(ctx: ModuleContext): void | Promise<void>;
+    afterSetup?(ctx: ModuleContext): void | Promise<void>;
 }
 
 export const Module = new Abstraction<IModule>("Module");

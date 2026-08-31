@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { Module } from "~/features/events/Module.js";
+import { Module, type ModuleContext } from "~/features/events/Module.js";
 import { runModules } from "~/features/events/runModules.js";
 
 describe("Module (phased per-request lifecycle)", () => {
@@ -44,7 +44,7 @@ describe("Module (phased per-request lifecycle)", () => {
         // Producer registers a value during setup (phase 2). Modules read the shared ctx.container.
         const Value = "__moduleTestValue__";
         class ProducerModule implements Module.Interface {
-            setup(ctx: Record<string, any>) {
+            setup(ctx: ModuleContext) {
                 (ctx.container as any)[Value] = "ready";
             }
         }
@@ -52,7 +52,7 @@ describe("Module (phased per-request lifecycle)", () => {
         // Consumer reads it during afterSetup (phase 3) — would be undefined if it ran in setup.
         let observed: string | undefined;
         class ConsumerModule implements Module.Interface {
-            afterSetup(ctx: Record<string, any>) {
+            afterSetup(ctx: ModuleContext) {
                 observed = (ctx.container as any)[Value];
             }
         }
@@ -93,5 +93,29 @@ describe("Module (phased per-request lifecycle)", () => {
 
         // Without continueOnError it propagates.
         await expect(runModules(container)).rejects.toThrow("boom");
+    });
+
+    it("merges options.context into the ctx handed to each phase (the api-layer seam)", async () => {
+        const container = new Container();
+        const seen: Record<string, unknown> = {};
+
+        class Reader implements Module.Interface {
+            setup(ctx: ModuleContext) {
+                seen.setupTenant = ctx.tenant;
+                // container is always present alongside the injected context
+                seen.hasContainer = ctx.container === container;
+            }
+            afterSetup(ctx: ModuleContext) {
+                seen.afterTenant = ctx.tenant;
+            }
+        }
+
+        container.register(
+            Module.createImplementation({ implementation: Reader, dependencies: [] })
+        );
+
+        await runModules(container, { context: { tenant: "acme", featureFlags: { any: true } } });
+
+        expect(seen).toEqual({ setupTenant: "acme", hasContainer: true, afterTenant: "acme" });
     });
 });
