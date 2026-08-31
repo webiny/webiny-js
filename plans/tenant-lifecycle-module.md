@@ -43,6 +43,71 @@ So the two efforts are orthogonal: **Slice-1 fixes the trigger; `Module` defines
 5. **Migration** — the 4 real `RequestContextInitializer` impls (AcoInitializer, WorkflowsInitializer, FileModelContextualSchema, SchedulerModelContextualSchema) + the `GraphQLContextualSchema` impls that fire on schema-build. Which move to `setup` vs `after-setup`?
 6. **`withoutAuthorization`** — hoist the wrapper to the phase runner (whole bootstrap runs unauthorized, features stop injecting `IdentityContext`)? Deferred from Slice-1; fits the `Module` runner naturally.
 
+## Examples: what a Module looks like (illustrative — not built)
+
+The unified shape — all three phases in one declaration; `register` is static (compose-time), `setup`/`afterSetup` are per-request and receive a `ctx` the kernel hands them:
+
+```ts
+export const CommentsModule = createModule({
+    name: "Comments",
+    register(container) {                 // phase 1 — immediate DI wiring (= today's Feature.register)
+        container.register(CommentsRepository);
+    },
+    async setup(ctx) {                    // phase 2 — per-request, tenant known (via ctx, no injection)
+        const model = await ctx.container.resolve(GetModelUseCase).execute(COMMENTS_MODEL_ID);
+        ctx.container.registerInstance(CommentsModel, model.value);
+    }
+    // no afterSetup — Comments doesn't depend on other modules' setup
+});
+```
+
+CMS schema — the archetype. **One module per package** (`HeadlessCmsModule`, `FileManagerModule`, …); the phase split is *within* a module (`setup` vs `afterSetup`), the barrier is *across* modules (every module's `setup` before any module's `afterSetup`). So the cooperation is between *different packages*, not a within-CMS split:
+
+```ts
+// Another package contributes its model in its own setup.
+export const FileManagerModule = createModule({
+    name: "FileManager",
+    async setup(ctx) {
+        ctx.container.registerInstance(CmsModels, await loadFileModel(ctx.container, ctx.tenant));
+    }
+});
+
+// HeadlessCms loads its own models in setup, and builds the schema from EVERYONE's models in
+// afterSetup — guaranteed to see FileManager's (and every other module's) models, because their
+// setup already ran.
+export const HeadlessCmsModule = createModule({
+    name: "HeadlessCms",
+    async setup(ctx) {
+        for (const m of await loadCmsModelsForTenant(ctx.container, ctx.tenant)) {
+            ctx.container.registerInstance(CmsModels, m);
+        }
+    },
+    async afterSetup(ctx) {
+        ctx.container.registerInstance(CmsSchema, buildGraphQLSchema(ctx.container.resolveAll(CmsModels)));
+    }
+});
+```
+
+The schema module's `afterSetup` is phase-3 precisely because it depends on *other* modules' `setup`. One module per package (`ApiCoreModule`, `HeadlessCmsModule`, `FileManagerModule`, …) — no registration-order comments, no `initialized` flags.
+
+api-core impact — `AcoInitializer` today injects `Container` + `IdentityContext` and hand-wraps `withoutAuthorization`; as a Module it reads `ctx.tenant` / `ctx.featureFlags`, injects nothing infra, and the phase runner runs the whole bootstrap unauthorized:
+
+```ts
+export const AcoModule = createModule({
+    name: "Aco",
+    register(container) { /* DI wiring */ },
+    async setup(ctx) {
+        const folderModel = await ctx.container.resolve(GetModelUseCase).execute(FOLDER_MODEL_ID);
+        ctx.container.registerInstance(FolderModelAbstraction, folderModel.value);
+        if (ctx.featureFlags.isEnabled("advancedAccessControlLayer.folderLevelPermissions")) {
+            CmsFlpFeature.register(ctx.container);
+        }
+    }
+});
+```
+
+**`ctx` is the infra→feature interface:** `{ container, tenant, featureFlags, ... }`, supplied by the kernel. Features stop reaching for `Container`/`TenantContext`/`IdentityContext` — they declare *what* runs in *which* phase; infra owns the lifecycle, api-core owns the domain work. (Layering split: mechanism-in-infra, tenant-resolution-in-app, tenant-handed-to-features-via-ctx.)
+
 ## What's happening now vs deferred
 
 - **Now (Slice-1):** fire-on-`establish()` + remove the `HttpRouter` decorator & the 4 manual calls (double-fire fix + centralization). Keeps the `RequestContextInitializer` name.
