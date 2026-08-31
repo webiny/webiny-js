@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { FileDetailsPresenter } from "~/presentation/FileDetails/abstractions.js";
 import {
     ReenrichFileGateway,
     ReenrichWithAiPresenter as PresenterAbstraction
@@ -32,7 +33,10 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
      */
     private controller: AbortController | null = null;
 
-    constructor(private gateway: IReenrichFileGateway) {
+    constructor(
+        private gateway: IReenrichFileGateway,
+        private fileDetails: FileDetailsPresenter.Interface
+    ) {
         // The second type parameter is what lets a PRIVATE field appear in the annotation map.
         makeAutoObservable<ReenrichWithAiPresenterImpl, "controller">(this, { controller: false });
     }
@@ -59,6 +63,12 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
                 if (event.type === "done") {
                     this.finish("done");
+                    // The open drawer's form was built when the drawer opened; nothing else refreshes
+                    // it, so hand it the persisted values.
+                    this.fileDetails.applyEnrichment({
+                        tags: event.tags,
+                        description: event.description
+                    });
                 }
 
                 if (event.type === "error") {
@@ -132,5 +142,5 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
 export const ReenrichWithAiPresenter = PresenterAbstraction.createImplementation({
     implementation: ReenrichWithAiPresenterImpl,
-    dependencies: [ReenrichFileGateway]
+    dependencies: [ReenrichFileGateway, FileDetailsPresenter]
 });

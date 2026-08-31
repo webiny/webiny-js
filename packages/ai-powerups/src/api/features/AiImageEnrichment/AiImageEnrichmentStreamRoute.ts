@@ -75,7 +75,6 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
 
         const appliedResult = await this.apply.execute({
             fileId: prepared.fileId,
-            existingTags: prepared.existingTags,
             ...output
         });
 

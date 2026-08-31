@@ -19,7 +19,6 @@ import {
 
 const prepared: IPreparedImageEnrichment = {
     fileId: "file-1",
-    existingTags: ["existing"],
     imageBase64: "aGVsbG8=",
     imageMediaType: "image/png",
     model: "anthropic/claude-sonnet-4-5",
@@ -69,13 +68,7 @@ describe("AiImageEnrichmentStreamRoute", () => {
     beforeEach(() => {
         prepare = { execute: vi.fn().mockResolvedValue(Result.ok(prepared)) };
         apply = {
-            execute: vi.fn().mockImplementation(async (params: any) =>
-                Result.ok({
-                    fileId: params.fileId,
-                    tags: [...new Set([...params.existingTags, ...params.tags])],
-                    description: params.description
-                })
-            )
+            execute: vi.fn().mockImplementation(async (params: any) => Result.ok({ ...params }))
         };
         ai = {
             streamText: vi.fn().mockResolvedValue({
@@ -127,17 +120,16 @@ describe("AiImageEnrichmentStreamRoute", () => {
         expect(events[4]).toEqual({
             type: "done",
             fileId: "file-1",
-            tags: ["existing", "cat", "sofa"],
+            tags: ["cat", "sofa"],
             description: "A cat on a sofa."
         });
     });
 
-    it("should persist the final output merged with the file's existing tags", async () => {
+    it("should persist the final output, replacing whatever the file had", async () => {
         await collectEvents(await invokeHttpRoute(route, request()));
 
         expect(apply.execute).toHaveBeenCalledWith({
             fileId: "file-1",
-            existingTags: ["existing"],
             tags: ["cat", "sofa"],
             description: "A cat on a sofa."
         });

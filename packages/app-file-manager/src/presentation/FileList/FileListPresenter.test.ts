@@ -212,7 +212,8 @@ function createMockFileDetailsPresenter(): IFileDetailsPresenter {
         },
         loadFile: vi.fn().mockResolvedValue(undefined),
         saveFile: vi.fn().mockResolvedValue(undefined),
-        setFile: vi.fn()
+        setFile: vi.fn(),
+        applyEnrichment: vi.fn()
     };
 }
 
