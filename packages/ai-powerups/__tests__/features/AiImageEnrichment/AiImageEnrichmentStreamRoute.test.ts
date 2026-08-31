@@ -130,6 +130,16 @@ describe("AiImageEnrichmentStreamRoute", () => {
         expect(apply.execute).not.toHaveBeenCalled();
     });
 
+    it("should drop empty tags, which mid-stream mean an entry not yet written into", async () => {
+        ai.streamText.mockResolvedValue({
+            partialOutputStream: partials([{ tags: ["webiny", ""] }, { tags: ["webiny", "aws"] }])
+        });
+
+        const events = await collectEvents(await invokeHttpRoute(route, request()));
+
+        expect(events[1]).toEqual({ type: "partial", tags: ["webiny"], description: "" });
+    });
+
     it("should tolerate holes in a partial tag array", async () => {
         ai.streamText.mockResolvedValue({
             partialOutputStream: partials([{ tags: ["cat", undefined] }, { tags: ["cat", "sofa"] }])
