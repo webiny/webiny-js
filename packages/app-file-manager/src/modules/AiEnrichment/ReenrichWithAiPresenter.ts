@@ -90,7 +90,17 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
             return;
         }
 
-        this.fileDetails.applyEnrichment({ tags: this.tags, description: this.description });
+        // Through the form's own `setData` rather than a method on FileDetailsPresenter: the drawer
+        // has no business knowing that AI enrichment exists, and every future feature that fills in
+        // fields would otherwise add one more method to it.
+        //
+        // `dirty: true` skips the baseline snapshot, so the form stays dirty and Update has something
+        // to save. setData merges — it only touches the keys passed — so Name and Access Control keep
+        // whatever the user has typed.
+        this.fileDetails.vm.form.setData(
+            { tags: this.tags, description: this.description },
+            { dirty: true }
+        );
         this.setOpen(false);
 
         // The dialog is gone the moment it is accepted, so the reminder has to outlive it. `notify`
