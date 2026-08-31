@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { FileDetailsPresenter } from "~/presentation/FileDetails/abstractions.js";
 import {
     ReenrichFileGateway,
@@ -20,26 +19,6 @@ const STATUS_LABEL: Record<Status, string> = {
     error: "Failed."
 };
 
-interface IEnrichmentValues {
-    tags: string[];
-    description: string;
-}
-
-/**
- * Reads the values the form is showing right now, to roll back to if a background save fails.
- * `getData()` is untyped, so each field is narrowed rather than cast.
- */
-function readFormValues(data: Record<string, unknown>): IEnrichmentValues {
-    const tags = Array.isArray(data.tags)
-        ? data.tags.filter((tag: unknown): tag is string => typeof tag === "string")
-        : [];
-
-    return {
-        tags,
-        description: typeof data.description === "string" ? data.description : ""
-    };
-}
-
 class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
     private open = false;
     private status: Status = "idle";
@@ -56,8 +35,7 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
     constructor(
         private gateway: IReenrichFileGateway,
-        private fileDetails: FileDetailsPresenter.Interface,
-        private notifications: Notifications.Interface
+        private fileDetails: FileDetailsPresenter.Interface
     ) {
         // The second type parameter is what lets a PRIVATE field appear in the annotation map.
         makeAutoObservable<ReenrichWithAiPresenterImpl, "controller">(this, { controller: false });
@@ -102,41 +80,13 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
         }
     }
 
-    async save() {
+    accept() {
         if (this.status !== "ready") {
             return;
         }
 
-        const previous = readFormValues(this.fileDetails.vm.form.getData());
-        const accepted = { tags: this.tags, description: this.description };
-
-        // Optimistic: show the values and get out of the way. The user carries on while the write
-        // runs. Straight into the drawer's own form and save path, so enrichment persists exactly the
-        // way a manual edit does — one write path, one set of permissions and validation.
-        this.fileDetails.applyEnrichment(accepted);
+        this.fileDetails.applyEnrichment({ tags: this.tags, description: this.description });
         this.setOpen(false);
-
-        if (await this.persist()) {
-            return;
-        }
-
-        // Failed, so put back what was on screen before rather than leaving the user believing a
-        // change was saved. The dialog is gone by now, hence a notification.
-        this.fileDetails.applyEnrichment(previous);
-        this.notifications.warning({
-            title: "Enrichment not saved",
-            description:
-                "The AI suggestion could not be saved, so the previous values were restored."
-        });
-    }
-
-    /** False on a rejected save AND on a thrown one — the caller rolls back either way. */
-    private async persist(): Promise<boolean> {
-        try {
-            return await this.fileDetails.saveFile({ showLoader: false });
-        } catch {
-            return false;
-        }
     }
 
     setOpen(open: boolean) {
@@ -197,5 +147,5 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
 export const ReenrichWithAiPresenter = PresenterAbstraction.createImplementation({
     implementation: ReenrichWithAiPresenterImpl,
-    dependencies: [ReenrichFileGateway, FileDetailsPresenter, Notifications]
+    dependencies: [ReenrichFileGateway, FileDetailsPresenter]
 });

@@ -12,8 +12,8 @@ const { FileDetails } = FileManagerViewConfig;
  * Test-bed for HTTP response streaming: re-runs AI enrichment for the open file and renders the
  * model's output as it arrives, rather than waiting for the whole response.
  *
- * The stream only PROPOSES: nothing is written until the user presses Save, which puts the values
- * into the file details form and saves it through the file's normal update path.
+ * The stream only PROPOSES. Save drops the values into the file details form as pending edits; the
+ * file is written when the user presses Update in the drawer, exactly as for a hand-typed edit.
  */
 export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() {
     const { file } = useFile();
@@ -44,7 +44,7 @@ export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() 
                         <Dialog.CancelAction />
                         <Dialog.ConfirmAction
                             text={"Save"}
-                            onClick={() => presenter.save()}
+                            onClick={() => presenter.accept()}
                             disabled={!vm.canSave}
                         />
                     </>
