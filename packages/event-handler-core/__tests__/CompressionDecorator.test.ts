@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import zlib from "node:zlib";
 import { Container } from "@webiny/di";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
@@ -25,6 +26,9 @@ const routerForRoute = (handle: IHttpRoute["handle"]) => {
     const container = new Container();
     const route: IHttpRoute = { method: "GET", path: "/test", handle };
     container.registerInstance(HttpRoute, route);
+    // HttpRouter resolves routes inside route() rather than taking them as a constructor dependency,
+    // so it needs the container that holds them.
+    container.registerInstance(RequestContainer, container);
     container.register(HttpRouterImpl).inSingletonScope();
     container.registerDecorator(CompressionDecorator);
     return container.resolve(HttpRouter);

@@ -19,13 +19,13 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/feature": "0.0.0",
-    "ai": "^7.0.58"
+    "ai": "^7.0.73"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

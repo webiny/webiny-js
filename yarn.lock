@@ -56,19 +56,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/gateway@npm:4.0.64":
-  version: 4.0.64
-  resolution: "@ai-sdk/gateway@npm:4.0.64"
-  dependencies:
-    "@ai-sdk/provider": "npm:4.0.8"
-    "@ai-sdk/provider-utils": "npm:5.0.30"
-    "@vercel/oidc": "npm:3.2.0"
-  peerDependencies:
-    zod: ^3.25.76 || ^4.1.8
-  checksum: 10/1af6a17fc7c1a150033e0b051317cd50b4d3a15c1f35ea6252ff0efaca06e2264b9e24be7ae419d8991b50c2e8d70b36d393a4569773b4fe42acf91b77d709d6
-  languageName: node
-  linkType: hard
-
 "@ai-sdk/openai@npm:^4.0.45":
   version: 4.0.45
   resolution: "@ai-sdk/openai@npm:4.0.45"
@@ -96,36 +83,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ai-sdk/provider-utils@npm:5.0.30":
-  version: 5.0.30
-  resolution: "@ai-sdk/provider-utils@npm:5.0.30"
-  dependencies:
-    "@ai-sdk/provider": "npm:4.0.8"
-    "@standard-schema/spec": "npm:^1.1.0"
-    "@workflow/serde": "npm:4.1.0"
-    eventsource-parser: "npm:^3.0.8"
-    undici: "npm:^7.28.0"
-  peerDependencies:
-    zod: ^3.25.76 || ^4.1.8
-  checksum: 10/02fda2edf0e482a1e5c923d9545911cf7ae9b29516d23eeb1ca8a7cb32c8f11f924f25dd1a0dc8c8e2f09ca58527d73eab3dcadc03141a6017ed0f81196e1909
-  languageName: node
-  linkType: hard
-
 "@ai-sdk/provider@npm:4.0.7":
   version: 4.0.7
   resolution: "@ai-sdk/provider@npm:4.0.7"
   dependencies:
     json-schema: "npm:^0.4.0"
   checksum: 10/9c813a89084b66881296d551b8e567f6ba63a625288c2cc7135b0ad58a0beb76f09b95d922f7d6ceb50a70667487138dd0f86c75246cd97effd367bf56a05644
-  languageName: node
-  linkType: hard
-
-"@ai-sdk/provider@npm:4.0.8":
-  version: 4.0.8
-  resolution: "@ai-sdk/provider@npm:4.0.8"
-  dependencies:
-    json-schema: "npm:^0.4.0"
-  checksum: 10/52a9b7c8a1910e5a8e47febdb6aa3cbce0bb66f385b4b4f296a393380af1dbe31a9e7b0b1e35b2e44f58463ad36fc18eca5773abbbf8e6da101f1ae9d88fc069
   languageName: node
   linkType: hard
 
@@ -10270,9 +10233,9 @@ __metadata:
     "@webiny/di": "npm:^1.0.2"
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
-    ai: "npm:^7.0.58"
+    ai: "npm:^7.0.73"
     typescript: "npm:^7.0.2"
-    vitest: "npm:^4.1.10"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 
@@ -10284,9 +10247,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
     "@webiny/feature": "npm:0.0.0"
-    ai: "npm:^7.0.58"
+    ai: "npm:^7.0.73"
     typescript: "npm:^7.0.2"
-    vitest: "npm:^4.1.10"
+    vitest: "npm:^4.1.11"
   languageName: unknown
   linkType: soft
 
@@ -13987,19 +13950,6 @@ __metadata:
   version: 7.1.4
   resolution: "agent-base@npm:7.1.4"
   checksum: 10/79bef167247789f955aaba113bae74bf64aa1e1acca4b1d6bb444bdf91d82c3e07e9451ef6a6e2e35e8f71a6f97ce33e3d855a5328eb9fad1bc3cc4cfd031ed8
-  languageName: node
-  linkType: hard
-
-"ai@npm:^7.0.58":
-  version: 7.0.79
-  resolution: "ai@npm:7.0.79"
-  dependencies:
-    "@ai-sdk/gateway": "npm:4.0.64"
-    "@ai-sdk/provider": "npm:4.0.8"
-    "@ai-sdk/provider-utils": "npm:5.0.30"
-  peerDependencies:
-    zod: ^3.25.76 || ^4.1.8
-  checksum: 10/2feec57d762a6a878429cbc087dc5dd30e55fd04b97d2dd344fc4f1101c6c501f34d7033a0d83145a4b4d99247a7170370300d0558df6aaa1c1b790359d931f3
   languageName: node
   linkType: hard
 
@@ -27531,7 +27481,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^4.1.10, vitest@npm:^4.1.11":
+"vitest@npm:^4.1.11":
   version: 4.1.11
   resolution: "vitest@npm:4.1.11"
   dependencies:
