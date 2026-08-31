@@ -1,7 +1,6 @@
 import { Container } from "@webiny/di";
 import { ChildContainerFactory, HandlerConfig } from "./abstractions.js";
 import { RequestContainer } from "./RequestContainer.js";
-import { RequestInitializer } from "./RequestInitializer.js";
 import { noopTransport } from "./Transport.js";
 
 class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
@@ -18,12 +17,6 @@ class ChildContainerFactoryImpl implements ChildContainerFactory.Interface {
 
         if (this.config.child) {
             await this.config.child(child);
-        }
-
-        // Per-request async initialization (tenant-agnostic), before the event is dispatched and
-        // before auth/tenant are established. For tenant-dependent setup use lazy DI factories.
-        for (const initializer of child.resolveAll(RequestInitializer)) {
-            await initializer.init();
         }
 
         return child;
