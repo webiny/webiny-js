@@ -70,10 +70,10 @@ export interface IReenrichWithAiPresenter {
     readonly vm: IReenrichWithAiViewModel;
     start(fileId: string): Promise<void>;
     /**
-     * Accept the proposal. Applies the values and closes immediately; the save runs in the
-     * background and is rolled back if it fails.
+     * Accept the proposal: drop the values into the file details form and close. Nothing is written
+     * — the user saves the file with Update, the same as for a hand-typed edit.
      */
-    save(): Promise<void>;
+    accept(): void;
     setOpen(open: boolean): void;
     dispose(): void;
 }

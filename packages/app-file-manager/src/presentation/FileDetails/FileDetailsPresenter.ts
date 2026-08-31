@@ -86,19 +86,15 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
 
     applyEnrichment(enrichment: { tags: string[]; description: string }): void {
         runInAction(() => {
-            if (this.file) {
-                this.file = { ...this.file, ...enrichment };
-            }
-
-            // Silent: the caller submits the form itself right after, so marking it dirty would only
-            // leave the drawer asking to save what was just saved. `setValueSilent` still updates the
-            // value `getData()` returns, so the submit carries these through.
-            this.form.field("description").setValueSilent(enrichment.description);
-            this.form.field("tags").setValueSilent(enrichment.tags);
+            // Deliberately NOT silent, and `this.file` is left alone: nothing is persisted at this
+            // point. These are pending edits like any the user could type, so the form has to go
+            // dirty and Update has to be the thing that writes them.
+            this.form.field("description").setValue(enrichment.description);
+            this.form.field("tags").setValue(enrichment.tags);
         });
     }
 
-    async saveFile(options?: { showLoader?: boolean }): Promise<boolean> {
+    async saveFile(): Promise<boolean> {
         if (!this.file) {
             return false;
         }
@@ -108,14 +104,8 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
             return false;
         }
 
-        // A background save passes `showLoader: false`: the caller has already put the new values on
-        // screen and does not want the drawer blocked behind an overlay while the request runs.
-        const showLoader = options?.showLoader ?? true;
-
         runInAction(() => {
-            if (showLoader) {
-                this.loading = "Saving changes...";
-            }
+            this.loading = "Saving changes...";
         });
 
         try {
@@ -133,9 +123,7 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
             return true;
         } finally {
             runInAction(() => {
-                if (showLoader) {
-                    this.loading = null;
-                }
+                this.loading = null;
             });
         }
     }

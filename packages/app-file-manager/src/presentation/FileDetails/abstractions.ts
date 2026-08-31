@@ -24,17 +24,14 @@ export interface IFileDetailsViewModel {
 export interface IFileDetailsPresenter {
     vm: IFileDetailsViewModel;
     loadFile(id: string): Promise<void>;
-    /**
-     * Persists the form. `showLoader: false` skips the blocking overlay, for a caller that has
-     * already applied the values optimistically and reverts them itself if this returns false.
-     */
-    saveFile(options?: { showLoader?: boolean }): Promise<boolean>;
+    saveFile(): Promise<boolean>;
     /** Replace the currently displayed file (e.g. after an out-of-band update). */
     setFile(file: FmFile): void;
     /**
-     * Put accepted enrichment values into the open form, so they save through the normal path and
-     * the visible fields match. Needed because the form is built once in `loadFile` — patching the
-     * files LIST cache, which is all the websocket handler does, never reaches an open drawer.
+     * Put accepted enrichment values into the open form as PENDING edits — dirty, unsaved, written
+     * only when the user presses Update. Needed because the form is built once in `loadFile`, so
+     * patching the files LIST cache, which is all the websocket handler does, never reaches an open
+     * drawer.
      */
     applyEnrichment(enrichment: { tags: string[]; description: string }): void;
 }
