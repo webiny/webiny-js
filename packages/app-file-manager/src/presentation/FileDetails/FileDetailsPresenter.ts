@@ -98,7 +98,7 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
         });
     }
 
-    async saveFile(): Promise<boolean> {
+    async saveFile(options?: { showLoader?: boolean }): Promise<boolean> {
         if (!this.file) {
             return false;
         }
@@ -108,8 +108,14 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
             return false;
         }
 
+        // A background save passes `showLoader: false`: the caller has already put the new values on
+        // screen and does not want the drawer blocked behind an overlay while the request runs.
+        const showLoader = options?.showLoader ?? true;
+
         runInAction(() => {
-            this.loading = "Saving changes...";
+            if (showLoader) {
+                this.loading = "Saving changes...";
+            }
         });
 
         try {
@@ -127,7 +133,9 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
             return true;
         } finally {
             runInAction(() => {
-                this.loading = null;
+                if (showLoader) {
+                    this.loading = null;
+                }
             });
         }
     }

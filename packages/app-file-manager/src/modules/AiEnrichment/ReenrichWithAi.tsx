@@ -43,7 +43,7 @@ export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() 
                     <>
                         <Dialog.CancelAction />
                         <Dialog.ConfirmAction
-                            text={vm.saving ? "Saving…" : "Save"}
+                            text={"Save"}
                             onClick={() => presenter.save()}
                             disabled={!vm.canSave}
                         />
