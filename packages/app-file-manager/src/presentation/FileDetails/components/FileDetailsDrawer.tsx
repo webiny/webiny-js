@@ -92,6 +92,10 @@ export const FileDetailsDrawer = observer(function FileDetailsDrawer() {
                         {fileDetails.vm.permissions.canEdit && (
                             <Drawer.ConfirmButton
                                 text={"Update"}
+                                // Enabled only when there is something to save, so the button itself
+                                // shows whether the drawer holds unsaved changes. Nothing else on
+                                // screen does — which is why an applied AI suggestion looked saved.
+                                disabled={!fileDetails.vm.form.isDirty}
                                 onClick={async () => {
                                     const saved = await fileDetails.saveFile();
                                     if (saved) {

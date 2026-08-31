@@ -33,8 +33,21 @@ function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
 
     const data: Record<string, unknown> = {};
 
+    // `field(name)` has to return something usable: loadFile disables fields for a read-only user,
+    // and applyEnrichment sets values through it.
+    const fields: Record<string, unknown> = {};
+
     return {
-        field: vi.fn() as any,
+        field: vi.fn((name: string) => {
+            fields[name] = fields[name] ?? {
+                setValue: vi.fn((value: unknown) => {
+                    data[name] = value;
+                }),
+                setValueSilent: vi.fn(),
+                setDisabled: vi.fn()
+            };
+            return fields[name];
+        }) as any,
         fields: vi.fn() as any,
         layout: vi.fn() as any,
         getData: vi.fn(() => ({ ...data })),
@@ -239,6 +252,26 @@ describe("FileDetailsPresenter", () => {
         await presenter.loadFile("file-1");
 
         expect(presenter.vm.form.isDirty).toBe(false);
+    });
+
+    // Enrichment must leave the form dirty — the drawer's Update button is bound to that, so a
+    // silent apply would look like an already-saved change.
+    it("should set the enrichment values on the form via setValue", async () => {
+        await presenter.loadFile("file-1");
+
+        const mockForm = (mocks.formModelFactory.create as ReturnType<typeof vi.fn>).mock.results[1]
+            .value as IFormModel;
+
+        presenter.applyEnrichment({ tags: ["cat", "sofa"], description: "A cat on a sofa." });
+
+        // setValue, not setValueSilent: the values are unsaved, and the drawer's Update button is
+        // bound to isDirty.
+        expect(mockForm.field("description").setValue).toHaveBeenCalledWith("A cat on a sofa.");
+        expect(mockForm.field("tags").setValue).toHaveBeenCalledWith(["cat", "sofa"]);
+        expect(mockForm.getData()).toMatchObject({
+            description: "A cat on a sofa.",
+            tags: ["cat", "sofa"]
+        });
     });
 
     // -----------------------------------------------------------------------
