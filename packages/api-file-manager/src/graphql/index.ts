@@ -27,6 +27,9 @@ export const createGraphQLSchemaPlugin = () => {
 
             await context.security.withoutAuthorization(async () => {
                 const modelsResult = await listModels.execute();
+                if (modelsResult.isFail()) {
+                    throw modelsResult.error;
+                }
                 const models = modelsResult.value;
 
                 /**
