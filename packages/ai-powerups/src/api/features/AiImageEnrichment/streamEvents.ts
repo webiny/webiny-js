@@ -24,7 +24,10 @@ export interface EnrichmentStreamPartialEvent {
 export interface EnrichmentStreamDoneEvent {
     type: "done";
     fileId: string;
-    /** The persisted tags — AI tags merged with the file's existing ones. */
+    /**
+     * The model's final output. NOT persisted — the streaming route only proposes, and the client
+     * saves through the file's normal update path if the user accepts.
+     */
     tags: string[];
     description: string;
 }

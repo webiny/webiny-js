@@ -12,9 +12,8 @@ const { FileDetails } = FileManagerViewConfig;
  * Test-bed for HTTP response streaming: re-runs AI enrichment for the open file and renders the
  * model's output as it arrives, rather than waiting for the whole response.
  *
- * The list cache and the success toast are NOT handled here — the api side also pushes the
- * `fm.file.enrichment` websocket message on completion, which `AiImageEnrichmentEventHandler`
- * already reacts to. This component only shows the live progress.
+ * The stream only PROPOSES: nothing is written until the user presses Save, which puts the values
+ * into the file details form and saves it through the file's normal update path.
  */
 export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() {
     const { file } = useFile();
@@ -40,13 +39,18 @@ export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() 
                 onOpenChange={open => presenter.setOpen(open)}
                 title={"Re-enrich with AI"}
                 description={vm.message}
+                actions={
+                    <>
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction
+                            text={vm.saving ? "Saving…" : "Save"}
+                            onClick={() => presenter.save()}
+                            disabled={!vm.canSave}
+                        />
+                    </>
+                }
             >
-                {/*
-                 * `pb` because DialogBody only applies horizontal padding — vertical breathing
-                 * room at the bottom normally comes from DialogFooter, and this dialog has no
-                 * actions, so without it the description sits flush against the dialog edge.
-                 */}
-                <div className={"flex flex-col gap-md pb-md-extra"}>
+                <div className={"flex flex-col gap-md"}>
                     <div>
                         <div className={"text-sm font-semibold mb-xs"}>{"Tags"}</div>
                         {vm.tags.length ? (

@@ -13,8 +13,7 @@ import type { IPreparedImageEnrichment } from "~/api/features/AiImageEnrichment/
 import {
     EnrichmentFileNotFoundError,
     EnrichmentNoProviderError,
-    EnrichmentNotAnImageError,
-    EnrichmentPersistError
+    EnrichmentNotAnImageError
 } from "~/api/features/AiImageEnrichment/errors.js";
 
 const prepared: IPreparedImageEnrichment = {
@@ -125,14 +124,10 @@ describe("AiImageEnrichmentStreamRoute", () => {
         });
     });
 
-    it("should persist the final output, replacing whatever the file had", async () => {
+    it("should NOT persist anything — the route only proposes", async () => {
         await collectEvents(await invokeHttpRoute(route, request()));
 
-        expect(apply.execute).toHaveBeenCalledWith({
-            fileId: "file-1",
-            tags: ["cat", "sofa"],
-            description: "A cat on a sofa."
-        });
+        expect(apply.execute).not.toHaveBeenCalled();
     });
 
     it("should tolerate holes in a partial tag array", async () => {
@@ -203,17 +198,6 @@ describe("AiImageEnrichmentStreamRoute", () => {
                 message: "AI enrichment failed: rate limited"
             });
             expect(apply.execute).not.toHaveBeenCalled();
-        });
-
-        it("should emit an error event when persisting fails", async () => {
-            apply.execute.mockResolvedValue(Result.fail(new EnrichmentPersistError("no access")));
-
-            const events = await collectEvents(await invokeHttpRoute(route, request()));
-
-            expect(events[events.length - 1]).toEqual({
-                type: "error",
-                message: "Failed to update file: no access"
-            });
         });
 
         it("should emit no done event after an error", async () => {
