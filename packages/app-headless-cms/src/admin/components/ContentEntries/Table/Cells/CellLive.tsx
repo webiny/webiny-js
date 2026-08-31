@@ -23,7 +23,7 @@ export const CellLive = () => {
                 content={`Live (v${entry.live.version})`}
             />
             {entry.lastPublishedOn ? (
-                <Text size={"xs"} className={"text-neutral-strong"}>
+                <Text size={"sm"} className={"text-neutral-strong"}>
                     <TimeAgo datetime={entry.lastPublishedOn} />
                 </Text>
             ) : null}
