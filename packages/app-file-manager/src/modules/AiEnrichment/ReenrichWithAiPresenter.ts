@@ -129,26 +129,16 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
     /**
      * Merges one streamed value into the displayed proposal.
      *
-     * Tags are kept in the order they were FIRST seen rather than the order the latest value happens
-     * to list them in. The model does not stream the array as a growing prefix — it revises it, so
-     * successive values can list the same tags in a different order, which makes chips visibly
-     * reshuffle under the pointer mid-stream. Insertion order is stable, so a tag only ever appears
-     * and never jumps.
+     * The model streams the tag array CHARACTER by character, so the last entry of a partial value is
+     * usually a half-written word — "webiny" arrives as "web", "webi", "webiny". While the stream is
+     * running that trailing entry is dropped, so a chip appears only once its text is settled; the
+     * `done` value is complete and used whole.
      *
-     * `final` reconciles: anything the model dropped along the way goes, so what gets saved is the
-     * model's actual answer and not the union of every guess it made on the way there.
+     * Do NOT accumulate across partials instead of replacing. Every prefix differs from the last, so
+     * "keep everything seen" turns one tag into a chip per keystroke.
      */
-    private applyOutput(tags: string[], description: string, final = false) {
-        for (const tag of tags) {
-            if (!this.tags.includes(tag)) {
-                this.tags.push(tag);
-            }
-        }
-
-        if (final) {
-            this.tags = this.tags.filter(tag => tags.includes(tag));
-        }
-
+    private applyOutput(tags: string[], description: string, final: boolean) {
+        this.tags = final ? tags : tags.slice(0, -1);
         this.description = description;
     }
 
