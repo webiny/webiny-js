@@ -47,7 +47,8 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
             message: this.error ?? STATUS_LABEL[this.status],
             tags: this.tags,
             description: this.description,
-            canSave: this.status === "ready"
+            canSave: this.status === "ready",
+            loading: this.status === "running"
         };
     }
 
