@@ -24,7 +24,11 @@ export interface IFileDetailsViewModel {
 export interface IFileDetailsPresenter {
     vm: IFileDetailsViewModel;
     loadFile(id: string): Promise<void>;
-    saveFile(): Promise<boolean>;
+    /**
+     * Persists the form. `showLoader: false` skips the blocking overlay, for a caller that has
+     * already applied the values optimistically and reverts them itself if this returns false.
+     */
+    saveFile(options?: { showLoader?: boolean }): Promise<boolean>;
     /** Replace the currently displayed file (e.g. after an out-of-band update). */
     setFile(file: FmFile): void;
     /**
