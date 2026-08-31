@@ -84,16 +84,6 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
         });
     }
 
-    applyEnrichment(enrichment: { tags: string[]; description: string }): void {
-        runInAction(() => {
-            // Deliberately NOT silent, and `this.file` is left alone: nothing is persisted at this
-            // point. These are pending edits like any the user could type, so the form has to go
-            // dirty and Update has to be the thing that writes them.
-            this.form.field("description").setValue(enrichment.description);
-            this.form.field("tags").setValue(enrichment.tags);
-        });
-    }
-
     async saveFile(): Promise<boolean> {
         if (!this.file) {
             return false;

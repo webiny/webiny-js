@@ -18,6 +18,10 @@ import type { FmFile } from "../../features/shared/types.js";
 // ---------------------------------------------------------------------------
 
 function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
+    const data: Record<string, unknown> = {};
+
+    // The view model reads and writes the SAME data as the model. Callers reach the form through
+    // `vm.form`, so a vm whose getData/setData were inert stubs could not exercise them at all.
     const vm: IFormVM = {
         layout: [],
         errors: [],
@@ -26,15 +30,14 @@ function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
         isValid: true,
         submitCount: 0,
         focusField: vi.fn(),
-        getData: vi.fn(() => ({})),
-        setData: vi.fn(),
+        getData: vi.fn(() => ({ ...data })),
+        setData: vi.fn((incoming: Record<string, unknown>) => {
+            Object.assign(data, incoming);
+        }),
         ...overrides
     };
 
-    const data: Record<string, unknown> = {};
-
-    // `field(name)` has to return something usable: loadFile disables fields for a read-only user,
-    // and applyEnrichment sets values through it.
+    // `field(name)` has to return something usable: loadFile disables fields for a read-only user.
     const fields: Record<string, unknown> = {};
 
     return {
@@ -254,21 +257,17 @@ describe("FileDetailsPresenter", () => {
         expect(presenter.vm.form.isDirty).toBe(false);
     });
 
-    // Enrichment must leave the form dirty — the drawer's Update button is bound to that, so a
-    // silent apply would look like an already-saved change.
-    it("should set the enrichment values on the form via setValue", async () => {
+    // Features fill fields in through `vm.form.setData` rather than a method on this presenter, so
+    // the form has to be reachable and writable from the view model.
+    it("should expose a writable form on the view model", async () => {
         await presenter.loadFile("file-1");
 
-        const mockForm = (mocks.formModelFactory.create as ReturnType<typeof vi.fn>).mock.results[1]
-            .value as IFormModel;
+        presenter.vm.form.setData(
+            { tags: ["cat", "sofa"], description: "A cat on a sofa." },
+            { dirty: true }
+        );
 
-        presenter.applyEnrichment({ tags: ["cat", "sofa"], description: "A cat on a sofa." });
-
-        // setValue, not setValueSilent: the values are unsaved, and the drawer's Update button is
-        // bound to isDirty.
-        expect(mockForm.field("description").setValue).toHaveBeenCalledWith("A cat on a sofa.");
-        expect(mockForm.field("tags").setValue).toHaveBeenCalledWith(["cat", "sofa"]);
-        expect(mockForm.getData()).toMatchObject({
+        expect(presenter.vm.form.getData()).toMatchObject({
             description: "A cat on a sofa.",
             tags: ["cat", "sofa"]
         });

@@ -27,13 +27,6 @@ export interface IFileDetailsPresenter {
     saveFile(): Promise<boolean>;
     /** Replace the currently displayed file (e.g. after an out-of-band update). */
     setFile(file: FmFile): void;
-    /**
-     * Put accepted enrichment values into the open form as PENDING edits — dirty, unsaved, written
-     * only when the user presses Update. Needed because the form is built once in `loadFile`, so
-     * patching the files LIST cache, which is all the websocket handler does, never reaches an open
-     * drawer.
-     */
-    applyEnrichment(enrichment: { tags: string[]; description: string }): void;
 }
 
 export const FileDetailsPresenter =
