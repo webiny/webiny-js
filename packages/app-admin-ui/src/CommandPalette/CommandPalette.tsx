@@ -116,14 +116,39 @@ const CommandPaletteBase = () => {
         [presenter, enterAiMode]
     );
 
-    // mod+k toggles; backspace backs out of a detail view; command shortcuts run directly.
+    /*
+     * mod+k cycles closed -> commands -> AI -> closed, so the same key that opens the palette also
+     * reaches the assistant without the user having to know about the space shortcut. Closing from AI
+     * mode keeps mod+k a way OUT of the palette, which is what it does everywhere else.
+     * Backspace backs out of a detail view; command shortcuts run directly.
+     */
     const keys = useMemo(
         () => ({
             "mod+k": (e: KeyboardEvent) => {
                 e.preventDefault();
-                presenter.toggle();
-                setQuery("");
-                setAiMode(false);
+
+                if (!vm.isOpen) {
+                    presenter.open();
+                    setQuery("");
+                    setAiMode(false);
+                    return;
+                }
+
+                /*
+                 * A detail view renders in place of the command list, so switching to AI mode from
+                 * there would put the user in a mode they cannot see. Back out to the list instead.
+                 */
+                if (vm.activeCommand) {
+                    presenter.cancelCommand();
+                    return;
+                }
+
+                if (!aiMode) {
+                    enterAiMode();
+                    return;
+                }
+
+                close();
             },
             backspace: (e: KeyboardEvent) => {
                 if (e.target instanceof HTMLInputElement) {
@@ -134,7 +159,7 @@ const CommandPaletteBase = () => {
             },
             ...presenter.shortcutKeys
         }),
-        [presenter, presenter.shortcutKeys]
+        [presenter, presenter.shortcutKeys, vm.isOpen, vm.activeCommand, aiMode, enterAiMode, close]
     );
 
     useHotkeys({ zIndex: PALETTE_HOTKEY_ZINDEX, keys });
