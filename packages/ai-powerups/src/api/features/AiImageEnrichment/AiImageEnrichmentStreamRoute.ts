@@ -1,14 +1,15 @@
 import { HttpRoute, toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
+import { PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import type { IPreparedImageEnrichment } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { readEnrichmentPartial } from "./readEnrichmentPartial.js";
 import { imageEnrichmentErrorStatusCode } from "./imageEnrichmentErrorStatusCode.js";
 
 /**
- * Re-runs AI enrichment for a single file, streaming progress to the caller as server-sent events.
+ * Re-runs AI enrichment for a single file, streaming the model's output to the caller as
+ * server-sent events. Read-only: the result is a proposal the caller can accept or discard.
  *
  * Preparation (file lookup, image read, provider resolution) happens BEFORE the response opens, so
  * anything knowable up front — missing file, wrong type, no provider — comes back as a real status
@@ -21,7 +22,6 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
 
     constructor(
         private prepare: PrepareImageEnrichmentUseCase.Interface,
-        private apply: ApplyImageEnrichmentUseCase.Interface,
         private ai: Ai.Interface
     ) {}
 
@@ -73,27 +73,19 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
             return;
         }
 
-        const appliedResult = await this.apply.execute({
-            fileId: prepared.fileId,
-            ...output
-        });
-
-        if (appliedResult.isFail()) {
-            yield toSseFrame({ type: "error", message: appliedResult.error.message });
-            return;
-        }
-
-        const applied = appliedResult.value;
+        // Nothing is persisted here. The route PROPOSES; the user accepts in the UI, and the save
+        // goes through the file's normal update path. The upload-time task still applies
+        // automatically — there is nobody to ask at that point.
         yield toSseFrame({
             type: "done",
-            fileId: applied.fileId,
-            tags: applied.tags,
-            description: applied.description
+            fileId: prepared.fileId,
+            tags: output.tags,
+            description: output.description
         });
     }
 }
 
 export const AiImageEnrichmentStreamRoute = HttpRoute.createImplementation({
     implementation: AiImageEnrichmentStreamRouteImpl,
-    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
+    dependencies: [PrepareImageEnrichmentUseCase, Ai]
 });

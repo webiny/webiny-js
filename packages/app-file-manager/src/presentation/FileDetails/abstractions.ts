@@ -28,9 +28,9 @@ export interface IFileDetailsPresenter {
     /** Replace the currently displayed file (e.g. after an out-of-band update). */
     setFile(file: FmFile): void;
     /**
-     * Push server-side enrichment results into the open form. The websocket handler patches the
-     * files LIST cache, which does nothing for an already-open drawer: its form is built once in
-     * `loadFile`, so without this the fields keep showing what they held when it opened.
+     * Put accepted enrichment values into the open form, so they save through the normal path and
+     * the visible fields match. Needed because the form is built once in `loadFile` — patching the
+     * files LIST cache, which is all the websocket handler does, never reaches an open drawer.
      */
     applyEnrichment(enrichment: { tags: string[]; description: string }): void;
 }

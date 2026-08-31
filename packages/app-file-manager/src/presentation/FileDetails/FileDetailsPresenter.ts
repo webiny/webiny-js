@@ -90,10 +90,9 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
                 this.file = { ...this.file, ...enrichment };
             }
 
-            // Silent: the server already persisted these, so the form must NOT become dirty. If it
-            // did, the user would be prompted to save data that is already saved — and worse, before
-            // this existed the form still held the pre-enrichment values, so pressing Update wrote
-            // them straight back and undid the enrichment.
+            // Silent: the caller submits the form itself right after, so marking it dirty would only
+            // leave the drawer asking to save what was just saved. `setValueSilent` still updates the
+            // value `getData()` returns, so the submit carries these through.
             this.form.field("description").setValueSilent(enrichment.description);
             this.form.field("tags").setValueSilent(enrichment.tags);
         });

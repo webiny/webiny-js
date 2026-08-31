@@ -62,11 +62,16 @@ export interface IReenrichWithAiViewModel {
     message: string;
     tags: string[];
     description: string;
+    /** The proposal is complete and nothing is in flight, so it can be accepted. */
+    canSave: boolean;
+    saving: boolean;
 }
 
 export interface IReenrichWithAiPresenter {
     readonly vm: IReenrichWithAiViewModel;
     start(fileId: string): Promise<void>;
+    /** Accept the proposal: write it into the file and persist. */
+    save(): Promise<void>;
     setOpen(open: boolean): void;
     dispose(): void;
 }

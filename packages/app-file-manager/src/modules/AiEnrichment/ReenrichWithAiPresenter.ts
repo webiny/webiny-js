@@ -10,12 +10,13 @@ import type {
     IReenrichWithAiViewModel
 } from "./abstractions.js";
 
-type Status = "idle" | "running" | "done" | "error";
+type Status = "idle" | "running" | "ready" | "saving" | "error";
 
 const STATUS_LABEL: Record<Status, string> = {
     idle: "",
     running: "Analyzing image…",
-    done: "Saved.",
+    ready: "Review the suggestion, then save.",
+    saving: "Saving…",
     error: "Failed."
 };
 
@@ -46,7 +47,9 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
             open: this.open,
             message: this.error ?? STATUS_LABEL[this.status],
             tags: this.tags,
-            description: this.description
+            description: this.description,
+            canSave: this.status === "ready",
+            saving: this.status === "saving"
         };
     }
 
@@ -61,14 +64,9 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
                     this.applyOutput(event.tags, event.description);
                 }
 
+                // Nothing is written yet — the route only proposes. The user accepts with save().
                 if (event.type === "done") {
-                    this.finish("done");
-                    // The open drawer's form was built when the drawer opened; nothing else refreshes
-                    // it, so hand it the persisted values.
-                    this.fileDetails.applyEnrichment({
-                        tags: event.tags,
-                        description: event.description
-                    });
+                    this.finish("ready");
                 }
 
                 if (event.type === "error") {
@@ -82,6 +80,27 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
             }
             this.fail(err instanceof Error ? err.message : String(err));
         }
+    }
+
+    async save() {
+        if (this.status !== "ready") {
+            return;
+        }
+
+        this.finish("saving");
+
+        // Straight into the drawer's own form and save path, so enrichment persists exactly the way
+        // a manual edit does — one write path, one set of permissions and validation.
+        this.fileDetails.applyEnrichment({ tags: this.tags, description: this.description });
+
+        const saved = await this.fileDetails.saveFile();
+
+        if (!saved) {
+            this.fail("Could not save the file.");
+            return;
+        }
+
+        this.setOpen(false);
     }
 
     setOpen(open: boolean) {
