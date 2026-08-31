@@ -22,6 +22,7 @@ export const CellLive = () => {
                 variant={"success-light"}
                 content={`Live (v${entry.live.version})`}
             />
+            packages/app-headless-cms/src/admin/components/ContentEntries/Table/Cells/CellLive.tsx
             {entry.lastPublishedOn ? (
                 <Text size={"sm"} className={"text-neutral-strong"}>
                     <TimeAgo datetime={entry.lastPublishedOn} />
