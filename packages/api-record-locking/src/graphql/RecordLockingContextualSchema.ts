@@ -4,7 +4,6 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { mergeResolvers } from "@graphql-tools/merge";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
-import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
@@ -21,14 +20,15 @@ import { createGraphQLSchema } from "~/graphql/schema.js";
 
 class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
     constructor(
-        private featureFlags: FeatureFlags.Interface,
         private tenantCtx: TenantContext.Interface,
         private identityCtx: IdentityContext.Interface,
         private config: IRecordLockingAppConfig
     ) {}
 
     async build(ctx: Record<string, any>): Promise<GraphQLSchema> {
-        if (!this.featureFlags.get().isEnabled("recordLocking") || !this.tenantCtx.getTenant()) {
+        // Only registered when recordLocking is licensed (RecordLockingAppFeature gates on the flag),
+        // so here we only fall back to an empty schema until the tenant is known.
+        if (!this.tenantCtx.getTenant()) {
             return makeExecutableSchema({
                 typeDefs: "type Query\ntype Mutation",
                 assumeValidSDL: true
@@ -84,5 +84,5 @@ class RecordLockingContextualSchemaImpl implements IGraphQLContextualSchema {
 
 export const RecordLockingContextualSchema = GraphQLContextualSchema.createImplementation({
     implementation: RecordLockingContextualSchemaImpl,
-    dependencies: [FeatureFlags, TenantContext, IdentityContext, RecordLockingAppConfig]
+    dependencies: [TenantContext, IdentityContext, RecordLockingAppConfig]
 });
