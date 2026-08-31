@@ -108,6 +108,21 @@ export const AcoModule = createModule({
 
 **`ctx` is the infra→feature interface:** `{ container, tenant, featureFlags, ... }`, supplied by the kernel. Features stop reaching for `Container`/`TenantContext`/`IdentityContext` — they declare *what* runs in *which* phase; infra owns the lifecycle, api-core owns the domain work. (Layering split: mechanism-in-infra, tenant-resolution-in-app, tenant-handed-to-features-via-ctx.)
 
+## Unified: `Module` subsumes `createFeature` (Adrian's lean)
+
+`createModule` is the **one** feature abstraction; a feature fills only the phases it needs:
+
+- **Register-only features** (the majority, e.g. `ApiCoreFeature`) → `createModule({ register })` — literally `createFeature` renamed.
+- **Features with per-request work** → add `setup` / `afterSetup`. A feature's `Feature` + its `RequestContextInitializer` **collapse into one module** — e.g. `AcoFeature` (register) + `AcoInitializer` (RequestContextInitializer) → one `AcoModule` with `register` + `setup`.
+
+So there aren't two abstractions ("is this a Feature or a Module?") — there's `Module`, with named phases.
+
+### `RequestContextInitializer` is removed
+
+It *becomes* the `setup` phase. Deleted: the `RequestContextInitializer` abstraction, the `runRequestContextInitializers` runner, the `HttpRouter` `RequestContextInitializerDecorator`, and the 4 manual firing calls (bg-task ×2, scheduler ×2). Replaced by `runModules`, fired once post-`establish()`. The 4 impls migrate to `Module.setup`. The "Request*" naming smell is gone — only `Module` + phases remain.
+
+Migration surface: **every** `createFeature` → `createModule` (mechanical for register-only), plus the 4 initializer merges. Big but single-model. Worth Pavel's nod (it's his `Module` vision).
+
 ## What's happening now vs deferred
 
 - **Now (Slice-1):** fire-on-`establish()` + remove the `HttpRouter` decorator & the 4 manual calls (double-fire fix + centralization). Keeps the `RequestContextInitializer` name.
