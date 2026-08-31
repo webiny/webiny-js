@@ -60,7 +60,7 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
                 signal: controller.signal
             })) {
                 if (event.type === "partial" || event.type === "done") {
-                    this.applyOutput(event.tags, event.description);
+                    this.applyOutput(event.tags, event.description, event.type === "done");
                 }
 
                 // Nothing is written yet — the route only proposes. The user accepts with save().
@@ -126,8 +126,29 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
         return controller;
     }
 
-    private applyOutput(tags: string[], description: string) {
-        this.tags = tags;
+    /**
+     * Merges one streamed value into the displayed proposal.
+     *
+     * Tags are kept in the order they were FIRST seen rather than the order the latest value happens
+     * to list them in. The model does not stream the array as a growing prefix — it revises it, so
+     * successive values can list the same tags in a different order, which makes chips visibly
+     * reshuffle under the pointer mid-stream. Insertion order is stable, so a tag only ever appears
+     * and never jumps.
+     *
+     * `final` reconciles: anything the model dropped along the way goes, so what gets saved is the
+     * model's actual answer and not the union of every guess it made on the way there.
+     */
+    private applyOutput(tags: string[], description: string, final = false) {
+        for (const tag of tags) {
+            if (!this.tags.includes(tag)) {
+                this.tags.push(tag);
+            }
+        }
+
+        if (final) {
+            this.tags = this.tags.filter(tag => tags.includes(tag));
+        }
+
         this.description = description;
     }
 
