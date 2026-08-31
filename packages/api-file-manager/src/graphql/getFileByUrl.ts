@@ -56,6 +56,10 @@ class GetFileByUrlUseCase implements IGetFileByUrl {
             },
             limit: 1
         });
+        if (filesResult.isFail()) {
+            // TODO Not 100% sure about this. Maybe we can log it?
+            return undefined;
+        }
 
         const files = filesResult.value.items;
 
