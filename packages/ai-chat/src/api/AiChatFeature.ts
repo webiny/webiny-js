@@ -1,8 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
-
-const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
+import { EnvAiChatProvider } from "./EnvAiChatProvider.js";
 
 /**
  * Enough steps for the deepest expected chain: list models, describe one, query it, answer — plus room
@@ -20,11 +19,9 @@ export const AiChatFeature = createFeature({
     name: "AiChat",
     register: container => {
         const config: {
-            model: string;
             maxSteps: number;
             approvalSecret?: string;
         } = {
-            model: process.env["WEBINY_API_AI_CHAT_MODEL"] || DEFAULT_MODEL,
             maxSteps: Number(process.env["WEBINY_API_AI_CHAT_MAX_STEPS"]) || DEFAULT_MAX_STEPS
         };
 
@@ -38,6 +35,11 @@ export const AiChatFeature = createFeature({
         }
 
         container.registerInstance(AiChatConfig, config);
+        /*
+         * Registered first so a later registration wins — AI Power-Ups overrides this with providers
+         * configured in the admin UI.
+         */
+        container.register(EnvAiChatProvider);
         container.register(AiChatUseCase);
     }
 });

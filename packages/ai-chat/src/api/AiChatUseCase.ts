@@ -7,6 +7,7 @@ import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { AiChatConfig } from "./abstractions.js";
+import { AiChatProvider } from "./abstractions.js";
 import { AiChatUseCase as Abstraction } from "./abstractions.js";
 import type { AiChatParams } from "./abstractions.js";
 import type { AiChatResult } from "./abstractions.js";
@@ -83,11 +84,12 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         private readonly aiSdkTools: AiSdkTools.Interface,
         private readonly declarations: IAiSdkTool[],
         private readonly identityContext: IdentityContext.Interface,
-        private readonly config: AiChatConfig.Interface
+        private readonly config: AiChatConfig.Interface,
+        private readonly provider: AiChatProvider.Interface
     ) {}
 
     async execute(params: AiChatParams): Promise<AiChatResult> {
-        const { request, writesEnabled } = this.prepare(params);
+        const { request, writesEnabled } = await this.prepare(params);
 
         const result = await this.ai.generateText(request as never);
 
@@ -110,7 +112,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
          * left to change.
          */
         try {
-            prepared = this.prepare(params);
+            prepared = await this.prepare(params);
         } catch (error) {
             yield { type: "error", message: toMessage(error) };
             return;
@@ -179,10 +181,10 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
      * Everything both entry points need: the identity check, which tools may run unattended, and the
      * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
      */
-    private prepare(params: AiChatParams): {
+    private async prepare(params: AiChatParams): Promise<{
         request: Record<string, unknown>;
         writesEnabled: boolean;
-    } {
+    }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
         }
@@ -207,15 +209,21 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             messages.push(toApprovalMessage(params.decisions));
         }
 
-        const [providerId] = this.config.model.split("/");
+        const provider = await this.provider.resolve();
+        const [providerId] = provider.model.split("/");
+
+        /*
+         * An absent apiKey is meaningful: the provider's SDK factory then falls back to its own
+         * environment variable. Only a configured provider (e.g. AI Power-Ups) supplies one here.
+         */
+        const connection: { sdkName: string; apiKey?: string } = { sdkName: providerId };
+        if (provider.apiKey) {
+            connection.apiKey = provider.apiKey;
+        }
 
         const request: Record<string, unknown> = {
-            model: this.config.model,
-            /*
-             * No apiKey: the provider factory falls back to its environment variable, so the key never
-             * travels through a request or gets stored per tenant.
-             */
-            connection: { sdkName: providerId },
+            model: provider.model,
+            connection,
             system: SYSTEM_PROMPT,
             messages,
             tools,
@@ -278,5 +286,12 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
 
 export const AiChatUseCase = Abstraction.createImplementation({
     implementation: AiChatUseCaseImpl,
-    dependencies: [Ai, AiSdkTools, [AiSdkTool, { multiple: true }], IdentityContext, AiChatConfig]
+    dependencies: [
+        Ai,
+        AiSdkTools,
+        [AiSdkTool, { multiple: true }],
+        IdentityContext,
+        AiChatConfig,
+        AiChatProvider
+    ]
 });

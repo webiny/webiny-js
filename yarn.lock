@@ -10258,6 +10258,7 @@ __metadata:
   resolution: "@webiny/ai-powerups@workspace:packages/ai-powerups"
   dependencies:
     "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/ai-chat": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-graphql": "npm:0.0.0"

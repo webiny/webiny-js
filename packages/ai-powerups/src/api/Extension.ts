@@ -14,6 +14,7 @@ import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.j
 import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
 import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
+import { AiChatProviderFeature } from "./features/AiChatProvider/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
@@ -33,6 +34,7 @@ export const Extension = createFeature({
         WbGeneratePageContentFeature.register(container);
         CmsGenerateEntryContentFeature.register(container);
         CmsResolveImageToolFeature.register(container);
+        AiChatProviderFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
         // Registered unconditionally. The WCP license gate lives inside the feature's

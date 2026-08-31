@@ -1,7 +1,11 @@
 export { AiChatFeature } from "./AiChatFeature.js";
 export { AiChatUseCase } from "./abstractions.js";
 export { AiChatConfig } from "./abstractions.js";
+export { AiChatProvider } from "./abstractions.js";
+export { EnvAiChatProvider } from "./EnvAiChatProvider.js";
 export type { IAiChatConfig } from "./abstractions.js";
+export type { IAiChatProvider } from "./abstractions.js";
+export type { IAiChatProviderResolution } from "./abstractions.js";
 export type { IAiChatUseCase } from "./abstractions.js";
 export type { AiChatParams } from "./abstractions.js";
 export type { AiChatResult } from "./abstractions.js";
