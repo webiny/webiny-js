@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
 import { FileDetailsPresenter } from "~/presentation/FileDetails/abstractions.js";
 import {
     ReenrichFileGateway,
@@ -15,7 +16,9 @@ type Status = "idle" | "running" | "ready" | "error";
 const STATUS_LABEL: Record<Status, string> = {
     idle: "",
     running: "Analyzing image…",
-    ready: "Review the suggestion, then save.",
+    // Says what Apply does AND does not do. Applying only fills the form in — the file is written by
+    // the drawer's Update button, and nothing else on screen says so.
+    ready: "Applying fills in the form below. Press Update to save the file.",
     error: "Failed."
 };
 
@@ -35,7 +38,8 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
     constructor(
         private gateway: IReenrichFileGateway,
-        private fileDetails: FileDetailsPresenter.Interface
+        private fileDetails: FileDetailsPresenter.Interface,
+        private notifications: Notifications.Interface
     ) {
         // The second type parameter is what lets a PRIVATE field appear in the annotation map.
         makeAutoObservable<ReenrichWithAiPresenterImpl, "controller">(this, { controller: false });
@@ -88,6 +92,13 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
         this.fileDetails.applyEnrichment({ tags: this.tags, description: this.description });
         this.setOpen(false);
+
+        // The dialog is gone the moment it is accepted, so the reminder has to outlive it. `notify`
+        // rather than `success`: nothing has been saved yet, and a green tick would say it had.
+        this.notifications.notify({
+            title: "Suggestion applied",
+            description: "Press Update to save the new tags and description."
+        });
     }
 
     setOpen(open: boolean) {
@@ -159,5 +170,5 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
 export const ReenrichWithAiPresenter = PresenterAbstraction.createImplementation({
     implementation: ReenrichWithAiPresenterImpl,
-    dependencies: [ReenrichFileGateway, FileDetailsPresenter]
+    dependencies: [ReenrichFileGateway, FileDetailsPresenter, Notifications]
 });
