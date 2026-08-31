@@ -64,6 +64,8 @@ export interface IReenrichWithAiViewModel {
     description: string;
     /** The proposal is complete, so it can be accepted. */
     canSave: boolean;
+    /** The model is still producing output, so empty fields are pending rather than absent. */
+    loading: boolean;
 }
 
 export interface IReenrichWithAiPresenter {

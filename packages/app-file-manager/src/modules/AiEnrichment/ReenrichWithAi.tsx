@@ -1,12 +1,46 @@
 import React, { useEffect } from "react";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
-import { Dialog } from "@webiny/admin-ui";
+import { cn, Dialog, Skeleton } from "@webiny/admin-ui";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { useFeature } from "@webiny/app";
 import { FileManagerViewConfig, useFile } from "~/index.js";
 import { AiEnrichmentFeature } from "./feature.js";
 
 const { FileDetails } = FileManagerViewConfig;
+
+// Uneven on purpose: equal-length bars read as a table, not as text still arriving.
+const TAG_WIDTHS = ["w-16", "w-24", "w-20", "w-14"];
+const DESCRIPTION_WIDTHS = ["w-full", "w-full", "w-3/4"];
+
+interface PlaceholderProps {
+    /** While the model is still producing, an empty field is pending — not empty. */
+    loading: boolean;
+    widths: string[];
+    pill?: boolean;
+}
+
+/**
+ * Stands in for a field that has no content yet: skeleton bars while the stream is running, and a
+ * dash once it has stopped and the field genuinely came back empty.
+ */
+const Placeholder = ({ loading, widths, pill }: PlaceholderProps) => {
+    if (!loading) {
+        return <div className={"text-sm text-neutral-strong"}>{"—"}</div>;
+    }
+
+    return (
+        <div className={pill ? "flex flex-wrap gap-xs" : "flex flex-col gap-xs"}>
+            {widths.map(width => (
+                <Skeleton
+                    key={width}
+                    type={"text"}
+                    size={"sm"}
+                    className={cn(width, pill && "rounded")}
+                />
+            ))}
+        </div>
+    );
+};
 
 /**
  * Test-bed for HTTP response streaming: re-runs AI enrichment for the open file and renders the
@@ -65,12 +99,16 @@ export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() 
                                 ))}
                             </div>
                         ) : (
-                            <div className={"text-sm text-neutral-strong"}>{"—"}</div>
+                            <Placeholder loading={vm.loading} widths={TAG_WIDTHS} pill={true} />
                         )}
                     </div>
                     <div>
                         <div className={"text-sm font-semibold mb-xs"}>{"Description"}</div>
-                        <div className={"text-sm"}>{vm.description || "—"}</div>
+                        {vm.description ? (
+                            <div className={"text-sm"}>{vm.description}</div>
+                        ) : (
+                            <Placeholder loading={vm.loading} widths={DESCRIPTION_WIDTHS} />
+                        )}
                     </div>
                 </div>
             </Dialog>
