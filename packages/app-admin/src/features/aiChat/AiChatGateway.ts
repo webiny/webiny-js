@@ -9,7 +9,11 @@ import { AuthenticationContext } from "~/features/security/AuthenticationContext
 import { TenantContext } from "~/features/tenancy/abstractions.js";
 
 const CHAT_PATH = "/ai/chat";
-const CHAT_STREAM_PATH = "/ai/chat/stream";
+/*
+ * The `/stream/` prefix is required, not cosmetic: it is the CloudFront behavior that targets the
+ * Lambda Function URL. Any other path lands on API Gateway and gets buffered.
+ */
+const CHAT_STREAM_PATH = "/stream/ai/chat";
 
 const toBody = (request: AiChatRequest): Record<string, unknown> => {
     const body: Record<string, unknown> = { messages: request.messages };

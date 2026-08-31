@@ -37,7 +37,13 @@ async function* toSseFrames(events: AsyncIterable<AiChatEvent>): AsyncIterable<s
  */
 class AiChatStreamRouteImpl implements HttpRoute.Interface {
     public readonly method = "POST";
-    public readonly path = "/ai/chat/stream";
+    /*
+     * Under `/stream/*` because that prefix is what reaches a transport able to stream. On AWS,
+     * CloudFront routes `/stream/*` to the Lambda Function URL origin; everything else goes to API
+     * Gateway, which buffers the whole response no matter how the route produced it. A path outside
+     * this prefix still works — it just silently arrives all at once.
+     */
+    public readonly path = "/stream/ai/chat";
 
     public constructor(private readonly aiChat: AiChatUseCase.Interface) {}
 
