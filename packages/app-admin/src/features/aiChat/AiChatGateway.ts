@@ -1,49 +1,66 @@
+import { ApiStreamClient } from "@webiny/app/features/apiStreamClient";
+import { readServerSentEvents } from "@webiny/app/features/apiStreamClient";
 import { EnvConfig } from "@webiny/app/features/envConfig";
 import { AiChatGateway as Abstraction } from "./abstractions.js";
-import type { AiChatRequest, AiChatResult } from "./abstractions.js";
+import type { AiChatRequest } from "./abstractions.js";
+import type { AiChatResult } from "./abstractions.js";
+import type { AiChatStreamEvent } from "./abstractions.js";
 import { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
 import { TenantContext } from "~/features/tenancy/abstractions.js";
 
+const CHAT_PATH = "/ai/chat";
+const CHAT_STREAM_PATH = "/ai/chat/stream";
+
+const toBody = (request: AiChatRequest): Record<string, unknown> => {
+    const body: Record<string, unknown> = { messages: request.messages };
+
+    if (request.approvals?.length) {
+        body["approvals"] = request.approvals;
+    }
+
+    return body;
+};
+
 /**
- * Calls the API app's `/ai/chat` route.
+ * Talks to the API app's chat routes.
  *
- * Sources endpoint, token and tenant exactly as `WebinySdk` does, so the assistant runs as the signed-in
- * user. That identity is what gates every tool the server then calls — the browser holds no API key and
- * cannot widen its own access.
+ * Streaming goes through `ApiStreamClient`, so auth and tenant headers come from the platform's own
+ * decorators — including `x-webiny-authorization`, which the streaming path needs because on AWS
+ * SigV4 occupies `Authorization`. Getting that wrong would silently make every streamed request
+ * anonymous.
+ *
+ * The buffered call still uses `fetch`: `ApiStreamClient` hands back an unread `Response` for a caller
+ * that owns a read loop, which is the wrong shape for a single JSON answer.
  */
 class AiChatGatewayImpl implements Abstraction.Interface {
     constructor(
         private authContext: AuthenticationContext.Interface,
         private envConfig: EnvConfig.Interface,
-        private tenantContext: TenantContext.Interface
+        private tenantContext: TenantContext.Interface,
+        private streamClient: ApiStreamClient.Interface
     ) {}
 
     async execute(request: AiChatRequest): Promise<AiChatResult> {
         const endpoint = this.envConfig.get("apiUrl").replace(/\/$/, "");
         const token = (await this.authContext.getIdToken()) ?? "";
 
-        const response = await fetch(`${endpoint}/ai/chat`, {
+        const response = await fetch(`${endpoint}${CHAT_PATH}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
                 authorization: `Bearer ${token}`,
                 "x-tenant": this.tenantContext.getCurrentTenant() || "root"
             },
-            body: JSON.stringify({
-                messages: request.messages,
-                ...(request.approvals?.length ? { approvals: request.approvals } : {})
-            })
+            body: JSON.stringify(toBody(request))
         });
 
         const payload = await response.json().catch(() => undefined);
 
         if (!response.ok) {
-            // The route reports failures as `{ error }`; surface that text so the user sees the real
-            // reason (missing provider key, no permission) instead of a bare status code.
-            const reason =
-                (payload as { error?: string } | undefined)?.error ??
-                `Request failed with status ${response.status}.`;
-            throw new Error(reason);
+            const reason = payload as { message?: string; error?: string } | undefined;
+            throw new Error(
+                reason?.message ?? reason?.error ?? `Request failed with status ${response.status}.`
+            );
         }
 
         const result = payload as Partial<AiChatResult> | undefined;
@@ -57,9 +74,19 @@ class AiChatGatewayImpl implements Abstraction.Interface {
             writesEnabled: result?.writesEnabled ?? false
         };
     }
+
+    async *stream(request: AiChatRequest, signal?: AbortSignal): AsyncIterable<AiChatStreamEvent> {
+        const response = await this.streamClient.execute({
+            path: CHAT_STREAM_PATH,
+            body: toBody(request),
+            signal
+        });
+
+        yield* readServerSentEvents<AiChatStreamEvent>(response);
+    }
 }
 
 export const AiChatGateway = Abstraction.createImplementation({
     implementation: AiChatGatewayImpl,
-    dependencies: [AuthenticationContext, EnvConfig, TenantContext]
+    dependencies: [AuthenticationContext, EnvConfig, TenantContext, ApiStreamClient]
 });

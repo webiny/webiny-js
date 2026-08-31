@@ -1,11 +1,22 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useContainer } from "@webiny/app";
 import { AiChatGateway } from "@webiny/app-admin";
-import type { AiChatMessage, AiChatResult } from "@webiny/app-admin";
+import type { AiChatMessage } from "@webiny/app-admin";
+import type { AiChatPendingApproval } from "@webiny/app-admin";
+import type { AiChatRequest } from "@webiny/app-admin";
 
 export interface AiTurn {
     question: string;
-    result?: AiChatResult;
+    /** Answer text so far. Grows as the stream arrives. */
+    text: string;
+    /** Tools seen this turn, in call order, deduplicated. */
+    tools: string[];
+    /** Set while a tool is running and no answer text has arrived yet. */
+    running: boolean;
+    pendingApprovals: AiChatPendingApproval[];
+    /** Server messages to replay when resuming after an approval. */
+    messages: AiChatMessage[];
+    settled: boolean;
     error?: string;
 }
 
@@ -13,21 +24,45 @@ export interface UseAiChat {
     turns: AiTurn[];
     busy: boolean;
     ask(question: string): void;
-    /** Approve or reject the calls the server paused on for a given turn. */
     decide(turnIndex: number, approved: boolean): void;
     reset(): void;
 }
+
+const emptyTurn = (question: string): AiTurn => ({
+    question,
+    text: "",
+    tools: [],
+    running: false,
+    pendingApprovals: [],
+    messages: [],
+    settled: false
+});
 
 /**
  * Owns the AI conversation for the palette.
  *
  * State lives here rather than in a command's detail view because the design keeps ONE input row
- * across every mode — the palette itself renders the conversation, so it has to own it.
+ * across every mode — the palette renders the conversation, so it has to own it.
  */
 export const useAiChat = (): UseAiChat => {
     const container = useContainer();
     const [turns, setTurns] = useState<AiTurn[]>([]);
     const [busy, setBusy] = useState(false);
+    const abortRef = useRef<AbortController | null>(null);
+
+    /*
+     * A stream stays open for as long as the model runs, so an unmounted palette would keep consuming
+     * events into state that no longer exists.
+     */
+    useEffect(() => {
+        return () => abortRef.current?.abort();
+    }, []);
+
+    const patch = useCallback((index: number, change: Partial<AiTurn>) => {
+        setTurns(current =>
+            current.map((turn, i) => (i === index ? { ...turn, ...change } : turn))
+        );
+    }, []);
 
     /** Replays settled turns so follow-ups ("and which of those is cheapest?") have context. */
     const historyBefore = useCallback(
@@ -35,19 +70,73 @@ export const useAiChat = (): UseAiChat => {
             turns
                 .slice(0, upTo)
                 .flatMap(turn =>
-                    turn.result
-                        ? [{ role: "user", content: turn.question }, ...turn.result.messages]
+                    turn.settled && !turn.error
+                        ? [{ role: "user", content: turn.question }, ...turn.messages]
                         : []
                 ),
         [turns]
     );
 
-    const settleAt = useCallback(
-        (index: number, patch: Partial<AiTurn>) =>
-            setTurns(current =>
-                current.map((turn, i) => (i === index ? { ...turn, ...patch } : turn))
-            ),
-        []
+    const run = useCallback(
+        async (index: number, request: AiChatRequest) => {
+            abortRef.current?.abort();
+            const controller = new AbortController();
+            abortRef.current = controller;
+
+            setBusy(true);
+
+            try {
+                let text = "";
+                const tools: string[] = [];
+
+                for await (const event of container
+                    .resolve(AiChatGateway)
+                    .stream(request, controller.signal)) {
+                    if (event.type === "text") {
+                        text += event.text;
+                        patch(index, { text, running: false });
+                        continue;
+                    }
+
+                    if (event.type === "tool-call") {
+                        tools.push(event.name);
+                        patch(index, { tools: [...tools], running: true });
+                        continue;
+                    }
+
+                    if (event.type === "approval") {
+                        patch(index, { pendingApprovals: event.approvals, running: false });
+                        continue;
+                    }
+
+                    if (event.type === "done") {
+                        patch(index, {
+                            messages: event.messages,
+                            settled: true,
+                            running: false
+                        });
+                        continue;
+                    }
+
+                    if (event.type === "error") {
+                        patch(index, { error: event.message, settled: true, running: false });
+                        return;
+                    }
+                }
+            } catch (error) {
+                // An abort is the palette closing, not a failure worth showing.
+                if (!controller.signal.aborted) {
+                    patch(index, {
+                        error: error instanceof Error ? error.message : String(error),
+                        settled: true,
+                        running: false
+                    });
+                }
+            } finally {
+                setBusy(false);
+            }
+        },
+        [container, patch]
     );
 
     const ask = useCallback(
@@ -58,69 +147,48 @@ export const useAiChat = (): UseAiChat => {
             }
 
             const index = turns.length;
-            setBusy(true);
-            setTurns(current => [...current, { question: trimmed }]);
+            setTurns(current => [...current, { ...emptyTurn(trimmed), running: true }]);
 
-            container
-                .resolve(AiChatGateway)
-                .execute({
-                    messages: [...historyBefore(index), { role: "user", content: trimmed }]
-                })
-                .then(result => settleAt(index, { result }))
-                .catch(error =>
-                    settleAt(index, {
-                        error: error instanceof Error ? error.message : String(error)
-                    })
-                )
-                .finally(() => setBusy(false));
+            void run(index, {
+                messages: [...historyBefore(index), { role: "user", content: trimmed }]
+            });
         },
-        [busy, container, historyBefore, settleAt, turns.length]
+        [busy, historyBefore, run, turns.length]
     );
 
     const decide = useCallback(
         (turnIndex: number, approved: boolean) => {
             const turn = turns[turnIndex];
-            if (!turn?.result?.pendingApprovals.length || busy) {
+            if (!turn?.pendingApprovals.length || busy) {
                 return;
             }
 
-            const pending = turn.result.pendingApprovals;
+            const approvals = turn.pendingApprovals.map(approval => ({
+                approvalId: approval.approvalId,
+                approved
+            }));
 
-            // The paused assistant message must be replayed unchanged — the approval request lives only
-            // in `result.messages`, so resuming means sending the same history back plus the decision.
+            /*
+             * The paused assistant message must be replayed unchanged — the approval request lives only
+             * in the server's messages, so resuming means sending the same history back plus the
+             * decision.
+             */
             const messages: AiChatMessage[] = [
                 ...historyBefore(turnIndex),
                 { role: "user", content: turn.question },
-                ...turn.result.messages
+                ...turn.messages
             ];
 
-            setBusy(true);
-            // Clear the pending block immediately so the plan cannot be double-submitted.
-            settleAt(turnIndex, {
-                result: { ...turn.result, pendingApprovals: [] }
-            });
+            // Clear the block immediately so the plan cannot be submitted twice.
+            patch(turnIndex, { pendingApprovals: [], settled: false, running: true });
 
-            container
-                .resolve(AiChatGateway)
-                .execute({
-                    messages,
-                    approvals: pending.map(approval => ({
-                        approvalId: approval.approvalId,
-                        approved
-                    }))
-                })
-                .then(result => settleAt(turnIndex, { result }))
-                .catch(error =>
-                    settleAt(turnIndex, {
-                        error: error instanceof Error ? error.message : String(error)
-                    })
-                )
-                .finally(() => setBusy(false));
+            void run(turnIndex, { messages, approvals });
         },
-        [busy, container, historyBefore, settleAt, turns]
+        [busy, historyBefore, patch, run, turns]
     );
 
     const reset = useCallback(() => {
+        abortRef.current?.abort();
         setTurns([]);
         setBusy(false);
     }, []);

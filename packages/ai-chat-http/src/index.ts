@@ -1,8 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
 import { AiChatFeature } from "@webiny/ai-chat/api/index.js";
 import { AiChatRoute } from "./AiChatRoute.js";
+import { AiChatStreamRoute } from "./AiChatStreamRoute.js";
 
 export { AiChatRoute };
+export { AiChatStreamRoute };
 
 /**
  * Exposes the AI chat feature over HTTP as `POST /ai/chat`.
@@ -16,5 +18,6 @@ export const AiChatHttpFeature = createFeature({
     register: container => {
         AiChatFeature.register(container);
         container.register(AiChatRoute);
+        container.register(AiChatStreamRoute);
     }
 });

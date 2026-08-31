@@ -15,6 +15,24 @@ import { isReadOnly } from "./approvals.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
+import type { AiChatEvent } from "./events.js";
+
+/** The subset of the AI SDK's stream parts this use case reacts to. */
+interface StreamPart {
+    type: string;
+    text?: string;
+    toolName?: string;
+    approvalId?: string;
+    toolCall?: {
+        toolName: string;
+        input: unknown;
+    };
+    error?: unknown;
+}
+
+const toMessage = (error: unknown): string => {
+    return error instanceof Error ? error.message : String(error);
+};
 
 interface ApprovalRequestPart {
     approvalId: string;
@@ -69,6 +87,102 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     ) {}
 
     async execute(params: AiChatParams): Promise<AiChatResult> {
+        const { request, writesEnabled } = this.prepare(params);
+
+        const result = await this.ai.generateText(request as never);
+
+        return {
+            text: this.extractText(result),
+            toolCalls: this.extractToolCalls(result),
+            steps: result.steps.length,
+            pendingApprovals: this.extractPendingApprovals(result),
+            messages: result.responseMessages,
+            writesEnabled
+        };
+    }
+
+    async *stream(params: AiChatParams): AsyncIterable<AiChatEvent> {
+        let prepared;
+
+        /*
+         * An auth failure has to arrive as an event, not a thrown error: by the time a transport is
+         * iterating this it has already committed to a 200 and a stream, so there is no status code
+         * left to change.
+         */
+        try {
+            prepared = this.prepare(params);
+        } catch (error) {
+            yield { type: "error", message: toMessage(error) };
+            return;
+        }
+
+        const { request, writesEnabled } = prepared;
+        const pending: PendingApproval[] = [];
+
+        try {
+            const result = await this.ai.streamText(request as never);
+
+            for await (const part of result.fullStream as AsyncIterable<StreamPart>) {
+                if (part.type === "text-delta" && part.text) {
+                    yield { type: "text", text: part.text };
+                    continue;
+                }
+
+                if (part.type === "tool-call" && part.toolName) {
+                    yield { type: "tool-call", name: part.toolName };
+                    continue;
+                }
+
+                if (part.type === "tool-result" && part.toolName) {
+                    yield { type: "tool-result", name: part.toolName };
+                    continue;
+                }
+
+                if (part.type === "tool-approval-request" && part.approvalId && part.toolCall) {
+                    pending.push(
+                        toPendingApproval(
+                            part.approvalId,
+                            part.toolCall.toolName,
+                            part.toolCall.input,
+                            this.declarations
+                        )
+                    );
+                    continue;
+                }
+
+                if (part.type === "error") {
+                    yield { type: "error", message: toMessage(part.error) };
+                    return;
+                }
+            }
+
+            if (pending.length > 0) {
+                yield { type: "approval", approvals: pending };
+            }
+
+            /*
+             * Awaited only after the stream drains — these settle when the run finishes, so reading
+             * them earlier would block the loop above and defeat the point of streaming.
+             */
+            yield {
+                type: "done",
+                messages: await result.response.then(response => response.messages),
+                steps: (await result.steps).length,
+                writesEnabled
+            };
+        } catch (error) {
+            yield { type: "error", message: toMessage(error) };
+        }
+    }
+
+    /**
+     * Everything both entry points need: the identity check, which tools may run unattended, and the
+     * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
+     */
+    private prepare(params: AiChatParams): {
+        request: Record<string, unknown>;
+        writesEnabled: boolean;
+    } {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
         }
@@ -117,16 +231,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             request["experimental_toolApprovalSecret"] = this.config.approvalSecret;
         }
 
-        const result = await this.ai.generateText(request as never);
-
-        return {
-            text: this.extractText(result),
-            toolCalls: this.extractToolCalls(result),
-            steps: result.steps.length,
-            pendingApprovals: this.extractPendingApprovals(result),
-            messages: result.responseMessages,
-            writesEnabled
-        };
+        return { request, writesEnabled };
     }
 
     /**

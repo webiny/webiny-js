@@ -46,8 +46,26 @@ export interface AiChatRequest {
     approvals?: AiChatDecision[];
 }
 
+/**
+ * What the assistant emits while it works. Mirrors the server's `AiChatEvent`; declared here so the
+ * admin bundle carries no server or AI SDK code.
+ */
+export type AiChatStreamEvent =
+    | { type: "text"; text: string }
+    | { type: "tool-call"; name: string }
+    | { type: "tool-result"; name: string }
+    | { type: "approval"; approvals: AiChatPendingApproval[] }
+    | { type: "done"; messages: AiChatMessage[]; steps: number; writesEnabled: boolean }
+    | { type: "error"; message: string };
+
 export interface IAiChatGateway {
+    /** Run to completion and return the whole result. */
     execute(request: AiChatRequest): Promise<AiChatResult>;
+    /**
+     * Run and yield progress as it arrives. Preferred in the UI: a multi-tool question takes tens of
+     * seconds, and an approval request is worth showing the moment it appears.
+     */
+    stream(request: AiChatRequest, signal?: AbortSignal): AsyncIterable<AiChatStreamEvent>;
 }
 
 /** Sends a question to the server-side AI assistant (`POST /ai/chat`). */
@@ -61,4 +79,5 @@ export namespace AiChatGateway {
     export type Decision = AiChatDecision;
     export type Request = AiChatRequest;
     export type Result = AiChatResult;
+    export type StreamEvent = AiChatStreamEvent;
 }

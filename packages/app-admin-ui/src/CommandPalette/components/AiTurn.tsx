@@ -33,8 +33,12 @@ export interface AiTurnProps {
 
 export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProps) => {
     const { compileMarkdown } = useAdminUi();
-    const settled = Boolean(turn.result || turn.error);
-    const toolNames = turn.result?.toolCalls.map(call => call.name) ?? [];
+
+    /*
+     * Show the skeleton only until the first token lands. Once text is arriving, the text itself is
+     * the progress indicator — swapping a skeleton in and out under it would flicker.
+     */
+    const showSkeleton = !turn.text && !turn.error && !turn.settled;
 
     return (
         <div className="mb-md">
@@ -50,45 +54,50 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
             </div>
 
             <div className="px-sm">
-                {!settled ? (
-                    <AnswerSkeleton />
-                ) : turn.error ? (
+                {turn.tools.length > 0 ? (
+                    <div className="mb-sm flex flex-wrap items-center gap-xs">
+                        {turn.tools.map((name, index) => (
+                            <ToolChip
+                                key={`${name}-${index}`}
+                                name={name}
+                                state={
+                                    turn.running && index === turn.tools.length - 1
+                                        ? "running"
+                                        : "done"
+                                }
+                            />
+                        ))}
+                    </div>
+                ) : null}
+
+                {turn.error ? (
                     <Text as="div" size="sm" className="text-destructive-primary">
                         {turn.error}
                     </Text>
-                ) : turn.result?.text ? (
+                ) : showSkeleton ? (
+                    <AnswerSkeleton />
+                ) : turn.text ? (
                     // `as="div"` so block-level markdown (p, ul, pre) nests legally — Text is a span.
                     <Text
                         as="div"
                         size="sm"
                         className={cn("text-neutral-strong", MARKDOWN_CLASSES)}
                     >
-                        {compileMarkdown(turn.result.text)}
+                        {compileMarkdown(turn.text)}
                     </Text>
-                ) : (
+                ) : turn.pendingApprovals.length === 0 ? (
                     <Text as="div" size="sm" className="text-neutral-muted">
                         No answer returned.
                     </Text>
-                )}
+                ) : null}
 
-                {turn.result?.pendingApprovals.length ? (
+                {turn.pendingApprovals.length > 0 ? (
                     <ApprovalPlan
-                        approvals={turn.result.pendingApprovals}
+                        approvals={turn.pendingApprovals}
                         busy={busy}
                         onApprove={onApprove}
                         onReject={onReject}
                     />
-                ) : null}
-
-                {settled && toolNames.length > 0 ? (
-                    <div className="mt-sm flex flex-wrap items-center gap-xs">
-                        <Text size="sm" className="text-xs text-neutral-muted">
-                            Ran
-                        </Text>
-                        {toolNames.map((name, index) => (
-                            <ToolChip key={`${name}-${index}`} name={name} state="done" />
-                        ))}
-                    </div>
                 ) : null}
             </div>
         </div>

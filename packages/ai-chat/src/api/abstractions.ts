@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { ModelMessage } from "ai";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
+import type { AiChatEvent } from "./events.js";
 
 export interface IAiChatConfig {
     /** Model id in `<provider>/<model>` form, e.g. "anthropic/claude-sonnet-5". */
@@ -45,7 +46,17 @@ export interface AiChatResult {
 }
 
 export interface IAiChatUseCase {
+    /**
+     * Run to completion and return the whole result. Used by transports that cannot stream, and by
+     * hosts that just want the answer (a CLI, a background task).
+     */
     execute(params: AiChatParams): Promise<AiChatResult>;
+    /**
+     * Run and emit progress as it happens. Same work as `execute`, reported incrementally — a
+     * multi-tool question takes tens of seconds, and the approval pause is worth showing the moment
+     * it arrives rather than after everything settles.
+     */
+    stream(params: AiChatParams): AsyncIterable<AiChatEvent>;
 }
 
 /** Answer a question about the project using the registered AI tools, gating writes on approval. */
