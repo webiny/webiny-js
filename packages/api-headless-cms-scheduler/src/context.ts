@@ -1,5 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { CancelScheduledActionOnEntryChangeFeature } from "~/features/CancelScheduledActionOnEntryChange/feature.js";
+import { CmsSchedulerPermissions } from "~/features/permissions/CmsSchedulerPermissions.js";
 import { NamespaceHandler } from "~/features/NamespaceHandler/NamespaceHandler.js";
 import { PublishEntryActionHandler } from "~/features/PublishActionHandler/PublishEntryActionHandler.js";
 import { UnpublishEntryActionHandler } from "~/features/UnpublishActionHandler/UnpublishEntryActionHandler.js";
@@ -15,5 +16,6 @@ export const createHeadlessCmsScheduleContext = () => {
         context.container.register(ScheduleUnpublishEntryUseCase);
 
         CancelScheduledActionOnEntryChangeFeature.register(context.container);
+        context.container.register(CmsSchedulerPermissions);
     });
 };

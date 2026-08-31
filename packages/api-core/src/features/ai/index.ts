@@ -3,6 +3,7 @@ export {
     AiSdkFactory,
     AiConnectionFactory,
     Ai,
+    AiModelRegistry,
     AiSdkTool,
     AiSdkTools
 } from "./abstractions.js";
@@ -11,6 +12,7 @@ export type {
     IAiConnectionInline,
     AiModel,
     IAiSdkModel,
+    IAiModelRegistry,
     IAiSdkTool,
     IAiSdkTools
 } from "./abstractions.js";

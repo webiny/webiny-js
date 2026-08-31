@@ -3,7 +3,8 @@ export {
     AiSdkFactory,
     AiSdkTool,
     AiConnectionFactory,
-    Ai
+    Ai,
+    AiModelRegistry
 } from "@webiny/api-core/features/ai/index.js";
 export type { IAiConnection, IAiConnectionInline } from "@webiny/api-core/features/ai/index.js";
 export { Logger } from "@webiny/api-core/features/logger/index.js";

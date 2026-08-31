@@ -46,7 +46,7 @@ export namespace CreateModelUseCase {
  * CreateModelRepository - Validates domain rules and persists a new model to storage.
  */
 export interface ICreateModelRepository {
-    execute(model: CmsModel): Promise<Result<void, RepositoryError>>;
+    execute(model: CmsModel): Promise<Result<CmsModel, RepositoryError>>;
 }
 
 export interface ICreateModelRepositoryErrors {
