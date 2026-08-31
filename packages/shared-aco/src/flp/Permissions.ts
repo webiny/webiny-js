@@ -5,9 +5,14 @@ export class Permissions {
         permissions?: FolderPermission[],
         parentFlp?: Pick<FolderLevelPermission, "id" | "permissions"> | null
     ): FolderPermission[] {
-        const parentFolderPermissions = parentFlp?.permissions || [];
+        // Code-defined permissions (contributed via an `FlpFactory`) are merged into FLP records on
+        // read only. Every write to the FLP catalog funnels through here, so this is where we make
+        // sure they can never be persisted — otherwise a client echoing back what it read would turn
+        // a code permission into a stored one that nobody can remove from the UI.
+        const parentFolderPermissions = (parentFlp?.permissions || []).filter(p => !p.plugin);
         const currentFolderPermissions =
-            permissions?.filter(p => p.inheritedFrom !== `parent:${parentFlp?.id}`) || [];
+            permissions?.filter(p => !p.plugin && p.inheritedFrom !== `parent:${parentFlp?.id}`) ||
+            [];
 
         if (!parentFolderPermissions.length) {
             return currentFolderPermissions;

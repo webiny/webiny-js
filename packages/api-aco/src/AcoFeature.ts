@@ -46,6 +46,7 @@ import {
 } from "~/features/folder/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
+import { CodeFlpsFeature } from "~/features/flp/shared/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
@@ -94,6 +95,8 @@ export const AcoFeature = createFeature({
         DeleteFlpFeature.register(container);
         ListFlpsFeature.register(container);
         GetFlpFeature.register(container);
+        // Must come after ListFlps/GetFlp — it decorates both.
+        CodeFlpsFeature.register(container);
         CreateFlpOnFolderCreatedFeature.register(container);
         UpdateFlpOnFolderUpdatedFeature.register(container);
         DeleteFlpOnFolderDeletedFeature.register(container);

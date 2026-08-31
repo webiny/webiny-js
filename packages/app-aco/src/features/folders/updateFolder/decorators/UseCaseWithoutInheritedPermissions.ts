@@ -4,8 +4,9 @@ class UpdateFolderUseCaseWithoutInheritedPermissionsImpl implements UseCaseAbstr
     constructor(private decoratee: UseCaseAbstraction.Interface) {}
 
     async execute(folder: UseCaseAbstraction.Params) {
-        // We must omit all inherited permissions.
-        const filteredPermissions = folder.permissions.filter(p => !p.inheritedFrom);
+        // We must omit all inherited permissions, and all code-defined ones — those are contributed
+        // by an `FlpFactory` on the API side and the API rejects them on write.
+        const filteredPermissions = folder.permissions.filter(p => !p.inheritedFrom && !p.plugin);
 
         await this.decoratee.execute({
             ...folder,
