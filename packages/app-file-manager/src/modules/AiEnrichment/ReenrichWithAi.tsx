@@ -85,30 +85,50 @@ export const ReenrichWithAi = createReactiveComponent(function ReenrichWithAi() 
                 }
             >
                 <div className={"flex flex-col gap-md"}>
+                    {/*
+                     * Each value box reserves its space so the dialog doesn't resize while the model
+                     * streams, and the footer buttons don't slide out from under the pointer.
+                     *
+                     * On the value boxes rather than once on the body: tags and description grow
+                     * independently, so a single body minimum would still let wrapping tags shove the
+                     * description down. The reservations cover what this prompt ("up to 5 tags and one
+                     * short sentence") actually produces — two rows of chips, four lines of text.
+                     * Beyond that the dialog grows, which beats clipping.
+                     */}
                     <div>
                         <div className={"text-sm font-semibold mb-xs"}>{"Tags"}</div>
-                        {vm.tags.length ? (
-                            <div className={"flex flex-wrap gap-xs"}>
-                                {vm.tags.map(tag => (
-                                    <span
-                                        key={tag}
-                                        className={"text-sm px-sm py-xxs rounded bg-neutral-dimmed"}
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        ) : (
-                            <Placeholder loading={vm.loading} widths={TAG_WIDTHS} pill={true} />
-                        )}
+                        <div className={"min-h-[48px]"}>
+                            {vm.tags.length ? (
+                                <div className={"flex flex-wrap gap-xs"}>
+                                    {vm.tags.map(tag => (
+                                        <span
+                                            key={tag}
+                                            className={
+                                                "text-sm px-sm py-xxs rounded bg-neutral-dimmed"
+                                            }
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            ) : (
+                                <Placeholder loading={vm.loading} widths={TAG_WIDTHS} pill={true} />
+                            )}
+                        </div>
                     </div>
                     <div>
                         <div className={"text-sm font-semibold mb-xs"}>{"Description"}</div>
-                        {vm.description ? (
-                            <div className={"text-sm"}>{vm.description}</div>
-                        ) : (
-                            <Placeholder loading={vm.loading} widths={DESCRIPTION_WIDTHS} />
-                        )}
+                        {/*
+                         * `lh` is the line-height unit, so four lines stays four lines if the type
+                         * scale changes. Browsers without it simply ignore the minimum.
+                         */}
+                        <div className={"text-sm min-h-[4lh]"}>
+                            {vm.description ? (
+                                vm.description
+                            ) : (
+                                <Placeholder loading={vm.loading} widths={DESCRIPTION_WIDTHS} />
+                            )}
+                        </div>
                     </div>
                 </div>
             </Dialog>
