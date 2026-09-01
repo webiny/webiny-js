@@ -1,6 +1,15 @@
 import { ACTION } from "../utils/index.js";
 interface CreateYarnCacheStepsParams {
     workingDirectory: string;
+
+    // Restore the cache without attempting to save it afterwards. Set this for workflows triggered
+    // by `issue_comment` (our /alpha, /beta, /e2e and /vitest commands): since GitHub's June 2026
+    // "read-only cache for low-trust triggers" change, those runs get a read-only cache token and
+    // every save fails with "cache write denied: token has no writable scopes" - a warning on an
+    // otherwise green job. Restores still work, and the cache is kept fresh by the `push` and
+    // `pull_request` workflows, so there is nothing to gain from trying. See also
+    // `createRunBuildArtifactSteps`, which sidesteps the same restriction using artifacts.
+    restoreOnly?: boolean;
 }
 
 // Caches Yarn's download cache between runs.
@@ -23,7 +32,7 @@ export const createYarnCacheSteps = (params: CreateYarnCacheStepsParams) => {
             run: 'echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT'
         },
         {
-            uses: ACTION.cache,
+            uses: params.restoreOnly ? ACTION.cacheRestore : ACTION.cache,
             with: {
                 path: "${{ steps.yarn-cache-folder.outputs.path }}",
                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"

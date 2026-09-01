@@ -146,11 +146,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -325,7 +325,7 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -496,7 +496,7 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -679,7 +679,7 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -851,7 +851,7 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -1024,7 +1024,7 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}

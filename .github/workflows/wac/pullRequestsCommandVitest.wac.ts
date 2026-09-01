@@ -33,8 +33,14 @@ const pgliteStorageOps = new PgliteStorageOps();
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: DIR_WEBINY_JS,
+    restoreOnly: true
+});
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({
+    workingDirectory: DIR_WEBINY_JS,
+    restoreOnly: true
+});
 const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
     workingDirectory: DIR_WEBINY_JS
 });
