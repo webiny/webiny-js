@@ -4,6 +4,7 @@ import { useAdminConfig } from "~/config/AdminConfig.js";
 import { lightTheme } from "~/config/AdminConfig/Theme/lightTheme.js";
 import type { Theme } from "~/config/AdminConfig/Theme/types.js";
 import { applyTheme } from "./applyTheme.js";
+import { readCachedThemeId } from "./bootstrapTheme.js";
 
 export const THEME_KEY = "webiny/theme";
 /**
@@ -35,7 +36,11 @@ export const useTheme = (): UseTheme => {
 
     const themes = useMemo<Theme[]>(() => [lightTheme, ...registeredThemes], [registeredThemes]);
 
-    const theme = storedTheme || DEFAULT_THEME;
+    // The service prefix is unresolved on the first render after a reload, so fall back to a
+    // prefix-tolerant raw read. Without it the id reads as "light" and the registry can
+    // never resolve the real theme, leaving the cached variables in charge permanently.
+    const bootstrappedTheme = useMemo(() => readCachedThemeId(), []);
+    const theme = storedTheme || bootstrappedTheme || DEFAULT_THEME;
 
     const setTheme = useCallback(
         (id: string) => {

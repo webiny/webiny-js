@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocalStorage } from "@webiny/app";
 import { useTheme, THEME_VARIABLES_KEY } from "./useTheme.js";
 import { applyTheme } from "./applyTheme.js";
@@ -18,7 +19,7 @@ import { readCachedThemeVariables } from "./bootstrapTheme.js";
  */
 export const ThemeModeApplier = () => {
     const { theme, themes } = useTheme();
-    const { get } = useLocalStorage();
+    const { get, set } = useLocalStorage();
 
     // Variables cached when the theme was selected. Prefer the (prefix-aware) localStorage
     // service, but fall back to a direct scan: the service prefix isn't resolved on the first
@@ -33,6 +34,20 @@ export const ThemeModeApplier = () => {
         registered && Object.keys(registered.variables).length > 0 ? registered.variables : null;
 
     applyTheme(registeredVariables ?? cached ?? {});
+
+    // Keep the cache in step with the registry. The cache exists only to paint the right theme
+    // before the registry resolves, but it is written once — when the theme is selected — so a
+    // token added or changed in a later release would otherwise never reach `<html>`: every
+    // load would re-apply the original snapshot, and no amount of rebuilding would help. A
+    // theme switch was the only way to refresh it.
+    const registeredJson = registeredVariables ? JSON.stringify(registeredVariables) : null;
+    const cachedJson = cached ? JSON.stringify(cached) : null;
+
+    useEffect(() => {
+        if (registeredJson && registeredJson !== cachedJson) {
+            set(THEME_VARIABLES_KEY, JSON.parse(registeredJson));
+        }
+    }, [registeredJson, cachedJson, set]);
 
     return null;
 };
