@@ -28,6 +28,11 @@ export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalP
 
     const destructive = approvals.some(approval => approval.destructive);
 
+    let heading = `Approve ${approvals.length} changes`;
+    if (approvals.length === 1) {
+        heading = `Approve: ${approvals[0].title ?? approvals[0].toolName}`;
+    }
+
     return (
         <div
             className={cn(
@@ -44,9 +49,7 @@ export const ApprovalPlan = ({ approvals, busy, onApprove, onReject }: ApprovalP
                     className={destructive ? "text-destructive-primary" : undefined}
                 />
                 <Text size="sm" className="font-semibold text-neutral-primary">
-                    {approvals.length === 1
-                        ? `Approve: ${approvals[0].title ?? approvals[0].toolName}`
-                        : `Approve ${approvals.length} changes`}
+                    {heading}
                 </Text>
                 {destructive ? (
                     <Text size="sm" className="ml-auto text-destructive-primary">

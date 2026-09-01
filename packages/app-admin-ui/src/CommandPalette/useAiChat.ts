@@ -66,14 +66,19 @@ export const useAiChat = (): UseAiChat => {
 
     /** Replays settled turns so follow-ups ("and which of those is cheapest?") have context. */
     const historyBefore = useCallback(
-        (upTo: number): AiChatMessage[] =>
-            turns
-                .slice(0, upTo)
-                .flatMap(turn =>
-                    turn.settled && !turn.error
-                        ? [{ role: "user", content: turn.question }, ...turn.messages]
-                        : []
-                ),
+        (upTo: number): AiChatMessage[] => {
+            const history: AiChatMessage[] = [];
+
+            for (const turn of turns.slice(0, upTo)) {
+                if (!turn.settled || turn.error) {
+                    continue;
+                }
+                history.push({ role: "user", content: turn.question });
+                history.push(...turn.messages);
+            }
+
+            return history;
+        },
         [turns]
     );
 

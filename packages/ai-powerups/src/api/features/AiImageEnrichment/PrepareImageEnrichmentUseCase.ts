@@ -56,7 +56,6 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
 
         return Result.ok({
             fileId: file.id,
-            existingTags: file.tags,
             imageBase64: contentsResult.value.buffer.toString("base64"),
             imageMediaType: contentsResult.value.contentType,
             model: firstProvider.model,

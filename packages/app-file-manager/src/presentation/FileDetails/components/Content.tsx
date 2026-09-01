@@ -22,10 +22,13 @@ const Grow = ({ flex, children, className }: React.PropsWithChildren<GrowProps>)
 
 interface ContentProps {
     children: React.ReactNode;
+    className?: string;
 }
 
-export const Content = ({ children }: ContentProps) => {
-    return <div className={"flex h-full"}>{children}</div>;
+export const Content = ({ children, className }: ContentProps) => {
+    // `min-h-0` matters: without it this flex child refuses to shrink below its content height, so
+    // the panels' own scrollbars never engage and the whole drawer body scrolls instead.
+    return <div className={cn("flex min-h-0", className)}>{children}</div>;
 };
 
 interface PanelProps {

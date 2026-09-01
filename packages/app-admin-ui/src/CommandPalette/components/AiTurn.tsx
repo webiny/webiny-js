@@ -22,6 +22,15 @@ const MARKDOWN_CLASSES = [
     "[&_pre]:mb-xs [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-neutral-subtle [&_pre]:p-sm"
 ].join(" ");
 
+/** Only the last tool can still be running; everything before it has already returned. */
+const toolState = (turn: AiTurnModel, index: number): "running" | "done" => {
+    if (turn.running && index === turn.tools.length - 1) {
+        return "running";
+    }
+
+    return "done";
+};
+
 export interface AiTurnProps {
     turn: AiTurnModel;
     /** Initials of the signed-in user, shown against their question. */
@@ -60,11 +69,7 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
                             <ToolChip
                                 key={`${name}-${index}`}
                                 name={name}
-                                state={
-                                    turn.running && index === turn.tools.length - 1
-                                        ? "running"
-                                        : "done"
-                                }
+                                state={toolState(turn, index)}
                             />
                         ))}
                     </div>

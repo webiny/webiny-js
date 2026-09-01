@@ -18,14 +18,14 @@ export interface ToolChipProps {
 export const ToolChip = ({ name, state }: ToolChipProps) => {
     const done = state === "done";
 
+    let tone = "border-neutral-dimmed bg-neutral-subtle text-neutral-strong";
+    if (done) {
+        tone = "border-success-subtle bg-success-subtle text-success";
+    }
+
     return (
         <span
-            className={cn(
-                "inline-flex items-center gap-xs rounded-xl border px-sm py-xxs",
-                done
-                    ? "border-success-subtle bg-success-subtle text-success"
-                    : "border-neutral-dimmed bg-neutral-subtle text-neutral-strong"
-            )}
+            className={cn("inline-flex items-center gap-xs rounded-xl border px-sm py-xxs", tone)}
         >
             <Icon
                 icon={done ? <CheckIcon /> : <SpinnerIcon />}

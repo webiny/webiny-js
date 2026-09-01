@@ -62,11 +62,20 @@ export interface IReenrichWithAiViewModel {
     message: string;
     tags: string[];
     description: string;
+    /** The proposal is complete, so it can be accepted. */
+    canSave: boolean;
+    /** The model is still producing output, so empty fields are pending rather than absent. */
+    loading: boolean;
 }
 
 export interface IReenrichWithAiPresenter {
     readonly vm: IReenrichWithAiViewModel;
     start(fileId: string): Promise<void>;
+    /**
+     * Accept the proposal: drop the values into the file details form and close. Nothing is written
+     * — the user saves the file with Update, the same as for a hand-typed edit.
+     */
+    accept(): void;
     setOpen(open: boolean): void;
     dispose(): void;
 }

@@ -134,16 +134,22 @@ export async function registerApiRequestStack(
     await config.transports?.scheduler?.(container);
     CmsSchedulerFeature.register(container);
 
+    // ── AI chat endpoint (in-admin assistant) ──────────────────
+    // The agent loop runs here rather than in the browser, so the browser needs no model and no API
+    // key. BEFORE extensions on purpose: the feature registers a default `AiChatProvider` that reads
+    // the environment, and an extension (AI Power-Ups) overrides it with the providers configured in
+    // the admin UI. A single resolve takes the LAST registration, so registering this after extensions
+    // silently won and the configured provider was ignored.
+    //
+    // Route construction does not depend on this order — `HttpRouter` resolves routes inside `route()`,
+    // and `resolveAll(AiSdkTool)` collects every tool regardless of when it was registered.
+    AiChatHttpFeature.register(container);
+
     // ── Extensions ─────────────────────────────────────────────
     // Apply at register() time (not via a post-auth initializer) so extension features — including
     // code-defined CMS models (ModelFactory), e.g. Languages — are registered before any initializer
     // (e.g. ACO) lists + caches the per-request model set.
     await registerExtensions(container, config.extensions());
-
-    // ── AI chat endpoint (in-admin assistant) ──────────────────
-    // Same tool registry as MCP, but the agent loop runs here instead of in an external harness, so the
-    // browser never needs a model or an API key. After extensions, for the same reason MCP is.
-    AiChatHttpFeature.register(container);
 
     // ── GraphQL engine (always last) ───────────────────────────
     GraphQLEngineFeature.register(container);

@@ -7,6 +7,7 @@ import {
     useHotkeys
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
@@ -15,7 +16,12 @@ import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg"
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
-import { AI_COMMAND_NAME, NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
+import {
+    AI_CHAT_FLAG,
+    AI_COMMAND_NAME,
+    NAVIGATION_GROUP,
+    PALETTE_HOTKEY_ZINDEX
+} from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -58,6 +64,11 @@ const CommandPaletteBase = () => {
     const [aiMode, setAiMode] = useState(false);
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
+    /*
+     * Same flag the API routes check. Gating only the UI would leave the endpoint open; gating only the
+     * API would offer a mode that then fails.
+     */
+    const aiEnabled = useFeatureFlags().isEnabled(AI_CHAT_FLAG);
     const container = useContainer();
     const inputRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -77,6 +88,9 @@ const CommandPaletteBase = () => {
 
     const enterAiMode = useCallback(
         (seed?: string) => {
+            if (!aiEnabled) {
+                return;
+            }
             setAiMode(true);
             setQuery("");
             if (seed?.trim()) {
@@ -86,7 +100,7 @@ const CommandPaletteBase = () => {
             // surrounding tree swaps.
             requestAnimationFrame(() => inputRef.current?.focus());
         },
-        [ai]
+        [ai, aiEnabled]
     );
 
     const exitAiMode = useCallback(() => {
@@ -170,9 +184,13 @@ const CommandPaletteBase = () => {
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        result.push(...commandVmsToGroups(vm.commands, runCommand));
+        const commands = aiEnabled
+            ? vm.commands
+            : vm.commands.filter(command => command.name !== AI_COMMAND_NAME);
+
+        result.push(...commandVmsToGroups(commands, runCommand));
         return result;
-    }, [menus, vm.commands, navigateTo, runCommand]);
+    }, [menus, vm.commands, navigateTo, runCommand, aiEnabled]);
 
     // Keep the newest turn in view; answers are long enough to push earlier ones off-screen.
     useEffect(() => {
@@ -186,6 +204,26 @@ const CommandPaletteBase = () => {
     }
 
     const active = vm.activeCommand;
+
+    let placeholder = "Search for pages and actions…";
+    if (aiMode && ai.turns.length > 0) {
+        placeholder = "Ask a follow-up…";
+    } else if (aiMode) {
+        placeholder = "Ask about your content…";
+    }
+
+    const askAiFromQuery = () => enterAiMode(query);
+
+    let footerLabel = "Webiny command palette";
+    let hints = COMMAND_HINTS;
+
+    if (aiMode) {
+        footerLabel = "Webiny AI";
+        hints = AI_HINTS;
+    } else if (!aiEnabled) {
+        // Don't advertise a shortcut that does nothing.
+        hints = COMMAND_HINTS.filter(hint => hint.label !== "Ask AI");
+    }
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -263,13 +301,7 @@ const CommandPaletteBase = () => {
                                 value={query}
                                 onValueChange={setQuery}
                                 spellCheck={false}
-                                placeholder={
-                                    aiMode
-                                        ? ai.turns.length
-                                            ? "Ask a follow-up…"
-                                            : "Ask about your content…"
-                                        : "Search for pages and actions…"
-                                }
+                                placeholder={placeholder}
                                 className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
                             />
                             <Kbd>esc</Kbd>
@@ -300,7 +332,7 @@ const CommandPaletteBase = () => {
                                     <Command.Empty>
                                         <NoResults
                                             query={query}
-                                            onAskAi={() => enterAiMode(query)}
+                                            onAskAi={aiEnabled ? askAiFromQuery : undefined}
                                         />
                                     </Command.Empty>
 
@@ -318,10 +350,7 @@ const CommandPaletteBase = () => {
                             )}
                         </div>
 
-                        <PaletteFooter
-                            label={aiMode ? "Webiny AI" : "Webiny command palette"}
-                            hints={aiMode ? AI_HINTS : COMMAND_HINTS}
-                        />
+                        <PaletteFooter label={footerLabel} hints={hints} />
                     </Command>
                 )}
             </div>

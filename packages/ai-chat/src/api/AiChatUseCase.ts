@@ -91,7 +91,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     async execute(params: AiChatParams): Promise<AiChatResult> {
         const { request, writesEnabled } = await this.prepare(params);
 
-        const result = await this.ai.generateText(request as never);
+        const result = await this.ai.generateText(request);
 
         return {
             text: this.extractText(result),
@@ -122,7 +122,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         const pending: PendingApproval[] = [];
 
         try {
-            const result = await this.ai.streamText(request as never);
+            const result = await this.ai.streamText(request);
 
             for await (const part of result.fullStream as AsyncIterable<StreamPart>) {
                 if (part.type === "text-delta" && part.text) {
@@ -182,7 +182,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
      * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
      */
     private async prepare(params: AiChatParams): Promise<{
-        request: Record<string, unknown>;
+        request: Ai.GenerateTextParams;
         writesEnabled: boolean;
     }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
@@ -200,9 +200,11 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
          */
         const writesEnabled = Boolean(this.config.approvalSecret);
         const toolNames = Object.keys(tools);
-        const activeTools = writesEnabled
-            ? toolNames
-            : toolNames.filter(name => readOnlyNames.has(name));
+        let activeTools = toolNames;
+
+        if (!writesEnabled) {
+            activeTools = toolNames.filter(name => readOnlyNames.has(name));
+        }
 
         const messages = [...params.messages];
         if (params.decisions.length > 0) {
@@ -221,7 +223,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             connection.apiKey = provider.apiKey;
         }
 
-        const request: Record<string, unknown> = {
+        const request: Ai.GenerateTextParams = {
             model: provider.model,
             connection,
             system: SYSTEM_PROMPT,

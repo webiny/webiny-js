@@ -10,3 +10,6 @@ export const NAVIGATION_GROUP = "Navigation";
 
 /** DI name of the "Ask AI" command, activated by pressing space on an empty query. */
 export const AI_COMMAND_NAME = "admin.ai.ask";
+
+/** Feature flag gating AI mode. Must match the API routes' flag. */
+export const AI_CHAT_FLAG = "aiChat";

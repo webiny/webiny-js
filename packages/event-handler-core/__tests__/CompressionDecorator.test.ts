@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import zlib from "node:zlib";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
+import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
 import { HttpRoute } from "~/features/http/abstractions.js";
 import type {
     IHttpRequest,
@@ -26,11 +27,11 @@ const routerForRoute = (handle: IHttpRoute["handle"]) => {
     const container = new Container();
     const route: IHttpRoute = { method: "GET", path: "/test", handle };
     container.registerInstance(HttpRoute, route);
-    // HttpRouter resolves routes inside route() rather than taking them as a constructor dependency,
-    // so it needs the container that holds them.
-    container.registerInstance(RequestContainer, container);
     container.register(HttpRouterImpl).inSingletonScope();
     container.registerDecorator(CompressionDecorator);
+    // The router resolves routes through the request container, the way ChildContainerFactory wires
+    // it in production.
+    container.registerInstance(RequestContainer, container);
     return container.resolve(HttpRouter);
 };
 
@@ -41,6 +42,34 @@ const routerFor = (response: IHttpResponse) => routerForRoute(async () => respon
 const largeBody = () => ({ data: "x".repeat(5000) });
 
 describe("CompressionDecorator", () => {
+    // Compression and streaming are mutually exclusive: compressing means draining, which defeats
+    // incremental delivery. Without the guard in serializeBody a stream body falls through to the
+    // JSON branch, and the body is REPLACED by a gzipped `{"source":...}`.
+    //
+    // The source is an OBJECT with enumerable data, not a generator, on purpose: a generator
+    // stringifies to `{}` and would slip under the size threshold, so the test would pass with or
+    // without the guard and pin nothing.
+    it("should leave a streaming body untouched", async () => {
+        const source = {
+            padding: "x".repeat(5000),
+            async *[Symbol.asyncIterator]() {
+                yield "data: hello\n\n";
+            }
+        };
+
+        const streamBody = new HttpStreamBody(source);
+        const router = routerFor({
+            statusCode: 200,
+            headers: { "content-type": "text/event-stream" },
+            body: streamBody
+        });
+
+        const result = await router.route(req("gzip, deflate, br"));
+
+        expect(result.body).toBe(streamBody);
+        expect(result.headers?.["content-encoding"]).toBeUndefined();
+    });
+
     it("should gzip a large body when the client accepts gzip", async () => {
         const router = routerFor({ statusCode: 200, headers: {}, body: largeBody() });
 

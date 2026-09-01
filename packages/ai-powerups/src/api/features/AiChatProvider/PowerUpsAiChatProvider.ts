@@ -40,17 +40,21 @@ class PowerUpsAiChatProviderImpl implements Abstraction.Interface {
             );
         }
 
-        const resolution: { model: string; apiKey?: string } = { model: provider.model };
-
         /*
-         * A provider row can exist with no key yet — leaving apiKey unset lets the SDK factory fall
-         * back to its environment variable rather than sending an empty string the provider rejects.
+         * A row can exist before a key is entered. Erroring here is deliberate: falling back to an
+         * environment variable when a provider IS configured is what made the previous behaviour so
+         * hard to reason about — the settings screen said one thing and the request used another.
          */
-        if (provider.apiKeyEncrypted) {
-            resolution.apiKey = await this.encryption.decrypt(provider.apiKeyEncrypted);
+        if (!provider.apiKeyEncrypted) {
+            throw new Error(
+                `The AI provider "${provider.name}" has no API key. Add one under Settings → AI Power-Ups → Providers.`
+            );
         }
 
-        return resolution;
+        return {
+            model: provider.model,
+            apiKey: await this.encryption.decrypt(provider.apiKeyEncrypted)
+        };
     }
 }
 
