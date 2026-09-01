@@ -52,7 +52,7 @@ export namespace RootContainerFactory {
 
 /**
  * Creates and sets up the per-request (child) container: spawns the child, binds transport
- * primitives, runs request setup, and runs the pre-dispatch {@link RequestInitializer} loop.
+ * primitives, and runs request setup.
  *
  * Decoratable — this is the seam for per-request work that must run BEFORE the register/dispatch
  * flow (e.g. refreshing a project-level license so register-time checks see it). Since such work
