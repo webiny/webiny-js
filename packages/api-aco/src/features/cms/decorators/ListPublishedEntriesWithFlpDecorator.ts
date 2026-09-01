@@ -25,6 +25,9 @@ class ListPublishedEntriesWithFlpDecoratorImpl implements ListPublishedEntriesUs
     ): ListPublishedEntriesUseCase.Return<T> {
         const loader = async (params?: CmsEntryListParams) => {
             const result = await this.decoratee.execute<T>(model, params);
+            if (result.isFail()) {
+                throw result.error;
+            }
             return result.value;
         };
 
