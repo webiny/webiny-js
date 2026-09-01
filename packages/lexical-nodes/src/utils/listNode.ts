@@ -1,5 +1,4 @@
-import type { LexicalNode, Spread } from "lexical";
-
+import type { ElementNode, LexicalNode, Spread } from "lexical";
 import type { ListNode } from "~/ListNode.js";
 import { $isListNode } from "~/ListNode.js";
 import type { ListItemNode } from "~/ListItemNode.js";
@@ -35,7 +34,7 @@ export function $getTopListNode(listItem: LexicalNode): ListNode {
         return listItem as ListNode;
     }
 
-    let parent: ListNode | null = list;
+    let parent: ElementNode | null = list;
 
     while (parent !== null) {
         parent = parent.getParent();

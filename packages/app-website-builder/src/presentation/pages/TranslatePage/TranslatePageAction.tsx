@@ -1,8 +1,8 @@
 import React from "react";
 import { ReactComponent as TranslateIcon } from "@webiny/icons/language.svg";
 import { useOpenDialog } from "@webiny/app-admin";
-import { usePage } from "~/modules/pages/PagesList/hooks/usePage.js";
-import { PageListConfig } from "~/modules/pages/configs/index.js";
+import { usePage } from "~/presentation/pages/PageList/hooks/usePage.js";
+import { PageListConfig } from "~/presentation/pages/PageList/configs/index.js";
 import { TRANSLATE_PAGE_DIALOG } from "./TranslatePageDialog.js";
 import { translatePageParams } from "./translatePageSchema.js";
 

@@ -17,6 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/cms-sdk": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
     "mobx": "^6.16.1",
@@ -27,8 +28,8 @@
   "devDependencies": {
     "@types/react": "18.3.31",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

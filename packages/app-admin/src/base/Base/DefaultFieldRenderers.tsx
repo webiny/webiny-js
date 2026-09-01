@@ -24,58 +24,129 @@ import { FileUrlPickerRenderer } from "~/base/Base/FieldRenderers/FileUrlPickerR
 import { MultiFilePickerRenderer } from "~/base/Base/FieldRenderers/MultiFilePickerRenderer.js";
 import { CodeEditorRenderer } from "~/base/Base/FieldRenderers/CodeEditorRenderer.js";
 import { LexicalRenderer } from "~/base/Base/FieldRenderers/LexicalRenderer.js";
+import { LexicalEditorsRenderer } from "~/base/Base/FieldRenderers/LexicalEditorsRenderer.js";
+import { PasswordInputRenderer } from "~/base/Base/FieldRenderers/PasswordInputRenderer.js";
+import { PermissionsRenderer } from "~/base/Base/FieldRenderers/PermissionsRenderer.js";
+import { RolesMultiSelectRenderer } from "~/base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import { ApiKeyTokenRenderer } from "~/base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
+import { MultiAutoCompleteRenderer } from "~/base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
+import { AutoCompleteRenderer } from "~/base/Base/FieldRenderers/AutoCompleteRenderer.js";
+import { MultiSelectRenderer } from "~/base/Base/FieldRenderers/MultiSelectRenderer.js";
+import { RegisterFeature } from "~/exports/admin.js";
+import { MultiValueDynamicZoneFeature } from "~/base/Base/FieldRenderers/ObjectRenderer/MultiValueDynamicZone/feature.js";
 
 export const DefaultFieldRenderers = () => {
     return (
-        <AdminConfig>
-            <AdminConfig.Form.FieldRenderer name={"textInput"} component={InputRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"textarea"} component={TextareaRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"dropdown"} component={SelectRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"objectAccordionSingle"}
-                component={ObjectRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer
-                name={"objectAccordionMultiple"}
-                component={ObjectAccordionMultipleRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer name={"dynamicZone"} component={DynamicZoneRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"passthrough"} component={PassthroughRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"switch"} component={SwitchRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"numberInput"} component={NumberInputRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"numberInputs"}
-                component={NumberInputsRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer name={"textInputs"} component={TextInputsRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"textareas"} component={TextareasRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"tags"} component={TagsRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"radioButtons"}
-                component={RadioButtonsRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer name={"checkboxes"} component={CheckboxesRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"dateTimeInput"} component={DateTimeRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"dateTimeInputs"}
-                component={DateTimeInputsRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer name={"hidden"} component={HiddenRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"keyValueTags"}
-                component={KeyValueTagsRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer name={"filePicker"} component={FilePickerRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"multiFilePicker"}
-                component={MultiFilePickerRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer
-                name={"fileUrlPicker"}
-                component={FileUrlPickerRenderer}
-            />
-            <AdminConfig.Form.FieldRenderer name={"codeEditor"} component={CodeEditorRenderer} />
-            <AdminConfig.Form.FieldRenderer name={"lexical"} component={LexicalRenderer} />
-        </AdminConfig>
+        <>
+            <RegisterFeature feature={MultiValueDynamicZoneFeature} />
+            <AdminConfig>
+                <AdminConfig.Form.FieldRenderer name={"textInput"} component={InputRenderer} />
+                <AdminConfig.Form.FieldRenderer name={"textarea"} component={TextareaRenderer} />
+                <AdminConfig.Form.FieldRenderer name={"select"} component={SelectRenderer} />
+                <AdminConfig.Form.FieldRenderer
+                    name={"autoComplete"}
+                    component={AutoCompleteRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"multiSelect"}
+                    component={MultiSelectRenderer}
+                />
+                {/* @deprecated "dropdown" is for BC only./ */}
+                <AdminConfig.Form.FieldRenderer name={"dropdown"} component={SelectRenderer} />
+                <AdminConfig.Form.FieldRenderer
+                    name={"objectAccordionSingle"}
+                    component={ObjectRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"objectAccordionMultiple"}
+                    component={ObjectAccordionMultipleRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"dynamicZone"}
+                    component={DynamicZoneRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"passthrough"}
+                    component={PassthroughRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer name={"switch"} component={SwitchRenderer} />
+                <AdminConfig.Form.FieldRenderer
+                    name={"numberInput"}
+                    component={NumberInputRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"numberInputs"}
+                    component={NumberInputsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"textInputs"}
+                    component={TextInputsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer name={"textareas"} component={TextareasRenderer} />
+                <AdminConfig.Form.FieldRenderer name={"tags"} component={TagsRenderer} />
+                <AdminConfig.Form.FieldRenderer
+                    name={"radioButtons"}
+                    component={RadioButtonsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"checkboxes"}
+                    component={CheckboxesRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"dateTimeInput"}
+                    component={DateTimeRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"dateTimeInputs"}
+                    component={DateTimeInputsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer name={"hidden"} component={HiddenRenderer} />
+                <AdminConfig.Form.FieldRenderer
+                    name={"keyValueTags"}
+                    component={KeyValueTagsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"filePicker"}
+                    component={FilePickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"multiFilePicker"}
+                    component={MultiFilePickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"fileUrlPicker"}
+                    component={FileUrlPickerRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"codeEditor"}
+                    component={CodeEditorRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer name={"lexical"} component={LexicalRenderer} />
+                <AdminConfig.Form.FieldRenderer
+                    name={"lexicalEditors"}
+                    component={LexicalEditorsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"passwordInput"}
+                    component={PasswordInputRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"permissions"}
+                    component={PermissionsRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"rolesMultiSelect"}
+                    component={RolesMultiSelectRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"apiKeyToken"}
+                    component={ApiKeyTokenRenderer}
+                />
+                <AdminConfig.Form.FieldRenderer
+                    name={"multiAutoComplete"}
+                    component={MultiAutoCompleteRenderer}
+                />
+            </AdminConfig>
+        </>
     );
 };

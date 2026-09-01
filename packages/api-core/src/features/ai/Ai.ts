@@ -4,21 +4,21 @@ import { streamText } from "ai";
 import { Ai as AiAbstraction } from "./abstractions.js";
 import { AiSdkFactory } from "./abstractions.js";
 import { AiConnectionFactory } from "./abstractions.js";
-import type { AiGenerateTextParams, AiModel, IAiSdkFactory } from "./abstractions.js";
+import { AiModelRegistry } from "./abstractions.js";
+import type { AiGenerateTextParams, AiModel } from "./abstractions.js";
 import type { AiStreamTextParams } from "./abstractions.js";
 import type { IAiSdk } from "./abstractions.js";
 import type { IAiConnection } from "./abstractions.js";
 import type { IAiConnectionInline } from "./abstractions.js";
 import type { LanguageModel } from "ai";
-
-function toAiModel(factory: IAiSdkFactory, modelId: string, modelName: string): AiModel {
-    return {
-        providerId: factory.id,
-        providerName: factory.name,
-        modelId,
-        modelName
-    };
-}
+import { mdbid } from "@webiny/utils/mdbid.js";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
+import {
+    AiBeforeGenerateTextEvent,
+    AiAfterGenerateTextEvent,
+    AiGenerateTextErrorEvent,
+    AiBeforeStreamTextEvent
+} from "./events.js";
 
 class AiImpl implements AiAbstraction.Interface {
     private sdkCache = new Map<string, IAiSdk>();
@@ -26,52 +26,73 @@ class AiImpl implements AiAbstraction.Interface {
 
     constructor(
         private readonly sdkFactories: AiSdkFactory.Interface[],
-        private readonly connectionFactories: AiConnectionFactory.Interface[]
+        private readonly connectionFactories: AiConnectionFactory.Interface[],
+        private readonly eventPublisher: EventPublisher.Interface,
+        private readonly modelRegistry: AiModelRegistry.Interface
     ) {}
 
-    generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
+    async generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
         const { model, connection, ...rest } = params;
-        return this.resolveLanguageModel(model, connection).then(resolvedModel => {
-            // Cast required: spreading the discriminated Prompt union loses its narrowing.
-            return generateText({ model: resolvedModel, ...rest } as Parameters<
+        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        const requestId = mdbid();
+
+        await this.eventPublisher.publish(new AiBeforeGenerateTextEvent({ requestId, params }));
+
+        const start = performance.now();
+
+        try {
+            const result = await generateText({ model: resolvedModel, ...rest } as Parameters<
                 typeof generateText
             >[0]);
-        });
+
+            const duration = performance.now() - start;
+
+            await this.eventPublisher.publish(
+                new AiAfterGenerateTextEvent({ requestId, params, result, duration })
+            );
+
+            return result;
+        } catch (err) {
+            const duration = performance.now() - start;
+            const error = err instanceof Error ? err : new Error(String(err));
+
+            await this.eventPublisher.publish(
+                new AiGenerateTextErrorEvent({ requestId, params, error, duration })
+            );
+
+            throw err;
+        }
     }
 
     async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
         const { model, connection, ...rest } = params;
         const resolvedModel = await this.resolveLanguageModel(model, connection);
+
+        await this.eventPublisher.publish(new AiBeforeStreamTextEvent({ params }));
+
         // Cast required: spreading the discriminated Prompt union loses its narrowing.
         return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
     }
 
     listModels(): Promise<AiModel[]> {
-        return Promise.resolve(
-            this.sdkFactories.flatMap(factory =>
-                factory.models.map(m => toAiModel(factory, m.id, m.name))
-            )
-        );
+        return this.modelRegistry.listModels();
     }
 
     async listModelsByConnections(): Promise<AiModel[]> {
-        const connections = await this.getConnections();
-        return connections.flatMap(conn => {
-            const factory = this.sdkFactories.find(f => f.id === conn.sdkName);
-            if (!factory) {
-                return [];
-            }
-            return factory.models.map(m => toAiModel(factory, m.id, m.name));
-        });
+        const [connections, models] = await Promise.all([
+            this.getConnections(),
+            this.modelRegistry.listModels()
+        ]);
+        const connectedProviderIds = new Set(connections.map(c => c.sdkName));
+        return models.filter(m => connectedProviderIds.has(m.providerId));
     }
 
     async listModelsByConnection(connection: string | IAiConnectionInline): Promise<AiModel[]> {
-        const conn = await this.resolveConnection(undefined, connection);
-        const factory = this.sdkFactories.find(f => f.id === conn.sdkName);
-        if (!factory) {
-            return [];
-        }
-        return factory.models.map(m => toAiModel(factory, m.id, m.name));
+        const [conn, models] = await Promise.all([
+            this.resolveConnection(undefined, connection),
+            this.modelRegistry.listModels()
+        ]);
+        return models.filter(m => m.providerId === conn.sdkName);
     }
 
     private async resolveLanguageModel(
@@ -86,11 +107,19 @@ class AiImpl implements AiAbstraction.Interface {
         }
 
         const providerId = modelId.slice(0, slashIndex);
-        const modelName = modelId.slice(slashIndex + 1);
+        const rawModelId = modelId.slice(slashIndex + 1);
+
+        const models = await this.modelRegistry.listModels();
+        const found = models.some(m => m.providerId === providerId && m.modelId === rawModelId);
+        if (!found) {
+            throw new Error(
+                `Model "${modelId}" is not available. Use listModels() to see available models.`
+            );
+        }
 
         const conn = await this.resolveConnection(providerId, connection);
         const sdk = await this.getSdk(conn);
-        return sdk.languageModel(modelName);
+        return sdk.languageModel(rawModelId);
     }
 
     private async getConnections(): Promise<IAiConnection[]> {
@@ -163,6 +192,8 @@ export const Ai = createImplementation({
     implementation: AiImpl,
     dependencies: [
         [AiSdkFactory, { multiple: true }],
-        [AiConnectionFactory, { multiple: true }]
+        [AiConnectionFactory, { multiple: true }],
+        EventPublisher,
+        AiModelRegistry
     ]
 });

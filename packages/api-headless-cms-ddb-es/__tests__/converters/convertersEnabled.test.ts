@@ -138,6 +138,7 @@ describe("storage field path converters enabled", () => {
             },
             "object@informationFieldIdWithSomeValue": {
                 ...expectedDynamoDbRecord["object@informationFieldIdWithSomeValue"],
+                _id: expect.any(String),
                 "long-text@subDescriptionFieldIdWithSomeValue": {
                     compression: "gzip",
                     value: expect.any(String)
@@ -146,6 +147,7 @@ describe("storage field path converters enabled", () => {
                     ...expectedDynamoDbRecord["object@informationFieldIdWithSomeValue"][
                         "object@subInformationFieldIdWithSomeValue"
                     ],
+                    _id: expect.any(String),
                     "long-text@subSecondSubDescriptionFieldIdWithSomeValue": {
                         compression: "gzip",
                         value: expect.any(String)

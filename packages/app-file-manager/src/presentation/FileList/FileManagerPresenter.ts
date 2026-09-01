@@ -3,6 +3,7 @@ import type { FmFile } from "@webiny/sdk";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { sortFolders } from "@webiny/app-aco";
 import { LocalStorage } from "@webiny/app/features/localStorage";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import {
@@ -93,6 +94,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             loading: this.isLoading(),
             empty: this.isEmpty(),
             showFolders: this.shouldShowFolders(),
+            childFolders: this.getSortedChildFolders(),
             viewMode: this._viewMode,
             dragging: this._dragging,
             showingFilters: this._showingFilters
@@ -112,7 +114,9 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         filter: {
             set: (key: string, value: unknown) => this.listPresenter.actions.filter.set(key, value),
             clear: (key: string) => this.listPresenter.actions.filter.clear(key),
-            clearAll: () => this.listPresenter.actions.filter.clearAll()
+            clearAll: () => this.listPresenter.actions.filter.clearAll(),
+            show: () => this.listPresenter.actions.filter.show(),
+            hide: () => this.listPresenter.actions.filter.hide()
         },
         selection: {
             toggle: (id: string) => this.listPresenter.actions.selection.toggle(id),
@@ -196,10 +200,15 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             config?.scope
         );
 
+        const initialFilters: Record<string, unknown> = { folderId: initialFolderId };
+        if (config?.accept && config.accept.length > 0) {
+            initialFilters["accept"] = config.accept;
+        }
+
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            initialFilters: { folderId: initialFolderId },
+            initialFilters,
             limit: 50
         });
 
@@ -260,6 +269,16 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         return true;
     }
 
+    private getSortedChildFolders() {
+        if (!this.shouldShowFolders()) {
+            return [];
+        }
+        return sortFolders(
+            this.folderTreePresenter.vm.childFolders ?? [],
+            this.listPresenter.vm.appliedQuery?.sort
+        );
+    }
+
     // Hide folders when the user is actively filtering or searching.
     // Uses `appliedQuery` (not `vm.search`) so folders stay visible while typing
     // and only disappear once the debounced query has actually executed.
@@ -274,7 +293,9 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         }
 
         // `folderId` is always present as a default filter; ignore it.
-        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(k => k !== "folderId");
+        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(
+            k => k !== "folderId" && k !== "accept"
+        );
         if (filterKeys.length > 0) {
             return false;
         }

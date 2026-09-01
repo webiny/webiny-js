@@ -32,6 +32,7 @@ export function useRoute<TParams extends RouteParamsDefinition | undefined = und
         route: currentRoute as MatchedRoute<
             TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
         >,
-        setRouteParams: presenter.setRouteParams.bind(presenter)
+        setRouteParams: presenter.setRouteParams.bind(presenter),
+        replaceRouteParams: presenter.replaceRouteParams.bind(presenter)
     };
 }

@@ -30,15 +30,20 @@ describe("PublishPage", () => {
             },
             bindings: {
                 data: "any-data"
+            },
+            extensions: {
+                ext1: "ext-data"
             }
         })
     };
 
     const pagesCache = pageListCache;
+    const detailsCache = fullPageCache;
 
     beforeEach(() => {
         vi.clearAllMocks();
         pagesCache.clear();
+        detailsCache.clear();
         pagesCache.addItems([
             Page.create({
                 id: "page-1#0001",
@@ -58,6 +63,31 @@ describe("PublishPage", () => {
                 },
                 bindings: {
                     data: "any-data"
+                }
+            })
+        ]);
+        detailsCache.addItems([
+            Page.create({
+                id: "page-1#0001",
+                entryId: "page-1",
+                status: WbPageStatus.Draft,
+                location: {
+                    folderId: "folder-1"
+                },
+                properties: {
+                    title: "Page 1"
+                },
+                metadata: {
+                    metadata: "data-1"
+                },
+                elements: {
+                    element1: "element"
+                },
+                bindings: {
+                    data: "any-data"
+                },
+                extensions: {
+                    ext1: "ext-data"
                 }
             })
         ]);
@@ -89,6 +119,15 @@ describe("PublishPage", () => {
 
         expect(publishedItem?.id).toEqual("page-1#0001");
         expect(publishedItem?.status).toEqual(WbPageStatus.Published);
+
+        // Details cache is updated with the full gateway result including document fields
+        const detailItem = detailsCache.getItem(page => page.entryId === "page-1");
+        expect(detailItem).toBeDefined();
+        expect(detailItem?.id).toEqual("page-1#0001");
+        expect(detailItem?.status).toEqual(WbPageStatus.Published);
+        expect(detailItem?.elements).toMatchObject({ element1: "element" });
+        expect(detailItem?.bindings).toMatchObject({ data: "any-data" });
+        expect(detailItem?.extensions).toMatchObject({ ext1: "ext-data" });
     });
 
     it("should not publish a page if id is missing", async () => {

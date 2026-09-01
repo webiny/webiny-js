@@ -1,27 +1,32 @@
 import type { DragEventHandler } from "react";
-import React from "react";
-import { plugins } from "@webiny/plugins";
+import React, { useMemo } from "react";
+import { useContainer } from "@webiny/app";
+import { useModelEditor } from "~/admin/hooks/index.js";
 import Draggable from "../Draggable.js";
-import type { CmsModelFieldTypePlugin, CmsModelLayoutFieldTypePlugin } from "~/types.js";
 import { IconButton } from "@webiny/admin-ui";
 import { GridItem } from "./GridItem.js";
 import { SectionHeader } from "./SectionHeader.js";
 import { FieldsGrid } from "./FieldsGrid.js";
 import { ReactComponent as CollapseSidebarIcon } from "@webiny/icons/right_panel_open.svg";
+import { CmsFieldType, type ICmsFieldType } from "~/presentation/fieldTypes/abstractions.js";
+import {
+    CmsLayoutFieldType,
+    type ICmsLayoutFieldType
+} from "~/presentation/fieldTypes/abstractions.js";
 
 interface FieldProps {
     onFieldDragStart: DragEventHandler;
-    fieldType: CmsModelFieldTypePlugin["field"];
+    fieldType: ICmsFieldType;
 }
 
-const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }: FieldProps) => {
+const Field = ({ onFieldDragStart, fieldType }: FieldProps) => {
     return (
-        <Draggable beginDrag={{ type: "newField", fieldType: type }}>
+        <Draggable beginDrag={{ type: "newField", fieldType: fieldType.type }}>
             {({ drag }) => (
                 <GridItem
-                    testId={`cms-editor-fields-field-${type}`}
-                    label={label}
-                    icon={icon as React.ReactElement}
+                    testId={`cms-editor-fields-field-${fieldType.type}`}
+                    label={fieldType.label}
+                    icon={fieldType.icon}
                     onDragStart={onFieldDragStart}
                     dragRef={element => drag(element)}
                 />
@@ -32,12 +37,12 @@ const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }: FieldProp
 
 interface LayoutFieldItemProps {
     onFieldDragStart: DragEventHandler;
-    layoutField: CmsModelLayoutFieldTypePlugin["field"];
+    layoutFieldType: ICmsLayoutFieldType;
 }
 
 const LayoutFieldItem = ({
     onFieldDragStart,
-    layoutField: { type, label, icon }
+    layoutFieldType: { type, label, icon }
 }: LayoutFieldItemProps) => {
     return (
         <Draggable beginDrag={{ type: "newLayoutField", layoutFieldType: type }}>
@@ -60,13 +65,28 @@ interface FieldsSidebarProps {
 }
 
 export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarProps) => {
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
-        .filter(p => !p.field.hideInAdmin);
+    const container = useContainer();
+    const { data: model } = useModelEditor();
 
-    const layoutFieldPlugins = plugins.byType<CmsModelLayoutFieldTypePlugin>(
-        "cms-editor-layout-field-type"
-    );
+    const fieldTypes = useMemo(() => {
+        const existingTypes = new Set((model?.fields ?? []).map(f => f.type));
+        return container.resolveAll(CmsFieldType).filter(ft => {
+            if (ft.hideInAdmin) {
+                return false;
+            }
+            // Deprecated field types (e.g. "file", superseded by "asset") are only
+            // offered when the model already contains a field of that type, so
+            // existing models stay editable while new fields use the replacement.
+            if (ft.deprecated) {
+                return existingTypes.has(ft.type);
+            }
+            return true;
+        });
+    }, [container, model?.fields]);
+
+    const layoutFieldTypes = useMemo(() => {
+        return container.resolveAll(CmsLayoutFieldType);
+    }, [container]);
 
     return (
         <>
@@ -84,22 +104,18 @@ export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarPro
                 }
             />
             <FieldsGrid>
-                {fieldTypePlugins.map(fieldPlugin => (
-                    <Field
-                        key={fieldPlugin.field.type}
-                        fieldType={fieldPlugin.field}
-                        onFieldDragStart={onFieldDragStart}
-                    />
+                {fieldTypes.map(ft => (
+                    <Field key={ft.type} fieldType={ft} onFieldDragStart={onFieldDragStart} />
                 ))}
             </FieldsGrid>
-            {layoutFieldPlugins.length > 0 && (
+            {layoutFieldTypes.length > 0 && (
                 <>
                     <SectionHeader title={"Layout"} />
                     <FieldsGrid>
-                        {layoutFieldPlugins.map(lp => (
+                        {layoutFieldTypes.map(lft => (
                             <LayoutFieldItem
-                                key={lp.field.type}
-                                layoutField={lp.field}
+                                key={lft.type}
+                                layoutFieldType={lft}
                                 onFieldDragStart={onFieldDragStart}
                             />
                         ))}

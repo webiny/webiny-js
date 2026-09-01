@@ -4,7 +4,7 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
 import { createApiCoreSql, registerSQLCore } from "@webiny/api-core-sql";
-import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
 import { createCmsExtension } from "@webiny/api-headless-cms";
@@ -66,7 +66,6 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext(),
-        createFileManagerGraphQL(),
         createFileManagerAco(),
         createAssetDelivery(),
         createFileManagerS3(),

@@ -86,6 +86,9 @@ describe("UpdatePage", () => {
                 },
                 bindings: {
                     data: "any-data-updated"
+                },
+                extensions: {
+                    ext1: "ext-data-updated"
                 }
             })
         };
@@ -141,7 +144,7 @@ describe("UpdatePage", () => {
             data: "any-data-updated"
         });
 
-        // Details cache preserves elements and bindings from the DTO (sent data)
+        // Details cache is updated with the full gateway result including document fields
         const detailItem = detailsCache.getItem(page => page.entryId === "page-1");
         expect(detailItem).toBeDefined();
         expect(detailItem?.id).toEqual("page-1#0001");
@@ -151,9 +154,15 @@ describe("UpdatePage", () => {
         expect(detailItem?.metadata).toMatchObject({
             data: "metadata-1-updated"
         });
-        // elements and bindings come from the DTO (sent data), not the gateway result
-        expect(detailItem?.elements).toMatchObject({});
-        expect(detailItem?.bindings).toMatchObject({});
+        expect(detailItem?.elements).toMatchObject({
+            element1: "element-updated"
+        });
+        expect(detailItem?.bindings).toMatchObject({
+            data: "any-data-updated"
+        });
+        expect(detailItem?.extensions).toMatchObject({
+            ext1: "ext-data-updated"
+        });
     });
 
     it("should not update a page if id is missing", async () => {

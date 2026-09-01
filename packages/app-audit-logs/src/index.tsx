@@ -9,6 +9,9 @@ import { LogsView } from "~/views/Logs/LogsView.js";
 import { AuditLogsListWithConfig } from "~/config/list/index.js";
 import { Routes } from "~/routes.js";
 import { AlPermissionsFeature } from "~/features/permissions/feature.js";
+import { ListAuditLogsFeature } from "~/features/listAuditLogs/index.js";
+import { AuditLogDetailsPresenterFeature } from "~/views/Logs/Preview/feature.js";
+import { AiPromptPreviewTabs } from "~/views/Logs/Preview/tabs/AiPromptTabs.js";
 
 const { Menu, Route } = AdminConfig;
 
@@ -23,8 +26,11 @@ export const AuditLogs = () => {
     return (
         <>
             <RegisterFeature feature={AlPermissionsFeature} />
+            <RegisterFeature feature={ListAuditLogsFeature} />
+            <RegisterFeature feature={AuditLogDetailsPresenterFeature} />
             <LogsModule />
             <SecurityPermission />
+            <AiPromptPreviewTabs />
             <AdminConfig>
                 <HasPermission any={["al.*"]}>
                     <Menu

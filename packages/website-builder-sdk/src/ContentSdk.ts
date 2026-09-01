@@ -1,6 +1,7 @@
 import type {
     Component,
     IContentSdk,
+    IDataProvider,
     ListPagesOptions,
     ListPagesResult,
     PublicPage,
@@ -69,6 +70,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
     protected sdk?: InternalContentSdk;
     private isPreview = false;
     private lastConfig: any;
+    private dataProvider?: IDataProvider;
 
     public init(config: ContentSDKConfig, afterInit?: () => void): void {
         const configHash = JSON.stringify(config);
@@ -85,6 +87,7 @@ export class ContentSdk implements IContentSdk, IRedirects {
         });
 
         const dataProvider = new DefaultDataProvider({ apiClient });
+        this.dataProvider = dataProvider;
 
         let liveSdk: IContentSdk = new LiveSdk(dataProvider);
 
@@ -164,6 +167,13 @@ export class ContentSdk implements IContentSdk, IRedirects {
         if (!this.sdk) {
             throw new Error(`ContentSdk has not been initialized!`);
         }
+    }
+
+    private requireDataProvider(): IDataProvider {
+        if (!this.dataProvider) {
+            throw new Error(`ContentSdk has not been initialized!`);
+        }
+        return this.dataProvider;
     }
 }
 

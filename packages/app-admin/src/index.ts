@@ -21,9 +21,15 @@ export * from "./base/ui/CenteredView.js";
 export * from "./base/ui/Dashboard.js";
 export * from "./base/ui/NotFound.js";
 
+export { observer as createReactiveComponent } from "mobx-react-lite";
+
 // Base admin app
 export { Admin } from "./base/Admin.js";
 export * from "./config/AdminConfig.js";
+export type { ColumnConfig as TableColumnConfig } from "./config/table/Column.js";
+export type { SortingConfig as TableSortingConfig } from "./config/table/Sorting.js";
+export { Column as TableColumn } from "./config/table/Column.js";
+export { Sorting as TableSorting } from "./config/table/Sorting.js";
 
 export type { AdminProps } from "./base/Admin.js";
 
@@ -58,6 +64,11 @@ export { ToolsFeature } from "./features/tools/feature.js";
 export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
 
+export { DateFormatter } from "./features/dateFormatter/abstractions.js";
+export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";
+export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
+export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
+
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
@@ -72,6 +83,20 @@ export { lightTheme } from "./config/AdminConfig/Theme/lightTheme.js";
 export type { Theme } from "./config/AdminConfig/Theme/types.js";
 // Re-exported from @webiny/admin-ui so extension theme files can import everything from here.
 export { darkThemeBase, type ThemeVariables } from "@webiny/admin-ui";
+
+// Command palette (DI-based command registration)
+export {
+    Command,
+    CommandPaletteFeature,
+    CommandPalettePresenter
+} from "./presentation/commandPalette/index.js";
+export type {
+    ICommand,
+    CommandDetailProps,
+    CommandItemVm,
+    ActiveCommandVm,
+    CommandPaletteViewModel
+} from "./presentation/commandPalette/index.js";
 
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
@@ -138,6 +163,38 @@ export { PresenterErrors } from "./features/formModel/PresenterErrors.js";
 
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
+
+// Import all field renderers to ensure their module augmentations are applied.
+import "./base/Base/FieldRenderers/InputRenderer.js";
+import "./base/Base/FieldRenderers/SelectRenderer.js";
+import "./base/Base/FieldRenderers/MultiSelectRenderer.js";
+import "./base/Base/FieldRenderers/TextareaRenderer.js";
+import "./base/Base/FieldRenderers/SwitchRenderer.js";
+import "./base/Base/FieldRenderers/NumberInputRenderer.js";
+import "./base/Base/FieldRenderers/NumberInputsRenderer.js";
+import "./base/Base/FieldRenderers/TextInputsRenderer.js";
+import "./base/Base/FieldRenderers/TextareasRenderer.js";
+import "./base/Base/FieldRenderers/TagsRenderer.js";
+import "./base/Base/FieldRenderers/RadioButtonsRenderer.js";
+import "./base/Base/FieldRenderers/CheckboxesRenderer.js";
+import "./base/Base/FieldRenderers/DateTimeRenderer.js";
+import "./base/Base/FieldRenderers/DateTimeInputsRenderer.js";
+import "./base/Base/FieldRenderers/HiddenRenderer.js";
+import "./base/Base/FieldRenderers/PassthroughRenderer.js";
+import "./base/Base/FieldRenderers/FilePickerRenderer.js";
+import "./base/Base/FieldRenderers/FileUrlPickerRenderer.js";
+import "./base/Base/FieldRenderers/MultiFilePickerRenderer.js";
+import "./base/Base/FieldRenderers/CodeEditorRenderer.js";
+import "./base/Base/FieldRenderers/LexicalRenderer.js";
+import "./base/Base/FieldRenderers/PasswordInputRenderer.js";
+import "./base/Base/FieldRenderers/PermissionsRenderer.js";
+import "./base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import "./base/Base/FieldRenderers/ApiKeyTokenRenderer.js";
+import "./base/Base/FieldRenderers/MultiAutoCompleteRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/ObjectRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/ObjectAccordionMultipleRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/DynamicZoneRenderer.js";
+import "./base/Base/FieldRenderers/ObjectRenderer/KeyValueTagsRenderer.js";
 export type {
     FieldRenderers,
     FieldRendererComponent,

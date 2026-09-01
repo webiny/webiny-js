@@ -73,6 +73,8 @@ export const MODEL_FIELDS = `
     }
     plugin
     isBeingDeleted
+    metadata { valuesSelection }
+    settings
 `;
 /**
  * ############################

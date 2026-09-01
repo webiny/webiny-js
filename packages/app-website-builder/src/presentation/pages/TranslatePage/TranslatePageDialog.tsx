@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDialog } from "@webiny/app-admin";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { useLanguages } from "@webiny/languages/exports/admin/languages.js";
@@ -6,7 +6,7 @@ import { Bind, Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { FolderPicker } from "@webiny/app-aco";
 import { useTranslatePage } from "~/presentation/pages/hooks/useTranslatePage.js";
-import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
+import { useEditPageUrl } from "~/presentation/pages/PageList/hooks/useEditPageUrl.js";
 import { translatePageParams } from "./translatePageSchema.js";
 import { LanguageSelector } from "~/presentation/components/LanguageSelector.js";
 
@@ -17,6 +17,7 @@ export const TranslatePageDialog = () => {
     const { translatePage } = useTranslatePage();
     const { goToPageEditor } = useEditPageUrl();
     const { languages, loading } = useLanguages();
+    const [translating, setTranslating] = useState(false);
 
     const handleSubmit = async (data: Record<string, unknown>) => {
         const { languageCode, folderId } = data as {
@@ -24,14 +25,20 @@ export const TranslatePageDialog = () => {
             folderId: string;
         };
 
-        const newPage = await translatePage({
-            id: params.pageId,
-            languageCode,
-            folderId
-        });
+        setTranslating(true);
 
-        closeDialog();
-        goToPageEditor(newPage.id);
+        try {
+            const newPage = await translatePage({
+                id: params.pageId,
+                languageCode,
+                folderId
+            });
+
+            closeDialog();
+            goToPageEditor(newPage.id);
+        } finally {
+            setTranslating(false);
+        }
     };
 
     return (
@@ -40,14 +47,21 @@ export const TranslatePageDialog = () => {
                 <Dialog
                     open={true}
                     onClose={closeDialog}
+                    dismissible={!translating}
+                    loading={translating ? { text: "Translating page..." } : undefined}
                     title="Translate Page"
                     description="Select a target language and destination folder"
                     actions={
                         <>
-                            <Dialog.CancelAction onClick={closeDialog} text="Cancel" />
+                            <Dialog.CancelAction
+                                onClick={closeDialog}
+                                text="Cancel"
+                                disabled={translating}
+                            />
                             <Dialog.ConfirmAction
                                 onClick={submit}
                                 text={loading ? "Loading..." : "Confirm"}
+                                disabled={translating}
                             />
                         </>
                     }

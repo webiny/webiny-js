@@ -115,6 +115,7 @@ export const createWorkflowStateSchema = () => {
                 currentStep: WorkflowStateStep!
                 nextStep: WorkflowStateStep
                 previousStep: WorkflowStateStep
+                targetContext: JSON
             }
 
             type ListWorkflowStatesResponse {

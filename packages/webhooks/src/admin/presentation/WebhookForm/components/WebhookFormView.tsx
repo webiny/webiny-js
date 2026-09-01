@@ -60,11 +60,7 @@ const WebhookFormViewInner = observer(function WebhookFormViewInner() {
         <SimpleForm>
             {vm.loading ? <OverlayLoader text={"Loading..."} /> : null}
             {vm.saving ? <OverlayLoader text={"Saving..."} /> : null}
-            {vm.form.errors.length > 0 ? (
-                <div className={"mb-lg"}>
-                    <FormErrors form={vm.form} />
-                </div>
-            ) : null}
+            <FormErrors form={vm.form} className={"mb-lg"} />
             <SimpleFormHeader
                 title={vm.isNew ? "Create Webhook" : (vm.webhook?.name ?? "Edit Webhook")}
             />

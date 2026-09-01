@@ -9,13 +9,15 @@ import { RecordLockingConfig, RecordLockingModel } from "~/domain/abstractions.j
 import { LockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordValues } from "~/domain/types.js";
 import { LockRecordPersistenceError } from "~/domain/errors.js";
+import { CmsWhereMapper } from "@webiny/api-headless-cms";
 import { convertWhereCondition } from "~/utils/convertWhereCondition.js";
 
 class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private model: RecordLockingModel.Interface,
         private config: RecordLockingConfig.Interface,
-        private listEntries: ListLatestEntriesUseCase.Interface
+        private listEntries: ListLatestEntriesUseCase.Interface,
+        private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(
@@ -24,7 +26,10 @@ class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             const params = {
                 ...input,
-                where: convertWhereCondition(input?.where || {})
+                where: this.cmsWhereMapper.map({
+                    input: convertWhereCondition(input?.where),
+                    fields: this.model.fields
+                })
             };
 
             const result = await this.listEntries.execute<LockRecordValues>(this.model, params);
@@ -49,5 +54,10 @@ class ListLockRecordsRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListLockRecordsRepository = RepositoryAbstraction.createImplementation({
     implementation: ListLockRecordsRepositoryImpl,
-    dependencies: [RecordLockingModel, RecordLockingConfig, ListLatestEntriesUseCase]
+    dependencies: [
+        RecordLockingModel,
+        RecordLockingConfig,
+        ListLatestEntriesUseCase,
+        CmsWhereMapper
+    ]
 });

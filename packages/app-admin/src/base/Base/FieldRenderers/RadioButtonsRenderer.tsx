@@ -9,12 +9,16 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
+const isValidValue = (value: unknown): value is string | number =>
+    typeof value === "string" || typeof value === "number";
+
 export const RadioButtonsRenderer = createFieldRenderer(({ field }) => {
     const options: IValueOption[] = field.options ?? [];
 
     return (
         <RadioGroup
             label={field.label}
+            hint={field.help}
             description={field.description}
             note={field.note}
             required={field.required}
@@ -22,9 +26,9 @@ export const RadioButtonsRenderer = createFieldRenderer(({ field }) => {
             validation={field.validation}
             items={options.map(opt => ({
                 label: opt.label,
-                value: String(opt.value)
+                value: isValidValue(opt.value) ? String(opt.value) : opt.value
             }))}
-            value={field.value !== undefined ? String(field.value) : undefined}
+            value={isValidValue(field.value) ? String(field.value) : undefined}
             onChange={value => {
                 field.onChange(value);
                 field.onBlur();

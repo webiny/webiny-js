@@ -50,6 +50,11 @@ export function createTemplateBuilder(): TemplateBuilderInternal {
                         `The discriminator is added automatically.`
                 );
             }
+            for (const [fieldName, builder] of Object.entries(childBuilders)) {
+                if (builder) {
+                    builder.build(fieldName);
+                }
+            }
             return { id, label, icon, childBuilders, visible: visibleFn };
         }
     };
@@ -116,6 +121,8 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     }
 
     override build(name: string): IObjectFieldConfig {
+        this._config.name = name;
+
         if (this._templates && Object.keys(this._childBuilders).length > 0) {
             throw new Error(
                 `Object field "${name}" has both .fields() and .template() defined. ` +
@@ -125,7 +132,6 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
 
         return {
             ...this._config,
-            name,
             childBuilders: this._childBuilders,
             isList: this._isList,
             listSchema: this._listSchema,

@@ -10,7 +10,6 @@ import { buildPackage } from "./buildSinglePackage";
 import { getHardwareInfo } from "./getHardwareInfo";
 import execa from "execa";
 import notifier from "node-notifier";
-
 import path from "path";
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
@@ -23,7 +22,11 @@ const { green, red } = chalk;
 const projectFolder = path.basename(process.cwd());
 
 const sendNotification = (title: string, message: string) => {
-    notifier.notify({ title, message });
+    try {
+        notifier.notify({ title, message });
+    } catch {
+        // does not matter
+    }
 };
 
 interface BuildOptions {

@@ -36,15 +36,18 @@ export interface IFieldRendererRegistry {
     dateTimeInputs: {
         fieldType: "datetime";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     dynamicZone: {
         fieldType: "dynamicZone";
         settings?: {
+            /** Whether the accordion is expanded by default. */
             open?: boolean;
+            /** Wrap the zone in a container panel. Set to `false` for a flat inline layout. */
+            container?: boolean;
+            /** Label for the "add item" button (defaults to "Add Item"). */
+            addItemLabel?: string;
         };
     };
     hidden: {
@@ -58,9 +61,7 @@ export interface IFieldRendererRegistry {
     lexicalEditors: {
         fieldType: "rich-text";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     textarea: {
@@ -70,9 +71,7 @@ export interface IFieldRendererRegistry {
     textareas: {
         fieldType: "long-text";
         settings: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     numberInput: {
@@ -82,24 +81,35 @@ export interface IFieldRendererRegistry {
     numberInputs: {
         fieldType: "number";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
     objectAccordionSingle: {
         fieldType: "object";
         settings?: {
+            /** Whether the accordion is expanded by default. */
             open?: boolean;
+            /** Wrap the object in a container panel. Set to `false` for a flat inline layout. */
+            container?: boolean;
+            /** Field ID whose value is used as the accordion title, or a function receiving the object data. */
+            itemTitle?: string;
+            /** Field ID whose value is used as the accordion description, or a function receiving the object data. */
+            itemDescription?: string;
         };
     };
     objectAccordionMultiple: {
         fieldType: "object";
         settings?: {
+            /** Whether each accordion item is expanded by default. */
             open?: boolean;
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            /** Wrap the list in a container panel. Set to `false` for a flat inline layout. */
+            container?: boolean;
+            /** Field ID whose value is used as each item's accordion title. */
+            itemTitle?: string;
+            /** Field ID whose value is used as each item's accordion description. */
+            itemDescription?: string;
+            /** Label for the "add item" button (defaults to "Add {fieldLabel}"). */
+            addItemLabel?: string;
         };
     };
     passthrough: {
@@ -117,6 +127,7 @@ export interface IFieldRendererRegistry {
     refDialogMultiple: {
         fieldType: "ref";
         settings?: {
+            /** Where newly picked references are inserted: `"first"` (top) or `"last"` (bottom, default). */
             newItemPosition?: "first" | "last";
         };
     };
@@ -136,6 +147,11 @@ export interface IFieldRendererRegistry {
         fieldType: "ref";
         settings: undefined;
     };
+    select: {
+        fieldType: "text" | "number";
+        settings: undefined;
+    };
+    /** @deprecated Use "select" instead. */
     dropdown: {
         fieldType: "text" | "number";
         settings: undefined;
@@ -151,21 +167,41 @@ export interface IFieldRendererRegistry {
     textInputs: {
         fieldType: "text";
         settings?: {
-            multiValue?: {
-                addValueButtonLabel?: string;
-            };
+            addItemLabel?: string;
         };
     };
+    /** @deprecated Use `assetField` instead. */
     file: {
         fieldType: "file";
         settings?: {
+            /** Only allow image files to be selected. */
             imagesOnly?: boolean;
         };
     };
+    /** @deprecated Use `assetFields` instead. */
     files: {
         fieldType: "file";
         settings?: {
+            /** Only allow image files to be selected. */
             imagesOnly?: boolean;
+        };
+    };
+    assetField: {
+        fieldType: "asset";
+        settings?: {
+            /** Only allow image files to be selected. */
+            imagesOnly?: boolean;
+            /** MIME types or extensions to allow (e.g. `["image/png", "application/pdf"]`). Leave empty to allow all. */
+            accept?: string[];
+        };
+    };
+    assetFields: {
+        fieldType: "asset";
+        settings?: {
+            /** Only allow image files to be selected. */
+            imagesOnly?: boolean;
+            /** MIME types or extensions to allow (e.g. `["image/png", "application/pdf"]`). Leave empty to allow all. */
+            accept?: string[];
         };
     };
     uiSeparator: {
@@ -211,12 +247,15 @@ const rendererNameMap: Record<keyof IFieldRendererRegistry, string> = {
     refAutocompleteMultiple: "ref-inputs",
     refCheckboxes: "ref-simple-multiple",
     refRadioButtons: "ref-simple-single",
+    select: "select-box",
     dropdown: "select-box",
     tags: "tags",
     textInput: "text-input",
     textInputs: "text-inputs",
     file: "file-input",
     files: "file-inputs",
+    assetField: "asset-input",
+    assetFields: "asset-inputs",
     uiSeparator: "uiSeparator",
     uiAlert: "uiAlert",
     uiTabs: "uiTabs"
@@ -401,7 +440,8 @@ export class DataFieldBuilder<TType extends string = string> extends BaseFieldBu
                 note: this.config.note || null,
                 renderer: this.config.renderer || null,
                 settings: this.config.settings || {},
-                tags: this.config.tags || []
+                tags: this.config.tags || [],
+                rules: this.config.rules
             }
         };
     }

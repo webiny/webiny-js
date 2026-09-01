@@ -24,9 +24,11 @@ export const FilePickerRenderer = createFieldRenderer<"filePicker">(({ field }) 
             render={({ showFileManager }) => (
                 <FilePicker
                     label={field.label}
+                    hint={field.help}
                     description={field.description}
                     type="area"
                     value={toFilePickerValue(field.value)}
+                    validation={field.validation}
                     onSelectItem={() =>
                         showFileManager((file: FileManagerFileItem) => {
                             field.onChange(fileManagerItemToValue(file));

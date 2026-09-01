@@ -1,3 +1,4 @@
+.caveman.json
 .idea
 .webpack
 .webiny
@@ -39,7 +40,6 @@ globalConfig.json
 schema.graphql
 .tmp/
 .swc/
-.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases

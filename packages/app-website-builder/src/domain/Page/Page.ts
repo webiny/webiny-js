@@ -1,4 +1,4 @@
-import type { WbIdentity, WbLive, WbLocation, WbSystem } from "~/types.js";
+import type { WbIdentity, WbLive, WbLocation, WbPageSystem } from "~/types.js";
 import { ROOT_FOLDER, WbPageStatus, type WbStatus } from "~/constants.js";
 
 export interface PageData {
@@ -18,7 +18,7 @@ export interface PageData {
     savedOn?: string;
     modifiedBy?: WbIdentity | null;
     modifiedOn?: string | null;
-    system?: WbSystem | null;
+    system?: WbPageSystem | null;
     live?: WbLive | null;
     revisionDescription?: string;
 }
@@ -40,7 +40,7 @@ export class Page {
     public savedOn: string;
     public modifiedBy: WbIdentity;
     public modifiedOn: string;
-    public system: WbSystem | null;
+    public system: WbPageSystem | null;
     public live: WbLive | null = null;
     public revisionDescription?: string | undefined;
 

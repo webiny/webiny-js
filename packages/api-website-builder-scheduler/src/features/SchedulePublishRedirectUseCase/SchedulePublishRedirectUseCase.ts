@@ -15,6 +15,7 @@ class SchedulePublishRedirectUseCaseImpl implements UseCaseAbstraction.Interface
             namespace: createNamespace(SCHEDULED_ACTION_TYPE_REDIRECT),
             actionType: ScheduledActionTypePublish,
             scheduleFor: params.scheduleFor,
+            tenant: params.tenant,
             targetId: params.id
         });
         if (scheduleResult.isFail()) {

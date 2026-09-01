@@ -13,6 +13,7 @@ describe("Lexical State Transformer", () => {
         expect(output).toEqual([
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-heading",
                     __parent: "root",
                     __prev: null,
@@ -21,6 +22,8 @@ describe("Lexical State Transformer", () => {
                     __first: "2",
                     __last: "2",
                     __size: 1,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -28,12 +31,16 @@ describe("Lexical State Transformer", () => {
                     __textFormat: 0,
                     __textStyle: "",
                     __tag: "h1",
-                    __styleId: "heading1"
+                    __styleId: "heading1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<h1 dir="ltr"><span style="white-space: pre-wrap;">Test CMS Title</span></h1>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "1",
@@ -42,18 +49,24 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><br></p>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "3",
@@ -62,18 +75,24 @@ describe("Lexical State Transformer", () => {
                     __first: "5",
                     __last: "8",
                     __size: 3,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><span style="white-space: pre-wrap;">Testing a </span><a href="https://space.com" rel="noreferrer" dir="ltr"><span style="white-space: pre-wrap;">link</span></a><span style="white-space: pre-wrap;"> for parsing</span></p>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "4",
@@ -82,18 +101,24 @@ describe("Lexical State Transformer", () => {
                     __first: "10",
                     __last: "10",
                     __size: 1,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><span style="white-space: pre-wrap;">Test CMS Paragraph</span></p>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "9",
@@ -102,18 +127,24 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><br></p>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-quote",
                     __parent: "root",
                     __prev: "11",
@@ -122,18 +153,24 @@ describe("Lexical State Transformer", () => {
                     __first: "13",
                     __last: "14",
                     __size: 2,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "quote"
+                    __styleId: "quote",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<blockquote dir="ltr"><span style="white-space: pre-wrap;">Test quote from lexical </span><strong style="white-space: pre-wrap;">CMS</strong></blockquote>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "12",
@@ -142,18 +179,24 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><br></p>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-list",
                     __parent: "root",
                     __prev: "15",
@@ -162,6 +205,8 @@ describe("Lexical State Transformer", () => {
                     __first: "17",
                     __last: "21",
                     __size: 3,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
@@ -171,12 +216,16 @@ describe("Lexical State Transformer", () => {
                     __styleId: "",
                     __listType: "bullet",
                     __tag: "ul",
-                    __start: 1
+                    __start: 1,
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<ul dir="ltr"><li value="1" dir="ltr"><span style="white-space: pre-wrap;">List item 1</span></li><li value="2" dir="ltr"><span style="white-space: pre-wrap;">List item 2</span></li><li value="3" dir="ltr"><span style="white-space: pre-wrap;">List item 3</span></li></ul>'
             },
             {
                 node: {
+                    __className: undefined,
                     __type: "wby-paragraph",
                     __parent: "root",
                     __prev: "16",
@@ -185,13 +234,18 @@ describe("Lexical State Transformer", () => {
                     __first: null,
                     __last: null,
                     __size: 0,
+                    __slotHost: null,
+                    __slots: null,
                     __format: 0,
                     __style: "",
                     __indent: 0,
                     __dir: null,
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: "<p><br></p>"
             }

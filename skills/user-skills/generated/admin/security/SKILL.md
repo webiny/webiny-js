@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-security-catalog
-context: webiny-api
 description: >
   admin/security — 15 abstractions.
 ---

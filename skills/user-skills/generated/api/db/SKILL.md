@@ -1,8 +1,7 @@
 ---
 name: webiny-api-db-catalog
-context: webiny-api
 description: >
-  api/db — 3 abstractions.
+  api/db — 6 abstractions.
 ---
 
 # api/db
@@ -15,6 +14,24 @@ description: >
 4. See `webiny-use-case-pattern` or `webiny-event-handler-pattern` skills for implementation patterns
 
 ## Abstractions
+
+---
+
+**Name:** `DbRegistry`
+**Import:** `import { DbRegistry } from "webiny/api/db"`
+**Source:** `@webiny/db/features/DbRegistry/index.ts`
+
+---
+
+**Name:** `DbRegistryFeature`
+**Import:** `import { DbRegistryFeature } from "webiny/api/db"`
+**Source:** `@webiny/db/features/DbRegistry/index.ts`
+
+---
+
+**Name:** `DynamoDBClient`
+**Import:** `import { DynamoDBClient } from "webiny/api/db"`
+**Source:** `@webiny/db-dynamodb/feature/DynamoDBClient/index.ts`
 
 ---
 

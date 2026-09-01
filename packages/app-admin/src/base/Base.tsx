@@ -8,6 +8,7 @@ import { DefaultFieldRenderers } from "./Base/DefaultFieldRenderers.js";
 import { DefaultLayoutRenderers } from "./Base/DefaultLayoutRenderers.js";
 import { DefaultLexicalEditorConfig } from "~/components/LexicalEditor/DefaultLexicalEditorConfig.js";
 import { ThemeModeApplier } from "./Base/ThemeMode/ThemeModeApplier.js";
+import { AccessManagementExtension } from "~/modules/AccessManagementExtension.js";
 
 const BaseExtension = () => {
     return (
@@ -21,6 +22,7 @@ const BaseExtension = () => {
             <DefaultFieldRenderers />
             <DefaultLayoutRenderers />
             <DefaultLexicalEditorConfig />
+            <AccessManagementExtension />
         </>
     );
 };

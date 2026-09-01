@@ -13,6 +13,11 @@ import { ProjectsFeature } from "./features/Projects/feature.js";
 import { AiPromptContextFeature } from "./features/AiPromptContext/feature.js";
 import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.js";
 import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
+import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
+import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
+import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
+import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
+import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -27,6 +32,8 @@ export const Extension = createFeature({
         ProjectsFeature.register(container);
         AiPromptContextFeature.register(container);
         WbGeneratePageContentFeature.register(container);
+        CmsGenerateEntryContentFeature.register(container);
+        CmsResolveImageToolFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
         const wcp = container.resolve(WcpContext);
@@ -34,7 +41,11 @@ export const Extension = createFeature({
             AiImageEnrichmentFeature.register(container);
         }
 
+        CmsCompareEntryRevisionsFeature.register(container);
+        WbTranslatePageFeature.register(container);
+
         container.register(AiPowerUpsSettingsGraphQLMapperImpl).inSingletonScope();
         container.register(BaseGraphQLSchema);
+        container.register(CmsCompareEntryRevisionsSchema);
     }
 });

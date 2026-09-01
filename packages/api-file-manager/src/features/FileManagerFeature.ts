@@ -10,6 +10,12 @@ import { SettingsInstallerFeature } from "~/features/settings/SettingsInstaller/
 import { GetSettingsFeature } from "~/features/settings/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/feature.js";
 import { ListImagesByTagToolFeature } from "~/features/file/ListImagesByTagTool/feature.js";
+import { FileUrlGeneratorFeature } from "~/features/file/FileUrlGenerator/feature.js";
+import { GetFileByUrlFeature } from "~/features/file/GetFileByUrl/feature.js";
+import { ReadFileMetadataFeature } from "~/features/upload/ReadFileMetadata/feature.js";
+import { WriteFileMetadataFeature } from "~/features/upload/WriteFileMetadata/feature.js";
+import { FmGraphQLSchema } from "~/graphql/FmGraphQLSchema.js";
+import { FmUploadGraphQLSchema } from "~/graphql/FmUploadGraphQLSchema.js";
 
 export const FileManagerFeature = createFeature({
     name: "FileManager",
@@ -25,5 +31,13 @@ export const FileManagerFeature = createFeature({
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
         ListImagesByTagToolFeature.register(container);
+        FileUrlGeneratorFeature.register(container);
+        GetFileByUrlFeature.register(container);
+        ReadFileMetadataFeature.register(container);
+        WriteFileMetadataFeature.register(container);
+
+        /* GraphQL schema factories. */
+        container.register(FmGraphQLSchema);
+        container.register(FmUploadGraphQLSchema);
     }
 });

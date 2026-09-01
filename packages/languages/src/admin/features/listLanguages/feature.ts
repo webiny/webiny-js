@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/admin";
+import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
 import {
     ListLanguagesUseCase as UseCaseAbstraction,
     ListLanguagesRepository as RepositoryAbstraction,
@@ -11,7 +12,6 @@ import { ListLanguagesGateway } from "./ListLanguagesGateway.js";
 import { LanguageEntryAfterCreateHandler } from "./LanguageEntryAfterCreateHandler.js";
 import { LanguageEntryAfterUpdateHandler } from "./LanguageEntryAfterUpdateHandler.js";
 import { LanguageEntryAfterDeleteHandler } from "./LanguageEntryAfterDeleteHandler.js";
-import { ListCache } from "@webiny/app-headless-cms/features/ListCache.js";
 
 export const ListLanguagesFeature = createFeature({
     name: "Languages/ListLanguages",

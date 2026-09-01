@@ -7,12 +7,10 @@ import {
 import type { Asset, AssetRequest } from "./index.js";
 import type { Reply } from "@webiny/handler/types.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import {
-    AssetRequestResolver,
-    AssetResolver,
-    AssetProcessor,
-    AssetOutputStrategy
-} from "~/features/assetDelivery/abstractions.js";
+import { AssetRequestResolver } from "~/features/assetDelivery/abstractions/AssetRequestResolver.js";
+import { AssetResolver } from "~/features/assetDelivery/abstractions/AssetResolver.js";
+import { AssetProcessor } from "~/features/assetDelivery/abstractions/AssetProcessor.js";
+import { AssetOutputStrategy } from "~/features/assetDelivery/abstractions/AssetOutputStrategy.js";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",

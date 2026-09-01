@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction, computed } from "mobx";
+import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
 import {
     FileDetailsPresenter as Abstraction,
     type IFileDetailsPresenter,
@@ -6,12 +7,12 @@ import {
 } from "./abstractions.js";
 import { GetFileUseCase } from "../../features/getFile/abstractions.js";
 import { UpdateFileUseCase } from "../../features/updateFile/abstractions.js";
-import { DeleteFileUseCase } from "../../features/deleteFile/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { FileManagerPermissions } from "../../features/permissions/abstractions.js";
 import { GetSettingsRepository } from "../../features/settings/abstractions.js";
 import type { FmFile } from "../../features/shared/types.js";
+import type { UpdateFileData } from "../../features/updateFile/abstractions.js";
 
 class FileDetailsPresenterImpl implements IFileDetailsPresenter {
     private file: FmFile | null = null;
@@ -21,10 +22,10 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
     constructor(
         private getFileUseCase: GetFileUseCase.Interface,
         private updateFileUseCase: UpdateFileUseCase.Interface,
-        private deleteFileUseCase: DeleteFileUseCase.Interface,
         private formModelFactory: FormModelFactory.Interface,
         private permissions: FileManagerPermissions.Interface,
-        private settingsRepository: GetSettingsRepository.Interface
+        private settingsRepository: GetSettingsRepository.Interface,
+        private wcp: WcpService.Interface
     ) {
         // Build an empty form initially.
         this.form = this.buildForm();
@@ -56,18 +57,26 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
                 if (result.success) {
                     this.file = result.file;
                     this.form = this.buildForm();
-                    this.form.setData({
+
+                    const formData: Record<string, unknown> = {
                         name: result.file.name ?? "",
                         description: result.file.description ?? "",
-                        tags: result.file.tags ?? [],
-                        accessControl: result.file.accessControl?.type ?? "public"
-                    });
+                        tags: result.file.tags ?? []
+                    };
+
+                    if (this.canUsePrivateFiles()) {
+                        formData.accessControl = result.file.accessControl?.type ?? "public";
+                    }
+
+                    this.form.setData(formData);
 
                     if (!this.permissions.canEdit("file", result.file)) {
                         this.form.field("name").setDisabled(true);
                         this.form.field("description").setDisabled(true);
                         this.form.field("tags").setDisabled(true);
-                        this.form.field("accessControl").setDisabled(true);
+                        if (this.canUsePrivateFiles()) {
+                            this.form.field("accessControl").setDisabled(true);
+                        }
                     }
                 }
             });
@@ -76,6 +85,12 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
                 this.loading = null;
             });
         }
+    }
+
+    setFile(file: FmFile): void {
+        runInAction(() => {
+            this.file = file;
+        });
     }
 
     async saveFile(): Promise<boolean> {
@@ -93,16 +108,21 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
         });
 
         try {
+            const updateData: UpdateFileData = {
+                name: data.name as string,
+                description: data.description as string,
+                tags: data.tags as string[]
+            };
+
+            if (this.canUsePrivateFiles()) {
+                updateData.accessControl = {
+                    type: data.accessControl as "public" | "private-authenticated"
+                };
+            }
+
             await this.updateFileUseCase.execute({
                 id: this.file.id,
-                data: {
-                    name: data.name as string,
-                    description: data.description as string,
-                    tags: data.tags as string[],
-                    accessControl: {
-                        type: data.accessControl as "public" | "private-authenticated"
-                    }
-                }
+                data: updateData
             });
             return true;
         } finally {
@@ -114,31 +134,53 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
 
     private buildForm(): IFormModel {
         return this.formModelFactory.create({
-            fields: fields => ({
-                name: fields.text().label("Name").required().placeholder("Enter name"),
-                description: fields
-                    .text()
-                    .label("Description")
-                    .renderer("textarea")
-                    .placeholder("Enter description"),
-                tags: fields.text().label("Tags").list().renderer("tags").placeholder("Add tags"),
-                accessControl: fields
-                    .text()
-                    .label("Access Control")
-                    .help("Control who can access this file.")
-                    .options([
-                        { label: "Public", value: "public" },
-                        { label: "Private (Authenticated)", value: "private-authenticated" }
-                    ])
-                    .defaultValue("public")
-            }),
-            layout: layout => [
-                layout.row("name"),
-                layout.row("description"),
-                layout.row("tags"),
-                layout.row("accessControl")
-            ]
+            fields: fields => {
+                const fieldDefs: Record<string, any> = {
+                    name: fields.text().label("Name").required().placeholder("Enter name"),
+                    description: fields
+                        .text()
+                        .label("Description")
+                        .renderer("textarea")
+                        .placeholder("Enter description"),
+                    tags: fields
+                        .text()
+                        .label("Tags")
+                        .list()
+                        .renderer("tags")
+                        .placeholder("Add tags")
+                };
+
+                if (this.canUsePrivateFiles()) {
+                    fieldDefs.accessControl = fields
+                        .text()
+                        .label("Access Control")
+                        .help("Control who can access this file.")
+                        .options([
+                            { label: "Public", value: "public" },
+                            {
+                                label: "Private (Authenticated)",
+                                value: "private-authenticated"
+                            }
+                        ])
+                        .defaultValue("public");
+                }
+
+                return fieldDefs;
+            },
+            layout: layout => {
+                const rows = [layout.row("name"), layout.row("description"), layout.row("tags")];
+
+                if (this.canUsePrivateFiles()) {
+                    rows.push(layout.row("accessControl"));
+                }
+
+                return rows;
+            }
         });
+    }
+
+    private canUsePrivateFiles(): boolean {
+        return this.wcp.getProject().canUsePrivateFiles();
     }
 
     private buildPreviewUrl(): string | null {
@@ -155,9 +197,9 @@ export const FileDetailsPresenter = Abstraction.createImplementation({
     dependencies: [
         GetFileUseCase,
         UpdateFileUseCase,
-        DeleteFileUseCase,
         FormModelFactory,
         FileManagerPermissions,
-        GetSettingsRepository
+        GetSettingsRepository,
+        WcpService
     ]
 });

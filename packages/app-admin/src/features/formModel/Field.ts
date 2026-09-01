@@ -14,12 +14,50 @@ import type {
     OnBlurCallback,
     RequiredWhenCallback,
     HiddenWhenCallback,
-    ComputedFieldCallback
+    DisabledWhenCallback,
+    ComputedFieldCallback,
+    IFieldCallbackParams,
+    IFieldNavigator,
+    IFieldScope
 } from "./abstractions.js";
 
 /**
  * Runtime observable field. Holds value, validation state, and exposes a VM for renderers.
  */
+class FieldScope implements IFieldScope {
+    constructor(
+        private _form: IFormModel,
+        private _path: string
+    ) {}
+
+    field(name: string): IField {
+        const path = this._path ? `${this._path}.${name}` : name;
+        return this._form.field(path);
+    }
+
+    parent(): IFieldScope {
+        if (!this._path) {
+            throw new Error("Cannot navigate above root level.");
+        }
+        const segments = this._path.split(".");
+        segments.pop();
+        return new FieldScope(this._form, segments.join("."));
+    }
+}
+
+class FieldNavigator implements IFieldNavigator {
+    constructor(
+        private _form: IFormModel,
+        private _qualifiedName: string
+    ) {}
+
+    parent(): IFieldScope {
+        const segments = this._qualifiedName.split(".");
+        segments.pop();
+        return new FieldScope(this._form, segments.join("."));
+    }
+}
+
 export class Field implements IField {
     private _value: unknown;
     private _validation: IFieldValidation = { isValid: null };
@@ -31,6 +69,7 @@ export class Field implements IField {
     private _onBlurCallbacks: OnBlurCallback[] = [];
     private _requiredWhenCallbacks: RequiredWhenCallback[] = [];
     private _hiddenWhenCallbacks: HiddenWhenCallback[] = [];
+    private _disabledWhenCallbacks: DisabledWhenCallback[] = [];
     private _computed: ComputedFieldCallback | null = null;
     private _computedUntilDirty: ComputedFieldCallback | null = null;
     /** Set once a computedUntilDirty field receives its first user edit. */
@@ -41,6 +80,7 @@ export class Field implements IField {
     private _isUIChange = false;
     private _focusRequested = false;
     private _qualifiedName: string = "";
+    private _parentPath: string = "";
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
 
@@ -75,6 +115,9 @@ export class Field implements IField {
         if (config.hiddenWhenCallbacks) {
             this._hiddenWhenCallbacks = [...config.hiddenWhenCallbacks];
         }
+        if (config.disabledWhenCallbacks) {
+            this._disabledWhenCallbacks = [...config.disabledWhenCallbacks];
+        }
         if (config.computed) {
             this._computed = config.computed;
         } else if (config.computedUntilDirty) {
@@ -97,10 +140,10 @@ export class Field implements IField {
 
     getValue<T = unknown>(): T {
         if (this._computed && this._form) {
-            return this._computed(this._form) as T;
+            return this._computed(this._callbackParams()) as T;
         }
         if (this._computedUntilDirty && !this._computedOverridden && this._form) {
-            return this._computedUntilDirty(this._form) as T;
+            return this._computedUntilDirty(this._callbackParams()) as T;
         }
         return this._value as T;
     }
@@ -115,7 +158,7 @@ export class Field implements IField {
             ? this._applyNormalizeValue(raw, this.config.normalizeValue)
             : raw;
         for (const cb of this._beforeChangeCallbacks) {
-            transformed = cb(transformed, this._form!);
+            transformed = cb(transformed, this._callbackParams());
         }
 
         if (transformed === this._value) {
@@ -123,7 +166,9 @@ export class Field implements IField {
         }
 
         const wasComputed = this._computedUntilDirty && !this._computedOverridden && this._form;
-        const computedValue = wasComputed ? this._computedUntilDirty!(this._form!) : undefined;
+        const computedValue = wasComputed
+            ? this._computedUntilDirty!(this._callbackParams())
+            : undefined;
 
         this._value = transformed;
         if (this._computedUntilDirty && this._isUIChange) {
@@ -133,12 +178,12 @@ export class Field implements IField {
         }
 
         for (const cb of this._afterChangeCallbacks) {
-            cb(transformed, this._form!);
+            cb(transformed, this._callbackParams());
         }
 
         if (!this._isUIChange) {
             for (const cb of this._afterSetValueCallbacks) {
-                cb(transformed, this._form!);
+                cb(transformed, this._callbackParams());
             }
         }
     }
@@ -152,7 +197,14 @@ export class Field implements IField {
             : value;
         this._value = parsed;
         if (this._computedUntilDirty) {
-            this._computedOverridden = parsed !== null && parsed !== undefined;
+            if (parsed === null || parsed === undefined) {
+                this._computedOverridden = false;
+            } else if (this._form) {
+                const computedValue = this._computedUntilDirty(this._callbackParams());
+                this._computedOverridden = parsed !== computedValue;
+            } else {
+                this._computedOverridden = true;
+            }
         }
     }
 
@@ -169,6 +221,15 @@ export class Field implements IField {
         if (all.length === 0) {
             return { visible: true, disabled: false };
         }
+        if (this._parentPath) {
+            const resolved = all.map(rule => {
+                if (rule.target.startsWith("$.")) {
+                    return { ...rule, target: `${this._parentPath}.${rule.target.slice(2)}` };
+                }
+                return rule;
+            });
+            return this._form.evaluateRules(resolved);
+        }
         return this._form.evaluateRules(all);
     }
 
@@ -177,8 +238,9 @@ export class Field implements IField {
             return false;
         }
         if (this._form && this._hiddenWhenCallbacks.length > 0) {
+            const scoped = this._callbackParams();
             for (const cb of this._hiddenWhenCallbacks) {
-                if (cb(this._form)) {
+                if (cb(scoped)) {
                     return false;
                 }
             }
@@ -189,6 +251,14 @@ export class Field implements IField {
     get disabled(): boolean {
         if (this._disabled) {
             return true;
+        }
+        if (this._form && this._disabledWhenCallbacks.length > 0) {
+            const scoped = this._callbackParams();
+            for (const cb of this._disabledWhenCallbacks) {
+                if (cb(scoped)) {
+                    return true;
+                }
+            }
         }
         return this._evaluateRules().disabled;
     }
@@ -229,7 +299,7 @@ export class Field implements IField {
         this._onBlurCallbacks.push(cb);
     }
 
-    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+    addRequiredWhen(fn: (params: IFieldCallbackParams) => boolean, message?: string): void {
         this._requiredWhenCallbacks.push({ fn, message });
     }
 
@@ -259,8 +329,9 @@ export class Field implements IField {
             return { required: true, message: this.config.requiredMessage };
         }
         if (this._form && this._requiredWhenCallbacks.length > 0) {
+            const scoped = this._callbackParams();
             for (const cb of this._requiredWhenCallbacks) {
-                if (cb.fn(this._form)) {
+                if (cb.fn(scoped)) {
                     return { required: true, message: cb.message };
                 }
             }
@@ -270,13 +341,24 @@ export class Field implements IField {
 
     blur(): void {
         for (const cb of this._onBlurCallbacks) {
-            cb(this._value, this._form!);
+            cb(this._value, this._callbackParams());
         }
     }
 
     setForm(form: IFormModel, parentPath?: string): void {
         this._form = form;
+        this._parentPath = parentPath || "";
         this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
+    }
+
+    private _callbackParams(): IFieldCallbackParams {
+        if (!this._form) {
+            throw new Error("Field not attached to a form.");
+        }
+        return {
+            field: new FieldNavigator(this._form, this._qualifiedName),
+            form: this._form
+        };
     }
 
     get qualifiedName(): string {
@@ -327,7 +409,7 @@ export class Field implements IField {
             note: this.config.note,
             placeholder: this.config.placeholder,
             value: this.getValue(),
-            validation: this._validation,
+            validation: this.visible ? this._validation : { isValid: null },
             validating: this._validating,
             required,
             visible: this.visible,
@@ -346,7 +428,8 @@ export class Field implements IField {
             addItem: (value?: unknown) => this._addItem(value),
             removeItem: (index: number) => this._removeItem(index),
             focusRequested: this._focusRequested,
-            clearFocusRequest: () => this.clearFocusRequest()
+            clearFocusRequest: () => this.clearFocusRequest(),
+            context: this._resolveContext()
         };
     }
 
@@ -381,9 +464,16 @@ export class Field implements IField {
             return undefined;
         }
         if (typeof this.config.options === "function") {
-            return this.config.options(this._form!);
+            return this.config.options(this._callbackParams());
         }
         return this.config.options;
+    }
+
+    private _resolveContext(): Record<string, unknown> {
+        if (!this.config.context || !this._form) {
+            return {};
+        }
+        return this.config.context(this._callbackParams());
     }
 
     /**

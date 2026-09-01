@@ -1,9 +1,9 @@
-export { usePageEditorConfig } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
-export { PageEditorConfig } from "~/modules/pages/PageEditor/PageEditorConfig.js";
+export { usePageEditorConfig } from "~/presentation/pages/PageEditor/usePageEditorConfig.js";
+export { PageEditorConfig } from "~/presentation/pages/PageEditor/PageEditorConfig.js";
 export {
     PageSettingsGroup,
     PageSettingsGroupModifier
-} from "~/modules/pages/PageEditor/PageSettings/index.js";
+} from "~/presentation/pages/PageEditor/PageSettings/index.js";
 export { createCommand } from "~/editorSdk/createCommand.js";
 export { Commands } from "~/BaseEditor/index.js";
 export { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";

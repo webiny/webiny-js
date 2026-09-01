@@ -2,6 +2,7 @@
 // Each renderer file declares its registry entry via `declare module`.
 import "../../base/Base/FieldRenderers/InputRenderer.js";
 import "../../base/Base/FieldRenderers/SelectRenderer.js";
+import "../../base/Base/FieldRenderers/AutoCompleteRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectAccordionMultipleRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/DynamicZoneRenderer.js";
@@ -21,3 +22,7 @@ import "../../base/Base/FieldRenderers/HiddenRenderer.js";
 import "../../base/Base/FieldRenderers/FilePickerRenderer.js";
 import "../../base/Base/FieldRenderers/CodeEditorRenderer.js";
 import "../../base/Base/FieldRenderers/LexicalRenderer.js";
+import "../../base/Base/FieldRenderers/PasswordInputRenderer.js";
+import "../../base/Base/FieldRenderers/PermissionsRenderer.js";
+import "../../base/Base/FieldRenderers/RolesMultiSelectRenderer.js";
+import "../../base/Base/FieldRenderers/ApiKeyTokenRenderer.js";

@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
+import { observer } from "mobx-react-lite";
 import { Accordion } from "@webiny/admin-ui";
+import { useContainer } from "@webiny/app";
 import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { ListItemRenderer, AddItemButton } from "./ObjectFieldComponents.js";
+import { SortablePresenter } from "~/presentation/sortable/index.js";
+import type { IObjectFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -11,6 +15,9 @@ declare module "../../../../features/formModel/abstractions.js" {
                 open?: boolean;
                 container?: boolean;
                 itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
+                itemDescription?:
+                    | string
+                    | ((data: Record<string, unknown>, index: number) => string);
                 addItemLabel?: string;
             };
         };
@@ -46,20 +53,40 @@ export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"object
         const label = `${field.label || ""} ${field.items.length ? `(${field.items.length})` : ""}`;
 
         return (
-            <div className={"flex flex-col gap-lg"}>
-                <Accordion background={"base"} variant={"container"}>
-                    <Accordion.Item title={label} defaultOpen={true}>
+            <Accordion background={"base"} variant={"container"}>
+                <Accordion.Item title={label} description={field.description} defaultOpen={true}>
+                    <div className={"flex flex-col gap-lg"}>
                         <ListItems field={field} />
-                    </Accordion.Item>
-                </Accordion>
-                {addButton}
-            </div>
+                        {addButton}
+                    </div>
+                </Accordion.Item>
+            </Accordion>
         );
     }
 );
 
-const ListItems = createObjectFieldRenderer<"objectAccordionMultiple">(({ field }) => {
-    const settings = field.rendererSettings;
+interface ListItemsProps {
+    field: IObjectFieldVM;
+}
+
+const ListItems = observer(({ field }: ListItemsProps) => {
+    const settings = field.rendererSettings as
+        | {
+              itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
+              itemDescription?: string | ((data: Record<string, unknown>, index: number) => string);
+          }
+        | undefined;
+
+    const container = useContainer();
+    const sortable = useMemo(() => {
+        const p = container.resolve(SortablePresenter);
+        p.init({ type: `obj:${field.name}`, onReorder: (from, to) => field.moveItem(from, to) });
+        return p;
+    }, []);
+
+    useEffect(() => {
+        return () => sortable.dispose();
+    }, [sortable]);
 
     return (
         <div className={"flex flex-col gap-md"}>
@@ -71,7 +98,9 @@ const ListItems = createObjectFieldRenderer<"objectAccordionMultiple">(({ field 
                     total={field.items.length}
                     label={field.label}
                     itemTitle={settings?.itemTitle}
+                    itemDescription={settings?.itemDescription}
                     disabled={field.disabled}
+                    sortable={sortable.getItemProps(index)}
                 />
             ))}
         </div>

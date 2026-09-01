@@ -20,7 +20,11 @@ accounts:
       IAMRole:
         - "GitHubActionsWebinyJs"
         - "GitHubActionsWebinyJsAdminAccess"
-        - "scheduler-invoke-api-destination"
+        # Pulumi auto-names this role with a random suffix (e.g.
+        # "scheduler-invoke-api-destination-8f773db"), so we glob-match it.
+        - property: Name
+          type: glob
+          value: "scheduler-invoke-api-destination*"
       IAMUser:
         - "webiny-ci"
       IAMUserPolicyAttachment:
@@ -39,6 +43,11 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
+      # Inline policy on the scheduler role (auto-named by Pulumi).
+      IAMRolePolicy:
+        - property: "role:RoleName"
+          type: glob
+          value: "scheduler-invoke-api-destination*"
       IAMOpenIDConnectProvider:
         - property: Arn
           type: exact
@@ -46,12 +55,27 @@ accounts:
       Route53HostedZone:
         - property: Name
           value: "ci.webiny.com."
-      EventsConnection:
-        - "github-workflow-dispatch"
-      EventsApiDestination:
-        - "deploy-e2e-dispatch"
-      EventsRule:
-        - "daily-deploy-e2e"
+      # --- "scheduler" Pulumi stack: daily deploy-e2e dispatcher ---
+      # These EventBridge resources trigger the deploy-e2e GitHub Actions workflow
+      # once a day. Pulumi auto-names them with a random suffix (e.g.
+      # "daily-deploy-e2e-0b45b80"), so they MUST be glob-matched — exact names
+      # never match and the schedule gets nuked every night.
+      #
+      # NOTE: the EventBridge Connection ("github-workflow-dispatch") and API
+      # Destination ("deploy-e2e-dispatch") have no resource type in aws-nuke, so
+      # they are never destroyed and need no filter. The connection's credentials,
+      # however, live in a Secrets Manager secret that IS nukeable — see below.
+      CloudWatchEventsRule:
+        - type: glob
+          value: "daily-deploy-e2e*"
+      CloudWatchEventsTarget:
+        - property: Name # The rule name the target is attached to.
+          type: glob
+          value: "daily-deploy-e2e*"
+      SecretsManagerSecret:
+        - property: Name
+          type: glob
+          value: "events!connection/github-workflow-dispatch*"
 
 resource-types:
   excludes:

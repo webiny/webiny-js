@@ -4,11 +4,7 @@ import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
 class WebhookModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
         const model = builder
-            .public({ modelId: WEBHOOK_MODEL_ID, name: "Webhook", group: "hidden" })
-            .description("Stores webhook configurations.")
-            .titleFieldId("name")
-            .singularApiName("Webhook")
-            .pluralApiName("Webhooks")
+            .private({ modelId: WEBHOOK_MODEL_ID, name: "Webhook" })
             .tags(["$publishing:false", "$hidden:true"]);
 
         model.fields(fields => ({

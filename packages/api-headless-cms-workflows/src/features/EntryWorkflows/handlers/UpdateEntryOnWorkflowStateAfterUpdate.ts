@@ -20,19 +20,18 @@ class UpdateEntryOnWorkflowStateAfterUpdateImpl
             return;
         }
 
-        const values = getStateValues(state);
-
         const modelResult = await this.getModel.execute(modelId);
         if (modelResult.isFail()) {
             return;
         }
 
         const model = modelResult.value;
-        await this.updateEntry.execute(model, state.targetRevisionId, {
-            system: {
-                workflow: values
-            }
-        });
+        await this.updateEntry.execute(
+            model,
+            state.targetRevisionId,
+            { system: { workflow: state.isActive ? getStateValues(state) : null } },
+            { skipValidation: true }
+        );
     }
 }
 

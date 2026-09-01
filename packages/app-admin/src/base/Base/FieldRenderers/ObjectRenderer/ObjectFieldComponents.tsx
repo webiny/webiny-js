@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, IconButton } from "@webiny/admin-ui";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import type { IObjectFieldItemVM, LayoutNodeVM } from "~/features/formModel/index.js";
 import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
-import { resolveItemTitle } from "./resolveItemTitle.js";
-/**
- * Walks a resolved layout sub-tree. Used by dynamic-zone renderers to render
- * a templated object's children via per-template layouts (Phase 8c).
- */
+import { resolveItemTitle, resolveItemDescription } from "./resolveItemTitle.js";
+import type { ISortableItemProps } from "~/presentation/sortable/index.js";
+
 export const NestedLayout = observer(({ layout }: { layout: LayoutNodeVM[] }) => {
     return (
         <div className={"flex flex-col gap-md"}>
@@ -27,11 +26,22 @@ export interface ListItemRendererProps {
     total: number;
     label?: string;
     itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
+    itemDescription?: string | ((data: Record<string, unknown>, index: number) => string);
     disabled: boolean;
+    sortable?: ISortableItemProps;
 }
 
 export const ListItemRenderer = observer(
-    ({ item, index, total, label, itemTitle, disabled }: ListItemRendererProps) => {
+    ({
+        item,
+        index,
+        total,
+        label,
+        itemTitle,
+        itemDescription,
+        disabled,
+        sortable
+    }: ListItemRendererProps) => {
         const [open, setOpen] = useState(false);
         const hasFocusRequest = item.fields.some(f => f.focusRequested);
 
@@ -73,7 +83,7 @@ export const ListItemRenderer = observer(
             </>
         );
 
-        return (
+        const accordion = (
             <Accordion
                 background={"base"}
                 variant={"container"}
@@ -81,16 +91,70 @@ export const ListItemRenderer = observer(
             >
                 <Accordion.Item
                     title={resolveItemTitle(item, index, label, itemTitle)}
+                    description={resolveItemDescription(item, index, itemDescription)}
                     actions={disabled ? null : actions}
                     open={open}
                     onOpenChange={setOpen}
+                    draggable={!disabled && sortable !== undefined}
+                    dragHandleRef={sortable?.handleRef}
                 >
                     <NestedLayout layout={item.layout} />
                 </Accordion.Item>
             </Accordion>
         );
+
+        if (!sortable) {
+            return accordion;
+        }
+
+        return (
+            <div
+                ref={sortable.ref}
+                data-sortable-item=""
+                className={"relative"}
+                style={{ opacity: sortable.isDragging ? 0.4 : 1 }}
+            >
+                {sortable.closestEdge === "top" && (
+                    <DropIndicator position={"top"} isFirst={index === 0} />
+                )}
+                {accordion}
+                {sortable.closestEdge === "bottom" && (
+                    <DropIndicator position={"bottom"} isLast={index === total - 1} />
+                )}
+            </div>
+        );
     }
 );
+
+const DropIndicator = ({
+    position,
+    isFirst = false,
+    isLast = false
+}: {
+    position: "top" | "bottom";
+    isFirst?: boolean;
+    isLast?: boolean;
+}) => {
+    let offset = "calc(var(--spacing-md) / -2)";
+    if (position === "top" && isFirst) {
+        offset = "0px";
+    }
+    if (position === "bottom" && isLast) {
+        offset = "0px";
+    }
+
+    return (
+        <div
+            className={"absolute left-0 right-0 z-10"}
+            style={{
+                [position]: offset,
+                transform: position === "top" ? "translateY(-50%)" : "translateY(50%)"
+            }}
+        >
+            <div className={"w-full h-[2px] bg-primary rounded-full"} />
+        </div>
+    );
+};
 
 export interface AddItemButtonProps {
     label?: string;
@@ -102,9 +166,9 @@ export const AddItemButton = ({ label, disabled, onAdd }: AddItemButtonProps) =>
     return (
         <div>
             <Button
+                icon={<AddIcon />}
                 text={label || "Add Item"}
-                variant={"secondary"}
-                size={"sm"}
+                variant={"tertiary"}
                 onClick={onAdd}
                 disabled={disabled}
             />

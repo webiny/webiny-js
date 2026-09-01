@@ -4,6 +4,9 @@ import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { ValuesSelectionGenerator } from "~/features/contentModel/ValuesSelectionGenerator/abstractions.js";
+import { ComponentMapGenerator } from "~/features/contentModel/ComponentMapGenerator/abstractions.js";
+import { RefModelsGenerator } from "~/features/contentModel/RefModelsGenerator/abstractions.js";
 
 export interface CreateModelsSchemaParams {
     context: CmsContext;
@@ -54,7 +57,22 @@ export const createModelsSchema = ({
                 return Array.isArray(field.tags) ? field.tags : [];
             }
         },
+        CmsContentModelMetadata: {
+            valuesSelection: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ValuesSelectionGenerator);
+                return generator.generate(model);
+            },
+            componentMap: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ComponentMapGenerator);
+                return generator.generate(model);
+            },
+            refModels: async (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(RefModelsGenerator);
+                return generator.generate(model);
+            }
+        },
         CmsContentModel: {
+            metadata: (model: CmsModel) => model,
             tags(model: CmsModel) {
                 // Make sure `tags` always contain a `type` tag, to differentiate between models.
                 const hasType = (model.tags || []).find(tag => tag.startsWith("type:"));
@@ -63,6 +81,10 @@ export const createModelsSchema = ({
             },
             plugin: (model: CmsModel) => {
                 return model.isPlugin ?? false;
+            },
+            valuesSelection: (model: CmsModel, _: unknown, ctx: CmsContext) => {
+                const generator = ctx.container.resolve(ValuesSelectionGenerator);
+                return generator.generate(model);
             }
         }
     };
@@ -174,6 +196,7 @@ export const createModelsSchema = ({
                 imageFieldId: String
                 tags: [String!]
                 defaultFields: Boolean
+                settings: JSON
             }
 
             input CmsContentModelCreateFromInput {
@@ -199,6 +222,7 @@ export const createModelsSchema = ({
                 descriptionFieldId: String
                 imageFieldId: String
                 tags: [String!]
+                settings: JSON
             }
 
             extend type Mutation {
@@ -273,6 +297,16 @@ export const createModelsSchema = ({
                 rules: [CmsFieldRule!]
             }
 
+            type CmsContentModelRefModel {
+                valuesSelection: String
+            }
+
+            type CmsContentModelMetadata {
+                valuesSelection: String
+                componentMap: JSON
+                refModels: JSON
+            }
+
             type CmsContentModel {
                 name: String!
                 singularApiName: String!
@@ -291,8 +325,11 @@ export const createModelsSchema = ({
                 imageFieldId: String
                 tags: [String!]!
                 tenant: String!
+                settings: JSON
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
+                valuesSelection: String
+                metadata: CmsContentModelMetadata
             }
 
             type CmsContentModelResponse {

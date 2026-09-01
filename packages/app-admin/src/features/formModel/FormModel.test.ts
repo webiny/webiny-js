@@ -443,10 +443,10 @@ describe("FormModel", () => {
                     title: fields
                         .text()
                         .label("Title")
-                        .afterChange((value, f) => {
+                        .afterChange((value, { form }) => {
                             // Auto-generate path from title
                             const path = "/" + String(value).toLowerCase().replace(/\s+/g, "-");
-                            f.field("path").setValue(path);
+                            form.field("path").setValue(path);
                         }),
                     path: fields
                         .text()
@@ -499,16 +499,16 @@ describe("FormModel", () => {
                         .text()
                         .label("Title")
                         .required("Title is required")
-                        .afterChange((value, f) => {
+                        .afterChange((value, { form }) => {
                             // Only auto-generate if path is empty
-                            if (f.field("path").getValue()) {
+                            if (form.field("path").getValue()) {
                                 return;
                             }
                             const slug = String(value)
                                 .toLowerCase()
                                 .replace(/[^a-z0-9]+/g, "-")
                                 .replace(/^-|-$/g, "");
-                            f.field("path").setValue("/" + slug);
+                            form.field("path").setValue("/" + slug);
                         }),
                     path: fields
                         .text()
@@ -747,9 +747,9 @@ describe("FormModel", () => {
                 });
 
                 // Modifier appends afterChange
-                form.field("title").addAfterChange((value, f) => {
+                form.field("title").addAfterChange((value, { form }) => {
                     received.push(value);
-                    f.field("path").setValue("/" + String(value).toLowerCase());
+                    form.field("path").setValue("/" + String(value).toLowerCase());
                 });
 
                 form.field("title").setValue("Hello");
@@ -883,13 +883,13 @@ describe("FormModel", () => {
                                     { label: "English", value: "en" },
                                     { label: "German", value: "de" }
                                 ])
-                                .afterChange((value, f) => {
-                                    const current = String(f.field("path").getValue() || "");
+                                .afterChange((value, { form }) => {
+                                    const current = String(form.field("path").getValue() || "");
                                     const stripped = current.replace(/^\/[a-z]{2}\//, "/");
                                     if (value && value !== "en") {
-                                        f.field("path").setValue("/" + value + stripped);
+                                        form.field("path").setValue("/" + value + stripped);
                                     } else {
-                                        f.field("path").setValue(stripped);
+                                        form.field("path").setValue(stripped);
                                     }
                                 })
                         }));
@@ -3072,7 +3072,10 @@ describe("FormModel", () => {
                     plan: fields.text().defaultValue("free"),
                     seats: fields
                         .text()
-                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Seats required")
+                        .requiredWhen(
+                            ({ form }) => form.field("plan").getValue() === "pro",
+                            "Seats required"
+                        )
                 })
             });
 
@@ -3094,8 +3097,14 @@ describe("FormModel", () => {
                     flag: fields.text().defaultValue("off"),
                     seats: fields
                         .text()
-                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro requires it")
-                        .requiredWhen(f => f.field("flag").getValue() === "on", "Flag requires it")
+                        .requiredWhen(
+                            ({ form }) => form.field("plan").getValue() === "pro",
+                            "Pro requires it"
+                        )
+                        .requiredWhen(
+                            ({ form }) => form.field("flag").getValue() === "on",
+                            "Flag requires it"
+                        )
                 })
             });
 
@@ -3131,12 +3140,15 @@ describe("FormModel", () => {
                     other: fields.text().defaultValue("off"),
                     seats: fields
                         .text()
-                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro required")
+                        .requiredWhen(
+                            ({ form }) => form.field("plan").getValue() === "pro",
+                            "Pro required"
+                        )
                 })
             });
 
             form.field("seats").addRequiredWhen(
-                f => f.field("other").getValue() === "on",
+                ({ form }) => form.field("other").getValue() === "on",
                 "Other required"
             );
 
@@ -3159,7 +3171,8 @@ describe("FormModel", () => {
                     full: fields
                         .text()
                         .computed(
-                            f => `${f.field("first").getValue()} ${f.field("last").getValue()}`
+                            ({ form }) =>
+                                `${form.field("first").getValue()} ${form.field("last").getValue()}`
                         )
                 })
             });
@@ -3173,7 +3186,7 @@ describe("FormModel", () => {
             const form = createForm({
                 fields: fields => ({
                     src: fields.text().defaultValue("A"),
-                    derived: fields.text().computed(f => f.field("src").getValue())
+                    derived: fields.text().computed(({ form }) => form.field("src").getValue())
                 })
             });
 
@@ -3191,7 +3204,7 @@ describe("FormModel", () => {
                     src: fields.text().defaultValue("A"),
                     derived: fields
                         .text()
-                        .computedUntilDirty(f => `derived-${f.field("src").getValue()}`)
+                        .computedUntilDirty(({ form }) => `derived-${form.field("src").getValue()}`)
                 })
             });
 
@@ -3212,7 +3225,7 @@ describe("FormModel", () => {
                     derived: fields
                         .text()
                         .required("Derived must not be empty")
-                        .computed(f => f.field("src").getValue())
+                        .computed(({ form }) => form.field("src").getValue())
                 })
             });
 
@@ -3224,6 +3237,131 @@ describe("FormModel", () => {
             expect(await form.validate()).toBe(true);
         });
 
+        it("computedUntilDirty can access nested fields inside object via dot notation", () => {
+            const form = createForm({
+                fields: fields => ({
+                    group: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text().defaultValue("Hello World"),
+                            fieldId: f.text().computedUntilDirty(({ form }) =>
+                                String(form.field("group.label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            expect(form.field("group.fieldId").getValue()).toBe("hello-world");
+
+            form.field("group.label").setValue("New Title");
+            expect(form.field("group.fieldId").getValue()).toBe("new-title");
+
+            // Manual edit overrides
+            form.field("group.fieldId").vm.onChange("custom-id");
+            expect(form.field("group.fieldId").getValue()).toBe("custom-id");
+
+            // Source changes no longer overwrite
+            form.field("group.label").setValue("Another");
+            expect(form.field("group.fieldId").getValue()).toBe("custom-id");
+        });
+
+        it("computedUntilDirty works after setData for nested object fields", () => {
+            const form = createForm({
+                fields: fields => ({
+                    general: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text(),
+                            fieldId: f.text().computedUntilDirty(({ form }) =>
+                                String(form.field("general.label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            // Before setData, label is null, fieldId computes to ""
+            expect(form.field("general.fieldId").getValue()).toBe("");
+
+            // After setData, fieldId should compute from the new label
+            form.setData({ general: { label: "My Field" } });
+            expect(form.field("general.fieldId").getValue()).toBe("my-field");
+
+            // Changing label updates fieldId
+            form.field("general.label").setValue("Updated Label");
+            expect(form.field("general.fieldId").getValue()).toBe("updated-label");
+
+            // UI edit overrides
+            form.field("general.fieldId").vm.onChange("custom");
+            expect(form.field("general.fieldId").getValue()).toBe("custom");
+
+            form.field("general.label").setValue("Ignored");
+            expect(form.field("general.fieldId").getValue()).toBe("custom");
+        });
+
+        it("field.parent().field() resolves sibling fields relative to the parent object", () => {
+            const form = createForm({
+                fields: fields => ({
+                    group: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            label: f.text().defaultValue("Hello"),
+                            slug: f.text().computedUntilDirty(({ field }) =>
+                                String(field.parent().field("label").getValue() || "")
+                                    .toLowerCase()
+                                    .replace(/\s+/g, "-")
+                            )
+                        }))
+                })
+            });
+
+            expect(form.field("group.slug").getValue()).toBe("hello");
+
+            form.field("group.label").setValue("New Title");
+            expect(form.field("group.slug").getValue()).toBe("new-title");
+        });
+
+        it("field.parent().field() can traverse into sibling objects", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            message: f
+                                .text()
+                                .defaultValue("default")
+                                .computedUntilDirty(({ field }) => {
+                                    const preset = field
+                                        .parent()
+                                        .field("settings.preset")
+                                        .getValue();
+                                    return preset === "custom"
+                                        ? "Custom message"
+                                        : `Preset: ${preset}`;
+                                }),
+                            settings: f
+                                .object()
+                                .renderer("passthrough")
+                                .fields(inner => ({
+                                    preset: inner.text().defaultValue("custom")
+                                }))
+                        }))
+                })
+            });
+
+            expect(form.field("wrapper.message").getValue()).toBe("Custom message");
+
+            form.field("wrapper.settings.preset").setValue("email");
+            expect(form.field("wrapper.message").getValue()).toBe("Preset: email");
+        });
+
         it("modifier setComputed converts a regular field into a computed one", () => {
             const form = createForm({
                 fields: fields => ({
@@ -3232,7 +3370,7 @@ describe("FormModel", () => {
                 })
             });
 
-            form.field("derived").setComputed(f => `from-${f.field("src").getValue()}`);
+            form.field("derived").setComputed(({ form }) => `from-${form.field("src").getValue()}`);
 
             expect(form.field("derived").getValue()).toBe("from-X");
             form.field("src").setValue("Y");
@@ -4036,7 +4174,7 @@ describe("FormModel", () => {
                         .text()
                         .list()
                         .defaultValue(["a"])
-                        .beforeChange((value, _form) => {
+                        .beforeChange((value, _params) => {
                             log.push(value);
                             return value;
                         })
@@ -4047,6 +4185,246 @@ describe("FormModel", () => {
             form.field("tags").vm.addItem("b");
             form.field("tags").vm.removeItem(0);
             expect(log).toEqual([["a", "b"], ["b"]]);
+        });
+    });
+
+    describe("field context", () => {
+        it("should expose context derived from sibling fields via form param", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("My Article"),
+                    description: fields.text().defaultValue("A great article"),
+                    media: fields.file().context(({ form }) => ({
+                        title: form.field("title").getValue(),
+                        description: form.field("description").getValue()
+                    }))
+                })
+            });
+
+            expect(form.field("media").vm.context).toEqual({
+                title: "My Article",
+                description: "A great article"
+            });
+        });
+
+        it("should access root-level siblings via field.parent().field()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Root Sibling"),
+                    media: fields.file().context(({ field }) => ({
+                        title: field.parent().field("title").getValue()
+                    }))
+                })
+            });
+
+            expect(form.field("media").vm.context).toEqual({
+                title: "Root Sibling"
+            });
+        });
+
+        it("should reactively update context when source fields change", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Original"),
+                    media: fields.file().context(({ form }) => ({
+                        title: form.field("title").getValue()
+                    }))
+                })
+            });
+
+            expect(form.field("media").vm.context).toEqual({ title: "Original" });
+
+            form.field("title").setValue("Updated");
+            expect(form.field("media").vm.context).toEqual({ title: "Updated" });
+        });
+
+        it("should default to empty object when no context callback is set", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text()
+                })
+            });
+
+            expect(form.field("title").vm.context).toEqual({});
+        });
+
+        it("should access root fields via form param from nested object", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Page Title"),
+                    settings: fields.object().fields(f => ({
+                        media: f.file().context(({ form }) => ({
+                            title: form.field("title").getValue()
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("title"), l.row("settings")]
+            });
+
+            expect(form.field("settings.media").vm.context).toEqual({
+                title: "Page Title"
+            });
+
+            form.field("title").setValue("New Title");
+            expect(form.field("settings.media").vm.context).toEqual({
+                title: "New Title"
+            });
+        });
+
+        it("should navigate to siblings via field.parent().field()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields.object().fields(f => ({
+                        title: f.text().defaultValue("Nested Title"),
+                        media: f.file().context(({ field }) => ({
+                            title: field.parent().field("title").getValue()
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("wrapper")]
+            });
+
+            expect(form.field("wrapper.media").vm.context).toEqual({
+                title: "Nested Title"
+            });
+        });
+
+        it("should navigate multiple levels up via chained parent()", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().defaultValue("Root Title"),
+                    settings: fields.object().fields(f => ({
+                        nested: f.object().fields(inner => ({
+                            media: inner.file().context(({ field }) => ({
+                                title: field.parent().parent().parent().field("title").getValue()
+                            }))
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("title"), l.row("settings")]
+            });
+
+            expect(form.field("settings.nested.media").vm.context).toEqual({
+                title: "Root Title"
+            });
+
+            form.field("title").setValue("Updated Root");
+            expect(form.field("settings.nested.media").vm.context).toEqual({
+                title: "Updated Root"
+            });
+        });
+
+        it("should navigate past parent to grandparent scope", () => {
+            const form = createForm({
+                fields: fields => ({
+                    settings: fields.object().fields(f => ({
+                        label: f.text().defaultValue("Settings Label"),
+                        nested: f.object().fields(inner => ({
+                            media: inner.file().context(({ field }) => ({
+                                label: field.parent().parent().field("label").getValue()
+                            }))
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("settings")]
+            });
+
+            expect(form.field("settings.nested.media").vm.context).toEqual({
+                label: "Settings Label"
+            });
+        });
+
+        it("should throw when navigating above root level", () => {
+            const form = createForm({
+                fields: fields => ({
+                    media: fields.file().context(({ field }) => ({
+                        bad: field.parent().parent().field("x").getValue()
+                    }))
+                })
+            });
+
+            expect(() => form.field("media").vm.context).toThrow(
+                "Cannot navigate above root level."
+            );
+        });
+
+        it("should use both field navigator and form in the same callback", () => {
+            const form = createForm({
+                fields: fields => ({
+                    slug: fields.text().defaultValue("my-slug"),
+                    settings: fields.object().fields(f => ({
+                        label: f.text().defaultValue("Settings Label"),
+                        media: f.file().context(({ field, form }) => ({
+                            label: field.parent().field("label").getValue(),
+                            slug: form.field("slug").getValue()
+                        }))
+                    }))
+                }),
+                layout: l => [l.row("slug"), l.row("settings")]
+            });
+
+            expect(form.field("settings.media").vm.context).toEqual({
+                label: "Settings Label",
+                slug: "my-slug"
+            });
+        });
+    });
+
+    describe("$. static references in rules", () => {
+        it("$. resolves rule targets relative to the parent object", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            status: f.text().defaultValue("draft"),
+                            details: f.text().rules([
+                                {
+                                    type: "condition",
+                                    target: "$.status",
+                                    operator: "eq",
+                                    value: "draft",
+                                    action: "hide"
+                                }
+                            ])
+                        }))
+                }),
+                layout: l => [l.row("wrapper")]
+            });
+
+            expect(form.field("wrapper.details").visible).toBe(false);
+
+            form.field("wrapper.status").setValue("published");
+            expect(form.field("wrapper.details").visible).toBe(true);
+        });
+
+        it("$. in rules with disable action", () => {
+            const form = createForm({
+                fields: fields => ({
+                    wrapper: fields
+                        .object()
+                        .renderer("passthrough")
+                        .fields(f => ({
+                            locked: f.text().defaultValue("yes"),
+                            editable: f.text().rules([
+                                {
+                                    type: "condition",
+                                    target: "$.locked",
+                                    operator: "eq",
+                                    value: "yes",
+                                    action: "disable"
+                                }
+                            ])
+                        }))
+                }),
+                layout: l => [l.row("wrapper")]
+            });
+
+            expect(form.field("wrapper.editable").disabled).toBe(true);
+
+            form.field("wrapper.locked").setValue("no");
+            expect(form.field("wrapper.editable").disabled).toBe(false);
         });
     });
 });

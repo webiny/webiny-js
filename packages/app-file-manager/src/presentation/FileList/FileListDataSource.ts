@@ -1,106 +1,67 @@
-import { makeAutoObservable, runInAction, computed } from "mobx";
+import { FolderAwareDataSource } from "@webiny/app-admin/presentation/listPresenter/FolderAwareDataSource.js";
 import type {
-    IDataSource,
-    IDataSourceQuery,
-    IDataSourceMeta
-} from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
-import type { IListFilesUseCase } from "../../features/listFiles/abstractions.js";
+    FetchParams,
+    FetchResult
+} from "@webiny/app-admin/presentation/listPresenter/FolderAwareDataSource.js";
 import type { IGetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
-import type { FmFile } from "../../features/shared/types.js";
 import { DEFAULT_SCOPE } from "~/domain/constants.js";
+import type { IListFilesUseCase } from "~/features/listFiles/index.js";
+import type { FmFile } from "~/features/shared/types.js";
 
-export class FileListDataSource implements IDataSource<FmFile> {
-    private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
-    private _loading = false;
-
+export class FileListDataSource extends FolderAwareDataSource<FmFile> {
     constructor(
         private listFilesUseCase: IListFilesUseCase,
         private cache: IListCache<FmFile>,
-        private getDescendantFoldersUseCase?: IGetDescendantFoldersUseCase,
+        getDescendantFoldersUseCase?: IGetDescendantFoldersUseCase,
         private scope?: string
     ) {
-        makeAutoObservable<FileListDataSource, "listFilesUseCase" | "getDescendantFoldersUseCase">(
-            this,
-            {
-                listFilesUseCase: false,
-                getDescendantFoldersUseCase: false,
-                rows: computed
+        super({
+            keyField: "id",
+            getDescendantFolders: getDescendantFoldersUseCase,
+            localFilters: {
+                accept: (item, value) => {
+                    const mimeTypes = value as string[];
+                    if (!mimeTypes || mimeTypes.length === 0) {
+                        return true;
+                    }
+                    return mimeTypes.some(pattern => {
+                        if (pattern.endsWith("/*")) {
+                            return item.type.startsWith(pattern.slice(0, -1));
+                        }
+                        return item.type === pattern;
+                    });
+                }
             }
-        );
+        });
     }
 
     get rows(): FmFile[] {
-        return this.cache.getItems();
+        return this.queryMatcher.filter(this.cache.getItems());
     }
 
-    get meta(): IDataSourceMeta {
-        return this._meta;
-    }
-
-    get loading(): boolean {
-        return this._loading;
-    }
-
-    async query(params: IDataSourceQuery): Promise<void> {
-        this._loading = true;
-        this.cache.clear();
-
-        const where = this.buildWhere(params);
-        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
-
-        const result = await this.listFilesUseCase.execute({
+    async fetch(params: FetchParams): Promise<FetchResult<FmFile>> {
+        return this.listFilesUseCase.execute({
             search: params.search,
-            where,
-            sort,
+            where: params.where,
+            sort: params.sort,
             limit: params.limit,
-            after: params.cursor
-        });
-
-        runInAction(() => {
-            this.cache.addItems(result.data);
-            this._meta = {
-                cursor: result.meta.cursor,
-                hasMoreItems: result.meta.hasMoreItems,
-                totalCount: result.meta.totalCount
-            };
-            this._loading = false;
+            after: params.after
         });
     }
 
-    async loadMore(params: IDataSourceQuery): Promise<void> {
-        if (!this._meta.hasMoreItems || this._loading) {
-            return;
-        }
-        this._loading = true;
-
-        const where = this.buildWhere(params);
-        const sort = params.sort ? [`${params.sort.field}_${params.sort.direction}`] : undefined;
-
-        const result = await this.listFilesUseCase.execute({
-            search: params.search,
-            where,
-            sort,
-            limit: params.limit,
-            after: params.cursor
-        });
-
-        runInAction(() => {
-            this.cache.addItems(result.data);
-            this._meta = {
-                cursor: result.meta.cursor,
-                hasMoreItems: result.meta.hasMoreItems,
-                totalCount: result.meta.totalCount
-            };
-            this._loading = false;
-        });
+    protected override shouldExpandFolders(filters: Record<string, unknown>): boolean {
+        return filters["includeSubFolders"] === true;
     }
 
-    private buildWhere(params: IDataSourceQuery): Record<string, unknown> {
-        const where: Record<string, unknown> = { ...params.filters };
-
-        const includeSubFolders = where["includeSubFolders"] === true;
+    protected override customizeWhere(
+        where: Record<string, unknown>,
+        filters: Record<string, unknown>
+    ): void {
         delete where["includeSubFolders"];
+
+        const accept = where["accept"] as string[] | undefined;
+        delete where["accept"];
 
         const tags = where["tags"] as string[] | undefined;
         const tagsRule = (where["tags_rule"] as string) || "OR";
@@ -123,23 +84,34 @@ export class FileListDataSource implements IDataSource<FmFile> {
             where["AND"] = andConditions;
         }
 
-        if (where["folderId"]) {
-            const currentFolderId = where["folderId"] as string;
-            const isRoot = currentFolderId === "root";
-
-            if (params.search && isRoot) {
-                // Search from root: no location filter — search all folders.
-            } else if ((params.search || includeSubFolders) && this.getDescendantFoldersUseCase) {
-                const descendants = this.getDescendantFoldersUseCase.execute(currentFolderId);
-                const folderIds = descendants.map(f => f.id);
-                where["location"] = { folderId_in: folderIds };
-            } else {
-                where["location"] = { folderId: currentFolderId };
+        if (accept && accept.length > 0) {
+            const exact: string[] = [];
+            const prefixes: string[] = [];
+            for (const mime of accept) {
+                if (mime.endsWith("/*")) {
+                    prefixes.push(mime.slice(0, -1));
+                } else {
+                    exact.push(mime);
+                }
             }
 
-            delete where["folderId"];
+            if (prefixes.length === 0) {
+                where["type_in"] = exact;
+            } else if (exact.length === 0 && prefixes.length === 1) {
+                where["type_startsWith"] = prefixes[0];
+            } else {
+                const orConditions: Record<string, unknown>[] = [];
+                if (exact.length > 0) {
+                    orConditions.push({ type_in: exact });
+                }
+                for (const prefix of prefixes) {
+                    orConditions.push({ type_startsWith: prefix });
+                }
+                where["OR"] = [
+                    ...((where["OR"] as Record<string, unknown>[]) ?? []),
+                    ...orConditions
+                ];
+            }
         }
-
-        return where;
     }
 }

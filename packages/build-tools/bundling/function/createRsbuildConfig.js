@@ -2,7 +2,7 @@ import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
-const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 4_718_592; // 4.5 MB
+const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 6_291_456; // 6 MB
 
 export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
@@ -24,7 +24,7 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
             target: "node",
             minify: true,
             sourceMap: {
-                js: isDebugEnabled ? "source-map" : false
+                js: isDebugEnabled || mode === "development" ? "source-map" : false
             },
             filename: {
                 js: pathData => {
@@ -48,13 +48,26 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                         maxAssetSize: maxBundleSize
                     }
                 }),
-                externals: [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/],
+                externals: [
+                    /^@aws-sdk/,
+                    /^aws-sdk$/,
+                    /^sharp$/,
+                    // knex is a runtime-polymorphic package: its source statically require()s a
+                    // driver for EVERY SQL dialect (pg, mysql, mariadb, mssql, sqlite, ...) and
+                    // picks one at runtime from the configured `client`. Bundling it forces the
+                    // bundler to resolve drivers that aren't installed (the mariadb/tedious/pg
+                    // "Module not found" errors). The server flavour runs as a Node process with
+                    // node_modules present, so we externalize knex and let Node load it — knex then
+                    // lazily require()s ONLY the configured dialect's driver (e.g. better-sqlite3),
+                    // never the others.
+                    /^knex(\/|$)/
+                ],
                 plugins: [
-                    // This is necessary to enable JSDOM usage in Lambda.
+                    // Ignore optional `canvas` native module required by jsdom.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
                     new rspack.IgnorePlugin({
-                        resourceRegExp: /canvas/,
-                        contextRegExp: /jsdom$/
+                        resourceRegExp: /^canvas$/,
+                        contextRegExp: /jsdom/
                     })
                 ],
                 resolve: {

@@ -1,6 +1,5 @@
 ---
 name: webiny-form-model
-context: webiny-admin
 description: >
   Building forms with the FormModel system — field types, renderers, layout, validation,
   conditional rules, computed fields, and dynamic zones. Use this skill when the developer
@@ -13,7 +12,7 @@ description: >
 
 ## TL;DR
 
-The Form Model is Webiny's declarative form system. Define fields with a fluent builder API (`fields.text()`, `fields.datetime()`, etc.), arrange them with a layout builder (`layout.row()`, `layout.tabs()`, etc.), and validate with Zod schemas or imperative rules. Fields support conditional visibility, computed values, and deeply nested object/list structures with templates (dynamic zones).
+The Form Model is Webiny's declarative form system. Define fields with a fluent builder API (`fields.text()`, `fields.datetime()`, etc.), arrange them with a layout builder (`layout.row()`, `layout.tabs()`, etc.), and validate with Zod schemas or imperative rules. Fields support conditional visibility, computed values, reactive context from other fields (`.context()`), and deeply nested object/list structures with templates (dynamic zones).
 
 ## Field Types
 
@@ -37,9 +36,15 @@ fields.text().renderer("codeEditor", { language: "html", height: 300 })
 fields.text().options([
     { label: "Option A", value: "a" },
     { label: "Option B", value: "b" }
-])  // auto-switches to "dropdown" renderer
+])  // auto-switches to "select" renderer
 fields.text().options([...]).renderer("radioButtons")
 fields.text().list().options([...]).renderer("checkboxes")
+
+// Dynamic options — callback receives { field, form }, re-evaluated reactively
+fields.text().options(({ form }) => {
+    const type = form.field("general.type").getValue();
+    return getOptionsForType(type);
+})
 ```
 
 ### Number
@@ -140,6 +145,42 @@ Default renderer: `lexical`. Value: `RichTextValueWithHtml | null` (`{ state: st
 fields.lexical().label("Content").required("Content is required");
 ```
 
+### Password
+
+```typescript
+fields.password();
+```
+
+Default renderer: `passwordInput`. Value: `string | null`.
+
+```typescript
+fields.password().label("Password").required("Password is required");
+```
+
+### Permissions
+
+```typescript
+fields.permissions();
+```
+
+Default renderer: `permissions`. Value: `Record<string, unknown>[]`. Has a built-in Zod schema requiring at least one permission entry.
+
+```typescript
+fields.permissions().label("Permissions");
+```
+
+### Roles Multi-Select
+
+```typescript
+fields.rolesMultiSelect();
+```
+
+Default renderer: `rolesMultiSelect`. Value: `unknown[]`.
+
+```typescript
+fields.rolesMultiSelect().label("Roles");
+```
+
 ### Object
 
 ```typescript
@@ -207,65 +248,73 @@ Template visibility can be conditional:
 
 These are available on **all** field types:
 
-| Method                        | Description                                               |
-| ----------------------------- | --------------------------------------------------------- |
-| `.label(text)`                | Field label                                               |
-| `.description(text)`          | Description text below the field                          |
-| `.help(text)`                 | Help text                                                 |
-| `.note(text)`                 | Supplementary note                                        |
-| `.placeholder(text)`          | Input placeholder                                         |
-| `.defaultValue(value)`        | Default value (can be a function for dynamic defaults)    |
-| `.required(message?)`         | Mark as required                                          |
-| `.requiredWhen(fn, message?)` | Conditionally required based on other field values        |
-| `.schema(zodSchema)`          | Zod validation schema                                     |
-| `.renderer(name, settings?)`  | Override the default renderer                             |
-| `.options([...])`             | Add value options (auto-switches text/number to dropdown) |
-| `.list()`                     | Convert to array field                                    |
-| `.hidden()`                   | Hide the field (value still in form data)                 |
-| `.disabled(value?)`           | Disable the field                                         |
-| `.rules([...])`               | Conditional visibility/disable rules                      |
-| `.computed(fn)`               | Always-computed value from other fields                   |
-| `.computedUntilDirty(fn)`     | Computed until user edits the field                       |
-| `.beforeChange(fn)`           | Transform value before change                             |
-| `.afterChange(fn)`            | Side effects after value changes                          |
-| `.afterSetValue(fn)`          | Side effects after programmatic value set                 |
-| `.onBlur(fn)`                 | Blur event callback                                       |
-| `.cloneValue(fn)`             | Custom clone logic for list item duplication              |
-| `.tags([...])`                | Tag the field for programmatic lookup                     |
+| Method                        | Description                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| `.label(text)`                | Field label                                             |
+| `.description(text)`          | Description text below the field                        |
+| `.help(text)`                 | Help text                                               |
+| `.note(text)`                 | Supplementary note                                      |
+| `.placeholder(text)`          | Input placeholder                                       |
+| `.defaultValue(value)`        | Default value (can be a function for dynamic defaults)  |
+| `.required(message?)`         | Mark as required                                        |
+| `.requiredWhen(fn, message?)` | Conditionally required based on other field values      |
+| `.schema(zodSchema)`          | Zod validation schema                                   |
+| `.renderer(name, settings?)`  | Override the default renderer                           |
+| `.options([...])`             | Add value options (auto-switches text/number to select) |
+| `.list()`                     | Convert to array field                                  |
+| `.hidden()`                   | Hide the field (value still in form data)               |
+| `.hiddenWhen(fn)`             | Conditionally hide based on form state                  |
+| `.disabled(value?)`           | Disable the field                                       |
+| `.disabledWhen(fn)`           | Conditionally disable based on form state               |
+| `.rules([...])`               | Conditional visibility/disable rules                    |
+| `.computed(fn)`               | Always-computed value from other fields                 |
+| `.computedUntilDirty(fn)`     | Computed until user edits the field                     |
+| `.beforeChange(fn)`           | Transform value before change                           |
+| `.afterChange(fn)`            | Side effects after value changes                        |
+| `.afterSetValue(fn)`          | Side effects after programmatic value set               |
+| `.onBlur(fn)`                 | Blur event callback                                     |
+| `.cloneValue(fn)`             | Custom clone logic for list item duplication            |
+| `.context(fn)`                | Inject reactive context from other fields into the VM   |
+| `.tags([...])`                | Tag the field for programmatic lookup                   |
 
 ## Renderers
 
 ### Complete Renderer Reference
 
-| Renderer                  | Field Type                 | Settings                                                        | Description                                               |
-| ------------------------- | -------------------------- | --------------------------------------------------------------- | --------------------------------------------------------- |
-| `textInput`               | text                       | —                                                               | Single-line text input (default for text)                 |
-| `textarea`                | text                       | `{ rows?: number }`                                             | Multi-line text area                                      |
-| `textInputs`              | text (list)                | `{ addItemLabel?: string }`                                     | List of text inputs                                       |
-| `textareas`               | text (list)                | `{ addItemLabel?: string }`                                     | List of textareas                                         |
-| `tags`                    | text (list)                | —                                                               | Comma-separated tag input                                 |
-| `codeEditor`              | text                       | `{ language?: string; height?: number }`                        | Code editor with syntax highlighting                      |
-| `dropdown`                | text, number               | —                                                               | Select dropdown (auto-selected when `.options()` is used) |
-| `radioButtons`            | text, number               | —                                                               | Radio button group (requires `.options()`)                |
-| `checkboxes`              | text (list), number (list) | —                                                               | Checkbox group (requires `.options()` + `.list()`)        |
-| `numberInput`             | number                     | —                                                               | Number input (default for number)                         |
-| `numberInputs`            | number (list)              | `{ addItemLabel?: string }`                                     | List of number inputs                                     |
-| `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                       |
-| `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                   |
-| `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                 |
-| `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)            |
-| `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)         |
-| `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)      |
-| `objectAccordionSingle`   | object                     | `{ open?: boolean }`                                            | Single object in accordion (default for object)           |
-| `objectAccordionMultiple` | object (list)              | `{ open?, container?, itemTitle?, addItemLabel? }`              | List of objects in accordions (auto for `.list()`)        |
-| `dynamicZone`             | object (templates)         | `{ container?: boolean }`                                       | Template picker zone (auto for `.template()`)             |
-| `passthrough`             | object                     | —                                                               | Renders child fields inline without wrapper               |
-| `keyValueTags`            | object (list)              | `{ addItemLabel?: string }`                                     | Key-value tag pairs                                       |
-| `hidden`                  | any                        | —                                                               | Hidden field (no UI rendered)                             |
+| Renderer                  | Field Type                 | Settings                                                        | Description                                                  |
+| ------------------------- | -------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------ |
+| `textInput`               | text                       | —                                                               | Single-line text input (default for text)                    |
+| `textarea`                | text                       | `{ rows?: number }`                                             | Multi-line text area                                         |
+| `textInputs`              | text (list)                | `{ addItemLabel?: string }`                                     | List of text inputs                                          |
+| `textareas`               | text (list)                | `{ addItemLabel?: string }`                                     | List of textareas                                            |
+| `tags`                    | text (list)                | —                                                               | Comma-separated tag input                                    |
+| `codeEditor`              | text                       | `{ language?: string; height?: number }`                        | Code editor with syntax highlighting                         |
+| `select`                  | text, number               | —                                                               | Select dropdown (auto-selected when `.options()` is used)    |
+| `multiSelect`             | text (list), number (list) | `{ showSelectionCount?: boolean }`                              | Multi-select dropdown (requires `.options()` + `.list()`)    |
+| `dropdown`                | text, number               | —                                                               | **Deprecated** alias for `select`                            |
+| `radioButtons`            | text, number               | —                                                               | Radio button group (requires `.options()`)                   |
+| `checkboxes`              | text (list), number (list) | —                                                               | Checkbox group (requires `.options()` + `.list()`)           |
+| `numberInput`             | number                     | —                                                               | Number input (default for number)                            |
+| `numberInputs`            | number (list)              | `{ addItemLabel?: string }`                                     | List of number inputs                                        |
+| `switch`                  | boolean                    | —                                                               | Toggle switch (default for boolean)                          |
+| `dateTimeInput`           | datetime                   | `{ type, displayFormat?, yearRange?, weekStartsOn?, presets? }` | Date/time picker (default for datetime)                      |
+| `dateTimeInputs`          | datetime (list)            | `{ type, displayFormat?, weekStartsOn?, addItemLabel? }`        | List of date/time pickers                                    |
+| `lexical`                 | lexical                    | —                                                               | Lexical rich text editor (default for lexical)               |
+| `filePicker`              | file                       | —                                                               | File picker with full metadata (default for file)            |
+| `fileUrlPicker`           | fileUrl                    | —                                                               | File picker returning URL only (default for fileUrl)         |
+| `objectAccordionSingle`   | object                     | `{ open?: boolean }`                                            | Single object in accordion (default for object)              |
+| `objectAccordionMultiple` | object (list)              | `{ open?, container?, itemTitle?, addItemLabel? }`              | List of objects in accordions (auto for `.list()`)           |
+| `dynamicZone`             | object (templates)         | `{ container?: boolean }`                                       | Template picker zone (auto for `.template()`)                |
+| `passthrough`             | object                     | —                                                               | Renders child fields inline without wrapper                  |
+| `keyValueTags`            | object (list)              | `{ addItemLabel?: string }`                                     | Key-value tag pairs                                          |
+| `hidden`                  | any                        | —                                                               | Hidden field (no UI rendered, but field stays visible in VM) |
+| `passwordInput`           | password                   | —                                                               | Password input (default for password)                        |
+| `permissions`             | permissions                | —                                                               | Permissions editor (default for permissions)                 |
+| `rolesMultiSelect`        | rolesMultiSelect           | —                                                               | Roles multi-select (default for rolesMultiSelect)            |
 
 ### Automatic Renderer Switching
 
-- Calling `.options()` on text/number fields switches to `dropdown`
+- Calling `.options()` on text/number fields switches to `select`
 - Calling `.list()` on datetime switches to `dateTimeInputs`
 - Calling `.list()` on object switches to `objectAccordionMultiple`
 - Calling `.template()` on object switches to `dynamicZone`
@@ -307,6 +356,16 @@ Vertical tabs (used by page settings):
 
 ```typescript
 layout.tabs("settings-tabs").renderer("tabsVertical");
+```
+
+Tabs with renderer settings:
+
+```typescript
+layout.tabs("field-settings").renderer("tabsHorizontal", {
+  spacing: "lg",
+  size: "md",
+  separator: true
+});
 ```
 
 Tab-level conditional visibility:
@@ -370,7 +429,10 @@ fields
 fields
   .text()
   .label("Seats")
-  .requiredWhen(form => form.field("plan").getValue() === "pro", "Pro plan requires a seat count");
+  .requiredWhen(
+    ({ form }) => form.field("plan").getValue() === "pro",
+    "Pro plan requires a seat count"
+  );
 ```
 
 ### Form-Level Rules
@@ -454,6 +516,63 @@ fields
 | `"isFalsy"`    | Boolean coercion is false                     |
 | `"matches"`    | Exact string match                            |
 
+## Callback Parameters (`{ field, form }`)
+
+All field callbacks (`computed`, `computedUntilDirty`, `hiddenWhen`, `disabledWhen`, `requiredWhen`, `options`, `context`) receive a single `{ field, form }` object:
+
+- **`form`** — the root `IFormModel` for absolute field access (e.g., `form.field("title")`)
+- **`field`** — a navigator scoped to the current field. Call `.parent()` to get the containing object, then `.field(name)` to access fields at that level. Chain `.parent()` for higher levels.
+
+Value-first callbacks (`beforeChange`, `afterChange`, `afterSetValue`, `onBlur`) receive `(value, { field, form })`.
+
+```typescript
+// Relative: access a sibling within the same object
+fields
+  .object()
+  .renderer("passthrough")
+  .fields(f => ({
+    label: f.text().defaultValue("Hello"),
+    slug: f.text().computedUntilDirty(({ field }) =>
+      String(field.parent().field("label").getValue() || "")
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+    )
+  }));
+
+// Absolute: access a root-level field
+fields.text().computedUntilDirty(({ form }) =>
+  String(form.field("title").getValue() ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+);
+
+// Multi-level traversal: parent().parent() goes up two levels
+inner.file().context(({ field }) => ({
+  title: field.parent().parent().field("title").getValue()
+}));
+```
+
+## Conditional Visibility / Disable (callback form)
+
+For dynamic visibility and disabled state that depends on other field values:
+
+```typescript
+// Hide a field based on a sibling value (inside an object)
+fields
+  .text()
+  .label("Details")
+  .hiddenWhen(({ field }) => field.parent().field("mode").getValue() !== "advanced");
+
+// Disable based on a root-level field
+fields
+  .text()
+  .label("Name")
+  .disabledWhen(({ form }) => Boolean(form.field("locked").getValue()));
+```
+
+Both `hiddenWhen` and `disabledWhen` accept `(params: IFieldCallbackParams) => boolean`. Multiple calls chain — any returning true triggers the effect.
+
 ## Computed Fields
 
 ```typescript
@@ -461,13 +580,13 @@ fields
 fields
   .text()
   .label("Full Name")
-  .computed(form => `${form.field("first").getValue()} ${form.field("last").getValue()}`);
+  .computed(({ form }) => `${form.field("first").getValue()} ${form.field("last").getValue()}`);
 
 // Computed until the user edits the field manually
 fields
   .text()
   .label("Slug")
-  .computedUntilDirty(form => {
+  .computedUntilDirty(({ form }) => {
     const name = String(form.field("title").getValue() ?? "");
     return name.trim().toLowerCase().replace(/\s+/g, "-");
   });
@@ -485,7 +604,7 @@ fields
     { label: "Public", value: "public" },
     { label: "Password Protected", value: "password" }
   ])
-  .afterChange((value, form) => {
+  .afterChange((value, { form }) => {
     const path = form.field("general.path").as("text").getValue() ?? "";
     if (value === "password") {
       form.field("general.path").setValue(path + "/protected");
@@ -494,6 +613,81 @@ fields
     }
   });
 ```
+
+## Field Context
+
+Use `.context()` to push data from other fields into a field's VM. The renderer reads it via `field.context` — no hooks, no reaching up to the parent form. The callback is MobX-reactive: only the specific fields accessed inside it trigger re-renders.
+
+The callback receives `{ field, form }` — the same `IFieldCallbackParams` used by all other callbacks (see [Callback Parameters](#callback-parameters--field-form-)).
+
+### Sibling access (fields at the same level)
+
+```typescript
+fields
+  .file()
+  .label("Media")
+  .context(({ field }) => ({
+    title: field.parent().field("title").getValue(),
+    description: field.parent().field("description").getValue()
+  }));
+```
+
+### Nested field accessing root-level fields
+
+```typescript
+// Inside an object: settings > media needs root-level "title"
+fields
+  .object()
+  .label("Settings")
+  .fields(f => ({
+    media: f.file().context(({ form }) => ({
+      title: form.field("title").getValue()
+    }))
+  }));
+```
+
+### Deep nesting — traversing multiple levels up
+
+```typescript
+// settings > nested > media needs settings-level "label"
+fields
+  .object()
+  .label("Settings")
+  .fields(f => ({
+    label: f.text().defaultValue("Settings Label"),
+    nested: f.object().fields(inner => ({
+      media: inner.file().context(({ field }) => ({
+        // parent() = nested, parent().parent() = settings
+        label: field.parent().parent().field("label").getValue()
+      }))
+    }))
+  }));
+```
+
+### Using both field navigator and form
+
+```typescript
+fields
+  .file()
+  .label("Media")
+  .context(({ field, form }) => ({
+    // Relative: sibling via parent
+    label: field.parent().field("label").getValue(),
+    // Absolute: root-level field
+    slug: form.field("slug").getValue()
+  }));
+```
+
+### Reading context in a renderer
+
+```typescript
+const MediaPickerRenderer = createFieldRenderer<"mediaPicker">(({ field }) => {
+    const { title, description } = field.context as { title: string; description: string };
+    return <MediaPicker field={field} title={title} description={description} />;
+});
+```
+
+Fields without `.context()` have `field.context` defaulting to `{}`.
 
 ## Extending Object Fields After Creation
 
@@ -534,6 +728,44 @@ sections.templates.add("runtimeBanner", t => {
   }));
 });
 ```
+
+## Form API
+
+### Submit with Skip Validation
+
+```typescript
+// Normal submit — validates first, returns false if invalid
+const data = await form.submit();
+
+// Skip validation — returns data immediately
+const data = await form.submit({ skipValidation: true });
+```
+
+### FormVM
+
+The `IFormVM` exposes reactive state for the UI:
+
+```typescript
+form.vm.layout; // LayoutNodeVM[] — resolved layout nodes
+form.vm.errors; // IFormError[] — current validation errors
+form.vm.hasErrors; // boolean — shorthand for errors.length > 0
+form.vm.isDirty; // boolean — any field changed from initial value
+form.vm.isValid; // boolean | null — null until first validation
+form.vm.submitCount; // number — increments on each submit attempt
+form.vm.focusField(path); // scroll to and focus a field
+form.vm.getData(); // current form data snapshot
+form.vm.setData(); // replace all form data
+```
+
+### FormErrors Component
+
+```typescript
+import { FormErrors } from "webiny/admin/form";
+
+<FormErrors form={presenter.vm.form} className="my-4" />
+```
+
+Renders an alert with all validation errors. Accepts an optional `className` prop.
 
 ## Related Skills
 

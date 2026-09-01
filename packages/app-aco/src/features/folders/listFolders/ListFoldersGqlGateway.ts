@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
@@ -22,7 +21,7 @@ export interface ListFoldersQueryVariables {
     after?: string | null;
 }
 
-export const LIST_FOLDERS = (FOLDER_FIELDS: string) => gql`
+export const LIST_FOLDERS = (FOLDER_FIELDS: string) => /* GraphQL */ `
     query ListFolders($type: String!, $limit: Int!) {
         aco {
             listFolders(where: { type: $type }, limit: $limit) {

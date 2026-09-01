@@ -2,7 +2,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface AssetRequestOptions {
     original?: boolean;
-    width?: number;
+    [key: string]: unknown;
 }
 
 export type AssetRequestContext<T extends GenericRecord = GenericRecord> = T & {
@@ -17,31 +17,36 @@ export interface AssetRequestData<TOptions> {
     context: AssetRequestContext;
     options: TOptions;
 }
-
 export class AssetRequest<TOptions extends AssetRequestOptions = AssetRequestOptions> {
-    private data: AssetRequestData<TOptions>;
+    private readonly data: AssetRequestData<TOptions>;
 
-    constructor(data: AssetRequestData<TOptions>) {
+    public static create<TOptions extends AssetRequestOptions = AssetRequestOptions>(
+        data: AssetRequestData<TOptions>
+    ) {
+        return new AssetRequest(data);
+    }
+
+    private constructor(data: AssetRequestData<TOptions>) {
         this.data = data;
     }
 
-    getKey() {
+    public getKey() {
         return this.data.key;
     }
 
-    getOptions(): TOptions {
+    public getOptions(): TOptions {
         return this.data.options;
     }
 
-    setOptions(options: TOptions) {
+    public setOptions(options: TOptions) {
         this.data.options = options;
     }
 
-    getContext<T extends GenericRecord = GenericRecord>() {
+    public getContext<T extends GenericRecord = GenericRecord>() {
         return this.data.context as AssetRequestContext<T>;
     }
 
-    getExtension() {
+    public getExtension() {
         return this.data.key.split(".").pop();
     }
 }

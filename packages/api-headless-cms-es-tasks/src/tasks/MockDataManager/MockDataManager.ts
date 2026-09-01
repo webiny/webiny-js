@@ -1,3 +1,4 @@
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { TaskDataStatus } from "@webiny/background-tasks/api";
 import type {
     IMockDataManagerInput,
@@ -13,11 +14,13 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { MOCK_DATA_CREATOR_TASK_ID } from "~/tasks/MockDataCreatorTask.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import type { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-ddb-es/features/CmsModelOpenSearchIndex/CmsModelOpenSearchIndexProvider.js";
 
 export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDataManagerOutput> {
     constructor(
         private readonly context: Context,
-        private readonly openSearchClient: OpenSearchClient.Interface
+        private readonly openSearchClient: OpenSearchClient.Interface,
+        private readonly indexProvider: CmsModelOpenSearchIndexProvider.Interface
     ) {}
 
     public async execute(
@@ -53,7 +56,8 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
                 model: {
                     modelId: input.modelId,
                     tenant: "root"
-                }
+                } as StorageCmsModel,
+                indexProvider: this.indexProvider
             });
             return controller.response.done();
         }
@@ -69,7 +73,8 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
 
         await disableIndexing({
             model: result.model,
-            client: this.openSearchClient.use()
+            client: this.openSearchClient.use(),
+            indexProvider: this.indexProvider
         });
 
         const { amountOfTasks, amountOfRecords } = calculateAmounts(input.amount);

@@ -25,7 +25,11 @@ export interface ILicense {
     canUseHcmsFieldPermissions: () => boolean;
     canUseAiImageEnrichment: () => boolean;
     canUseAiPageGeneration: () => boolean;
+    canUseAiPageTranslation: () => boolean;
     canUseAiLexicalGeneration: () => boolean;
+    canUseAiEntryGeneration: () => boolean;
+    canUseAiEntryComparison: () => boolean;
+    canUseAiEntryTranslation: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -99,9 +103,6 @@ export interface ProjectPackageFeatures {
             hcmsFieldPermissions: boolean;
         };
     };
-    [PROJECT_PACKAGE_FEATURE_NAME.AL]: {
-        enabled: boolean;
-    };
     [PROJECT_PACKAGE_FEATURE_NAME.FILE_MANAGER]: {
         enabled: boolean;
         options: { threatDetection: boolean };
@@ -109,9 +110,14 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.AI_POWERUPS]: {
         enabled: boolean;
         options: {
-            websiteBuilder?: { pageGeneration?: boolean };
+            websiteBuilder?: { pageGeneration?: boolean; pageTranslation?: boolean };
             fileManager?: { imageEnrichment?: boolean };
             lexicalGeneration?: boolean;
+            cms?: {
+                entryGeneration?: boolean;
+                entryComparison?: boolean;
+                entryTranslation?: boolean;
+            };
         };
     };
 }

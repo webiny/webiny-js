@@ -51,7 +51,23 @@ export class InputValueObject {
 }
 
 function convertBracketPathToDotPath(path: string): string {
-    return path.replace(/\/(\d+)\//g, ".$1");
+    // Flat binding paths use `/` as the segment separator (e.g. `items/0/label`, `address/city`).
+    // lodash `set`/`get` expect `.`-delimited paths, and treat numeric segments as array indexes,
+    // so a straight `/` -> `.` conversion handles both nested objects and list items.
+    return path.replace(/\//g, ".");
+}
+
+/**
+ * Reads a value from a deep inputs object using a flat `/`-delimited binding path.
+ * Numeric segments are treated as array indexes (e.g. `items/0/label`).
+ */
+function getDeepValueAtPath(obj: any, path: string): any {
+    if (!path) {
+        return obj;
+    }
+
+    const keys = path.split("/").map(key => (/^\d+$/.test(key) ? Number(key) : key));
+    return keys.reduce((acc, key) => (acc == null ? undefined : acc[key]), obj);
 }
 
 /**
@@ -91,7 +107,17 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
     }, [elementId, rawBindings]);
 
     // This value is the final calculated breakpoint value.
-    const value = resolvedBindings.inputs[node.path];
+    // Leaf inputs resolve directly from the flat bindings. Container inputs (object / object-list)
+    // have no flat entry of their own, so we resolve their deep value (object / array) from the
+    // processor - this is what list fields read to render items and to rewrite the whole array.
+    const value = useMemo(() => {
+        if (node.children.length > 0) {
+            const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
+            return getDeepValueAtPath(deepInputs, node.path);
+        }
+
+        return resolvedBindings.inputs[node.path];
+    }, [resolvedBindings, node.path, inputsProcessor]);
 
     const inputMetadata = useMemo((): IMetadata => {
         let elementMetadata: IMetadata = new ElementMetadata(elementId, rawBindings.metadata);

@@ -5,9 +5,10 @@ import type { IFormVM } from "./abstractions.js";
 
 interface FormErrorsProps {
     form: IFormVM;
+    className?: string;
 }
 
-export const FormErrors = observer(({ form }: FormErrorsProps) => {
+export const FormErrors = observer(({ form, className }: FormErrorsProps) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -16,12 +17,12 @@ export const FormErrors = observer(({ form }: FormErrorsProps) => {
         }
     }, [form.submitCount]);
 
-    if (form.errors.length === 0) {
+    if (!form.hasErrors) {
         return null;
     }
 
     return (
-        <div ref={ref}>
+        <div ref={ref} className={className}>
             <Alert type="danger" variant="subtle">
                 <Heading level={6}>Some fields contain errors</Heading>
                 <ul className="list-disc mt-sm">

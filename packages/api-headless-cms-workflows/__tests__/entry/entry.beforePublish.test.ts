@@ -77,7 +77,7 @@ describe("On Before Entry Publish", () => {
         const publishResult = await context.cms.publishEntry(model, entry.id);
         expect(publishResult).toMatchObject({
             system: {
-                workflow: undefined
+                workflow: null
             }
         });
     });

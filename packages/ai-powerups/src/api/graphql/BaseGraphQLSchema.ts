@@ -1,7 +1,8 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
-import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { AiModelRegistry } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
 import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
@@ -9,6 +10,10 @@ import {
     WB_GENERATE_PAGE_CONTENT_TASK_ID,
     type IWbGeneratePageContentTaskInput
 } from "~/api/features/WbGeneratePageContent/WbGeneratePageContentTask.js";
+import {
+    CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
+    type ICmsGenerateEntryContentTaskInput
+} from "~/api/features/CmsGenerateEntryContent/CmsGenerateEntryContentTask.js";
 
 class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -49,6 +54,16 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                     excludedFileIds: [String!]
                     readerPersonaId: String
                     writerPersonaId: String
+                    additionalFileIds: [String!]
+                ): JSON!
+                generateEntryContent(
+                    prompt: String!
+                    modelId: String!
+                    projectId: String
+                    excludedFileIds: [String!]
+                    readerPersonaId: String
+                    writerPersonaId: String
+                    additionalFileIds: [String!]
                 ): JSON!
             }
 
@@ -73,9 +88,9 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "AiPowerUpsQuery.listModels",
-            dependencies: [Ai],
-            resolver: (ai: Ai.Interface) => {
-                return async () => ai.listModels();
+            dependencies: [AiModelRegistry],
+            resolver: (registry: AiModelRegistry.Interface) => {
+                return async () => registry.listModels();
             }
         });
 
@@ -111,7 +126,44 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             projectId: args.projectId ?? null,
                             excludedFileIds: args.excludedFileIds ?? null,
                             readerPersonaId: args.readerPersonaId ?? null,
-                            writerPersonaId: args.writerPersonaId ?? null
+                            writerPersonaId: args.writerPersonaId ?? null,
+                            additionalFileIds: args.additionalFileIds ?? null
+                        }
+                    });
+
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
+
+                    return { id: result.value.id };
+                };
+            }
+        });
+
+        builder.addResolver<ICmsGenerateEntryContentTaskInput>({
+            path: "AiPowerUpsMutation.generateEntryContent",
+            dependencies: [TaskService, WcpContext],
+            resolver: (taskService: TaskService.Interface, wcp: WcpContext.Interface) => {
+                return async ({ args }) => {
+                    // Gated at resolver-time, NOT at feature-registration time: the WCP license is
+                    // loaded per request, so a register-time check reads the placeholder
+                    // NullLicense (canUse* → false).
+                    if (!wcp.canUseAiEntryGeneration()) {
+                        throw new Error(
+                            "AI entry generation cannot be used because your project license does not permit it."
+                        );
+                    }
+
+                    const result = await taskService.trigger<ICmsGenerateEntryContentTaskInput>({
+                        definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
+                        input: {
+                            prompt: args.prompt,
+                            modelId: args.modelId,
+                            projectId: args.projectId ?? null,
+                            excludedFileIds: args.excludedFileIds ?? null,
+                            readerPersonaId: args.readerPersonaId ?? null,
+                            writerPersonaId: args.writerPersonaId ?? null,
+                            additionalFileIds: args.additionalFileIds ?? null
                         }
                     });
 

@@ -33,13 +33,14 @@ const createDefaultFields = (): CmsModelFieldInput[] => {
         {
             id: generateAlphaNumericLowerCaseId(8),
             fieldId: "image",
-            type: "file",
+            type: "asset",
             label: "Image",
             validation: [],
             listValidation: [],
             renderer: {
-                name: "file-input"
+                name: "asset-input"
             },
+            tags: [],
             settings: {
                 imagesOnly: true
             }

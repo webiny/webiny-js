@@ -129,11 +129,19 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             templates
         });
 
+        const templateIds = templateTypes.map(type => {
+            return `extend type ${type} {
+                _templateId: ID!
+                _id: ID
+            }
+            `;
+        });
+
         typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
 
         return {
             fields: `${field.fieldId}: ${field.list ? `[${unionTypeName}!]` : unionTypeName}`,
-            typeDefs: typeDefs.join("\n")
+            typeDefs: typeDefs.concat(templateIds).join("\n")
         };
     }
 
@@ -170,10 +178,11 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
             templates
         });
 
-        /* Add _templateId. */
+        /* Add _templateId and _id. */
         const templateIds = templateTypes.map(type => {
             return `extend type ${type} {
                 _templateId: ID!
+                _id: ID
             }
             `;
         });
@@ -232,9 +241,17 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
             )}
         }`);
 
+        /* Extend each template input type with _id. */
+        const templateInputIds = templateTypes.map(inputTypeName => {
+            return `extend input ${inputTypeName} {
+                _id: ID
+            }
+            `;
+        });
+
         return {
             fields: createGraphQLInputField(field, `${typeName}Input`),
-            typeDefs: typeDefs.join("\n")
+            typeDefs: typeDefs.concat(templateInputIds).join("\n")
         };
     }
 

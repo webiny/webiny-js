@@ -122,7 +122,7 @@ export const DocumentList = observer(() => {
     }, [folderId, actions]);
 
     const isSearch = !vm.showFolders;
-    const hasFolders = vm.showFolders && vm.folders.childFolders.length > 0;
+    const hasFolders = vm.showFolders && vm.childFolders.length > 0;
 
     return (
         <>

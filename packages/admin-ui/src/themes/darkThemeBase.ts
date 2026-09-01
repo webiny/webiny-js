@@ -66,8 +66,5 @@ export const darkThemeBase: ThemeVariables = {
     "--shadow-md": "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4)",
     "--shadow-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4)",
     "--shadow-xl": "0 24px 24px rgba(0, 0, 0, 0.5)",
-    "--shadow-xxl": "0 48px 48px rgba(0, 0, 0, 0.5)",
-
-    // Signal for background-image icons (e.g. the Lexical toolbar) to invert to light.
-    "--icon-invert": "1"
+    "--shadow-xxl": "0 48px 48px rgba(0, 0, 0, 0.5)"
 };

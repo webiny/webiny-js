@@ -19,7 +19,7 @@ const EditorBar = ({ activeTab, onTabChange }: EditorBarProps) => {
         <HeaderBar
             data-testid={"cms-editor-top-bar"}
             start={
-                <div className={"flex items-center justify-start gap-sm"}>
+                <div className={"flex items-center justify-start"}>
                     {renderPlugins("content-model-editor-default-bar-left")}
                 </div>
             }
@@ -32,7 +32,7 @@ const EditorBar = ({ activeTab, onTabChange }: EditorBarProps) => {
                 />
             }
             end={
-                <div className={"flex items-center justify-end gap-xs"}>
+                <div className={"flex items-center justify-end"}>
                     {renderPlugins("content-model-editor-default-bar-right")}
                 </div>
             }

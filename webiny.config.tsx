@@ -2,11 +2,17 @@ import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
+import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
+import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
+
+// import { CognitoFederation } from "@/extensions/idp/entraid/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
     return (
         <>
+            <Api.Extension src={"@/extensions/tenantTheme/TenantThemeExtension.ts"} />
+            <Api.Extension src={"/extensions/WebsiteBuilderApiKey.ts"} />
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/previewUrlModifier/index.tsx"} />
             {/*<Admin.Extension src={"@/extensions/fileUrlFormatter/index.tsx"} />*/}
@@ -16,6 +22,14 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             <Admin.Extension src={"@/extensions/adminThemes/index.tsx"} />
+            <Admin.Extension src={"@/extensions/commandPalette/index.tsx"} />
+            {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
+
+            {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
+            <ApplyDiscountExtension />
+            {/* Bulk actions demo: "Generate AI summary" bulk action on Products (API + Admin) */}
+            <AiContentExtension />
+            <Admin.Extension src={"@/extensions/folderDropConfirmation/index.tsx"} />
 
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
@@ -25,11 +39,12 @@ export const Extensions = () => {
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+            {/*<Infra.Admin.Pulumi src={"/extensions/adminCustomDomains/AdminCustomDomains.ts"} />*/}
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
-            {/*<Infra.Api.MaxBundleSize size={2359296}  />*/}
+            <Infra.Api.MaxBundleSize size={6291456} />
 
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
@@ -40,8 +55,12 @@ export const Extensions = () => {
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
-            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
-            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
+            {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
+            {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
+            {/* Bulk actions demo: Products model (the bulk actions themselves are registered
+                by the <ApplyDiscountExtension /> / <AiContentExtension /> components above) */}
+            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
+            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
             {/*<Admin.Extension*/}
@@ -118,6 +137,7 @@ export const Extensions = () => {
             )}
             {/* API */}
             {/*<MyIdpExtension />*/}
+            {/*<CognitoFederation />*/}
             <Cognito />
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />

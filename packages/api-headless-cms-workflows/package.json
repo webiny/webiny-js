@@ -18,20 +18,23 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-aco": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/error": "0.0.0",
-    "@webiny/feature": "0.0.0"
+    "@webiny/feature": "0.0.0",
+    "@webiny/shared-aco": "0.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
+    "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/testing": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "typescript": "6.0.3",
-    "vitest": "^4.1.9"
+    "typescript": "7.0.2",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

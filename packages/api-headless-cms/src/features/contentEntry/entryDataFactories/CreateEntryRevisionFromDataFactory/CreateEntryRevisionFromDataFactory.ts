@@ -5,7 +5,6 @@ import {
     type ICreateEntryRevisionFromDataResponse
 } from "./abstractions.js";
 import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type {
     CmsEntry,
@@ -24,6 +23,8 @@ import WebinyError from "@webiny/error";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../statuses.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
+import { ModelToAstConverter } from "~/features/contentModel/ModelToAstConverter/abstractions.js";
+import { ensureItemIds } from "../../ensureItemIds.js";
 
 const increaseEntryIdVersion = (id: string) => {
     const { id: entryId, version } = parseIdentifier(id);
@@ -50,8 +51,8 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
     public constructor(
         private readonly cmsContext: CmsContext.Interface,
         private readonly identityContext: IdentityContext.Interface,
-        private readonly tenantContext: TenantContext.Interface,
-        private readonly accessControl: AccessControl.Interface
+        private readonly accessControl: AccessControl.Interface,
+        private readonly modelToAstConverter: ModelToAstConverter.Interface
     ) {}
 
     public async create<TValues extends CmsEntryValues = CmsEntryValues>(
@@ -67,12 +68,15 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             ...mapAndCleanUpdatedInputData<TValues>(model, rawInput.values)
         };
 
+        const modelAst = this.modelToAstConverter.toAst(model);
+        await ensureItemIds(modelAst, initialValues);
+
         await validateModelEntryDataOrThrow({
             context: this.cmsContext,
             model,
             values: initialValues,
             entry: originalEntry,
-            skipValidators: options?.skipValidators
+            skipValidation: options?.skipValidation
         });
 
         const values = await referenceFieldsMapping<TValues>({
@@ -189,6 +193,7 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
             revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity)!,
             revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
             revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
+            revisionDescription: undefined,
             ...revisionLevelPublishingMetaFields,
             locked,
             status,
@@ -214,5 +219,5 @@ class CreateEntryRevisionFromDataFactoryImpl implements ICreateEntryRevisionFrom
 export const CreateEntryRevisionFromDataFactory = createImplementation({
     abstraction: FactoryAbstraction,
     implementation: CreateEntryRevisionFromDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext, AccessControl]
+    dependencies: [CmsContext, IdentityContext, AccessControl, ModelToAstConverter]
 });

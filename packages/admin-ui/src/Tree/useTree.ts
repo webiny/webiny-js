@@ -56,8 +56,6 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
             });
         });
 
-        await presenter.handleDrop(newNodeTree);
-
         if (props.onDrop) {
             const { dragSourceId, dropTargetId } = options;
 
@@ -70,8 +68,14 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
                 dropTarget: newTreeDto.find(node => node.id === String(options.dropTargetId))
             };
 
-            await props.onDrop(newTreeDto, dropOptions);
+            try {
+                await props.onDrop(newTreeDto, dropOptions);
+            } catch {
+                return;
+            }
         }
+
+        await presenter.handleDrop(newNodeTree);
     };
 
     const changeOpen = (newOpenIds: NodeModel<TData>["id"][]) => {

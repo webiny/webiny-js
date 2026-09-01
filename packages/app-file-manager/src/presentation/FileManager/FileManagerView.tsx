@@ -49,6 +49,7 @@ import { TagsList } from "~/presentation/FileList/components/TagsList/index.js";
 import { UploadProgress } from "~/presentation/FileList/components/Upload/index.js";
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
 import { OverlayProvider, useOverlay } from "./OverlayContext.js";
+import { RouteParamsSync } from "./RouteParamsSync.js";
 
 import type { FmFile } from "~/features/shared/types.js";
 import type {
@@ -130,14 +131,14 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 
         if (vm.viewMode === "table") {
             return (
-                <ScrollArea onScroll={loadMoreOnScroll}>
+                <ScrollArea className={"h-full"} onScroll={loadMoreOnScroll}>
                     <FileTable />
                 </ScrollArea>
             );
         }
 
         return (
-            <ScrollArea onScroll={loadMoreOnScroll}>
+            <ScrollArea className={"h-full"} onScroll={loadMoreOnScroll}>
                 <FileGrid />
             </ScrollArea>
         );
@@ -157,7 +158,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                     <FileDetailsDrawer />
                     <SplitView namespace={"fm/file/list"}>
                         <LeftPanel span={2}>
-                            <div className={"flex flex-col h-main-content"}>
+                            <div className={"flex flex-col h-full"}>
                                 <div className={"py-sm px-md"}>
                                     <Heading level={5}>{t`File Manager`}</Heading>
                                 </div>
@@ -200,13 +201,10 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                             </div>
                         </LeftPanel>
                         <RightPanel span={10}>
-                            <div
-                                className={"flex flex-col relative"}
-                                style={{ height: "calc(100vh - 45px" }}
-                            >
+                            <div className={"flex flex-col relative h-full overflow-hidden"}>
                                 <FileManagerHeader browseFiles={browseFiles} />
                                 <div
-                                    className={"flex-1"}
+                                    className={"flex-1 min-h-0 overflow-hidden"}
                                     {...getDropZoneProps({
                                         onDragEnter: () => actions.setDragging(true),
                                         onDrop: () => actions.setDragging(false),
@@ -299,7 +297,7 @@ const FileManagerViewInner = observer(
         }, [overlay, onChange, onClose, multiple, accept]);
 
         useEffect(() => {
-            presenter.init({ scope });
+            presenter.init({ scope, accept: accept ?? undefined });
             return () => presenter.dispose();
         }, [presenter, overlay, scope]);
 
@@ -309,6 +307,7 @@ const FileManagerViewInner = observer(
                     <FileManagerPresenterProvider presenter={presenter}>
                         <FileManagerViewLayout />
                         {children}
+                        {!overlayConfig && <RouteParamsSync />}
                     </FileManagerPresenterProvider>
                 </FileManagerViewWithConfig>
             </DialogsProvider>

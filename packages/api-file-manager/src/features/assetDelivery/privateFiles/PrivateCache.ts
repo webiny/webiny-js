@@ -1,12 +1,12 @@
 import { parse, stringify } from "cache-control-parser";
 import type { Asset } from "~/delivery/AssetDelivery/Asset.js";
 import type { AssetReply } from "~/delivery/AssetDelivery/abstractions/AssetReply.js";
-import type { IAssetOutputStrategy } from "../abstractions.js";
+import { AssetOutputStrategy } from "../abstractions/AssetOutputStrategy.js";
 
-export class PrivateCache implements IAssetOutputStrategy {
-    private strategy: IAssetOutputStrategy;
+export class PrivateCache implements AssetOutputStrategy.Interface {
+    private strategy: AssetOutputStrategy.Interface;
 
-    constructor(strategy: IAssetOutputStrategy) {
+    constructor(strategy: AssetOutputStrategy.Interface) {
         this.strategy = strategy;
     }
 

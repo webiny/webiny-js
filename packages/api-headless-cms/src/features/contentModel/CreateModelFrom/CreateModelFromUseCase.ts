@@ -123,9 +123,14 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Publish after event
-        await this.eventPublisher.publish(new ModelAfterCreateFromEvent({ model, original }));
+        await this.eventPublisher.publish(
+            new ModelAfterCreateFromEvent({
+                model: result.value,
+                original
+            })
+        );
 
-        return Result.ok(model);
+        return Result.ok(result.value);
     }
 }
 
