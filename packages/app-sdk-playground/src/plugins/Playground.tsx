@@ -16,7 +16,7 @@ const Playground: React.FC = () => {
     const { output, isRunning, handleRun } = useCodeExecution(code, editorRef);
 
     return (
-        <div className="flex flex-col bg-gray-100" style={{ height: "calc(100vh - 45px)" }}>
+        <div className="flex flex-col bg-neutral-light" style={{ height: "calc(100vh - 45px)" }}>
             <PlaygroundToolbar isRunning={isRunning} onRun={handleRun} onFormat={handleFormat} />
             <div className="flex flex-1 overflow-hidden" ref={splitRef}>
                 <CodeEditor

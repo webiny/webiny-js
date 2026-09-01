@@ -13,10 +13,10 @@ export const OutputPanel: React.FC<OutputPanelProps> = ({ output }) => {
             className="bg-neutral-base flex flex-col overflow-hidden"
             style={{ flex: 1, width: "auto", minWidth: `${MIN_PANE_PCT}%` }}
         >
-            <div className="p-2 border-b border-gray-200 font-bold">Output</div>
+            <div className="p-2 border-b border-neutral-dimmed font-bold">Output</div>
             <div className="p-2 overflow-auto flex-1">
                 {output.length === 0 ? (
-                    <div className="text-gray-400 italic">
+                    <div className="text-neutral-dimmed italic">
                         Click &quot;Run Code&quot; to see output here...
                     </div>
                 ) : (

@@ -90,7 +90,7 @@ export const TabContextMenu = (props: TabContextMenuProps) => {
         return (
             <div
                 ref={menuRef}
-                className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg p-2"
+                className="fixed z-50 bg-neutral-elevated border border-neutral-dimmed rounded shadow-lg p-2"
                 style={{ left: props.x, top: props.y }}
             >
                 <input
@@ -100,7 +100,7 @@ export const TabContextMenu = (props: TabContextMenuProps) => {
                     onChange={ev => setRenameValue(ev.target.value)}
                     onKeyDown={handleRenameKeyDown}
                     onBlur={handleConfirmRename}
-                    className="px-2 py-1 border border-gray-300 rounded text-sm w-40"
+                    className="px-2 py-1 border border-neutral-muted rounded text-sm w-40"
                 />
             </div>
         );
@@ -109,11 +109,11 @@ export const TabContextMenu = (props: TabContextMenuProps) => {
     return (
         <div
             ref={menuRef}
-            className="fixed z-50 bg-white border border-gray-200 rounded shadow-lg py-1 min-w-32"
+            className="fixed z-50 bg-neutral-elevated border border-neutral-dimmed rounded shadow-lg py-1 min-w-32"
             style={{ left: props.x, top: props.y }}
         >
             <button
-                className="w-full px-4 py-1.5 text-left text-sm hover:bg-gray-100"
+                className="w-full px-4 py-1.5 text-left text-sm hover:bg-neutral-light"
                 onClick={handleDuplicate}
             >
                 Duplicate
@@ -136,7 +136,7 @@ const RenameButton = (props: RenameButtonProps) => {
 
     return (
         <button
-            className="w-full px-4 py-1.5 text-left text-sm hover:bg-gray-100"
+            className="w-full px-4 py-1.5 text-left text-sm hover:bg-neutral-light"
             onClick={props.onStartRename}
         >
             Rename

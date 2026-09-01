@@ -78,6 +78,8 @@ export { useAuthentication } from "./presentation/security/hooks/useAuthenticati
 export { useBuildParams } from "./presentation/buildParams/useBuildParams.js";
 export { useTheme, THEME_KEY } from "./base/Base/ThemeMode/useTheme.js";
 export type { UseTheme } from "./base/Base/ThemeMode/useTheme.js";
+export { useColorScheme } from "./base/Base/ThemeMode/useColorScheme.js";
+export type { ColorScheme } from "./base/Base/ThemeMode/useColorScheme.js";
 export { createTheme } from "./config/AdminConfig/Theme/createTheme.js";
 export { lightTheme } from "./config/AdminConfig/Theme/lightTheme.js";
 export type { Theme } from "./config/AdminConfig/Theme/types.js";
