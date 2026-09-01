@@ -1,10 +1,10 @@
 import { GetFlpUseCase } from "../abstractions.js";
-import { CodeFlpMerger, FlpsProvider } from "~/features/flp/shared/index.js";
+import { CodeFlpMerger, CodeFlpsProvider } from "~/features/flp/shared/index.js";
 import type { FolderLevelPermission } from "~/flp/flp.types.js";
 
 class GetFlpWithCodeFlpsImpl implements GetFlpUseCase.Interface {
     constructor(
-        private flpsProvider: FlpsProvider.Interface,
+        private codeFlpsProvider: CodeFlpsProvider.Interface,
         private decoratee: GetFlpUseCase.Interface
     ) {}
 
@@ -15,7 +15,7 @@ class GetFlpWithCodeFlpsImpl implements GetFlpUseCase.Interface {
             return null;
         }
 
-        const codePermissions = await this.flpsProvider.getPermissions({
+        const codePermissions = await this.codeFlpsProvider.getPermissions({
             type: flp.type,
             path: flp.path
         });
@@ -26,5 +26,5 @@ class GetFlpWithCodeFlpsImpl implements GetFlpUseCase.Interface {
 
 export const GetFlpWithCodeFlps = GetFlpUseCase.createDecorator({
     decorator: GetFlpWithCodeFlpsImpl,
-    dependencies: [FlpsProvider]
+    dependencies: [CodeFlpsProvider]
 });

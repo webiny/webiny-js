@@ -56,16 +56,19 @@ export interface GetCodePermissionsParams {
     path: string;
 }
 
-export interface IFlpsProvider {
+export interface ICodeFlpsProvider {
     /**
      * Return all code-defined permissions that apply to the given folder type and path.
      */
     getPermissions(params: GetCodePermissionsParams): Promise<FolderPermission[]>;
 }
 
-/** Resolve code-defined folder-level permissions for a given folder. */
-export const FlpsProvider = createAbstraction<IFlpsProvider>("FlpsProvider");
+/**
+ * Resolve code-defined folder-level permissions for a given folder. Only permissions contributed by
+ * an `FlpFactory` are considered — the ones stored in the database are loaded separately.
+ */
+export const CodeFlpsProvider = createAbstraction<ICodeFlpsProvider>("CodeFlpsProvider");
 
-export namespace FlpsProvider {
-    export type Interface = IFlpsProvider;
+export namespace CodeFlpsProvider {
+    export type Interface = ICodeFlpsProvider;
 }

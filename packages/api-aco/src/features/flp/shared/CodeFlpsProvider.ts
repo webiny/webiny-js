@@ -1,14 +1,14 @@
 import {
     type CodeFlp,
+    CodeFlpsProvider as CodeFlpsProviderAbstraction,
     FlpFactory,
-    FlpsProvider,
     type GetCodePermissionsParams
 } from "./abstractions.js";
 import { CodeFlpPath } from "./CodeFlpPath.js";
 import { CodeFlpTarget } from "./CodeFlpTarget.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 
-class FlpProviderImpl implements FlpsProvider.Interface {
+class CodeFlpsProviderImpl implements CodeFlpsProviderAbstraction.Interface {
     private cache: CodeFlp[] | undefined;
 
     constructor(private flpFactories: FlpFactory.Interface[]) {}
@@ -34,7 +34,7 @@ class FlpProviderImpl implements FlpsProvider.Interface {
     }
 }
 
-export const FlpProvider = FlpsProvider.createImplementation({
-    implementation: FlpProviderImpl,
+export const CodeFlpsProvider = CodeFlpsProviderAbstraction.createImplementation({
+    implementation: CodeFlpsProviderImpl,
     dependencies: [[FlpFactory, { multiple: true }]]
 });

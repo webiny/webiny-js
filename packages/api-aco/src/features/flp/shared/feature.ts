@@ -1,6 +1,6 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { FlpProvider } from "./FlpProvider.js";
+import { CodeFlpsProvider } from "./CodeFlpsProvider.js";
 import { GetFlpWithCodeFlps } from "~/features/flp/GetFlp/decorators/GetFlpWithCodeFlps.js";
 import { ListFlpsWithCodeFlps } from "~/features/flp/ListFlps/decorators/ListFlpsWithCodeFlps.js";
 
@@ -19,7 +19,7 @@ export const CodeFlpsFeature = createFeature({
             return;
         }
 
-        container.register(FlpProvider).inSingletonScope();
+        container.register(CodeFlpsProvider).inSingletonScope();
         container.registerDecorator(GetFlpWithCodeFlps);
         container.registerDecorator(ListFlpsWithCodeFlps);
     }
