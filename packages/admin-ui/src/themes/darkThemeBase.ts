@@ -51,6 +51,13 @@ export const darkThemeBase: ThemeVariables = {
     "--text-color-neutral-dimmed": "var(--color-neutral-500)",
     "--text-color-neutral-disabled": "var(--color-neutral-600)",
 
+    // The Lexical editor's default typography (app-admin `typography.css`, the `.wa-*`
+    // classes registered by LexicalPreset) colours text with this project-level var, which
+    // the project template pins to #0a0a0a. Left alone it painted black text on a dark
+    // editor. Overriding it here reaches existing projects, since applyTheme sets inline
+    // properties on <html> that beat global.css's `:root`.
+    "--wa-theme-color-text-base": "var(--text-color-neutral-primary)",
+
     // Status label text on a `*-subtle` chip: the chip background flips light->dark,
     // so the text has to flip dark->light with it.
     "--text-color-warning-strong": "var(--color-warning-300)",
