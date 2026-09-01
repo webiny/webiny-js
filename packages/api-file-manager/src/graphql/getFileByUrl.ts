@@ -64,7 +64,7 @@ class GetFileByUrlUseCase implements IGetFileByUrl {
             limit: 1
         });
         if (filesResult.isFail()) {
-            this.logger.error(filesResult.error);c
+            this.logger.error(filesResult.error);
             return undefined;
         }
 
