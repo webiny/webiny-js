@@ -91,7 +91,10 @@ export async function registerApiRequestStack(
 
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
-    ApiCoreFeature.register(container, { wcpLicense: undefined });
+    // No `wcpLicense` here on purpose: the license was just loaded into the process cache above.
+    // The config's `wcpLicense` is a test seam — tests pass a pre-resolved license to seed that
+    // cache without calling out to WCP.
+    ApiCoreFeature.register(container);
 
     // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
     await config.registerRequestStorage?.(container);

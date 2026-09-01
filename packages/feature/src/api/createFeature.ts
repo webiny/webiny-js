@@ -1,6 +1,24 @@
 import type { Container } from "@webiny/di";
 import { FeatureLifecycle, type FeaturePhases } from "./FeatureLifecycle.js";
 
+/**
+ * A feature definition: `register` (always) plus the optional per-request phases.
+ *
+ * The conditional type exists for one reason — to make the second argument of `register` absent,
+ * optional, or required depending on `TRegister`, so call sites get an accurate signature:
+ *
+ * | Declared as                             | `register` signature              |
+ * |-----------------------------------------|-----------------------------------|
+ * | `createFeature({...})`                  | `(container)`                     |
+ * | `createFeature<ILicense \| undefined>()` | `(container, context?)`           |
+ * | `createFeature<ApiCoreConfig>({...})`    | `(container, context)` — required |
+ *
+ * Two subtleties:
+ * - `[TRegister] extends [void]` is wrapped in tuples to STOP distribution: a naked
+ *   `TRegister extends void` would distribute over a union and evaluate per member.
+ * - The `void` branch has to come first, because `undefined extends void` is true — checking
+ *   `undefined extends TRegister` first would swallow the no-config case.
+ */
 export type FeatureDefinition<TRegister = void> = FeaturePhases &
     ([TRegister] extends [void]
         ? {
