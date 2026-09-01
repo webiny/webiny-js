@@ -14,16 +14,17 @@ class FlpProviderImpl implements FlpsProvider.Interface {
     constructor(private flpFactories: FlpFactory.Interface[]) {}
 
     async getPermissions({ type, path }: GetCodePermissionsParams): Promise<FolderPermission[]> {
-        const flps = await this.getFlps();
+        const codeFlps = await this.getCodeFlps();
 
-        return flps
+        return codeFlps
             .filter(flp => flp.type === type && CodeFlpPath.matches(flp.path, path))
             .flatMap<FolderPermission>(flp => {
                 return flp.permissions.map(permission => CodeFlpTarget.resolve(permission));
             });
     }
 
-    private async getFlps(): Promise<CodeFlp[]> {
+    /** All code-defined FLPs, collected from every registered `FlpFactory`. */
+    private async getCodeFlps(): Promise<CodeFlp[]> {
         if (this.cache === undefined) {
             const results = await Promise.all(this.flpFactories.map(factory => factory.execute()));
             this.cache = results.flat();
