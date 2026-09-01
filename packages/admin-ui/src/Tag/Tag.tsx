@@ -8,6 +8,16 @@ import { TagPropsProvider } from "~/Tag/TagPropsProvider.js";
 import { TagSwatchBox } from "./TagSwatchBox.js";
 import { TagIcon } from "./TagIcon.js";
 
+/** Tag variants whose surface is a solid accent colour rather than a pale neutral. */
+const ACCENT_SURFACE_VARIANTS = [
+    "neutral-strong",
+    "neutral-xstrong",
+    "neutral-dark",
+    "accent",
+    "success",
+    "destructive"
+];
+
 const tagVariants = cva(
     [
         "inline-flex items-center gap-xxs rounded-sm text-sm text-regular transition-colors overflow-hidden",
@@ -130,47 +140,30 @@ const DecoratableTag = (props: TagProps) => {
         ...rootProps
     } = omit(props, ["icon", "swatchColor", "swatchColorIcon"]);
 
-    const dismissButtonVariant = React.useMemo((): VariantProps<
-        typeof iconButtonVariants
-    >["variant"] => {
-        if (
-            variant &&
-            [
-                "neutral-strong",
-                "neutral-xstrong",
-                "neutral-dark",
-                "success",
-                "accent",
-                "destructive"
-            ].includes(variant)
-        ) {
-            return "ghost-negative";
-        }
+    const isOnAccentSurface = Boolean(variant && ACCENT_SURFACE_VARIANTS.includes(variant));
 
-        return "ghost";
-    }, [variant]);
+    const dismissButtonVariant = React.useMemo(
+        (): VariantProps<typeof iconButtonVariants>["variant"] =>
+            isOnAccentSurface ? "ghost-negative" : "ghost",
+        [isOnAccentSurface]
+    );
 
-    const dismissIconColor: IconProps["color"] = React.useMemo(() => {
-        if (
-            variant &&
-            [
-                "neutral-strong",
-                "neutral-xstrong",
-                "neutral-dark",
-                "accent",
-                "success",
-                "destructive"
-            ].includes(variant)
-        ) {
-            return "neutral-negative";
-        }
+    const dismissIconColor: IconProps["color"] = React.useMemo(
+        // On a solid accent surface the icon is white at 50%; elsewhere it is a full-strength
+        // neutral. It previously defaulted to `neutral-strong-transparent`
+        // (`fill-neutral-xstrong/30`), which was too faint to see on a pale tag.
+        () => (isOnAccentSurface ? "neutral-negative" : "neutral-strong"),
+        [isOnAccentSurface]
+    );
 
-        if (variant && ["warning"].includes(variant)) {
-            return "neutral-strong";
-        }
-
-        return "neutral-strong-transparent";
-    }, [variant]);
+    /**
+     * `warning` sits on a fixed yellow surface that darkThemeBase does not remap, so the
+     * dismiss icon must not flip with the theme either -- `neutral-strong` resolves to
+     * `--fill-neutral-xstrong`, which becomes light grey in dark. Pinned to match this
+     * variant's label and TagIcon.
+     */
+    const dismissIconClassName =
+        variant === "warning" ? "fill-neutral-900 text-neutral-900" : undefined;
 
     return (
         <TagPropsProvider props={props}>
@@ -198,6 +191,7 @@ const DecoratableTag = (props: TagProps) => {
                                 icon={dismissIconElement}
                                 label={dismissIconLabel}
                                 color={dismissIconColor}
+                                className={dismissIconClassName}
                                 size={"sm"}
                             />
                         }
