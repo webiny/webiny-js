@@ -73,6 +73,7 @@
   --color-neutral-base: var(--color-neutral-0);
   --color-neutral-elevated: var(--color-neutral-0);
   --color-neutral-dark: var(--color-neutral-900);
+  --color-neutral-overlay: var(--color-neutral-dark);
   --color-neutral-dimmed: var(--color-neutral-200);
   --color-neutral-disabled: var(--color-neutral-200);
   --color-neutral-light: var(--color-neutral-100);
@@ -247,6 +248,7 @@
   --text-color-accent-subtle: var(--color-primary-100);
 
   --text-color-destructive-muted: var(--color-destructive-300);
+  --text-color-destructive-strong: var(--color-destructive-700);
   --text-color-destructive-primary: var(--color-destructive-500);
   --text-color-destructive-subtle: var(--color-destructive-100);
 
@@ -259,7 +261,10 @@
 
   --text-color-success-muted: var(--color-success-400);
   --text-color-success-primary: var(--color-success-500);
+  --text-color-success-strong: var(--color-success-700);
   --text-color-success-subtle: var(--color-success-200);
+
+  --text-color-warning-strong: var(--color-warning-700);
 
   /* Text sizes. */
   --text-sm: 12px;

@@ -31,12 +31,23 @@ export const darkThemeBase: ThemeVariables = {
     "--color-neutral-strong": "var(--color-neutral-500)",
     "--color-neutral-xstrong": "var(--color-neutral-300)",
 
+    // Low-alpha interaction tints (hover/press) are painted with this colour. It must
+    // flip to white: a 5% *dark* tint on a dark surface is invisible, which is why
+    // `--color-neutral-dark` itself deliberately stays dark (it also backs scrims).
+    "--color-neutral-overlay": "var(--color-neutral-0)",
+
     // Text.
     "--text-color-neutral-primary": "var(--color-neutral-100)",
     "--text-color-neutral-strong": "var(--color-neutral-300)",
     "--text-color-neutral-muted": "var(--color-neutral-400)",
     "--text-color-neutral-dimmed": "var(--color-neutral-500)",
     "--text-color-neutral-disabled": "var(--color-neutral-600)",
+
+    // Status label text on a `*-subtle` chip: the chip background flips light->dark,
+    // so the text has to flip dark->light with it.
+    "--text-color-warning-strong": "var(--color-warning-300)",
+    "--text-color-success-strong": "var(--color-success-300)",
+    "--text-color-destructive-strong": "var(--color-destructive-300)",
 
     // Borders.
     "--border-color-neutral-base": "var(--color-neutral-900)",

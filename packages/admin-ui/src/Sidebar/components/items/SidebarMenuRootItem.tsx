@@ -185,7 +185,7 @@ const SidebarMenuItemBase = ({
                 // When the sidebar is collapsed, this ensures that the sidebar menu item is highlighted
                 // if it contains an active child (no matter how deep in the hierarchy).
                 "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]_svg]:fill-neutral-xstrong!",
-                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:bg-neutral-dark/5!",
+                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:bg-neutral-overlay/5!",
                 className
             )}
         >

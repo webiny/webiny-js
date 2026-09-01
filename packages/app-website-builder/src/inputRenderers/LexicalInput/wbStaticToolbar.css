@@ -50,8 +50,8 @@
 }
 
 .wb-static-toolbar .popup-item:hover:not([disabled]) {
-  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
-  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
+  /* Matches admin-ui ghost IconButton hover (bg-neutral-overlay/5). */
+  background-color: color-mix(in oklab, var(--color-neutral-overlay) 5%, transparent);
 }
 
 .wb-static-toolbar select.popup-item {
@@ -158,8 +158,8 @@
 }
 
 .wb-static-toolbar .toolbar-item:hover:not([disabled]) {
-  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
-  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
+  /* Matches admin-ui ghost IconButton hover (bg-neutral-overlay/5). */
+  background-color: color-mix(in oklab, var(--color-neutral-overlay) 5%, transparent);
 }
 
 .wb-static-toolbar .toolbar-item.font-family .text {
