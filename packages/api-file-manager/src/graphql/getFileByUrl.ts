@@ -5,6 +5,7 @@ import type { Security } from "@webiny/api-core/types/security.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ListFilesUseCase } from "~/features/file/ListFiles/index.js";
+import { Logger } from "@webiny/api-core/exports/api/logger";
 
 export const getFileByUrl = () => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -19,7 +20,10 @@ export const getFileByUrl = () => {
                     const { url } = args as { url: string };
                     const useCase = new SecureGetFileByUrl(
                         context.security,
-                        new GetFileByUrlUseCase(context.container.resolve(ListFilesUseCase))
+                        new GetFileByUrlUseCase(
+                            context.container.resolve(ListFilesUseCase),
+                            context.container.resolve(Logger)
+                        )
                     );
                     try {
                         const file = await useCase.execute(url);
@@ -44,7 +48,10 @@ interface IGetFileByUrl {
 }
 
 class GetFileByUrlUseCase implements IGetFileByUrl {
-    constructor(private listFiles: ListFilesUseCase.Interface) {}
+    constructor(
+        private readonly listFiles: ListFilesUseCase.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
 
     async execute(url: string): Promise<File | undefined> {
         const { pathname } = new URL(url);
@@ -57,7 +64,7 @@ class GetFileByUrlUseCase implements IGetFileByUrl {
             limit: 1
         });
         if (filesResult.isFail()) {
-            // TODO Not 100% sure about this. Maybe we can log it?
+            this.logger.error(filesResult.error);c
             return undefined;
         }
 
