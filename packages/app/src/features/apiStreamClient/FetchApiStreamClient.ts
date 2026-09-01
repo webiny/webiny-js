@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { ApiStreamClient, ApiStreamRequestError } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
+import { toPayloadHash } from "./toPayloadHash.js";
 
 function toFetchHeaders(headers: ApiStreamClient.Headers = {}): Record<string, string> {
     const result: Record<string, string> = {};
@@ -59,6 +60,17 @@ class ApiStreamClientImpl implements ApiStreamClient.Interface {
 
         const body = hasBody ? JSON.stringify(params.body) : undefined;
         const url = joinUrl(this.apiUrl, params.path);
+
+        /*
+         * CloudFront's Origin Access Control signs this request but does not hash the body — it trusts
+         * this header for the payload hash, and the Function URL's authorizer checks it against the
+         * body it received. Without it a POST carrying a body is rejected with
+         * `InvalidSignatureException`, while a bodyless one succeeds. Harmless on transports that do
+         * not sign.
+         */
+        if (body !== undefined) {
+            headers["x-amz-content-sha256"] = await toPayloadHash(body);
+        }
 
         let response: Response;
         try {
