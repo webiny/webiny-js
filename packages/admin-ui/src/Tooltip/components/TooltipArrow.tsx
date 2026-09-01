@@ -5,7 +5,12 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 const tooltipArrowVariants = cva("", {
     variants: {
         variant: {
-            accent: "fill-bg-neutral-dark",
+            // Must match the accent tooltip surface, `bg-neutral-dark`. NOT
+            // `fill-neutral-dark`: that token is for icons and darkThemeBase flips it to
+            // neutral-100, which would put a white arrow on a dark tooltip. The previous
+            // value, "fill-bg-neutral-dark", had a doubled prefix and resolved to nothing,
+            // so the arrow fell back to black -- close enough to hide the bug.
+            accent: "fill-[var(--color-neutral-dark)]",
             subtle: "fill-neutral-elevated"
         }
     },

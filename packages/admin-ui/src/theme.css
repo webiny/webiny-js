@@ -151,6 +151,7 @@
   --fill-destructive: var(--color-destructive-500);
 
   --fill-neutral-base: var(--color-neutral-0);
+  --fill-neutral-primary: var(--color-neutral-900);
   --fill-neutral-dark: var(--color-neutral-800);
   --fill-neutral-disabled: var(--color-neutral-400);
   --fill-neutral-strong: var(--color-neutral-500);

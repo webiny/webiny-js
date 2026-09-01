@@ -84,7 +84,9 @@ const tagVariants = cva(
                     "aria-disabled:bg-success-subtle aria-disabled:text-neutral-muted"
                 ],
                 warning: [
-                    "bg-warning-muted text-neutral-primary",
+                    // Fixed yellow surface (darkThemeBase does not remap it), so the
+                    // label must not flip either -- see Alert's warning/strong variant.
+                    "bg-warning-muted text-neutral-900",
                     "hover:bg-warning",
                     "aria-disabled:bg-warning-disabled aria-disabled:text-neutral-disabled"
                 ],

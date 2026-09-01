@@ -61,6 +61,8 @@ export const darkThemeBase: ThemeVariables = {
 
     // Fills (icons).
     "--fill-neutral-dark": "var(--color-neutral-100)",
+    // Mirrors --text-color-neutral-primary so a tag/chip icon tracks its label.
+    "--fill-neutral-primary": "var(--color-neutral-100)",
     "--fill-neutral-strong": "var(--color-neutral-400)",
     "--fill-neutral-xstrong": "var(--color-neutral-300)",
     "--fill-neutral-disabled": "var(--color-neutral-600)",
