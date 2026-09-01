@@ -1,6 +1,7 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { EnsureFolderIsEmpty as Abstraction } from "~/features/folder/EnsureFolderIsEmpty/abstractions.js";
+import { Logger } from "@webiny/api-core/exports/api/logger.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderNotAuthorizedError, FolderNotEmptyError } from "~/domain/folder/errors.js";
 import { Result } from "@webiny/feature/api";
@@ -9,7 +10,8 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private folderLevelPermissions: FolderLevelPermissions.Interface,
-        private listFoldersUseCase: ListFoldersUseCase.Interface
+        private listFoldersUseCase: ListFoldersUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async execute(
@@ -26,7 +28,7 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
                 limit: 1
             });
             if (result.isFail()) {
-                // TODO Maybe log the error?
+                this.logger.error(result.error);
                 return false;
             }
 
@@ -72,5 +74,5 @@ class EnsureFolderIsEmptyImpl implements Abstraction.Interface {
 
 export const EnsureFolderIsEmpty = Abstraction.createImplementation({
     implementation: EnsureFolderIsEmptyImpl,
-    dependencies: [IdentityContext, FolderLevelPermissions, ListFoldersUseCase]
+    dependencies: [IdentityContext, FolderLevelPermissions, ListFoldersUseCase, Logger]
 });
