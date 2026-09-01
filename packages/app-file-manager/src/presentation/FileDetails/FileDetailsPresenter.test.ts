@@ -18,6 +18,10 @@ import type { FmFile } from "../../features/shared/types.js";
 // ---------------------------------------------------------------------------
 
 function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
+    const data: Record<string, unknown> = {};
+
+    // The view model reads and writes the SAME data as the model. Callers reach the form through
+    // `vm.form`, so a vm whose getData/setData were inert stubs could not exercise them at all.
     const vm: IFormVM = {
         layout: [],
         errors: [],
@@ -26,15 +30,27 @@ function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
         isValid: true,
         submitCount: 0,
         focusField: vi.fn(),
-        getData: vi.fn(() => ({})),
-        setData: vi.fn(),
+        getData: vi.fn(() => ({ ...data })),
+        setData: vi.fn((incoming: Record<string, unknown>) => {
+            Object.assign(data, incoming);
+        }),
         ...overrides
     };
 
-    const data: Record<string, unknown> = {};
+    // `field(name)` has to return something usable: loadFile disables fields for a read-only user.
+    const fields: Record<string, unknown> = {};
 
     return {
-        field: vi.fn() as any,
+        field: vi.fn((name: string) => {
+            fields[name] = fields[name] ?? {
+                setValue: vi.fn((value: unknown) => {
+                    data[name] = value;
+                }),
+                setValueSilent: vi.fn(),
+                setDisabled: vi.fn()
+            };
+            return fields[name];
+        }) as any,
         fields: vi.fn() as any,
         layout: vi.fn() as any,
         getData: vi.fn(() => ({ ...data })),
@@ -239,6 +255,22 @@ describe("FileDetailsPresenter", () => {
         await presenter.loadFile("file-1");
 
         expect(presenter.vm.form.isDirty).toBe(false);
+    });
+
+    // Features fill fields in through `vm.form.setData` rather than a method on this presenter, so
+    // the form has to be reachable and writable from the view model.
+    it("should expose a writable form on the view model", async () => {
+        await presenter.loadFile("file-1");
+
+        presenter.vm.form.setData(
+            { tags: ["cat", "sofa"], description: "A cat on a sofa." },
+            { dirty: true }
+        );
+
+        expect(presenter.vm.form.getData()).toMatchObject({
+            description: "A cat on a sofa.",
+            tags: ["cat", "sofa"]
+        });
     });
 
     // -----------------------------------------------------------------------

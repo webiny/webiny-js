@@ -1,4 +1,6 @@
 import { makeAutoObservable } from "mobx";
+import { Notifications } from "@webiny/app-admin/features/notifications/abstractions.js";
+import { FileDetailsPresenter } from "~/presentation/FileDetails/abstractions.js";
 import {
     ReenrichFileGateway,
     ReenrichWithAiPresenter as PresenterAbstraction
@@ -9,12 +11,14 @@ import type {
     IReenrichWithAiViewModel
 } from "./abstractions.js";
 
-type Status = "idle" | "running" | "done" | "error";
+type Status = "idle" | "running" | "ready" | "error";
 
 const STATUS_LABEL: Record<Status, string> = {
     idle: "",
     running: "Analyzing image…",
-    done: "Saved.",
+    // Says what Apply does AND does not do. Applying only fills the form in — the file is written by
+    // the drawer's Update button, and nothing else on screen says so.
+    ready: "Applying fills in the form below. Press Update to save the file.",
     error: "Failed."
 };
 
@@ -32,7 +36,11 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
      */
     private controller: AbortController | null = null;
 
-    constructor(private gateway: IReenrichFileGateway) {
+    constructor(
+        private gateway: IReenrichFileGateway,
+        private fileDetails: FileDetailsPresenter.Interface,
+        private notifications: Notifications.Interface
+    ) {
         // The second type parameter is what lets a PRIVATE field appear in the annotation map.
         makeAutoObservable<ReenrichWithAiPresenterImpl, "controller">(this, { controller: false });
     }
@@ -42,7 +50,9 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
             open: this.open,
             message: this.error ?? STATUS_LABEL[this.status],
             tags: this.tags,
-            description: this.description
+            description: this.description,
+            canSave: this.status === "ready",
+            loading: this.status === "running"
         };
     }
 
@@ -54,11 +64,12 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
                 signal: controller.signal
             })) {
                 if (event.type === "partial" || event.type === "done") {
-                    this.applyOutput(event.tags, event.description);
+                    this.applyOutput(event.tags, event.description, event.type === "done");
                 }
 
+                // Nothing is written yet — the route only proposes. The user accepts with save().
                 if (event.type === "done") {
-                    this.finish("done");
+                    this.finish("ready");
                 }
 
                 if (event.type === "error") {
@@ -72,6 +83,32 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
             }
             this.fail(err instanceof Error ? err.message : String(err));
         }
+    }
+
+    accept() {
+        if (this.status !== "ready") {
+            return;
+        }
+
+        // Through the form's own `setData` rather than a method on FileDetailsPresenter: the drawer
+        // has no business knowing that AI enrichment exists, and every future feature that fills in
+        // fields would otherwise add one more method to it.
+        //
+        // `dirty: true` skips the baseline snapshot, so the form stays dirty and Update has something
+        // to save. setData merges — it only touches the keys passed — so Name and Access Control keep
+        // whatever the user has typed.
+        this.fileDetails.vm.form.setData(
+            { tags: this.tags, description: this.description },
+            { dirty: true }
+        );
+        this.setOpen(false);
+
+        // The dialog is gone the moment it is accepted, so the reminder has to outlive it. `notify`
+        // rather than `success`: nothing has been saved yet, and a green tick would say it had.
+        this.notifications.notify({
+            title: "Suggestion applied",
+            description: "Press Update to save the new tags and description."
+        });
     }
 
     setOpen(open: boolean) {
@@ -110,8 +147,19 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
         return controller;
     }
 
-    private applyOutput(tags: string[], description: string) {
-        this.tags = tags;
+    /**
+     * Merges one streamed value into the displayed proposal.
+     *
+     * The model streams the tag array CHARACTER by character, so the last entry of a partial value is
+     * usually a half-written word — "webiny" arrives as "web", "webi", "webiny". While the stream is
+     * running that trailing entry is dropped, so a chip appears only once its text is settled; the
+     * `done` value is complete and used whole.
+     *
+     * Do NOT accumulate across partials instead of replacing. Every prefix differs from the last, so
+     * "keep everything seen" turns one tag into a chip per keystroke.
+     */
+    private applyOutput(tags: string[], description: string, final: boolean) {
+        this.tags = final ? tags : tags.slice(0, -1);
         this.description = description;
     }
 
@@ -132,5 +180,5 @@ class ReenrichWithAiPresenterImpl implements IReenrichWithAiPresenter {
 
 export const ReenrichWithAiPresenter = PresenterAbstraction.createImplementation({
     implementation: ReenrichWithAiPresenterImpl,
-    dependencies: [ReenrichFileGateway]
+    dependencies: [ReenrichFileGateway, FileDetailsPresenter, Notifications]
 });
