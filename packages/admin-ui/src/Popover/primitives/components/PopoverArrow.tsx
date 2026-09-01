@@ -5,7 +5,10 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 const popoverArrowVariants = cva("", {
     variants: {
         variant: {
-            accent: "border-neutral-black",
+            // The arrow is an SVG: it needs `fill`, not `border` (the previous
+            // `border-neutral-black` did nothing, leaving it black). Tracks the accent
+            // surface so the two read as one shape.
+            accent: "fill-[var(--color-neutral-dark)]",
             subtle: "fill-neutral-elevated"
         }
     },

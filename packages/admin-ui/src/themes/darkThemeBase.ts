@@ -12,16 +12,24 @@
  * the `var(--color-neutral-900)` references resolve against whatever raw palette the theme
  * also sets (or the built-in light defaults, which gives "Webiny Dark").
  *
- * `--color-neutral-dark` is intentionally NOT included: it backs `bg-neutral-dark/N` hover
- * tints, modal backdrops/scrims and the inverted Toast/Tooltip surfaces, all of which must
- * remain dark in any theme. `--fill-neutral-base` and `--text-color-neutral-light` are
- * likewise omitted — they color icons/text on accent surfaces and must stay light.
+ * `--fill-neutral-base` and `--text-color-neutral-light` are intentionally NOT included —
+ * they color icons/text on accent surfaces and must stay light in any theme.
  */
 export type ThemeVariables = Record<string, string>;
 
 export const darkThemeBase: ThemeVariables = {
     // Surfaces / backgrounds.
     "--color-neutral-base": "var(--color-neutral-900)",
+
+    // Inverted / emphasis surfaces: Tooltip and Popover "accent", Toast, Alert "info"
+    // strong, the neutral-dark Tag, OverlayHeader "strong", UploadProgress. In light this
+    // is near-black against a white page. In dark it has to LIFT off the page rather than
+    // stay dark: neutral-900 IS the page colour (so a tooltip vanished into whatever was
+    // behind it), and neutral-800 is already --color-neutral-elevated, which would make
+    // Tooltip's "accent" and "subtle" variants identical. 700 keeps page < elevated <
+    // inverted distinct, and --text-color-neutral-light (white, never remapped) stays
+    // readable on it.
+    "--color-neutral-dark": "var(--color-neutral-700)",
     "--color-neutral-elevated": "var(--color-neutral-800)",
     "--color-neutral-subtle": "var(--color-neutral-800)",
     "--color-neutral-light": "var(--color-neutral-800)",

@@ -11,7 +11,10 @@ const popoverContentVariants = cva(
     {
         variants: {
             variant: {
-                accent: "bg-neutral-dark text-neutral-light border-neutral-black",
+                // Border matches the surface, as in light. Not `border-neutral-black`:
+                // that token is shared with the input focus rings and flips to white in
+                // dark, which outlined the popover instead of blending.
+                accent: "bg-neutral-dark text-neutral-light border-[var(--color-neutral-dark)]",
                 subtle: "bg-neutral-elevated text-neutral-primary border-neutral-muted"
             },
             arrow: {
