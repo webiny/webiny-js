@@ -22,6 +22,7 @@
     { "path": "../api-websockets" },
     { "path": "../api-workflows" },
     { "path": "../background-tasks" },
+    { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../webhooks" }
   ],
@@ -72,6 +73,8 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/webhooks/*": ["../webhooks/src/*"],

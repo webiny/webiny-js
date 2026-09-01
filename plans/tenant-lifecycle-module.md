@@ -1,7 +1,8 @@
-# Per-request lifecycle: phases + the `Module` concept
+# Per-request lifecycle: feature phases
 
-> Design note for discussion (Adrian + Pavel). Not a plan to code yet — a shared artifact to react to.
-> Context: Pavel's Slack notes (2026-08-01→03) + the `RequestContextInitializer` analysis.
+> Design settled between Adrian and Pavel (call, 2026-09). This note records the agreed shape and
+> what remains. Context: Pavel's Slack notes (2026-08-01→03) + the `RequestContextInitializer`
+> analysis.
 
 ## The problem today
 
@@ -12,135 +13,110 @@ Per-request post-auth setup runs through **one** hook: `RequestContextInitialize
 3. **Ordering is implicit.** `registerApiRequestStack` relies on hand-maintained registration order (comment-enforced) + per-impl `initialized` flags.
 4. **Firing is scattered + double-fires.** `runRequestContextInitializers` is called at 5 sites (HTTP `HttpRouter` decorator + 4 manual: bg-task aws/server, scheduler run/recover). On the server, body-tenant routes (bg-task/scheduler) pass through the `HttpRouter` decorator (fires pre-route, **no tenant yet**) *and* re-fire in-handler (post-tenant) → double-fire + `initialized`-flag poisoning. **(Verified.)**
 
-## The `Module` concept (Pavel, WIP)
+## The agreed shape: phases on `createFeature`
 
-A feature declares its pieces and **which phase** each runs in; the framework runs **all Modules' phase-N before any Module's phase-N+1**. So a developer says *when* (and possibly *where/scope*) each piece registers, instead of relying on order + lazy resolution.
+**No new authoring API.** `createFeature` gains two optional callbacks. A feature that doesn't need them is untouched — all ~1543 existing call sites keep working unchanged.
 
-### Proposed phases
+```ts
+export const AcoFeature = createFeature({
+    name: "Aco",
+    register(container) { /* phase 1 — immediate DI wiring, unchanged */ },
+    async setup(ctx) { /* phase 2 — per-request, tenant known */ },
+    async afterSetup(ctx) { /* phase 3 — depends on OTHER features' setup */ }
+});
+```
 
 | Phase | When | For | ≈ today |
 |---|---|---|---|
 | **register** | immediate, sync, no resolution | "what exists" — DI wiring | `Feature.register()` |
 | **setup** | per-request, post-tenant | a feature's own self-contained setup | `RequestContextInitializer` |
-| **after-setup** | per-request, after all `setup` | work depending on *other* features' setup | *(missing — bulk actions/bg-tasks belong here)* |
+| **afterSetup** | per-request, after **all** `setup` | work depending on *other* features' setup | *(missing — bulk actions/bg-tasks belong here)* |
 
-`after-setup` is the missing phase: its work resolves only once every feature's `setup` has run, so cross-feature deps are guaranteed present.
+`afterSetup` is the missing phase: it runs only once every feature's `setup` has completed, so cross-feature deps are guaranteed present.
 
-## How it composes with the firing work (Slice-1, being done now)
+### Why not `createModule`
 
-- **Trigger + timing = `RequestTenantLoader.establish()`.** Every path (HTTP loader decorator, bg-task aws+server, scheduler run+recover) calls `establish()`. Firing the per-request phases there = one fire per request, post-tenant → **kills the double-fire** and centralizes.
-- Initializers are **identity-agnostic** (all run inside `identityContext.withoutAuthorization`), so firing pre-identity (right after tenant) is safe.
-- With `Module`, that same `establish()` point runs **`setup` then `after-setup`** instead of one undifferentiated pass.
+A second authoring API would mean two front doors ("feature or module?"), a mixed registration list, and — since the honest answer would be "module, always" — a 1543-site rename. It only earns its keep if `Module` means *more* than phases (declaring scope, or separating definition from dependency-graph resolution). Phases are the whole change, so `createFeature` wins. `Module` as a developer-facing concept is dropped.
 
-So the two efforts are orthogonal: **Slice-1 fixes the trigger; `Module` defines the phase structure.**
+### How the phases are found: the carrier
 
-## Who executes the phases (resolved)
+`createFeature`'s generated `register()` stashes the callbacks in the container under an internal token, `FeatureLifecycle`:
 
-**event-handler-core owns it** — it's the DI-native request kernel and already runs a per-request `resolveAll(X) → init()` loop. So the mechanism has precedent, not novelty:
+```ts
+register(container, context) {
+    def.register(container, context);
+    if (def.setup || def.afterSetup) {
+        container.registerInstance(FeatureLifecycle, { name, setup, afterSetup });
+    }
+}
+```
+
+This is **plumbing, not a concept** — no feature author imports `FeatureLifecycle`. It buys two things a static walk over `registerApiRequestStack`'s list cannot:
+
+- **Uniformity.** Nested features get `register(container)` with the *same* container as their parent, so a feature at **any depth** works. A static list-walk would silently no-op for the (majority) nested call sites — an undetectable footgun across 1543 usages.
+- **Gating for free.** A feature gated behind a license check never registers, so it never contributes phases. No `enabled` predicate needed; today's early-return pattern keeps working:
+
+```ts
+// WorkflowsFeature — unchanged
+register(container) {
+    if (!...isEnabled("advancedPublishingWorkflow")) return;
+    WorkflowsInnerFeature.register(container);   // ← owns setup(); never registered when gated
+}
+```
+
+### `ctx` is the infra→feature interface
+
+`RequestContext` = `{ container, tenant, featureFlags, identity, ... }`, supplied by the runner. Features stop reaching for `Container`/`TenantContext`/`IdentityContext` — they declare *what* runs in *which* phase; infra owns the lifecycle. The type stays open in `@webiny/feature` (a base primitive that must not depend on `@webiny/api-core` types); the api layer narrows it.
+
+The runner wraps the whole pass in `withoutAuthorization` once, so features stop hand-wrapping it.
+
+## Who executes the phases
 
 | Phase | Executed by | When |
 |---|---|---|
-| **register** | `registerApiRequestStack` (api-event-handler-core) calls each `Feature.register()` | eager, at child-container build — **today, unchanged** |
-| **setup / afterSetup** | `runModules(child, { context })` — mechanism in event-handler-core | once per request, **post-tenant**, before dispatch |
+| **register** | `registerApiRequestStack` calls each `Feature.register()` | eager, at child-container build — **today, unchanged** |
+| **setup / afterSetup** | `runFeaturePhases(container, { context, continueOnError })` | once per request, **post-tenant**, before dispatch |
 
-- **Mechanism** in `event-handler-core` (`runModules`, transport/domain-agnostic — knows only `container`).
-- **Composition** in `api-event-handler-core` (`registerApiRequestStack` — the ordered module set).
-- **`ctx`** = `ModuleContext { container, ...context }`. The kernel only guarantees `container`; the api layer passes tenant / FeatureFlags / identity through `runModules`' `context` option, so core never imports api-core types. Runner wraps the whole pass in `withoutAuthorization` once.
+`runFeaturePhases` lives in **`api-event-handler-core`**, next to the feature list it serves. `event-handler-core` (the transport-agnostic kernel) is not involved — the mechanism is a two-pass loop, and the phases are an api-layer concern.
 
-**Trigger placement — one kernel lifecycle step (preferred).** A fixed step in `HandlerApp.handle()` right after tenant is established and before the matched event dispatches. All 5 transport paths hit it for free → kills the double-fire and centralizes. Rejected alternative: hooking `RequestTenantLoader.establish()` — it fires at multiple sites and ~20 test harnesses set tenant via header/`setTenant` not `establish()`, so it would break them and flatten the per-path error mode (`continueOnError` vs fail-fast).
+**Error mode stays per-path.** HTTP fails fast (a broken `setup` is a 500); background tasks and scheduled actions pass `continueOnError: true`. The caller passes its own policy, so no behaviour flattens.
 
-**Precedent, now vacated.** The pre-auth `RequestInitializer` loop (child-build, pre-tenant) proved this exact shape — but it has zero implementations left (its only user, the WCP refresh, moved to a pre-register eager load), so it's being deleted. `Module` doesn't just replace `RequestContextInitializer`; it also absorbs that empty pre-tenant slot. One post-tenant `runModules` step is the whole per-request lifecycle.
+**Trigger placement — open.** There is no single moment the kernel knows the tenant: HTTP takes it from the `x-tenant` header via a loader decorator, while bg-task and scheduler routes read it from the body *inside* the handler. Options:
 
-## Open questions for Pavel
+- **(a) hook `RequestTenantLoader.establish()`** — the one call every path makes. **Blocked:** ~20 test harnesses set tenant via `setTenant`/header and never call `establish()`, so they'd silently stop running phases.
+- **(b) keep per-transport firing**, collapsing 5 sites → 2 (HTTP decorator + one shared helper for the body-tenant routes). Unblocked, less elegant. **Current lean.**
+- **(c)** fire lazily on first resolve of something tenant-dependent. Too magic.
 
-1. **Phase contract** — names + how a feature declares which phase a piece belongs to. Is it methods on a `Module` (`register` / `setup` / `afterSetup`), or declarative entries? *(Prototype: methods. `ModuleContext` is the phase argument; `runModules` runs the phase barrier — see #5613.)*
-2. **Relationship to `createFeature`** — is `Module` a superset of the current Feature, or a new abstraction Features opt into?
-3. **Scope** — does a Module piece also declare *where* (root / child / per-tenant) it registers, or only *when* (phase)?
-4. **Naming** — `RequestContextInitializer` → becomes the `setup` phase of a Module? (If so, the standalone rename to `TenantFeature` is moot — the phase name wins.)
-5. **Migration** — the 4 real `RequestContextInitializer` impls (AcoInitializer, WorkflowsInitializer, FileModelContextualSchema, SchedulerModelContextualSchema) + the `GraphQLContextualSchema` impls that fire on schema-build. Which move to `setup` vs `after-setup`?
-6. **`withoutAuthorization`** — hoist the wrapper to the phase runner (whole bootstrap runs unauthorized, features stop injecting `IdentityContext`)? Deferred from Slice-1; fits the `Module` runner naturally.
+## `RequestContextInitializer` is removed
 
-## Examples: what a Module looks like (illustrative — not built)
+It *becomes* the `setup` phase. Deleted at the end of the migration: the `RequestContextInitializer` abstraction, the `runRequestContextInitializers` runner, the `HttpRouter` `RequestContextInitializerDecorator`, and the 4 manual firing calls (bg-task ×2, scheduler ×2). The "Request*" naming smell goes with it.
 
-The unified shape — all three phases in one declaration; `register` is static (compose-time), `setup`/`afterSetup` are per-request and receive a `ctx` the kernel hands them:
+The 4 impls fold into their parent feature — each is already registered from inside one:
 
-```ts
-export const CommentsModule = createModule({
-    name: "Comments",
-    register(container) {                 // phase 1 — immediate DI wiring (= today's Feature.register)
-        container.register(CommentsRepository);
-    },
-    async setup(ctx) {                    // phase 2 — per-request, tenant known (via ctx, no injection)
-        const model = await ctx.container.resolve(GetModelUseCase).execute(COMMENTS_MODEL_ID);
-        ctx.container.registerInstance(CommentsModel, model.value);
-    }
-    // no afterSetup — Comments doesn't depend on other modules' setup
-});
-```
+| Initializer | Folds into |
+|---|---|
+| `AcoInitializer` | `AcoFeature.setup` |
+| `WorkflowsInitializer` | `WorkflowsFeature` (inner, gated) |
+| `FileModelContextualSchema` | `FileManagerAppFeature.setup` |
+| `SchedulerModelContextualSchema` | `SchedulerFeature.setup` |
 
-CMS schema — the archetype. **One module per package** (`HeadlessCmsModule`, `FileManagerModule`, …); the phase split is *within* a module (`setup` vs `afterSetup`), the barrier is *across* modules (every module's `setup` before any module's `afterSetup`). So the cooperation is between *different packages*, not a within-CMS split:
+Each merge drops an `initialized` flag, a `constructor(container)`, and its hand-rolled `withoutAuthorization` wrapper.
 
-```ts
-// Another package contributes its model in its own setup.
-export const FileManagerModule = createModule({
-    name: "FileManager",
-    async setup(ctx) {
-        ctx.container.registerInstance(CmsModels, await loadFileModel(ctx.container, ctx.tenant));
-    }
-});
+**`RequestInitializer` (pre-auth) is already gone** — it had zero implementations after the WCP license load moved to a pre-register eager load. Removed separately (#5623). So `setup`/`afterSetup` is the *whole* per-request lifecycle, not a third hook alongside two others.
 
-// HeadlessCms loads its own models in setup, and builds the schema from EVERYONE's models in
-// afterSetup — guaranteed to see FileManager's (and every other module's) models, because their
-// setup already ran.
-export const HeadlessCmsModule = createModule({
-    name: "HeadlessCms",
-    async setup(ctx) {
-        for (const m of await loadCmsModelsForTenant(ctx.container, ctx.tenant)) {
-            ctx.container.registerInstance(CmsModels, m);
-        }
-    },
-    async afterSetup(ctx) {
-        ctx.container.registerInstance(CmsSchema, buildGraphQLSchema(ctx.container.resolveAll(CmsModels)));
-    }
-});
-```
+## Status
 
-The schema module's `afterSetup` is phase-3 precisely because it depends on *other* modules' `setup`. One module per package (`ApiCoreModule`, `HeadlessCmsModule`, `FileManagerModule`, …) — no registration-order comments, no `initialized` flags.
+**Step 1 — done (this branch).** Fully additive, nothing fires yet:
 
-api-core impact — `AcoInitializer` today injects `Container` + `IdentityContext` and hand-wraps `withoutAuthorization`; as a Module it reads `ctx.tenant` / `ctx.featureFlags`, injects nothing infra, and the phase runner runs the whole bootstrap unauthorized:
+- `FeatureLifecycle` token + `RequestContext` / `FeaturePhases` types in `@webiny/feature`
+- `createFeature` accepts optional `setup` / `afterSetup` and stashes them
+- `runFeaturePhases` in `api-event-handler-core` (phase barrier, `continueOnError`, `context`)
+- 14 tests across the two packages; api-core's 171 green (backward compatible)
 
-```ts
-export const AcoModule = createModule({
-    name: "Aco",
-    register(container) { /* DI wiring */ },
-    async setup(ctx) {
-        const folderModel = await ctx.container.resolve(GetModelUseCase).execute(FOLDER_MODEL_ID);
-        ctx.container.registerInstance(FolderModelAbstraction, folderModel.value);
-        if (ctx.featureFlags.isEnabled("advancedAccessControlLayer.folderLevelPermissions")) {
-            CmsFlpFeature.register(ctx.container);
-        }
-    }
-});
-```
+**Next**, in order:
 
-**`ctx` is the infra→feature interface:** `{ container, tenant, featureFlags, ... }`, supplied by the kernel. Features stop reaching for `Container`/`TenantContext`/`IdentityContext` — they declare *what* runs in *which* phase; infra owns the lifecycle, api-core owns the domain work. (Layering split: mechanism-in-infra, tenant-resolution-in-app, tenant-handed-to-features-via-ctx.)
-
-## Unified: `Module` subsumes `createFeature` (Adrian's lean)
-
-`createModule` is the **one** feature abstraction; a feature fills only the phases it needs:
-
-- **Register-only features** (the majority, e.g. `ApiCoreFeature`) → `createModule({ register })` — literally `createFeature` renamed.
-- **Features with per-request work** → add `setup` / `afterSetup`. A feature's `Feature` + its `RequestContextInitializer` **collapse into one module** — e.g. `AcoFeature` (register) + `AcoInitializer` (RequestContextInitializer) → one `AcoModule` with `register` + `setup`.
-
-So there aren't two abstractions ("is this a Feature or a Module?") — there's `Module`, with named phases.
-
-### `RequestContextInitializer` is removed
-
-It *becomes* the `setup` phase. Deleted: the `RequestContextInitializer` abstraction, the `runRequestContextInitializers` runner, the `HttpRouter` `RequestContextInitializerDecorator`, and the 4 manual firing calls (bg-task ×2, scheduler ×2). Replaced by `runModules`, fired once post-`establish()`. The 4 impls migrate to `Module.setup`. The "Request*" naming smell is gone — only `Module` + phases remain.
-
-Migration surface: **every** `createFeature` → `createModule` (mechanical for register-only), plus the 4 initializer merges. Big but single-model. Worth Pavel's nod (it's his `Module` vision).
-
-## What's happening now vs deferred
-
-- **Now (Slice-1):** fire-on-`establish()` + remove the `HttpRouter` decorator & the 4 manual calls (double-fire fix + centralization). Keeps the `RequestContextInitializer` name.
-- **Deferred to `Module` design:** the rename, the 3rd phase (`after-setup`), the `withoutAuthorization` hoist. These should be decided together once the `Module` contract is agreed.
+1. Decide trigger placement (option b above), wire `runFeaturePhases`, remove the `HttpRouter` decorator + 4 manual calls → fixes the double-fire.
+2. Migrate the 4 initializers, one PR at a time. During transition the runner can also run legacy `RequestContextInitializer`s so nothing is stranded.
+3. Hoist `withoutAuthorization` into the runner.
+4. Delete `RequestContextInitializer` and its machinery.
+5. Un-comment bulk actions (`HcmsBulkActionsFeature`) into `afterSetup` — the case that motivated the third phase.

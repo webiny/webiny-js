@@ -38,6 +38,8 @@
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
+    "@webiny/di": "^1.0.2",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/webhooks": "0.0.0"
   },
