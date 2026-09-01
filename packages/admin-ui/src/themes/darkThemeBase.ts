@@ -77,5 +77,10 @@ export const darkThemeBase: ThemeVariables = {
     "--shadow-md": "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4)",
     "--shadow-lg": "0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4)",
     "--shadow-xl": "0 24px 24px rgba(0, 0, 0, 0.5)",
-    "--shadow-xxl": "0 48px 48px rgba(0, 0, 0, 0.5)"
+    "--shadow-xxl": "0 48px 48px rgba(0, 0, 0, 0.5)",
+
+    // Switches browser-drawn UI to its dark palette: the native date/time picker indicators,
+    // scrollbars, `<select>` popups and autofill. Those are outside CSS's reach — no `fill`
+    // or `color` affects them — so this is the only way they follow the theme.
+    "--color-scheme": "dark"
 };

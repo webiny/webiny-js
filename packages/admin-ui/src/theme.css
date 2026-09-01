@@ -376,6 +376,18 @@ body {
   background-color: var(--color-neutral-base);
 }
 
+/*
+ * Tells the browser which palette to draw *native* UI in — the widgets CSS cannot reach:
+ * the `::-webkit-calendar-picker-indicator` on `<input type="date">` / `type="time"`,
+ * scrollbars, `<select>` popups, autofill, spinners. These ignore `fill` and `color`, so
+ * without this they stay black-on-light in every theme (and, on an OS set to dark, could go
+ * dark while the light theme is active). A dark theme sets `--color-scheme: dark`; the
+ * fallback keeps light explicit rather than leaving it to the OS preference.
+ */
+:root {
+  color-scheme: var(--color-scheme, light);
+}
+
 @utility container {
   @apply pr-xxl pl-xxl mx-auto w-full;
 }
