@@ -1,6 +1,8 @@
+import type { Container } from "@webiny/di";
 import { HttpRouter, HttpRoute, RouteNotFoundError } from "~/features/http/abstractions.js";
 import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
 import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
 import type { IHttpRoute, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 function matchPath(pattern: string, path: string): Record<string, string> | null {
@@ -33,19 +35,28 @@ function matchPath(pattern: string, path: string): Record<string, string> | null
 }
 
 class HttpRouterImplClass implements HttpRouter.Interface {
-    // TODO: revisit eager route construction.
-    // Injecting [HttpRoute, { multiple: true }] constructs EVERY registered route on each request
-    // just to path-match, so a route's constructor runs even when its path doesn't match. Any route
-    // whose constructor pulls a request-time-registered token (e.g. CMS use-cases needing
-    // EntryFromStorageTransform / a per-request CmsModel) then throws "No registration found" before
-    // any handler runs. Current routes work around this by resolving such deps lazily inside handle()
-    // (AssetDeliveryRoute, WebsiteBuilderRedirectsRoute) or by pre-registering them before routing.
-    // The systemic fix is to construct only the matched route lazily (inject route factories/thunks,
-    // or resolve HttpRoute by matched path on demand) so this workaround isn't required per route.
-    constructor(private routes: IHttpRoute[]) {}
+    /**
+     * Takes the container, NOT `[HttpRoute, { multiple: true }]`.
+     *
+     * Injecting the routes would construct every one of them while the router itself is being
+     * constructed — which happens before `route()` is ever called, and therefore before
+     * `RequestContextInitializerDecorator` runs the request-context initializers. Any route whose
+     * constructor reaches a token those initializers register (`FileModel`, a per-request `CmsModel`,
+     * `EntryFromStorageTransform`) would throw "No registration found for ..." on EVERY request,
+     * including an OPTIONS preflight to an unrelated path, because construction does not care which
+     * route actually matches.
+     *
+     * Resolving inside `route()` puts route construction after the initializers, where a route's
+     * declared dependencies can be resolved normally. This is what lets routes declare what they
+     * need instead of taking a container and resolving lazily inside `handle()`.
+     *
+     * Still eager in that every route is constructed to path-match. Constructing only the matched
+     * route needs `method`/`path` to be readable without an instance, which is a bigger change.
+     */
+    constructor(private container: Container) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
-        for (const route of this.routes) {
+        for (const route of this.container.resolveAll(HttpRoute)) {
             const params = this.match(route, request);
             if (params !== null) {
                 const response = new HttpResponseBuilder();
@@ -66,5 +77,5 @@ class HttpRouterImplClass implements HttpRouter.Interface {
 
 export const HttpRouterImpl = HttpRouter.createImplementation({
     implementation: HttpRouterImplClass,
-    dependencies: [[HttpRoute, { multiple: true }]]
+    dependencies: [RequestContainer]
 });
