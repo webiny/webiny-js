@@ -21,6 +21,9 @@ export const createRedirectsRoute = () => {
             const getActiveRedirects = context.container.resolve(GetActiveRedirectsUseCase);
 
             const result = await getActiveRedirects.execute();
+            if (result.isFail()) {
+                return reply.code(500).send(result.error);
+            }
 
             const redirectsDto = result.value.map(entry => ActiveRedirectRestMapper.toDto(entry));
 

@@ -25,6 +25,10 @@ class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteEventHand
             limit: 10000
         });
 
+        if (result.isFail()) {
+            return;
+        }
+
         const workflows = result.value.items;
 
         for (const workflow of workflows) {

@@ -30,6 +30,10 @@ class EnsureWbRedirectFolderIsEmptyOnDeleteImpl
                 limit: 1
             });
 
+            if (result.isFail()) {
+                throw result.error;
+            }
+
             const { redirects } = result.value;
 
             return redirects.length > 0;
