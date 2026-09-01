@@ -31,6 +31,10 @@ class EnsureFolderIsEmptyBeforeDeleteImpl implements FolderBeforeDeleteEventHand
                 limit: 1
             });
 
+            if (result.isFail()) {
+                throw result.error;
+            }
+
             const { items } = result.value;
 
             return items.length > 0;

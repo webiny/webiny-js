@@ -123,6 +123,9 @@ class CreateWorkflowStateUseCaseImpl implements UseCase.Interface {
         const createdRecord = createResult.value;
 
         const teamsResult = await this.getUserTeams.execute(identity.id);
+        if (teamsResult.isFail()) {
+            return Result.fail(teamsResult.error);
+        }
         const teams = teamsResult.value;
         const workflowState = new WorkflowState(createdRecord, teams, identity);
 

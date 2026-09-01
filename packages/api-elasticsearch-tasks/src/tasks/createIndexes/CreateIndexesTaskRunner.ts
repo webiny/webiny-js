@@ -31,6 +31,9 @@ export class CreateIndexesTaskRunner {
         }
 
         const tenantsResult = await this.listTenantsUseCase.execute();
+        if (tenantsResult.isFail()) {
+            return this.taskController.response.error(tenantsResult.error);
+        }
         const tenants = tenantsResult.value;
 
         const indexes = await listIndexes(this.tenantContext, tenants, this.indexFactories);

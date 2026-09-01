@@ -115,6 +115,9 @@ export const createS3GraphQLSchema = () => {
                         const data = args.data as PresignedPostPayloadData;
 
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
@@ -142,6 +145,9 @@ export const createS3GraphQLSchema = () => {
 
                     try {
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
