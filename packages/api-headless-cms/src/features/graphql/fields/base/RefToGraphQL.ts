@@ -15,6 +15,7 @@ import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
+import { Logger } from "@webiny/api-core/exports/api/logger.js";
 
 interface RefFieldValue {
     /**
@@ -150,6 +151,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             const getModel = container.resolve(GetModelUseCase);
             const getPublishedByIds = container.resolve(GetPublishedEntriesByIdsUseCase);
             const getLatestByIds = container.resolve(GetLatestEntriesByIdsUseCase);
+            const logger = container.resolve(Logger);
 
             const initialValue = getValue(parent);
 
@@ -169,7 +171,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                     return [];
                 }
 
-                const entriesByModel = referenceFieldValues.reduce(
+                const entriesByModel = referenceFieldValues.reduce<Record<string, string[]>>(
                     (collection, ref) => {
                         if (!collection[ref.modelId]) {
                             collection[ref.modelId] = [];
@@ -179,21 +181,29 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                         collection[ref.modelId].push(ref.entryId);
                         return collection;
                     },
-                    {} as Record<string, string[]>
+                    {}
                 );
 
                 const getters = Object.keys(entriesByModel).map(async modelId => {
                     const idList = entriesByModel[modelId];
                     const modelResult = await getModel.execute(modelId);
+                    if (modelResult.isFail()) {
+                        logger.error(modelResult.error);
+                        return [];
+                    }
                     const model = modelResult.value;
 
-                    let entries: CmsEntry[];
+                    let entries: CmsEntry[] = [];
                     if (cms.READ) {
                         const getPublishedResult = await getPublishedByIds.execute(model, idList);
-                        entries = getPublishedResult.value;
+                        if (getPublishedResult.isOk()) {
+                            entries = getPublishedResult.value;
+                        }
                     } else {
-                        const latestByIsResult = await getLatestByIds.execute(model, idList);
-                        entries = latestByIsResult.value;
+                        const latestByIdsResult = await getLatestByIds.execute(model, idList);
+                        if (latestByIdsResult.isOk()) {
+                            entries = latestByIdsResult.value;
+                        }
                     }
                     return appendTypename(entries, modelIdToTypeName.get(modelId)!);
                 });
@@ -213,17 +223,25 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
 
             const value = initialValue as RefFieldValue;
             const modelResult = await getModel.execute(value.modelId);
+            if (modelResult.isFail()) {
+                logger.error(modelResult.error);
+                return null;
+            }
             const model = modelResult.value;
 
-            let revisions: CmsEntry[];
+            let revisions: CmsEntry[] = [];
             if (cms.READ) {
                 const publishedByIdsResult = await getPublishedByIds.execute(model, [
                     value.entryId
                 ]);
-                revisions = publishedByIdsResult.value;
+                if (publishedByIdsResult.isOk()) {
+                    revisions = publishedByIdsResult.value;
+                }
             } else {
                 const latestByIdsResult = await getLatestByIds.execute(model, [value.entryId]);
-                revisions = latestByIdsResult.value;
+                if (latestByIdsResult.isOk()) {
+                    revisions = latestByIdsResult.value;
+                }
             }
 
             if (!revisions || revisions.length === 0) {
