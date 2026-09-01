@@ -46,10 +46,13 @@ const ScheduledActionBar = observer(() => {
     const actionLabel =
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
 
-    // Match the workflow bar: a full-width white strip (below the header) containing the alert.
+    // Match the workflow bar: a full-width strip on the page surface (below the header)
+    // containing the alert.
     return (
         <div
-            className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}
+            className={
+                "max-w-screen bg-neutral-base p-sm border-solid border-b-sm border-neutral-dimmed"
+            }
         >
             <Alert type={"warning"} variant={"subtle"} icon={<ScheduledIcon />}>
                 {goLiveOn ? (
