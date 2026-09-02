@@ -44,6 +44,12 @@ export const GridComponent = ({ inputs, styles, element }: GridProps) => {
 
     return (
         <div className={gridClass} style={styles}>
+            {/*
+                A media query can't be expressed in an inline `style` attribute (that only
+                holds declarations, not at-rules), so the stacking CSS is emitted as a
+                scoped <style> tag. A <style> is `display:none` and valid inside <body>,
+                so it doesn't affect the grid's flex layout.
+            */}
             {stackCss ? <style dangerouslySetInnerHTML={{ __html: stackCss }} /> : null}
             {rows.map(columns => {
                 return columns.map((column, i) => (
