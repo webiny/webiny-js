@@ -119,13 +119,15 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
             const arrayValue = Array.isArray(value) ? value : [];
 
             return {
-                [field.fieldId]: arrayValue.map(item => {
-                    return this.processFromStorage({
-                        templates,
-                        converterCollection,
-                        value: item
-                    });
-                })
+                [field.fieldId]: arrayValue
+                    .map(item => {
+                        return this.processFromStorage({
+                            templates,
+                            converterCollection,
+                            value: item
+                        });
+                    })
+                    .filter(Boolean)
             };
         }
 
@@ -161,13 +163,15 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
 
         const template = templates.find(t => t.id === _templateId);
         if (!template) {
-            throw new WebinyError(
-                "Unknown template - converting from storage.",
-                "UNKNOWN_TEMPLATE",
-                {
+            // TODO Should we just return undefined?
+            console.warn({
+                message: "Unknown template - converting from storage.",
+                code: "UNKNOWN_TEMPLATE",
+                data: {
                     templateId: _templateId
                 }
-            );
+            });
+            return undefined;
         }
 
         return template.fields.reduce<GenericRecord<string>>(
