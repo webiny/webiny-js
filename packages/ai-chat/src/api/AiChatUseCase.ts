@@ -162,12 +162,18 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             }
 
             /*
-             * Awaited only after the stream drains — these settle when the run finishes, so reading
+             * `responseMessages`, not `response.messages`: the former is the ACCUMULATED history of
+             * every step, the latter only the final step's. Resuming after an approval needs the step
+             * that carried the approval request, so the narrower one silently broke every write —
+             * the client replayed a single message, the SDK could not match the approvalId, and the
+             * model simply proposed the change again.
+             *
+             * Awaited only after the stream drains: these settle when the run finishes, so reading
              * them earlier would block the loop above and defeat the point of streaming.
              */
             yield {
                 type: "done",
-                messages: await result.response.then(response => response.messages),
+                messages: await result.responseMessages,
                 steps: (await result.steps).length
             };
         } catch (error) {

@@ -9,8 +9,13 @@ export interface AiTurn {
     question: string;
     /** Answer text so far. Grows as the stream arrives. */
     text: string;
-    /** Tools seen this turn, in call order, deduplicated. */
+    /** Tools called this turn, in call order. */
     tools: string[];
+    /**
+     * Tools that actually returned. A call pending approval still emits `tool-call`, so this is the
+     * only way to tell a completed tool from one merely proposed.
+     */
+    completed: string[];
     /** Set while a tool is running and no answer text has arrived yet. */
     running: boolean;
     pendingApprovals: AiChatPendingApproval[];
@@ -32,6 +37,7 @@ const emptyTurn = (question: string): AiTurn => ({
     question,
     text: "",
     tools: [],
+    completed: [],
     running: false,
     pendingApprovals: [],
     messages: [],
@@ -93,6 +99,7 @@ export const useAiChat = (): UseAiChat => {
             try {
                 let text = "";
                 const tools: string[] = [];
+                const completed: string[] = [];
 
                 for await (const event of container
                     .resolve(AiChatGateway)
@@ -106,6 +113,12 @@ export const useAiChat = (): UseAiChat => {
                     if (event.type === "tool-call") {
                         tools.push(event.name);
                         patch(index, { tools: [...tools], running: true });
+                        continue;
+                    }
+
+                    if (event.type === "tool-result") {
+                        completed.push(event.name);
+                        patch(index, { completed: [...completed] });
                         continue;
                     }
 

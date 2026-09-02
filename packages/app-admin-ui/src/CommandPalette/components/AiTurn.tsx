@@ -22,13 +22,16 @@ const MARKDOWN_CLASSES = [
     "[&_pre]:mb-xs [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-neutral-subtle [&_pre]:p-sm"
 ].join(" ");
 
-/** Only the last tool can still be running; everything before it has already returned. */
+/**
+ * Done only once the tool has actually returned. A call awaiting approval still arrives as a
+ * `tool-call`, so keying off position would show a write as completed when it has only been proposed.
+ */
 const toolState = (turn: AiTurnModel, index: number): "running" | "done" => {
-    if (turn.running && index === turn.tools.length - 1) {
-        return "running";
-    }
+    const name = turn.tools[index];
+    const callsSoFar = turn.tools.slice(0, index + 1).filter(tool => tool === name).length;
+    const resultsSoFar = turn.completed.filter(tool => tool === name).length;
 
-    return "done";
+    return resultsSoFar >= callsSoFar ? "done" : "running";
 };
 
 export interface AiTurnProps {
