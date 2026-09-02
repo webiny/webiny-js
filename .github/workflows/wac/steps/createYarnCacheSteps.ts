@@ -23,6 +23,17 @@ interface CreateYarnCacheStepsParams {
 // so `yarn --immutable` re-downloaded every dependency on every run.
 //
 // Asking Yarn where its cache is keeps this correct if that setting is ever flipped back.
+//
+// `restore-keys` makes a changed `yarn.lock` a delta fetch instead of a full one. The exact `key`
+// misses whenever a PR bumps the lockfile, and without a fallback the cache folder starts out empty
+// and Yarn re-downloads every dependency. The prefix restores the most recent Yarn cache we have,
+// so Yarn only fetches what the bump actually added. This is safe because the global cache is
+// content-addressed per package version: entries from another lockfile are an imperfect SET of
+// zips, never a wrong zip - Yarn uses what matches the current lock and fetches the rest.
+//
+// The cost is that saving workflows carry stale entries forward into the new key, so the cache
+// grows slowly. Bump the literal `yarn-` prefix below (to `yarn2-`) to start clean if it ever gets
+// out of hand - that changes both the key and the fallback prefix, orphaning every old entry.
 export const createYarnCacheSteps = (params: CreateYarnCacheStepsParams) => {
     return [
         {
@@ -35,7 +46,8 @@ export const createYarnCacheSteps = (params: CreateYarnCacheStepsParams) => {
             uses: params.restoreOnly ? ACTION.cacheRestore : ACTION.cache,
             with: {
                 path: "${{ steps.yarn-cache-folder.outputs.path }}",
-                key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"
+                key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}",
+                "restore-keys": "yarn-${{ runner.os }}-"
             }
         }
     ] as const;
