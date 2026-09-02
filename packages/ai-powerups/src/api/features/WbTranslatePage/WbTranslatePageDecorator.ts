@@ -8,6 +8,8 @@ import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { LexicalParser } from "./abstractions/LexicalParser.js";
+import { GetPageByIdUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
+import { LlmJsonResponse } from "~/domain/LlmJsonResponse.js";
 
 type InputType = "text" | "longText" | "lexical";
 
@@ -30,6 +32,7 @@ interface TranslatedData {
 class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
     constructor(
         private getDefaultLanguage: GetDefaultLanguageUseCase.Interface,
+        private getPageById: GetPageByIdUseCase.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private encryption: Encryption.Interface,
@@ -63,6 +66,11 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
 
     private async resolveSourceLanguage(page: WbPage): Promise<string> {
         if (page.properties["sourcePage"]) {
+            const sourcePageId = `${page.properties["sourcePage"]}#0001`;
+            const sourcePage = await this.getPageById.execute(sourcePageId);
+            if (sourcePage.isOk()) {
+                return sourcePage.value.properties["language"];
+            }
             return page.properties["language"] ?? "en";
         }
 
@@ -113,7 +121,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         });
 
         try {
-            return JSON.parse(result.text);
+            return LlmJsonResponse.fromRawText(result.text).toJSON<TranslatedData>();
         } catch {
             return null;
         }
@@ -199,6 +207,7 @@ export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
     decorator: WbTranslatePageDecoratorImpl,
     dependencies: [
         GetDefaultLanguageUseCase,
+        GetPageByIdUseCase,
         GetSettingsUseCase,
         Ai,
         Encryption,

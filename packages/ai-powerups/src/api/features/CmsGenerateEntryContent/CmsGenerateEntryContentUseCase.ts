@@ -21,7 +21,7 @@ import type {
     GenerateEntryContentTelemetry
 } from "./abstractions.js";
 import { buildEntryPrompt } from "./buildPrompt.js";
-import { LlmJsonResponse } from "../WbGeneratePageContent/LlmJsonResponse.js";
+import { LlmJsonResponse } from "~/domain/LlmJsonResponse.js";
 import { injectDynamicZoneTypenames } from "./injectDynamicZoneTypenames.js";
 
 class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCase.Interface {

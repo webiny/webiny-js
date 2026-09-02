@@ -17,7 +17,7 @@ import type {
     GenerationTelemetry
 } from "./abstractions.js";
 import { buildDomainPrompt } from "./buildPrompt.js";
-import { LlmJsonResponse } from "./LlmJsonResponse.js";
+import { LlmJsonResponse } from "~/domain/LlmJsonResponse.js";
 import { ComponentFilter } from "./ComponentFilter.js";
 
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {

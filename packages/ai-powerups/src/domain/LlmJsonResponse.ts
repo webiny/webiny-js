@@ -30,6 +30,10 @@ export class LlmJsonResponse {
         return new LlmJsonResponse(text);
     }
 
+    toJSON<T = unknown>(): T {
+        return JSON.parse(this.text);
+    }
+
     toArray(): unknown[] {
         const parsed = JSON.parse(this.text);
 
