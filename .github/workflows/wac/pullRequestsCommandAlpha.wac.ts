@@ -29,7 +29,7 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 // release), /alpha only ever publishes an alpha prerelease. There is no follow-up job.
 export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
     command: "alpha",
-    name: "Pull Requests Command - Alpha Release",
+    name: "💬 PR Command - Alpha Release",
     comment:
         "Alpha release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     workflow: {
