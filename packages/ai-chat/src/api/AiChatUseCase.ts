@@ -89,7 +89,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     ) {}
 
     async execute(params: AiChatParams): Promise<AiChatResult> {
-        const { request, approvalsSigned } = await this.prepare(params);
+        const { request } = await this.prepare(params);
 
         const result = await this.ai.generateText(request);
 
@@ -98,8 +98,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             toolCalls: this.extractToolCalls(result),
             steps: result.steps.length,
             pendingApprovals: this.extractPendingApprovals(result),
-            messages: result.responseMessages,
-            approvalsSigned
+            messages: result.responseMessages
         };
     }
 
@@ -118,7 +117,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             return;
         }
 
-        const { request, approvalsSigned } = prepared;
+        const { request } = prepared;
         const pending: PendingApproval[] = [];
 
         try {
@@ -169,8 +168,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             yield {
                 type: "done",
                 messages: await result.response.then(response => response.messages),
-                steps: (await result.steps).length,
-                approvalsSigned
+                steps: (await result.steps).length
             };
         } catch (error) {
             yield { type: "error", message: toMessage(error) };
@@ -181,10 +179,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
      * Everything both entry points need: the identity check, which tools may run unattended, and the
      * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
      */
-    private async prepare(params: AiChatParams): Promise<{
-        request: Ai.GenerateTextParams;
-        approvalsSigned: boolean;
-    }> {
+    private async prepare(params: AiChatParams): Promise<{ request: Ai.GenerateTextParams }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
         }
@@ -195,12 +190,9 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         );
 
         /*
-         * Every tool runs through the same use cases as the admin UI, so the caller's permissions are
-         * the real control here, and a mutating tool still needs the human to approve the exact call
-         * before it executes. The signing secret is hardening on top of that: it binds an approval to
-         * the call it was issued for, so a compromised or buggy client cannot fabricate one. Worth
-         * having, but not worth withholding writes over — an unsigned approval a human clicked is not
-         * the weak link when that human could make the same change by hand.
+         * Every tool is offered. The controls are the caller's own permissions — each tool runs through
+         * the same use cases as the admin UI — and the approval pause, which stops a mutating call
+         * until a human has seen its exact arguments.
          */
         const activeTools = Object.keys(tools);
 
@@ -235,11 +227,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             stopWhen: stepCountIs(this.config.maxSteps)
         };
 
-        if (this.config.approvalSecret) {
-            request["experimental_toolApprovalSecret"] = this.config.approvalSecret;
-        }
-
-        return { request, approvalsSigned: Boolean(this.config.approvalSecret) };
+        return { request };
     }
 
     /**

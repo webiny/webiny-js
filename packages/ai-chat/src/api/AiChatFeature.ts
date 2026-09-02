@@ -18,23 +18,9 @@ const DEFAULT_MAX_STEPS = 12;
 export const AiChatFeature = createFeature({
     name: "AiChat",
     register: container => {
-        const config: {
-            maxSteps: number;
-            approvalSecret?: string;
-        } = {
+        container.registerInstance(AiChatConfig, {
             maxSteps: Number(process.env["WEBINY_API_AI_CHAT_MAX_STEPS"]) || DEFAULT_MAX_STEPS
-        };
-
-        /*
-         * Unset means read-only: mutating tools are withheld rather than gated on an approval we cannot
-         * verify. Opt in by setting the secret.
-         */
-        const approvalSecret = process.env["WEBINY_API_AI_CHAT_APPROVAL_SECRET"];
-        if (approvalSecret) {
-            config.approvalSecret = approvalSecret;
-        }
-
-        container.registerInstance(AiChatConfig, config);
+        });
         /*
          * Registered first so a later registration wins — AI Power-Ups overrides this with providers
          * configured in the admin UI.

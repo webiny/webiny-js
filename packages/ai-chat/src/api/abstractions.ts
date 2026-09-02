@@ -39,12 +39,6 @@ export interface IAiChatConfig {
      * three-tool question (list models, describe, query) needs at least four.
      */
     readonly maxSteps: number;
-    /**
-     * HMAC secret used to sign approval requests. Without it a client could replay an approval issued
-     * for one tool call against a different, unshown one — so an unset secret disables write tools
-     * entirely rather than degrading to an unsigned confirm.
-     */
-    readonly approvalSecret?: string;
 }
 
 /** Runtime limits for the assistant. The model itself comes from `AiChatProvider`. */
@@ -68,8 +62,6 @@ export interface AiChatResult {
     pendingApprovals: PendingApproval[];
     /** Response messages the caller replays when resuming after an approval. */
     messages: ModelMessage[];
-    /** True when approvals are HMAC-signed, binding each to the call it was issued for. */
-    approvalsSigned: boolean;
 }
 
 export interface IAiChatUseCase {

@@ -36,8 +36,6 @@ export interface AiChatResult {
     pendingApprovals: AiChatPendingApproval[];
     /** Server response messages, replayed unchanged when resuming after an approval. */
     messages: AiChatMessage[];
-    /** True when approvals are HMAC-signed. Writes work either way; this is hardening, not a gate. */
-    approvalsSigned: boolean;
 }
 
 export interface AiChatRequest {
@@ -55,7 +53,7 @@ export type AiChatStreamEvent =
     | { type: "tool-call"; name: string }
     | { type: "tool-result"; name: string }
     | { type: "approval"; approvals: AiChatPendingApproval[] }
-    | { type: "done"; messages: AiChatMessage[]; steps: number; approvalsSigned: boolean }
+    | { type: "done"; messages: AiChatMessage[]; steps: number }
     | { type: "error"; message: string };
 
 export interface IAiChatGateway {
