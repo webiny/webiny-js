@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import yargs from "yargs";
 import { writeJsonFileSync } from "write-json-file";
 import { Listr, ListrTask } from "listr2";
@@ -15,10 +14,9 @@ import path from "path";
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
 import { queueMetaWrite } from "./writeMetaQueue";
+import { createReporter } from "./reporter";
 
 const argv = yargs(hideBin(process.argv)).parse();
-
-const { green, red } = chalk;
 
 const projectFolder = path.basename(process.cwd());
 
@@ -36,6 +34,12 @@ interface BuildOptions {
     cache?: boolean;
     buildOverrides?: string;
     safeReplace?: boolean;
+    /**
+     * Emit newline-delimited JSON progress events on stdout instead of the interactive
+     * Listr UI, so an external tool (IDE, CI dashboard) can render its own progress.
+     * See `reporter.ts` for the event schema.
+     */
+    json?: boolean;
 }
 
 interface BuildContext {
@@ -43,15 +47,26 @@ interface BuildContext {
 }
 
 const buildInParallel =
-    !process.env.CI || process.env.RUNNER_NAME?.startsWith("webiny-build-packages");
+    !process.env.CI || process.env.RUNNER_NAME?.startsWith("webiny-build-packages") === true;
 
 export const buildPackages = async () => {
     const options = argv as BuildOptions;
 
-    printHardwareReport();
+    const reporter = createReporter(options.json === true);
 
-    console.log("Check Typescript");
-    await execa("yarn", ["tsc", "--version"], { stdio: "inherit" });
+    // Captured rather than inherited: in JSON mode stdout carries the event stream, and
+    // in text mode the reporter needs to print this after the hardware report.
+    const tscVersion = await execa("yarn", ["tsc", "--version"]);
+
+    const hardware = getHardwareInfo();
+
+    reporter.info({
+        projectFolder,
+        runner: process.env.RUNNER_NAME || "N/A",
+        parallel: buildInParallel,
+        ...hardware,
+        tscVersion: tscVersion.stdout?.trim() ?? ""
+    });
 
     let packagesWhitelist: string[] = [];
     if (options.p) {
@@ -62,30 +77,48 @@ export const buildPackages = async () => {
         }
     }
 
-    const { batches, packagesNoCache, allPackages, buildKeys } = await getBatches({
+    const {
+        batches,
+        packagesNoCache,
+        packagesUseCache,
+        restoredFromCache,
+        cacheEnabled,
+        allPackages,
+        buildKeys
+    } = await getBatches({
         cache: options.cache ?? true,
         packagesWhitelist
     });
 
-    if (!packagesNoCache.length) {
-        console.log("There are no packages that need to be built.");
-        return;
-    }
+    const start = Date.now();
 
-    if (packagesNoCache.length > 10) {
-        console.log(`\nRunning build for ${green(packagesNoCache.length)} packages.`);
-    } else {
-        console.log("\nRunning build for the following package(s):");
-        for (let i = 0; i < packagesNoCache.length; i++) {
-            const item = packagesNoCache[i];
-            console.log(`‣ ${green(item.packageJson.name)}`);
-        }
+    reporter.plan({
+        totalPackages: allPackages.length,
+        cacheEnabled,
+        packages: packagesNoCache.map(pkg => pkg.packageJson.name),
+        cachedPackages: packagesUseCache.map(pkg => pkg.packageJson.name),
+        restoredPackages: restoredFromCache.map(pkg => pkg.packageJson.name),
+        // A single package is built directly, without batching.
+        batches: allPackages.length === 1 ? 0 : batches.length
+    });
+
+    if (!packagesNoCache.length) {
+        reporter.end({ success: true, duration: 0, built: 0, failed: 0, errors: [] });
+        return;
     }
 
     if (allPackages.length === 1) {
         const [pkg] = allPackages;
+
+        reporter.packageStart(pkg.packageJson.name, 0);
+
         try {
-            await buildPackage(pkg, options.buildOverrides, "inherit", options.safeReplace);
+            await buildPackage(
+                pkg,
+                options.buildOverrides,
+                reporter.machineReadable ? undefined : "inherit",
+                options.safeReplace
+            );
 
             // Record the dependency-aware build key so a later build treats this
             // package as a cache hit (the cache→dist copy is then skipped when
@@ -96,139 +129,237 @@ export const buildPackages = async () => {
             };
             writeJsonFileSync(META_FILE_PATH, meta);
 
+            const duration = Date.now() - start;
+            reporter.packageEnd({ name: pkg.packageJson.name, batch: 0, duration });
+
             sendNotification(`Webiny Build (${projectFolder})`, "Build completed successfully");
+
+            reporter.end({
+                success: true,
+                duration: duration / 1000,
+                built: 1,
+                failed: 0,
+                errors: []
+            });
         } catch (err) {
-            sendNotification(`Webiny Build (${projectFolder})`, "Build failed");
-            throw err;
-        }
-    } else {
-        const start = Date.now();
+            const error = err as Error;
+            const duration = Date.now() - start;
 
-        console.log(
-            `\nThe build process will be performed in ${green(batches.length)} ${
-                batches.length > 1 ? "batches" : "batch"
-            }.\n`
-        );
-        const metaJson = getBuildMeta();
-
-        const totalBatches = `${batches.length}`.padStart(2, "0");
-
-        const tasks = new Listr<BuildContext>(
-            batches.map<ListrTask>((packageNames, index) => {
-                const id = `${index + 1}`.padStart(2, "0");
-                const title = `[${id}/${totalBatches}] Batch #${id} (${packageNames.length} packages)`;
-
-                return {
-                    title,
-                    skip: ctx => ctx.skip,
-                    task: (ctx, task): Listr => {
-                        const packages = allPackages.filter(pkg => packageNames.includes(pkg.name));
-
-                        const subtasks = packages.map(pkg => {
-                            return {
-                                title: `${pkg.name}`,
-                                task: async () => {
-                                    try {
-                                        await buildPackage(
-                                            pkg,
-                                            options.buildOverrides,
-                                            undefined,
-                                            options.safeReplace
-                                        );
-
-                                        // Store the dependency-aware build key.
-                                        const key = buildKeys.get(pkg.name) ?? "";
-                                        await queueMetaWrite(async () => {
-                                            const currentMeta = getBuildMeta();
-                                            currentMeta.packages[pkg.packageJson.name] = {
-                                                sourceHash: key
-                                            };
-                                            return writeJsonFileSync(META_FILE_PATH, currentMeta);
-                                        });
-                                    } catch (err) {
-                                        ctx.skip = true;
-                                        throw new PackageBuildError(pkg, err as Error);
-                                    }
-                                }
-                            };
-                        });
-
-                        return task.newListr(subtasks, {
-                            concurrent: buildInParallel,
-                            exitOnError: false,
-                            collectErrors: true,
-                            rendererOptions: { showErrorMessage: false }
-                        });
-                    }
-                };
-            }),
-            {
-                concurrent: false,
-                collectErrors: true,
-                rendererOptions: {
-                    timer: {
-                        condition: true,
-                        field: duration => {
-                            return `${Math.round(duration / 1000)}s`;
-                        },
-                        format: () => {
-                            return time => {
-                                return time || "";
-                            };
-                        }
-                    },
-                    collapseSubtasks: true
-                }
-            }
-        );
-
-        await tasks.run();
-
-        const duration = (Date.now() - start) / 1000;
-
-        if (tasks.errors?.length) {
-            console.log();
-            console.log(
-                `Error building ${red(tasks.errors.length)} package(s). Check the logs below.`
-            );
-            console.log();
-
-            tasks.errors.forEach(listrError => {
-                const pkgBuildError = listrError.error as PackageBuildError;
-                console.log(red("✖ " + pkgBuildError.getPackage().name));
-                console.log(pkgBuildError.getBuildError().message);
-                console.log();
+            reporter.packageEnd({
+                name: pkg.packageJson.name,
+                batch: 0,
+                duration,
+                error: error.message
             });
 
-            sendNotification(
-                `Webiny Build (${projectFolder})`,
-                `Build failed after ${duration} seconds`
-            );
-            console.log(`Build failed in ${red(duration)} seconds.`);
-            process.exit(1);
+            sendNotification(`Webiny Build (${projectFolder})`, "Build failed");
+
+            reporter.end({
+                success: false,
+                duration: duration / 1000,
+                built: 0,
+                failed: 1,
+                errors: [{ name: pkg.packageJson.name, message: error.message }]
+            });
+
+            // In JSON mode the failure is already fully described by the event stream,
+            // so rethrowing would only add an unparseable stack trace to the output.
+            if (reporter.machineReadable) {
+                process.exit(1);
+            }
+
+            throw err;
         }
+
+        return;
+    }
+
+    const totalBatches = `${batches.length}`.padStart(2, "0");
+
+    // A failure in any batch skips every later batch, so the packages in them never
+    // report a result. Tracked here so the final report can account for all of them.
+    const succeededPackages = new Set<string>();
+    const failedPackages = new Set<string>();
+    const skipReported = new Set<number>();
+
+    const tasks = new Listr<BuildContext>(
+        batches.map<ListrTask>((packageNames, index) => {
+            const batchNumber = index + 1;
+            const id = `${batchNumber}`.padStart(2, "0");
+            const title = `[${id}/${totalBatches}] Batch #${id} (${packageNames.length} packages)`;
+
+            const packages = allPackages.filter(pkg => packageNames.includes(pkg.name));
+
+            const batchInfo = {
+                batch: batchNumber,
+                totalBatches: batches.length,
+                packages: packages.map(pkg => pkg.packageJson.name)
+            };
+
+            return {
+                title,
+                skip: ctx => {
+                    if (!ctx.skip) {
+                        return false;
+                    }
+
+                    // `skip` may be consulted more than once — report the batch only once.
+                    if (!skipReported.has(batchNumber)) {
+                        skipReported.add(batchNumber);
+                        reporter.batchSkipped(batchInfo);
+                    }
+
+                    return true;
+                },
+                task: async (ctx, task) => {
+                    const batchStart = Date.now();
+                    let succeeded = 0;
+                    let failed = 0;
+
+                    reporter.batchStart(batchInfo);
+
+                    const subtasks = packages.map(pkg => {
+                        return {
+                            title: `${pkg.name}`,
+                            task: async () => {
+                                const packageStart = Date.now();
+
+                                reporter.packageStart(pkg.packageJson.name, batchNumber);
+
+                                try {
+                                    await buildPackage(
+                                        pkg,
+                                        options.buildOverrides,
+                                        undefined,
+                                        options.safeReplace
+                                    );
+
+                                    // Store the dependency-aware build key.
+                                    const key = buildKeys.get(pkg.name) ?? "";
+                                    await queueMetaWrite(async () => {
+                                        const currentMeta = getBuildMeta();
+                                        currentMeta.packages[pkg.packageJson.name] = {
+                                            sourceHash: key
+                                        };
+                                        return writeJsonFileSync(META_FILE_PATH, currentMeta);
+                                    });
+
+                                    succeeded++;
+                                    succeededPackages.add(pkg.packageJson.name);
+                                    reporter.packageEnd({
+                                        name: pkg.packageJson.name,
+                                        batch: batchNumber,
+                                        duration: Date.now() - packageStart
+                                    });
+                                } catch (err) {
+                                    failed++;
+                                    failedPackages.add(pkg.packageJson.name);
+                                    reporter.packageEnd({
+                                        name: pkg.packageJson.name,
+                                        batch: batchNumber,
+                                        duration: Date.now() - packageStart,
+                                        error: (err as Error).message
+                                    });
+
+                                    ctx.skip = true;
+                                    throw new PackageBuildError(pkg, err as Error);
+                                }
+                            }
+                        };
+                    });
+
+                    const subtaskList = task.newListr(subtasks, {
+                        concurrent: buildInParallel,
+                        exitOnError: false,
+                        collectErrors: true,
+                        rendererOptions: { showErrorMessage: false }
+                    });
+
+                    // Run the subtasks here rather than returning the list, so the batch's
+                    // own totals are known by the time `batchEnd` is reported. `exitOnError`
+                    // is off, so this never throws — errors surface on `tasks.errors`.
+                    try {
+                        await subtaskList.run();
+                    } finally {
+                        reporter.batchEnd({
+                            ...batchInfo,
+                            succeeded,
+                            failed,
+                            duration: Date.now() - batchStart
+                        });
+                    }
+                }
+            };
+        }),
+        {
+            concurrent: false,
+            collectErrors: true,
+            // Suppresses the interactive UI for this list and all of its subtasks, leaving
+            // the JSON reporter as the only thing writing to stdout.
+            silentRendererCondition: reporter.machineReadable,
+            rendererOptions: {
+                timer: {
+                    condition: true,
+                    field: duration => {
+                        return `${Math.round(duration / 1000)}s`;
+                    },
+                    format: () => {
+                        return time => {
+                            return time || "";
+                        };
+                    }
+                },
+                collapseSubtasks: true
+            }
+        }
+    );
+
+    await tasks.run();
+
+    const duration = (Date.now() - start) / 1000;
+
+    if (tasks.errors?.length) {
+        const errors = tasks.errors.map(listrError => {
+            const pkgBuildError = listrError.error as PackageBuildError;
+            return {
+                name: pkgBuildError.getPackage().name,
+                message: pkgBuildError.getBuildError().message
+            };
+        });
 
         sendNotification(
             `Webiny Build (${projectFolder})`,
-            `Build finished in ${duration} seconds`
+            `Build failed after ${duration} seconds`
         );
-        console.log(`\nBuild finished in ${green(duration)} seconds.`);
+
+        // Packages in the batches that got skipped never ran, so they count as neither
+        // built nor failed.
+        const skippedPackages = packagesNoCache
+            .map(pkg => pkg.packageJson.name)
+            .filter(name => !succeededPackages.has(name) && !failedPackages.has(name));
+
+        reporter.end({
+            success: false,
+            duration,
+            built: succeededPackages.size,
+            failed: failedPackages.size,
+            skipped: skippedPackages.length,
+            skippedPackages,
+            errors
+        });
+
+        process.exit(1);
     }
-};
 
-const toMB = (bytes: number) => {
-    const formatter = new Intl.NumberFormat("en", { style: "unit", unit: "megabyte" });
+    sendNotification(`Webiny Build (${projectFolder})`, `Build finished in ${duration} seconds`);
 
-    return formatter.format(Math.round(bytes / 1024 / 1024));
-};
-
-const printHardwareReport = () => {
-    const { cpuCount, cpuName, freeMemory, totalMemory } = getHardwareInfo();
-    console.log(
-        `Runner: ${green(process.env.RUNNER_NAME || "N/A")}; Build packages: ${
-            buildInParallel ? green("in parallel") : green("in series")
-        }; Hardware: ${green(cpuCount)} CPUs (${cpuName}); Total Memory: ${green(
-            toMB(totalMemory)
-        )}; Free Memory: ${green(toMB(freeMemory))}.`
-    );
+    reporter.end({
+        success: true,
+        duration,
+        built: succeededPackages.size,
+        failed: 0,
+        skipped: 0,
+        skippedPackages: [],
+        errors: []
+    });
 };
