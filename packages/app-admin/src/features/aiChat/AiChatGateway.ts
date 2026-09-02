@@ -75,7 +75,7 @@ class AiChatGatewayImpl implements Abstraction.Interface {
             steps: result?.steps ?? 0,
             pendingApprovals: result?.pendingApprovals ?? [],
             messages: result?.messages ?? [],
-            writesEnabled: result?.writesEnabled ?? false
+            approvalsSigned: result?.approvalsSigned ?? false
         };
     }
 

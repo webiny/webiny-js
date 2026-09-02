@@ -89,7 +89,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     ) {}
 
     async execute(params: AiChatParams): Promise<AiChatResult> {
-        const { request, writesEnabled } = await this.prepare(params);
+        const { request, approvalsSigned } = await this.prepare(params);
 
         const result = await this.ai.generateText(request);
 
@@ -99,7 +99,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             steps: result.steps.length,
             pendingApprovals: this.extractPendingApprovals(result),
             messages: result.responseMessages,
-            writesEnabled
+            approvalsSigned
         };
     }
 
@@ -118,7 +118,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             return;
         }
 
-        const { request, writesEnabled } = prepared;
+        const { request, approvalsSigned } = prepared;
         const pending: PendingApproval[] = [];
 
         try {
@@ -170,7 +170,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
                 type: "done",
                 messages: await result.response.then(response => response.messages),
                 steps: (await result.steps).length,
-                writesEnabled
+                approvalsSigned
             };
         } catch (error) {
             yield { type: "error", message: toMessage(error) };
@@ -183,7 +183,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
      */
     private async prepare(params: AiChatParams): Promise<{
         request: Ai.GenerateTextParams;
-        writesEnabled: boolean;
+        approvalsSigned: boolean;
     }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
@@ -195,16 +195,14 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         );
 
         /*
-         * Without a signing secret we cannot prove an approval belongs to the call it was issued for,
-         * so mutating tools are withheld entirely rather than gated on an unverifiable claim.
+         * Every tool runs through the same use cases as the admin UI, so the caller's permissions are
+         * the real control here, and a mutating tool still needs the human to approve the exact call
+         * before it executes. The signing secret is hardening on top of that: it binds an approval to
+         * the call it was issued for, so a compromised or buggy client cannot fabricate one. Worth
+         * having, but not worth withholding writes over — an unsigned approval a human clicked is not
+         * the weak link when that human could make the same change by hand.
          */
-        const writesEnabled = Boolean(this.config.approvalSecret);
-        const toolNames = Object.keys(tools);
-        let activeTools = toolNames;
-
-        if (!writesEnabled) {
-            activeTools = toolNames.filter(name => readOnlyNames.has(name));
-        }
+        const activeTools = Object.keys(tools);
 
         const messages = [...params.messages];
         if (params.decisions.length > 0) {
@@ -241,7 +239,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             request["experimental_toolApprovalSecret"] = this.config.approvalSecret;
         }
 
-        return { request, writesEnabled };
+        return { request, approvalsSigned: Boolean(this.config.approvalSecret) };
     }
 
     /**

@@ -68,8 +68,8 @@ export interface AiChatResult {
     pendingApprovals: PendingApproval[];
     /** Response messages the caller replays when resuming after an approval. */
     messages: ModelMessage[];
-    /** False when no approval secret is configured, so mutating tools were withheld. */
-    writesEnabled: boolean;
+    /** True when approvals are HMAC-signed, binding each to the call it was issued for. */
+    approvalsSigned: boolean;
 }
 
 export interface IAiChatUseCase {

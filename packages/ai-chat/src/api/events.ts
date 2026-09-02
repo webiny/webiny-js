@@ -25,7 +25,7 @@ export type AiChatEvent =
           type: "done";
           messages: ModelMessage[];
           steps: number;
-          writesEnabled: boolean;
+          approvalsSigned: boolean;
       }
     /** Terminal failure. The run produced no usable answer. */
     | { type: "error"; message: string };
