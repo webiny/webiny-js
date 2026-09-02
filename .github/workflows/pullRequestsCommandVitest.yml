@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Vitest
+name: 💬 PR Command - Vitest
 'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
@@ -146,11 +146,12 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -325,10 +326,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -496,10 +498,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -679,10 +682,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -851,10 +855,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
@@ -1024,10 +1029,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
