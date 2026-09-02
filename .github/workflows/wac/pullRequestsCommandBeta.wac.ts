@@ -30,7 +30,7 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 
 export const pullRequestsCommandBeta = createSlashCommandWorkflow({
     command: "beta",
-    name: "Pull Requests Command - Beta Release",
+    name: "💬 PR Command - Beta Release",
     comment:
         "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     workflow: {

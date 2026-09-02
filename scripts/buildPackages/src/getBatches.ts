@@ -1,6 +1,5 @@
 import fs from "fs-extra";
 import path from "path";
-import chalk from "chalk";
 import { getPackages } from "../../utils/getPackages";
 import { WorkspaceGraph } from "../../utils/WorkspaceGraph.js";
 import { Package } from "./types";
@@ -10,8 +9,6 @@ import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
 import { distMatchesCache, recordCacheHash } from "./distContentHash";
 import { getEffectiveHashes } from "./getEffectiveHashes";
-
-const { green } = chalk;
 
 interface GetBatchesOptions {
     cache?: boolean;
@@ -36,8 +33,6 @@ export async function getBatches(options: GetBatchesOptions = {}) {
             return packagesWhitelist.includes(pkg.name);
         });
     }
-
-    console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
 
     const useCache = options.cache ?? false;
 
@@ -79,27 +74,14 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     // changed package is already a cache miss above.
 
     // 2. Let's use cached built code where possible.
+    const restoredFromCache: Package[] = [];
     if (packagesUseCache.length) {
-        if (packagesUseCache.length > 10) {
-            console.log(`Using cache for ${green(packagesUseCache.length)} packages.`);
-            console.log(
-                `To build all packages regardless of cache, use the ${green("--no-cache")} flag.`
-            );
-        } else {
-            console.log("Using cache for following packages:");
-            for (let i = 0; i < packagesUseCache.length; i++) {
-                const item = packagesUseCache[i];
-                console.log(green(item.packageJson.name));
-            }
-        }
-
         // Skip the cache→dist copy for packages whose dist already matches the
         // cache byte-for-byte (content hash). Reads actual bytes in parallel, so
         // it can't go stale from out-of-band dist writes (`webiny watch`, manual
         // edits) — those change the hash and force a copy.
         const fresh = await Promise.all(packagesUseCache.map(pkg => distMatchesCache(pkg)));
 
-        const restored: Package[] = [];
         for (let i = 0; i < packagesUseCache.length; i++) {
             const workspacePackage = packagesUseCache[i];
 
@@ -109,26 +91,27 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
             const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
             fs.copySync(cacheFolderPath, getBuildOutputFolder(workspacePackage));
-            restored.push(workspacePackage);
+            restoredFromCache.push(workspacePackage);
         }
 
-        if (restored.length) {
+        if (restoredFromCache.length) {
             // dist now equals the cache — record the hash so the next build can
             // verify freshness by hashing dist alone.
-            await Promise.all(restored.map(pkg => recordCacheHash(pkg)));
-            console.log(`Restored ${green(restored.length)} package(s) from cache into dist.`);
-        }
-    } else {
-        if (useCache) {
-            console.log("Cache is empty, all packages need to be built.");
-        } else {
-            console.log("Skipping cache.");
+            await Promise.all(restoredFromCache.map(pkg => recordCacheHash(pkg)));
         }
     }
 
     // 3. Where needed, let's build and update the cache.
     if (packagesNoCache.length === 0) {
-        return { batches: [], packagesNoCache, allPackages: workspacesPackages, buildKeys };
+        return {
+            batches: [],
+            packagesNoCache,
+            packagesUseCache,
+            restoredFromCache,
+            cacheEnabled: useCache,
+            allPackages: workspacesPackages,
+            buildKeys
+        };
     }
 
     const rawPackagesList = workspaceGraph.toposort();
@@ -164,6 +147,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     return {
         batches,
         packagesNoCache,
+        packagesUseCache,
+        restoredFromCache,
+        cacheEnabled: useCache,
         allPackages: workspacesPackages,
         buildKeys
     };
