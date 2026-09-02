@@ -17,7 +17,10 @@ const PR_SHA = "${{ needs.prBranch.outputs.pr-sha }}";
 const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: PR_BRANCH,
+    restoreOnly: true
+});
 const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
     workingDirectory: PR_BRANCH
 });

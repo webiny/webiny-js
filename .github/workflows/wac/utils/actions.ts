@@ -16,6 +16,9 @@ export const ACTION = {
     setupNode: "actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444",
     // actions/cache v5
     cache: "actions/cache@caa296126883cff596d87d8935842f9db880ef25",
+    // actions/cache/restore v5 - restore without the post-job save, for workflows whose cache
+    // token is read-only (see `restoreOnly` in `createYarnCacheSteps`). Same commit as `cache`.
+    cacheRestore: "actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25",
     // actions/upload-artifact v6
     uploadArtifactV6: "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
     // actions/upload-artifact v7
