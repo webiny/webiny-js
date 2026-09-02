@@ -202,7 +202,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
 export const pullRequestsCommandVitest = createSlashCommandWorkflow({
     command: "vitest",
-    name: "Pull Requests Command - Vitest",
+    name: "💬 PR Command - Vitest",
     comment: INITIAL_COMMENT_BODY,
     captureCommentId: true,
     workflow: {
