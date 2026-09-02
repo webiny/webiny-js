@@ -55,6 +55,9 @@ export const useAiChat = (): UseAiChat => {
     const [turns, setTurns] = useState<AiTurn[]>([]);
     const [busy, setBusy] = useState(false);
     const abortRef = useRef<AbortController | null>(null);
+    /* Read inside `run` so resuming sees the turn as it stands, without re-creating the callback. */
+    const turnsRef = useRef<AiTurn[]>(turns);
+    turnsRef.current = turns;
 
     /*
      * A stream stays open for as long as the model runs, so an unmounted palette would keep consuming
@@ -89,7 +92,7 @@ export const useAiChat = (): UseAiChat => {
     );
 
     const run = useCallback(
-        async (index: number, request: AiChatRequest) => {
+        async (index: number, request: AiChatRequest, resuming = false) => {
             abortRef.current?.abort();
             const controller = new AbortController();
             abortRef.current = controller;
@@ -97,9 +100,17 @@ export const useAiChat = (): UseAiChat => {
             setBusy(true);
 
             try {
-                let text = "";
-                const tools: string[] = [];
-                const completed: string[] = [];
+                /*
+                 * Resuming continues the same turn: the tools already called, the text already shown
+                 * and the messages already collected all still belong to it. Starting from empty
+                 * would strand earlier chips as running and — worse — drop the assistant message
+                 * carrying the `tool_use` that the replayed `tool_result` refers to.
+                 */
+                const existing = resuming ? turnsRef.current[index] : undefined;
+                let text = existing?.text ?? "";
+                const tools: string[] = existing ? [...existing.tools] : [];
+                const completed: string[] = existing ? [...existing.completed] : [];
+                const priorMessages: AiChatMessage[] = existing ? [...existing.messages] : [];
 
                 for await (const event of container
                     .resolve(AiChatGateway)
@@ -129,7 +140,7 @@ export const useAiChat = (): UseAiChat => {
 
                     if (event.type === "done") {
                         patch(index, {
-                            messages: event.messages,
+                            messages: [...priorMessages, ...event.messages],
                             settled: true,
                             running: false
                         });
@@ -200,7 +211,7 @@ export const useAiChat = (): UseAiChat => {
             // Clear the block immediately so the plan cannot be submitted twice.
             patch(turnIndex, { pendingApprovals: [], settled: false, running: true });
 
-            void run(turnIndex, { messages, approvals });
+            void run(turnIndex, { messages, approvals }, true);
         },
         [busy, historyBefore, patch, run, turns]
     );

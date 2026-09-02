@@ -89,7 +89,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     ) {}
 
     async execute(params: AiChatParams): Promise<AiChatResult> {
-        const { request } = await this.prepare(params);
+        const { request, appended } = await this.prepare(params);
 
         const result = await this.ai.generateText(request);
 
@@ -98,7 +98,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             toolCalls: this.extractToolCalls(result),
             steps: result.steps.length,
             pendingApprovals: this.extractPendingApprovals(result),
-            messages: result.responseMessages
+            messages: [...appended, ...result.responseMessages]
         };
     }
 
@@ -117,7 +117,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             return;
         }
 
-        const { request } = prepared;
+        const { request, appended } = prepared;
         const pending: PendingApproval[] = [];
 
         try {
@@ -173,7 +173,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
              */
             yield {
                 type: "done",
-                messages: await result.responseMessages,
+                messages: [...appended, ...(await result.responseMessages)],
                 steps: (await result.steps).length
             };
         } catch (error) {
@@ -185,7 +185,10 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
      * Everything both entry points need: the identity check, which tools may run unattended, and the
      * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
      */
-    private async prepare(params: AiChatParams): Promise<{ request: Ai.GenerateTextParams }> {
+    private async prepare(params: AiChatParams): Promise<{
+        request: Ai.GenerateTextParams;
+        appended: ModelMessage[];
+    }> {
         if (this.identityContext.getIdentity().isAnonymous()) {
             throw new NotAuthorizedError();
         }
@@ -202,10 +205,17 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
          */
         const activeTools = Object.keys(tools);
 
-        const messages = [...params.messages];
+        /*
+         * Anything added here has to come back to the caller. The client replays the history on the
+         * next turn, and an approval response that never reached it would leave a `tool_result` with
+         * no preceding `tool_use` — which the provider rejects outright.
+         */
+        const appended: ModelMessage[] = [];
         if (params.decisions.length > 0) {
-            messages.push(toApprovalMessage(params.decisions));
+            appended.push(toApprovalMessage(params.decisions));
         }
+
+        const messages = [...params.messages, ...appended];
 
         const provider = await this.provider.resolve();
         const [providerId] = provider.model.split("/");
@@ -233,7 +243,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
             stopWhen: stepCountIs(this.config.maxSteps)
         };
 
-        return { request };
+        return { request, appended };
     }
 
     /**
