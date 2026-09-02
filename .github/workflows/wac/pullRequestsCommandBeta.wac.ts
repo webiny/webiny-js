@@ -148,7 +148,21 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
-            checkout: { path: PR_BRANCH, ref: PR_SHA, "fetch-depth": 0 },
+            // Checked out with the PAT, not the default token. `yarn release --type=latest
+            // --createGithubRelease` shells out to a raw `git tag` + `git push origin v<version>`,
+            // which uses whatever credentials actions/checkout persisted - so with the default
+            // token that push is made by github-actions[bot] and is refused:
+            //
+            //   remote: Permission to webiny/webiny-js.git denied to github-actions[bot].
+            //
+            // Packages are published BEFORE the tag is pushed, so the failure leaves a release on
+            // NPM with no matching tag. Matches what release.wac.ts already does for the same step.
+            checkout: {
+                path: PR_BRANCH,
+                ref: PR_SHA,
+                "fetch-depth": 0,
+                token: "${{ secrets.GH_TOKEN }}"
+            },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,

@@ -14,6 +14,7 @@
     { "path": "../app-website-builder/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../languages/tsconfig.build.json" },
     { "path": "../lexical-converter/tsconfig.build.json" },
@@ -21,6 +22,7 @@
     { "path": "../project-aws/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../feature-flags/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -54,6 +56,8 @@
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/languages/*": ["../languages/src/*"],
@@ -68,6 +72,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

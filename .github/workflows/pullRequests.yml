@@ -91,7 +91,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
@@ -135,7 +135,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Build core
         run: yarn webiny build core
@@ -233,7 +233,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
@@ -352,7 +352,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -446,7 +446,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -549,7 +549,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
@@ -644,7 +644,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Build packages
-        run: yarn build --rebuild-dependents
+        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
