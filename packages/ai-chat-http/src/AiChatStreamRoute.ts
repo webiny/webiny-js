@@ -4,12 +4,9 @@ import { toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import type { IHttpResponse } from "@webiny/event-handler-core";
 import { AiChatUseCase } from "@webiny/ai-chat/api/index.js";
-import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import type { AiChatEvent } from "@webiny/ai-chat/api/index.js";
 import { parseChatBody } from "./parseChatBody.js";
 import { jsonResponse } from "./jsonResponse.js";
-
-import { AI_CHAT_FLAG } from "./AI_CHAT_FLAG.js";
 
 const SSE_HEADERS = {
     "content-type": "text/event-stream",
@@ -48,17 +45,9 @@ class AiChatStreamRouteImpl implements HttpRoute.Interface {
      */
     public readonly path = "/stream/ai/chat";
 
-    public constructor(
-        private readonly aiChat: AiChatUseCase.Interface,
-        private readonly featureFlags: FeatureFlags.Interface
-    ) {}
+    public constructor(private readonly aiChat: AiChatUseCase.Interface) {}
 
     public async handle(request: IHttpRequest): Promise<IHttpResponse> {
-        // See AiChatRoute: absent rather than forbidden when switched off.
-        if (!this.featureFlags.get().isEnabled(AI_CHAT_FLAG)) {
-            return jsonResponse(404, { error: "Not found." });
-        }
-
         const parsed = parseChatBody(request.body);
 
         if (!parsed) {
@@ -77,5 +66,5 @@ class AiChatStreamRouteImpl implements HttpRoute.Interface {
 
 export const AiChatStreamRoute = HttpRoute.createImplementation({
     implementation: AiChatStreamRouteImpl,
-    dependencies: [AiChatUseCase, FeatureFlags]
+    dependencies: [AiChatUseCase]
 });

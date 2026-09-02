@@ -9,8 +9,7 @@ import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
  */
 export interface NoResultsProps {
     query: string;
-    /** Omitted when the assistant is switched off, so no dead affordance is offered. */
-    onAskAi?: () => void;
+    onAskAi: () => void;
 }
 
 export const NoResults = ({ query, onAskAi }: NoResultsProps) => (
@@ -22,13 +21,11 @@ export const NoResults = ({ query, onAskAi }: NoResultsProps) => (
         <Text as="div" size="sm" className="mb-md mt-xxs text-neutral-muted">
             No page or action matches. Ask the assistant instead.
         </Text>
-        {onAskAi ? (
-            <Button
-                variant="secondary"
-                text="Ask AI"
-                icon={<Icon icon={<AiIcon />} size="sm" label="" color="inherit" />}
-                onClick={onAskAi}
-            />
-        ) : null}
+        <Button
+            variant="secondary"
+            text="Ask AI"
+            icon={<Icon icon={<AiIcon />} size="sm" label="" color="inherit" />}
+            onClick={onAskAi}
+        />
     </div>
 );

@@ -7,7 +7,6 @@ import {
     useHotkeys
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
-import { useFeatureFlags } from "@webiny/app-admin";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
@@ -16,12 +15,7 @@ import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg"
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
-import {
-    AI_CHAT_FLAG,
-    AI_COMMAND_NAME,
-    NAVIGATION_GROUP,
-    PALETTE_HOTKEY_ZINDEX
-} from "./constants.js";
+import { AI_COMMAND_NAME, NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -64,11 +58,6 @@ const CommandPaletteBase = () => {
     const [aiMode, setAiMode] = useState(false);
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
-    /*
-     * Same flag the API routes check. Gating only the UI would leave the endpoint open; gating only the
-     * API would offer a mode that then fails.
-     */
-    const aiEnabled = useFeatureFlags().isEnabled(AI_CHAT_FLAG);
     const container = useContainer();
     const inputRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -88,9 +77,6 @@ const CommandPaletteBase = () => {
 
     const enterAiMode = useCallback(
         (seed?: string) => {
-            if (!aiEnabled) {
-                return;
-            }
             setAiMode(true);
             setQuery("");
             if (seed?.trim()) {
@@ -100,7 +86,7 @@ const CommandPaletteBase = () => {
             // surrounding tree swaps.
             requestAnimationFrame(() => inputRef.current?.focus());
         },
-        [ai, aiEnabled]
+        [ai]
     );
 
     const exitAiMode = useCallback(() => {
@@ -184,13 +170,9 @@ const CommandPaletteBase = () => {
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        const commands = aiEnabled
-            ? vm.commands
-            : vm.commands.filter(command => command.name !== AI_COMMAND_NAME);
-
-        result.push(...commandVmsToGroups(commands, runCommand));
+        result.push(...commandVmsToGroups(vm.commands, runCommand));
         return result;
-    }, [menus, vm.commands, navigateTo, runCommand, aiEnabled]);
+    }, [menus, vm.commands, navigateTo, runCommand]);
 
     // Keep the newest turn in view; answers are long enough to push earlier ones off-screen.
     useEffect(() => {
@@ -220,9 +202,6 @@ const CommandPaletteBase = () => {
     if (aiMode) {
         footerLabel = "Webiny AI";
         hints = AI_HINTS;
-    } else if (!aiEnabled) {
-        // Don't advertise a shortcut that does nothing.
-        hints = COMMAND_HINTS.filter(hint => hint.label !== "Ask AI");
     }
 
     const onKeyDown = (e: React.KeyboardEvent) => {
@@ -330,10 +309,7 @@ const CommandPaletteBase = () => {
                             ) : (
                                 <Command.List>
                                     <Command.Empty>
-                                        <NoResults
-                                            query={query}
-                                            onAskAi={aiEnabled ? askAiFromQuery : undefined}
-                                        />
+                                        <NoResults query={query} onAskAi={askAiFromQuery} />
                                     </Command.Empty>
 
                                     {groups.map(group => (

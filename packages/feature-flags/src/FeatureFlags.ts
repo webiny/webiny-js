@@ -20,8 +20,7 @@ export type KnownFeatureFlag =
     | "aiPowerups.cms.entryComparison"
     | "aiPowerups.cms.entryTranslation"
     | "abTesting"
-    | "remoteComponents"
-    | "aiChat";
+    | "remoteComponents";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
 
@@ -122,8 +121,7 @@ export class FeatureFlags {
                   }
                 : false,
             abTesting: this.isEnabled("abTesting"),
-            remoteComponents: this.isEnabled("remoteComponents"),
-            aiChat: this.isEnabled("aiChat")
+            remoteComponents: this.isEnabled("remoteComponents")
         };
     }
 }

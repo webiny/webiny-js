@@ -47,6 +47,4 @@ export interface IFeatureFlagsDto {
     aiPowerups?: boolean | IAiPowerupsOptions;
     abTesting?: boolean;
     remoteComponents?: boolean;
-    /** In-admin AI assistant in the command palette. */
-    aiChat?: boolean;
 }

@@ -22,9 +22,7 @@ export const FeatureFlags = () => (
             fileManager: {
                 threatDetection: false
             },
-            recordLocking: false,
-            // In-admin AI assistant in the command palette. Off by default while it settles.
-            aiChat: true
+            recordLocking: false
         }}
     />
 );

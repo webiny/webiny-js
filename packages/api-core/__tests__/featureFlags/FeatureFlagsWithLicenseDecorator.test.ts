@@ -94,13 +94,13 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
          * declared itself, which the license has no business preventing.
          */
         it("can be enabled by config with no license at all", () => {
-            const flags = flagsFor({ aiChat: true }, { present: false });
+            const flags = flagsFor({ myCustomFlag: true }, { present: false });
 
-            expect(flags.isEnabled("aiChat")).toBe(true);
+            expect(flags.isEnabled("myCustomFlag")).toBe(true);
         });
 
         it("stays off without a license when config does not enable it", () => {
-            const flags = flagsFor({ aiChat: true }, { present: false });
+            const flags = flagsFor({ myCustomFlag: true }, { present: false });
 
             expect(flags.isEnabled("somethingElse")).toBe(false);
         });
