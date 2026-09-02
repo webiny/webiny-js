@@ -20,7 +20,8 @@ export type KnownFeatureFlag =
     | "aiPowerups.cms.entryComparison"
     | "aiPowerups.cms.entryTranslation"
     | "abTesting"
-    | "remoteComponents";
+    | "remoteComponents"
+    | "aiChat";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
 
