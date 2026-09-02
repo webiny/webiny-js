@@ -25,10 +25,16 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
 }
 
 /**
- * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` — bearer
- * `Authorization` header preferred, then the `wby-id-token` cookie — into RawAuthToken, then invokes
- * the shared LOAD step (RequestIdentityLoader) which authenticates it (via the registered identity
- * provider, e.g. the self-hosted JWT IdP) and sets IdentityContext.
+ * EXTRACT (transport-specific): reads the auth token from a Node `IncomingMessage` —
+ * `x-webiny-authorization` first, then the bearer `Authorization` header, then the `wby-id-token`
+ * cookie — into RawAuthToken, then invokes the shared LOAD step (RequestIdentityLoader) which
+ * authenticates it (via the registered identity provider, e.g. the self-hosted JWT IdP) and sets
+ * IdentityContext.
+ *
+ * `x-webiny-authorization` exists for AWS parity: behind CloudFront with Origin Access Control, SigV4
+ * occupies the `Authorization` header, so clients that may traverse such an origin send the token in
+ * that header instead. Self-hosted has no such constraint, but it accepts the same header so one
+ * client works against both deployments.
  *
  * Node mirror of ApiGatewayIdentityLoaderDecorator. Registered BEFORE the tenant loader so identity
  * is established before tenant.
@@ -50,6 +56,12 @@ class NodeHttpIdentityLoaderDecoratorImpl implements NodeHttpEventHandler.Interf
         const headers = event?.headers;
         if (!headers) {
             return null;
+        }
+        const webinyAuth = headerValue(
+            headers["x-webiny-authorization"] ?? headers["X-Webiny-Authorization"]
+        ).replace(/^Bearer\s+/i, "");
+        if (webinyAuth) {
+            return webinyAuth;
         }
         const bearer = headerValue(headers["authorization"] ?? headers["Authorization"]).replace(
             /^Bearer\s+/i,
