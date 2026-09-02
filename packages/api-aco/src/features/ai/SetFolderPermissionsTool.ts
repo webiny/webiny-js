@@ -3,6 +3,7 @@ import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import type { FolderPermission } from "~/types.js";
 
 const ACCESS_LEVELS = ["owner", "editor", "viewer", "public", "no-access"] as const;
@@ -11,7 +12,7 @@ const permissionSchema = z.object({
     target: z
         .string()
         .describe(
-            "Who the rule applies to: 'team:<teamId>' or 'admin:<userId>'. Resolve ids with listTeams first — do not guess."
+            "Who the rule applies to. A team is 'team:<slug>' — the team's SLUG, not its id. A user is 'admin:<userId>'. Resolve either with listTeams or listFolderPermissionTargets first; do not guess."
         ),
     level: z
         .enum(ACCESS_LEVELS)
@@ -52,13 +53,14 @@ class SetFolderPermissionsToolImpl implements IAiSdkTool<Input> {
     readonly name = "setFolderPermissions";
     readonly title = "Set folder permissions";
     readonly description =
-        "Replaces the direct access permissions on a folder. Pass the complete desired set — any existing direct rule you omit is removed. Call listFolders to see current permissions and listTeams to resolve team ids first. Requires user approval.";
+        "Replaces the direct access permissions on a folder. Pass the complete desired set — any existing direct rule you omit is removed. Targets are 'team:<slug>' or 'admin:<userId>'. Call listFolders to see current permissions and listTeams to resolve team slugs first. Requires user approval.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: false, destructiveHint: true };
 
     constructor(
         private getFolder: GetFolderUseCase.Interface,
-        private updateFolder: UpdateFolderUseCase.Interface
+        private updateFolder: UpdateFolderUseCase.Interface,
+        private listTeams: ListTeamsUseCase.Interface
     ) {}
 
     async execute(input: Input): Promise<SetFolderPermissionsResult> {
@@ -68,6 +70,42 @@ class SetFolderPermissionsToolImpl implements IAiSdkTool<Input> {
             throw new Error(
                 `Folder "${input.folderId}" not found: ${existing.error.message}. Call listFolders for valid ids.`
             );
+        }
+
+        /*
+         * A folder rule matches a team by SLUG (`team:<slug>`) — see
+         * ListFolderLevelPermissionsTargets and GetDefaultPermissionsWithTeams — while a user rule
+         * matches by id (`admin:<userId>`). The field is only typed as a template string, so an id
+         * where a slug belongs is stored happily and then matches nobody: the permission appears to
+         * be set and grants nothing. Verify team slugs rather than write a rule that does nothing.
+         */
+        const teamsResult = await this.listTeams.execute();
+
+        if (teamsResult.isFail()) {
+            throw new Error(`Could not verify the teams: ${teamsResult.error.message}`);
+        }
+
+        const slugs = new Set(teamsResult.value.map(team => team.slug));
+        const byId = new Map(teamsResult.value.map(team => [team.id, team.slug]));
+
+        for (const permission of input.permissions) {
+            if (!permission.target.startsWith("team:")) {
+                continue;
+            }
+
+            const value = permission.target.slice("team:".length);
+            if (slugs.has(value)) {
+                continue;
+            }
+
+            const slug = byId.get(value);
+            if (slug) {
+                throw new Error(
+                    `"${permission.target}" uses a team id. Use the slug instead: "team:${slug}".`
+                );
+            }
+
+            throw new Error(`"${permission.target}" is not a known team. Call listTeams first.`);
         }
 
         const permissions = input.permissions.map(
@@ -99,5 +137,5 @@ class SetFolderPermissionsToolImpl implements IAiSdkTool<Input> {
 
 export const SetFolderPermissionsTool = AiSdkTool.createImplementation({
     implementation: SetFolderPermissionsToolImpl,
-    dependencies: [GetFolderUseCase, UpdateFolderUseCase]
+    dependencies: [GetFolderUseCase, UpdateFolderUseCase, ListTeamsUseCase]
 });

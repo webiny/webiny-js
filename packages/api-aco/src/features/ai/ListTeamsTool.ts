@@ -24,7 +24,7 @@ class ListTeamsToolImpl implements IAiSdkTool<Input> {
     readonly name = "listTeams";
     readonly title = "List teams";
     readonly description =
-        "Lists the teams in this project with their ids, names and slugs. Call this to resolve a team name to an id before changing folder permissions.";
+        "Lists the teams in this project with their ids, names and slugs. Folder permission targets use the SLUG (`team:<slug>`), not the id.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: true, idempotentHint: true };
 
