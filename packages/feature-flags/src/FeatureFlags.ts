@@ -122,7 +122,8 @@ export class FeatureFlags {
                   }
                 : false,
             abTesting: this.isEnabled("abTesting"),
-            remoteComponents: this.isEnabled("remoteComponents")
+            remoteComponents: this.isEnabled("remoteComponents"),
+            aiChat: this.isEnabled("aiChat")
         };
     }
 }
