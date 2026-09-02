@@ -26,7 +26,7 @@ const inputSchema = z.object({
     permissions: z
         .array(permissionSchema)
         .describe(
-            "The COMPLETE set of direct permissions for this folder. This REPLACES the folder's existing direct permissions — include every rule that should remain, or it will be removed."
+            "The COMPLETE set of DIRECT permissions for this folder. This REPLACES the existing direct rules, so include every direct rule that should remain. Do NOT include rules listFolders reported as inherited — those come from an ancestor or a role and are not this folder's to set."
         )
 });
 
@@ -36,7 +36,10 @@ interface SetFolderPermissionsResult {
     folderId: string;
     title: string;
     path: string;
+    /** The folder's direct permissions after the update, read back from storage. */
     permissions: { target: string; level: string }[];
+    /** Inherited rules that were passed in and skipped, so the answer can say so. */
+    ignoredInheritedTargets?: string[];
 }
 
 /**
@@ -108,13 +111,31 @@ class SetFolderPermissionsToolImpl implements IAiSdkTool<Input> {
             throw new Error(`"${permission.target}" is not a known team. Call listTeams first.`);
         }
 
-        const permissions = input.permissions.map(
-            permission =>
-                ({
-                    target: permission.target,
-                    level: permission.level
-                }) as FolderPermission
+        /*
+         * Inherited rules are not this folder's to set. Re-sending one — which a model will do,
+         * because listFolders showed it — would convert an ancestor's or a role's grant into a hard
+         * rule on this folder, quietly detaching it from the inheritance it came from. Drop those and
+         * report it, rather than writing a change nobody asked for.
+         */
+        const inherited = new Set<string>(
+            (existing.value.permissions ?? [])
+                .filter(permission => permission.inheritedFrom)
+                .map(permission => String(permission.target))
         );
+
+        const ignored = input.permissions
+            .filter(permission => inherited.has(permission.target))
+            .map(permission => permission.target);
+
+        const permissions = input.permissions
+            .filter(permission => !inherited.has(permission.target))
+            .map(
+                permission =>
+                    ({
+                        target: permission.target,
+                        level: permission.level
+                    }) as FolderPermission
+            );
 
         const result = await this.updateFolder.execute(input.folderId, { permissions });
 
@@ -124,7 +145,7 @@ class SetFolderPermissionsToolImpl implements IAiSdkTool<Input> {
 
         const folder = result.value;
 
-        return {
+        const result_: SetFolderPermissionsResult = {
             folderId: folder.id,
             title: folder.title,
             path: folder.path,
@@ -132,6 +153,12 @@ class SetFolderPermissionsToolImpl implements IAiSdkTool<Input> {
                 .filter(permission => !permission.inheritedFrom)
                 .map(permission => ({ target: permission.target, level: permission.level }))
         };
+
+        if (ignored.length > 0) {
+            result_.ignoredInheritedTargets = ignored;
+        }
+
+        return result_;
     }
 }
 
