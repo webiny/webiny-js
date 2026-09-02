@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
+import { FM_FILE_TYPE } from "~/constants.js";
 import type { FolderAccessLevel, FolderPermission } from "~/flp/flp.types.js";
 
 interface CodeTeamPermission {
@@ -26,7 +27,8 @@ export type CodeFolderPermission = CodeTeamPermission | CodeUserPermission;
 
 export type CodeFlp = {
     /**
-     * Folder type the rule applies to, e.g. `FmFile` or a Headless CMS model's folder type.
+     * Folder type the rule applies to. Use `FlpFactory.FolderType` to build the built-in ones
+     * instead of writing the string by hand.
      */
     type: string;
     /**
@@ -41,8 +43,28 @@ export interface IFlpFactory {
     execute(): Promise<CodeFlp[]>;
 }
 
+/**
+ * Builders for the folder types shipped with Webiny, so `CodeFlp.type` does not have to be written
+ * by hand.
+ *
+ * Folder types stay open-ended — every app registering folders picks its own type — so `type`
+ * remains a plain `string` and a custom app can still pass its own value directly.
+ */
+const FolderType = {
+    /** Folders of the File Manager. */
+    files(): string {
+        return FM_FILE_TYPE;
+    },
+    /** Folders holding entries of a Headless CMS model, addressed by its `modelId`. */
+    cmsEntries(modelId: string): string {
+        return `cms:${modelId}`;
+    }
+};
+
 /** Provide code-defined folder-level permissions. */
-export const FlpFactory = createAbstraction<IFlpFactory>("FlpFactory");
+export const FlpFactory = Object.assign(createAbstraction<IFlpFactory>("FlpFactory"), {
+    FolderType
+});
 
 export namespace FlpFactory {
     export type Interface = IFlpFactory;
