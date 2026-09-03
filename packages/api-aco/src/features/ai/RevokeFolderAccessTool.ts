@@ -21,7 +21,14 @@ interface RevokeResult {
     title: string;
     path: string;
     removed: { target: string; level: string };
-    /** Every direct rule remaining afterwards, read back from storage. */
+    /**
+     * Every direct rule remaining afterwards.
+     *
+     * This is the set the update was asked to store, not an independent read of it:
+     * `UpdateFolderWithFolderLevelPermissions` returns the permissions it derived from the input
+     * rather than the ones the repository wrote. Treating it as a verification would let the tool
+     * confirm its own request back to itself.
+     */
     permissions: { target: string; level: string }[];
 }
 

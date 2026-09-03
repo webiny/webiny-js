@@ -30,7 +30,14 @@ interface GrantResult {
     folderId: string;
     title: string;
     path: string;
-    /** Every direct rule on the folder afterwards, read back from storage. */
+    /**
+     * Every direct rule on the folder afterwards.
+     *
+     * This is the set the update was asked to store, not an independent read of it:
+     * `UpdateFolderWithFolderLevelPermissions` returns the permissions it derived from the input
+     * rather than the ones the repository wrote. Treating it as a verification would let the tool
+     * confirm its own request back to itself.
+     */
     permissions: { target: string; level: string }[];
     /** True when the target already had a direct rule and its level was changed. */
     replacedExistingLevel?: string;
