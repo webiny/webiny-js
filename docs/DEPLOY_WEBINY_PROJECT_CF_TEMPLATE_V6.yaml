@@ -73,6 +73,32 @@ Resources:
               - cloudfront:UpdateCloudFrontOriginAccessIdentity
               - cloudfront:DeleteCloudFrontOriginAccessIdentity
 
+          # Origin access control (OAC) is what lets CloudFront sign its requests to the streaming
+          # GraphQL Lambda Function URL, so that URL can stay on AWS_IAM authorization instead of
+          # being reachable from the internet. Note that this is a separate, newer concept from the
+          # origin access identity above, which is S3-only.
+          # Like origin access identities, OACs cannot be tagged, so there's no tag condition here.
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:origin-access-control/*
+            Action:
+              - cloudfront:CreateOriginAccessControl
+              - cloudfront:GetOriginAccessControl
+              - cloudfront:GetOriginAccessControlConfig
+              - cloudfront:UpdateOriginAccessControl
+              - cloudfront:DeleteOriginAccessControl
+
+          # The streaming cache behavior forwards headers and cookies via an origin request policy
+          # instead of the legacy (and deprecated) `forwardedValues` the other behaviors use.
+          # Origin request policies cannot be tagged either.
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:origin-request-policy/*
+            Action:
+              - cloudfront:CreateOriginRequestPolicy
+              - cloudfront:GetOriginRequestPolicy
+              - cloudfront:GetOriginRequestPolicyConfig
+              - cloudfront:UpdateOriginRequestPolicy
+              - cloudfront:DeleteOriginRequestPolicy
+
           # Amazon API Gateway
           - Effect: Allow
             Action:
@@ -317,6 +343,12 @@ Resources:
               - lambda:ListAliases
               # For deploying Lambda@Edge.
               - lambda:EnableReplication
+              # The streaming GraphQL function is reached through a Lambda Function URL, because
+              # Amazon API Gateway buffers the whole response and so cannot stream at all.
+              - lambda:CreateFunctionUrlConfig
+              - lambda:GetFunctionUrlConfig
+              - lambda:UpdateFunctionUrlConfig
+              - lambda:DeleteFunctionUrlConfig
             Resource:
               - arn:aws:lambda:*:*:function:wby-*
 
