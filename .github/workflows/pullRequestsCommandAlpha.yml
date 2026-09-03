@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Alpha Release
+name: 💬 PR Command - Alpha Release
 'on': issue_comment
 concurrency:
   group: alpha-release-${{ github.event.issue.number }}
@@ -113,10 +113,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -168,10 +169,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:

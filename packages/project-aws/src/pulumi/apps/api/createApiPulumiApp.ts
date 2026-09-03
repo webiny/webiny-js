@@ -6,6 +6,7 @@ import {
     ApiFileManager,
     ApiGateway,
     ApiGraphql,
+    ApiGraphqlStream,
     ApiWebsocket,
     CoreOutput,
     VpcConfig
@@ -173,28 +174,35 @@ export const createApiPulumiApp = () => {
 
             app.addModule(VpcConfig, { enabled: vpcEnabled });
 
-            const graphql = app.addModule(ApiGraphql, {
-                env: {
-                    COGNITO_REGION: getEnvVariableAwsRegion(),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                    DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
-                    OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
+            // Shared by the buffered `graphql` function and its response-streaming twin: both run the
+            // same code bundle, so they must see the same environment.
+            const graphqlEnv = {
+                COGNITO_REGION: getEnvVariableAwsRegion(),
+                COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
+                DB_TABLE: core.primaryDynamodbTableName,
+                DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
+                DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
-                    // Not required. Useful for testing purposes / ephemeral environments.
-                    // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
-                    OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
-                    OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME,
-                    OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD,
+                // Not required. Useful for testing purposes / ephemeral environments.
+                // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+                OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
+                OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
+                OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME,
+                OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD,
 
-                    S3_BUCKET: core.fileManagerBucketId,
-                    EVENT_BUS: core.eventBusArn,
-                    // TODO: move to okta plugin
-                    OKTA_ISSUER: process.env["OKTA_ISSUER"]
-                }
-            });
+                S3_BUCKET: core.fileManagerBucketId,
+                EVENT_BUS: core.eventBusArn,
+                // TODO: move to okta plugin
+                OKTA_ISSUER: process.env["OKTA_ISSUER"]
+            };
+
+            const graphql = app.addModule(ApiGraphql, { env: graphqlEnv });
+
+            // Second Lambda function off the same bundle, fronted by a Function URL instead of API
+            // Gateway, because API Gateway buffers the whole response and cannot stream. Added before
+            // ApiCloudfront, which resolves this module to wire the `/stream/*` origin and behavior.
+            const graphqlStream = app.addModule(ApiGraphqlStream, { env: graphqlEnv });
 
             const websocket = app.addModule(ApiWebsocket);
 
@@ -278,6 +286,8 @@ export const createApiPulumiApp = () => {
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
                 graphqlLambdaRoleName: graphql.role.output.name,
+                graphqlStreamLambdaName: graphqlStream.functions.graphqlStream.output.name,
+                graphqlStreamFunctionUrl: graphqlStream.functionUrl.output.functionUrl,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
                 backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
                 fileManagerDownloadLambdaArn: fileManager.functions.download.output.arn,
@@ -320,6 +330,7 @@ export const createApiPulumiApp = () => {
             return {
                 fileManager,
                 graphql,
+                graphqlStream,
                 apiGateway,
                 websocket,
                 cloudfront,

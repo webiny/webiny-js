@@ -29,7 +29,8 @@ import type { AcoContext } from "~/types.js";
  *
  * 1. Resolving the per-tenant folder model (async) and exposing it as FolderModelAbstraction.
  * 2. Registering the WCP-gated CMS-entry FLP decorators (CmsFlpFeature) — they must be in place
- *    before any CMS-entry resolver runs, and the WCP license is only known post-RequestInitializer.
+ *    before any CMS-entry resolver runs, and the WCP license is loaded pre-register by
+ *    registerApiRequestStack.
  * 3. Building the dynamic folder GraphQL schema (needs the resolved folder model).
  */
 class AcoInitializerImpl implements IRequestContextInitializer {
