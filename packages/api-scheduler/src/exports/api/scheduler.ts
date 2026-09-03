@@ -12,7 +12,7 @@ export type {
 } from "~/shared/abstractions.js";
 export {
     SchedulerService,
-    ScheduledActionModel,
+    ScheduledActionModelProvider,
     ScheduledActionHandler
 } from "~/shared/abstractions.js";
 

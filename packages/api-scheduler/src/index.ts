@@ -1,6 +1,6 @@
 export {
     SchedulerService,
-    ScheduledActionModel,
+    ScheduledActionModelProvider,
     ScheduledActionHandler
 } from "./shared/abstractions.js";
 export type { IScheduledAction } from "./shared/abstractions.js";
