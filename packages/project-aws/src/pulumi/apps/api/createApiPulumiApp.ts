@@ -22,6 +22,7 @@ import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js"
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
+import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
@@ -166,12 +167,9 @@ export const createApiPulumiApp = () => {
             const core = app.addModule(CoreOutput);
 
             // Register VPC config module to be available to other modules.
-            const vpcEnabled =
-                vpcExtensionsConfig === true ||
-                typeof vpcExtensionsConfig === "object" ||
-                isProduction;
-
-            app.addModule(VpcConfig, { enabled: vpcEnabled });
+            app.addModule(VpcConfig, {
+                enabled: isVpcEnabled(vpcExtensionsConfig, isProduction)
+            });
 
             const graphql = app.addModule(ApiGraphql, {
                 env: {
