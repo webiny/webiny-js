@@ -44,20 +44,24 @@ export interface IFlpFactory {
 }
 
 /**
- * Builders for the folder types shipped with Webiny, so `CodeFlp.type` does not have to be written
- * by hand.
+ * The folder types shipped with Webiny, grouped by the app that owns them, so `CodeFlp.type` does
+ * not have to be written by hand.
  *
  * Folder types stay open-ended — every app registering folders picks its own type — so `type`
  * remains a plain `string` and a custom app can still pass its own value directly.
  */
 const FolderType = {
-    /** Folders of the File Manager. */
-    files(): string {
-        return FM_FILE_TYPE;
+    /** File Manager folders. */
+    FileManager: {
+        /** Folders holding files. */
+        Files: FM_FILE_TYPE as string
     },
-    /** Folders holding entries of a Headless CMS model, addressed by its `modelId`. */
-    cmsEntries(modelId: string): string {
-        return `cms:${modelId}`;
+    /** Headless CMS folders. */
+    Cms: {
+        /** Folders holding entries of a content model, addressed by its `modelId`. */
+        Model(modelId: string): string {
+            return `cms:${modelId}`;
+        }
     }
 };
 
