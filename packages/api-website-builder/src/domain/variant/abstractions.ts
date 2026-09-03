@@ -38,8 +38,20 @@ export interface WbVariant extends CmsEntryWbVariantValues {
  * VariantModel abstraction - represents the Website Builder variant CMS model.
  * Registered via container.registerInstance in the composite feature.
  */
-export const VariantModel = createAbstraction<CmsModel>("Wb/VariantModel");
+/**
+ * Provides the tenant's Website Builder variant CMS model.
+ *
+ * A provider rather than the model itself: fetching a model is asynchronous and tenant-dependent,
+ * while DI resolution is synchronous — so an already-resolved `CmsModel` could only be supplied by
+ * something running before every consumer. Consumers `await get()` at the point of use.
+ */
+export interface IVariantModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace VariantModel {
-    export type Interface = CmsModel;
+export const VariantModelProvider =
+    createAbstraction<IVariantModelProvider>("Wb/VariantModelProvider");
+
+export namespace VariantModelProvider {
+    export type Interface = IVariantModelProvider;
 }
