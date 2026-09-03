@@ -34,6 +34,9 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                     // TODO: create `FileUrlGenerator` service to use here
                     const getSettings = context.container.resolve(GetSettingsUseCase);
                     const result = await getSettings.execute();
+                    if (result.isFail()) {
+                        throw result.error;
+                    }
                     const settings = result.value;
                     return (settings?.srcPrefix || "") + file.key;
                 }

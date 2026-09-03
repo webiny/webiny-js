@@ -3,6 +3,7 @@ import {
     CancelScheduledActionUseCase,
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { Logger } from "@webiny/api-core/exports/api/logger.js";
 import { createNamespace } from "~/utils/namespace.js";
 
 /**
@@ -15,7 +16,8 @@ import { createNamespace } from "~/utils/namespace.js";
 class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
-        private cancelScheduledAction: CancelScheduledActionUseCase.Interface
+        private cancelScheduledAction: CancelScheduledActionUseCase.Interface,
+        private logger: Logger.Interface
     ) {}
 
     async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
@@ -33,6 +35,11 @@ class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventH
             }
         });
 
+        if (actionsResult.isFail()) {
+            this.logger.error(actionsResult.error);
+            return;
+        }
+
         const actions = actionsResult.value.items;
 
         for (const action of actions) {
@@ -48,5 +55,5 @@ class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventH
 export const CancelScheduledActionOnRevisionDeleteEventHandler =
     EntryAfterDeleteEventHandler.createImplementation({
         implementation: CancelScheduledActionOnDeleteHandlerImpl,
-        dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
+        dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase, Logger]
     });

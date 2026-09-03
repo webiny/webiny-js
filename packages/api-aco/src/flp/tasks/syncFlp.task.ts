@@ -34,6 +34,9 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
              */
             if (input.folderId) {
                 const result = await this.getFolder.execute(input.folderId!);
+                if (result.isFail()) {
+                    return controller.response.error(result.error);
+                }
                 const folder = result.value;
 
                 await controller.task.trigger<IUpdateFlpTaskInput>({
@@ -75,6 +78,10 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                             parentId: null
                         }
                     });
+                    if (result.isFail()) {
+                        await controller.logger.error(result.error);
+                        continue;
+                    }
 
                     const { folders } = result.value;
 
@@ -113,6 +120,9 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                         parentId: null
                     }
                 });
+                if (result.isFail()) {
+                    return controller.response.error(result.error);
+                }
 
                 const { folders } = result.value;
 

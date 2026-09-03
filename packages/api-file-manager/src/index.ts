@@ -25,6 +25,9 @@ export const createFileManagerContext = () => {
 
         await context.security.withoutAuthorization(async () => {
             const fileModel = await getModel.execute(FILE_MODEL_ID);
+            if (fileModel.isFail()) {
+                throw fileModel.error;
+            }
             context.container.registerInstance(FileModelAbstraction, fileModel.value);
         });
 

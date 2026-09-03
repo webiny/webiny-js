@@ -57,10 +57,13 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
         context.container.register(NamespaceHandlerExecutioner);
         context.container.register(SchedulerPermissionsResolver);
 
-        await context.security.withoutAuthorization(async () => {
-            const schedulerModel = await getModel.execute(SCHEDULE_MODEL_ID);
-            context.container.registerInstance(ScheduledActionModel, schedulerModel.value);
+        const schedulerModelResult = await context.security.withoutAuthorization(async () => {
+            return await getModel.execute(SCHEDULE_MODEL_ID);
         });
+        if (schedulerModelResult.isFail()) {
+            throw schedulerModelResult.error;
+        }
+        context.container.registerInstance(ScheduledActionModel, schedulerModelResult.value);
 
         // Register all features
         SchedulerFeature.register(context.container);
