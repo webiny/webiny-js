@@ -12,7 +12,6 @@ export type {
 } from "@webiny/api-scheduler/shared/abstractions.js";
 export {
     SchedulerService,
-    ScheduledActionModelProvider,
     ScheduledActionHandler
 } from "@webiny/api-scheduler/shared/abstractions.js";
 export {
