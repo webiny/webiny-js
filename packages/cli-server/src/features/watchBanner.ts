@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { type UiService } from "@webiny/cli-core/abstractions/index.js";
 
-const MARK = chalk.magentaBright("▲");
+const MARK = chalk.magentaBright("◆");
 const TICK = chalk.green("✓");
 
 export interface IBannerRow {
@@ -19,9 +19,8 @@ const rows = (ui: UiService.Interface, entries: IBannerRow[]) => {
 };
 
 /**
- * The header a developer sees the moment `webiny watch` starts, before anything is built. Modelled on
- * what `next dev` prints, because it answers the same two questions in the same place: what am I
- * running, and where will it be.
+ * The header a developer sees the moment `webiny watch` starts, before anything is built. It answers
+ * the two questions worth answering there: what am I running, and where will it be.
  */
 export const printWatchBanner = (
     ui: UiService.Interface,
