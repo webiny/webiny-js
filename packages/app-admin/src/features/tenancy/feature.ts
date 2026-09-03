@@ -4,12 +4,14 @@ import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.j
 import { TenantContext as TenantContextAbstraction } from "./abstractions.js";
 import { TenantContext } from "./TenantContext.js";
 import { GraphQLClientDecorator } from "./GraphQLClientDecorator.js";
+import { ApiStreamClientDecorator } from "./ApiStreamClientDecorator.js";
 
 export const TenancyFeature = createFeature({
     name: "Tenancy",
     register(container: Container) {
         container.register(TenantContext).inSingletonScope();
         container.registerDecorator(GraphQLClientDecorator);
+        container.registerDecorator(ApiStreamClientDecorator);
     },
     resolve(container: Container) {
         const service = container.resolve(TenantContextAbstraction);

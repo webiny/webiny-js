@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
@@ -20,6 +21,9 @@ function makeRouter(...routes: HttpRoute.Interface[]): HttpRouter.Interface {
         container.registerInstance(HttpRoute, route);
     }
     container.register(HttpRouterImpl);
+    // The router resolves routes through the request container, the way ChildContainerFactory
+    // wires it in production.
+    container.registerInstance(RequestContainer, container);
     return container.resolve(HttpRouter);
 }
 
