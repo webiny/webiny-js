@@ -1,6 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { WorkflowStateModel, WorkflowStateMapper } from "~/domain/workflowState/abstractions.js";
+import {
+    WorkflowStateModelProvider,
+    WorkflowStateMapper
+} from "~/domain/workflowState/abstractions.js";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     WorkflowStateNotFoundError,
@@ -12,24 +15,22 @@ import { GetTargetWorkflowStateRepository as Repository } from "./abstractions.j
 class GetTargetWorkflowStateRepositoryImpl implements Repository.Interface {
     constructor(
         private listEntries: ListLatestEntriesUseCase.Interface,
-        private model: WorkflowStateModel.Interface,
+        private modelProvider: WorkflowStateModelProvider.Interface,
         private mapper: WorkflowStateMapper.Interface
     ) {}
 
     async execute(input: Repository.Params): Repository.Return {
-        const listResult = await this.listEntries.execute<Omit<IWorkflowStateRecord, "id">>(
-            this.model,
-            {
-                where: {
-                    values: {
-                        app: input.app,
-                        targetRevisionId: input.targetRevisionId,
-                        isActive: true
-                    }
-                },
-                limit: 1
-            }
-        );
+        const model = await this.modelProvider.get();
+        const listResult = await this.listEntries.execute<Omit<IWorkflowStateRecord, "id">>(model, {
+            where: {
+                values: {
+                    app: input.app,
+                    targetRevisionId: input.targetRevisionId,
+                    isActive: true
+                }
+            },
+            limit: 1
+        });
 
         if (listResult.isFail()) {
             return Result.fail(new WorkflowStatePersistenceError(listResult.error));
@@ -63,5 +64,5 @@ class GetTargetWorkflowStateRepositoryImpl implements Repository.Interface {
 
 export const GetTargetWorkflowStateRepository = Repository.createImplementation({
     implementation: GetTargetWorkflowStateRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, WorkflowStateModel, WorkflowStateMapper]
+    dependencies: [ListLatestEntriesUseCase, WorkflowStateModelProvider, WorkflowStateMapper]
 });

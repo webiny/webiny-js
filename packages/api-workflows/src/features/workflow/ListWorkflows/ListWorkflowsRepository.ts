@@ -1,6 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
-import { type IWorkflow, WorkflowMapper, WorkflowModel } from "~/domain/workflow/abstractions.js";
+import {
+    type IWorkflow,
+    WorkflowMapper,
+    WorkflowModelProvider
+} from "~/domain/workflow/abstractions.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import { type IListWorkflowsWhere, ListWorkflowsRepository as Repository } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
@@ -9,18 +13,19 @@ import { CmsWhereMapper } from "@webiny/api-headless-cms";
 class ListWorkflowsRepositoryImpl implements Repository.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private model: WorkflowModel.Interface,
+        private modelProvider: WorkflowModelProvider.Interface,
         private mapper: WorkflowMapper.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface
     ) {}
 
     async execute(input: Repository.Params): Repository.Return {
+        const model = await this.modelProvider.get();
         const where = this.cmsWhereMapper.map({
             input: this.convertListWhere(input.where),
-            fields: this.model.fields
+            fields: model.fields
         });
 
-        const listResult = await this.listLatestEntries.execute<IWorkflow>(this.model, {
+        const listResult = await this.listLatestEntries.execute<IWorkflow>(model, {
             sort: ["createdOn_ASC"],
             limit: 100,
             ...input,
@@ -66,5 +71,5 @@ class ListWorkflowsRepositoryImpl implements Repository.Interface {
 
 export const ListWorkflowsRepository = Repository.createImplementation({
     implementation: ListWorkflowsRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, WorkflowModel, WorkflowMapper, CmsWhereMapper]
+    dependencies: [ListLatestEntriesUseCase, WorkflowModelProvider, WorkflowMapper, CmsWhereMapper]
 });
