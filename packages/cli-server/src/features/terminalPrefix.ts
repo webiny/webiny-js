@@ -38,20 +38,77 @@ export function colorForString(value: string) {
     return COLORS[Math.abs(hash) % COLORS.length];
 }
 
+// SGR escape sequences, stripped before matching text so a colorized URL still parses. Assembled with
+// `fromCharCode` so the source holds no literal control character.
+const ANSI = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+
+// The admin dev server (rsbuild) announces itself as `Local:  http://localhost:3001`. Anchored on the
+// `Local:` label so the loopback URL wins over the `Network:` one printed right after it.
+const DEV_SERVER_URL = /\bLocal:\s+(https?:\/\/\S+)/;
+
+// ...and reports a finished compile as `ready   built in 3.54s`. That lands seconds after the URL —
+// binding the port comes first, building the app second — so it, not the URL, is what "done starting"
+// means for the admin app.
+const DEV_SERVER_READY = /\bready\b.*\bbuilt in\b/i;
+
+export function stripAnsi(value: string) {
+    return value.replace(ANSI, "");
+}
+
+export interface ICreatePrefixerOptions {
+    /**
+     * Called with the dev server URL the first time the stream announces one, so the caller can report
+     * where an app came up without having to predict its port.
+     */
+    onUrl?: (url: string) => void;
+
+    /** Called when the stream reports that it finished starting. Fires again on later rebuilds. */
+    onReady?: () => void;
+}
+
 /**
  * Line-oriented Transform that prepends `<prefix>: ` to every non-empty output line — used to label
  * interleaved output from multiple child processes (watch build processes, serve api/admin servers).
+ *
+ * Partial lines are held back until their newline arrives: child output lands in arbitrary chunks, and
+ * prefixing each chunk as if it were a whole line breaks single log lines into several prefixed ones.
  */
-export function createPrefixer(prefix: string) {
+export function createPrefixer(prefix: string, options: ICreatePrefixerOptions = {}) {
+    const { onUrl, onReady } = options;
+    let buffer = "";
+
     return new Transform({
-        readableObjectMode: true,
-        writableObjectMode: true,
         transform(chunk, _encoding, callback) {
-            for (const line of chunk.toString().split(/\r?\n/)) {
-                if (line.trim()) {
-                    this.push(`${prefix}: ${line}\n`);
+            buffer += chunk.toString();
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop() ?? "";
+
+            for (const line of lines) {
+                if (!line.trim()) {
+                    continue;
                 }
+
+                if (onUrl || onReady) {
+                    const plain = stripAnsi(line);
+
+                    const url = plain.match(DEV_SERVER_URL);
+                    if (url) {
+                        onUrl?.(url[1]);
+                    } else if (DEV_SERVER_READY.test(plain)) {
+                        onReady?.();
+                    }
+                }
+
+                this.push(`${prefix}: ${line}\n`);
             }
+
+            callback();
+        },
+        flush(callback) {
+            if (buffer.trim()) {
+                this.push(`${prefix}: ${buffer}\n`);
+            }
+            buffer = "";
             callback();
         }
     });

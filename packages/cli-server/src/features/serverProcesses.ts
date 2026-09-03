@@ -1,4 +1,5 @@
 import { Transform } from "node:stream";
+import { type ICreatePrefixerOptions } from "./terminalPrefix.js";
 
 // Node's built-in `--watch` prints control chatter we don't surface verbatim.
 const WATCH_NOISE =
@@ -12,7 +13,8 @@ const LISTENING = /listening on (\S+)/i;
  * `started` flag lives on the stdout instance (which carries the "listening" line); the stderr
  * instance just drops noise + prefixes.
  */
-export function createWatchServerPrefixer(prefix: string) {
+export function createWatchServerPrefixer(prefix: string, options: ICreatePrefixerOptions = {}) {
+    const { onUrl, onReady } = options;
     let started = false;
     let buffer = "";
 
@@ -29,6 +31,11 @@ export function createWatchServerPrefixer(prefix: string) {
 
                 const listening = line.match(LISTENING);
                 if (listening) {
+                    // For a server, listening *is* done starting — both signals come off this one line.
+                    if (!started) {
+                        onUrl?.(listening[1]);
+                    }
+                    onReady?.();
                     this.push(
                         started
                             ? `${prefix}: ↻ reloaded\n`
