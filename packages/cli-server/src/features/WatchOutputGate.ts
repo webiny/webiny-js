@@ -95,6 +95,8 @@ export class WatchOutputGate {
         for (const { target, line } of replay) {
             this.stream(target).write(`${line}\n`);
         }
+        // Keeps the replayed block from running straight into whatever the caller prints next.
+        this.ui.text("");
     }
 
     private accept(source: string, target: Target, text: string) {

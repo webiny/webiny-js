@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { type UiService } from "@webiny/cli-core/abstractions/index.js";
+import { printWatchReady } from "./watchBanner.js";
 
 /**
  * Collects what each watched app reports while starting, and prints one summary of where everything
@@ -23,6 +24,7 @@ export class WatchSummary {
 
     constructor(
         private ui: UiService.Interface,
+        private startedAt: number,
         private onChange: () => void = () => undefined
     ) {}
 
@@ -74,13 +76,12 @@ export class WatchSummary {
 
         this.printed = true;
 
-        const width = Math.max(...this.expected.map(app => app.length));
-
-        this.ui.emptyLine();
-        this.ui.success("All apps are up and watching for changes:");
-        for (const app of this.expected) {
-            this.ui.text(`  ${chalk.bold(app.padEnd(width))}   ${chalk.cyan(this.urls.get(app))}`);
-        }
-        this.ui.emptyLine();
+        printWatchReady(this.ui, {
+            elapsedMs: Date.now() - this.startedAt,
+            entries: this.expected.map(app => ({
+                label: app,
+                value: chalk.cyan(this.urls.get(app))
+            }))
+        });
     }
 }

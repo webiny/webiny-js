@@ -11,6 +11,7 @@ import { colorForString, createPrefixer } from "./terminalPrefix.js";
 import { createWatchServerPrefixer } from "./serverProcesses.js";
 import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
+import { printWatchBanner, printWatchStarting } from "./watchBanner.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 
 interface IServerWatchCommandParams {
@@ -160,9 +161,10 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     onActivity: () => waitForQuiet()
                 });
 
+                const startedAt = Date.now();
                 const summary =
                     apps.length > 1
-                        ? new WatchSummary(ui, () => {
+                        ? new WatchSummary(ui, startedAt, () => {
                               // Nothing is being held back, so there's nothing to wait for.
                               if (!gated) {
                                   summary?.print();
@@ -231,14 +233,20 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     return;
                 }
 
-                ui.info(`Watching %s packages...`, allProcesses.length);
-
-                if (gated) {
-                    ui.info(
-                        `Starting %s. Holding output back until they're up — run with %s to follow along.`,
-                        apps.join(", "),
-                        "--verbose"
+                if (summary) {
+                    printWatchBanner(ui, {
+                        version: projectSdk.getProjectVersion(),
+                        entries: [
+                            { label: "Apps", value: apps.join(", ") },
+                            { label: "Packages", value: String(allProcesses.length) }
+                        ]
+                    });
+                    printWatchStarting(
+                        ui,
+                        gated ? "(output held back until the apps are up, --verbose to follow)" : ""
                     );
+                } else {
+                    ui.info(`Watching %s packages...`, allProcesses.length);
                 }
 
                 const listenerCount = allProcesses.length + serverProcesses.length + 5;
