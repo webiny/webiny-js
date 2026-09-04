@@ -5,7 +5,7 @@ import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { ExperimentModel } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
-import { VariantModel } from "~/domain/variant/abstractions.js";
+import { VariantModelProvider } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";
 
@@ -24,10 +24,11 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private publishEntry: PublishEntryUseCase.Interface,
         private experimentModel: ExperimentModel.Interface,
-        private variantModel: VariantModel.Interface
+        private variantModelProvider: VariantModelProvider.Interface
     ) {}
 
     async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
+        const variantModel = await this.variantModelProvider.get();
         const page = event.payload.page;
 
         // Find the page's running experiment (latest draft state) and publish it.
@@ -53,7 +54,7 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
 
         // Publish its ready variants so their content goes live alongside the experiment.
         const variantsResult = await this.listLatestEntries.execute<CmsEntryWbVariantValues>(
-            this.variantModel,
+            variantModel,
             {
                 where: {
                     values: {
@@ -71,7 +72,7 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
 
         for (const entry of variantsResult.value.entries) {
             const variant = EntryToVariantMapper.toVariant(entry);
-            await this.publishEntry.execute(this.variantModel, variant.id);
+            await this.publishEntry.execute(variantModel, variant.id);
         }
     }
 }
@@ -83,6 +84,6 @@ export const EndExperimentOnPublishHandler = PageAfterPublishEventHandler.create
         ListLatestEntriesUseCase,
         PublishEntryUseCase,
         ExperimentModel,
-        VariantModel
+        VariantModelProvider
     ]
 });

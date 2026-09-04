@@ -22,7 +22,6 @@
     "@webiny/api-core": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/di": "^1.0.2",
     "@webiny/event-handler-aws": "0.0.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/feature": "0.0.0",

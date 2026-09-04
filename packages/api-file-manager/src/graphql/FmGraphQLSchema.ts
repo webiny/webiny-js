@@ -20,7 +20,7 @@ import { GetFileByUrlUseCase } from "~/features/file/GetFileByUrl/abstractions.j
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { FileUrlGenerator } from "~/features/file/FileUrlGenerator/abstractions.js";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
 const removeFieldRequiredValidation = (field: CmsModelField) => {
@@ -45,7 +45,7 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
         private readonly identityContext: IdentityContext.Interface,
         private readonly listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface,
-        private readonly fileModel: FileModel.Interface,
+        private readonly fileModelProvider: FileModelProvider.Interface,
         private readonly fileUrlGenerator: FileUrlGenerator.Interface
     ) {}
 
@@ -147,11 +147,12 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
     private async addFileTypeDefs(builder: GraphQLSchemaFactory.SchemaBuilder): Promise<void> {
         const models = await this.loadModels();
-        const { fields } = this.fileModel;
+        const fileModel = await this.fileModelProvider.get();
+        const { fields } = fileModel;
 
         const fieldTypes = renderFields({
             models,
-            model: this.fileModel,
+            model: fileModel,
             fields,
             type: "manage",
             fieldRegistry: this.fieldRegistry
@@ -159,21 +160,21 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
         const inputCreateFields = renderInputFields({
             models,
-            model: this.fileModel,
+            model: fileModel,
             fields,
             fieldRegistry: this.fieldRegistry
         });
 
         const inputUpdateFields = renderInputFields({
             models,
-            model: this.fileModel,
+            model: fileModel,
             fields: createUpdateFields(fields),
             fieldRegistry: this.fieldRegistry
         });
 
         const listFilterFieldsRender = renderListFilterFields({
-            model: this.fileModel,
-            fields: this.fileModel.fields,
+            model: fileModel,
+            fields: fileModel.fields,
             type: "manage",
             fieldRegistry: this.fieldRegistry,
             excludeFields: ["entryId", "status"]
@@ -370,10 +371,10 @@ class FmGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "FmQuery.getFileModel",
-            dependencies: [FileModel],
-            resolver: (fileModel: FileModel.Interface) => {
-                return () => {
-                    return new Response(fileModel);
+            dependencies: [FileModelProvider],
+            resolver: (fileModelProvider: FileModelProvider.Interface) => {
+                return async () => {
+                    return new Response(await fileModelProvider.get());
                 };
             }
         });
@@ -534,7 +535,7 @@ export const FmGraphQLSchema = GraphQLSchemaFactory.createImplementation({
         IdentityContext,
         ListModelsUseCase,
         CmsModelFieldToGraphQLRegistry,
-        FileModel,
+        FileModelProvider,
         FileUrlGenerator
     ]
 });

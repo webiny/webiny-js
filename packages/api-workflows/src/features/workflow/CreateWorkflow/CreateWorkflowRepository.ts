@@ -1,18 +1,23 @@
 import { Result } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { type IWorkflow, WorkflowMapper, WorkflowModel } from "~/domain/workflow/abstractions.js";
+import {
+    type IWorkflow,
+    WorkflowMapper,
+    WorkflowModelProvider
+} from "~/domain/workflow/abstractions.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import { CreateWorkflowRepository as Repository } from "./abstractions.js";
 
 class CreateWorkflowRepositoryImpl implements Repository.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
-        private model: WorkflowModel.Interface,
+        private modelProvider: WorkflowModelProvider.Interface,
         private mapper: WorkflowMapper.Interface
     ) {}
 
     async execute(input: Repository.Input): Repository.Return {
+        const model = await this.modelProvider.get();
         const { id } = parseIdentifier(input.id);
 
         const values = this.mapper.toCmsEntry({
@@ -22,7 +27,7 @@ class CreateWorkflowRepositoryImpl implements Repository.Interface {
             steps: input.steps
         });
         try {
-            const createResult = await this.createEntry.execute<IWorkflow>(this.model, {
+            const createResult = await this.createEntry.execute<IWorkflow>(model, {
                 id,
                 values
             });
@@ -40,5 +45,5 @@ class CreateWorkflowRepositoryImpl implements Repository.Interface {
 
 export const CreateWorkflowRepository = Repository.createImplementation({
     implementation: CreateWorkflowRepositoryImpl,
-    dependencies: [CreateEntryUseCase, WorkflowModel, WorkflowMapper]
+    dependencies: [CreateEntryUseCase, WorkflowModelProvider, WorkflowMapper]
 });

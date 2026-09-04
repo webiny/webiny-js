@@ -15,6 +15,8 @@ import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
 import { queueMetaWrite } from "./writeMetaQueue";
 import { createReporter } from "./reporter";
+import { previewBuild } from "./previewBuild";
+import { getPackagesWhitelist } from "./getPackagesWhitelist";
 
 const argv = yargs(hideBin(process.argv)).parse();
 
@@ -40,6 +42,12 @@ interface BuildOptions {
      * See `reporter.ts` for the event schema.
      */
     json?: boolean;
+    /**
+     * Report how many packages are already built and how many need to be (re)built,
+     * then exit without building anything. Combine with `--json` to poll it as a
+     * status indicator. See `previewBuild.ts`.
+     */
+    preview?: boolean;
 }
 
 interface BuildContext {
@@ -53,6 +61,13 @@ export const buildPackages = async () => {
     const options = argv as BuildOptions;
 
     const reporter = createReporter(options.json === true);
+
+    if (options.preview === true) {
+        // Nothing below this point runs: a preview reports the plan and stops. Notably,
+        // it also skips the `tsc --version` check, which nothing in a preview needs.
+        await previewBuild(options, reporter);
+        return;
+    }
 
     // Captured rather than inherited: in JSON mode stdout carries the event stream, and
     // in text mode the reporter needs to print this after the hardware report.
@@ -68,14 +83,7 @@ export const buildPackages = async () => {
         tscVersion: tscVersion.stdout?.trim() ?? ""
     });
 
-    let packagesWhitelist: string[] = [];
-    if (options.p) {
-        if (Array.isArray(options.p)) {
-            packagesWhitelist = options.p;
-        } else {
-            packagesWhitelist = [options.p];
-        }
-    }
+    const packagesWhitelist = getPackagesWhitelist(options.p);
 
     const {
         batches,
