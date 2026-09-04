@@ -11,6 +11,7 @@ import { colorForString, createPrefixer } from "./terminalPrefix.js";
 import { createWatchServerPrefixer } from "./serverProcesses.js";
 import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
+import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 
 interface IServerWatchCommandParams {
@@ -19,27 +20,6 @@ interface IServerWatchCommandParams {
     package?: string | string[];
     verbose?: boolean;
 }
-
-/**
- * How long to hold startup output back before giving up and showing it live. Generous, because the
- * first build compiles every package in the app — a developer staring at a silent terminal is worse
- * than a noisy one.
- */
-const STARTUP_TIMEOUT = 180 * 1000;
-
-/**
- * How long the apps have to stay quiet, after they all report being up, before the summary is printed.
- * Reporting "up" and going quiet aren't the same moment: the api logs a little more after it starts
- * listening, and the last package build can land after that. Without this, those stragglers print
- * underneath the summary, which is exactly what the summary exists to avoid.
- */
-const QUIET_PERIOD = 750;
-
-/**
- * Fallback for when the apps report their URLs but never say they finished starting — a tool changing
- * the wording of its ready line shouldn't mean output stays buffered until `STARTUP_TIMEOUT`.
- */
-const READY_TIMEOUT = 15 * 1000;
 
 export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWatchCommandParams> {
     constructor(
@@ -57,9 +37,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 "",
                 "Ports:",
                 " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
-                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
-                "PORT applies only when watching a single app (watch api / watch admin). When watching",
-                "several at once (no app), PORT is ignored — set WEBINY_API_PORT / WEBINY_ADMIN_PORT instead."
+                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)"
             ].join("\n"),
             examples: ["watch", "watch api", "watch admin", "watch -p my-package"],
             params: [
@@ -106,51 +84,9 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     }
                 }
 
-                // Several apps in one process means a generic PORT injected by the environment can only
-                // belong to one of them, so drop it and let each app fall back to its own dedicated port.
-                // Same rule `webiny serve` applies when serving both apps at once.
-                if (apps.length > 1 && process.env.PORT) {
-                    ui.warning(
-                        `%s is ignored when watching several apps at once. Set %s and %s instead.`,
-                        "PORT",
-                        "WEBINY_API_PORT",
-                        "WEBINY_ADMIN_PORT"
-                    );
-                    delete process.env.PORT;
-                }
-
                 // With a single app the app's own startup line is easy enough to spot; with several, the
                 // "where is each app running" answer would otherwise be buried in interleaved build output.
                 const gated = apps.length > 1 && !params.verbose;
-
-                // Timers own the "when": the summary only collects what the apps report, and the gate
-                // only decides what to replay.
-                let quietTimer: NodeJS.Timeout | undefined;
-                let readyTimer: NodeJS.Timeout | undefined;
-                let settled = false;
-
-                // Release the gate and print where everything landed. Both halves are idempotent; the
-                // flag only stops the timers being re-armed for the rest of the session.
-                const finish = () => {
-                    if (settled) {
-                        return;
-                    }
-                    settled = true;
-                    clearTimeout(quietTimer);
-                    clearTimeout(readyTimer);
-
-                    gate.open();
-                    summary?.print();
-                };
-
-                const waitForQuiet = () => {
-                    if (settled || !summary?.isSettled) {
-                        return;
-                    }
-                    clearTimeout(quietTimer);
-                    quietTimer = setTimeout(finish, QUIET_PERIOD);
-                    quietTimer.unref();
-                };
 
                 // Everything goes through the gate so that piping into it, rather than straight into
                 // stdout, is the only path — a plain `.pipe(stdout)` ends stdout as soon as the first
@@ -158,24 +94,19 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // through.
                 const gate = new WatchOutputGate(stdio, ui, {
                     open: !gated,
-                    onActivity: () => waitForQuiet()
+                    onActivity: () => startup.noteOutput()
                 });
 
-                const startedAt = Date.now();
+                // The summary collects what the apps report; WatchStartup decides when that adds up to
+                // "started" and releases both. Same path whether or not output is held back: a URL alone
+                // doesn't mean an app finished starting, so `--verbose` waits for the ready markers too
+                // rather than claiming "Ready" the moment rsbuild binds its port.
                 const summary =
                     apps.length > 1
-                        ? new WatchSummary(ui, startedAt, () => {
-                              // Same path whether or not output is held back. A URL alone doesn't mean
-                              // an app finished starting, so `--verbose` waits for the ready markers too
-                              // rather than claiming "Ready" the moment rsbuild binds its port.
-                              if (summary?.isSettled) {
-                                  waitForQuiet();
-                              } else if (summary?.hasAllUrls && !readyTimer) {
-                                  readyTimer = setTimeout(finish, READY_TIMEOUT);
-                                  readyTimer.unref();
-                              }
-                          })
+                        ? new WatchSummary(ui, Date.now(), () => startup.noteProgress())
                         : undefined;
+
+                const startup = new WatchStartup(gate, summary);
 
                 // Printed before the `projectSdk.watch()` calls below, not after: those prepare each
                 // app's workspace and evaluate its config, which is a slow, silent stretch. Announcing
@@ -296,31 +227,19 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     });
                 }
 
-                // Whatever the apps never reaching a known-good state looks like — a watcher exiting, the
-                // wait running long — stop holding output back and replay all of it, so the reason is on
-                // screen rather than sitting in a buffer.
-                // Deliberately does not mark the session settled: if the apps do come up after this, the
-                // summary is still worth printing. It only stops holding output back.
-                const abandon = () => {
-                    clearTimeout(quietTimer);
-                    clearTimeout(readyTimer);
-                    gate.open({ replayAll: true });
-                };
+                startup.begin();
 
-                const startupTimeout = setTimeout(abandon, STARTUP_TIMEOUT);
-                startupTimeout.unref();
-
-                const releaseOnSettle = <T>(promise: Promise<T>) => {
-                    return promise.finally(abandon);
-                };
-
+                // A watch process settling at all during startup means something went wrong, so give up
+                // holding output back and replay it: the reason belongs on screen, not in a buffer.
                 try {
                     await Promise.all([
-                        ...allProcesses.map(({ process }) => releaseOnSettle(process.run())),
-                        ...serverProcesses.map(p => releaseOnSettle(p.run()))
+                        ...allProcesses.map(({ process }) =>
+                            process.run().finally(() => startup.abandon())
+                        ),
+                        ...serverProcesses.map(p => p.run().finally(() => startup.abandon()))
                     ]);
                 } finally {
-                    clearTimeout(startupTimeout);
+                    startup.dispose();
                 }
             }
         };
