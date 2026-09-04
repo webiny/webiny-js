@@ -125,17 +125,18 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 const gated = apps.length > 1 && !params.verbose;
 
                 // Timers own the "when": the summary only collects what the apps report, and the gate
-                // only decides what to replay. `finish` is the single place both are released, whether
-                // that's because startup went well or because it ran out of patience.
+                // only decides what to replay.
                 let quietTimer: NodeJS.Timeout | undefined;
                 let readyTimer: NodeJS.Timeout | undefined;
-                let finished = false;
+                let settled = false;
 
+                // Release the gate and print where everything landed. Both halves are idempotent; the
+                // flag only stops the timers being re-armed for the rest of the session.
                 const finish = () => {
-                    if (finished) {
+                    if (settled) {
                         return;
                     }
-                    finished = true;
+                    settled = true;
                     clearTimeout(quietTimer);
                     clearTimeout(readyTimer);
 
@@ -144,7 +145,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 };
 
                 const waitForQuiet = () => {
-                    if (finished || !summary?.isSettled) {
+                    if (settled || !summary?.isSettled) {
                         return;
                     }
                     clearTimeout(quietTimer);
@@ -165,12 +166,9 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 const summary =
                     apps.length > 1
                         ? new WatchSummary(ui, startedAt, () => {
-                              // Nothing is being held back, so there's nothing to wait for.
-                              if (!gated) {
-                                  summary?.print();
-                                  return;
-                              }
-
+                              // Same path whether or not output is held back. A URL alone doesn't mean
+                              // an app finished starting, so `--verbose` waits for the ready markers too
+                              // rather than claiming "Ready" the moment rsbuild binds its port.
                               if (summary?.isSettled) {
                                   waitForQuiet();
                               } else if (summary?.hasAllUrls && !readyTimer) {
@@ -306,8 +304,9 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // Whatever the apps never reaching a known-good state looks like — a watcher exiting, the
                 // wait running long — stop holding output back and replay all of it, so the reason is on
                 // screen rather than sitting in a buffer.
+                // Deliberately does not mark the session settled: if the apps do come up after this, the
+                // summary is still worth printing. It only stops holding output back.
                 const abandon = () => {
-                    finished = true;
                     clearTimeout(quietTimer);
                     clearTimeout(readyTimer);
                     gate.open({ replayAll: true });

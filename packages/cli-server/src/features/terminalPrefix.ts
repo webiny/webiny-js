@@ -55,6 +55,18 @@ export function stripAnsi(value: string) {
     return value.replace(ANSI, "");
 }
 
+/**
+ * Line terminators, bare `\r` included: progress output redraws with `\r` and never sends a newline,
+ * so splitting on `\n` alone would hold it back forever.
+ */
+export const LINE_BREAK = /\r\n|\r|\n/;
+
+/**
+ * A line this long with no terminator in sight isn't a line any more. Flush it rather than let the
+ * buffer grow without bound.
+ */
+export const MAX_LINE_LENGTH = 8192;
+
 export interface ICreatePrefixerOptions {
     /**
      * Called with the dev server URL the first time the stream announces one, so the caller can report
@@ -80,8 +92,13 @@ export function createPrefixer(prefix: string, options: ICreatePrefixerOptions =
     return new Transform({
         transform(chunk, _encoding, callback) {
             buffer += chunk.toString();
-            const lines = buffer.split(/\r?\n/);
+            const lines = buffer.split(LINE_BREAK);
             buffer = lines.pop() ?? "";
+
+            if (buffer.length > MAX_LINE_LENGTH) {
+                lines.push(buffer);
+                buffer = "";
+            }
 
             for (const line of lines) {
                 if (!line.trim()) {

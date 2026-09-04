@@ -3,10 +3,20 @@ import { type StdioService, type UiService } from "@webiny/cli-core/abstractions
 import { stripAnsi } from "./terminalPrefix.js";
 
 /**
- * Lines that make a source worth replaying once the gate opens. Deliberately broad: a false positive
- * costs a few extra lines on screen, a miss swallows a build warning the developer needed to see.
+ * Lines that make a source worth replaying once the gate opens. Substring matching, not whole words:
+ * `\berror\b` misses `TypeError`, `SyntaxError` and every other named error class, which is exactly
+ * the output that must not be swallowed. A false positive costs a few extra lines on screen.
  */
-const PROBLEM = /\b(warn|warning|error|failed|failure|deprecated)\b/i;
+const PROBLEM = /\w*(?:error|warn|fail)\w*|deprecated/i;
+
+/**
+ * Counts of zero, stripped before the match above runs. Tools announce a clean build as "Found 0
+ * errors." or "0 errors, 0 warnings", which would otherwise flag every successful compile. Stripped
+ * rather than tested as a whole line, so "3 errors and 0 warnings" still counts as a problem.
+ */
+const RESOLVED = /\b(?:no|0)\s+(?:\w+\s+)?(?:errors?|warnings?|problems?)\b/gi;
+
+const looksLikeProblem = (line: string) => PROBLEM.test(line.replace(RESOLVED, ""));
 
 /**
  * Above this many buffered lines, give up on holding output back and switch to live. A startup this
@@ -27,11 +37,14 @@ interface IBufferedLine {
  * its first build, the api waiting for that build to land, rsbuild's banner) doesn't bury the summary
  * of what came up where.
  *
- * Nothing is dropped silently. When the gate opens, every source that printed something looking like a
- * warning or an error is replayed from that line on — the rest of the source, not just the matching
- * line, so multi-line compiler diagnostics stay intact and in order. Anything that goes wrong before
- * the apps are up (a process exiting, the wait timing out, too much output to hold) opens the gate and
- * replays everything.
+ * What gets dropped is startup chatter from a source that never printed anything resembling a problem.
+ * A source that did is replayed from that line on — the rest of the source, not just the matching line,
+ * so multi-line compiler diagnostics stay intact and in order. Anything that goes wrong before the apps
+ * are up (a process exiting, the wait timing out, too much output to hold) opens the gate and replays
+ * everything.
+ *
+ * So the guarantee is only as good as `PROBLEM` above. It errs towards replaying: worth widening if
+ * something turns up that a developer needed to see and didn't.
  */
 export class WatchOutputGate {
     private readonly buffered: IBufferedLine[] = [];
@@ -112,7 +125,7 @@ export class WatchOutputGate {
                 continue;
             }
 
-            if (!this.problemSources.has(source) && PROBLEM.test(stripAnsi(line))) {
+            if (!this.problemSources.has(source) && looksLikeProblem(stripAnsi(line))) {
                 this.problemSources.set(source, this.buffered.length);
             }
 

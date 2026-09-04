@@ -1,5 +1,5 @@
 import { Transform } from "node:stream";
-import { type ICreatePrefixerOptions } from "./terminalPrefix.js";
+import { type ICreatePrefixerOptions, LINE_BREAK, MAX_LINE_LENGTH } from "./terminalPrefix.js";
 
 // Node's built-in `--watch` prints control chatter we don't surface verbatim.
 const WATCH_NOISE =
@@ -21,8 +21,13 @@ export function createWatchServerPrefixer(prefix: string, options: ICreatePrefix
     return new Transform({
         transform(chunk, _encoding, callback) {
             buffer += chunk.toString();
-            const lines = buffer.split(/\r?\n/);
+            const lines = buffer.split(LINE_BREAK);
             buffer = lines.pop() ?? "";
+
+            if (buffer.length > MAX_LINE_LENGTH) {
+                lines.push(buffer);
+                buffer = "";
+            }
 
             for (const line of lines) {
                 if (!line.trim() || WATCH_NOISE.test(line)) {
