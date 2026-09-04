@@ -1,6 +1,6 @@
 import type { ModelMessage } from "ai";
-import { parseDecisions } from "@webiny/ai-chat/api/index.js";
-import type { ApprovalDecision } from "@webiny/ai-chat/api/index.js";
+import { parseDecisions } from "./approvals.js";
+import type { ApprovalDecision } from "./approvals.js";
 
 export interface ParsedChatBody {
     messages: ModelMessage[];
@@ -16,9 +16,9 @@ const safeParse = (value: string): unknown => {
 };
 
 /**
- * Accepts either a fresh question or a continuation. A continuation replays `messages` verbatim —
- * including the assistant message carrying the approval request — because the SDK matches an approval
- * response to its request by id, and that request exists nowhere else. We keep no session.
+ * Accepts either a fresh question or a continuation. A continuation replays `messages` verbatim,
+ * including the assistant message carrying the approval request, because the SDK matches an approval
+ * response to its request by id and that request exists nowhere else. We keep no session.
  *
  * Returns null for anything unusable, so the caller decides the status code.
  */

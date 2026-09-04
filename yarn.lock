@@ -10223,22 +10223,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ai-chat-http@npm:0.0.0, @webiny/ai-chat-http@workspace:packages/ai-chat-http":
-  version: 0.0.0-use.local
-  resolution: "@webiny/ai-chat-http@workspace:packages/ai-chat-http"
-  dependencies:
-    "@webiny/ai-chat": "npm:0.0.0"
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di": "npm:^1.0.2"
-    "@webiny/event-handler-core": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    ai: "npm:^7.0.73"
-    typescript: "npm:^7.0.2"
-    vitest: "npm:^4.1.11"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/ai-chat@npm:0.0.0, @webiny/ai-chat@workspace:packages/ai-chat":
   version: 0.0.0-use.local
   resolution: "@webiny/ai-chat@workspace:packages/ai-chat"
@@ -10246,6 +10230,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^1.0.2"
+    "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     ai: "npm:^7.0.73"
     typescript: "npm:^7.0.2"
@@ -10590,7 +10575,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-event-handler-core@workspace:packages/api-event-handler-core"
   dependencies:
-    "@webiny/ai-chat-http": "npm:0.0.0"
+    "@webiny/ai-chat": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"

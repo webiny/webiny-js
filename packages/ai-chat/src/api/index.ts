@@ -1,4 +1,6 @@
 export { AiChatFeature } from "./AiChatFeature.js";
+export { AiChatRoute } from "./AiChatRoute.js";
+export { AiChatStreamRoute } from "./AiChatStreamRoute.js";
 export { AiChatUseCase } from "./abstractions.js";
 export { AiChatConfig } from "./abstractions.js";
 export { AiChatProvider } from "./abstractions.js";

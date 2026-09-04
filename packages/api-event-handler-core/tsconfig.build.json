@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../ai-chat-http/tsconfig.build.json" },
+    { "path": "../ai-chat/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
@@ -33,8 +33,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/ai-chat-http/*": ["../ai-chat-http/src/*"],
-      "@webiny/ai-chat-http": ["../ai-chat-http/src"],
+      "@webiny/ai-chat/*": ["../ai-chat/src/*"],
+      "@webiny/ai-chat": ["../ai-chat/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],

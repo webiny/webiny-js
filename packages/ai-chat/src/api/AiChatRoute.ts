@@ -1,17 +1,18 @@
 import { HttpRoute } from "@webiny/event-handler-core";
-import type { IHttpRequest } from "@webiny/event-handler-core";
-import type { IHttpResponse } from "@webiny/event-handler-core";
+import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { AiChatUseCase } from "@webiny/ai-chat/api/index.js";
+import { AiChatUseCase } from "./abstractions.js";
 import { parseChatBody } from "./parseChatBody.js";
-import { jsonResponse } from "./jsonResponse.js";
 
 const BAD_REQUEST_MESSAGE =
     "Provide either a non-empty `prompt` string or a `messages` array of model messages.";
 
 /**
- * `POST /ai/chat` — transport only. Parses the request, delegates to `AiChatUseCase`, and maps failures
+ * `POST /ai/chat`, transport only. Parses the request, delegates to `AiChatUseCase`, and maps failures
  * onto status codes. All assistant behaviour lives in the use case.
+ *
+ * Kept alongside the streaming route for callers that cannot read a stream. It buffers the whole
+ * answer, so a multi-tool question returns once, after several seconds of silence.
  */
 class AiChatRouteImpl implements HttpRoute.Interface {
     public readonly method = "POST";
@@ -22,26 +23,29 @@ class AiChatRouteImpl implements HttpRoute.Interface {
         private readonly logger: Logger.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(
+        request: IHttpRequest,
+        response: IHttpResponseBuilder
+    ): Promise<IHttpResponseBuilder> {
         const parsed = parseChatBody(request.body);
 
         if (!parsed) {
-            return jsonResponse(400, { error: BAD_REQUEST_MESSAGE });
+            return response.status(400).json({ error: BAD_REQUEST_MESSAGE });
         }
 
         try {
-            return jsonResponse(200, await this.aiChat.execute(parsed));
+            return response.json(await this.aiChat.execute(parsed));
         } catch (error) {
             const code = (error as { code?: string }).code;
 
             if (code === "NOT_AUTHORIZED") {
-                return jsonResponse(401, { error: "Authentication required." });
+                return response.status(401).json({ error: "Authentication required." });
             }
 
             const message = error instanceof Error ? error.message : String(error);
             this.logger.error({ error }, "AI chat request failed.");
 
-            return jsonResponse(500, { error: message });
+            return response.status(500).json({ error: message });
         }
     }
 }

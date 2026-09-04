@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
-import { AiChatHttpFeature } from "@webiny/ai-chat-http";
+import { AiChatFeature } from "@webiny/ai-chat/api/index.js";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -143,7 +143,7 @@ export async function registerApiRequestStack(
     //
     // Route construction does not depend on this order — `HttpRouter` resolves routes inside `route()`,
     // and `resolveAll(AiSdkTool)` collects every tool regardless of when it was registered.
-    AiChatHttpFeature.register(container);
+    AiChatFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────
     // Apply at register() time (not via a post-auth initializer) so extension features — including
