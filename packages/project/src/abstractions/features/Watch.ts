@@ -50,4 +50,7 @@ export namespace Watch {
     export type Params = IWatchParams;
     export type Result = IWatchResult;
     export type Process = RunnableServerProcess;
+
+    /** The prepared (not yet running) build processes of a `packagesWatcher`. */
+    export type BuildProcesses = ReturnType<PackagesWatcher["prepare"]>;
 }
