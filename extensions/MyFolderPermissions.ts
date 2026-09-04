@@ -8,7 +8,7 @@ import { FlpFactory } from "webiny/api/aco/flp";
  *
  * Rules are matched on the folder's `type` and `path`:
  * - `type` is the folder type, grouped under `FlpFactory.FolderType` by the app that owns it —
- *   `FileManager.Files`, or `Cms.Model(modelId)` for a Headless CMS model. Apps that register their
+ *   `FileManager.Files`, or `Cms.Entries(modelId)` for a Headless CMS model. Apps that register their
  *   own folders can pass that type as a plain string instead.
  * - `path` is the folder's slug path. The leading `root` segment is optional, so `/marketing` and
  *   `root/marketing` both work. A trailing `/*` matches the folder plus its whole subtree.
@@ -24,13 +24,13 @@ class MyFolderPermissionsImpl implements FlpFactory.Interface {
         return [
             {
                 // Everything under /marketing is editable by the content team.
-                type: FlpFactory.FolderType.Cms.Model("article"),
+                type: FlpFactory.FolderType.Cms.Entries("article"),
                 path: "/marketing/*",
                 permissions: [{ team: "content-team", level: "editor" }]
             },
             {
                 // The finance folder itself — not its children — is read-only for the same team.
-                type: FlpFactory.FolderType.Cms.Model("article"),
+                type: FlpFactory.FolderType.Cms.Entries("article"),
                 path: "/finance",
                 permissions: [{ team: "content-team", level: "viewer" }]
             },
@@ -38,7 +38,7 @@ class MyFolderPermissionsImpl implements FlpFactory.Interface {
                 // A hard denial. `no-access` always wins: it cannot be overridden by a permission
                 // assigned in the Admin UI, and it is inherited by every folder in the subtree.
                 // Full-access users are still unaffected, same as with regular FLPs.
-                type: FlpFactory.FolderType.Cms.Model("article"),
+                type: FlpFactory.FolderType.Cms.Entries("article"),
                 path: "/legal-hold/*",
                 permissions: [{ team: "content-team", level: "no-access" }]
             },

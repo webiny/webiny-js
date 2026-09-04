@@ -59,7 +59,7 @@ const FolderType = {
     /** Headless CMS folders. */
     Cms: {
         /** Folders holding entries of a content model, addressed by its `modelId`. */
-        Model(modelId: string): string {
+        Entries(modelId: string): string {
             return `cms:${modelId}`;
         }
     }
