@@ -12,8 +12,7 @@ import {
     EntryAfterPublishEvent,
     EntryPublishErrorEvent
 } from "./events.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { CreatePublishEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreatePublishEntryDataFactory/index.js";
 
 class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -112,7 +111,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                     error: error as Error
                 })
             );
-            return Result.fail(error as any);
+            return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
 }

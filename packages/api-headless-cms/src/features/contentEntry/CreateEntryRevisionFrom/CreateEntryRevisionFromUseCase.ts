@@ -127,7 +127,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
                     error: error as Error
                 })
             );
-            return Result.fail(error as any);
+            return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
 }

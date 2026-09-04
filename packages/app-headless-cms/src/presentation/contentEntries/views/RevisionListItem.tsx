@@ -1,20 +1,19 @@
 import React from "react";
 import { useFeature } from "@webiny/app";
 import { useRoute, useRouter } from "@webiny/app-admin";
-import { DropdownMenu, Icon, IconButton, List, Text, Tooltip } from "@webiny/admin-ui";
+import { DropdownMenu, Icon, IconButton, List, Tag, Text, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { ReactComponent as BeenHereIcon } from "@webiny/icons/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/icons/gesture.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-// import { ReactComponent as PublishIcon } from "@webiny/icons/visibility.svg";
-// import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
+import { ReactComponent as EditNoteIcon } from "@webiny/icons/edit_note.svg";
+import { ReactComponent as UnpublishIcon } from "@webiny/icons/visibility_off.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
-import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { Routes } from "~/routes.js";
 
@@ -33,6 +32,18 @@ const DateDisplay = ({ date }: { date: string }) => {
         }).format(d);
     }, [date]);
     return <>{formatted}</>;
+};
+
+const getStatusTag = (rev: CmsContentEntryRevision) => {
+    if (rev.meta.status === "published") {
+        return { label: "Published", variant: "accent" as const };
+    }
+
+    if (rev.meta.locked) {
+        return { label: "Previously published", variant: "warning" as const };
+    }
+
+    return { label: "Draft", variant: "neutral-light" as const };
 };
 
 const getIcon = (rev: CmsContentEntryRevision) => {
@@ -79,13 +90,12 @@ interface RevisionListItemProps {
 }
 
 export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
-    const presenter = useContentEntryFormPresenter();
-    const formVm = presenter.vm;
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
-    const { canEdit, canDelete } = usePermission();
+    const { canEdit, canDelete, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
+    const statusTag = getStatusTag(revision);
 
     const navigateToRevision = (id: string) => {
         goToRoute(Routes.ContentEntries.List, { ...route.params, id });
@@ -104,6 +114,17 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
         revisionsPresenter.hide();
     };
 
+    const handleEditNote = async () => {
+        await revisionsPresenter.updateRevisionNote(
+            revision.id,
+            revision.revisionDescription ?? ""
+        );
+    };
+
+    const handleUnpublishRevision = async () => {
+        await revisionsPresenter.unpublishRevision(revision.id);
+    };
+
     const handleDeleteRevision = async () => {
         const deleted = await revisionsPresenter.deleteRevision(revision.id);
         if (deleted) {
@@ -120,7 +141,14 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     return (
         <List.Item
             icon={<Tooltip content={tooltipText} trigger={icon} />}
-            title={revision.meta.title || t`N/A`}
+            title={
+                <span className={"flex items-center gap-xs"}>
+                    <span className={"text-neutral-strong"}>#{revision.meta.version}</span>
+                    {" · "}
+                    {revision.meta.title || t`N/A`}
+                    <Tag content={statusTag.label} variant={statusTag.variant} />
+                </span>
+            }
             description={
                 <>
                     {revision.revisionDescription ? (
@@ -129,12 +157,19 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                         </Text>
                     ) : null}
                     <Text as={"div"} size={"sm"}>
-                        {t`Last modified by {author} on {time} (#{version})`({
+                        {t`Created by {author} on {time}`({
                             author: revision.revisionCreatedBy?.displayName,
-                            time: <DateDisplay date={revision.revisionSavedOn} />,
-                            version: revision.meta.version
+                            time: <DateDisplay date={revision.revisionCreatedOn} />
                         })}
                     </Text>
+                    {revision.revisionFirstPublishedBy && revision.revisionFirstPublishedOn ? (
+                        <Text as={"div"} size={"sm"}>
+                            {t`Published by {author} on {time}`({
+                                author: revision.revisionFirstPublishedBy.displayName,
+                                time: <DateDisplay date={revision.revisionFirstPublishedOn} />
+                            })}
+                        </Text>
+                    ) : null}
                 </>
             }
             actions={
@@ -150,7 +185,7 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                     data-testid={"cms.content-form.revisions.more-options"}
                 >
                     <>
-                        {formVm.entry && canEdit(formVm.entry, "cms.contentEntry") && (
+                        {canEdit(revision, "cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handleCreateRevision}
                                 data-testid={"cms.revision.create-revision"}
@@ -159,47 +194,43 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                             />
                         )}
 
-                        {!revision.meta.locked &&
-                            formVm.entry &&
-                            canEdit(formVm.entry, "cms.contentEntry") && (
-                                <DropdownMenu.Item
-                                    onClick={handleEditRevision}
-                                    icon={<EditIcon />}
-                                    text={t`Edit revision`}
-                                />
-                            )}
-
-                        {/*{revision.meta.status !== "published" && canPublish("cms.contentEntry") && (
+                        {!revision.meta.locked && canEdit(revision, "cms.contentEntry") && (
                             <DropdownMenu.Item
                                 onClick={handleEditRevision}
-                                icon={<PublishIcon />}
-                                text={t`Publish revision`}
+                                icon={<EditIcon />}
+                                text={t`Edit revision`}
+                            />
+                        )}
+
+                        {canEdit(revision, "cms.contentEntry") && (
+                            <DropdownMenu.Item
+                                onClick={handleEditNote}
+                                icon={<EditNoteIcon />}
+                                text={revision.revisionDescription ? t`Edit note` : t`Add note`}
                             />
                         )}
 
                         {revision.meta.status === "published" &&
                             canUnpublish("cms.contentEntry") && (
                                 <DropdownMenu.Item
-                                    onClick={}
+                                    onClick={handleUnpublishRevision}
                                     data-testid={"cms.revision.unpublish"}
                                     icon={<UnpublishIcon />}
-                                    text={t`Unpublish revision`}
+                                    text={t`Unpublish`}
                                 />
-                            )}*/}
-
-                        {!revision.meta.locked &&
-                            formVm.entry &&
-                            canDelete(formVm.entry, "cms.contentEntry") && (
-                                <>
-                                    <DropdownMenu.Separator />
-                                    <DropdownMenu.Item
-                                        onClick={handleDeleteRevision}
-                                        icon={<DeleteIcon />}
-                                        text={t`Delete revision`}
-                                        variant={"destructive"}
-                                    />
-                                </>
                             )}
+
+                        {canDelete(revision, "cms.contentEntry") && (
+                            <>
+                                <DropdownMenu.Separator />
+                                <DropdownMenu.Item
+                                    onClick={handleDeleteRevision}
+                                    icon={<DeleteIcon />}
+                                    text={t`Delete revision`}
+                                    variant={"destructive"}
+                                />
+                            </>
+                        )}
                     </>
                 </DropdownMenu>
             }

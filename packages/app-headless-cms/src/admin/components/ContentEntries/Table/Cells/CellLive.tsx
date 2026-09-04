@@ -1,6 +1,6 @@
 import React from "react";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { Tag } from "@webiny/admin-ui";
+import { Tag, Text, TimeAgo } from "@webiny/admin-ui";
 
 export const CellLive = () => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
@@ -16,10 +16,18 @@ export const CellLive = () => {
     }
 
     return (
-        <Tag
-            swatchColor={"#5AC84C"}
-            variant={"success-light"}
-            content={`Live (v${entry.live.version})`}
-        />
+        <div className={"flex flex-col gap-xxs"}>
+            <Tag
+                swatchColor={"#5AC84C"}
+                variant={"success-light"}
+                content={`Live (v${entry.live.version})`}
+            />
+            packages/app-headless-cms/src/admin/components/ContentEntries/Table/Cells/CellLive.tsx
+            {entry.lastPublishedOn ? (
+                <Text size={"sm"} className={"text-neutral-strong"}>
+                    <TimeAgo datetime={entry.lastPublishedOn} />
+                </Text>
+            ) : null}
+        </div>
     );
 };
