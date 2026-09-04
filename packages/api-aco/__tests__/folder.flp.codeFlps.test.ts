@@ -235,4 +235,102 @@ describe("Folder Level Permissions - code-defined FLPs", () => {
         // Exactly one code-defined permission, still marked as such — not duplicated, not stored.
         expect(after.permissions.filter((p: Record<string, unknown>) => p.plugin)).toHaveLength(1);
     });
+    it("should include code-defined permissions in the createFolder response", async () => {
+        // Regression: the create path used to compute permissions straight from the submitted
+        // folder, so the mutation response omitted code-defined ones until something refetched.
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+
+        expect(folderA.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "team:editors", level: "editor", inheritedFrom: null, plugin: true }
+            ])
+        );
+    });
+
+    it("should include code-defined permissions in the updateFolder response", async () => {
+        const folderA = await createFolder({
+            title: "Folder A",
+            slug: "folder-a",
+            type: FOLDER_TYPE
+        });
+
+        const [response] = await acoIdentityA.updateFolder({
+            id: folderA.id,
+            data: { title: "Folder A renamed" }
+        });
+
+        const { data, error } = response.data.aco.updateFolder;
+        expect(error).toBeNull();
+        expect(data.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "team:editors", level: "editor", inheritedFrom: null, plugin: true }
+            ])
+        );
+    });
+
+    it("should re-resolve code-defined permissions when a folder moves into a rule's path", async () => {
+        // No rule matches "/folder-unmatched".
+        const folder = await createFolder({
+            title: "Folder Unmatched",
+            slug: "folder-unmatched",
+            type: FOLDER_TYPE
+        });
+
+        expect(folder.permissions).not.toEqual(
+            expect.arrayContaining([expect.objectContaining({ plugin: true })])
+        );
+
+        // Renaming it onto "/folder-a" brings it under that rule, and the response has to reflect
+        // the folder's new path rather than the one it had on the way in.
+        const [response] = await acoIdentityA.updateFolder({
+            id: folder.id,
+            data: { slug: "folder-a" }
+        });
+
+        const { data, error } = response.data.aco.updateFolder;
+        expect(error).toBeNull();
+        expect(data.permissions).toEqual(
+            expect.arrayContaining([
+                { target: "team:editors", level: "editor", inheritedFrom: null, plugin: true }
+            ])
+        );
+    });
+});
+
+describe("Folder Level Permissions - no FlpFactory registered", () => {
+    // Only the team factory: nothing contributes code-defined FLPs.
+    const { aco } = useGraphQlHandler({
+        identity: identityA,
+        plugins: [
+            (container: Container) => {
+                container.registerInstance(TeamFactory, new TestTeamFactory());
+            }
+        ]
+    });
+
+    it("should leave folder permissions untouched on create and update", async () => {
+        const [createResponse] = await aco.createFolder({
+            data: { title: "Folder A", slug: "folder-a", type: FOLDER_TYPE }
+        });
+
+        const created = createResponse.data.aco.createFolder.data;
+        expect(created.permissions).not.toEqual(
+            expect.arrayContaining([expect.objectContaining({ plugin: true })])
+        );
+
+        const [updateResponse] = await aco.updateFolder({
+            id: created.id,
+            data: { title: "Folder A renamed" }
+        });
+
+        const { data, error } = updateResponse.data.aco.updateFolder;
+        expect(error).toBeNull();
+        expect(data.permissions).not.toEqual(
+            expect.arrayContaining([expect.objectContaining({ plugin: true })])
+        );
+    });
 });
