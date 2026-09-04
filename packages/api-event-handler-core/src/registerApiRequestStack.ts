@@ -76,7 +76,7 @@ export interface RegisterApiRequestStackConfig {
  * this per-request stack.
  *
  * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before any initializer
- * (e.g. ACO) lists + caches the per-request model set; the GraphQL engine must be registered last.
+ * that lists + caches the per-request model set; the GraphQL engine must be registered last.
  */
 export async function registerApiRequestStack(
     container: Container,
@@ -136,7 +136,11 @@ export async function registerApiRequestStack(
     // ── Extensions ─────────────────────────────────────────────
     // Apply at register() time (not via a post-auth initializer) so extension features — including
     // code-defined CMS models (ModelFactory), e.g. Languages — are registered before any initializer
-    // (e.g. ACO) lists + caches the per-request model set.
+    // populates ModelCache. Anything reaching the model set through GetModel/ListModels (which go
+    // via ModelsFetcher -> ModelCache.getOrSet) caches it for the rest of the request, so a set
+    // built before extensions register would be missing their models. The Website Builder
+    // initializer is the remaining case; ACO no longer is — it now resolves models at schema-build
+    // time, after all registration.
     await registerExtensions(container, config.extensions());
 
     // ── GraphQL engine (always last) ───────────────────────────
