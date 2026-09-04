@@ -234,7 +234,6 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     // The project layer has already printed the webiny.config notice by now; separate
                     // this block from it.
                     ui.emptyLine();
-                    ui.info(`Webiny %s`, projectSdk.getProjectVersion());
                     ui.info(`Starting...`);
                 } else {
                     ui.info(`Watching %s packages...`, allProcesses.length);
