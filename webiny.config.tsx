@@ -104,6 +104,13 @@ export const Extensions = () => {
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Api.Extension src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
+            {/* Code-defined roles, teams and folder-level permissions. The FLP rules grant access
+                to `content-team`, which comes from MyTeam.ts, whose role comes from MyRole.ts —
+                so all three go together. */}
+            <Api.Extension src={"/extensions/MyRole.ts"} />
+            <Api.Extension src={"/extensions/MyTeam.ts"} />
+            <Api.Extension src={"/extensions/MyFolderPermissions.ts"} />
+
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
 
