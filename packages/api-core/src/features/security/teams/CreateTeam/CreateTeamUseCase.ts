@@ -38,12 +38,17 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             return Result.fail(new TeamExistsError(data.slug));
         }
 
+        // A missing or null description is stored as an empty string - neither the domain type nor
+        // `CreateTeamInput` has a concept of an absent description, so normalising it here also
+        // keeps null out of the published events.
+        const createInput: CreateTeamInput = { ...data, description: data.description ?? "" };
+
         const team: Team = {
             id: mdbid(),
-            name: data.name,
-            slug: data.slug,
-            description: data.description,
-            roles: data.roles,
+            name: createInput.name,
+            slug: createInput.slug,
+            description: createInput.description ?? "",
+            roles: createInput.roles,
             system: input.system || false,
             createdOn: new Date().toISOString(),
             createdBy: {
@@ -54,9 +59,7 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             plugin: false
         };
 
-        await this.eventPublisher.publish(
-            new TeamBeforeCreateEvent({ team, input: validation.data })
-        );
+        await this.eventPublisher.publish(new TeamBeforeCreateEvent({ team, input: createInput }));
 
         const result = await this.repository.create(team);
 
@@ -64,9 +67,7 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             return Result.fail(result.error);
         }
 
-        await this.eventPublisher.publish(
-            new TeamAfterCreateEvent({ team, input: validation.data })
-        );
+        await this.eventPublisher.publish(new TeamAfterCreateEvent({ team, input: createInput }));
 
         return Result.ok(team);
     }

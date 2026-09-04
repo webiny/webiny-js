@@ -110,7 +110,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                 this._form.setData({
                     name: team.name,
                     slug: team.slug,
-                    description: team.description,
+                    description: team.description ?? "",
                     roles: team.roles || []
                 });
             });
@@ -173,14 +173,16 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                     this._form.setData({
                         name: team.name,
                         slug: team.slug,
-                        description: team.description,
+                        description: team.description ?? "",
                         roles: team.roles || []
                     });
                 });
                 return team;
             }
-        } catch {
-            return null;
+            // Errors deliberately propagate to the caller, which reports them to the user. This
+            // used to be a bare `catch { return null }`, and `null` is also what `save()` returns
+            // when client-side validation fails - so a rejected request looked to the view exactly
+            // like a form that had not been submitted, and failed silently.
         } finally {
             runInAction(() => {
                 this._saving = false;

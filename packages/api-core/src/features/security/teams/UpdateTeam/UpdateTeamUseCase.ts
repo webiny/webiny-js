@@ -57,16 +57,28 @@ export class UpdateTeamUseCase {
             return Result.fail(new CannotUpdatePluginTeamsError());
         }
 
+        // `description` is the one field that accepts null: an absent key leaves the stored value
+        // alone, while an explicit null clears it. Normalising it here keeps null out of both the
+        // entity and the published events, whose input type declares `description?: string`.
+        // Spreading `validation.data` directly would also let an `undefined` description overwrite
+        // the stored value.
+        const { description, ...rest } = validation.data;
+
+        const changes: UpdateTeamInput = {
+            ...rest,
+            ...(description !== undefined ? { description: description ?? "" } : {})
+        };
+
         const updatedTeam: Team = {
             ...existingTeam,
-            ...validation.data
+            ...changes
         };
 
         await this.eventPublisher.publish(
             new TeamBeforeUpdateEvent({
                 original: existingTeam,
                 updated: updatedTeam,
-                input: validation.data
+                input: changes
             })
         );
 
@@ -80,7 +92,7 @@ export class UpdateTeamUseCase {
             new TeamAfterUpdateEvent({
                 original: existingTeam,
                 updated: updatedTeam,
-                input: validation.data
+                input: changes
             })
         );
 

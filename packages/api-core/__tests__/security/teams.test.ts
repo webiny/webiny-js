@@ -189,6 +189,67 @@ describe("Security Team CRUD Test", () => {
         });
     });
 
+    // `description` is declared `String` (nullable) in the GraphQL schema, so clients may send
+    // `null` - and the admin app does exactly that when it reads a team saved without a
+    // description and submits the edit form again. Both schemas used Zod's `.optional()`, which
+    // accepts only `undefined`, so these requests failed with "Invalid input: expected string,
+    // received null".
+    test("should accept a null `description` on create and update", async () => {
+        const [createResponse] = await securityTeam.create({
+            data: { ...mocks.teamA, description: null }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                security: {
+                    createTeam: {
+                        data: { name: "Team-A", slug: "team-a", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const team = createResponse.data.security.createTeam.data;
+
+        const [updateResponse] = await securityTeam.update({
+            id: team.id,
+            data: { description: null }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                security: {
+                    updateTeam: {
+                        data: { name: "Team-A", slug: "team-a", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    // An update that does not mention `description` must leave the stored one alone. Easy to break
+    // while making the field accept null, because a Zod `.transform()` on an optional key makes it
+    // required in the parsed output, so the spread onto the existing team writes `undefined`.
+    test("should not clear `description` on an update that omits it", async () => {
+        const [createResponse] = await securityTeam.create({ data: mocks.teamA });
+        const team = createResponse.data.security.createTeam.data;
+
+        const [updateResponse] = await securityTeam.update({
+            id: team.id,
+            data: { name: "Team-A renamed" }
+        });
+
+        expect(updateResponse.data.security.updateTeam).toMatchObject({
+            data: {
+                name: "Team-A renamed",
+                description: mocks.teamA.description
+            },
+            error: null
+        });
+    });
+
     test('should not allow creating a team with same "slug"', async () => {
         // Creating a team
         await securityTeam.create({ data: mocks.teamA });
