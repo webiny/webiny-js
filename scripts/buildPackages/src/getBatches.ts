@@ -13,6 +13,13 @@ import { getEffectiveHashes } from "./getEffectiveHashes";
 interface GetBatchesOptions {
     cache?: boolean;
     packagesWhitelist?: string[];
+    /**
+     * Leaves `dist` alone: no cache→dist restore, and no hashing of `dist` to decide
+     * whether a restore is needed. Used by `--preview`, which only reports what a build
+     * would do — nothing is written, and the expensive dist hashing is skipped, so it
+     * stays cheap enough to poll. `restoredFromCache` is then always empty.
+     */
+    skipCacheRestore?: boolean;
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -75,7 +82,7 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
     // 2. Let's use cached built code where possible.
     const restoredFromCache: Package[] = [];
-    if (packagesUseCache.length) {
+    if (packagesUseCache.length && !options.skipCacheRestore) {
         // Skip the cache→dist copy for packages whose dist already matches the
         // cache byte-for-byte (content hash). Reads actual bytes in parallel, so
         // it can't go stale from out-of-band dist writes (`webiny watch`, manual
