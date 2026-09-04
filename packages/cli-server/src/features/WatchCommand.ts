@@ -235,15 +235,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     // this block from it.
                     ui.emptyLine();
                     ui.info(`Webiny %s`, projectSdk.getProjectVersion());
-
-                    if (gated) {
-                        ui.info(
-                            `Starting... Holding output back until the apps are up. Run with %s to follow along.`,
-                            "--verbose"
-                        );
-                    } else {
-                        ui.info(`Starting...`);
-                    }
+                    ui.info(`Starting...`);
                 } else {
                     ui.info(`Watching %s packages...`, allProcesses.length);
                 }
