@@ -2,7 +2,11 @@ import { Result } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import { createIdentifier } from "@webiny/utils";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
-import { type IWorkflow, WorkflowMapper, WorkflowModel } from "~/domain/workflow/abstractions.js";
+import {
+    type IWorkflow,
+    WorkflowMapper,
+    WorkflowModelProvider
+} from "~/domain/workflow/abstractions.js";
 import { WorkflowPersistenceError } from "~/domain/workflow/errors.js";
 import type { IUpdateWorkflowInput } from "./abstractions.js";
 import { UpdateWorkflowRepository as Repository } from "./abstractions.js";
@@ -10,11 +14,12 @@ import { UpdateWorkflowRepository as Repository } from "./abstractions.js";
 class UpdateWorkflowRepositoryImpl implements Repository.Interface {
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
-        private model: WorkflowModel.Interface,
+        private modelProvider: WorkflowModelProvider.Interface,
         private mapper: WorkflowMapper.Interface
     ) {}
 
     async execute(input: IUpdateWorkflowInput): Repository.Return {
+        const model = await this.modelProvider.get();
         const { id } = parseIdentifier(input.id);
 
         const values = this.mapper.toCmsEntry({
@@ -30,7 +35,7 @@ class UpdateWorkflowRepositoryImpl implements Repository.Interface {
         });
 
         try {
-            const updateResult = await this.updateEntry.execute<IWorkflow>(this.model, workflowId, {
+            const updateResult = await this.updateEntry.execute<IWorkflow>(model, workflowId, {
                 values
             });
 
@@ -50,5 +55,5 @@ class UpdateWorkflowRepositoryImpl implements Repository.Interface {
 
 export const UpdateWorkflowRepository = Repository.createImplementation({
     implementation: UpdateWorkflowRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, WorkflowModel, WorkflowMapper]
+    dependencies: [UpdateEntryUseCase, WorkflowModelProvider, WorkflowMapper]
 });

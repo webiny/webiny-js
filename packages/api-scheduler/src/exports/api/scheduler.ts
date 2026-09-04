@@ -10,11 +10,7 @@ export type {
     IScheduledActionEntry,
     ScheduledActionType
 } from "~/shared/abstractions.js";
-export {
-    SchedulerService,
-    ScheduledActionModel,
-    ScheduledActionHandler
-} from "~/shared/abstractions.js";
+export { SchedulerService, ScheduledActionHandler } from "~/shared/abstractions.js";
 
 export {
     SCHEDULED_ACTION_PUBLISH as ScheduledActionTypePublish,
