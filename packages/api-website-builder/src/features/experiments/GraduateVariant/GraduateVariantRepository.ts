@@ -3,11 +3,11 @@ import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/feature
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GraduateVariantRepository as RepositoryAbstraction } from "./abstractions/GraduateVariantRepository.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { ExperimentPersistenceError } from "~/domain/experiment/errors.js";
 
@@ -16,14 +16,16 @@ class GraduateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
         private createRevisionFrom: CreateEntryRevisionFromUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
-        private pageModel: PageModel.Interface,
-        private experimentModel: ExperimentModel.Interface
+        private pageModelProvider: PageModelProvider.Interface,
+        private experimentModelProvider: ExperimentModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
+        const experimentModel = await this.experimentModelProvider.get();
         // Resolve the baseline revision to copy its location onto the new revision.
         const baselineResult = await this.getEntryById.execute<WbPage>(
-            this.pageModel,
+            pageModel,
             params.baselineRevisionId
         );
         if (baselineResult.isFail()) {
@@ -35,7 +37,7 @@ class GraduateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
 
         // Create a new revision from the baseline, overriding its content with the variant snapshot.
         const revisionResult = await this.createRevisionFrom.execute(
-            this.pageModel,
+            pageModel,
             params.baselineRevisionId,
             {
                 location: baselineResult.value.location,
@@ -58,7 +60,7 @@ class GraduateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
 
         // Mark the experiment graduated and record the winning variant.
         const updateResult = await this.updateEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
+            experimentModel,
             params.experimentId,
             {
                 values: {
@@ -83,7 +85,7 @@ export const GraduateVariantRepository = RepositoryAbstraction.createImplementat
         CreateEntryRevisionFromUseCase,
         GetEntryByIdUseCase,
         UpdateEntryUseCase,
-        PageModel,
-        ExperimentModel
+        PageModelProvider,
+        ExperimentModelProvider
     ]
 });

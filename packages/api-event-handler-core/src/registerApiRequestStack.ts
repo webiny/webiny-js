@@ -16,7 +16,7 @@ import { AcoFeature } from "@webiny/api-aco";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
-import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
+import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
 import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
 import { WebsocketsFeature } from "@webiny/api-websockets";
@@ -109,7 +109,6 @@ export async function registerApiRequestStack(
 
     // ── Website Builder ────────────────────────────────────────
     WebsiteBuilderFeature.register(container);
-    await setupWebsiteBuilderModels(container);
     WebsiteBuilderWorkflowsFeature.register(container);
     WebsiteBuilderSchedulerFeature.register(container);
 
