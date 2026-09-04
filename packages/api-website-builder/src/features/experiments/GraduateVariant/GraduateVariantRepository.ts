@@ -7,7 +7,7 @@ import { PageModel } from "~/domain/page/abstractions.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { ExperimentPersistenceError } from "~/domain/experiment/errors.js";
 
@@ -17,10 +17,11 @@ class GraduateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
         private getEntryById: GetEntryByIdUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
         private pageModel: PageModel.Interface,
-        private experimentModel: ExperimentModel.Interface
+        private experimentModelProvider: ExperimentModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const experimentModel = await this.experimentModelProvider.get();
         // Resolve the baseline revision to copy its location onto the new revision.
         const baselineResult = await this.getEntryById.execute<WbPage>(
             this.pageModel,
@@ -58,7 +59,7 @@ class GraduateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
 
         // Mark the experiment graduated and record the winning variant.
         const updateResult = await this.updateEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
+            experimentModel,
             params.experimentId,
             {
                 values: {
@@ -84,6 +85,6 @@ export const GraduateVariantRepository = RepositoryAbstraction.createImplementat
         GetEntryByIdUseCase,
         UpdateEntryUseCase,
         PageModel,
-        ExperimentModel
+        ExperimentModelProvider
     ]
 });

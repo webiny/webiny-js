@@ -1,30 +1,28 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
 import { GetActiveExperimentForRevisionRepository as RepositoryAbstraction } from "./abstractions/GetActiveExperimentForRevisionRepository.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
 import { ExperimentPersistenceError, NoActiveExperimentError } from "~/domain/experiment/errors.js";
 
 class GetActiveExperimentForRevisionRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private experimentModel: ExperimentModel.Interface,
+        private experimentModelProvider: ExperimentModelProvider.Interface,
         private getEntry: GetEntryUseCase.Interface
     ) {}
 
     async execute(revisionId: string): RepositoryAbstraction.Return {
-        const result = await this.getEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
-            {
-                where: {
-                    latest: true,
-                    values: {
-                        baselineRevisionId: revisionId,
-                        status: "running"
-                    }
+        const experimentModel = await this.experimentModelProvider.get();
+        const result = await this.getEntry.execute<CmsEntryWbExperimentValues>(experimentModel, {
+            where: {
+                latest: true,
+                values: {
+                    baselineRevisionId: revisionId,
+                    status: "running"
                 }
             }
-        );
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
@@ -43,5 +41,5 @@ class GetActiveExperimentForRevisionRepositoryImpl implements RepositoryAbstract
 
 export const GetActiveExperimentForRevisionRepository = RepositoryAbstraction.createImplementation({
     implementation: GetActiveExperimentForRevisionRepositoryImpl,
-    dependencies: [ExperimentModel, GetEntryUseCase]
+    dependencies: [ExperimentModelProvider, GetEntryUseCase]
 });
