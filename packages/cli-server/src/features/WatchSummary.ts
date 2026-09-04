@@ -1,6 +1,4 @@
-import chalk from "chalk";
 import { type UiService } from "@webiny/cli-core/abstractions/index.js";
-import { printWatchReady } from "./watchBanner.js";
 
 /**
  * Collects what each watched app reports while starting, and prints one summary of where everything
@@ -76,12 +74,19 @@ export class WatchSummary {
 
         this.printed = true;
 
-        printWatchReady(this.ui, {
-            elapsedMs: Date.now() - this.startedAt,
-            entries: this.expected.map(app => ({
-                label: app,
-                value: chalk.cyan(this.urls.get(app))
-            }))
-        });
+        const width = Math.max(...this.expected.map(app => app.length));
+
+        this.ui.emptyLine();
+        this.ui.success(`Ready in %s`, this.elapsed());
+        for (const app of this.expected) {
+            this.ui.success(`%s   %s`, app.padEnd(width), this.urls.get(app));
+        }
+        this.ui.emptyLine();
+    }
+
+    /** Sub-second startups read better in milliseconds; anything longer in seconds. */
+    private elapsed() {
+        const ms = Date.now() - this.startedAt;
+        return ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
     }
 }

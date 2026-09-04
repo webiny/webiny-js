@@ -11,7 +11,6 @@ import { colorForString, createPrefixer } from "./terminalPrefix.js";
 import { createWatchServerPrefixer } from "./serverProcesses.js";
 import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
-import { printWatchBanner, printWatchStarting } from "./watchBanner.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 
 interface IServerWatchCommandParams {
@@ -232,17 +231,17 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 }
 
                 if (summary) {
-                    printWatchBanner(ui, {
-                        version: projectSdk.getProjectVersion(),
-                        entries: [
-                            { label: "Apps", value: apps.join(", ") },
-                            { label: "Packages", value: String(allProcesses.length) }
-                        ]
-                    });
-                    printWatchStarting(
-                        ui,
-                        gated ? "(output held back until the apps are up, --verbose to follow)" : ""
-                    );
+                    ui.info(`Webiny %s`, projectSdk.getProjectVersion());
+
+                    if (gated) {
+                        ui.info(
+                            `Starting %s... Holding output back until they're up. Run with %s to follow along.`,
+                            apps.join(", "),
+                            "--verbose"
+                        );
+                    } else {
+                        ui.info(`Starting %s...`, apps.join(", "));
+                    }
                 } else {
                     ui.info(`Watching %s packages...`, allProcesses.length);
                 }
