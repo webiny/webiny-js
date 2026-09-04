@@ -28,6 +28,23 @@ export interface BuildPlan {
     batches: number;
 }
 
+export interface BuildPreview {
+    /** Total number of buildable packages in the workspace (after `-p` filtering). */
+    totalPackages: number;
+    /** Whether the build cache was consulted at all (`--no-cache` turns it off). */
+    cacheEnabled: boolean;
+    /** Packages that are already built — their build key matches the one in the cache. */
+    upToDate: number;
+    /** How many packages a build would have to (re)build. */
+    packagesToBuild: number;
+    /** Names of the packages a build would have to (re)build. */
+    packages: string[];
+    /** Number of batches the build would be performed in. */
+    batches: number;
+    /** How long the preview itself took, in seconds. */
+    duration: number;
+}
+
 export interface BatchInfo {
     batch: number;
     totalBatches: number;
@@ -61,6 +78,8 @@ export interface BuildReporter {
 
     info(info: BuildInfo): void;
     plan(plan: BuildPlan): void;
+    /** The whole output of `--preview`: what a build would do, without doing it. */
+    preview(preview: BuildPreview): void;
     batchStart(batch: BatchInfo): void;
     batchEnd(batch: BatchInfo & { succeeded: number; failed: number; duration: number }): void;
     /** A batch was abandoned without running, because an earlier batch failed. */
@@ -70,6 +89,9 @@ export interface BuildReporter {
     end(result: BuildResult): void;
     log(message: string): void;
 }
+
+/** Beyond this, `--preview` prints a count instead of the whole list of package names. */
+const PREVIEW_PACKAGE_LIST_LIMIT = 20;
 
 const toMB = (bytes: number) => {
     const formatter = new Intl.NumberFormat("en", { style: "unit", unit: "megabyte" });
@@ -153,6 +175,40 @@ class TextReporter implements BuildReporter {
         }
     }
 
+    preview(preview: BuildPreview) {
+        console.log(`Total packages: ${green(preview.totalPackages)}`);
+        console.log(`Already built: ${green(preview.upToDate)}`);
+        console.log(
+            `Need to be built: ${preview.packagesToBuild ? red(preview.packagesToBuild) : green(0)}`
+        );
+
+        if (!preview.cacheEnabled) {
+            console.log(`\nCache is off (${green("--no-cache")}), so everything needs a build.`);
+        }
+
+        if (preview.packages.length) {
+            const shown = preview.packages.slice(0, PREVIEW_PACKAGE_LIST_LIMIT);
+
+            console.log("\nPackages that need to be built:");
+            for (const name of shown) {
+                console.log(`‣ ${red(name)}`);
+            }
+
+            const rest = preview.packages.length - shown.length;
+            if (rest > 0) {
+                console.log(`…and ${red(rest)} more.`);
+            }
+
+            console.log(
+                `\nThe build would be performed in ${green(preview.batches)} ${
+                    preview.batches === 1 ? "batch" : "batches"
+                }.`
+            );
+        }
+
+        console.log(`\nPreview took ${green(preview.duration)} seconds.`);
+    }
+
     batchStart() {
         // Rendered by Listr.
     }
@@ -222,6 +278,9 @@ class TextReporter implements BuildReporter {
  * `package:end` and `batch:skipped` both carry `completed`/`total`/`progress`, so a
  * progress bar can be driven without the consumer tracking counts itself, and still
  * reaches 1 when a failure abandons the remaining batches.
+ *
+ * `--preview` is the exception: it emits a single `build:preview` event and nothing
+ * else, so its stdout can be read with a plain `JSON.parse`.
  */
 class JsonReporter implements BuildReporter {
     readonly machineReadable = true;
@@ -246,6 +305,10 @@ class JsonReporter implements BuildReporter {
             packagesToBuild: plan.packages.length,
             packagesFromCache: plan.cachedPackages.length
         });
+    }
+
+    preview(preview: BuildPreview) {
+        this.emit("build:preview", { ...preview });
     }
 
     batchStart(batch: BatchInfo) {

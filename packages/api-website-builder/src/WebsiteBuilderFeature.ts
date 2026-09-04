@@ -56,16 +56,16 @@ import { NextjsGraphQLSchema } from "./graphql/nextjs/NextjsGraphQLSchema.js";
 import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
 // Models
 import { PAGE_MODEL_ID, PageModelPlugin } from "~/domain/page/page.model.js";
-import { REDIRECT_MODEL_ID, RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
+import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
 import {
     ExperimentModelPlugin,
     EXPERIMENT_MODEL_ID
 } from "~/domain/experiment/experiment.model.js";
-import { VariantModelPlugin, VARIANT_MODEL_ID } from "~/domain/variant/variant.model.js";
+import { VariantModelPlugin } from "~/domain/variant/variant.model.js";
 import { PageModel } from "~/domain/page/abstractions.js";
-import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvider.js";
+import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
 import { ExperimentModel } from "~/domain/experiment/abstractions.js";
-import { VariantModel } from "~/domain/variant/abstractions.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -137,6 +137,12 @@ export const WebsiteBuilderFeature = createFeature({
         // Static WB GraphQL schema (base + pages + redirects + experiments).
         registerWebsiteBuilderGraphQL(container);
 
+        // The per-tenant redirect model is resolved on demand — see RedirectModelProvider. The
+        // remaining models are still pushed in by the initializer below, until they are converted
+        // too.
+        container.register(RedirectModelProvider);
+        container.register(VariantModelProvider);
+
         // Per-request resolution of the WB CmsModel instances (Page/Redirect) for the GraphQL path.
         // The REST route path uses setupWebsiteBuilderModels() (runs for all transports, pre-routing).
         container.registerInstance(RequestContextInitializer, {
@@ -146,18 +152,13 @@ export const WebsiteBuilderFeature = createFeature({
                 const getModel = requestContainer.resolve(GetModelUseCase);
 
                 await identityContext.withoutAuthorization(async () => {
-                    const [pageModel, redirectModel, experimentModel, variantModel] =
-                        await Promise.all([
-                            getModel.execute(PAGE_MODEL_ID),
-                            getModel.execute(REDIRECT_MODEL_ID),
-                            getModel.execute(EXPERIMENT_MODEL_ID),
-                            getModel.execute(VARIANT_MODEL_ID)
-                        ]);
+                    const [pageModel, experimentModel] = await Promise.all([
+                        getModel.execute(PAGE_MODEL_ID),
+                        getModel.execute(EXPERIMENT_MODEL_ID)
+                    ]);
 
                     requestContainer.registerInstance(PageModel, pageModel.value);
-                    requestContainer.registerInstance(RedirectModel, redirectModel.value);
                     requestContainer.registerInstance(ExperimentModel, experimentModel.value);
-                    requestContainer.registerInstance(VariantModel, variantModel.value);
                 });
             }
         });
@@ -181,21 +182,13 @@ export async function setupWebsiteBuilderModels(container: Container): Promise<v
     const tenantId = (tenantCtx.getTenant() as any)?.id ?? "root";
     const models = await modelsProvider.list(tenantId);
 
-    const redirectModel = models.find(m => m.modelId === REDIRECT_MODEL_ID);
     const pageModel = models.find(m => m.modelId === PAGE_MODEL_ID);
     const experimentModel = models.find(m => m.modelId === EXPERIMENT_MODEL_ID);
-    const variantModel = models.find(m => m.modelId === VARIANT_MODEL_ID);
 
-    if (redirectModel) {
-        container.registerInstance(RedirectModel, redirectModel);
-    }
     if (pageModel) {
         container.registerInstance(PageModel, pageModel);
     }
     if (experimentModel) {
         container.registerInstance(ExperimentModel, experimentModel);
-    }
-    if (variantModel) {
-        container.registerInstance(VariantModel, variantModel);
     }
 }
