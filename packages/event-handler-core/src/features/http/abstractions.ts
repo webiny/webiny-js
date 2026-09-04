@@ -1,4 +1,5 @@
 import { Abstraction } from "@webiny/di";
+import type { HttpStreamSource } from "./HttpStreamBody.js";
 
 export interface IHttpRequest {
     method: string;
@@ -85,6 +86,18 @@ export interface IHttpResponseBuilder {
     redirect(url: string, statusCode?: number): this;
     /** Set the body verbatim, without touching `Content-Type`. */
     end(body?: any): this;
+    /**
+     * Stream the response as server-sent events: sets the SSE headers and wraps `source` in an
+     * {@link HttpStreamBody} so transports that can stream write each chunk as it is produced.
+     *
+     * Two of the headers are not obvious and are easy to omit, and omitting either yields a response
+     * that looks correct yet never arrives incrementally: `no-transform` stops CloudFront (and other
+     * proxies) compressing the body, which buffers chunks, and `x-accel-buffering: no` opts out of
+     * nginx-family response buffering.
+     *
+     * Framing is the caller's job — `source` should yield complete `data: ...\n\n` records.
+     */
+    sse(source: HttpStreamSource): this;
     /** Materialize the transport-agnostic response. Called by the router; routes rarely need it. */
     toResponse(): IHttpResponse;
 }

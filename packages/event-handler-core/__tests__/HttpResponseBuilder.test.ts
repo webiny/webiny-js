@@ -2,7 +2,9 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpResponseBuilder, serializeCookie } from "~/features/http/HttpResponseBuilder.js";
+import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
 import type {
     IHttpRequest,
     IHttpResponse,
@@ -22,6 +24,7 @@ function makeRouter(route: HttpRoute.Interface): HttpRouter.Interface {
     const container = new Container();
     container.registerInstance(HttpRoute, route);
     container.register(HttpRouterImpl);
+    container.registerInstance(RequestContainer, container);
     return container.resolve(HttpRouter);
 }
 
@@ -146,6 +149,44 @@ describe("HttpResponseBuilder", () => {
             headers: { location: "/login" }
         });
         expect(new HttpResponseBuilder().redirect("/login", 301).toResponse().statusCode).toBe(301);
+    });
+});
+
+describe("HttpResponseBuilder.sse", () => {
+    async function* source() {
+        yield "data: one\n\n";
+    }
+
+    it("should answer 200 with a streaming body", async () => {
+        const response = new HttpResponseBuilder().sse(source()).toResponse();
+
+        expect(response.statusCode).toBe(200);
+        expect(HttpStreamBody.is(response.body)).toBe(true);
+    });
+
+    it("should set the headers that keep delivery incremental", () => {
+        const headers = new HttpResponseBuilder().sse(source()).toResponse().headers!;
+
+        expect(headers["content-type"]).toBe("text/event-stream");
+        // Without `no-transform` CloudFront compresses the body, which buffers chunks; without
+        // `x-accel-buffering` nginx-family proxies buffer it. Either one silently defeats streaming.
+        expect(headers["cache-control"]).toContain("no-transform");
+        expect(headers["x-accel-buffering"]).toBe("no");
+        expect(headers["connection"]).toBe("keep-alive");
+    });
+
+    it("should pass the source through untouched", async () => {
+        const response = new HttpResponseBuilder().sse(source()).toResponse();
+        const body = response.body as HttpStreamBody;
+
+        expect(new TextDecoder().decode(await body.collect())).toBe("data: one\n\n");
+    });
+
+    it("should still carry a cookie set alongside the stream", () => {
+        const response = new HttpResponseBuilder().cookie("sid", "abc").sse(source()).toResponse();
+
+        expect(response.cookies?.[0]).toContain("sid=abc");
+        expect(HttpStreamBody.is(response.body)).toBe(true);
     });
 });
 

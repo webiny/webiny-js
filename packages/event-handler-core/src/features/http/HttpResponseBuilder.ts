@@ -1,4 +1,6 @@
 import type { CookieOptions, IHttpResponse, IHttpResponseBuilder } from "./abstractions.js";
+import { HttpStreamBody } from "./HttpStreamBody.js";
+import type { HttpStreamSource } from "./HttpStreamBody.js";
 
 const CONTENT_TYPE = "content-type";
 
@@ -145,6 +147,18 @@ export class HttpResponseBuilder implements IHttpResponseBuilder {
         this.bodyValue = body;
         this.modified = true;
         return this;
+    }
+
+    sse(source: HttpStreamSource): this {
+        // `no-transform` and `x-accel-buffering: no` are the two that silently matter: without them a
+        // proxy compresses or buffers the body and the response stops being incremental while still
+        // looking correct. See the interface docs.
+        return this.setHeaders({
+            "content-type": "text/event-stream",
+            "cache-control": "no-cache, no-transform",
+            connection: "keep-alive",
+            "x-accel-buffering": "no"
+        }).end(new HttpStreamBody(source));
     }
 
     /**

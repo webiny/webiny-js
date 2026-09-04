@@ -2,6 +2,7 @@ import zlib from "node:zlib";
 import { promisify } from "node:util";
 import { HttpRouter } from "~/features/http/abstractions.js";
 import type { IHttpRouter, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
+import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
 
 const gzip = promisify(zlib.gzip);
 const brotli = promisify(zlib.brotliCompress);
@@ -86,6 +87,14 @@ class CompressionDecoratorImpl implements IHttpRouter {
     // compressed media format, so gzipping them wastes CPU and can even enlarge them.
     private static serializeBody(body: any): Buffer | null {
         if (body === undefined || body === null) {
+            return null;
+        }
+        // A streaming body must never be touched. Compressing it would mean draining it here, which
+        // defeats incremental delivery, and it must not fall through to the JSON branch below: that
+        // would REPLACE the body with a gzipped `{"source":...}` and silently lose the stream. A
+        // generator source stringifies to `{}` and so survives on size alone, but an object source
+        // with enumerable data does not.
+        if (HttpStreamBody.is(body)) {
             return null;
         }
         if (typeof body === "string") {

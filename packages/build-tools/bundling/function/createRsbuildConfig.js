@@ -57,6 +57,21 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
         },
         tools: {
             rspack: {
+                output: {
+                    // Declares the entry's exports as the bundle's public API, so ALL of them survive.
+                    //
+                    // Nothing imports an entry's exports, so without this rspack treats any unused one
+                    // as dead: it dropped `streamHandler` AND every module reachable only from it. The
+                    // api bundle then exported just `handler` and contained zero streaming code, so the
+                    // response-streaming Lambda (`handler.streamHandler`) had no handler to load and
+                    // failed at cold start. `handler` survived only by accident of being first.
+                    //
+                    // To verify after changing anything here, grep the built bundle:
+                    //   .webiny/workspace/apps/api/graphql/build/_handler.mjs
+                    // It must export BOTH `handler` and `streamHandler`. Removing this line takes the
+                    // export count back to one — silently, with a green build.
+                    library: { type: "module" }
+                },
                 ...(enforceMaxBundleSize && {
                     performance: {
                         hints: "error",

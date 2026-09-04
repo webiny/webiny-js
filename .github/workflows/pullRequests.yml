@@ -83,6 +83,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -127,6 +128,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -173,6 +175,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -225,6 +228,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -263,6 +267,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
@@ -344,6 +349,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -438,6 +444,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -541,6 +548,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
@@ -636,6 +644,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages

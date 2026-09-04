@@ -13,7 +13,7 @@ export const WcpFeature = createFeature<ILicense | undefined>({
         WcpContextFeature.register(container, provider);
         container.registerDecorator(WcpContextWithFeatureFlagsDecorator);
         container.registerDecorator(FeatureFlagsWithLicenseDecorator);
-        // Per-request license refresh (RequestInitializer) is registered by api-event-handler-core's
+        // The per-request license refresh is loaded pre-register by api-event-handler-core's
         // registerApiRequestStack, keeping the domain layer free of the transport lifecycle contract.
     }
 });

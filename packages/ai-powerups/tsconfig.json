@@ -14,6 +14,7 @@
     { "path": "../app-website-builder" },
     { "path": "../app-websockets" },
     { "path": "../background-tasks" },
+    { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../languages" },
     { "path": "../lexical-converter" },
@@ -21,6 +22,7 @@
     { "path": "../project-aws" },
     { "path": "../utils" },
     { "path": "../api-graphql" },
+    { "path": "../feature-flags" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -54,6 +56,8 @@
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/languages/*": ["../languages/src/*"],
@@ -68,6 +72,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }
