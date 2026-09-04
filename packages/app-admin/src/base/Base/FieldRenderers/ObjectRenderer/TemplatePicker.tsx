@@ -96,7 +96,7 @@ const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
                 <Dialog.Close asChild>
                     <div
                         className={
-                            "absolute inset-0 flex items-center justify-center bg-white/80 cursor-pointer"
+                            "absolute inset-0 flex items-center justify-center bg-neutral-base/80 cursor-pointer"
                         }
                         onClick={() => onSelect(template)}
                     >

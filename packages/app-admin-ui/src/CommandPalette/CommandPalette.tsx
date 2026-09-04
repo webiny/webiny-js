@@ -109,7 +109,7 @@ const CommandPaletteBase = () => {
         <div
             role="presentation"
             onClick={close}
-            className="fixed inset-0 z-overlay flex items-start justify-center bg-neutral-dark/50"
+            className="fixed inset-0 z-overlay flex items-start justify-center bg-black/50"
             style={{ padding: "13vh 16px 16px", backdropFilter: "blur(2px)" }}
         >
             <div

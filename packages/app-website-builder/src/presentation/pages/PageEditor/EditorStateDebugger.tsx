@@ -13,7 +13,7 @@ const Toolbar = styled.div`
     padding-top: 5px;
     width: 100%;
     padding-left: 5px;
-    border-top: 1px solid #cccccc;
+    border-top: 1px solid var(--color-neutral-dimmed);
     z-index: 10000;
 `;
 

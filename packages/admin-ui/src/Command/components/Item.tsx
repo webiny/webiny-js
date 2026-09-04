@@ -6,7 +6,7 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 const commandItemVariants = cva(
     [
         "flex items-center justify-between gap-sm-extra cursor-default select-none rounded-sm p-sm mx-sm text-md outline-none overflow-hidden",
-        "bg-neutral-base text-neutral-primary fill-neutral-xstrong",
+        "bg-neutral-elevated text-neutral-primary fill-neutral-xstrong",
         "data-[disabled=true]:text-neutral-disabled data-[disabled=true]:cursor-not-allowed",
         "data-[selected=true]:bg-neutral-dimmed"
     ],

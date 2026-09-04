@@ -1,4 +1,5 @@
 import React from "react";
+import { useColorScheme } from "@webiny/app-admin";
 import Editor from "@monaco-editor/react";
 import type { OnMount, BeforeMount } from "@monaco-editor/react";
 import { OverlayLoader } from "@webiny/admin-ui";
@@ -22,9 +23,13 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     onMount,
     onDividerMouseDown
 }) => {
+    // Monaco themes itself, outside CSS — without this it defaults to "vs" (light) and
+    // stays a white editor on a dark page.
+    const monacoTheme = useColorScheme() === "dark" ? "vs-dark" : "vs";
+
     return (
         <div
-            className="relative overflow-hidden border-r border-gray-200"
+            className="relative overflow-hidden border-r border-neutral-dimmed"
             style={{ flex: "none", width: `${editorPct}%` }}
             onMouseMove={e => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -43,6 +48,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             {isRunning && <OverlayLoader text="Running code..." />}
             <Editor
                 height="100%"
+                theme={monacoTheme}
                 defaultLanguage="typescript"
                 value={code}
                 onChange={value => value && onCodeChange(value)}

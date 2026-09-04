@@ -27,7 +27,7 @@ export const ContentEntryFormWorkflow = ContentEntryFormContent.createDecorator(
             <>
                 <div
                     className={
-                        "max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"
+                        "max-w-screen bg-neutral-base p-sm border-solid border-b-sm border-neutral-dimmed"
                     }
                 >
                     <WorkflowStateBar />

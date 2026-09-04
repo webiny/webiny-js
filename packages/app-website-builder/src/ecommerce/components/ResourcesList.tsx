@@ -184,7 +184,7 @@ export const PickResourcesListButton = observer((props: Omit<PickResourceListPro
                         content: <PickResourceList {...props} />
                     });
                 }}
-                style={{ color: "#999", whiteSpace: "nowrap" }}
+                style={{ color: "var(--text-color-neutral-muted)", whiteSpace: "nowrap" }}
             />
         </React.Fragment>
     );

@@ -87,7 +87,22 @@ const AccordionTrigger = () => {
                             ) : null}
                         </>
                     ) : (
-                        <>{icon ? <div className={"mr-md"}>{icon}</div> : null}</>
+                        <>
+                            {icon ? (
+                                /*
+                                 * The slot supplies a themed colour so a caller can pass a bare
+                                 * SVG. Without it the icon inherits nothing and an @webiny/icons
+                                 * SVG (no `fill` attribute) renders black in every theme. Both
+                                 * properties are set to match what `Icon`'s "neutral-strong"
+                                 * variant produces -- `fill-*` for plain SVGs, `text-*` for
+                                 * FontAwesome, which uses `currentColor`. An icon that sets its
+                                 * own colour still wins, since that lands on the element itself.
+                                 */
+                                <div className={"mr-md fill-neutral-xstrong text-neutral-xstrong"}>
+                                    {icon}
+                                </div>
+                            ) : null}
+                        </>
                     )}
 
                     {/* Center: title, subtitle, description */}

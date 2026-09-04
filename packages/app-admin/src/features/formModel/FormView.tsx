@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import {
     Alert,
     Grid,
+    Icon as UiIcon,
     IconButton,
     Separator,
     Tabs,
@@ -30,11 +31,29 @@ import { DeveloperMode } from "~/components/DeveloperMode/DeveloperMode.js";
 import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
 import { useLayoutRenderers } from "~/features/formModel/useLayoutRenderers.js";
 
-export function renderTabIcon(icon: Icon | undefined): React.ReactElement | undefined {
+export function renderTabIcon(
+    icon: Icon | undefined,
+    label?: string
+): React.ReactElement | undefined {
     if (!icon || typeof icon.name !== "string") {
         return undefined;
     }
-    return <FontAwesomeIcon icon={icon.name.split("/") as IconProp} />;
+
+    /*
+     * Wrapped in `Icon` rather than returned bare. FontAwesome renders `fill="currentColor"`,
+     * so it follows `color`, not `fill` — a `fill-*` class on an ancestor does nothing to it,
+     * and with no `color` set anywhere it fell back to the inherited default and rendered
+     * black in every theme. `Icon`'s colour variants set both `fill-*` and `text-*`, so the
+     * `text-*` half drives FontAwesome while `fill-*` covers plain SVG icons.
+     */
+    return (
+        <UiIcon
+            icon={<FontAwesomeIcon icon={icon.name.split("/") as IconProp} />}
+            label={label ?? "Tab icon"}
+            color={"neutral-strong"}
+            size={"sm"}
+        />
+    );
 }
 
 /**
@@ -214,7 +233,7 @@ const TabsNodeRenderer = observer(({ node }: TabsNodeRendererProps) => {
                 <Tabs.Tab
                     key={tab.id}
                     value={tab.id}
-                    icon={renderTabIcon(tab.icon)}
+                    icon={renderTabIcon(tab.icon, tab.label)}
                     trigger={
                         <>
                             {tab.label}

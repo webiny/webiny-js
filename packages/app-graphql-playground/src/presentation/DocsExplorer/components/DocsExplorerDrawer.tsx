@@ -17,28 +17,28 @@ const DrawerHeader = (props: { presenter: DocsExplorerPresenter.Interface }) => 
     }
 
     return (
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 text-sm">
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-neutral-dimmed text-sm">
             <button
-                className="text-blue-600 hover:underline bg-transparent border-none p-0 cursor-pointer font-inherit"
+                className="text-accent-primary hover:underline bg-transparent border-none p-0 cursor-pointer font-inherit"
                 onClick={() => props.presenter.navigateBack()}
             >
                 &larr; Back
             </button>
-            <span className="text-gray-400">|</span>
+            <span className="text-neutral-dimmed">|</span>
             <button
-                className="text-blue-600 hover:underline bg-transparent border-none p-0 cursor-pointer font-inherit"
+                className="text-accent-primary hover:underline bg-transparent border-none p-0 cursor-pointer font-inherit"
                 onClick={() => props.presenter.navigateToRoot()}
             >
                 Root
             </button>
             {breadcrumbs.map((crumb, index) => (
                 <React.Fragment key={index}>
-                    <span className="text-gray-400">/</span>
+                    <span className="text-neutral-dimmed">/</span>
                     <span
                         className={
                             index === breadcrumbs.length - 1
-                                ? "text-gray-900 font-bold"
-                                : "text-gray-500"
+                                ? "text-neutral-primary font-bold"
+                                : "text-neutral-muted"
                         }
                     >
                         {crumb}
@@ -54,7 +54,7 @@ const DrawerBody = (props: { presenter: DocsExplorerPresenter.Interface }) => {
 
     if (schemaStatus === "loading" && !currentView) {
         return (
-            <div className="flex items-center justify-center gap-2 p-8 text-gray-500">
+            <div className="flex items-center justify-center gap-2 p-8 text-neutral-muted">
                 <Loader size="sm" />
                 <span>Loading schema...</span>
             </div>
@@ -62,7 +62,9 @@ const DrawerBody = (props: { presenter: DocsExplorerPresenter.Interface }) => {
     }
 
     if (!currentView) {
-        return <div className="p-8 text-center text-gray-400 text-sm">No schema available.</div>;
+        return (
+            <div className="p-8 text-center text-neutral-dimmed text-sm">No schema available.</div>
+        );
     }
 
     if (currentView.kind === "root") {

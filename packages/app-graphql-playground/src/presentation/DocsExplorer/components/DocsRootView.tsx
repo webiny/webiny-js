@@ -10,13 +10,13 @@ interface DocsRootViewProps {
 
 const SearchInput = (props: { value: string; presenter: DocsExplorerPresenter.Interface }) => {
     return (
-        <div className="p-3 border-b border-gray-200">
+        <div className="p-3 border-b border-neutral-dimmed">
             <input
                 type="text"
                 placeholder="Search types, fields, args..."
                 value={props.value}
                 onChange={ev => props.presenter.setSearchQuery(ev.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-neutral-muted rounded focus:outline-none focus:border-accent-default"
             />
         </div>
     );
@@ -34,11 +34,11 @@ const RootSectionField = (props: {
 
     return (
         <div
-            className={`px-4 py-1.5 flex gap-1 items-baseline ${props.field.type.isNavigable ? "hover:bg-gray-50 cursor-pointer" : ""}`}
+            className={`px-4 py-1.5 flex gap-1 items-baseline ${props.field.type.isNavigable ? "hover:bg-neutral-subtle cursor-pointer" : ""}`}
             onClick={handleClick}
         >
             <span className="font-mono text-sm">{props.field.name}</span>
-            <span className="text-gray-400">:</span>
+            <span className="text-neutral-dimmed">:</span>
             <DocsTypeRef typeRef={props.field.type} presenter={props.presenter} />
         </div>
     );
@@ -52,7 +52,7 @@ const RootSections = (props: {
         <>
             {props.sections.map(section => (
                 <div key={section.name} className="mb-4">
-                    <h4 className="text-xs font-bold text-gray-500 uppercase mb-2 px-4">
+                    <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2 px-4">
                         {section.name}
                     </h4>
                     {section.fields.map(field => (
@@ -73,7 +73,7 @@ const FilteredTypeList = (props: {
     presenter: DocsExplorerPresenter.Interface;
 }) => {
     if (props.types.length === 0) {
-        return <div className="p-4 text-sm text-gray-400 italic">No matching types.</div>;
+        return <div className="p-4 text-sm text-neutral-dimmed italic">No matching types.</div>;
     }
 
     return (
@@ -97,17 +97,17 @@ const TypeSummaryRow = (props: {
 
     return (
         <div
-            className={`px-4 py-1.5 flex items-baseline gap-2 ${props.type.isNavigable ? "hover:bg-gray-50 cursor-pointer" : ""}`}
+            className={`px-4 py-1.5 flex items-baseline gap-2 ${props.type.isNavigable ? "hover:bg-neutral-subtle cursor-pointer" : ""}`}
             onClick={handleClick}
         >
             <span
-                className={`font-mono text-sm ${props.type.isNavigable ? "text-blue-600" : "text-gray-700"}`}
+                className={`font-mono text-sm ${props.type.isNavigable ? "text-accent-primary" : "text-neutral-strong"}`}
             >
                 {props.type.name}
             </span>
-            <span className="text-xs text-gray-400">{props.type.typeKind}</span>
+            <span className="text-xs text-neutral-dimmed">{props.type.typeKind}</span>
             {props.type.matchContext ? (
-                <span className="text-xs text-gray-400 italic ml-auto">
+                <span className="text-xs text-neutral-dimmed italic ml-auto">
                     {props.type.matchContext}
                 </span>
             ) : null}
@@ -129,7 +129,7 @@ export const DocsRootView = observer((props: DocsRootViewProps) => {
                     <>
                         <RootSections sections={rootView.sections} presenter={presenter} />
                         <div className="mt-4 mb-2 px-4">
-                            <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">
+                            <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2">
                                 All Types
                             </h4>
                         </div>

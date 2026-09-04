@@ -10,7 +10,7 @@ interface DocsTypeViewProps {
 
 const KindBadge = (props: { kind: DocsExplorerPresenter.GraphQLTypeKind }) => {
     return (
-        <span className="inline-block px-2 py-0.5 text-xs rounded bg-gray-200 text-gray-700 ml-2">
+        <span className="inline-block px-2 py-0.5 text-xs rounded bg-neutral-dimmed text-neutral-strong ml-2">
             {props.kind}
         </span>
     );
@@ -25,14 +25,14 @@ const FieldArgs = (props: {
     }
 
     return (
-        <div className="ml-4 mt-1 text-sm text-gray-600">
+        <div className="ml-4 mt-1 text-sm text-neutral-strong">
             {props.args.map(arg => (
                 <div key={arg.name} className="flex gap-1 items-baseline">
-                    <span className="text-purple-700">{arg.name}</span>
+                    <span className="text-warning-strong">{arg.name}</span>
                     <span>:</span>
                     <DocsTypeRef typeRef={arg.type} presenter={props.presenter} />
                     {arg.defaultValue ? (
-                        <span className="text-gray-400"> = {arg.defaultValue}</span>
+                        <span className="text-neutral-dimmed"> = {arg.defaultValue}</span>
                     ) : null}
                 </div>
             ))}
@@ -50,16 +50,16 @@ const ObjectFields = (props: {
 
     return (
         <div className="mt-3">
-            <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Fields</h4>
+            <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2">Fields</h4>
             {props.fields.map(field => (
-                <div key={field.name} className="mb-3 border-b border-gray-100 pb-2">
+                <div key={field.name} className="mb-3 border-b border-neutral-subtle pb-2">
                     <div className="flex gap-1 items-baseline">
                         <span className="font-mono font-bold text-sm">{field.name}</span>
                         <span>:</span>
                         <DocsTypeRef typeRef={field.type} presenter={props.presenter} />
                     </div>
                     {field.description ? (
-                        <p className="text-sm text-gray-500 mt-0.5">{field.description}</p>
+                        <p className="text-sm text-neutral-muted mt-0.5">{field.description}</p>
                     ) : null}
                     <FieldArgs args={field.args} presenter={props.presenter} />
                 </div>
@@ -78,19 +78,19 @@ const InputFields = (props: {
 
     return (
         <div className="mt-3">
-            <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Input Fields</h4>
+            <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2">Input Fields</h4>
             {props.fields.map(field => (
-                <div key={field.name} className="mb-3 border-b border-gray-100 pb-2">
+                <div key={field.name} className="mb-3 border-b border-neutral-subtle pb-2">
                     <div className="flex gap-1 items-baseline">
                         <span className="font-mono font-bold text-sm">{field.name}</span>
                         <span>:</span>
                         <DocsTypeRef typeRef={field.type} presenter={props.presenter} />
                         {field.defaultValue ? (
-                            <span className="text-gray-400"> = {field.defaultValue}</span>
+                            <span className="text-neutral-dimmed"> = {field.defaultValue}</span>
                         ) : null}
                     </div>
                     {field.description ? (
-                        <p className="text-sm text-gray-500 mt-0.5">{field.description}</p>
+                        <p className="text-sm text-neutral-muted mt-0.5">{field.description}</p>
                     ) : null}
                 </div>
             ))}
@@ -105,12 +105,12 @@ const EnumValues = (props: { values: DocsExplorerPresenter.EnumValueVm[] }) => {
 
     return (
         <div className="mt-3">
-            <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Values</h4>
+            <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2">Values</h4>
             {props.values.map(value => (
                 <div key={value.name} className="mb-2">
                     <span className="font-mono text-sm font-bold">{value.name}</span>
                     {value.description ? (
-                        <p className="text-sm text-gray-500 mt-0.5">{value.description}</p>
+                        <p className="text-sm text-neutral-muted mt-0.5">{value.description}</p>
                     ) : null}
                 </div>
             ))}
@@ -128,7 +128,7 @@ const PossibleTypes = (props: {
 
     return (
         <div className="mt-3">
-            <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Possible Types</h4>
+            <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2">Possible Types</h4>
             <div className="flex flex-wrap gap-2">
                 {props.types.map(typeRef => (
                     <DocsTypeRef key={typeRef.name} typeRef={typeRef} presenter={props.presenter} />
@@ -148,7 +148,7 @@ const Interfaces = (props: {
 
     return (
         <div className="mt-3">
-            <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Implements</h4>
+            <h4 className="text-xs font-bold text-neutral-muted uppercase mb-2">Implements</h4>
             <div className="flex flex-wrap gap-2">
                 {props.types.map(typeRef => (
                     <DocsTypeRef key={typeRef.name} typeRef={typeRef} presenter={props.presenter} />
@@ -168,7 +168,7 @@ export const DocsTypeView = observer((props: DocsTypeViewProps) => {
                 <KindBadge kind={typeView.typeKind} />
             </div>
             {typeView.description ? (
-                <p className="text-sm text-gray-600 mb-3">{typeView.description}</p>
+                <p className="text-sm text-neutral-strong mb-3">{typeView.description}</p>
             ) : null}
             <ObjectFields fields={typeView.fields} presenter={presenter} />
             <InputFields fields={typeView.inputFields} presenter={presenter} />

@@ -32,7 +32,7 @@ export const PreviewDecorator = ContentEntryFormContent.createDecorator(Original
 
             return (
                 <SplitView namespace={"cms-live-preview"} className="h-full">
-                    <LeftPanel span={5} minSize={20} className="bg-white overflow-y-auto">
+                    <LeftPanel span={5} minSize={20} className="bg-neutral-base overflow-y-auto">
                         <Original
                             {...props}
                             width={"100%"}

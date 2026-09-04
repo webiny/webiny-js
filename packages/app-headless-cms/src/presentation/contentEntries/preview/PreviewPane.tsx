@@ -151,7 +151,7 @@ export const PreviewPane = ({
 
     return (
         <div className="relative border border-neutral-dimmed rounded-t-lg flex flex-col flex-1 h-full overflow-hidden">
-            <div className="flex p-md items-center bg-white border-b border-neutral-dimmed">
+            <div className="flex p-md items-center bg-neutral-base border-b border-neutral-dimmed">
                 <div className="w-full">
                     <Input
                         value={address}

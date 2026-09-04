@@ -43,7 +43,7 @@ export const PlaygroundPage = observer(() => {
     }, [presenter.vm.activeTab?.isExecuting, historyPresenter]);
 
     return (
-        <div className="flex flex-col bg-gray-100" style={{ height: "calc(100vh - 45px)" }}>
+        <div className="flex flex-col bg-neutral-light" style={{ height: "calc(100vh - 45px)" }}>
             <PlaygroundToolbar
                 presenter={presenter}
                 docsPresenter={docsPresenter}
@@ -78,7 +78,7 @@ const ActiveTabContent = observer((props: ActiveTabContentProps) => {
     return (
         <div className="flex flex-1 overflow-hidden" ref={props.splitRef}>
             <div
-                className="flex flex-col overflow-hidden border-r border-gray-200"
+                className="flex flex-col overflow-hidden border-r border-neutral-dimmed"
                 style={{ flex: "none", width: `${props.editorPct}%` }}
                 onMouseMove={ev => {
                     const rect = ev.currentTarget.getBoundingClientRect();

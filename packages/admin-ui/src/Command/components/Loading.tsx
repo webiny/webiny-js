@@ -5,7 +5,7 @@ type LoadingProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Loadi
 
 const Loading = (props: LoadingProps) => (
     <CommandPrimitive.Loading
-        className="bg-neutral-base text-neutral-strong fill-neutral-xstrong rounded-sm p-sm mx-sm text-md outline-none"
+        className="bg-neutral-elevated text-neutral-strong fill-neutral-xstrong rounded-sm p-sm mx-sm text-md outline-none"
         {...props}
     />
 );

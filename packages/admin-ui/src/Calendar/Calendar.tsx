@@ -10,11 +10,37 @@ type CalendarProps = DayPickerProps & {
     className?: string;
 };
 
-function CalendarChevron(props: { orientation?: "left" | "right" | "up" | "down" }) {
+/*
+ * `className` must be forwarded: react-day-picker passes `classNames.chevron` down to this
+ * component, and that class carries `fill-current`. Without it the icon keeps Icon's default
+ * `fill-inherit`, and since nothing in the popover tree sets a `fill` the SVG falls back to
+ * its own black in every theme. With it, the chevron follows the nav button's
+ * `text-neutral-strong` (and its disabled colour) via `currentColor`.
+ */
+function CalendarChevron(props: {
+    orientation?: "left" | "right" | "up" | "down";
+    className?: string;
+}) {
     if (props.orientation === "left") {
-        return <Icon icon={<ChevronLeftIcon />} label="Previous" size="sm" color="inherit" />;
+        return (
+            <Icon
+                icon={<ChevronLeftIcon />}
+                label="Previous"
+                size="sm"
+                color="inherit"
+                className={props.className}
+            />
+        );
     }
-    return <Icon icon={<ChevronRightIcon />} label="Next" size="sm" color="inherit" />;
+    return (
+        <Icon
+            icon={<ChevronRightIcon />}
+            label="Next"
+            size="sm"
+            color="inherit"
+            className={props.className}
+        />
+    );
 }
 
 const DecoratableCalendar = ({ className, classNames, components, ...props }: CalendarProps) => {

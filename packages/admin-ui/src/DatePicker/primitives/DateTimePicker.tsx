@@ -133,25 +133,27 @@ const DateTimePicker = ({
                                 ...(maxDate ? [{ after: maxDate }] : [])
                             ]}
                         />
-                        <div className="flex gap-sm px-md pb-md">
-                            <div className="flex-1">
-                                <TimePicker
-                                    value={timeValue}
-                                    onChange={handleTimeChange}
+                        {/*
+                         * Stacked, not side by side: TimePicker is itself two Selects (hour and
+                         * minute), so putting the timezone beside it puts three controls on one
+                         * row and widens the popover past the calendar. The timezone gets its own
+                         * full-width row, leaving the calendar to set the popover width.
+                         */}
+                        <div className="flex flex-col gap-sm px-md pb-md">
+                            <TimePicker
+                                value={timeValue}
+                                onChange={handleTimeChange}
+                                disabled={disabled}
+                                size="md"
+                            />
+                            {withTimezone && (
+                                <SelectPrimitive
+                                    value={timezone}
+                                    onChange={handleTimezoneChange}
+                                    options={timezoneOptions}
                                     disabled={disabled}
                                     size="md"
                                 />
-                            </div>
-                            {withTimezone && (
-                                <div className="flex-1">
-                                    <SelectPrimitive
-                                        value={timezone}
-                                        onChange={handleTimezoneChange}
-                                        options={timezoneOptions}
-                                        disabled={disabled}
-                                        size="md"
-                                    />
-                                </div>
                             )}
                         </div>
                     </div>
