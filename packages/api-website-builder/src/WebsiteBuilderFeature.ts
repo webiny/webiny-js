@@ -57,15 +57,12 @@ import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
 // Models
 import { PAGE_MODEL_ID, PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
-import {
-    ExperimentModelPlugin,
-    EXPERIMENT_MODEL_ID
-} from "~/domain/experiment/experiment.model.js";
+import { ExperimentModelPlugin } from "~/domain/experiment/experiment.model.js";
 import { VariantModelPlugin } from "~/domain/variant/variant.model.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvider.js";
 import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -142,6 +139,7 @@ export const WebsiteBuilderFeature = createFeature({
         // too.
         container.register(RedirectModelProvider);
         container.register(VariantModelProvider);
+        container.register(ExperimentModelProvider);
 
         // Per-request resolution of the WB CmsModel instances (Page/Redirect) for the GraphQL path.
         // The REST route path uses setupWebsiteBuilderModels() (runs for all transports, pre-routing).
@@ -152,13 +150,8 @@ export const WebsiteBuilderFeature = createFeature({
                 const getModel = requestContainer.resolve(GetModelUseCase);
 
                 await identityContext.withoutAuthorization(async () => {
-                    const [pageModel, experimentModel] = await Promise.all([
-                        getModel.execute(PAGE_MODEL_ID),
-                        getModel.execute(EXPERIMENT_MODEL_ID)
-                    ]);
-
+                    const pageModel = await getModel.execute(PAGE_MODEL_ID);
                     requestContainer.registerInstance(PageModel, pageModel.value);
-                    requestContainer.registerInstance(ExperimentModel, experimentModel.value);
                 });
             }
         });
@@ -183,12 +176,8 @@ export async function setupWebsiteBuilderModels(container: Container): Promise<v
     const models = await modelsProvider.list(tenantId);
 
     const pageModel = models.find(m => m.modelId === PAGE_MODEL_ID);
-    const experimentModel = models.find(m => m.modelId === EXPERIMENT_MODEL_ID);
 
     if (pageModel) {
         container.registerInstance(PageModel, pageModel);
-    }
-    if (experimentModel) {
-        container.registerInstance(ExperimentModel, experimentModel);
     }
 }

@@ -1,20 +1,21 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { GetExperimentByIdRepository as RepositoryAbstraction } from "./abstractions/GetExperimentByIdRepository.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
 import { ExperimentNotFoundError, ExperimentPersistenceError } from "~/domain/experiment/errors.js";
 
 class GetExperimentByIdRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private experimentModel: ExperimentModel.Interface,
+        private experimentModelProvider: ExperimentModelProvider.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface
     ) {}
 
     async execute(id: string): RepositoryAbstraction.Return {
+        const experimentModel = await this.experimentModelProvider.get();
         const result = await this.getEntryById.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
+            experimentModel,
             id
         );
 
@@ -31,5 +32,5 @@ class GetExperimentByIdRepositoryImpl implements RepositoryAbstraction.Interface
 
 export const GetExperimentByIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetExperimentByIdRepositoryImpl,
-    dependencies: [ExperimentModel, GetEntryByIdUseCase]
+    dependencies: [ExperimentModelProvider, GetEntryByIdUseCase]
 });
