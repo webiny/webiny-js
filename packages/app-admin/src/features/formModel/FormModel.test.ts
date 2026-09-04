@@ -212,6 +212,88 @@ describe("FormModel", () => {
             expect(form.errors[0].message).toBe("Email is required");
         });
 
+        it("should skip zod validation for non-required field with null value", async () => {
+            const form = createForm({
+                fields: fields => ({
+                    description: fields.text().label("Description").schema(z.string())
+                })
+            });
+
+            const valid = await form.validate();
+
+            expect(valid).toBe(true);
+            expect(form.errors).toHaveLength(0);
+            expect(form.field("description").vm.validation.isValid).toBeNull();
+        });
+
+        it("should skip zod validation for non-required field with undefined value", async () => {
+            const form = createForm({
+                fields: fields => ({
+                    description: fields.text().label("Description").schema(z.string())
+                })
+            });
+
+            form.field("description").setValue(undefined as any);
+            const valid = await form.validate();
+
+            expect(valid).toBe(true);
+            expect(form.errors).toHaveLength(0);
+            expect(form.field("description").vm.validation.isValid).toBeNull();
+        });
+
+        it("should run zod validation for non-required field with empty string value", async () => {
+            const form = createForm({
+                fields: fields => ({
+                    description: fields
+                        .text()
+                        .label("Description")
+                        .schema(z.string().min(3, "Too short"))
+                })
+            });
+
+            form.field("description").setValue("");
+            const valid = await form.validate();
+
+            expect(valid).toBe(false);
+            expect(form.field("description").vm.validation.isValid).toBe(false);
+            expect(form.field("description").vm.validation.message).toBe("Too short");
+        });
+
+        it("should fail required validation for required field with null value even when schema is set", async () => {
+            const form = createForm({
+                fields: fields => ({
+                    description: fields
+                        .text()
+                        .label("Description")
+                        .required("Description is required")
+                        .schema(z.string().min(3, "Too short"))
+                })
+            });
+
+            const valid = await form.validate();
+
+            expect(valid).toBe(false);
+            expect(form.field("description").vm.validation.isValid).toBe(false);
+            expect(form.field("description").vm.validation.message).toBe("Description is required");
+        });
+
+        it("should run and pass zod validation for non-required field with valid value", async () => {
+            const form = createForm({
+                fields: fields => ({
+                    description: fields
+                        .text()
+                        .label("Description")
+                        .schema(z.string().min(3, "Too short"))
+                })
+            });
+
+            form.field("description").setValue("Hello world");
+            const valid = await form.validate();
+
+            expect(valid).toBe(true);
+            expect(form.field("description").vm.validation.isValid).toBe(true);
+        });
+
         it("should expose field-level validation in field.vm", async () => {
             const form = createBasicForm();
             await form.validate();
@@ -219,6 +301,26 @@ describe("FormModel", () => {
             const titleVm = form.field("title").vm;
             expect(titleVm.validation.isValid).toBe(false);
             expect(titleVm.validation.message).toBe("Title is required");
+        });
+
+        it("setValidationWithCache should populate the validation cache", async () => {
+            const schema = z.string().min(3, "Too short");
+            const spy = vi.spyOn(schema, "safeParseAsync");
+            const form = createForm({
+                fields: fields => ({
+                    description: fields.text().label("Description").schema(schema)
+                })
+            });
+
+            const valid1 = await form.validate();
+            expect(valid1).toBe(true);
+            expect(spy).not.toHaveBeenCalled();
+
+            const valid2 = await form.validate();
+            expect(valid2).toBe(true);
+            expect(spy).not.toHaveBeenCalled();
+            expect(form.field("description").vm.validation.isValid).toBeNull();
+            spy.mockRestore();
         });
 
         it("isValid should be null before first validation", () => {
@@ -1517,6 +1619,142 @@ describe("FormModel", () => {
                     }
                 });
             });
+
+            it("should skip schema validation for non-required object field with null underlying data", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street")
+                            }))
+                            .schema(z.object({ street: z.string().min(1) }))
+                    })
+                });
+
+                form.setData({ address: null as any });
+                const valid = await form.validate();
+
+                expect(valid).toBe(true);
+                expect(form.errors).toHaveLength(0);
+            });
+
+            it("should skip schema validation for non-required object field with undefined underlying data", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street")
+                            }))
+                            .schema(z.object({ street: z.string().min(1) }))
+                    })
+                });
+
+                form.setData({ address: undefined as any });
+                const valid = await form.validate();
+
+                expect(valid).toBe(true);
+                expect(form.errors).toHaveLength(0);
+            });
+
+            it("should run schema validation for non-required object field with populated values", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street")
+                            }))
+                            .schema(z.object({ street: z.string().min(5, "Street too short") }))
+                    })
+                });
+
+                form.field("address.street").setValue("Hi");
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
+                expect(form.errors).toHaveLength(1);
+                expect(form.errors[0].message).toBe("Street too short");
+            });
+
+            it("should run schema validation for required object field with populated but invalid values", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street")
+                            }))
+                            .required("Address is required")
+                            .schema(
+                                z.object({
+                                    street: z.string().min(5, "Street too short")
+                                })
+                            )
+                    })
+                });
+
+                form.field("address.street").setValue("Hi");
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
+                expect(form.errors).toHaveLength(1);
+                expect(form.errors[0].message).toBe("Street too short");
+            });
+
+            it("should fail required validation for required object field with null data even when schema is set", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street")
+                            }))
+                            .required("Address is required")
+                            .schema(z.object({ street: z.string().min(1) }))
+                    })
+                });
+
+                form.setData({ address: null as any });
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
+                expect(form.errors).toHaveLength(1);
+                expect(form.errors[0].message).toBe("Address is required");
+            });
+
+            it("should skip schema validation for non-required object field when all child values are empty", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street"),
+                                city: f.text().label("City")
+                            }))
+                            .schema(
+                                z.object({
+                                    street: z.string().min(1),
+                                    city: z.string().min(1)
+                                })
+                            )
+                    })
+                });
+
+                form.field("address.street").setValue("");
+                form.field("address.city").setValue("");
+                const valid = await form.validate();
+
+                expect(valid).toBe(true);
+                expect(form.errors).toHaveLength(0);
+            });
         });
 
         describe("list object field", () => {
@@ -1671,6 +1909,110 @@ describe("FormModel", () => {
 
                 expect(valid).toBe(false);
                 expect(form.errors[0].message).toBe("At least 2 presets are required");
+            });
+
+            it("should skip listSchema validation for non-required list field with empty list", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name")
+                            }))
+                            .list()
+                            .listSchema(z.array(z.any()).min(2, "At least 2 presets are required"))
+                    })
+                });
+
+                const valid = await form.validate();
+
+                expect(valid).toBe(true);
+                expect(form.errors).toHaveLength(0);
+            });
+
+            it("should skip listSchema validation for non-required list field with undefined value", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name")
+                            }))
+                            .list()
+                            .listSchema(z.array(z.any()).min(2, "At least 2 presets are required"))
+                    })
+                });
+
+                form.setData({ presets: undefined as any });
+                const valid = await form.validate();
+
+                expect(valid).toBe(true);
+                expect(form.errors).toHaveLength(0);
+            });
+
+            it("should skip listSchema validation for non-required list field with null value", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name")
+                            }))
+                            .list()
+                            .listSchema(z.array(z.any()).min(2, "At least 2 presets are required"))
+                    })
+                });
+
+                form.setData({ presets: null as any });
+                const valid = await form.validate();
+
+                expect(valid).toBe(true);
+                expect(form.errors).toHaveLength(0);
+            });
+
+            it("should enforce listSchema validation for required list field with null value", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name")
+                            }))
+                            .list()
+                            .required("Presets are required")
+                            .listSchema(z.array(z.any()).min(2, "At least 2 presets are required"))
+                    })
+                });
+
+                form.setData({ presets: null as any });
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
+                expect(form.errors[0].message).toBe("Presets are required");
+            });
+
+            it("should enforce listSchema validation for required list field with empty list", async () => {
+                const form = createForm({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name")
+                            }))
+                            .list()
+                            .required("Presets are required")
+                            .listSchema(z.array(z.any()).min(2, "At least 2 presets are required"))
+                    })
+                });
+
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
             });
 
             it("should be dirty after adding an item", () => {
