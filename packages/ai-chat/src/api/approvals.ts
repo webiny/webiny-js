@@ -59,12 +59,12 @@ export const parseDecisions = (value: unknown): ApprovalDecision[] => {
         if (typeof approvalId !== "string" || typeof approved !== "boolean") {
             return [];
         }
-        return [
-            {
-                approvalId,
-                approved,
-                ...(typeof reason === "string" ? { reason } : {})
-            }
-        ];
+        const decision: ApprovalDecision = { approvalId, approved };
+
+        if (typeof reason === "string") {
+            decision.reason = reason;
+        }
+
+        return [decision];
     });
 };

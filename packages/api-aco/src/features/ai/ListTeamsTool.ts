@@ -37,12 +37,19 @@ class ListTeamsToolImpl implements IAiSdkTool<Input> {
             throw new Error(`Could not list teams: ${result.error.message}`);
         }
 
-        return result.value.map(team => ({
-            id: team.id,
-            name: team.name,
-            slug: team.slug,
-            ...(team.description ? { description: team.description } : {})
-        }));
+        return result.value.map(team => {
+            const summary: TeamSummary = {
+                id: team.id,
+                name: team.name,
+                slug: team.slug
+            };
+
+            if (team.description) {
+                summary.description = team.description;
+            }
+
+            return summary;
+        });
     }
 }
 
