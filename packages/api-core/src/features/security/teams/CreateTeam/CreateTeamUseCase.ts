@@ -9,6 +9,7 @@ import { createTeamValidation } from "./schema.js";
 import { TeamBeforeCreateEvent, TeamAfterCreateEvent } from "./events.js";
 import type { Team, CreateTeamInput } from "../shared/types.js";
 import { NotAuthorizedError, TeamExistsError, TeamValidationError } from "../shared/errors.js";
+import { descriptionOnCreate } from "../../shared/description.js";
 
 export class CreateTeamUseCase implements CreateTeam.Interface {
     constructor(
@@ -38,16 +39,17 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             return Result.fail(new TeamExistsError(data.slug));
         }
 
-        // A missing or null description is stored as an empty string - neither the domain type nor
-        // `CreateTeamInput` has a concept of an absent description, so normalising it here also
-        // keeps null out of the published events.
-        const createInput: CreateTeamInput = { ...data, description: data.description ?? "" };
+        // Normalised up front so that null reaches neither the entity nor the published events.
+        const createInput: CreateTeamInput = {
+            ...data,
+            description: descriptionOnCreate(data.description)
+        };
 
         const team: Team = {
             id: mdbid(),
             name: createInput.name,
             slug: createInput.slug,
-            description: createInput.description ?? "",
+            description: descriptionOnCreate(createInput.description),
             roles: createInput.roles,
             system: input.system || false,
             createdOn: new Date().toISOString(),

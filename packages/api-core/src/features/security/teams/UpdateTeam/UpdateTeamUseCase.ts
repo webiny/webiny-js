@@ -7,6 +7,7 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateTeamValidation } from "./schema.js";
 import { TeamBeforeUpdateEvent, TeamAfterUpdateEvent } from "./events.js";
 import type { Team, UpdateTeamInput } from "../shared/types.js";
+import { descriptionOnUpdate } from "../../shared/description.js";
 import {
     NotAuthorizedError,
     CannotUpdatePluginTeamsError,
@@ -57,16 +58,14 @@ export class UpdateTeamUseCase {
             return Result.fail(new CannotUpdatePluginTeamsError());
         }
 
-        // `description` is the one field that accepts null: an absent key leaves the stored value
-        // alone, while an explicit null clears it. Normalising it here keeps null out of both the
-        // entity and the published events, whose input type declares `description?: string`.
-        // Spreading `validation.data` directly would also let an `undefined` description overwrite
-        // the stored value.
+        // `description` is pulled out of the spread because it is the one field that accepts null.
+        // Normalising it here keeps null out of both the entity and the published events, whose
+        // input type declares `description?: string`.
         const { description, ...rest } = validation.data;
 
         const changes: UpdateTeamInput = {
             ...rest,
-            ...(description !== undefined ? { description: description ?? "" } : {})
+            ...descriptionOnUpdate(description)
         };
 
         const updatedTeam: Team = {

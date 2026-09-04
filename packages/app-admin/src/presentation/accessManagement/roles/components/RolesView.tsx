@@ -196,12 +196,16 @@ const RolesForm = observer(({ newEntry, id }: { newEntry: boolean; id: string | 
     }, [id, newEntry]);
 
     const handleSave = useCallback(async () => {
-        const role = await presenter.save();
-        if (role) {
-            if (!vm.selectedRole || vm.selectedRole.id !== role.id) {
-                goToRoute(Routes.Roles.List, { id: role.id });
+        try {
+            const role = await presenter.save();
+            if (role) {
+                if (!vm.selectedRole || vm.selectedRole.id !== role.id) {
+                    goToRoute(Routes.Roles.List, { id: role.id });
+                }
+                showSnackbar("Role saved successfully!");
             }
-            showSnackbar("Role saved successfully!");
+        } catch (e: any) {
+            showSnackbar(e.message);
         }
     }, [presenter, vm.selectedRole]);
 

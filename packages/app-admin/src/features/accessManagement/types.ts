@@ -3,7 +3,9 @@ import type { Identity } from "~/domain/Identity.js";
 export interface Role {
     id: string;
     name: string;
-    description: string;
+    // Nullable because the GraphQL schema declares `description: String`, and an entity saved
+    // without one reads back as `null`. See the same field on `Team`.
+    description: string | null;
     slug: string;
     system?: boolean;
     plugin: boolean | null;
@@ -30,7 +32,9 @@ export interface ApiKey {
     slug: string;
     token: string;
     name: string;
-    description: string;
+    // Nullable because the GraphQL schema declares `description: String`, and an entity saved
+    // without one reads back as `null`. See the same field on `Team`.
+    description: string | null;
     permissions: Identity.Permission[];
     createdOn: string;
 }

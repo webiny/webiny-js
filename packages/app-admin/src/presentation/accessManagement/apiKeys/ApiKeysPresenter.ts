@@ -95,7 +95,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                 this._form.setData({
                     name: apiKey.name,
                     slug: apiKey.slug,
-                    description: apiKey.description,
+                    description: apiKey.description ?? "",
                     token: apiKey.token,
                     permissions: apiKey.permissions || []
                 });
@@ -134,7 +134,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
             if (isUpdate) {
                 const apiKey = await this.updateApiKeyUseCase.execute(this._selectedApiKey!.id, {
                     name: data.name,
-                    description: data.description,
+                    description: data.description ?? "",
                     permissions: data.permissions
                 });
                 runInAction(() => {
@@ -145,7 +145,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                 const apiKey = await this.createApiKeyUseCase.execute({
                     name: data.name,
                     slug: data.slug,
-                    description: data.description,
+                    description: data.description ?? "",
                     permissions: data.permissions
                 });
                 runInAction(() => {
@@ -154,14 +154,16 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                     this._form.setData({
                         name: apiKey.name,
                         slug: apiKey.slug,
-                        description: apiKey.description,
+                        description: apiKey.description ?? "",
                         permissions: apiKey.permissions || []
                     });
                 });
                 return apiKey;
             }
-        } catch {
-            return null;
+            // Errors deliberately propagate to the caller, which reports them to the user. This
+            // used to be a bare `catch { return null }`, and `null` is also what `save()` returns
+            // when client-side validation fails - so a rejected request looked to the view exactly
+            // like a form that had not been submitted, and failed silently.
         } finally {
             runInAction(() => {
                 this._saving = false;
