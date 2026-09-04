@@ -1,17 +1,18 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
 import { DeleteExperimentRepository as RepositoryAbstraction } from "./abstractions/DeleteExperimentRepository.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import { ExperimentNotFoundError, ExperimentPersistenceError } from "~/domain/experiment/errors.js";
 
 class DeleteExperimentRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private experimentModel: ExperimentModel.Interface
+        private experimentModelProvider: ExperimentModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.deleteEntry.execute(this.experimentModel, params.id);
+        const experimentModel = await this.experimentModelProvider.get();
+        const result = await this.deleteEntry.execute(experimentModel, params.id);
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
@@ -26,5 +27,5 @@ class DeleteExperimentRepositoryImpl implements RepositoryAbstraction.Interface 
 
 export const DeleteExperimentRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteExperimentRepositoryImpl,
-    dependencies: [DeleteEntryUseCase, ExperimentModel]
+    dependencies: [DeleteEntryUseCase, ExperimentModelProvider]
 });

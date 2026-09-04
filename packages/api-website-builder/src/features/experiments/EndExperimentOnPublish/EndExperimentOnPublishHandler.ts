@@ -2,7 +2,7 @@ import { PageAfterPublishEventHandler } from "~/features/pages/PublishPage/abstr
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
 import { VariantModelProvider } from "~/domain/variant/abstractions.js";
@@ -23,17 +23,18 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
         private getEntry: GetEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private publishEntry: PublishEntryUseCase.Interface,
-        private experimentModel: ExperimentModel.Interface,
+        private experimentModelProvider: ExperimentModelProvider.Interface,
         private variantModelProvider: VariantModelProvider.Interface
     ) {}
 
     async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
+        const experimentModel = await this.experimentModelProvider.get();
         const variantModel = await this.variantModelProvider.get();
         const page = event.payload.page;
 
         // Find the page's running experiment (latest draft state) and publish it.
         const experimentResult = await this.getEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
+            experimentModel,
             {
                 where: {
                     latest: true,
@@ -50,7 +51,7 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
         }
 
         const experiment = EntryToExperimentMapper.toExperiment(experimentResult.value);
-        await this.publishEntry.execute(this.experimentModel, experiment.id);
+        await this.publishEntry.execute(experimentModel, experiment.id);
 
         // Publish its ready variants so their content goes live alongside the experiment.
         const variantsResult = await this.listLatestEntries.execute<CmsEntryWbVariantValues>(
@@ -83,7 +84,7 @@ export const EndExperimentOnPublishHandler = PageAfterPublishEventHandler.create
         GetEntryUseCase,
         ListLatestEntriesUseCase,
         PublishEntryUseCase,
-        ExperimentModel,
+        ExperimentModelProvider,
         VariantModelProvider
     ]
 });
