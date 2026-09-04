@@ -2,25 +2,26 @@ import { Result } from "@webiny/feature/api";
 import { ListPublishedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
 import { GetPageLanguagePathsRepository as RepositoryAbstraction } from "./abstractions.js";
-import { type CmsEntryWbPage, PageModel } from "~/domain/page/abstractions.js";
+import { type CmsEntryWbPage, PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PagePersistenceError } from "~/domain/page/errors.js";
 
 class GetPageLanguagePathsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private pageModel: PageModel.Interface,
+        private pageModelProvider: PageModelProvider.Interface,
         private listPublished: ListPublishedEntriesUseCase.Interface,
         private getEntry: GetEntryUseCase.Interface
     ) {}
 
     async execute(rootEntryId: string): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         const [sourceResult, translationsResult] = await Promise.all([
             // Fetch the source page itself.
-            this.getEntry.execute<CmsEntryWbPage>(this.pageModel, {
+            this.getEntry.execute<CmsEntryWbPage>(pageModel, {
                 where: { entryId: rootEntryId, published: true }
             }),
             // Fetch all translated pages pointing to the source.
-            this.listPublished.execute<CmsEntryWbPage>(this.pageModel, {
+            this.listPublished.execute<CmsEntryWbPage>(pageModel, {
                 where: {
                     values: {
                         properties: { sourcePage: rootEntryId }
@@ -57,5 +58,5 @@ class GetPageLanguagePathsRepositoryImpl implements RepositoryAbstraction.Interf
 
 export const GetPageLanguagePathsRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPageLanguagePathsRepositoryImpl,
-    dependencies: [PageModel, ListPublishedEntriesUseCase, GetEntryUseCase]
+    dependencies: [PageModelProvider, ListPublishedEntriesUseCase, GetEntryUseCase]
 });
