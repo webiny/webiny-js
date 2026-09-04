@@ -277,6 +277,12 @@ export class Field implements IField {
         this._validation = validation;
     }
 
+    setValidationWithCache(validation: IFieldValidation, value: unknown, result: boolean): void {
+        this._validation = validation;
+        this._validationCacheKey = this._serializeValue(value);
+        this._validationCache = result;
+    }
+
     resetValidation(): void {
         this._validation = { isValid: null };
         this._validationCacheKey = undefined;
@@ -532,6 +538,19 @@ export class Field implements IField {
                     });
                     return false;
                 }
+            }
+
+            if (
+                !requiredState.required &&
+                (effectiveValue === null || effectiveValue === undefined)
+            ) {
+                const cacheKey = this._serializeValue(effectiveValue);
+                runInAction(() => {
+                    this._validation = { isValid: null };
+                    this._validationCacheKey = cacheKey;
+                    this._validationCache = true;
+                });
+                return true;
             }
 
             // Zod schema check
