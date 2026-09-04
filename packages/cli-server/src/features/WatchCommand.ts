@@ -177,6 +177,14 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                           })
                         : undefined;
 
+                // Printed before the `projectSdk.watch()` calls below, not after: those prepare each
+                // app's workspace and evaluate its config, which is a slow, silent stretch. Announcing
+                // the start afterwards left "Ready in Xs" reporting time the developer never saw pass.
+                if (summary) {
+                    ui.emptyLine();
+                    ui.info(`Starting...`);
+                }
+
                 // Collect PackagesWatcher instances (one per app or for package-only mode) plus any
                 // long-running server processes the hosting type attaches (e.g. the api HTTP server).
                 // The app each watcher belongs to is kept alongside it so a dev server URL found in the
@@ -230,12 +238,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     return;
                 }
 
-                if (summary) {
-                    // The project layer has already printed the webiny.config notice by now; separate
-                    // this block from it.
-                    ui.emptyLine();
-                    ui.info(`Starting...`);
-                } else {
+                if (!summary) {
                     ui.info(`Watching %s packages...`, allProcesses.length);
                 }
 
