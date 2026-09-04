@@ -37,7 +37,9 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 "",
                 "Ports:",
                 " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
-                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)"
+                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
+                "PORT applies only when watching a single app (watch api / watch admin). When watching",
+                "several at once (no app), PORT is ignored — set WEBINY_API_PORT / WEBINY_ADMIN_PORT instead."
             ].join("\n"),
             examples: ["watch", "watch api", "watch admin", "watch -p my-package"],
             params: [
@@ -82,6 +84,20 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         );
                         return;
                     }
+                }
+
+                // Several apps in one process means a generic PORT injected by the environment can only
+                // belong to one of them, so drop it and let each app fall back to its own dedicated port.
+                // Same rule `webiny serve` applies when serving both apps at once. Has to happen before
+                // the watchers are prepared below: that is where each forked process snapshots the env.
+                if (apps.length > 1 && process.env.PORT) {
+                    ui.warning(
+                        `%s is ignored when watching several apps at once. Set %s and %s instead.`,
+                        "PORT",
+                        "WEBINY_API_PORT",
+                        "WEBINY_ADMIN_PORT"
+                    );
+                    delete process.env.PORT;
                 }
 
                 // With a single app the app's own startup line is easy enough to spot; with several, the
