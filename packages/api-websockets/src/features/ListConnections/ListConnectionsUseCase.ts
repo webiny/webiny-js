@@ -4,6 +4,8 @@ import type { WebsocketsError } from "~/features/shared/errors.js";
 import { WebsocketServiceError } from "~/features/shared/errors.js";
 import { ConnectionRegistry } from "~/features/ConnectionRegistry/abstractions.js";
 
+const RECENT_CONNECTION_WINDOW_MS = 3 * 60 * 60 * 1000;
+
 class ListConnectionsUseCaseImpl implements WebsocketsListConnectionsUseCase.Interface {
     public constructor(private readonly registry: ConnectionRegistry.Interface) {}
 
@@ -27,8 +29,11 @@ class ListConnectionsUseCaseImpl implements WebsocketsListConnectionsUseCase.Int
             return Result.fail(new WebsocketServiceError(error as Error));
         }
 
-        const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
-        connections = connections.filter(c => c.connectedOn >= threeHoursAgo);
+        // Keep only connections seen within the recency window. `connectedOn` is a canonical UTC ISO
+        // string (the registry normalizes the driver's `datetime` shape at its boundary), so ISO
+        // strings compare chronologically as plain strings.
+        const cutoff = new Date(Date.now() - RECENT_CONNECTION_WINDOW_MS).toISOString();
+        connections = connections.filter(c => c.connectedOn >= cutoff);
 
         return Result.ok(connections);
     }
