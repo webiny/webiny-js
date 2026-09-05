@@ -4,6 +4,8 @@ import mocks from "../mocks/securityTeam";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
+import { getStorageOps } from "~/testing/environment.js";
+import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 class TestRoleFactory implements RoleFactory.Interface {
     execute(): RoleFactory.Return {
@@ -248,6 +250,38 @@ describe("Security Team CRUD Test", () => {
             },
             error: null
         });
+    });
+
+    // The read path for rows written before `description` was normalised. Those still hold null in
+    // storage, and `SecurityTeam.description` is declared `String` (nullable), so GraphQL has to
+    // return the null rather than error on it - which is what lets the admin app coalesce it to "".
+    test("should return a null `description` stored before normalisation", async () => {
+        const [createResponse] = await securityTeam.create({ data: mocks.teamA });
+        const team = createResponse.data.security.createTeam.data;
+
+        // Write null straight through storage, bypassing the use case that would coalesce it.
+        const { securityStorageOperations } =
+            getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+
+        const stored = await securityStorageOperations.getTeam({
+            where: { id: team.id, tenant: "root" }
+        });
+
+        await securityStorageOperations.updateTeam({
+            original: stored as any,
+            team: { ...(stored as any), description: null }
+        });
+
+        const [getResponse] = await securityTeam.get({ id: team.id });
+
+        // `id` is not in this query's selection set - `description` is, which is the point.
+        expect(getResponse.data.security.getTeam).toMatchObject({
+            data: { name: "Team-A", description: null },
+            error: null
+        });
+
+        // A GraphQL-level rejection would surface here instead of in the payload.
+        expect(getResponse.errors).toBeUndefined();
     });
 
     test('should not allow creating a team with same "slug"', async () => {
