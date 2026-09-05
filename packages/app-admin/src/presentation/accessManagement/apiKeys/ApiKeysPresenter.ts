@@ -200,7 +200,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                 description: fields
                     .text()
                     .label("Description")
-                    .required("Description is required.")
+                    .defaultValue("")
                     .renderer("textarea"),
                 // @ts-expect-error This is a single-use local renderer I don't want to be visible to users.
                 token: fields.text().label("Token").renderer("apiKeyToken"),
