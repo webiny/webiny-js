@@ -7,7 +7,7 @@ import { FunctionUrlStreamRouterHandler } from "~/handlers/FunctionUrlStreamRout
 /**
  * Registers the transport-only Lambda Function URL response-streaming infrastructure:
  * - FunctionUrlStreamEventType (recognises a Function URL HTTP invocation)
- * - HttpFeature (HttpRouter + RequestContextInitializerDecorator + SecureHeadersDecorator)
+ * - HttpFeature (HttpRouter + SecureHeadersDecorator)
  * - FunctionUrlStreamRouterHandler (terminal: routes via HttpRouter, writes to the response stream)
  *
  * Must NOT be combined with `ApiGatewayFeature` in the same container — the two event types match the

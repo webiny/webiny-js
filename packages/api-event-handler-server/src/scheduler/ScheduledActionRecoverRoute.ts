@@ -1,8 +1,4 @@
-import {
-    HttpRoute,
-    RequestContainer,
-    runRequestContextInitializers
-} from "@webiny/event-handler-core";
+import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -52,8 +48,6 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
 
             this.container.resolve(RawTenantId).set(tenant);
             await this.container.resolve(RequestTenantLoader).establish();
-
-            await runRequestContextInitializers(this.container, { continueOnError: true });
 
             const ctx: Record<string, any> = { container: this.container };
             for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {

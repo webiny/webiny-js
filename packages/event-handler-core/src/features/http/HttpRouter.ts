@@ -39,16 +39,14 @@ class HttpRouterImplClass implements HttpRouter.Interface {
      * Takes the container, NOT `[HttpRoute, { multiple: true }]`.
      *
      * Injecting the routes would construct every one of them while the router itself is being
-     * constructed — which happens before `route()` is ever called, and therefore before
-     * `RequestContextInitializerDecorator` runs the request-context initializers. Any route whose
-     * constructor reaches a token those initializers register (`FileModel`, a per-request `CmsModel`,
-     * `EntryFromStorageTransform`) would throw "No registration found for ..." on EVERY request,
-     * including an OPTIONS preflight to an unrelated path, because construction does not care which
-     * route actually matches.
+     * constructed. That used to be fatal: construction ran before the request-context initializers,
+     * so any route whose constructor reached a token an initializer registered (`FileModel`, a
+     * per-request `CmsModel`) threw "No registration found for ..." on EVERY request, including an
+     * OPTIONS preflight to an unrelated path — construction does not care which route matches.
      *
-     * Resolving inside `route()` puts route construction after the initializers, where a route's
-     * declared dependencies can be resolved normally. This is what lets routes declare what they
-     * need instead of taking a container and resolving lazily inside `handle()`.
+     * That hazard is gone: those tokens are now providers with real implementations, resolvable at
+     * any point. What remains is cost — constructing all ~11 routes to match one path — so routes
+     * are still resolved inside `route()`. Injecting them is a viable cleanup, not a correctness fix.
      *
      * Still eager in that every route is constructed to path-match. Constructing only the matched
      * route needs `method`/`path` to be readable without an instance, which is a bigger change.
