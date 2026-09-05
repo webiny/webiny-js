@@ -33,7 +33,7 @@ const defaultIdentity: IdentityData = { id: "12345678", type: "admin", displayNa
 const defaultPermissions: SecurityPermission[] = [{ name: "*" }];
 
 describe("Languages api extension — registered via the app indirection", () => {
-    it("registers the wbyLanguage model through registerExtension + RequestContextInitializer", async () => {
+    it("registers the wbyLanguage model through registerExtension", async () => {
         const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
         const cmsStorage = getStorageOps("cms");
 

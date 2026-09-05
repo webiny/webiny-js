@@ -15,9 +15,7 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
 
 /**
  * The HTTP route for a CMS GraphQL endpoint (manage/read/preview). Per request it runs the
- * contextual schemas, then executes the CMS sub-schema via CmsSchemaExecutor. The post-auth
- * RequestContextInitializers are run once per request by the HTTP layer
- * (RequestContextInitializerDecorator) before the router dispatches, so they cover every route.
+ * contextual schemas, then executes the CMS sub-schema via CmsSchemaExecutor.
  */
 export function createCmsRoute(type: ApiEndpoint) {
     class CmsGraphQLRoute implements HttpRoute.Interface {
