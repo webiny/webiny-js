@@ -6,6 +6,7 @@ import { GetProjectRootPath } from "../../../../services/index.js";
 import { ServerProjectParams } from "./types.js";
 import { GetTemplatesFolderPath } from "../../../../services/GetTemplatesFolderPath.js";
 import { addProjectDependencies } from "../addProjectDependencies.js";
+import { addProjectScripts } from "../addProjectScripts.js";
 
 export class SetupServerWebinyProject {
     async execute(cliArgs: CliParams): Promise<ServerProjectParams> {
@@ -32,6 +33,13 @@ export class SetupServerWebinyProject {
             "@webiny/project-server": "latest",
             "@webiny/project-server-template": "latest",
             "@webiny/self-hosted-auth": "latest"
+        });
+
+        // Self-hosted watches every default app in a single process, so `yarn dev` is all a developer
+        // needs to get the whole project running locally. Server-only — on AWS the apps are watched
+        // separately, so there's no single command to alias.
+        addProjectScripts(projectRootFolderPath, {
+            dev: "webiny watch"
         });
 
         return serverArgs;

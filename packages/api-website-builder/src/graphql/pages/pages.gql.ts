@@ -4,7 +4,7 @@ import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
@@ -30,12 +30,12 @@ export const addPagesSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbQuery.getPageModel",
-        dependencies: [PageModel],
-        resolver(pageModel) {
+        dependencies: [PageModelProvider],
+        resolver(pageModelProvider) {
             return ({ context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
-                    return pageModel;
+                    return pageModelProvider.get();
                 });
         }
     });

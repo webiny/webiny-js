@@ -4,18 +4,19 @@ import {
     type IDeleteFolderRepository
 } from "./abstractions.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import type { Folder } from "~/folder/folder.types.js";
 import { FolderNotAuthorizedError, FolderPersistenceError } from "~/domain/folder/errors.js";
 
 class DeleteFolderRepositoryImpl implements IDeleteFolderRepository {
     constructor(
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private folderModel: FolderModel.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(folder: Folder): Promise<Result<void, RepositoryAbstraction.Error>> {
-        const result = await this.deleteEntry.execute(this.folderModel, folder.id, {
+        const folderModel = await this.folderModelProvider.get();
+        const result = await this.deleteEntry.execute(folderModel, folder.id, {
             permanently: true,
             force: true
         });
@@ -33,5 +34,5 @@ class DeleteFolderRepositoryImpl implements IDeleteFolderRepository {
 
 export const DeleteFolderRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteFolderRepositoryImpl,
-    dependencies: [DeleteEntryUseCase, FolderModel]
+    dependencies: [DeleteEntryUseCase, FolderModelProvider]
 });
