@@ -4,15 +4,13 @@
 # For more information, run "github-actions-wac --help".
 name: Delete Merged Branches
 'on':
-  schedule:
-    - cron: 30 3 * * *
   workflow_dispatch:
     inputs:
       dryRun:
         description: Only list the branches that would be deleted.
         type: boolean
         required: false
-        default: false
+        default: true
 concurrency:
   group: delete-merged-branches
   cancel-in-progress: false
