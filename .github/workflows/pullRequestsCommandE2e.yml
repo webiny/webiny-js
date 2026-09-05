@@ -372,7 +372,9 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Create Cypress config
-        run: yarn setup-cypress --projectFolder ../new-webiny-project
+        run: >-
+          yarn setup-cypress --projectFolder ${{ github.workspace
+          }}/new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Save Cypress config
         id: save-cypress-config
@@ -636,7 +638,9 @@ jobs:
           gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID -X
           PATCH --field body=@/tmp/comment.txt
       - name: Create Cypress config
-        run: yarn setup-cypress --projectFolder ../new-webiny-project
+        run: >-
+          yarn setup-cypress --projectFolder ${{ github.workspace
+          }}/new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Save Cypress config
         id: save-cypress-config
