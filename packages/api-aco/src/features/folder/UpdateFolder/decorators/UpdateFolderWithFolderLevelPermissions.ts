@@ -73,6 +73,14 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
                         )
                     );
                 }
+
+                if (permission.plugin) {
+                    return Result.fail(
+                        new FolderValidationError(
+                            `Permission "plugin" cannot be set manually. Code-defined permissions are managed via an "FlpFactory".`
+                        )
+                    );
+                }
             }
         }
 
