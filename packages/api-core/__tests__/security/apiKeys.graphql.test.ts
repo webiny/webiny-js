@@ -93,6 +93,23 @@ describe("Security API Key Test", () => {
         });
     });
 
+    // Length cap matches teams and roles. This was the one description field without one.
+    test("should reject a `description` longer than 500 characters", async () => {
+        const [response] = await securityApiKeys.create({
+            data: {
+                name: "Too long",
+                slug: "too-long",
+                description: "x".repeat(501),
+                permissions: []
+            }
+        });
+
+        expect(response.data.security.createApiKey).toMatchObject({
+            data: null,
+            error: { code: "ApiKey/Validation" }
+        });
+    });
+
     test("should create, list, update and delete an API key", async () => {
         // Create a token
         const [createResponse] = await securityApiKeys.create({

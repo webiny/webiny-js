@@ -5,8 +5,8 @@ export const createApiKeyInputSchema = z.object({
     slug: z.string().min(1),
     // Nullable in the GraphQL schema - see `descriptionOnCreate` for why this is `.nullish()`.
     // This was a bare `z.string()`, so an API key created without a description was rejected
-    // whether the client sent null or omitted the field entirely.
-    description: z.string().nullish(),
+    // whether the client sent null or omitted the field entirely. `max` matches teams and roles.
+    description: z.string().max(500).nullish(),
     permissions: z
         .array(z.looseObject({ name: z.string() }))
         .optional()
@@ -16,8 +16,8 @@ export const createApiKeyInputSchema = z.object({
 export const updateApiKeyInputSchema = z.object({
     name: z.string().min(1).optional(),
     // Nullable in the GraphQL schema - see `descriptionOnUpdate` for why this is `.nullish()` and
-    // must not carry a `.transform()`.
-    description: z.string().nullish(),
+    // must not carry a `.transform()`. `max` matches teams and roles.
+    description: z.string().max(500).nullish(),
     permissions: z
         .array(z.looseObject({ name: z.string() }))
         .optional()
