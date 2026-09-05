@@ -14,6 +14,7 @@ import { StorageFeature } from "~/features/storage/index.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
 import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
+import { CmsAiToolsFeature } from "~/features/ai/index.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
@@ -123,6 +124,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         CmsInstallerFeature.register(container);
         ContentEntriesFeature.register(container);
         ContentModelFeature.register(container);
+        CmsAiToolsFeature.register(container);
         ContentModelGroupFeature.register(container);
         ModelBuilderFeature.register(container);
         CmsWhereMapperFeature.register(container);

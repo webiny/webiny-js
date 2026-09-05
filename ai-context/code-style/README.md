@@ -22,5 +22,6 @@ Read every rule in this folder before writing or editing code.
 | [no-stateless-private-methods.md](./no-stateless-private-methods.md)                         | A private method that never reads `this` becomes a module-level function.   |
 | [presenter-owns-component-state.md](./presenter-owns-component-state.md)                     | Non-trivial component state goes in a presenter, reached via `useFeature`.  |
 | [no-multiline-ternaries.md](./no-multiline-ternaries.md)                                     | Ternaries stay on one line; wrapping or nested ones become `if` statements. |
+| [routes-delegate-to-use-cases.md](./routes-delegate-to-use-cases.md)                         | Routes parse and map; feature logic lives in a use case.                    |
 
 When adding a new code-style rule, create a new `*.md` file here (one rule per file) and add it to the table above.
