@@ -12174,6 +12174,7 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-utils": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -13639,6 +13640,7 @@ __metadata:
   dependencies:
     "@types/react": "npm:18.3.31"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cms-sdk": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^7.0.3"
