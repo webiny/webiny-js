@@ -210,12 +210,16 @@ const ApiKeyForm = observer(({ newEntry, id }: { newEntry: boolean; id: string |
     }, [id, newEntry]);
 
     const handleSave = useCallback(async () => {
-        const apiKey = await presenter.save();
-        if (apiKey) {
-            if (!vm.selectedApiKey || vm.selectedApiKey.id !== apiKey.id) {
-                goToRoute(Routes.ApiKeys.List, { id: apiKey.id });
+        try {
+            const apiKey = await presenter.save();
+            if (apiKey) {
+                if (!vm.selectedApiKey || vm.selectedApiKey.id !== apiKey.id) {
+                    goToRoute(Routes.ApiKeys.List, { id: apiKey.id });
+                }
+                toast.showSuccessToast({ title: "API key saved successfully." });
             }
-            toast.showSuccessToast({ title: "API key saved successfully." });
+        } catch (e: any) {
+            toast.showWarningToast({ title: e.message });
         }
     }, [presenter, vm.selectedApiKey]);
 

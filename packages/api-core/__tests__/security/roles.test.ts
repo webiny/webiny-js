@@ -179,6 +179,61 @@ describe("Security Role CRUD Test", () => {
         });
     });
 
+    // `description` is declared `String` (nullable) in the GraphQL schema, so clients may send
+    // null - and the admin app does exactly that when it reads a role saved without a description
+    // and submits the edit form again. `.optional().default("")` did not cover this: Zod applies a
+    // default to `undefined` only, so an explicit null still failed validation.
+    test("should accept a null `description` on create and update", async () => {
+        const [createResponse] = await securityRole.create({
+            data: { ...mocks.roleA, description: null }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                security: {
+                    createRole: {
+                        data: { name: "Role-A", slug: "role-a", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const role = createResponse.data.security.createRole.data;
+
+        const [updateResponse] = await securityRole.update({
+            id: role.id,
+            data: { description: null }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                security: {
+                    updateRole: {
+                        data: { name: "Role-A", slug: "role-a", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    // An update that does not mention `description` must leave the stored one alone.
+    test("should not clear `description` on an update that omits it", async () => {
+        const [createResponse] = await securityRole.create({ data: mocks.roleA });
+        const role = createResponse.data.security.createRole.data;
+
+        const [updateResponse] = await securityRole.update({
+            id: role.id,
+            data: { name: "Role-A renamed" }
+        });
+
+        expect(updateResponse.data.security.updateRole).toMatchObject({
+            data: { name: "Role-A renamed", description: mocks.roleA.description },
+            error: null
+        });
+    });
+
     test('should not allow creating a role with same "slug"', async () => {
         // Creating a role
         await securityRole.create({ data: mocks.roleA });

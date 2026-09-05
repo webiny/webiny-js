@@ -194,12 +194,16 @@ const TeamsForm = observer(({ newEntry, id }: { newEntry: boolean; id: string | 
     }, [id, newEntry]);
 
     const handleSave = useCallback(async () => {
-        const team = await presenter.save();
-        if (team) {
-            if (!vm.selectedTeam || vm.selectedTeam.id !== team.id) {
-                goToRoute(Routes.Teams.List, { id: team.id });
+        try {
+            const team = await presenter.save();
+            if (team) {
+                if (!vm.selectedTeam || vm.selectedTeam.id !== team.id) {
+                    goToRoute(Routes.Teams.List, { id: team.id });
+                }
+                showSnackbar("Team saved successfully!");
             }
-            showSnackbar("Team saved successfully!");
+        } catch (e: any) {
+            showSnackbar(e.message);
         }
     }, [presenter, vm.selectedTeam]);
 
