@@ -1,0 +1,27 @@
+import React from "react";
+import { Command } from "webiny/admin";
+import { Icon } from "webiny/admin/ui";
+import { ReactComponent as BugIcon } from "webiny/admin/icons/bug_report.svg";
+import { ReportBugPresenter } from "../presentation/report/abstractions.js";
+
+class ReportBugCommandImpl implements Command.Interface {
+    name = "bugReport.report";
+    label = "Report a bug";
+    description = "Say what went wrong; the context is attached for you";
+    category = "Actions";
+    keywords = ["bug", "issue", "report", "feedback", "github", "broken"];
+    shortcut = "cmd+shift+b";
+    icon = <Icon icon={<BugIcon />} size="sm" color="neutral-strong" label="" />;
+
+    constructor(private presenter: ReportBugPresenter.Interface) {}
+
+    execute() {
+        // Deliberately not a `detailView`: the palette has to close before the screenshot.
+        void this.presenter.open();
+    }
+}
+
+export const ReportBugCommand = Command.createImplementation({
+    implementation: ReportBugCommandImpl,
+    dependencies: [ReportBugPresenter]
+});
