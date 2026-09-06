@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { createReactiveComponent } from "webiny/admin";
 import { useFeature } from "webiny/admin";
+import { Plugin } from "webiny/admin";
 import { BugReportFeature } from "./feature.js";
 import { ReportBugDialog } from "./presentation/report/ReportBugDialog.js";
 import { BugReportSettingsDialog } from "./presentation/settings/BugReportSettingsDialog.js";
@@ -8,6 +9,11 @@ import { BugReportSettingsDialog } from "./presentation/settings/BugReportSettin
 /*
  * Always mounted, so the recorder is running long before anyone decides something is broken,
  * and both dialogs live outside the command palette (which has to close before we screenshot).
+ *
+ * The dialogs go through <Plugin> rather than being rendered here. An extension's children are
+ * rendered by <App> BEFORE the provider stack, so anything drawn directly from this component
+ * sits outside AdminUiProvider and every admin-ui form component throws. Plugins are collected
+ * and re-rendered inside the providers, which is where UI belongs.
  */
 export const BugReportMount = createReactiveComponent(function BugReportMount() {
     const { recorder } = useFeature(BugReportFeature);
@@ -18,9 +24,9 @@ export const BugReportMount = createReactiveComponent(function BugReportMount() 
     }, [recorder]);
 
     return (
-        <>
+        <Plugin>
             <ReportBugDialog />
             <BugReportSettingsDialog />
-        </>
+        </Plugin>
     );
 });
