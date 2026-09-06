@@ -1,10 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { LocalStoragePath } from "./abstractions.js";
 import { LocalAssetDeliveryConfig } from "./abstractions.js";
 import type { AssetDeliveryParams } from "./types.js";
 import { LocalAssetResolver } from "./LocalAssetResolver.js";
 import { LocalOutputStrategy } from "./LocalOutputStrategy.js";
+import { LazyLocalSharpTransformImpl } from "./LazyLocalSharpTransform.js";
 
 export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}) => {
     return createFeature({
@@ -26,16 +26,8 @@ export const createLocalAssetDeliveryFeature = (params: AssetDeliveryParams = {}
             container.register(LocalOutputStrategy);
 
             if (process.env.WEBINY_FUNCTION_TYPE === "asset-delivery") {
-                container.registerInstance(RequestContextInitializer, {
-                    async init(ctx) {
-                        const { LocalSharpTransformImpl } = await import(
-                            /* webpackChunkName: "localAssetDelivery" */ "./LocalSharpTransform.js"
-                        );
-                        (ctx.container as typeof container)
-                            .register(LocalSharpTransformImpl)
-                            .inSingletonScope();
-                    }
-                });
+                // Registered eagerly; `sharp` is still loaded lazily, inside the handler.
+                container.register(LazyLocalSharpTransformImpl).inSingletonScope();
             }
         }
     });

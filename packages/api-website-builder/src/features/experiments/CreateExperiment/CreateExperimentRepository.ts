@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { CreateExperimentRepository as RepositoryAbstraction } from "./abstractions/CreateExperimentRepository.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
 import {
@@ -12,10 +12,11 @@ import {
 class CreateExperimentRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
-        private experimentModel: ExperimentModel.Interface
+        private experimentModelProvider: ExperimentModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const experimentModel = await this.experimentModelProvider.get();
         const values: CmsEntryWbExperimentValues = {
             pageEntryId: params.pageEntryId,
             baselineRevisionId: params.baselineRevisionId,
@@ -30,10 +31,9 @@ class CreateExperimentRepositoryImpl implements RepositoryAbstraction.Interface 
             winningVariantId: null
         };
 
-        const result = await this.createEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
-            { values }
-        );
+        const result = await this.createEntry.execute<CmsEntryWbExperimentValues>(experimentModel, {
+            values
+        });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {
@@ -48,5 +48,5 @@ class CreateExperimentRepositoryImpl implements RepositoryAbstraction.Interface 
 
 export const CreateExperimentRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateExperimentRepositoryImpl,
-    dependencies: [CreateEntryUseCase, ExperimentModel]
+    dependencies: [CreateEntryUseCase, ExperimentModelProvider]
 });

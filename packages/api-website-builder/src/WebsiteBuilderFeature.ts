@@ -1,18 +1,11 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
-import {
-    ModelBuilderFeature,
-    ModelsProvider
-} from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelBuilderFeature } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { StorageFeature } from "@webiny/api-headless-cms/features/storage/index.js";
 import { ContentModelFeature } from "@webiny/api-headless-cms/features/contentModel/ContentModelFeature.js";
 import { ContentEntriesFeature } from "@webiny/api-headless-cms/features/contentEntry/ContentEntriesFeature.js";
 import { CmsWhereMapperFeature } from "@webiny/api-headless-cms/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "@webiny/api-headless-cms/features/sortMapper/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WebsiteBuilderRedirectsRoute } from "./rest/WebsiteBuilderRedirectsRoute.js";
 import { registerWebsiteBuilderGraphQL } from "./graphql/createGraphQL.js";
 // Redirects
@@ -55,17 +48,14 @@ import { VariantFeature } from "./features/variants/feature.js";
 import { NextjsGraphQLSchema } from "./graphql/nextjs/NextjsGraphQLSchema.js";
 import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
 // Models
-import { PAGE_MODEL_ID, PageModelPlugin } from "~/domain/page/page.model.js";
+import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
-import {
-    ExperimentModelPlugin,
-    EXPERIMENT_MODEL_ID
-} from "~/domain/experiment/experiment.model.js";
+import { ExperimentModelPlugin } from "~/domain/experiment/experiment.model.js";
 import { VariantModelPlugin } from "~/domain/variant/variant.model.js";
-import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvider.js";
 import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
+import { PageModelProvider } from "~/features/pages/PageModelProvider.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -142,53 +132,7 @@ export const WebsiteBuilderFeature = createFeature({
         // too.
         container.register(RedirectModelProvider);
         container.register(VariantModelProvider);
-
-        // Per-request resolution of the WB CmsModel instances (Page/Redirect) for the GraphQL path.
-        // The REST route path uses setupWebsiteBuilderModels() (runs for all transports, pre-routing).
-        container.registerInstance(RequestContextInitializer, {
-            async init(ctx: Record<string, any>) {
-                const requestContainer = ctx.container as Container;
-                const identityContext = requestContainer.resolve(IdentityContext);
-                const getModel = requestContainer.resolve(GetModelUseCase);
-
-                await identityContext.withoutAuthorization(async () => {
-                    const [pageModel, experimentModel] = await Promise.all([
-                        getModel.execute(PAGE_MODEL_ID),
-                        getModel.execute(EXPERIMENT_MODEL_ID)
-                    ]);
-
-                    requestContainer.registerInstance(PageModel, pageModel.value);
-                    requestContainer.registerInstance(ExperimentModel, experimentModel.value);
-                });
-            }
-        });
+        container.register(ExperimentModelProvider);
+        container.register(PageModelProvider);
     }
 });
-
-/**
- * Resolves the WB CmsModel instances (Page/Redirect) from the registered ModelFactory plugins and
- * exposes them by token for the redirect REST route + page features. Must run in the `request`
- * callback after WebsiteBuilderFeature.register() and HeadlessCmsFeature.register().
- *
- * Storage operations, AccessControl, the entry transforms and SearchableFieldsProvider are provided
- * by HeadlessCmsFeature.register() for every event, so WB no longer builds its own.
- */
-export async function setupWebsiteBuilderModels(container: Container): Promise<void> {
-    const modelsProvider = container.resolve(ModelsProvider);
-    const tenantCtx = container.resolve(TenantContext);
-    // getTenant() is typed non-null but returns null before the tenant is set during routing;
-    // fall back to "root" for code-defined model building (the per-request tenant is applied later
-    // when DynamoDB queries run).
-    const tenantId = (tenantCtx.getTenant() as any)?.id ?? "root";
-    const models = await modelsProvider.list(tenantId);
-
-    const pageModel = models.find(m => m.modelId === PAGE_MODEL_ID);
-    const experimentModel = models.find(m => m.modelId === EXPERIMENT_MODEL_ID);
-
-    if (pageModel) {
-        container.registerInstance(PageModel, pageModel);
-    }
-    if (experimentModel) {
-        container.registerInstance(ExperimentModel, experimentModel);
-    }
-}
