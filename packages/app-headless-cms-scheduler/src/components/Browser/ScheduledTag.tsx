@@ -5,6 +5,7 @@ import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
 import type { SchedulerEntry } from "@webiny/app-scheduler/types.js";
 import { useDateFormatter } from "@webiny/app-admin";
 import type { DateFormatter } from "@webiny/app-admin";
+import { formatUtcOffset } from "@webiny/app-scheduler/utils/formatUtcOffset.js";
 
 const scheduledTooltip = (
     scheduled: SchedulerEntry,
@@ -14,7 +15,7 @@ const scheduledTooltip = (
     const actionLabel =
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
     return goLiveOn
-        ? `Scheduled to ${actionLabel} on ${dateFormatter.format(goLiveOn, { timeZoneName: "short" })}`
+        ? `Scheduled to ${actionLabel} on ${dateFormatter.format(goLiveOn)} (${formatUtcOffset()})`
         : `Scheduled to ${actionLabel}`;
 };
 
