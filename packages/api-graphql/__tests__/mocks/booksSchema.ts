@@ -1,7 +1,7 @@
 import type { Container } from "@webiny/di";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
 import type { Book } from "~tests/types";
 import { CoreGraphQLSchemaFactory } from "~/graphql/abstractions.js";
+import { GraphQLContextEnhancer } from "~/engine/GraphQLContextEnhancer.js";
 import type { GraphQLSchemaBuilder } from "~/features/GraphQLSchemaBuilder/abstractions.js";
 
 export const books: Book[] = [
@@ -91,10 +91,10 @@ export const BooksSchemaImpl = CoreGraphQLSchemaFactory.createImplementation({
     dependencies: []
 });
 
-// Augments the request context with `getBooks` post-auth (the Query.books resolver reads it).
+// Augments the resolver context with `getBooks` (the Query.books resolver reads it).
 export const booksCrudPlugin = (container: Container) => {
-    container.registerInstance(RequestContextInitializer, {
-        async init(context: Record<string, any>) {
+    container.registerInstance(GraphQLContextEnhancer, {
+        async enhance(context: Record<string, any>) {
             context.getBooks = async () => {
                 console.log("getBooks");
                 console.table(books);

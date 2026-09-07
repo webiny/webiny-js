@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -131,10 +131,6 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
-        }
-        const initializers = container.resolveAll(RequestContextInitializer);
-        for (const initializer of initializers) {
-            await initializer.init(ctx);
         }
         const schemas = container.resolveAll(GraphQLContextualSchema);
         for (const schema of schemas) {
