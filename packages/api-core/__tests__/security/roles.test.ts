@@ -234,6 +234,19 @@ describe("Security Role CRUD Test", () => {
         });
     });
 
+    // The 500 character cap predates this branch but had no coverage, so nothing would catch it
+    // being dropped from the schema.
+    test("should reject a `description` longer than 500 characters", async () => {
+        const [response] = await securityRole.create({
+            data: { ...mocks.roleA, description: "x".repeat(501) }
+        });
+
+        expect(response.data.security.createRole).toMatchObject({
+            data: null,
+            error: { code: "ROLE_VALIDATION_ERROR" }
+        });
+    });
+
     test('should not allow creating a role with same "slug"', async () => {
         // Creating a role
         await securityRole.create({ data: mocks.roleA });

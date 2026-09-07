@@ -284,6 +284,19 @@ describe("Security Team CRUD Test", () => {
         expect(getResponse.errors).toBeUndefined();
     });
 
+    // The 500 character cap predates this branch but had no coverage, so nothing would catch it
+    // being dropped from the schema.
+    test("should reject a `description` longer than 500 characters", async () => {
+        const [response] = await securityTeam.create({
+            data: { ...mocks.teamA, description: "x".repeat(501) }
+        });
+
+        expect(response.data.security.createTeam).toMatchObject({
+            data: null,
+            error: { code: "TEAM_VALIDATION_ERROR" }
+        });
+    });
+
     test('should not allow creating a team with same "slug"', async () => {
         // Creating a team
         await securityTeam.create({ data: mocks.teamA });
