@@ -4,13 +4,15 @@
 # For more information, run "github-actions-wac --help".
 name: Delete Merged Branches
 'on':
+  schedule:
+    - cron: 30 3 * * *
   workflow_dispatch:
     inputs:
       dryRun:
         description: Only list the branches that would be deleted.
         type: boolean
         required: false
-        default: true
+        default: false
 concurrency:
   group: delete-merged-branches
   cancel-in-progress: false
@@ -50,6 +52,8 @@ jobs:
           CUTOFF=$(date -u -d "$MAX_AGE_DAYS days ago" +%s)
 
           DELETED=0
+
+          FAILED=0
 
 
           # name + head SHA in one listing, so the SHA below does not need
@@ -117,18 +121,39 @@ jobs:
 
             if [ "$DRY_RUN" = "true" ]; then
               echo "$BRANCH: would be deleted (merged $MERGED_AT)."
-            else
-              gh api --method DELETE "repos/$REPO/git/refs/heads/$BRANCH"
-              echo "$BRANCH: deleted (merged $MERGED_AT)."
+              DELETED=$((DELETED + 1))
+              continue
             fi
-            DELETED=$((DELETED + 1))
+
+            # One branch failing to delete is not a reason to abandon the other 180, so
+            # swallow the error here and fail the job at the end instead.
+            if gh api --method DELETE "repos/$REPO/git/refs/heads/$BRANCH"; then
+              echo "$BRANCH: deleted (merged $MERGED_AT)."
+              DELETED=$((DELETED + 1))
+            else
+              echo "::warning::Could not delete $BRANCH."
+              FAILED=$((FAILED + 1))
+            fi
+
+            # Deleting a ref is a write, and GitHub's secondary rate limit on writes is
+            # around 80 a minute. The first live run has a backlog of ~185 branches to get
+            # through, so pace them rather than get throttled halfway.
+            sleep 1
           done <<< "$BRANCHES"
 
 
           if [ "$DRY_RUN" = "true" ]; then
             echo "::notice::$DELETED branch(es) would be deleted."
-          else
-            echo "::notice::Deleted $DELETED branch(es)."
+            exit 0
+          fi
+
+
+          echo "::notice::Deleted $DELETED branch(es)."
+
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::$FAILED branch(es) could not be deleted. See the warnings above."
+            exit 1
           fi
     runs-on: ubuntu-latest
     permissions:
