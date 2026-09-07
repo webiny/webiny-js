@@ -29,7 +29,7 @@ export type TransportRegistrar = (container: Container) => void | Promise<void>;
 export interface RegisterApiRequestStackConfig {
     /**
      * Project-defined extensions, applied at register() time (so extension features — including
-     * code-defined CMS models — are registered before any initializer lists/caches the model set).
+     * code-defined CMS models — are registered before anything lists/caches the model set).
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
@@ -75,8 +75,8 @@ export interface RegisterApiRequestStackConfig {
  * (HTTP/event transport, auth/tenant loaders, identity provider, DB + storage) before dispatch reaches
  * this per-request stack.
  *
- * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before any initializer
- * that lists + caches the per-request model set; the GraphQL engine must be registered last.
+ * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
+ * lists + caches the per-request model set; the GraphQL engine must be registered last.
  */
 export async function registerApiRequestStack(
     container: Container,
@@ -133,13 +133,12 @@ export async function registerApiRequestStack(
     CmsSchedulerFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────
-    // Apply at register() time (not via a post-auth initializer) so extension features — including
-    // code-defined CMS models (ModelFactory), e.g. Languages — are registered before any initializer
-    // populates ModelCache. Anything reaching the model set through GetModel/ListModels (which go
-    // via ModelsFetcher -> ModelCache.getOrSet) caches it for the rest of the request, so a set
-    // built before extensions register would be missing their models. The Website Builder
-    // initializer is the remaining case; ACO no longer is — it now resolves models at schema-build
-    // time, after all registration.
+    // Apply at register() time so extension features — including code-defined CMS models
+    // (ModelFactory), e.g. Languages — are registered before anything populates ModelCache. Anything
+    // reaching the model set through GetModel/ListModels (which go via ModelsFetcher ->
+    // ModelCache.getOrSet) caches it for the rest of the request, so a set built before extensions
+    // register would be missing their models. Every consumer now resolves models at schema-build or
+    // resolver time, i.e. after all registration.
     await registerExtensions(container, config.extensions());
 
     // ── GraphQL engine (always last) ───────────────────────────
