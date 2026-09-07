@@ -1,5 +1,6 @@
 import { JwtIdentityProvider } from "@webiny/api-core/idp/index.js";
 import { TokenIssuer, SELF_HOSTED_ISSUER } from "~/api/domain/crypto/TokenIssuer.js";
+import { CLI_RESET_ISSUER } from "~/shared/cliResetToken.js";
 
 /**
  * Validation half of the self-hosted IdP. Registered as one of the many
@@ -14,6 +15,14 @@ class SelfHostedJwtIdentityProviderImpl implements JwtIdentityProvider.Interface
     constructor(private tokenIssuer: TokenIssuer.Interface) {}
 
     isApplicable(payload: JwtIdentityProvider.JwtPayload): boolean {
+        // CLI password-reset tokens are signed with the same secret as login tokens, so the
+        // only thing keeping them from being accepted as an identity is the issuer. Rejected
+        // explicitly (rather than relying on the equality check below) so that loosening the
+        // issuer match later cannot silently turn a reset token into a login-as-anyone token.
+        if (payload.iss === CLI_RESET_ISSUER) {
+            return false;
+        }
+
         return payload.iss === SELF_HOSTED_ISSUER;
     }
 
