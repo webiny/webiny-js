@@ -13,9 +13,6 @@ export const HcmsTasksFeature = createFeature({
 
         DeleteModelTaskFeature.register(container);
 
-        // DisableModelFeature resolves DeleteModelOperations eagerly (it binds
-        // `isModelBeingDeleted` into a decorator), so the operations must be registered first.
-        // That ordering is local and explicit here; it used to be spread across two initializers.
         container.register(DeleteModelOperationsImplementation);
         DisableModelFeature.register(container);
 

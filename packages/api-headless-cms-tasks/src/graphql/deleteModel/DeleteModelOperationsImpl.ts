@@ -1,10 +1,11 @@
-import type { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { createCacheKey, createMemoryCache } from "@webiny/api-headless-cms/utils/index.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { AbortTaskUseCase, GetTaskUseCase, TriggerTaskUseCase } from "@webiny/background-tasks/api";
 import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
-import type { HcmsTasksContext } from "~/types.js";
 import { createDeleteModelStore } from "~/helpers/store.js";
 import { fullyDeleteModel } from "~/graphql/deleteModel/fullyDeleteModel.js";
 import { cancelDeleteModel } from "~/graphql/deleteModel/cancelDeleteModel.js";
@@ -22,21 +23,19 @@ import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
  * The in-memory cache is KEPT. Unlike the CMS model providers — where `ModelsFetcher`/`ModelCache`
  * already cached a layer down — nothing caches these key-value reads, so without it every
  * `isModelBeingDeleted()` check would hit the store. It is cleared on mutation, as before.
- *
- * `RequestContainer` is injected only to hand a `{ container }` context to `fullyDeleteModel`,
- * `cancelDeleteModel` and `getDeleteModelProgress`, which service-locate their own dependencies
- * (`GetModelUseCase`, `AccessControl`, `TriggerTaskUseCase`, `GetTaskUseCase`, `AbortTaskUseCase`,
- * `IdentityContext`, `GlobalKeyValueStore`). Converting those three helpers to declare their
- * dependencies is a separate change — it touches ~271 lines across three files and is orthogonal to
- * retiring the initializer.
  */
 class DeleteModelOperationsImpl implements DeleteModelOperations.Interface {
     private readonly cache = createMemoryCache<Promise<IStoreValue[]>>();
 
     constructor(
-        private readonly container: Container,
         private readonly tenantContext: TenantContext.Interface,
-        private readonly keyValueStore: GlobalKeyValueStore.Interface
+        private readonly keyValueStore: GlobalKeyValueStore.Interface,
+        private readonly identityContext: IdentityContext.Interface,
+        private readonly getModel: GetModelUseCase.Interface,
+        private readonly accessControl: AccessControl.Interface,
+        private readonly triggerTask: TriggerTaskUseCase.Interface,
+        private readonly getTask: GetTaskUseCase.Interface,
+        private readonly abortTask: AbortTaskUseCase.Interface
     ) {}
 
     async listModelsBeingDeleted(): Promise<IStoreValue[]> {
@@ -50,19 +49,39 @@ class DeleteModelOperationsImpl implements DeleteModelOperations.Interface {
     }
 
     async fullyDeleteModel(modelId: string) {
-        const result = await fullyDeleteModel({ context: this.context(), modelId });
+        const result = await fullyDeleteModel({
+            getModel: this.getModel,
+            accessControl: this.accessControl,
+            keyValueStore: this.keyValueStore,
+            triggerTask: this.triggerTask,
+            identityContext: this.identityContext,
+            modelId
+        });
         this.cache.clear();
         return result;
     }
 
     async cancelFullyDeleteModel(modelId: string) {
-        const result = await cancelDeleteModel({ context: this.context(), modelId });
+        const result = await cancelDeleteModel({
+            getModel: this.getModel,
+            accessControl: this.accessControl,
+            keyValueStore: this.keyValueStore,
+            getTask: this.getTask,
+            abortTask: this.abortTask,
+            modelId
+        });
         this.cache.clear();
         return result;
     }
 
     async getDeleteModelProgress(modelId: string) {
-        return getDeleteModelProgress({ context: this.context(), modelId });
+        return getDeleteModelProgress({
+            getModel: this.getModel,
+            accessControl: this.accessControl,
+            keyValueStore: this.keyValueStore,
+            getTask: this.getTask,
+            modelId
+        });
     }
 
     private getTenant(): string {
@@ -72,13 +91,18 @@ class DeleteModelOperationsImpl implements DeleteModelOperations.Interface {
     private getStore() {
         return createDeleteModelStore(this.keyValueStore, this.getTenant());
     }
-
-    private context(): HcmsTasksContext {
-        return { container: this.container } as HcmsTasksContext;
-    }
 }
 
 export const DeleteModelOperationsImplementation = DeleteModelOperations.createImplementation({
     implementation: DeleteModelOperationsImpl,
-    dependencies: [RequestContainer, TenantContext, GlobalKeyValueStore]
+    dependencies: [
+        TenantContext,
+        GlobalKeyValueStore,
+        IdentityContext,
+        GetModelUseCase,
+        AccessControl,
+        TriggerTaskUseCase,
+        GetTaskUseCase,
+        AbortTaskUseCase
+    ]
 });
