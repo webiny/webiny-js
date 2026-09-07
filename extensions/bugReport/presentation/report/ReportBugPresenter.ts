@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { ActionRecorder } from "../../recording/abstractions.js";
 import type { IRecordedEvent } from "../../recording/abstractions.js";
-import { captureScreenshot } from "../../capture/captureScreenshot.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { SpeechDictation } from "../../speech/abstractions.js";
@@ -9,14 +8,6 @@ import { ReportBugPresenter as Abstraction } from "./abstractions.js";
 import type { IReportBugViewModel } from "./abstractions.js";
 import type { IReportedEnvironment } from "../../shared/types.js";
 import type { IReportedScreenshot } from "../../shared/types.js";
-
-function waitForRepaint(): Promise<void> {
-    return new Promise(resolve => {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve());
-        });
-    });
-}
 
 function describeFailure(error: unknown): string {
     if (error instanceof Error) {
@@ -85,21 +76,9 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         };
     }
 
-    /*
-     * The palette closes before this runs, and the two repainted frames let it disappear —
-     * otherwise the screenshot is a picture of the palette rather than of the bug. Transient
-     * user activation outlives that wait, so the share prompt still opens.
-     */
-    async open(): Promise<void> {
+    open(): void {
         this.reset();
-
-        await waitForRepaint();
-        const captured = await captureScreenshot();
-        if (captured) {
-            this.addScreenshot(captured);
-        }
-
-        this.show();
+        this.isOpen = true;
     }
 
     close(): void {
@@ -124,15 +103,8 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         );
     }
 
-    async captureScreen(): Promise<void> {
-        const captured = await captureScreenshot();
-        if (captured) {
-            this.addScreenshot(captured);
-        }
-    }
-
     attachScreenshot(dataUrl: string): void {
-        this.addScreenshot(dataUrl);
+        this.screenshots = [...this.screenshots, dataUrl];
     }
 
     removeScreenshot(index: number): void {
@@ -179,14 +151,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
         this.environment = collectEnvironment();
-    }
-
-    private show(): void {
-        this.isOpen = true;
-    }
-
-    private addScreenshot(dataUrl: string): void {
-        this.screenshots = [...this.screenshots, dataUrl];
     }
 
     private beginSubmission(): void {

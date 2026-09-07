@@ -16,8 +16,7 @@ class ReportBugCommandImpl implements Command.Interface {
     constructor(private presenter: ReportBugPresenter.Interface) {}
 
     execute() {
-        // Deliberately not a `detailView`: the palette has to close before the screenshot.
-        void this.presenter.open();
+        this.presenter.open();
     }
 }
 

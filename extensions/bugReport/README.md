@@ -1,8 +1,8 @@
 # Bug reporter
 
-Report a bug by talking to the app. Hit `cmd+shift+b`, say what went wrong, and a GitHub
-issue appears with a screenshot, the environment, and a timeline of what you did in the
-minutes before you reported it.
+Report a bug by talking to the app. Hit `cmd+shift+b`, say what went wrong, paste your
+screenshot, and a GitHub issue appears with it attached alongside the environment and a
+timeline of what you did in the minutes before you reported it.
 
 Nobody using it configures anything. The keys live on the API.
 
@@ -42,15 +42,13 @@ leaves the browser until you submit.
 | Exceptions    | `window.onerror` and unhandled promise rejections                        |
 
 Field values are deliberately excluded because reports get filed from tenants holding real
-customer data. The screenshot is not filtered, though, so look at it before you send.
+customer data. Screenshots are not filtered, but you took them, so you know what is in them.
 
 ## How it fits together
 
 ```
 cmd+shift+b
-  → the palette closes, two frames repaint
-  → getDisplayMedia screenshots the tab (one click on the share prompt)
-  → the dialog opens; type or dictate, paste more images
+  → the dialog opens; type or dictate, paste screenshots
   → reportBug mutation carries the text, events, environment and images to the API
   ↓ API
   → the first AI Power-Ups provider drafts title / summary / steps from the words + timeline
@@ -64,16 +62,13 @@ so the factual half of the issue can't be paraphrased or invented.
 
 ## Attachments
 
-The auto-capture is the first attachment. Beyond it:
+`cmd+v` anywhere in the dialog attaches an image, as many as you like, each with a remove
+button. Works for a raw screenshot on the clipboard and for an image file copied from Finder.
+Pasted _text_ is left alone, so it still lands in the textarea.
 
-- **Paste an image** anywhere in the dialog and it is appended. Works for a raw screenshot on
-  the clipboard and for an image file copied from Finder. Pasted _text_ is left alone, so it
-  still lands in the textarea.
-- **Capture the screen** takes another shot of the tab.
-- Each thumbnail has a remove button, including the auto-capture.
-
-So the usual flow for something you already caught: screenshot it yourself, open the report,
-remove the auto-capture if it is not the interesting frame, and paste yours.
+Nothing is captured for you. Taking the screenshot yourself means you frame the thing that is
+actually wrong, and there is no browser share prompt in the way. Use whatever you already use:
+`cmd+ctrl+shift+4` on macOS puts a region straight on the clipboard.
 
 Dictation uses the browser's own speech recognition. No key, no cost, but it is a Chrome and
 Safari feature — elsewhere the mic button just doesn't appear.
@@ -83,7 +78,7 @@ Safari feature — elsewhere the mic button just doesn't appear.
 ```
 shared/types.ts        the wire shape, types only, read by both bundles
 recording/             the action recorder and its ring buffer   (admin)
-capture/               screenshot and environment                (admin)
+capture/               pasted images and environment             (admin)
 speech/                dictation                                 (admin)
 presentation/report/   presenter and dialog                      (admin)
 commands/              the command palette entry                 (admin)
@@ -93,8 +88,6 @@ api/                   use case, drafter, GitHub, formatting     (api)
 
 ## Known rough edges
 
-- The share prompt appears on every report. That is the price of a real screenshot; a DOM
-  rasteriser skips the prompt but gets canvases, iframes and cross-origin images wrong.
 - The screenshot branch grows forever. Delete it when it gets large; nothing links to old ones
   except closed issues.
 - Build params are baked at build time, so rotating the token means a redeploy of the API.

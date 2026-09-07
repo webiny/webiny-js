@@ -33,7 +33,7 @@ export interface IBugReportPayload {
     reportedAt: number;
     events: IReportedEvent[];
     environment: IReportedEnvironment;
-    /* In the order the reporter attached them: the auto-capture first, then anything pasted. */
+    /* Whatever the reporter pasted, in the order they pasted it. Often empty. */
     screenshots: IReportedScreenshot[];
 }
 

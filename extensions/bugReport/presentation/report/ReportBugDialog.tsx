@@ -77,7 +77,7 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
             open={vm.open}
             onOpenChange={() => report.close()}
             title={"Report a bug"}
-            description={"Say what went wrong. The rest is already captured."}
+            description={"Say what went wrong, paste a screenshot. The rest is already captured."}
             loading={vm.busy}
             actions={
                 <>
@@ -106,8 +106,8 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                     onChange={(value: string) => report.describe(value)}
                 />
 
-                <div className={"flex gap-sm"}>
-                    {vm.dictationSupported ? (
+                {vm.dictationSupported ? (
+                    <div>
                         <Button
                             variant={"secondary"}
                             size={"sm"}
@@ -115,14 +115,8 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                             text={micLabel}
                             onClick={() => report.toggleDictation()}
                         />
-                    ) : null}
-                    <Button
-                        variant={"secondary"}
-                        size={"sm"}
-                        text={"Capture the screen"}
-                        onClick={() => void report.captureScreen()}
-                    />
-                </div>
+                    </div>
+                ) : null}
 
                 {vm.screenshots.length > 0 ? (
                     <div className={"flex flex-wrap gap-sm"}>
@@ -150,7 +144,7 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                 ) : null}
 
                 <Text size={"sm"}>
-                    {`Paste an image to attach it. ${vm.recordedEventCount} recorded actions will be included.`}
+                    {`Paste a screenshot to attach it. ${vm.recordedEventCount} recorded actions will be included.`}
                 </Text>
 
                 {vm.statusLabel ? <Text size={"sm"}>{vm.statusLabel}</Text> : null}
