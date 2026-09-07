@@ -14,11 +14,26 @@ from Webiny never get.
 Set these in the environment that builds the API. `BugReporterExtension.tsx` reads them and
 passes them through as build params, so CI can hold them as secrets:
 
-| Variable                  |                                                                                                                                                                                                                 |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `BUG_REPORT_GITHUB_TOKEN` | Fine-grained PAT with **Issues** and **Contents** write on the repository. Contents is needed because screenshots are committed to a `bug-report-assets` branch; GitHub's issue API has no attachment endpoint. |
-| `BUG_REPORT_REPOSITORY`   | `owner/name`. Defaults to `webiny/webiny-js`.                                                                                                                                                                   |
-| `BUG_REPORT_LABELS`       | Comma separated. Defaults to `bug`.                                                                                                                                                                             |
+| Variable                  |                                               |
+| ------------------------- | --------------------------------------------- |
+| `BUG_REPORT_GITHUB_TOKEN` | A PAT, either kind. See below.                |
+| `BUG_REPORT_REPOSITORY`   | `owner/name`. Defaults to `webiny/webiny-js`. |
+| `BUG_REPORT_LABELS`       | Comma separated. Defaults to `bug`.           |
+
+### The token
+
+Two write permissions are needed: **issues** to file the issue, and **contents** to commit the
+screenshots. Contents is not optional if anyone pastes an image, because GitHub's issue API has
+no attachment endpoint, so images go to a `bug-report-assets` branch instead.
+
+- **Classic** — one `repo` scope covers both:
+  [create one](https://github.com/settings/tokens/new?scopes=repo&description=Webiny%20bug%20reporter).
+  Use `public_repo` instead if the target repo is public. Classic tokens can't be limited to a
+  single repository: `repo` reaches every repo the account can write to.
+- **Fine-grained** — pick the one repository, then set Issues and Contents to read and write:
+  [create one](https://github.com/settings/personal-access-tokens/new).
+
+Both go in the same `Authorization: Bearer` header, so the code doesn't care which you use.
 
 Drafting uses the **first provider configured in AI Power-Ups**, decrypted server-side, the
 same way AI image enrichment resolves its provider. Nothing to set: if a provider is there it
