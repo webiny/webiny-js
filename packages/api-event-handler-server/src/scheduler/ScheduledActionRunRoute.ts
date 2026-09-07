@@ -1,8 +1,4 @@
-import {
-    HttpRoute,
-    RequestContainer,
-    runRequestContextInitializers
-} from "@webiny/event-handler-core";
+import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -43,8 +39,6 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
         try {
             this.container.resolve(RawTenantId).set(tenant);
             await this.container.resolve(RequestTenantLoader).establish();
-
-            await runRequestContextInitializers(this.container, { continueOnError: true });
 
             /* TODO: remove once legacy ctx is gone — resolve services directly from the container. */
             const ctx: Record<string, any> = { container: this.container };

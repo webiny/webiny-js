@@ -7,7 +7,7 @@ import { NodeHttpRouterHandler } from "~/handlers/NodeHttpRouterHandler.js";
 /**
  * Registers the transport-only Node HTTP server infrastructure:
  * - NodeHttpEventType (recognises an `IncomingMessage`)
- * - HttpFeature (HttpRouter + RequestContextInitializerDecorator + SecureHeadersDecorator)
+ * - HttpFeature (HttpRouter + SecureHeadersDecorator)
  * - NodeHttpRouterHandler (terminal: translates IncomingMessage → IHttpRequest, routes via HttpRouter)
  *
  * Auth/tenant establishment (the extract→load decorators, which depend on api-core) is NOT here —

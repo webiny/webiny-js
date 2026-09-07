@@ -6,7 +6,7 @@ import {
     DuplicatePageRepository as RepositoryAbstraction,
     type DuplicatePageCallback
 } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
     PageNotFoundError,
@@ -18,15 +18,16 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private pageModel: PageModel.Interface
+        private pageModelProvider: PageModelProvider.Interface
     ) {}
 
     async execute(
         params: RepositoryAbstraction.Params,
         callback?: DuplicatePageCallback
     ): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         // First, get the page to duplicate
-        const getResult = await this.getEntryById.execute(this.pageModel, params.id);
+        const getResult = await this.getEntryById.execute(pageModel, params.id);
 
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
@@ -63,7 +64,7 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Create the duplicated page
-        const result = await this.createEntry.execute(this.pageModel, {
+        const result = await this.createEntry.execute(pageModel, {
             location: newPageData.location,
             values: newPageData
         });
@@ -82,5 +83,5 @@ class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const DuplicatePageRepository = RepositoryAbstraction.createImplementation({
     implementation: DuplicatePageRepositoryImpl,
-    dependencies: [CreateEntryUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [CreateEntryUseCase, GetEntryByIdUseCase, PageModelProvider]
 });
