@@ -71,9 +71,12 @@ export function composeIssueBody(input: IComposeIssueBodyInput): string {
     sections.push("### What the reporter did");
     sections.push(input.timeline);
 
-    sections.push("<details><summary>Reported verbatim</summary>\n");
-    sections.push(`> ${input.description.split("\n").join("\n> ")}`);
-    sections.push("</details>");
+    // Skipped when the reporter typed nothing and let a screenshot speak for them.
+    if (input.description.trim() !== "") {
+        sections.push("<details><summary>Reported verbatim</summary>\n");
+        sections.push(`> ${input.description.split("\n").join("\n> ")}`);
+        sections.push("</details>");
+    }
 
     sections.push("---");
     sections.push("_Filed from the Webiny admin app by the bug reporter extension._");

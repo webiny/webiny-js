@@ -17,6 +17,15 @@ const TOKEN_PARAM = "BUG_REPORT_GITHUB_TOKEN";
 const REPOSITORY_PARAM = "BUG_REPORT_REPOSITORY";
 const LABELS_PARAM = "BUG_REPORT_LABELS";
 
+/*
+ * Always applied, on top of whatever BUG_REPORT_LABELS says, so these issues can be found and
+ * filtered as a group. Not configurable on purpose: it is only useful if it is the same
+ * everywhere.
+ */
+const TOOL_LABEL = "reported-in-app";
+const TOOL_LABEL_COLOR = "1d76db";
+const TOOL_LABEL_DESCRIPTION = "Filed from the admin app by the bug reporter";
+
 interface IRepositoryRef {
     owner: string;
     name: string;
@@ -78,7 +87,11 @@ function parseLabels(raw: string): string[] {
     }
 
     if (labels.length === 0) {
-        return ["bug"];
+        labels.push("bug");
+    }
+
+    if (!labels.includes(TOOL_LABEL)) {
+        labels.push(TOOL_LABEL);
     }
 
     return labels;
@@ -127,6 +140,8 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
 
     async createIssue(input: ICreateIssueInput): Promise<IFiledIssue> {
         const repository = this.readRepository();
+        await this.ensureToolLabel(repository);
+
         const payload = { title: input.title, body: input.body, labels: input.labels };
 
         const created = await this.request(`/repos/${repository.owner}/${repository.name}/issues`, {
@@ -145,12 +160,33 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
     }
 
     /*
+     * Created rather than relied upon, so it arrives with our colour and description instead of a
+     * grey auto-created one, and so the first report against a fresh repository can't fail on it.
+     * Only our own label: whatever BUG_REPORT_LABELS names is the configurer's business.
+     */
+    private async ensureToolLabel(repository: IRepositoryRef): Promise<void> {
+        const base = `/repos/${repository.owner}/${repository.name}`;
+        const exists = await this.exists(`${base}/labels/${encodeURIComponent(TOOL_LABEL)}`);
+        if (exists) {
+            return;
+        }
+
+        const payload = {
+            name: TOOL_LABEL,
+            color: TOOL_LABEL_COLOR,
+            description: TOOL_LABEL_DESCRIPTION
+        };
+
+        await this.request(`${base}/labels`, { method: "POST", body: JSON.stringify(payload) });
+    }
+
+    /*
      * The Contents API writes to an existing branch only, so the first report against a repository
      * has to create it. Branching off the default branch head keeps it a normal branch.
      */
     private async ensureAssetsBranch(repository: IRepositoryRef): Promise<void> {
         const base = `/repos/${repository.owner}/${repository.name}`;
-        const exists = await this.hasRef(`${base}/git/ref/heads/${ASSETS_BRANCH}`);
+        const exists = await this.exists(`${base}/git/ref/heads/${ASSETS_BRANCH}`);
         if (exists) {
             return;
         }
@@ -183,7 +219,7 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
         return parseRepository(readParam(this.params, REPOSITORY_PARAM));
     }
 
-    private async hasRef(path: string): Promise<boolean> {
+    private async exists(path: string): Promise<boolean> {
         const response = await fetch(`${API_ROOT}${path}`, { headers: this.buildHeaders() });
         return response.ok;
     }

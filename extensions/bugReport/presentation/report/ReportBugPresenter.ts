@@ -72,7 +72,8 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             statusLabel: this.status,
             error: this.error,
             issueUrl: this.issueUrl,
-            canSubmit: this.status === null && this.description.trim() !== ""
+            // A screenshot on its own is a report: the error text is often in the image.
+            canSubmit: this.status === null && !this.isEmpty()
         };
     }
 
@@ -151,6 +152,13 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
         this.environment = collectEnvironment();
+    }
+
+    private isEmpty(): boolean {
+        if (this.description.trim() !== "") {
+            return false;
+        }
+        return this.screenshots.length === 0;
     }
 
     private beginSubmission(): void {

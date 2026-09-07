@@ -20,6 +20,17 @@ passes them through as build params, so CI can hold them as secrets:
 | `BUG_REPORT_REPOSITORY`   | `owner/name`. Defaults to `webiny/webiny-js`. |
 | `BUG_REPORT_LABELS`       | Comma separated. Defaults to `bug`.           |
 
+Every issue also gets a `reported-in-app` label, on top of whatever `BUG_REPORT_LABELS` says.
+That one isn't configurable — it's only useful if it's the same everywhere, so you can filter
+the whole set:
+
+```
+label:reported-in-app
+```
+
+The gateway creates it on first use with its own colour and description, rather than letting
+GitHub auto-create a grey one.
+
 ### The token
 
 Two write permissions are needed: **issues** to file the issue, and **contents** to commit the
@@ -80,6 +91,11 @@ so the factual half of the issue can't be paraphrased or invented.
 `cmd+v` anywhere in the dialog attaches an image, as many as you like, each with a remove
 button. Works for a raw screenshot on the clipboard and for an image file copied from Finder.
 Pasted _text_ is left alone, so it still lands in the textarea.
+
+**A screenshot on its own is a whole report.** Paste and submit without typing anything: the
+first three images go to the model as file parts, so it reads the error text off the image and
+writes the title and summary from that. Handy when the screenshot already says it better than
+you would.
 
 Nothing is captured for you. Taking the screenshot yourself means you frame the thing that is
 actually wrong, and there is no browser share prompt in the way. Use whatever you already use:
