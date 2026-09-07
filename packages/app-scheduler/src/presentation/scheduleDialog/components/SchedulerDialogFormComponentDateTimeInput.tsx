@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DatePicker } from "@webiny/admin-ui";
 import { makeDecoratable } from "@webiny/react-composition";
 import type { BindComponentRenderProp } from "@webiny/form";
@@ -12,6 +12,18 @@ export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
     (props: ISchedulerDialogFormComponentDateTimeInputProps) => {
         const { bind } = props;
 
-        return <DatePicker {...bind} type={"dateTimeLocal"} label={"Schedule On"} size={"lg"} />;
+        const timezone = useMemo(() => {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }, []);
+
+        return (
+            <DatePicker
+                {...bind}
+                type={"dateTimeLocal"}
+                label={"Schedule On"}
+                description={`Timezone: ${timezone}`}
+                size={"lg"}
+            />
+        );
     }
 );
