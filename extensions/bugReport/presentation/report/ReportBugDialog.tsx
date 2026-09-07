@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createReactiveComponent } from "webiny/admin";
 import { useFeature } from "webiny/admin";
 import { Alert } from "webiny/admin/ui";
 import { Button } from "webiny/admin/ui";
 import { Dialog } from "webiny/admin/ui";
+import { IconButton } from "webiny/admin/ui";
 import { Text } from "webiny/admin/ui";
 import { Textarea } from "webiny/admin/ui";
 import { ReactComponent as MicIcon } from "webiny/admin/icons/mic.svg";
 import { ReactComponent as MicOffIcon } from "webiny/admin/icons/mic_off.svg";
+import { ReactComponent as CloseIcon } from "webiny/admin/icons/close.svg";
+import { readPastedImage } from "../../capture/readPastedImage.js";
 import { BugReportFeature } from "../../feature.js";
 
 const PLACEHOLDER = "Hey, this isn't working...";
@@ -15,6 +18,31 @@ const PLACEHOLDER = "Hey, this isn't working...";
 export const ReportBugDialog = createReactiveComponent(function ReportBugDialog() {
     const { report } = useFeature(BugReportFeature);
     const { vm } = report;
+
+    /*
+     * Paste anywhere in the dialog to attach an image. The listener sits on the document so it
+     * works wherever focus is, and only claims the event when the clipboard actually holds an
+     * image — otherwise pasted text still lands in the textarea.
+     */
+    useEffect(() => {
+        if (!vm.open) {
+            return;
+        }
+
+        const onPaste = (event: ClipboardEvent) => {
+            void readPastedImage(event).then(dataUrl => {
+                if (dataUrl) {
+                    report.attachScreenshot(dataUrl);
+                }
+            });
+        };
+
+        document.addEventListener("paste", onPaste);
+
+        return () => {
+            document.removeEventListener("paste", onPaste);
+        };
+    }, [vm.open, report]);
 
     if (vm.issueUrl) {
         return (
@@ -78,8 +106,8 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                     onChange={(value: string) => report.describe(value)}
                 />
 
-                {vm.dictationSupported ? (
-                    <div>
+                <div className={"flex gap-sm"}>
+                    {vm.dictationSupported ? (
                         <Button
                             variant={"secondary"}
                             size={"sm"}
@@ -87,44 +115,42 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                             text={micLabel}
                             onClick={() => report.toggleDictation()}
                         />
-                    </div>
-                ) : null}
-
-                {vm.screenshot ? (
-                    <div className={"flex flex-col gap-sm"}>
-                        <img
-                            src={vm.screenshot}
-                            alt={"Screenshot taken when the report was opened"}
-                            className={
-                                "max-h-64 w-full rounded-md border-sm border-neutral-muted object-contain"
-                            }
-                        />
-                        <div className={"flex gap-sm"}>
-                            <Button
-                                variant={"ghost"}
-                                size={"sm"}
-                                text={"Retake"}
-                                onClick={() => void report.retakeScreenshot()}
-                            />
-                            <Button
-                                variant={"ghost"}
-                                size={"sm"}
-                                text={"Remove"}
-                                onClick={() => report.discardScreenshot()}
-                            />
-                        </div>
-                    </div>
-                ) : (
+                    ) : null}
                     <Button
                         variant={"secondary"}
                         size={"sm"}
-                        text={"Attach a screenshot"}
-                        onClick={() => void report.retakeScreenshot()}
+                        text={"Capture the screen"}
+                        onClick={() => void report.captureScreen()}
                     />
-                )}
+                </div>
+
+                {vm.screenshots.length > 0 ? (
+                    <div className={"flex flex-wrap gap-sm"}>
+                        {vm.screenshots.map((screenshot, index) => (
+                            <div key={index} className={"relative"}>
+                                <img
+                                    src={screenshot}
+                                    alt={`Attachment ${index + 1}`}
+                                    className={
+                                        "h-24 w-40 rounded-md border-sm border-neutral-muted object-cover"
+                                    }
+                                />
+                                <div className={"absolute right-xxs top-xxs"}>
+                                    <IconButton
+                                        size={"sm"}
+                                        variant={"secondary"}
+                                        icon={<CloseIcon />}
+                                        aria-label={`Remove attachment ${index + 1}`}
+                                        onClick={() => report.removeScreenshot(index)}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : null}
 
                 <Text size={"sm"}>
-                    {`${vm.recordedEventCount} recorded actions will be attached.`}
+                    {`Paste an image to attach it. ${vm.recordedEventCount} recorded actions will be included.`}
                 </Text>
 
                 {vm.statusLabel ? <Text size={"sm"}>{vm.statusLabel}</Text> : null}

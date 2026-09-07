@@ -50,17 +50,30 @@ customer data. The screenshot is not filtered, though, so look at it before you 
 cmd+shift+b
   → the palette closes, two frames repaint
   → getDisplayMedia screenshots the tab (one click on the share prompt)
-  → the dialog opens; type or dictate
-  → reportBug mutation carries the text, events, environment and PNG to the API
+  → the dialog opens; type or dictate, paste more images
+  → reportBug mutation carries the text, events, environment and images to the API
   ↓ API
   → the first AI Power-Ups provider drafts title / summary / steps from the words + timeline
-  → the screenshot is committed to the bug-report-assets branch
+  → each image is committed to the bug-report-assets branch
   → the issue is created and its URL comes back to the dialog
 ```
 
 The model writes five fields: `title`, `summary`, `stepsToReproduce`, `expected`, `actual`.
 Everything else in the body is assembled by `api/composeIssueBody.ts` from what was recorded,
 so the factual half of the issue can't be paraphrased or invented.
+
+## Attachments
+
+The auto-capture is the first attachment. Beyond it:
+
+- **Paste an image** anywhere in the dialog and it is appended. Works for a raw screenshot on
+  the clipboard and for an image file copied from Finder. Pasted _text_ is left alone, so it
+  still lands in the textarea.
+- **Capture the screen** takes another shot of the tab.
+- Each thumbnail has a remove button, including the auto-capture.
+
+So the usual flow for something you already caught: screenshot it yourself, open the report,
+remove the auto-capture if it is not the interesting frame, and paste yours.
 
 Dictation uses the browser's own speech recognition. No key, no cost, but it is a Chrome and
 Safari feature — elsewhere the mic button just doesn't appear.

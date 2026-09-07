@@ -22,9 +22,12 @@ class SubmitBugReportUseCaseImpl implements Abstraction.Interface {
         const timeline = formatTimeline(payload.events, payload.reportedAt);
         const draft = await this.drafter.execute(payload, timeline);
 
-        let screenshotUrl: string | null = null;
-        if (payload.screenshotBase64) {
-            screenshotUrl = await this.github.uploadScreenshot(payload.screenshotBase64);
+        // Sequential on purpose: the first upload may have to create the assets branch, and
+        // concurrent creates race into a 422.
+        const screenshotUrls: string[] = [];
+        for (const screenshot of payload.screenshots) {
+            const url = await this.github.uploadScreenshot(screenshot);
+            screenshotUrls.push(url);
         }
 
         const body = composeIssueBody({
@@ -32,7 +35,7 @@ class SubmitBugReportUseCaseImpl implements Abstraction.Interface {
             description: payload.description,
             environment: payload.environment,
             timeline,
-            screenshotUrl
+            screenshotUrls
         });
 
         return this.github.createIssue({

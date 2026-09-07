@@ -8,6 +8,7 @@ import { SpeechDictation } from "../../speech/abstractions.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
 import type { IReportBugViewModel } from "./abstractions.js";
 import type { IReportedEnvironment } from "../../shared/types.js";
+import type { IReportedScreenshot } from "../../shared/types.js";
 
 function waitForRepaint(): Promise<void> {
     return new Promise(resolve => {
@@ -24,20 +25,31 @@ function describeFailure(error: unknown): string {
     return String(error);
 }
 
-/* The API wants bare base64; a canvas data URL carries a `data:image/png;base64,` prefix. */
-function readBase64Payload(dataUrl: string): string | null {
-    const separator = dataUrl.indexOf(",");
-    if (separator === -1) {
+/*
+ * Splits `data:image/png;base64,AAAA` into the parts the API wants. Returns null for anything
+ * that isn't a base64 data URL, so a malformed attachment is dropped rather than sent.
+ */
+function parseDataUrl(dataUrl: string): IReportedScreenshot | null {
+    const match = /^data:([^;,]+);base64,(.+)$/s.exec(dataUrl);
+    if (!match) {
         return null;
     }
-    return dataUrl.slice(separator + 1);
+
+    const mediaType = match[1];
+    const base64 = match[2];
+
+    if (!mediaType || !base64) {
+        return null;
+    }
+
+    return { mediaType, base64 };
 }
 
 class ReportBugPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
     private description = "";
     private listening = false;
-    private screenshot: string | null = null;
+    private screenshots: string[] = [];
     private events: IRecordedEvent[] = [];
     private environment: IReportedEnvironment | null = null;
     private capturedAt = 0;
@@ -63,7 +75,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             description: this.description,
             listening: this.listening,
             dictationSupported: this.dictation.supported,
-            screenshot: this.screenshot,
+            screenshots: this.screenshots,
             recordedEventCount: this.events.length,
             busy: this.status !== null,
             statusLabel: this.status,
@@ -83,7 +95,9 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
         await waitForRepaint();
         const captured = await captureScreenshot();
-        this.setScreenshot(captured);
+        if (captured) {
+            this.addScreenshot(captured);
+        }
 
         this.show();
     }
@@ -110,13 +124,19 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         );
     }
 
-    async retakeScreenshot(): Promise<void> {
+    async captureScreen(): Promise<void> {
         const captured = await captureScreenshot();
-        this.setScreenshot(captured);
+        if (captured) {
+            this.addScreenshot(captured);
+        }
     }
 
-    discardScreenshot(): void {
-        this.screenshot = null;
+    attachScreenshot(dataUrl: string): void {
+        this.addScreenshot(dataUrl);
+    }
+
+    removeScreenshot(index: number): void {
+        this.screenshots = this.screenshots.filter((_, position) => position !== index);
     }
 
     async submit(): Promise<void> {
@@ -127,9 +147,12 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.stopDictation();
         this.beginSubmission();
 
-        let screenshotBase64: string | null = null;
-        if (this.screenshot) {
-            screenshotBase64 = readBase64Payload(this.screenshot);
+        const screenshots: IReportedScreenshot[] = [];
+        for (const dataUrl of this.screenshots) {
+            const screenshot = parseDataUrl(dataUrl);
+            if (screenshot) {
+                screenshots.push(screenshot);
+            }
         }
 
         try {
@@ -138,7 +161,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
                 reportedAt: this.capturedAt,
                 events: this.events,
                 environment: this.environment,
-                screenshotBase64
+                screenshots
             });
 
             this.markFiled(issue.url);
@@ -149,7 +172,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     private reset(): void {
         this.description = "";
-        this.screenshot = null;
+        this.screenshots = [];
         this.error = null;
         this.issueUrl = null;
         this.status = null;
@@ -162,8 +185,8 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.isOpen = true;
     }
 
-    private setScreenshot(screenshot: string | null): void {
-        this.screenshot = screenshot;
+    private addScreenshot(dataUrl: string): void {
+        this.screenshots = [...this.screenshots, dataUrl];
     }
 
     private beginSubmission(): void {

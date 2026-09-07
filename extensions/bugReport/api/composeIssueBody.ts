@@ -6,7 +6,7 @@ export interface IComposeIssueBodyInput {
     description: string;
     environment: IReportedEnvironment;
     timeline: string;
-    screenshotUrl: string | null;
+    screenshotUrls: string[];
 }
 
 function buildEnvironmentTable(environment: IReportedEnvironment): string {
@@ -56,9 +56,13 @@ export function composeIssueBody(input: IComposeIssueBodyInput): string {
         sections.push(input.draft.actual);
     }
 
-    if (input.screenshotUrl) {
-        sections.push("### Screenshot");
-        sections.push(`![Screenshot at the moment of reporting](${input.screenshotUrl})`);
+    if (input.screenshotUrls.length > 0) {
+        sections.push("### Screenshots");
+        const images: string[] = [];
+        input.screenshotUrls.forEach((url, index) => {
+            images.push(`![Attachment ${index + 1}](${url})`);
+        });
+        sections.push(images.join("\n\n"));
     }
 
     sections.push("### Environment");

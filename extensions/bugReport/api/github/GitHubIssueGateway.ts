@@ -2,6 +2,7 @@ import { BuildParams } from "webiny/api";
 import { GitHubIssueGateway as Abstraction } from "./abstractions.js";
 import type { ICreateIssueInput } from "./abstractions.js";
 import type { IFiledIssue } from "../../shared/types.js";
+import type { IReportedScreenshot } from "../../shared/types.js";
 
 const API_ROOT = "https://api.github.com";
 
@@ -29,9 +30,20 @@ function parseRepository(repository: string): IRepositoryRef {
     return { owner, name };
 }
 
-function buildScreenshotPath(): string {
+const EXTENSION_BY_MEDIA_TYPE: Record<string, string> = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/gif": "gif",
+    "image/webp": "webp"
+};
+
+/* Pasted images are not always PNG, and GitHub renders by extension. */
+function buildScreenshotPath(mediaType: string): string {
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-    return `screenshots/${stamp}.png`;
+    const extension = EXTENSION_BY_MEDIA_TYPE[mediaType] ?? "png";
+    // A report can attach several images inside the same millisecond, hence the suffix.
+    const suffix = Math.random().toString(36).slice(2, 8);
+    return `screenshots/${stamp}-${suffix}.${extension}`;
 }
 
 function readParam(params: BuildParams.Interface, key: string): string {
@@ -86,14 +98,14 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
         return parseLabels(readParam(this.params, LABELS_PARAM));
     }
 
-    async uploadScreenshot(base64: string): Promise<string> {
+    async uploadScreenshot(screenshot: IReportedScreenshot): Promise<string> {
         const repository = this.readRepository();
         await this.ensureAssetsBranch(repository);
 
-        const path = buildScreenshotPath();
+        const path = buildScreenshotPath(screenshot.mediaType);
         const payload = {
             message: "chore: bug report screenshot",
-            content: base64,
+            content: screenshot.base64,
             branch: ASSETS_BRANCH
         };
 

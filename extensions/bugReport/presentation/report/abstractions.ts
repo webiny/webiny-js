@@ -5,7 +5,8 @@ export interface IReportBugViewModel {
     description: string;
     listening: boolean;
     dictationSupported: boolean;
-    screenshot: string | null;
+    /* Data URLs, ready to render. The auto-capture first, then anything pasted. */
+    screenshots: string[];
     recordedEventCount: number;
     busy: boolean;
     statusLabel: string | null;
@@ -20,8 +21,9 @@ export interface IReportBugPresenter {
     close(): void;
     describe(description: string): void;
     toggleDictation(): void;
-    retakeScreenshot(): Promise<void>;
-    discardScreenshot(): void;
+    captureScreen(): Promise<void>;
+    attachScreenshot(dataUrl: string): void;
+    removeScreenshot(index: number): void;
     submit(): Promise<void>;
 }
 
