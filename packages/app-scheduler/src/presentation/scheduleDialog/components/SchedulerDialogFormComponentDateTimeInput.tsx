@@ -12,14 +12,6 @@ export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
     (props: ISchedulerDialogFormComponentDateTimeInputProps) => {
         const { bind } = props;
 
-        return (
-            <DatePicker
-                {...bind}
-                type={"dateTimeLocal"}
-                label={"Schedule On"}
-                showTimezone={true}
-                size={"lg"}
-            />
-        );
+        return <DatePicker {...bind} type={"dateTimeTz"} label={"Schedule On"} size={"lg"} />;
     }
 );
