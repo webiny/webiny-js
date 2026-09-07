@@ -5,7 +5,9 @@ import {
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
     NODE_VERSION,
+    OPENSEARCH_SERVICE,
     addToOutputs,
+    createWaitForOpenSearchStep,
     runNodeScript
 } from "./utils/index.js";
 import {
@@ -71,13 +73,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-        if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
-            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
+        if (needsOpenSearch) {
+            // No endpoint/username/password: that is what makes the test client fall back to the
+            // service container on localhost. See `utils/openSearch.ts`.
             env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
@@ -97,11 +99,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env,
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
+        ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
             ...installBuildSteps,
+            ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
             {
                 name: "Run tests",
                 run: "${{ matrix.testCommand.cmd }}",
