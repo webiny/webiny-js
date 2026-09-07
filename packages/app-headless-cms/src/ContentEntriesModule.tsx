@@ -134,6 +134,7 @@ export const ContentEntriesModule = () => {
                         name={"live"}
                         header={"Live"}
                         truncate={false}
+                        sortable={true}
                         cell={<CellLive />}
                     />
                 </IsModelPublishable>
