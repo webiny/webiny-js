@@ -3,13 +3,6 @@ import { Ai } from "webiny/api";
 import { Encryption } from "webiny/api";
 import { Logger } from "webiny/api";
 import { GetSettingsUseCase } from "webiny/api/ai-powerups";
-/*
- * `IAiPowerUpsSettings` is an empty interface that each settings group augments by declaration
- * merging. The package's emitted .d.ts still carries the unresolved `~/...` specifiers that pull
- * those augmentations in, so from outside the package `providers` is missing until the module is
- * imported by its real path. Drop this once ai-powerups rewrites aliases on build.
- */
-import "@webiny/ai-powerups/api/features/Providers/types.js";
 import { IssueDrafter as Abstraction } from "./abstractions.js";
 import { issueDraftSchema } from "./abstractions.js";
 import type { IIssueDraft } from "./abstractions.js";

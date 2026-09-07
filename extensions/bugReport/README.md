@@ -85,9 +85,9 @@ api/                   use case, drafter, GitHub, formatting     (api)
 - The screenshot branch grows forever. Delete it when it gets large; nothing links to old ones
   except closed issues.
 - Build params are baked at build time, so rotating the token means a redeploy of the API.
-- `api/drafter/IssueDrafter.ts` imports `@webiny/ai-powerups/api/features/Providers/types.js`
-  by its real path. The package emits unresolved `~/...` specifiers in its `.d.ts`, so its
-  settings augmentations don't reach consumers outside the package. Drop that import once the
-  package rewrites aliases on build.
+- `packages/webiny/src/api/ai-powerups.ts` now side-effect-imports the AI Power-Ups settings
+  augmentations. The package emits unresolved `~/...` specifiers in its `.d.ts`, so without
+  that, `settings.providers` is invisible to every consumer outside the package. Drop those
+  imports once ai-powerups rewrites aliases on build.
 - No PR is opened. A well-formed issue is the deliverable; wiring an agent to pick it up is a
   separate job.
