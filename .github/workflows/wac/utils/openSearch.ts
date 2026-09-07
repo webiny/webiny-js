@@ -12,6 +12,12 @@
 // `http://localhost:9200` with no auth, which is what `yarn test:os` uses locally, and only
 // switches to a remote cluster when `OPENSEARCH_ENDPOINT` is set. So a job that wants the container
 // simply leaves `OPENSEARCH_ENDPOINT`, `OPENSEARCH_USERNAME` and `OPENSEARCH_PASSWORD` unset.
+//
+// `OPENSEARCH_INDEX_PREFIX` is gone for the same reason. It existed to keep matrix legs from
+// colliding in the one shared cluster; a cluster per leg makes that impossible by construction.
+// `getOpenSearchIndexPrefix()` falls back to `""`, and the packages that want a namespace of their
+// own still set one (`api-sync-ddb-to-opensearch-`, `api-headless-cms-env-`), which is exactly how
+// `yarn test:os` has always run locally.
 
 // Matches `OS_ENGINE_VERSION` in `packages/project-aws/src/pulumi/apps/core/CoreOpenSearch.ts`
 // (OpenSearch_3.3), so CI runs against the version users deploy.

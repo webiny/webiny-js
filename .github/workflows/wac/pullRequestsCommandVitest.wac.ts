@@ -125,16 +125,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
     const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-
-        if (needsOpenSearch) {
-            // No endpoint/username/password: that is what makes the test client fall back to the
-            // service container on localhost. See `utils/openSearch.ts`.
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        }
 
         if (storageOps instanceof PgliteStorageOps) {
             env["WEBINY_SQL_CLIENT"] = "pglite";
