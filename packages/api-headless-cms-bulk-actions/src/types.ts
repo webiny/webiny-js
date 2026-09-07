@@ -49,6 +49,11 @@ export interface IBulkActionOperationByModelInput {
     after?: string | null;
     data?: Record<string, any>;
     action?: BulkActionOperationByModelAction;
+    /**
+     * Fingerprint of the entry ids dispatched in the previous round. Carried across iterations so
+     * CHECK_MORE_SUBTASKS can tell "there is more work" from "the same work came back untouched".
+     */
+    dispatchedSignature?: string;
 }
 
 export interface IBulkActionOperationByModelOutput {

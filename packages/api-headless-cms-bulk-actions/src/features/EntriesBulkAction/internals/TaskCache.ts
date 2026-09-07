@@ -1,6 +1,11 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 
+export interface ITriggerTasksResult {
+    triggered: number;
+    failures: Error[];
+}
+
 /**
  * TaskCache class for managing and triggering cached tasks.
  * @template TTask - Task input data.
@@ -22,15 +27,25 @@ export class TaskCache<TTask extends TaskDefinition.TaskInput = TaskDefinition.T
     }
 
     /**
-     * Triggers all cached tasks using the provided TriggerTaskUseCase and parent task.
+     * Triggers all cached tasks and REPORTS what happened, rather than deciding for the caller.
+     *
+     * A trigger failure used to be logged and dropped here, which left the parent waiting on
+     * subtasks that were never created — it advances to PROCESS_SUBTASKS either way, finds no
+     * running children, and loops. Returning the failures lets the caller end the task when
+     * nothing could be dispatched.
+     *
      * @param {TriggerTaskUseCase.Interface} triggerTask - The use case used to trigger the tasks.
      * @param {ITask} parent - The parent task to associate with the triggered tasks.
      */
-    async triggerTask(triggerTask: TriggerTaskUseCase.Interface, parent: TaskDefinition.Task) {
+    async triggerTask(
+        triggerTask: TriggerTaskUseCase.Interface,
+        parent: TaskDefinition.Task
+    ): Promise<ITriggerTasksResult> {
         const tasks = this.getTasks();
+        const result: ITriggerTasksResult = { triggered: 0, failures: [] };
 
         if (tasks.length === 0) {
-            return;
+            return result;
         }
 
         for (const task of tasks) {
@@ -40,13 +55,16 @@ export class TaskCache<TTask extends TaskDefinition.TaskInput = TaskDefinition.T
                     parent,
                     input: task
                 });
-            } catch (error) {
-                console.error(`Error triggering task.`, error);
+                result.triggered++;
+            } catch (ex) {
+                result.failures.push(ex instanceof Error ? ex : new Error(String(ex)));
             }
         }
 
         // Clear the cache after processing
         this.clearTasks();
+
+        return result;
     }
 
     /**
