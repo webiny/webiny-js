@@ -49,7 +49,10 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
         }
         const actionName =
             entry.actionType === ScheduleActionType.publish ? "publish" : "unpublish";
-        return { actionName, scheduleOn: this.dateFormatter.format(scheduleOn) };
+        return {
+            actionName,
+            scheduleOn: this.dateFormatter.format(scheduleOn, { timeZoneName: "short" })
+        };
     }
 
     async load(params: IScheduleDialogPresenterLoadParams): Promise<void> {
