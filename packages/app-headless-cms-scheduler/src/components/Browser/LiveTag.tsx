@@ -1,18 +1,24 @@
 import React from "react";
-import { Tag, Text, TimeAgo } from "@webiny/admin-ui";
+import { Tag, Tooltip } from "@webiny/admin-ui";
+import { useDateFormatter } from "@webiny/app-admin";
 
 interface LiveTagProps {
     version: number;
     lastPublishedOn?: string | null;
 }
 
-export const LiveTag = ({ version, lastPublishedOn }: LiveTagProps) => (
-    <div className={"flex flex-col gap-xxs"}>
+export const LiveTag = ({ version, lastPublishedOn }: LiveTagProps) => {
+    const dateFormatter = useDateFormatter();
+
+    const tag = (
         <Tag swatchColor={"#5AC84C"} variant={"success-light"} content={`Live (v${version})`} />
-        {lastPublishedOn ? (
-            <Text size={"sm"} className={"text-neutral-strong"}>
-                <TimeAgo datetime={lastPublishedOn} />
-            </Text>
-        ) : null}
-    </div>
-);
+    );
+
+    if (lastPublishedOn) {
+        return (
+            <Tooltip content={`Published ${dateFormatter.format(lastPublishedOn)}`} trigger={tag} />
+        );
+    }
+
+    return tag;
+};

@@ -1,10 +1,12 @@
 import React from "react";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
-import { Tag, Text, TimeAgo } from "@webiny/admin-ui";
+import { Tag, Tooltip } from "@webiny/admin-ui";
+import { useDateFormatter } from "@webiny/app-admin";
 
 export const CellLive = () => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
+    const dateFormatter = useDateFormatter();
 
     if (isFolderRow(row)) {
         return <>{"-"}</>;
@@ -15,19 +17,22 @@ export const CellLive = () => {
         return <>No</>;
     }
 
-    return (
-        <div className={"flex flex-col gap-xxs"}>
-            <Tag
-                swatchColor={"#5AC84C"}
-                variant={"success-light"}
-                content={`Live (v${entry.live.version})`}
-            />
-            packages/app-headless-cms/src/admin/components/ContentEntries/Table/Cells/CellLive.tsx
-            {entry.lastPublishedOn ? (
-                <Text size={"sm"} className={"text-neutral-strong"}>
-                    <TimeAgo datetime={entry.lastPublishedOn} />
-                </Text>
-            ) : null}
-        </div>
+    const tag = (
+        <Tag
+            swatchColor={"#5AC84C"}
+            variant={"success-light"}
+            content={`Live (v${entry.live.version})`}
+        />
     );
+
+    if (entry.lastPublishedOn) {
+        return (
+            <Tooltip
+                content={`Published ${dateFormatter.format(entry.lastPublishedOn)}`}
+                trigger={tag}
+            />
+        );
+    }
+
+    return tag;
 };
