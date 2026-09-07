@@ -103,9 +103,6 @@ const DateTimePicker = ({
 
     const handleTimezoneChange = (tz: string) => {
         setTimezone(tz);
-        if (displayDate) {
-            emitChange(displayDate, tz);
-        }
     };
 
     return (
