@@ -14,7 +14,7 @@ const scheduledTooltip = (
     const actionLabel =
         scheduled.actionType === ScheduleActionType.unpublish ? "unpublish" : "publish";
     return goLiveOn
-        ? `Scheduled to ${actionLabel} on ${dateFormatter.format(goLiveOn)}`
+        ? `Scheduled to ${actionLabel} on ${dateFormatter.format(goLiveOn, { timeZoneName: "short" })}`
         : `Scheduled to ${actionLabel}`;
 };
 

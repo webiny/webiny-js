@@ -55,7 +55,8 @@ const ScheduledActionBar = observer(() => {
                 {goLiveOn ? (
                     <>
                         This entry is scheduled to {actionLabel} on{" "}
-                        <strong>{dateFormatter.format(goLiveOn)}</strong>.
+                        <strong>{dateFormatter.format(goLiveOn, { timeZoneName: "short" })}</strong>
+                        .
                     </>
                 ) : (
                     <>This entry is scheduled to {actionLabel}.</>
