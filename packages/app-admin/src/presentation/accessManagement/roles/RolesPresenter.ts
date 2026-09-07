@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
 import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
@@ -219,6 +220,9 @@ class RolesPresenterImpl implements IRolesPresenter {
                     .text()
                     .label("Description")
                     .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .renderer("textarea")
                     .disabled(!canModify),
                 permissions: fields

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
 import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
@@ -201,6 +202,9 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                     .text()
                     .label("Description")
                     .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .renderer("textarea"),
                 // @ts-expect-error This is a single-use local renderer I don't want to be visible to users.
                 token: fields.text().label("Token").renderer("apiKeyToken"),

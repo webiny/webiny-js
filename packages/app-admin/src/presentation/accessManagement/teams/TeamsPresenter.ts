@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
 import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
@@ -226,6 +227,9 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                     .label("Description")
                     .renderer("textarea")
                     .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .disabled(!canModify),
                 roles: fields
                     .rolesMultiSelect()
