@@ -7,7 +7,7 @@ import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/exports/a
 import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
 import { useDateFormatter } from "@webiny/app-admin";
 import { useScheduledActionsPresenter } from "~/hooks/useScheduledActionsPresenter.js";
-import { formatUtcOffset } from "@webiny/app-scheduler/utils/formatUtcOffset.js";
+import { formatUtcOffset } from "@webiny/app-admin";
 
 /**
  * Full-width bar shown below the entry-form header (above the form content) when the entry has a

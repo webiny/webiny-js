@@ -1,6 +1,6 @@
 import React from "react";
 import { Tag, Tooltip } from "@webiny/admin-ui";
-import { useDateFormatter } from "@webiny/app-admin";
+import { formatUtcOffset, useDateFormatter } from "@webiny/app-admin";
 
 interface LiveTagProps {
     version: number;
@@ -16,7 +16,10 @@ export const LiveTag = ({ version, lastPublishedOn }: LiveTagProps) => {
 
     if (lastPublishedOn) {
         return (
-            <Tooltip content={`Published ${dateFormatter.format(lastPublishedOn)}`} trigger={tag} />
+            <Tooltip
+                content={`Published ${dateFormatter.format(lastPublishedOn)} (${formatUtcOffset()})`}
+                trigger={tag}
+            />
         );
     }
 

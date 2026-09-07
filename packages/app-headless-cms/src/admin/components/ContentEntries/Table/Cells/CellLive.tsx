@@ -1,7 +1,7 @@
 import React from "react";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { Tag, Tooltip } from "@webiny/admin-ui";
-import { useDateFormatter } from "@webiny/app-admin";
+import { formatUtcOffset, useDateFormatter } from "@webiny/app-admin";
 
 export const CellLive = () => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
@@ -28,7 +28,7 @@ export const CellLive = () => {
     if (entry.lastPublishedOn) {
         return (
             <Tooltip
-                content={`Published ${dateFormatter.format(entry.lastPublishedOn)}`}
+                content={`Published ${dateFormatter.format(entry.lastPublishedOn)} (${formatUtcOffset()})`}
                 trigger={tag}
             />
         );

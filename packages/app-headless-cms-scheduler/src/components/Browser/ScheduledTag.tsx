@@ -5,7 +5,7 @@ import { ScheduleActionType } from "@webiny/app-scheduler/types.js";
 import type { SchedulerEntry } from "@webiny/app-scheduler/types.js";
 import { useDateFormatter } from "@webiny/app-admin";
 import type { DateFormatter } from "@webiny/app-admin";
-import { formatUtcOffset } from "@webiny/app-scheduler/utils/formatUtcOffset.js";
+import { formatUtcOffset } from "@webiny/app-admin";
 
 const scheduledTooltip = (
     scheduled: SchedulerEntry,

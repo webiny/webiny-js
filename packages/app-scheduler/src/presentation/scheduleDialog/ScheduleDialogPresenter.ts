@@ -6,7 +6,7 @@ import { ScheduleUnpublishActionGateway } from "~/features/scheduleUnpublishActi
 import { ScheduleActionType } from "~/types.js";
 import type { SchedulerEntry } from "~/types.js";
 import { DateFormatter } from "@webiny/app-admin";
-import { formatUtcOffset } from "~/utils/formatUtcOffset.js";
+import { formatUtcOffset } from "@webiny/app-admin";
 import {
     ScheduleDialogPresenter as Abstraction,
     type IScheduleDialogPresenter,
