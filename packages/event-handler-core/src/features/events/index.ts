@@ -1,7 +1,6 @@
 export * from "./EventHandler.js";
 export * from "./EventType.js";
 export * from "./RequestContainer.js";
-export * from "./RequestContextInitializer.js";
 export * from "./chain.js";
 export * from "./abstractions.js";
 export * from "./HandlerApp.js";
@@ -9,4 +8,3 @@ export * from "./RootContainerFactory.js";
 export * from "./ChildContainerFactory.js";
 export * from "./Transport.js";
 export * from "./types.js";
-export * from "./runRequestContextInitializers.js";

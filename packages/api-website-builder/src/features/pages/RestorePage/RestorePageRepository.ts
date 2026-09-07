@@ -1,19 +1,20 @@
 import { Result } from "@webiny/feature/api";
 import { RestoreEntryFromBinUseCase } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin";
 import { RestorePageRepository as RepositoryAbstraction } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 
 class RestorePageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private restoreEntry: RestoreEntryFromBinUseCase.Interface,
-        private pageModel: PageModel.Interface
+        private pageModelProvider: PageModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         // Restore the entry
-        const result = await this.restoreEntry.execute(this.pageModel, params.id);
+        const result = await this.restoreEntry.execute(pageModel, params.id);
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
@@ -29,5 +30,5 @@ class RestorePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const RestorePageRepository = RepositoryAbstraction.createImplementation({
     implementation: RestorePageRepositoryImpl,
-    dependencies: [RestoreEntryFromBinUseCase, PageModel]
+    dependencies: [RestoreEntryFromBinUseCase, PageModelProvider]
 });

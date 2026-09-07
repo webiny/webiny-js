@@ -2,7 +2,7 @@ import type { Container } from "@webiny/feature/api";
 import { AwsLambdaContext } from "@webiny/event-handler-aws/abstractions/AwsLambdaContext.js";
 import { BackgroundTaskEventHandler } from "@webiny/event-handler-aws/abstractions/handlers/BackgroundTaskEventHandler.js";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
-import { RequestContainer, runRequestContextInitializers } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import {
     RawTenantId,
     RequestTenantLoader
@@ -42,13 +42,6 @@ class BackgroundTaskLambdaHandlerImpl implements BackgroundTaskEventHandler.Inte
             this.container.resolve(RawTenantId).set(taskEvent.tenant);
             await this.container.resolve(RequestTenantLoader).establish();
         }
-
-        // Run the post-context initializers (register TasksCrud, FileModel, etc.). The HTTP layer does
-        // this via RequestContextInitializerDecorator; the bg-task chain must do it too, before the
-        // task runs — otherwise TaskControl can't resolve TasksCrud. continueOnError: a task doesn't
-        // need every HTTP initializer (e.g. ACO/scheduler), and some throw in the bg-task context —
-        // skip+log those so they don't fail the task, while TasksCrud/FileModel still register.
-        await runRequestContextInitializers(this.container, { continueOnError: true });
 
         // TODO: remove once legacy ctx is gone — resolve services directly from the container.
         const ctx: Record<string, any> = { container: this.container };
