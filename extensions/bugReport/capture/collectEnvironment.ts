@@ -1,12 +1,4 @@
-export interface IEnvironmentInfo {
-    url: string;
-    page: string;
-    userAgent: string;
-    viewport: string;
-    language: string;
-    timezone: string;
-    capturedAt: string;
-}
+import type { IReportedEnvironment } from "../shared/types.js";
 
 function readTimezone(): string {
     try {
@@ -18,7 +10,7 @@ function readTimezone(): string {
 }
 
 /* Everything the reporter would otherwise be asked for in the first triage comment. */
-export function collectEnvironment(): IEnvironmentInfo {
+export function collectEnvironment(): IReportedEnvironment {
     return {
         url: window.location.href,
         page: document.title,

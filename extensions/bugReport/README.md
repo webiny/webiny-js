@@ -4,29 +4,33 @@ Report a bug by talking to the app. Hit `cmd+shift+b`, say what went wrong, and 
 issue appears with a screenshot, the environment, and a timeline of what you did in the
 minutes before you reported it.
 
+Nobody using it configures anything. The keys live on the API.
+
 This is internal. It is registered in this repo's `webiny.config.tsx`, which projects created
 from Webiny never get.
 
 ## Setup
 
-Run **Bug reporter settings** from the command palette (`cmd+k`) and paste:
+Set these in the environment that builds the API. `BugReporterExtension.tsx` reads them and
+passes them through as build params, so CI can hold them as secrets:
 
-- **GitHub token** — a fine-grained PAT with read and write access to **Issues** and
-  **Contents** on the target repository. Contents is needed because screenshots are committed
-  to a `bug-report-assets` branch; GitHub's issue API has no attachment endpoint.
-- **Repository** — `owner/name`, defaults to `webiny/webiny-js`.
-- **Labels** — comma separated, applied to every issue filed from here.
-- **Anthropic API key** — optional. With it, what you said is turned into a titled issue with
-  steps to reproduce. Without it, your words are filed verbatim and the timeline still goes in.
+| Variable                  |                                                                                                                                                                                                                 |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BUG_REPORT_GITHUB_TOKEN` | Fine-grained PAT with **Issues** and **Contents** write on the repository. Contents is needed because screenshots are committed to a `bug-report-assets` branch; GitHub's issue API has no attachment endpoint. |
+| `BUG_REPORT_REPOSITORY`   | `owner/name`. Defaults to `webiny/webiny-js`.                                                                                                                                                                   |
+| `BUG_REPORT_LABELS`       | Comma separated. Defaults to `bug`.                                                                                                                                                                             |
 
-Everything is stored in this browser's `localStorage` under `bugReport.settings`, so issues
-are filed as **you**, not as a shared bot. That does mean a token sitting in localStorage:
-scope it to one repository and revoke it when you are done.
+Drafting uses the **first provider configured in AI Power-Ups**, decrypted server-side, the
+same way AI image enrichment resolves its provider. Nothing to set: if a provider is there it
+gets used, and if it isn't, the report is filed word for word with the timeline attached.
+
+With no token set, the mutation refuses with a message the dialog shows, rather than failing
+quietly.
 
 ## What gets captured
 
 Recording starts when the admin app loads and keeps the last 150 events in memory. Nothing
-leaves the browser until you file a report.
+leaves the browser until you submit.
 
 |               |                                                                          |
 | ------------- | ------------------------------------------------------------------------ |
@@ -47,17 +51,32 @@ cmd+shift+b
   → the palette closes, two frames repaint
   → getDisplayMedia screenshots the tab (one click on the share prompt)
   → the dialog opens; type or dictate
-  → Claude drafts title / summary / steps from your words + the timeline
+  → reportBug mutation carries the text, events, environment and PNG to the API
+  ↓ API
+  → the first AI Power-Ups provider drafts title / summary / steps from the words + timeline
   → the screenshot is committed to the bug-report-assets branch
-  → the issue is created, and the body is assembled here, not by the model
+  → the issue is created and its URL comes back to the dialog
 ```
 
-The prose comes from the model. The screenshot, environment table and timeline are assembled
-by `issue/composeIssueBody.ts` from the captured data, so the factual half of the issue is
-exactly what was recorded rather than a paraphrase of it.
+The model writes five fields: `title`, `summary`, `stepsToReproduce`, `expected`, `actual`.
+Everything else in the body is assembled by `api/composeIssueBody.ts` from what was recorded,
+so the factual half of the issue can't be paraphrased or invented.
 
 Dictation uses the browser's own speech recognition. No key, no cost, but it is a Chrome and
 Safari feature — elsewhere the mic button just doesn't appear.
+
+## Layout
+
+```
+shared/types.ts        the wire shape, types only, read by both bundles
+recording/             the action recorder and its ring buffer   (admin)
+capture/               screenshot and environment                (admin)
+speech/                dictation                                 (admin)
+presentation/report/   presenter and dialog                      (admin)
+commands/              the command palette entry                 (admin)
+gateway/               the reportBug mutation client             (admin)
+api/                   use case, drafter, GitHub, formatting     (api)
+```
 
 ## Known rough edges
 
@@ -65,5 +84,10 @@ Safari feature — elsewhere the mic button just doesn't appear.
   rasteriser skips the prompt but gets canvases, iframes and cross-origin images wrong.
 - The screenshot branch grows forever. Delete it when it gets large; nothing links to old ones
   except closed issues.
+- Build params are baked at build time, so rotating the token means a redeploy of the API.
+- `api/drafter/IssueDrafter.ts` imports `@webiny/ai-powerups/api/features/Providers/types.js`
+  by its real path. The package emits unresolved `~/...` specifiers in its `.d.ts`, so its
+  settings augmentations don't reach consumers outside the package. Drop that import once the
+  package rewrites aliases on build.
 - No PR is opened. A well-formed issue is the deliverable; wiring an agent to pick it up is a
   separate job.

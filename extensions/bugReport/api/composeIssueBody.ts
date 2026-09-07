@@ -1,15 +1,15 @@
-import type { IEnvironmentInfo } from "../capture/collectEnvironment.js";
-import type { IIssueDraft } from "../ai/abstractions.js";
+import type { IReportedEnvironment } from "../shared/types.js";
+import type { IIssueDraft } from "./drafter/abstractions.js";
 
 export interface IComposeIssueBodyInput {
     draft: IIssueDraft;
     description: string;
-    environment: IEnvironmentInfo;
+    environment: IReportedEnvironment;
     timeline: string;
     screenshotUrl: string | null;
 }
 
-function buildEnvironmentTable(environment: IEnvironmentInfo): string {
+function buildEnvironmentTable(environment: IReportedEnvironment): string {
     const rows = [
         ["Page", environment.page],
         ["URL", environment.url],

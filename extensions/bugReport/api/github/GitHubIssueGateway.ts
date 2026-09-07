@@ -1,15 +1,20 @@
-import { BugReportSettings } from "../settings/abstractions.js";
-import { GitHubGateway as Abstraction } from "./abstractions.js";
-import type { ICreatedIssue } from "./abstractions.js";
-import type { IIssueInput } from "./abstractions.js";
+import { BuildParams } from "webiny/api";
+import { GitHubIssueGateway as Abstraction } from "./abstractions.js";
+import type { ICreateIssueInput } from "./abstractions.js";
+import type { IFiledIssue } from "../../shared/types.js";
 
 const API_ROOT = "https://api.github.com";
 
 /*
- * Screenshots are committed to a branch of their own rather than to the default branch, so
- * they never show up in a diff, and the whole branch can be deleted when it gets large.
+ * Screenshots are committed to a branch of their own rather than to the default branch, so they
+ * never show up in a diff, and the whole branch can be deleted once it gets large.
  */
 const ASSETS_BRANCH = "bug-report-assets";
+
+/* Set from webiny.config.tsx, which reads them from the environment at build time. */
+const TOKEN_PARAM = "BUG_REPORT_GITHUB_TOKEN";
+const REPOSITORY_PARAM = "BUG_REPORT_REPOSITORY";
+const LABELS_PARAM = "BUG_REPORT_LABELS";
 
 interface IRepositoryRef {
     owner: string;
@@ -24,17 +29,17 @@ function parseRepository(repository: string): IRepositoryRef {
     return { owner, name };
 }
 
-function readBase64Payload(dataUrl: string): string {
-    const separator = dataUrl.indexOf(",");
-    if (separator === -1) {
-        throw new Error("The screenshot is not a valid data URL.");
-    }
-    return dataUrl.slice(separator + 1);
-}
-
 function buildScreenshotPath(): string {
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
     return `screenshots/${stamp}.png`;
+}
+
+function readParam(params: BuildParams.Interface, key: string): string {
+    const value = params.get<string>(key);
+    if (typeof value !== "string") {
+        return "";
+    }
+    return value.trim();
 }
 
 async function readErrorMessage(response: Response): Promise<string> {
@@ -50,21 +55,49 @@ async function readErrorMessage(response: Response): Promise<string> {
     return response.statusText;
 }
 
-class GitHubGatewayImpl implements Abstraction.Interface {
-    constructor(private settings: BugReportSettings.Interface) {}
+function parseLabels(raw: string): string[] {
+    const labels: string[] = [];
 
-    async uploadScreenshot(dataUrl: string): Promise<string> {
-        const repository = parseRepository(this.settings.values.repository);
+    for (const part of raw.split(",")) {
+        const label = part.trim();
+        if (label !== "") {
+            labels.push(label);
+        }
+    }
+
+    if (labels.length === 0) {
+        return ["bug"];
+    }
+
+    return labels;
+}
+
+class GitHubIssueGatewayImpl implements Abstraction.Interface {
+    constructor(private params: BuildParams.Interface) {}
+
+    get configured(): boolean {
+        if (readParam(this.params, TOKEN_PARAM) === "") {
+            return false;
+        }
+        return readParam(this.params, REPOSITORY_PARAM).includes("/");
+    }
+
+    get labels(): string[] {
+        return parseLabels(readParam(this.params, LABELS_PARAM));
+    }
+
+    async uploadScreenshot(base64: string): Promise<string> {
+        const repository = this.readRepository();
         await this.ensureAssetsBranch(repository);
 
         const path = buildScreenshotPath();
         const payload = {
-            message: `chore: bug report screenshot`,
-            content: readBase64Payload(dataUrl),
+            message: "chore: bug report screenshot",
+            content: base64,
             branch: ASSETS_BRANCH
         };
 
-        const created: Record<string, unknown> = await this.request(
+        const created = await this.request(
             `/repos/${repository.owner}/${repository.name}/contents/${path}`,
             { method: "PUT", body: JSON.stringify(payload) }
         );
@@ -80,14 +113,14 @@ class GitHubGatewayImpl implements Abstraction.Interface {
         throw new Error("GitHub accepted the screenshot but returned no URL for it.");
     }
 
-    async createIssue(input: IIssueInput): Promise<ICreatedIssue> {
-        const repository = parseRepository(this.settings.values.repository);
+    async createIssue(input: ICreateIssueInput): Promise<IFiledIssue> {
+        const repository = this.readRepository();
         const payload = { title: input.title, body: input.body, labels: input.labels };
 
-        const created: Record<string, unknown> = await this.request(
-            `/repos/${repository.owner}/${repository.name}/issues`,
-            { method: "POST", body: JSON.stringify(payload) }
-        );
+        const created = await this.request(`/repos/${repository.owner}/${repository.name}/issues`, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
 
         const number = created.number;
         const url = created.html_url;
@@ -100,9 +133,8 @@ class GitHubGatewayImpl implements Abstraction.Interface {
     }
 
     /*
-     * The Contents API writes to an existing branch only, so the first report of the day on
-     * a fresh clone has to create it. Branching off the default branch head keeps it a
-     * normal branch that anyone can check out.
+     * The Contents API writes to an existing branch only, so the first report against a repository
+     * has to create it. Branching off the default branch head keeps it a normal branch.
      */
     private async ensureAssetsBranch(repository: IRepositoryRef): Promise<void> {
         const base = `/repos/${repository.owner}/${repository.name}`;
@@ -111,16 +143,15 @@ class GitHubGatewayImpl implements Abstraction.Interface {
             return;
         }
 
-        const info: Record<string, unknown> = await this.request(base, { method: "GET" });
+        const info = await this.request(base, { method: "GET" });
         const defaultBranch = info.default_branch;
         if (typeof defaultBranch !== "string") {
             throw new Error("Could not determine the repository's default branch.");
         }
 
-        const head: Record<string, unknown> = await this.request(
-            `${base}/git/ref/heads/${defaultBranch}`,
-            { method: "GET" }
-        );
+        const head = await this.request(`${base}/git/ref/heads/${defaultBranch}`, {
+            method: "GET"
+        });
 
         const object = head.object;
         if (!object || typeof object !== "object") {
@@ -134,6 +165,10 @@ class GitHubGatewayImpl implements Abstraction.Interface {
 
         const payload = { ref: `refs/heads/${ASSETS_BRANCH}`, sha };
         await this.request(`${base}/git/refs`, { method: "POST", body: JSON.stringify(payload) });
+    }
+
+    private readRepository(): IRepositoryRef {
+        return parseRepository(readParam(this.params, REPOSITORY_PARAM));
     }
 
     private async hasRef(path: string): Promise<boolean> {
@@ -158,7 +193,7 @@ class GitHubGatewayImpl implements Abstraction.Interface {
 
     private buildHeaders(): Record<string, string> {
         return {
-            Authorization: `Bearer ${this.settings.values.githubToken}`,
+            Authorization: `Bearer ${readParam(this.params, TOKEN_PARAM)}`,
             Accept: "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "Content-Type": "application/json"
@@ -166,7 +201,7 @@ class GitHubGatewayImpl implements Abstraction.Interface {
     }
 }
 
-export const GitHubGateway = Abstraction.createImplementation({
-    implementation: GitHubGatewayImpl,
-    dependencies: [BugReportSettings]
+export const GitHubIssueGateway = Abstraction.createImplementation({
+    implementation: GitHubIssueGatewayImpl,
+    dependencies: [BuildParams]
 });

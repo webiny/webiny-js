@@ -1,18 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import { ActionRecorder } from "../../recording/abstractions.js";
 import type { IRecordedEvent } from "../../recording/abstractions.js";
-import { formatTimeline } from "../../recording/formatTimeline.js";
 import { captureScreenshot } from "../../capture/captureScreenshot.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
-import type { IEnvironmentInfo } from "../../capture/collectEnvironment.js";
-import { BugReportSettings } from "../../settings/abstractions.js";
-import { GitHubGateway } from "../../github/abstractions.js";
-import { IssueDrafter } from "../../ai/abstractions.js";
+import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { SpeechDictation } from "../../speech/abstractions.js";
-import { composeIssueBody } from "../../issue/composeIssueBody.js";
-import { BugReportSettingsPresenter } from "../settings/abstractions.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
 import type { IReportBugViewModel } from "./abstractions.js";
+import type { IReportedEnvironment } from "../../shared/types.js";
 
 function waitForRepaint(): Promise<void> {
     return new Promise(resolve => {
@@ -29,13 +24,22 @@ function describeFailure(error: unknown): string {
     return String(error);
 }
 
+/* The API wants bare base64; a canvas data URL carries a `data:image/png;base64,` prefix. */
+function readBase64Payload(dataUrl: string): string | null {
+    const separator = dataUrl.indexOf(",");
+    if (separator === -1) {
+        return null;
+    }
+    return dataUrl.slice(separator + 1);
+}
+
 class ReportBugPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
     private description = "";
     private listening = false;
     private screenshot: string | null = null;
     private events: IRecordedEvent[] = [];
-    private environment: IEnvironmentInfo | null = null;
+    private environment: IReportedEnvironment | null = null;
     private capturedAt = 0;
     private status: string | null = null;
     private error: string | null = null;
@@ -43,22 +47,13 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private recorder: ActionRecorder.Interface,
-        private settings: BugReportSettings.Interface,
-        private github: GitHubGateway.Interface,
-        private drafter: IssueDrafter.Interface,
-        private dictation: SpeechDictation.Interface,
-        private settingsPresenter: BugReportSettingsPresenter.Interface
+        private gateway: SubmitBugReportGateway.Interface,
+        private dictation: SpeechDictation.Interface
     ) {
-        makeAutoObservable<
-            ReportBugPresenterImpl,
-            "recorder" | "settings" | "github" | "drafter" | "dictation" | "settingsPresenter"
-        >(this, {
+        makeAutoObservable<ReportBugPresenterImpl, "recorder" | "gateway" | "dictation">(this, {
             recorder: false,
-            settings: false,
-            github: false,
-            drafter: false,
-            dictation: false,
-            settingsPresenter: false
+            gateway: false,
+            dictation: false
         });
     }
 
@@ -84,18 +79,11 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
      * user activation outlives that wait, so the share prompt still opens.
      */
     async open(): Promise<void> {
-        if (!this.settings.isConfigured) {
-            this.settingsPresenter.open();
-            return;
-        }
-
         this.reset();
 
-        if (this.settings.values.includeScreenshot) {
-            await waitForRepaint();
-            const captured = await captureScreenshot();
-            this.setScreenshot(captured);
-        }
+        await waitForRepaint();
+        const captured = await captureScreenshot();
+        this.setScreenshot(captured);
 
         this.show();
     }
@@ -139,34 +127,18 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.stopDictation();
         this.beginSubmission();
 
+        let screenshotBase64: string | null = null;
+        if (this.screenshot) {
+            screenshotBase64 = readBase64Payload(this.screenshot);
+        }
+
         try {
-            const timeline = formatTimeline(this.events, this.capturedAt);
-            const draft = await this.drafter.draft({
+            const issue = await this.gateway.execute({
                 description: this.description.trim(),
+                reportedAt: this.capturedAt,
+                events: this.events,
                 environment: this.environment,
-                timeline,
-                labels: this.settings.labelList
-            });
-
-            let screenshotUrl: string | null = null;
-            if (this.screenshot) {
-                this.setStatus("Uploading the screenshot...");
-                screenshotUrl = await this.github.uploadScreenshot(this.screenshot);
-            }
-
-            this.setStatus("Creating the issue...");
-            const body = composeIssueBody({
-                draft,
-                description: this.description.trim(),
-                environment: this.environment,
-                timeline,
-                screenshotUrl
-            });
-
-            const issue = await this.github.createIssue({
-                title: draft.title,
-                body,
-                labels: draft.labels
+                screenshotBase64
             });
 
             this.markFiled(issue.url);
@@ -196,11 +168,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     private beginSubmission(): void {
         this.error = null;
-        this.status = "Drafting the issue...";
-    }
-
-    private setStatus(status: string): void {
-        this.status = status;
+        this.status = "Filing the issue...";
     }
 
     private markFiled(url: string): void {
@@ -233,12 +201,5 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
 export const ReportBugPresenter = Abstraction.createImplementation({
     implementation: ReportBugPresenterImpl,
-    dependencies: [
-        ActionRecorder,
-        BugReportSettings,
-        GitHubGateway,
-        IssueDrafter,
-        SpeechDictation,
-        BugReportSettingsPresenter
-    ]
+    dependencies: [ActionRecorder, SubmitBugReportGateway, SpeechDictation]
 });

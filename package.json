@@ -193,10 +193,11 @@
   },
   "packageManager": "yarn@4.18.0",
   "dependencies": {
-    "@anthropic-ai/sdk": "0.123.0",
     "@types/hoist-non-react-statics": "^3.3.7",
     "@webiny/di": "^1.0.2",
-    "jwt-decode": "^4.0.0"
+    "ai": "7.0.73",
+    "jwt-decode": "^4.0.0",
+    "zod": "4.4.3"
   },
   "dependenciesMeta": {
     "better-sqlite3": {
