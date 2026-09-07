@@ -26,11 +26,11 @@ export const createRegisterExtensionPlugin = <C extends Context = Context>(
 
 /**
  * Apply RegisterExtensionPlugins at register() time — synchronously with the request container,
- * BEFORE any RequestContextInitializer runs. Each plugin's callback only does DI registration via
+ * BEFORE anything lists the model set. Each plugin's callback only does DI registration via
  * registerExtension(ctx.container, ...) (feature/decorator/registration), which is register-time
- * safe. Doing this early is important for code-defined CMS models (ModelFactory): a later
- * initializer (e.g. ACO) lists + caches the model set per request, so any model registered after
- * that — as happened when extensions ran via the post-auth initializer — was silently missing.
+ * safe. Doing this early is important for code-defined CMS models (ModelFactory): the first
+ * request-time listing (e.g. the ACO folder schema) caches the model set for the rest of the
+ * request, so any model registered after that point is silently missing.
  */
 export async function registerExtensions(
     container: Container,

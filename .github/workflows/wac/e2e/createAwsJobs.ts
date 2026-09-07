@@ -7,7 +7,7 @@ import {
 } from "../steps/index.js";
 import { ACTION, AWS_REGION } from "../utils/index.js";
 import { createJob } from "../jobs/index.js";
-import { DIR_TEST_PROJECT, DIR_WEBINY_JS } from "./constants.js";
+import { DIR_TEST_PROJECT, DIR_WEBINY_JS, PATH_TEST_PROJECT } from "./constants.js";
 import { createStatusRowUpdateSteps } from "./statusComment.js";
 import {
     globalBuildCacheSteps,
@@ -192,12 +192,17 @@ export const createAwsJobs = (dbSetup: string) => {
                     //     name: "Deployment Summary",
                     //     run: `${runNodeScript(
                     //         "printDeploymentSummary",
-                    //         `../${DIR_TEST_PROJECT}`
+                    //         PATH_TEST_PROJECT
                     //     )} >> $GITHUB_STEP_SUMMARY`
                     // },
                     {
+                        // These steps run from DIR_WEBINY_JS, but the test project is scaffolded at
+                        // the workspace root, so the path has to climb out. `../` only works when
+                        // DIR_WEBINY_JS is one segment deep, and it isn't: it's the PR's base branch
+                        // name, which is usually something like "release/6.5.0". An absolute path
+                        // works whatever the branch is named.
                         name: "Create Cypress config",
-                        run: `yarn setup-cypress --projectFolder ../${DIR_TEST_PROJECT}`
+                        run: `yarn setup-cypress --projectFolder ${PATH_TEST_PROJECT}`
                     },
                     {
                         name: "Save Cypress config",

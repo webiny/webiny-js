@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdatePageRepository as RepositoryAbstraction } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
     PageNotFoundError,
@@ -14,15 +14,16 @@ class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private pageModel: PageModel.Interface
+        private pageModelProvider: PageModelProvider.Interface
     ) {}
 
     async execute(
         id: string,
         data: RepositoryAbstraction.UpdateData
     ): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         // First, validate the page exists
-        const getResult = await this.getEntryById.execute(this.pageModel, id);
+        const getResult = await this.getEntryById.execute(pageModel, id);
 
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
@@ -32,7 +33,7 @@ class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Update the entry
-        const result = await this.updateEntry.execute(this.pageModel, id, {
+        const result = await this.updateEntry.execute(pageModel, id, {
             location: data.location,
             system: data.system,
             values: data
@@ -55,5 +56,5 @@ class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdatePageRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdatePageRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, PageModelProvider]
 });
