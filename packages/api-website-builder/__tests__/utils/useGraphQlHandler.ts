@@ -9,6 +9,7 @@ import { NoopInvalidateAssetCacheTaskDefinition } from "./noopInvalidateAssetCac
 import { WebsiteBuilderFeature } from "~/index.js";
 import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import { createWbSdk } from "~tests/utils/createWbSdk.js";
+import { Extension as FrontendSettingsExtension } from "@webiny/frontend-settings/api/Extension.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 
@@ -33,6 +34,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             BackgroundTasksFeature.register(container);
             WebsiteBuilderFeature.register(container);
             LanguagesExtension.register(container);
+            FrontendSettingsExtension.register(container);
             container.registerInstance(TaskService, createMockTaskService());
         }
     });

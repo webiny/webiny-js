@@ -6,7 +6,7 @@ const GET_SETTINGS = /* GraphQL */ `
         websiteBuilder {
             getSettings {
                 data {
-                    previewDomain
+                    domain
                 }
                 error {
                     code
@@ -21,7 +21,7 @@ const GET_SETTINGS = /* GraphQL */ `
 type GetSettingsResponse = {
     websiteBuilder: {
         getSettings:
-            | { data: { previewDomain: string }; error: null }
+            | { data: { domain: string }; error: null }
             | { data: null; error: { code: string; message: string; data: any } };
     };
 };
@@ -39,7 +39,11 @@ class GetSettingsGatewayImpl implements GatewayAbstraction.Interface {
             throw new Error(envelope.error.message || "Could not fetch settings.");
         }
 
-        return envelope.data || undefined;
+        if (!envelope.data) {
+            return undefined;
+        }
+
+        return { previewDomain: envelope.data.domain };
     }
 }
 

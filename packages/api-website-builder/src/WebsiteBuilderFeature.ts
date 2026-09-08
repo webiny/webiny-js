@@ -37,16 +37,16 @@ import { UnpublishPageFeature } from "./features/pages/UnpublishPage/feature.js"
 import { DuplicatePageFeature } from "./features/pages/DuplicatePage/feature.js";
 import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js";
 import { MovePageFeature } from "./features/pages/MovePage/feature.js";
+import { GetSettingsFeature } from "./features/pages/GetSettings/feature.js";
 // Misc
 import { WbPermissionsFeature } from "./features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
 import { NextjsFeature } from "./features/nextjs/feature.js";
 import { NuxtFeature } from "./features/nuxt/feature.js";
+import { WbStarterKitsFeature } from "./features/starterKits/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
 import { ExperimentFeature } from "./features/experiments/feature.js";
 import { VariantFeature } from "./features/variants/feature.js";
-import { NextjsGraphQLSchema } from "./graphql/nextjs/NextjsGraphQLSchema.js";
-import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
 // Models
 import { PageModelPlugin } from "~/domain/page/page.model.js";
 import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
@@ -111,18 +111,18 @@ export const WebsiteBuilderFeature = createFeature({
         DuplicatePageFeature.register(container);
         TranslatePageFeature.register(container);
         MovePageFeature.register(container);
+        GetSettingsFeature.register(container);
 
         // A/B testing — experiments and variants.
         ExperimentFeature.register(container);
         VariantFeature.register(container);
 
-        // Misc features + framework GraphQL (Next.js / Nuxt).
+        // Misc features. The Next.js and Nuxt configs reach the Admin as Frontend Settings starter kits.
         ApiKeyInstallerFeature.register(container);
         NextjsFeature.register(container);
         NuxtFeature.register(container);
+        WbStarterKitsFeature.register(container);
         WbWebhooksFeature.register(container);
-        container.register(NextjsGraphQLSchema);
-        container.register(NuxtGraphQLSchema);
 
         // Static WB GraphQL schema (base + pages + redirects + experiments).
         registerWebsiteBuilderGraphQL(container);

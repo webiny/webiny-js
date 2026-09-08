@@ -304,26 +304,41 @@ describe("Pages CRUD", () => {
         expect(deleteResponse.data.websiteBuilder.deletePage).toEqual(
             expect.objectContaining(notAuthorizedResponse)
         );
+
+        // Try to get settings with anonymous identity
+        const [settingsResponse] = await anonymousHandler.wb.getSettings({});
+        expect(settingsResponse.data.websiteBuilder.getSettings).toEqual(
+            expect.objectContaining(notAuthorizedResponse)
+        );
+
+        // Try to update integrations with anonymous identity
+        const [updateIntResponse] = await anonymousHandler.wb.updateIntegrations({
+            data: { googleAnalytics: { trackingId: "UA-000" } }
+        });
+        expect(updateIntResponse.data.websiteBuilder.updateIntegrations).toEqual(
+            expect.objectContaining(notAuthorizedResponse)
+        );
     });
 
-    it("should get and update settings", async () => {
+    it("should get settings", async () => {
         const [getResponse] = await handler.wb.getSettings({});
         expect(getResponse.data.websiteBuilder.getSettings.error).toBeNull();
         expect(getResponse.data.websiteBuilder.getSettings.data).toMatchObject({
-            previewDomain: expect.any(String)
+            domain: expect.any(String)
+        });
+    });
+
+    it("should require wb.integrations permission for updateIntegrations", async () => {
+        const limitedHandler = useGraphQlHandler({
+            permissions: [{ name: "wb.page", rwd: "rwd" }]
         });
 
-        const [updateResponse] = await handler.wb.updateSettings({
-            data: {
-                previewDomain: "http://localhost:4000"
-            }
+        const [updateResponse] = await limitedHandler.wb.updateIntegrations({
+            data: { googleAnalytics: { trackingId: "UA-000" } }
         });
-        expect(updateResponse.data.websiteBuilder.updateSettings.error).toBeNull();
-        expect(updateResponse.data.websiteBuilder.updateSettings.data).toBe(true);
-
-        const [getUpdatedResponse] = await handler.wb.getSettings({});
-        expect(getUpdatedResponse.data.websiteBuilder.getSettings.data.previewDomain).toBe(
-            "http://localhost:4000"
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.error).not.toBeNull();
+        expect(updateResponse.data.websiteBuilder.updateIntegrations.error.code).toBe(
+            "NOT_AUTHORIZED"
         );
     });
 
