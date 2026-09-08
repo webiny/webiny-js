@@ -1,4 +1,8 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -22,16 +26,13 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * NOTE: recovers ONE tenant per call. Boot recovery for additional (non-root) tenants would enumerate
  * tenants and call this per tenant — left as a follow-up; single/root-tenant deployments are covered.
  */
-class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/scheduled-action-recover";
-
+class ScheduledActionRecoverRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }
@@ -93,7 +94,19 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ScheduledActionRecoverRoute = HttpRoute.createImplementation({
+export const ScheduledActionRecoverRoute = HttpRouteHandler.createImplementation({
     implementation: ScheduledActionRecoverRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
+});
+
+class ScheduledActionRecoverRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/scheduled-action-recover";
+    readonly handler = ScheduledActionRecoverRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ScheduledActionRecoverRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ScheduledActionRecoverRouteDefinitionImpl,
+    dependencies: []
 });

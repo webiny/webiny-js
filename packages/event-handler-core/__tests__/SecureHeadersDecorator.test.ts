@@ -4,8 +4,8 @@ import { HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { SecureHeadersDecorator } from "~/features/http/decorators/SecureHeadersDecorator.js";
-import { HttpRoute } from "~/features/http/abstractions.js";
 import type { IHttpRequest, IHttpRoute, IHttpResponse } from "~/features/http/abstractions.js";
+import { registerHttpRouteInstance } from "~/features/testing/index.js";
 
 const req = (method: string, path: string, origin?: string): IHttpRequest => ({
     method,
@@ -56,14 +56,18 @@ describe("SecureHeadersDecorator", () => {
         const container = new Container();
 
         const route: IHttpRoute = {
-            method: "GET",
-            path: "/test",
             async handle(_r: IHttpRequest): Promise<IHttpResponse> {
                 return { statusCode: 200, headers: {}, body: "ok" };
             }
         };
 
-        container.registerInstance(HttpRoute, route);
+        registerHttpRouteInstance(container, {
+            method: "GET",
+
+            path: "/test",
+
+            route
+        });
         container.register(HttpRouterImpl).inSingletonScope();
         container.registerInstance(RequestContainer, container);
         container.registerDecorator(SecureHeadersDecorator);

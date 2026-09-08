@@ -1,4 +1,8 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -14,16 +18,13 @@ import { InternalToken } from "~/domain/InternalToken.js";
 /* Shared between worker and route to gate access. */
 const INTERNAL_HEADER = "x-webiny-background-task-token";
 
-class BackgroundTaskRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/background-task";
-
+class BackgroundTaskRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: InternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         /* Reject requests without a matching internal token. */
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
@@ -63,7 +64,19 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const BackgroundTaskRoute = HttpRoute.createImplementation({
+export const BackgroundTaskRoute = HttpRouteHandler.createImplementation({
     implementation: BackgroundTaskRouteImpl,
     dependencies: [RequestContainer, InternalToken]
+});
+
+class BackgroundTaskRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/background-task";
+    readonly handler = BackgroundTaskRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const BackgroundTaskRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: BackgroundTaskRouteDefinitionImpl,
+    dependencies: []
 });

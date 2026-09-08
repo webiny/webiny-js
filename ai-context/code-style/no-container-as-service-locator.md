@@ -6,7 +6,7 @@ the real dependencies from the signature, from the DI graph, and from anyone rea
 
 ```ts
 // Bad
-class MyRouteImpl implements HttpRoute.Interface {
+class MyRouteImpl implements HttpRouteHandler.Interface {
   constructor(private container: Container) {}
 
   async handle(request: IHttpRequest) {
@@ -16,7 +16,7 @@ class MyRouteImpl implements HttpRoute.Interface {
   }
 }
 
-export const MyRoute = HttpRoute.createImplementation({
+export const MyRoute = HttpRouteHandler.createImplementation({
   implementation: MyRouteImpl,
   dependencies: [RequestContainer]
 });
@@ -24,7 +24,7 @@ export const MyRoute = HttpRoute.createImplementation({
 
 ```ts
 // Good
-class MyRouteImpl implements HttpRoute.Interface {
+class MyRouteImpl implements HttpRouteHandler.Interface {
   constructor(
     private prepare: PrepareUseCase.Interface,
     private ai: Ai.Interface
@@ -35,7 +35,7 @@ class MyRouteImpl implements HttpRoute.Interface {
   }
 }
 
-export const MyRoute = HttpRoute.createImplementation({
+export const MyRoute = HttpRouteHandler.createImplementation({
   implementation: MyRouteImpl,
   dependencies: [PrepareUseCase, Ai]
 });
@@ -44,12 +44,14 @@ export const MyRoute = HttpRoute.createImplementation({
 `container.resolve(...)` IS correct in a `createFeature` `resolve()` hook — that hook exists to hand
 resolved instances to callers. This rule is about implementation classes.
 
-`HttpRouter` itself takes the container, and that is now only about cost: it resolves routes inside
-`route()` so it doesn't construct all of them to match one path. The original reason was stronger —
-construction used to happen before the request-context initializers ran, so a route reaching a
-request-time token (`FileModel`, a per-request `CmsModel`) threw "No registration found" on every
-request. Those tokens are providers with real implementations now and the initializers are gone, so
-that hazard no longer exists.
+`HttpRouter` itself takes the container, and that is deliberate: it builds the route that matched,
+and only that one. It matches on `HttpRouteDefinition` implementations, which declare no
+dependencies of their own — `method`, `path`, and the handler class — so finding a route never
+builds one. See `buildHttpRoute`.
 
-Some routes (`AssetDeliveryRoute`, `WebsiteBuilderRedirectsRoute`) still resolve lazily inside
-`handle()` as a leftover of that old constraint. They no longer need to — don't copy them.
+Some routes (`AssetDeliveryRoute`, `WebsiteBuilderRedirectsRoute`) still resolve dependencies lazily
+inside `handle()`. That was once necessary twice over: route construction ran before the
+request-context initializers, so reaching a request-time token threw, and every route was built on
+every request whether or not it matched. Neither is true now — those tokens are providers, the
+initializers are deleted, and a route is built only once its definition matches. Declare
+dependencies instead; don't copy them.

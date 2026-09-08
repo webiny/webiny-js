@@ -1,4 +1,8 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -17,16 +21,13 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * CMS models via the request-context initializers + contextual schemas) for the action's tenant, then
  * runs ExecuteScheduledActionUseCase. Mirrors the background-task run route.
  */
-class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/scheduled-action-run";
-
+class ScheduledActionRunRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }
@@ -68,7 +69,19 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ScheduledActionRunRoute = HttpRoute.createImplementation({
+export const ScheduledActionRunRoute = HttpRouteHandler.createImplementation({
     implementation: ScheduledActionRunRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
+});
+
+class ScheduledActionRunRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/scheduled-action-run";
+    readonly handler = ScheduledActionRunRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ScheduledActionRunRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ScheduledActionRunRouteDefinitionImpl,
+    dependencies: []
 });

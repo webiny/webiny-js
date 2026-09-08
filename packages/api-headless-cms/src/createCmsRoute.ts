@@ -1,5 +1,9 @@
 import type { Container } from "@webiny/di";
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
@@ -18,10 +22,7 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
  * contextual schemas, then executes the CMS sub-schema via CmsSchemaExecutor.
  */
 export function createCmsRoute(type: ApiEndpoint) {
-    class CmsGraphQLRoute implements HttpRoute.Interface {
-        readonly method = "POST";
-        readonly path = CMS_PATHS[type];
-
+    class CmsGraphQLRoute implements HttpRouteHandler.Interface {
         // public (not private): this class is returned from an exported factory, so its members
         // must be declarable in the emitted .d.ts — private parameter-properties on an exported
         // anonymous class type are a TS4094 error.
@@ -48,8 +49,19 @@ export function createCmsRoute(type: ApiEndpoint) {
         }
     }
 
-    return HttpRoute.createImplementation({
+    const implementation = HttpRouteHandler.createImplementation({
         implementation: CmsGraphQLRoute,
         dependencies: [RequestContainer, [GraphQLContextualSchema, { multiple: true }]]
+    });
+
+    class CmsRouteDefinition implements HttpRouteDefinition.Interface {
+        readonly method = "POST";
+        readonly path = CMS_PATHS[type];
+        readonly handler = implementation;
+    }
+
+    return HttpRouteDefinition.createImplementation({
+        implementation: CmsRouteDefinition,
+        dependencies: []
     });
 }
