@@ -172,7 +172,7 @@ jobs:
         with:
           name: run-build-cache
           path: run-build-cache.tzst
-          retention-days: 1
+          retention-days: 7
           compression-level: 0
           if-no-files-found: error
           overwrite: true
@@ -335,8 +335,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -507,8 +513,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -689,8 +701,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -880,8 +898,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -1054,8 +1078,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
