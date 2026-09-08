@@ -121,9 +121,10 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 {
                     name: "signing-secret",
                     description:
-                        "JWT signing secret to sign the reset token with. Defaults to the " +
-                        `\`signingSecret\` from webiny.config, then to $${SIGNING_SECRET_ENV_VAR}. ` +
-                        "Prefer the env var: a flag is visible in shell history and the process list.",
+                        "JWT signing secret to sign the reset token with. Falls back to " +
+                        `$${SIGNING_SECRET_ENV_VAR}, then to the \`signingSecret\` from ` +
+                        "webiny.config. Prefer the env var over this flag: a flag is visible in " +
+                        "shell history and the process list.",
                     type: "string"
                 }
             ],
@@ -167,15 +168,17 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
     }
 
     /**
-     * Flag, then project config, then env var. The flag wins because it is the most deliberate
-     * thing the operator can do, and the env var comes last so a stale shell export cannot
-     * silently override a project that is correctly configured.
+     * Flag, then env var, then project config. Both overrides have to beat the config, or the
+     * workflow they exist for does not work: a developer's config almost always resolves a local
+     * secret, so ranking it above the env var would sign a production reset with the dev secret
+     * and fail with nothing but `INVALID_RESET_TOKEN` to go on. The config is the default, not a
+     * preference.
      */
     private resolveSigningSecret(
         override: string | undefined,
         authParams: SelfHostedAuthParams | undefined
     ): string {
-        const secret = override || authParams?.signingSecret || process.env[SIGNING_SECRET_ENV_VAR];
+        const secret = override || process.env[SIGNING_SECRET_ENV_VAR] || authParams?.signingSecret;
 
         if (!secret) {
             throw new Error(

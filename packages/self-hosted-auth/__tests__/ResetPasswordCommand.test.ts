@@ -260,7 +260,7 @@ describe("reset-password command, talking to an API", () => {
         });
     });
 
-    it("falls back to the env var, but only when nothing else supplies a secret", async () => {
+    it("uses the env var when the project config supplies no secret", async () => {
         const fetchMock = respondWith({
             data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
         });
@@ -279,19 +279,44 @@ describe("reset-password command, talking to an API", () => {
         });
     });
 
-    it("lets a configured project win over a stale env var", async () => {
+    /**
+     * The whole point of the env var. A developer's config resolves a local secret nearly always,
+     * so if it outranked the env var, a production reset would be signed with the dev secret and
+     * fail with nothing to go on.
+     */
+    it("prefers the env var over a project config that has its own secret", async () => {
         const fetchMock = respondWith({
             data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
         });
 
-        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "stale");
+        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "prod-secret");
 
         const definition = await setup(configured).execute();
         await definition.handler({ email: "admin@example.com" });
 
         const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
 
-        expect(verifyCliResetToken({ secret: SECRET, token: sent.variables.token })).toEqual({
+        expect(verifyCliResetToken({ secret: "prod-secret", token: sent.variables.token })).toEqual(
+            {
+                email: "admin@example.com"
+            }
+        );
+        expect(verifyCliResetToken({ secret: SECRET, token: sent.variables.token })).toBeNull();
+    });
+
+    it("still lets --signing-secret beat the env var", async () => {
+        const fetchMock = respondWith({
+            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
+        });
+
+        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "from-env");
+
+        const definition = await setup(configured).execute();
+        await definition.handler({ email: "admin@example.com", signingSecret: "from-flag" });
+
+        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
+
+        expect(verifyCliResetToken({ secret: "from-flag", token: sent.variables.token })).toEqual({
             email: "admin@example.com"
         });
     });
