@@ -11,12 +11,11 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
     constructor(private container: Container) {}
 
     async handle(_request: HttpRoute.Request, response: HttpRoute.Response) {
-        // Resolve collaborators lazily (request time), not as constructor deps. HttpRouter eagerly
-        // constructs every route on each request to path-match (see TODO in HttpRouter), and
-        // GetActiveRedirectsUseCase's chain pulls request-time CMS tokens (RedirectModel,
-        // ListLatestEntriesUseCase -> EntryFromStorageTransform) that are only registered when
-        // setupWebsiteBuilderModels() runs in the request callback. Resolving here keeps route
-        // construction cheap and robust regardless of whether that setup ran first.
+        // Resolve collaborators lazily (request time), not as constructor deps: HttpRouter eagerly
+        // constructs every route on each request to path-match (see TODO in HttpRouter), so keeping
+        // route construction cheap matters. The redirect model itself is no longer a timing
+        // concern — GetActiveRedirectsUseCase's chain awaits RedirectModelProvider when it needs
+        // the model, rather than depending on a setup step having already run.
         const identityCtx = this.container.resolve(IdentityContext);
         const getActiveRedirects = this.container.resolve(GetActiveRedirectsUseCase);
 

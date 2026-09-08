@@ -194,3 +194,62 @@ jobs:
     permissions:
       contents: read
       actions: write
+  notifySlackOnFailure:
+    name: Notify Slack on failure
+    needs:
+      - resolveSource
+      - createWebinyJsBranch
+      - createDocsBranch
+    if: failure()
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      LABEL: Full release of Webiny ${{ github.event.inputs.version }}
+      RUN_URL: >-
+        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+        github.run_id }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Notify Slack
+        run: >-
+          set -euo pipefail
+
+
+          [ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not
+          configured, skipping." && exit 0
+
+
+          # Name the jobs that actually failed, so the message says something
+          without
+
+          # anyone having to open the run first.
+
+          FAILED=$(gh api --paginate "repos/${{ github.repository
+          }}/actions/runs/${{ github.run_id }}/jobs" \
+            --jq '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")')
+          [ -n "$FAILED" ] || FAILED="unknown job"
+
+
+          # Built with jq, not string interpolation: job names here contain
+          double quotes
+
+          # (`NPM release ("latest" tag)`) and would produce invalid JSON
+          otherwise.
+
+          jq -nc --arg label "$LABEL" --arg failed "$FAILED" --arg url
+          "$RUN_URL" \
+            '{ text: ":rotating_light: \($label) failed: \($failed)\n\($url)" }' \
+            > /tmp/slack-payload.json
+
+          curl -s -o /dev/null -X POST \
+            -H "Content-type: application/json" \
+            --data @/tmp/slack-payload.json \
+            "$SLACK_RELEASE_CHANNEL_WEBHOOK"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

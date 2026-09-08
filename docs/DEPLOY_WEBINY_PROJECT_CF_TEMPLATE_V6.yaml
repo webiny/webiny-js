@@ -492,6 +492,11 @@ Resources:
               # arn:aws:ec2:*:*:route-table/*
               - ec2:CreateRouteTable
 
+              # arn:aws:ec2:*:*:vpc-endpoint/*
+              # Only used with the `useVpcEndpoints` VPC option, which keeps traffic to S3,
+              # DynamoDB, Amazon SQS, and Amazon EventBridge inside the VPC.
+              - ec2:CreateVpcEndpoint
+
           # Besides the above ec2 permissions, we also need this:
           - Effect: Allow
 
@@ -500,6 +505,7 @@ Resources:
             Resource: "*"
             Action:
               - ec2:DescribeAddressesAttribute
+              - ec2:DescribeVpcEndpoints
 
           - Effect: Allow
             # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.
@@ -515,6 +521,10 @@ Resources:
               - ec2:DeleteVpc
               - ec2:DescribeVpcAttribute
               - ec2:AttachInternetGateway
+
+              # Interface endpoints resolve via private DNS, which requires both DNS support and
+              # DNS hostnames on the VPC. Enabling them is a modify on the VPC itself.
+              - ec2:ModifyVpcAttribute
 
               # arn:aws:ec2:*:*:subnet/*
               - ec2:CreateNatGateway
@@ -537,6 +547,10 @@ Resources:
               # arn:aws:ec2:*:*:route-table/*
               - ec2:CreateRoute
               - ec2:DeleteRouteTable
+
+              # arn:aws:ec2:*:*:vpc-endpoint/*
+              - ec2:ModifyVpcEndpoint
+              - ec2:DeleteVpcEndpoints
 
           - Effect: Allow
             # Could not use tags.

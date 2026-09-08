@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdatePageRevisionDescriptionRepository as RepositoryAbstraction } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
     PageNotFoundError,
@@ -14,15 +14,16 @@ class UpdatePageRevisionDescriptionRepositoryImpl implements RepositoryAbstracti
     constructor(
         private updateEntryRevisionDescription: UpdateRevisionDescriptionUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private pageModel: PageModel.Interface
+        private pageModelProvider: PageModelProvider.Interface
     ) {}
 
     async execute(
         id: string,
         revisionDescription: string | undefined
     ): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         // First, validate the page exists
-        const getResult = await this.getEntryById.execute(this.pageModel, id);
+        const getResult = await this.getEntryById.execute(pageModel, id);
 
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
@@ -33,7 +34,7 @@ class UpdatePageRevisionDescriptionRepositoryImpl implements RepositoryAbstracti
 
         // Update the entry
         const result = await this.updateEntryRevisionDescription.execute(
-            this.pageModel,
+            pageModel,
             id,
             revisionDescription
         );
@@ -55,5 +56,5 @@ class UpdatePageRevisionDescriptionRepositoryImpl implements RepositoryAbstracti
 
 export const UpdatePageRevisionDescriptionRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdatePageRevisionDescriptionRepositoryImpl,
-    dependencies: [UpdateRevisionDescriptionUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [UpdateRevisionDescriptionUseCase, GetEntryByIdUseCase, PageModelProvider]
 });

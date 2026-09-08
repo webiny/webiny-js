@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateVariantRepository as RepositoryAbstraction } from "./abstractions/UpdateVariantRepository.js";
-import { VariantModel } from "~/domain/variant/abstractions.js";
+import { VariantModelProvider } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";
 import {
@@ -15,11 +15,12 @@ class UpdateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private variantModel: VariantModel.Interface
+        private variantModelProvider: VariantModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const getResult = await this.getEntryById.execute(this.variantModel, params.id);
+        const variantModel = await this.variantModelProvider.get();
+        const getResult = await this.getEntryById.execute(variantModel, params.id);
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
                 return Result.fail(new VariantNotFoundError(params.id));
@@ -28,7 +29,7 @@ class UpdateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         const result = await this.updateEntry.execute<CmsEntryWbVariantValues>(
-            this.variantModel,
+            variantModel,
             params.id,
             { values: params.data as Partial<CmsEntryWbVariantValues> }
         );
@@ -49,5 +50,5 @@ class UpdateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdateVariantRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateVariantRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, VariantModel]
+    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, VariantModelProvider]
 });

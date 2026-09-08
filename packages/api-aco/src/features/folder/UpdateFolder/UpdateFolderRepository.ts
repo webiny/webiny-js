@@ -6,7 +6,7 @@ import {
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import type { CmsEntryFolder, Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
@@ -18,18 +18,19 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         private updateEntry: UpdateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private folderModel: FolderModel.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(
         id: string,
         data: UpdateFolderParams
     ): Promise<Result<Folder, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const entryId = EntryId.from(id);
 
         // Get the original folder
         const originalResult = await this.getEntryById.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             entryId.toString()
         );
 
@@ -62,7 +63,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         }
 
         const result = await this.updateEntry.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             entryId.toString(),
             {
                 values: {
@@ -86,9 +87,10 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         slug: string;
         parentId?: string | null;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const { id, type, slug, parentId } = params;
 
-        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(folderModel, {
             where: {
                 latest: true,
                 entryId_not: id,
@@ -122,6 +124,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         slug: string;
         parentId?: string | null;
     }): Promise<Result<string, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const { slug, parentId } = params;
 
         if (!parentId) {
@@ -129,7 +132,7 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
         }
 
         const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             EntryId.from(parentId).toString()
         );
 
@@ -148,5 +151,10 @@ class UpdateFolderRepositoryImpl implements IUpdateFolderRepository {
 
 export const UpdateFolderRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateFolderRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, ListLatestEntriesUseCase, FolderModel]
+    dependencies: [
+        UpdateEntryUseCase,
+        GetEntryByIdUseCase,
+        ListLatestEntriesUseCase,
+        FolderModelProvider
+    ]
 });
