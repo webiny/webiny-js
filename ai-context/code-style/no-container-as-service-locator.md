@@ -44,12 +44,11 @@ export const MyRoute = HttpRoute.createImplementation({
 `container.resolve(...)` IS correct in a `createFeature` `resolve()` hook — that hook exists to hand
 resolved instances to callers. This rule is about implementation classes.
 
-`HttpRouter` itself takes the container, and that is now only about cost: it resolves routes inside
-`route()` so it doesn't construct all of them to match one path. The original reason was stronger —
-construction used to happen before the request-context initializers ran, so a route reaching a
-request-time token (`FileModel`, a per-request `CmsModel`) threw "No registration found" on every
-request. Those tokens are providers with real implementations now and the initializers are gone, so
-that hazard no longer exists.
+`HttpRouter` itself takes the container, and that is deliberate: it resolves the route that matched,
+and only that one. Route definitions are plain data (`method`, `path`, and the handler's
+abstraction), so matching builds nothing; see `createHttpRoute`.
 
-Some routes (`AssetDeliveryRoute`, `WebsiteBuilderRedirectsRoute`) still resolve lazily inside
-`handle()` as a leftover of that old constraint. They no longer need to — don't copy them.
+Some routes (`AssetDeliveryRoute`, `WebsiteBuilderRedirectsRoute`) still resolve dependencies lazily
+inside `handle()`, left over from when route construction ran before the request-context
+initializers and reaching a request-time token threw. Both of those reasons are gone — the tokens
+are providers and the initializers are deleted — so declare dependencies instead; don't copy them.
