@@ -230,6 +230,14 @@ export class ObjectField implements IObjectField {
         this._base.setValidation(validation);
     }
 
+    private setValidationWithCache(
+        validation: IFieldValidation,
+        value: unknown,
+        result: boolean
+    ): void {
+        this._base.setValidationWithCache(validation, value, result);
+    }
+
     addBeforeChange(cb: BeforeChangeCallback): void {
         this._base.addBeforeChange(cb);
     }
@@ -907,6 +915,15 @@ export class ObjectField implements IObjectField {
 
             if (this.config.isList && this.config.listSchema) {
                 const listData = this.getData();
+                if (
+                    !requiredState.required &&
+                    (listData === null ||
+                        listData === undefined ||
+                        (Array.isArray(listData) && listData.length === 0))
+                ) {
+                    this.setValidationWithCache({ isValid: null }, listData, true);
+                    return true;
+                }
                 const result = await this.config.listSchema.safeParseAsync(listData);
                 if (!result.success) {
                     const firstIssue = result.error.issues[0];
@@ -922,6 +939,19 @@ export class ObjectField implements IObjectField {
 
             if (this.config.schema) {
                 const data = this.getData();
+                if (!requiredState.required) {
+                    if (data == null) {
+                        this.setValidationWithCache({ isValid: null }, data, true);
+                        return true;
+                    }
+                    const hasAnyValue = Object.values(data).some(
+                        v => v !== null && v !== undefined && v !== ""
+                    );
+                    if (!hasAnyValue) {
+                        this.setValidationWithCache({ isValid: null }, data, true);
+                        return true;
+                    }
+                }
                 const result = await this.config.schema.safeParseAsync(data);
                 if (!result.success) {
                     const firstIssue = result.error.issues[0];
