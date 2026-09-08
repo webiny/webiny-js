@@ -4,7 +4,8 @@ import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { createStreamLambdaHandler } from "~/createStreamLambdaHandler.js";
 import { FunctionUrlStreamFeature } from "~/features/FunctionUrlStreamFeature.js";
 import type { IRawResponseStream, IResponseStreamMetadata } from "~/streaming/awslambda.js";
-import { createHttpRoute, registerHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
+import { Abstraction } from "@webiny/di";
 
 const decoder = new TextDecoder();
 
@@ -76,20 +77,27 @@ function makeRoute(handle: (request: IHttpRequest) => Promise<IHttpResponse>) {
         handle = handle;
     }
 
-    return createHttpRoute({
-        name: "test:FunctionUrlStream",
-        method: "POST",
-        path: "/stream/test",
-        implementation: TestRouteImplementation,
-        dependencies: []
-    });
+    const handler = new Abstraction<HttpRoute.Interface>("test:FunctionUrlStream");
+
+    return {
+        implementation: handler.createImplementation({
+            implementation: TestRouteImplementation,
+            dependencies: []
+        }),
+        definition: {
+            method: "POST",
+            path: "/stream/test",
+            handler
+        } as HttpRouteDefinition.Interface
+    };
 }
 
-function makeHandler(route: ReturnType<typeof createHttpRoute>) {
+function makeHandler(route: ReturnType<typeof makeRoute>) {
     return createStreamLambdaHandler({
         root: container => {
             FunctionUrlStreamFeature.register(container);
-            registerHttpRoute(container, route);
+            container.register(route.implementation);
+            container.registerInstance(HttpRouteDefinition, route.definition);
         }
     });
 }

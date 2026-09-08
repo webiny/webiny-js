@@ -1,9 +1,10 @@
 import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
-import { HttpRoute, createHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import { isPathContained, toBuffer, parseMultipart, getBoundary } from "../utils.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 class UploadSingleFileRouteImpl implements HttpRoute.Interface {
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
@@ -68,10 +69,19 @@ class UploadSingleFileRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const UploadSingleFileRoute = createHttpRoute({
-    name: "UploadSingleFile",
-    method: "POST",
-    path: "/webiny-file-upload",
+/** Its own abstraction, so the router can resolve THIS route and only this route. */
+export const UploadSingleFileRouteHandler = createAbstraction<HttpRoute.Interface>(
+    "UploadSingleFileRouteHandler"
+);
+
+export const UploadSingleFileRoute = UploadSingleFileRouteHandler.createImplementation({
     implementation: UploadSingleFileRouteImpl,
     dependencies: [FileManagerServerConfig]
 });
+
+/** What the router matches on. Plain data — reading it builds nothing. */
+export const UploadSingleFileRouteDefinition: HttpRouteDefinition.Interface = {
+    method: "POST",
+    path: "/webiny-file-upload",
+    handler: UploadSingleFileRouteHandler
+};

@@ -1,4 +1,4 @@
-import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition, RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -7,6 +7,7 @@ import {
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import type { Container } from "@webiny/feature/api";
 import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 /* Shared between the Bree singleton and this route to gate access. */
 const INTERNAL_HEADER = "x-webiny-scheduler-token";
@@ -65,10 +66,19 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ScheduledActionRunRoute = createHttpRoute({
-    name: "ScheduledActionRun",
-    method: "POST",
-    path: "/scheduled-action-run",
+/** Its own abstraction, so the router can resolve THIS route and only this route. */
+export const ScheduledActionRunRouteHandler = createAbstraction<HttpRoute.Interface>(
+    "ScheduledActionRunRouteHandler"
+);
+
+export const ScheduledActionRunRoute = ScheduledActionRunRouteHandler.createImplementation({
     implementation: ScheduledActionRunRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
 });
+
+/** What the router matches on. Plain data — reading it builds nothing. */
+export const ScheduledActionRunRouteDefinition: HttpRouteDefinition.Interface = {
+    method: "POST",
+    path: "/scheduled-action-run",
+    handler: ScheduledActionRunRouteHandler
+};

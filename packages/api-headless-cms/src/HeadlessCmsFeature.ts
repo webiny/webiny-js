@@ -80,7 +80,7 @@ import {
 } from "~/legacy/abstractions.js";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
-import { registerHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
 export interface HeadlessCmsConfig {
     type: ApiEndpoint;
     /** Extra plugins (e.g. CmsGraphQLSchemaPlugin) to register in ctx.plugins at runtime. */
@@ -300,6 +300,8 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
             });
         });
 
-        registerHttpRoute(container, createCmsRoute(config.type));
+        const cmsRoute = createCmsRoute(config.type);
+        container.register(cmsRoute.implementation);
+        container.registerInstance(HttpRouteDefinition, cmsRoute.definition);
     }
 });

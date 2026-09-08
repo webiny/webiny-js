@@ -3,9 +3,12 @@ import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
 import { HttpRoute, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
-import { BackgroundTaskRoute } from "~/routes/BackgroundTaskRoute.js";
+import {
+    BackgroundTaskRoute,
+    BackgroundTaskRouteDefinition,
+    BackgroundTaskRouteHandler
+} from "~/routes/BackgroundTaskRoute.js";
 import { InternalToken } from "~/domain/InternalToken.js";
-import { registerHttpRoute } from "@webiny/event-handler-core";
 
 const TOKEN_VALUE = "valid-token-abc";
 
@@ -13,8 +16,8 @@ const createRouteInstance = (): HttpRoute.Interface => {
     const container = new Container();
     container.registerInstance(RequestContainer, container);
     container.registerInstance(InternalToken, { value: TOKEN_VALUE });
-    registerHttpRoute(container, BackgroundTaskRoute);
-    return container.resolve(BackgroundTaskRoute.handler);
+    container.register(BackgroundTaskRoute);
+    return container.resolve(BackgroundTaskRouteHandler);
 };
 
 const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({
@@ -39,8 +42,8 @@ describe("BackgroundTaskRoute", () => {
     it("should have correct method and path", () => {
         // Method and path are declaration-time data now, so the router can match without
         // constructing the route.
-        expect(BackgroundTaskRoute.method).toBe("POST");
-        expect(BackgroundTaskRoute.path).toBe("/background-task");
+        expect(BackgroundTaskRouteDefinition.method).toBe("POST");
+        expect(BackgroundTaskRouteDefinition.path).toBe("/background-task");
     });
 
     it("should reject requests without token header", async () => {

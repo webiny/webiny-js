@@ -6,7 +6,10 @@ import { ContentEntriesFeature } from "@webiny/api-headless-cms/features/content
 import { CmsWhereMapperFeature } from "@webiny/api-headless-cms/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "@webiny/api-headless-cms/features/sortMapper/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { WebsiteBuilderRedirectsRoute } from "./rest/WebsiteBuilderRedirectsRoute.js";
+import {
+    WebsiteBuilderRedirectsRoute,
+    WebsiteBuilderRedirectsRouteDefinition
+} from "./rest/WebsiteBuilderRedirectsRoute.js";
 import { registerWebsiteBuilderGraphQL } from "./graphql/createGraphQL.js";
 // Redirects
 import { GetRedirectByIdFeature } from "./features/redirects/GetRedirectById/feature.js";
@@ -56,7 +59,7 @@ import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvide
 import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
 import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
 import { PageModelProvider } from "~/features/pages/PageModelProvider.js";
-import { registerHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -90,7 +93,8 @@ export const WebsiteBuilderFeature = createFeature({
         DeleteRedirectFeature.register(container);
         MoveRedirectFeature.register(container);
         InvalidateRedirectsCacheFeature.register(container);
-        registerHttpRoute(container, WebsiteBuilderRedirectsRoute);
+        container.register(WebsiteBuilderRedirectsRoute);
+        container.registerInstance(HttpRouteDefinition, WebsiteBuilderRedirectsRouteDefinition);
 
         // Page features.
         GetPageByIdFeature.register(container);

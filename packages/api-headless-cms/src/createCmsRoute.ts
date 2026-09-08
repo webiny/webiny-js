@@ -1,11 +1,12 @@
 import type { Container } from "@webiny/di";
-import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition, RequestContainer } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 const CMS_PATHS: Record<ApiEndpoint, string> = {
     manage: "/cms/manage",
@@ -45,12 +46,20 @@ export function createCmsRoute(type: ApiEndpoint) {
         }
     }
 
-    return createHttpRoute({
-        // One abstraction per endpoint, so manage/read/preview stay independently resolvable.
-        name: `Cms/${type}`,
-        method: "POST",
-        path: CMS_PATHS[type],
+    // One abstraction per endpoint, so manage/read/preview stay independently resolvable.
+    const handler = createAbstraction<HttpRoute.Interface>(`CmsRouteHandler/${type}`);
+
+    const implementation = handler.createImplementation({
         implementation: CmsGraphQLRoute,
         dependencies: [RequestContainer, [GraphQLContextualSchema, { multiple: true }]]
     });
+
+    const definition: HttpRouteDefinition.Interface = {
+        method: "POST",
+        path: CMS_PATHS[type],
+        handler
+    };
+
+    // A generated route has to hand back both halves; the caller registers each.
+    return { implementation, definition };
 }

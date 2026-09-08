@@ -10,11 +10,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
-import { HttpRouter } from "~/features/http/abstractions.js";
+import { HttpRoute, HttpRouteDefinition, HttpRouter } from "~/features/http/abstractions.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
-import { createHttpRoute } from "~/features/http/createHttpRoute.js";
-import { registerHttpRoute } from "~/features/http/registerHttpRoute.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 const req = (method: string, path: string): IHttpRequest => ({
@@ -39,39 +37,44 @@ describe("HttpRouter route construction", () => {
             return { id: "expensive" };
         });
 
-        class CostlyRouteImpl {
+        class CostlyRouteImpl implements HttpRoute.Interface {
             constructor(private readonly expensive: { id: string }) {}
             async handle(): Promise<IHttpResponse> {
                 return { statusCode: 200, body: this.expensive.id };
             }
         }
 
-        class CheapRouteImpl {
+        class CheapRouteImpl implements HttpRoute.Interface {
             async handle(): Promise<IHttpResponse> {
                 return { statusCode: 200, body: "cheap" };
             }
         }
 
-        registerHttpRoute(
-            container,
-            createHttpRoute({
-                name: "test:Costly",
-                method: "POST",
-                path: "/costly",
+        const CostlyHandler = new Abstraction<HttpRoute.Interface>("test:Costly");
+        container.register(
+            CostlyHandler.createImplementation({
                 implementation: CostlyRouteImpl,
                 dependencies: [Expensive]
             })
         );
-        registerHttpRoute(
-            container,
-            createHttpRoute({
-                name: "test:Cheap",
-                method: "GET",
-                path: "/cheap",
+        container.registerInstance(HttpRouteDefinition, {
+            method: "POST",
+            path: "/costly",
+            handler: CostlyHandler
+        });
+
+        const CheapHandler = new Abstraction<HttpRoute.Interface>("test:Cheap");
+        container.register(
+            CheapHandler.createImplementation({
                 implementation: CheapRouteImpl,
                 dependencies: []
             })
         );
+        container.registerInstance(HttpRouteDefinition, {
+            method: "GET",
+            path: "/cheap",
+            handler: CheapHandler
+        });
 
         container.register(HttpRouterImpl);
         container.registerInstance(RequestContainer, container);
@@ -111,21 +114,25 @@ describe("HttpRouter route construction", () => {
             body: "original"
         }));
 
-        class RouteImpl {
+        class RouteImpl implements HttpRoute.Interface {
             handle = handle;
         }
 
-        const route = createHttpRoute({
-            name: "test:Decorated",
+        const DecoratedHandler = new Abstraction<HttpRoute.Interface>("test:Decorated");
+        container.register(
+            DecoratedHandler.createImplementation({
+                implementation: RouteImpl,
+                dependencies: []
+            })
+        );
+        container.registerInstance(HttpRouteDefinition, {
             method: "GET",
             path: "/decorated",
-            implementation: RouteImpl,
-            dependencies: []
+            handler: DecoratedHandler
         });
-        registerHttpRoute(container, route);
 
         container.registerDecorator(
-            route.handler.createDecorator({
+            DecoratedHandler.createDecorator({
                 decorator: class {
                     constructor(private readonly decoratee: { handle: typeof handle }) {}
                     async handle(): Promise<IHttpResponse> {

@@ -1,7 +1,8 @@
-import { HttpRoute, createHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 const INTERNAL_HEADER = "x-webiny-bulk-actions-token";
 
@@ -31,10 +32,19 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const EmptyTrashBinRoute = createHttpRoute({
-    name: "EmptyTrashBin",
-    method: "POST",
-    path: "/empty-trash-bins",
+/** Its own abstraction, so the router can resolve THIS route and only this route. */
+export const EmptyTrashBinRouteHandler = createAbstraction<HttpRoute.Interface>(
+    "EmptyTrashBinRouteHandler"
+);
+
+export const EmptyTrashBinRoute = EmptyTrashBinRouteHandler.createImplementation({
     implementation: EmptyTrashBinRouteImpl,
     dependencies: [TenantContext, TaskService, BulkActionsInternalToken]
 });
+
+/** What the router matches on. Plain data — reading it builds nothing. */
+export const EmptyTrashBinRouteDefinition: HttpRouteDefinition.Interface = {
+    method: "POST",
+    path: "/empty-trash-bins",
+    handler: EmptyTrashBinRouteHandler
+};

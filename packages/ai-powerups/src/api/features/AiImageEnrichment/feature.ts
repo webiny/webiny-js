@@ -2,10 +2,13 @@ import { createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AiImageEnrichmentAfterCreateHandler } from "./AiImageEnrichmentAfterCreateHandler.js";
 import { AiImageEnrichmentTask } from "./AiImageEnrichmentTask.js";
-import { AiImageEnrichmentStreamRoute } from "./AiImageEnrichmentStreamRoute.js";
+import {
+    AiImageEnrichmentStreamRoute,
+    AiImageEnrichmentStreamRouteDefinition
+} from "./AiImageEnrichmentStreamRoute.js";
 import { PrepareImageEnrichmentUseCase } from "./PrepareImageEnrichmentUseCase.js";
 import { ApplyImageEnrichmentUseCase } from "./ApplyImageEnrichmentUseCase.js";
-import { registerHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const AiImageEnrichmentFeature = createFeature({
     name: "AiPowerUps/AiImageEnrichment",
@@ -31,6 +34,7 @@ export const AiImageEnrichmentFeature = createFeature({
         container.register(AiImageEnrichmentTask);
 
         // On-demand re-enrichment, streamed.
-        registerHttpRoute(container, AiImageEnrichmentStreamRoute);
+        container.register(AiImageEnrichmentStreamRoute);
+        container.registerInstance(HttpRouteDefinition, AiImageEnrichmentStreamRouteDefinition);
     }
 });

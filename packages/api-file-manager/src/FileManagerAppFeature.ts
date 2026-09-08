@@ -1,17 +1,18 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { AssetDeliveryFeature } from "~/features/assetDelivery/feature.js";
-import { AssetDeliveryRoute } from "./delivery/AssetDeliveryRoute.js";
+import { AssetDeliveryRoute, AssetDeliveryRouteDefinition } from "./delivery/AssetDeliveryRoute.js";
 import { FileModel } from "~/domain/file/file.model.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 import { FileModelProvider } from "~/features/file/FileModelProvider.js";
-import { registerHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const FileManagerAppFeature = createFeature({
     name: "FileManagerApp",
     register(container: Container) {
         AssetDeliveryFeature.register(container);
-        registerHttpRoute(container, AssetDeliveryRoute);
+        container.register(AssetDeliveryRoute);
+        container.registerInstance(HttpRouteDefinition, AssetDeliveryRouteDefinition);
         container.register(FileModel);
         FmPermissionsFeature.register(container);
         FileManagerFeature.register(container);

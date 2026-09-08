@@ -1,10 +1,11 @@
 import { createFeature } from "@webiny/feature/api";
-import { UploadPartRoute } from "./UploadPartRoute.js";
-import { registerHttpRoute } from "@webiny/event-handler-core";
+import { UploadPartRoute, UploadPartRouteDefinition } from "./UploadPartRoute.js";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const UploadPartRouteFeature = createFeature({
     name: "FileManagerServer/UploadPartRoute",
     register(container) {
-        registerHttpRoute(container, UploadPartRoute);
+        container.register(UploadPartRoute);
+        container.registerInstance(HttpRouteDefinition, UploadPartRouteDefinition);
     }
 });

@@ -26,7 +26,7 @@ afterEach(async () => {
 describe("upload + read round trip", () => {
     it("should upload a file via route then read it back via use case", async () => {
         const config = makeConfig();
-        const route = new UploadSingleFileRoute.implementation(config);
+        const route = new UploadSingleFileRoute(config);
         const tenantContext = makeTenantContext();
         const fileContent = Buffer.from("round trip content");
         const fileKey = "roundtrip/test.txt";
@@ -52,7 +52,7 @@ describe("upload + read round trip", () => {
 
     it("should upload parts, assemble, then read back", async () => {
         const config = makeConfig();
-        const partRoute = new UploadPartRoute.implementation(config);
+        const partRoute = new UploadPartRoute(config);
         const tenantContext = makeTenantContext();
         const uploadId = "rt-mp-001";
         const fileKey = "assembled.dat";

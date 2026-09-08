@@ -1,4 +1,4 @@
-import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition, RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -10,6 +10,7 @@ import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/List
 import type { Container } from "@webiny/feature/api";
 import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
+import { createAbstraction } from "@webiny/feature/api";
 
 const INTERNAL_HEADER = "x-webiny-scheduler-token";
 
@@ -90,10 +91,19 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ScheduledActionRecoverRoute = createHttpRoute({
-    name: "ScheduledActionRecover",
-    method: "POST",
-    path: "/scheduled-action-recover",
+/** Its own abstraction, so the router can resolve THIS route and only this route. */
+export const ScheduledActionRecoverRouteHandler = createAbstraction<HttpRoute.Interface>(
+    "ScheduledActionRecoverRouteHandler"
+);
+
+export const ScheduledActionRecoverRoute = ScheduledActionRecoverRouteHandler.createImplementation({
     implementation: ScheduledActionRecoverRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
 });
+
+/** What the router matches on. Plain data — reading it builds nothing. */
+export const ScheduledActionRecoverRouteDefinition: HttpRouteDefinition.Interface = {
+    method: "POST",
+    path: "/scheduled-action-recover",
+    handler: ScheduledActionRecoverRouteHandler
+};

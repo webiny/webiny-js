@@ -6,7 +6,7 @@ import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
-/** A route plus the method/path the router matches on, mirroring what `createHttpRoute` builds. */
+/** A route plus the method/path its definition carries, mirroring the production pair. */
 interface TestRoute {
     method: string;
     path: string;

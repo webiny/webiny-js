@@ -1,15 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import {
-    HttpRoute,
-    HttpStreamBody,
-    invokeHttpRoute,
-    registerHttpRoute
-} from "@webiny/event-handler-core";
+import { HttpRoute, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { AiImageEnrichmentStreamRoute } from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
+import {
+    AiImageEnrichmentStreamRoute,
+    AiImageEnrichmentStreamRouteDefinition,
+    AiImageEnrichmentStreamRouteHandler
+} from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
 import {
     ApplyImageEnrichmentUseCase,
     PrepareImageEnrichmentUseCase
@@ -88,15 +87,15 @@ describe("AiImageEnrichmentStreamRoute", () => {
         container.registerInstance(PrepareImageEnrichmentUseCase, prepare as any);
         container.registerInstance(ApplyImageEnrichmentUseCase, apply as any);
         container.registerInstance(Ai, ai as any);
-        registerHttpRoute(container, AiImageEnrichmentStreamRoute);
+        container.register(AiImageEnrichmentStreamRoute);
 
-        route = container.resolve(AiImageEnrichmentStreamRoute.handler);
+        route = container.resolve(AiImageEnrichmentStreamRouteHandler);
     });
 
     it("should be a POST route with a file-scoped path", () => {
         // Declaration-time data now, so the router matches without constructing the route.
-        expect(AiImageEnrichmentStreamRoute.method).toBe("POST");
-        expect(AiImageEnrichmentStreamRoute.path).toBe("/stream/fm/files/:fileId/enrich");
+        expect(AiImageEnrichmentStreamRouteDefinition.method).toBe("POST");
+        expect(AiImageEnrichmentStreamRouteDefinition.path).toBe("/stream/fm/files/:fileId/enrich");
     });
 
     it("should respond with SSE headers that defeat proxy buffering", async () => {

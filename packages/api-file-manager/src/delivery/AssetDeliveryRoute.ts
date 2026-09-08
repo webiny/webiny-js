@@ -1,5 +1,6 @@
-import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition, RequestContainer } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
+import { createAbstraction } from "@webiny/feature/api";
 import {
     AssetRequestResolver,
     AssetResolver,
@@ -71,10 +72,19 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const AssetDeliveryRoute = createHttpRoute({
-    name: "AssetDelivery",
-    method: "GET",
-    path: "/files/*",
+/** Its own abstraction, so the router can resolve THIS route and only this route. */
+export const AssetDeliveryRouteHandler = createAbstraction<HttpRoute.Interface>(
+    "AssetDeliveryRouteHandler"
+);
+
+export const AssetDeliveryRoute = AssetDeliveryRouteHandler.createImplementation({
     implementation: AssetDeliveryRouteImpl,
     dependencies: [RequestContainer]
 });
+
+/** What the router matches on. Plain data — reading it builds nothing. */
+export const AssetDeliveryRouteDefinition: HttpRouteDefinition.Interface = {
+    method: "GET",
+    path: "/files/*",
+    handler: AssetDeliveryRouteHandler
+};

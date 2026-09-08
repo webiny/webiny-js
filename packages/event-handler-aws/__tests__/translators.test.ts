@@ -5,7 +5,8 @@ import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHand
 import { HttpFeature } from "@webiny/event-handler-core";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { createHttpRoute, registerHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition } from "@webiny/event-handler-core";
+import { Abstraction } from "@webiny/di";
 
 const apiGwEvent = {
     httpMethod: "POST",
@@ -25,13 +26,18 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 return { statusCode, body };
             }
         }
-        return createHttpRoute({
-            name: "test:MakeRoute",
-            method: "POST",
-            path: "/graphql",
-            implementation: MakeRouteImplementation,
-            dependencies: []
-        });
+        const handler = new Abstraction<HttpRoute.Interface>("test:MakeRoute");
+        return {
+            implementation: handler.createImplementation({
+                implementation: MakeRouteImplementation,
+                dependencies: []
+            }),
+            definition: {
+                method: "POST",
+                path: "/graphql",
+                handler
+            } as HttpRouteDefinition.Interface
+        };
     };
 
     it("should translate APIGatewayProxyEvent, route, and translate back", async () => {
@@ -39,7 +45,9 @@ describe("ApiGatewayHttpRouterHandler", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                registerHttpRoute(container, makeRoute(200, { ok: true }));
+                const route = makeRoute(200, { ok: true });
+                container.register(route.implementation);
+                container.registerInstance(HttpRouteDefinition, route.definition);
                 container.register(ApiGatewayHttpRouterHandler);
             }
         });
@@ -72,19 +80,25 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 };
             }
         }
-        const bufferRoute = createHttpRoute({
-            name: "test:BufferRoute",
-            method: "POST",
-            path: "/graphql",
-            implementation: BufferRouteImplementation,
-            dependencies: []
-        });
+        const bufferHandler = new Abstraction<HttpRoute.Interface>("test:BufferRoute");
+        const bufferRoute = {
+            implementation: bufferHandler.createImplementation({
+                implementation: BufferRouteImplementation,
+                dependencies: []
+            }),
+            definition: {
+                method: "POST",
+                path: "/graphql",
+                handler: bufferHandler
+            } as HttpRouteDefinition.Interface
+        };
 
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                registerHttpRoute(container, bufferRoute);
+                container.register(bufferRoute.implementation);
+                container.registerInstance(HttpRouteDefinition, bufferRoute.definition);
                 container.register(ApiGatewayHttpRouterHandler);
             }
         });
