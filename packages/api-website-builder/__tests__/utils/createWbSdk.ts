@@ -71,9 +71,6 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async getSettings(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_SETTINGS, variables } });
         },
-        async updateSettings(variables = {}) {
-            return invoke({ body: { query: PAGES_GQL.UPDATE_SETTINGS, variables } });
-        },
         async getIntegrations(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_INTEGRATIONS, variables } });
         },
@@ -82,6 +79,12 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         },
         async getPageModel(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_MODEL, variables } });
+        },
+        async getFrontendSettings(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.GET_FRONTEND_SETTINGS, variables } });
+        },
+        async updateFrontendSettings(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.UPDATE_FRONTEND_SETTINGS, variables } });
         },
 
         // Redirects operations

@@ -8,7 +8,7 @@ export const createRedirectsRoute = () => {
     return createRoute<ApiCoreContext>(({ onGet, context }) => {
         onGet("/wb/redirects", async (_, reply) => {
             try {
-                ensureAuthentication(context);
+                await ensureAuthentication(context);
             } catch (err) {
                 if (err.code === "SECURITY_NOT_AUTHORIZED") {
                     reply.code(401).send(err.message);
