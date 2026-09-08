@@ -96,9 +96,12 @@ describe("AiImageEnrichmentStreamRoute", () => {
     });
 
     it("should be a POST route with a file-scoped path", () => {
-        // Declaration-time data now, so the router matches without constructing the route.
-        expect(AiImageEnrichmentStreamRouteDefinition.method).toBe("POST");
-        expect(AiImageEnrichmentStreamRouteDefinition.path).toBe("/stream/fm/files/:fileId/enrich");
+        // The definition is what the router matches on; it has no dependencies, so building it
+        // costs nothing and never touches the route itself.
+        const definition = new AiImageEnrichmentStreamRouteDefinition();
+
+        expect(definition.method).toBe("POST");
+        expect(definition.path).toBe("/stream/fm/files/:fileId/enrich");
     });
 
     it("should respond with SSE headers that defeat proxy buffering", async () => {

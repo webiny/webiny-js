@@ -38,9 +38,16 @@ export function registerHttpRouteInstance(
         dependencies: []
     });
 
-    container.registerInstance(HttpRouteDefinition, {
-        method: params.method,
-        path: params.path,
-        handler
-    });
+    class DelegatingRouteDefinition implements HttpRouteDefinition.Interface {
+        readonly method = params.method;
+        readonly path = params.path;
+        readonly handler = handler;
+    }
+
+    container.register(
+        HttpRouteDefinition.createImplementation({
+            implementation: DelegatingRouteDefinition,
+            dependencies: []
+        })
+    );
 }

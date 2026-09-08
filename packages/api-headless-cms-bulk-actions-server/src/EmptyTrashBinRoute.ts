@@ -36,9 +36,14 @@ export const EmptyTrashBinRoute = HttpRouteHandler.createImplementation({
     dependencies: [TenantContext, TaskService, BulkActionsInternalToken]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const EmptyTrashBinRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/empty-trash-bins",
-    handler: EmptyTrashBinRoute
-};
+class EmptyTrashBinRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/empty-trash-bins";
+    readonly handler = EmptyTrashBinRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const EmptyTrashBinRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: EmptyTrashBinRouteDefinitionImpl,
+    dependencies: []
+});

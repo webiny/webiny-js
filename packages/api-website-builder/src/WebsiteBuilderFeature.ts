@@ -56,7 +56,6 @@ import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvide
 import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
 import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
 import { PageModelProvider } from "~/features/pages/PageModelProvider.js";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -90,7 +89,7 @@ export const WebsiteBuilderFeature = createFeature({
         DeleteRedirectFeature.register(container);
         MoveRedirectFeature.register(container);
         InvalidateRedirectsCacheFeature.register(container);
-        container.registerInstance(HttpRouteDefinition, WebsiteBuilderRedirectsRouteDefinition);
+        container.register(WebsiteBuilderRedirectsRouteDefinition);
 
         // Page features.
         GetPageByIdFeature.register(container);

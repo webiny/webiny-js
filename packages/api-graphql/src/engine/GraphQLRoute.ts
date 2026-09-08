@@ -21,9 +21,14 @@ export const GraphQLRoute = HttpRouteHandler.createImplementation({
     dependencies: [GraphQLEngine]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const GraphQLRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/graphql",
-    handler: GraphQLRoute
-};
+class GraphQLRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/graphql";
+    readonly handler = GraphQLRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const GraphQLRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: GraphQLRouteDefinitionImpl,
+    dependencies: []
+});

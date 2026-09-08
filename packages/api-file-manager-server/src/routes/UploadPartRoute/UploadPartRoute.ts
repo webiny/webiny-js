@@ -62,9 +62,14 @@ export const UploadPartRoute = HttpRouteHandler.createImplementation({
     dependencies: [FileManagerServerConfig]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const UploadPartRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "PUT",
-    path: "/webiny-file-upload/parts",
-    handler: UploadPartRoute
-};
+class UploadPartRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "PUT";
+    readonly path = "/webiny-file-upload/parts";
+    readonly handler = UploadPartRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const UploadPartRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: UploadPartRouteDefinitionImpl,
+    dependencies: []
+});

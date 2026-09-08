@@ -100,9 +100,14 @@ export const ScheduledActionRecoverRoute = HttpRouteHandler.createImplementation
     dependencies: [RequestContainer, SchedulerInternalToken]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const ScheduledActionRecoverRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/scheduled-action-recover",
-    handler: ScheduledActionRecoverRoute
-};
+class ScheduledActionRecoverRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/scheduled-action-recover";
+    readonly handler = ScheduledActionRecoverRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ScheduledActionRecoverRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ScheduledActionRecoverRouteDefinitionImpl,
+    dependencies: []
+});

@@ -70,9 +70,14 @@ export const BackgroundTaskRoute = HttpRouteHandler.createImplementation({
     dependencies: [RequestContainer, InternalToken]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const BackgroundTaskRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/background-task",
-    handler: BackgroundTaskRoute
-};
+class BackgroundTaskRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/background-task";
+    readonly handler = BackgroundTaskRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const BackgroundTaskRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: BackgroundTaskRouteDefinitionImpl,
+    dependencies: []
+});

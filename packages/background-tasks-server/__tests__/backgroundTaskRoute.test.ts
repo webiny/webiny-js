@@ -38,10 +38,12 @@ const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({
 
 describe("BackgroundTaskRoute", () => {
     it("should have correct method and path", () => {
-        // Method and path are declaration-time data now, so the router can match without
-        // constructing the route.
-        expect(BackgroundTaskRouteDefinition.method).toBe("POST");
-        expect(BackgroundTaskRouteDefinition.path).toBe("/background-task");
+        // The definition is what the router matches on; it has no dependencies, so building it
+        // costs nothing and never touches the route itself.
+        const definition = new BackgroundTaskRouteDefinition();
+
+        expect(definition.method).toBe("POST");
+        expect(definition.path).toBe("/background-task");
     });
 
     it("should reject requests without token header", async () => {

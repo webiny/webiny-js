@@ -5,13 +5,12 @@ import { FileModel } from "~/domain/file/file.model.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 import { FileModelProvider } from "~/features/file/FileModelProvider.js";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const FileManagerAppFeature = createFeature({
     name: "FileManagerApp",
     register(container: Container) {
         AssetDeliveryFeature.register(container);
-        container.registerInstance(HttpRouteDefinition, AssetDeliveryRouteDefinition);
+        container.register(AssetDeliveryRouteDefinition);
         container.register(FileModel);
         FmPermissionsFeature.register(container);
         FileManagerFeature.register(container);

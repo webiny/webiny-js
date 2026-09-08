@@ -75,9 +75,14 @@ export const ScheduledActionRunRoute = HttpRouteHandler.createImplementation({
     dependencies: [RequestContainer, SchedulerInternalToken]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const ScheduledActionRunRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/scheduled-action-run",
-    handler: ScheduledActionRunRoute
-};
+class ScheduledActionRunRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/scheduled-action-run";
+    readonly handler = ScheduledActionRunRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ScheduledActionRunRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ScheduledActionRunRouteDefinitionImpl,
+    dependencies: []
+});

@@ -81,9 +81,14 @@ export const AssetDeliveryRoute = HttpRouteHandler.createImplementation({
     dependencies: [RequestContainer]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const AssetDeliveryRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "GET",
-    path: "/files/*",
-    handler: AssetDeliveryRoute
-};
+class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "GET";
+    readonly path = "/files/*";
+    readonly handler = AssetDeliveryRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const AssetDeliveryRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: AssetDeliveryRouteDefinitionImpl,
+    dependencies: []
+});

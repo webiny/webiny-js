@@ -22,7 +22,7 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
  * The HTTP route for a CMS GraphQL endpoint (manage/read/preview). Per request it runs the
  * contextual schemas, then executes the CMS sub-schema via CmsSchemaExecutor.
  */
-export function createCmsRoute(type: ApiEndpoint): HttpRouteDefinition.Interface {
+export function createCmsRoute(type: ApiEndpoint) {
     class CmsGraphQLRoute implements HttpRoute.Interface {
         // public (not private): this class is returned from an exported factory, so its members
         // must be declarable in the emitted .d.ts — private parameter-properties on an exported
@@ -55,9 +55,14 @@ export function createCmsRoute(type: ApiEndpoint): HttpRouteDefinition.Interface
         dependencies: [RequestContainer, [GraphQLContextualSchema, { multiple: true }]]
     });
 
-    return {
-        method: "POST",
-        path: CMS_PATHS[type],
-        handler: implementation
-    };
+    class CmsRouteDefinition implements HttpRouteDefinition.Interface {
+        readonly method = "POST";
+        readonly path = CMS_PATHS[type];
+        readonly handler = implementation;
+    }
+
+    return HttpRouteDefinition.createImplementation({
+        implementation: CmsRouteDefinition,
+        dependencies: []
+    });
 }

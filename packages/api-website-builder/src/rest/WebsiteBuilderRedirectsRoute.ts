@@ -36,9 +36,14 @@ export const WebsiteBuilderRedirectsRoute = HttpRouteHandler.createImplementatio
     dependencies: [RequestContainer]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const WebsiteBuilderRedirectsRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "GET",
-    path: "/wb/redirects",
-    handler: WebsiteBuilderRedirectsRoute
-};
+class WebsiteBuilderRedirectsRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "GET";
+    readonly path = "/wb/redirects";
+    readonly handler = WebsiteBuilderRedirectsRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const WebsiteBuilderRedirectsRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: WebsiteBuilderRedirectsRouteDefinitionImpl,
+    dependencies: []
+});

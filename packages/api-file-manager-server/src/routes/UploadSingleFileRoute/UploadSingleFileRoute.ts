@@ -73,9 +73,14 @@ export const UploadSingleFileRoute = HttpRouteHandler.createImplementation({
     dependencies: [FileManagerServerConfig]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const UploadSingleFileRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/webiny-file-upload",
-    handler: UploadSingleFileRoute
-};
+class UploadSingleFileRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/webiny-file-upload";
+    readonly handler = UploadSingleFileRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const UploadSingleFileRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: UploadSingleFileRouteDefinitionImpl,
+    dependencies: []
+});

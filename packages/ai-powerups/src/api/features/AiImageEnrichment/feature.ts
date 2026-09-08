@@ -5,7 +5,6 @@ import { AiImageEnrichmentTask } from "./AiImageEnrichmentTask.js";
 import { AiImageEnrichmentStreamRouteDefinition } from "./AiImageEnrichmentStreamRoute.js";
 import { PrepareImageEnrichmentUseCase } from "./PrepareImageEnrichmentUseCase.js";
 import { ApplyImageEnrichmentUseCase } from "./ApplyImageEnrichmentUseCase.js";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
 
 export const AiImageEnrichmentFeature = createFeature({
     name: "AiPowerUps/AiImageEnrichment",
@@ -31,6 +30,6 @@ export const AiImageEnrichmentFeature = createFeature({
         container.register(AiImageEnrichmentTask);
 
         // On-demand re-enrichment, streamed.
-        container.registerInstance(HttpRouteDefinition, AiImageEnrichmentStreamRouteDefinition);
+        container.register(AiImageEnrichmentStreamRouteDefinition);
     }
 });

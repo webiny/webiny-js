@@ -92,9 +92,14 @@ export const AiImageEnrichmentStreamRoute = HttpRouteHandler.createImplementatio
     dependencies: [PrepareImageEnrichmentUseCase, Ai]
 });
 
-/** What the router matches on. Plain data — reading it builds nothing. */
-export const AiImageEnrichmentStreamRouteDefinition: HttpRouteDefinition.Interface = {
-    method: "POST",
-    path: "/stream/fm/files/:fileId/enrich",
-    handler: AiImageEnrichmentStreamRoute
-};
+class AiImageEnrichmentStreamRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/stream/fm/files/:fileId/enrich";
+    readonly handler = AiImageEnrichmentStreamRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const AiImageEnrichmentStreamRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: AiImageEnrichmentStreamRouteDefinitionImpl,
+    dependencies: []
+});
