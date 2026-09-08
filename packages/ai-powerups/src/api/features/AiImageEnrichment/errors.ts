@@ -30,8 +30,16 @@ export class EnrichmentFileContentsError extends Error {
 export class EnrichmentNoProviderError extends Error {
     readonly code = "ENRICHMENT_NO_AI_PROVIDER" as const;
 
-    constructor() {
-        super("No AI provider configured. Add a provider in AI Power Ups settings.");
+    /**
+     * The reason comes from capability resolution, which knows which of the several ways this can
+     * fail actually happened: no model in the Vision role, a deleted connection, a missing key.
+     * Passing it through beats replacing all of them with one generic sentence.
+     */
+    constructor(reason?: string) {
+        super(
+            reason ??
+                "No AI model is configured for image enrichment. Pick one under Settings → AI Power-Ups → Model roles."
+        );
     }
 }
 

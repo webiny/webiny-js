@@ -49,7 +49,13 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
         this.errors = [];
 
         try {
-            const data = await this.getSettings.execute();
+            // Groups that build fields from server data get to load it first. Both run in
+            // parallel; neither depends on the other.
+            const [data] = await Promise.all([
+                this.getSettings.execute(),
+                Promise.all(this.groups.map(group => group.init?.()))
+            ]);
+
             runInAction(() => {
                 this.form = this.buildForm();
                 this.form.setData(data);

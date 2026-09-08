@@ -3,12 +3,15 @@ import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { AiToolPipelineRunner } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 import { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/contentModelToJsonSchema/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "~/api/features/Capabilities/index.js";
+import { CMS_GENERATE_ENTRY_CAPABILITY } from "./capability.js";
 import {
     AiPromptContextBuilder,
     formatAdditionalFilesContext
@@ -27,10 +30,9 @@ import { injectDynamicZoneTypenames } from "./injectDynamicZoneTypenames.js";
 class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCase.Interface {
     constructor(
         private promptContextBuilder: AiPromptContextBuilder.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private encryption: Encryption.Interface,
         private listTags: ListTagsUseCase.Interface,
         private getModel: GetModelUseCase.Interface,
         private modelToAst: ModelToAstConverter.Interface,
@@ -40,19 +42,12 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
     async execute<TValues = Record<string, any>>(
         params: CmsGenerateEntryContentParams
     ): Promise<Result<GenerateEntryContentResult<TValues>, Error>> {
-        const settingsResult = await this.getSettings.execute();
-        if (settingsResult.isFail()) {
-            return Result.fail(new Error("Failed to load AI PowerUps settings."));
+        const resolved = await this.resolveCapability.execute(CMS_GENERATE_ENTRY_CAPABILITY);
+        if (resolved.isFail()) {
+            return Result.fail(resolved.error);
         }
 
-        const settings = settingsResult.value;
-        const firstProvider = settings.providers.presets[0];
-
-        if (!firstProvider) {
-            return Result.fail(
-                new Error("No AI provider configured. Add a provider in AI Power Ups settings.")
-            );
-        }
+        const capability = resolved.value;
 
         const modelResult = await this.getModel.execute(params.modelId);
         if (modelResult.isFail()) {
@@ -67,7 +62,6 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
             description: model.description
         });
 
-        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
         const sdkTools = this.aiSdkTools.getToolSet();
 
         const context = await this.promptContextBuilder.execute({
@@ -92,8 +86,10 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         });
         const imageTags = tagsResult.isOk() ? tagsResult.value.map(t => t.tag) : [];
 
-        const systemText =
-            buildEntryPrompt(model.name, entrySchema, imageTags) + context.toString();
+        const systemText = withAdditionalInstructions(
+            buildEntryPrompt(model.name, entrySchema, imageTags) + context.toString(),
+            capability
+        );
 
         const system = {
             role: "system" as const,
@@ -107,11 +103,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
 
         try {
             const aiResult = await this.ai.generateText({
-                model: firstProvider.model,
-                connection: {
-                    sdkName: firstProvider.model.split("/")[0],
-                    apiKey
-                },
+                model: capability.model,
+                connection: capability.connection,
                 system,
                 toolChoice: "auto",
                 prompt: params.prompt + formatAdditionalFilesContext(context.additionalFiles),
@@ -174,10 +167,9 @@ export const CmsGenerateEntryContentUseCaseImplementation =
         implementation: CmsGenerateEntryContentUseCaseImpl,
         dependencies: [
             AiPromptContextBuilder,
-            GetSettingsUseCase,
+            ResolveAiCapabilityUseCase,
             Ai,
             AiSdkTools,
-            Encryption,
             ListTagsUseCase,
             GetModelUseCase,
             ModelToAstConverter,

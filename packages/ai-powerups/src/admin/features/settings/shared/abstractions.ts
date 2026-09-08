@@ -19,14 +19,29 @@ export interface IAiPowerUpsPersonaPreset {
     style?: string;
 }
 
+export interface IAiPowerUpsCapabilityOverride {
+    roleId?: string;
+    connectionId?: string;
+    model?: string;
+    additionalInstructions?: string;
+    replacePrompt?: boolean;
+    guidance?: string;
+}
+
 export interface IAiPowerUpsSettings {
-    providers: {
+    connections: {
         presets: {
+            id: string;
             name: string;
-            description: string;
-            model: string;
+            sdkName: string;
             apiKey: string;
         }[];
+    };
+    modelRoles: {
+        roles: Record<string, { connectionId: string; model: string }>;
+    };
+    capabilities: {
+        overrides: Record<string, IAiPowerUpsCapabilityOverride>;
     };
     readerPersonas: {
         presets: IAiPowerUpsPersonaPreset[];
