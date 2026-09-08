@@ -127,6 +127,9 @@ class FmUploadGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
                         const data = args.data as PresignedPostPayloadData;
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
@@ -159,6 +162,9 @@ class FmUploadGraphQLSchema_ implements GraphQLSchemaFactory.Interface {
 
                         const files = args.data as PresignedPostPayloadData[];
                         const settingsResult = await getSettings.execute();
+                        if (settingsResult.isFail()) {
+                            throw settingsResult.error;
+                        }
                         const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);

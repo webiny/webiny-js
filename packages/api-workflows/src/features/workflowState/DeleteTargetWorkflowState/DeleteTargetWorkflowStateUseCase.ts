@@ -49,6 +49,9 @@ class DeleteTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
 
         const identity = this.identityContext.getIdentity();
         const teamsResult = await this.getUserTeams.execute(identity.id);
+        if (teamsResult.isFail()) {
+            return Result.fail(teamsResult.error);
+        }
         const teams = teamsResult.value;
         const state = new WorkflowState(record, teams, identity);
 
