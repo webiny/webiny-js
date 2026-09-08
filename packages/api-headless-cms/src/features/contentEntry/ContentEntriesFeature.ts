@@ -26,6 +26,7 @@ import { GetUniqueFieldValuesFeature } from "./GetUniqueFieldValues/feature.js";
 import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
 import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
+import { UpdateRevisionFeature } from "./UpdateRevision/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./UpdateRevisionDescription/feature.js";
 import { EntryDataFactoriesFeature } from "./entryDataFactories/EntryDataFactoriesFeature.js";
 import { RuntimeTenant } from "../runtimeTenant/RuntimeTenant.js";
@@ -57,6 +58,7 @@ export const ContentEntriesFeature = createFeature({
         CreateEntryFeature.register(container);
         CreateEntryRevisionFromFeature.register(container);
         UpdateEntryFeature.register(container);
+        UpdateRevisionFeature.register(container);
         UpdateRevisionDescriptionFeature.register(container);
         ValidateEntryFeature.register(container);
         MoveEntryFeature.register(container);

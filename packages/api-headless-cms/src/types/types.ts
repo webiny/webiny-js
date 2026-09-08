@@ -1360,6 +1360,13 @@ export interface CmsEntryStorageOperations {
         params: CmsEntryStorageOperationsUpdateParams<T>
     ) => Promise<CmsEntry<T>>;
     /**
+     * Update a single revision record without touching the latest or published records.
+     */
+    updateRevision: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryStorageOperationsUpdateParams<T>
+    ) => Promise<CmsEntry<T>>;
+    /**
      * Move entry and all its entries into a new folder.
      */
     move: (model: CmsModel, id: string, folderId: string) => Promise<void>;
