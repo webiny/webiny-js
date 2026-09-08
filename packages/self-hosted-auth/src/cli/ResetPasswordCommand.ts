@@ -18,6 +18,13 @@ import { isCliPasswordResetEnabled } from "~/shared/buildParams.js";
  *
  * The trade is that the API has to be reachable. That is the right trade: this exists for
  * "locked out of the admin UI", and if the API is down a password is not what is blocking you.
+ *
+ * Which instance it talks to: whatever the config resolves to on the machine running the command.
+ * The self-hosted hosting type has no deploy environments, so there is a single `<Infra.ApiUrl>`
+ * value, and `--api-url` overrides it for a one-off (say, resetting on a deployed box from a
+ * laptop configured for localhost). The signing secret has the same property but no override, so
+ * a reset against a deployed API needs the same `signingSecret` locally that the API was built
+ * with. `explainError` says so when the token is refused, because that is the likeliest cause.
  */
 
 /** Extension type ids, referenced as strings so the CLI need not import the React config modules. */
@@ -45,6 +52,8 @@ export interface IResetPasswordCommandParams {
     email: string;
     apiUrl?: string;
 }
+
+const MUTATION_NAME = "selfHostedAuthCliResetPassword";
 
 const MUTATION = /* GraphQL */ `
     mutation SelfHostedAuthCliResetPassword($token: String!, $password: String!) {
@@ -91,7 +100,9 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 {
                     name: "api-url",
                     description:
-                        "API origin to call. Defaults to the <Infra.ApiUrl> value from webiny.config.",
+                        "API origin to call, e.g. https://api.example.com. Defaults to the " +
+                        "<Infra.ApiUrl> value from webiny.config. Pass it to reset a password on " +
+                        "a deployed instance from a machine configured for localhost.",
                     type: "string"
                 }
             ],
@@ -232,24 +243,51 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
         };
 
         if (body.errors?.length) {
-            throw new Error(body.errors.map(error => error.message).join("; "));
+            const messages = body.errors.map(error => error.message);
+
+            // An API built with `cliPasswordReset={false}` has no such field, and GraphQL rejects
+            // an unknown field during validation. So this arrives as a schema error rather than as
+            // a null result, and the raw "Cannot query field" text would tell the operator nothing
+            // about the cause.
+            if (messages.some(message => message.includes(MUTATION_NAME))) {
+                throw new Error(
+                    `The API at ${endpoint} has no \`${MUTATION_NAME}\` mutation, which means it ` +
+                        "was built with CLI password reset disabled. Remove " +
+                        "`cliPasswordReset={false}` from <SelfHostedAuth />, then rebuild and " +
+                        "redeploy the API."
+                );
+            }
+
+            throw new Error(messages.join("; "));
         }
 
         const result = body.data?.selfHostedAuthCliResetPassword;
         if (!result) {
-            // The mutation is absent from the schema when the flag is off. The config check above
-            // catches the normal case; this catches a deployed API built before the flag was
-            // flipped back on.
-            throw new Error(
-                "The API did not accept the reset. The `selfHostedAuthCliResetPassword` mutation " +
-                    "is missing, which means the deployed API was built with CLI password reset " +
-                    "disabled. Rebuild and redeploy the API, then try again."
-            );
+            throw new Error(`The API at ${endpoint} returned an unexpected response.`);
         }
 
         if (result.error) {
-            throw new Error(`${result.error.message} (${result.error.code})`);
+            throw new Error(this.explainError(result.error, endpoint));
         }
+    }
+
+    private explainError(error: { code: string; message: string }, endpoint: string): string {
+        const base = `${error.message} (${error.code})`;
+
+        // The token is signed with whatever `signingSecret` resolves to on THIS machine, and
+        // verified against whatever the API was built with. Those differ more often than anything
+        // else that produces this code, and the bare message gives no hint of it. Self-hosted has
+        // no deploy environments, so there is one config value and one env to get right.
+        if (error.code === "INVALID_RESET_TOKEN") {
+            return (
+                `${base} The usual cause is a signing secret mismatch: the token was signed with ` +
+                `the \`signingSecret\` your local webiny.config resolves to, and ${endpoint} was ` +
+                "built with a different one. Check the environment variable behind it. A clock " +
+                "skew of over two minutes between this machine and the API will do it too."
+            );
+        }
+
+        return base;
     }
 }
 
