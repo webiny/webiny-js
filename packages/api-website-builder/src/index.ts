@@ -31,15 +31,15 @@ import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
-import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
 import { NextjsFeature } from "~/features/nextjs/feature.js";
-import { NuxtGraphQLSchema } from "~/graphql/nuxt/NuxtGraphQLSchema.js";
 import { NuxtFeature } from "~/features/nuxt/feature.js";
+import { WbStarterKitsFeature } from "~/features/starterKits/feature.js";
 import { ListDeletedPagesFeature } from "~/features/pages/ListDeletedPages/feature.js";
 import { TrashPageFeature } from "~/features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "~/features/pages/RestorePage/feature.js";
 import { GetDeletedPageByIdFeature } from "~/features/pages/GetDeletedPageById/feature.js";
 import { GetPageLanguagePathsFeature } from "~/features/pages/GetPageLanguagePaths/feature.js";
+import { GetSettingsFeature } from "~/features/pages/GetSettings/feature.js";
 import { UpdatePageRevisionDescriptionFeature } from "./features/pages/UpdatePageRevisionDescription/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
 import { EnsureWbPageFolderIsEmptyOnDeleteFeature } from "./features/folders/EnsureWbPageFolderIsEmptyOnDelete/feature.js";
@@ -86,6 +86,7 @@ const createContext = () => {
             GetPageRevisionsFeature.register(container);
             GetDeletedPageByIdFeature.register(container);
             GetPageLanguagePathsFeature.register(container);
+            GetSettingsFeature.register(container);
             ListPagesFeature.register(container);
             ListDeletedPagesFeature.register(container);
             CreatePageFeature.register(container);
@@ -103,15 +104,12 @@ const createContext = () => {
             ApiKeyInstallerFeature.register(container);
             NextjsFeature.register(container);
             NuxtFeature.register(container);
+            WbStarterKitsFeature.register(container);
             WbWebhooksFeature.register(container);
             EnsureWbPageFolderIsEmptyOnDeleteFeature.register(container);
             EnsureWbRedirectFolderIsEmptyOnDeleteFeature.register(container);
 
             // TenantModelExtensionFeature.register(container);
-
-            // Register GraphQL
-            container.register(NextjsGraphQLSchema);
-            container.register(NuxtGraphQLSchema);
         },
         { name: "wb.createContext" }
     );

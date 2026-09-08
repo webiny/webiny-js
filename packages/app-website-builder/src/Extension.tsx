@@ -6,16 +6,12 @@ import {
 } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/presentation/pages/PageEditor/PageEditor.js";
 import { PagesList } from "~/presentation/pages/PageList/components/PagesList.js";
-import { useSettingsDialog } from "~/modules/settings/useSettingsDialog.js";
 import { useIntegrationsDialog } from "./modules/integrations/useIntegrationsDialog.js";
 import { PagesListConfig } from "~/presentation/pages/PageList/components/PagesListConfig.js";
 import { RedirectsList } from "~/presentation/redirects/RedirectList/components/RedirectsList.js";
 import { RedirectsListConfig } from "~/presentation/redirects/RedirectList/components/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
-import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
-import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
-import { NuxtConfigFeature } from "~/presentation/navigation/NuxtConfig/feature.js";
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
@@ -37,7 +33,6 @@ import { TranslatePageConfig } from "./presentation/pages/TranslatePage/Translat
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/presentation/pages/PageEditor/PageSettings/feature.js";
 import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
-import { UpdateSettingsFeature } from "~/features/settings/updateSettings/index.js";
 import { GetSettingsFeature } from "~/features/settings/getSettings/index.js";
 import { GetEcommerceSettingsFeature } from "~/features/ecommerce/settings/getSettings/index.js";
 import { UpdateEcommerceSettingsFeature } from "~/features/ecommerce/settings/updateSettings/index.js";
@@ -50,8 +45,6 @@ export const Extension = () => {
     return (
         <>
             <RegisterFeature feature={SharedPageInfrastructureFeature} />
-            <RegisterFeature feature={NextjsConfigFeature} />
-            <RegisterFeature feature={NuxtConfigFeature} />
             <RegisterFeature feature={WbPermissionsFeature} />
             <RegisterFeature feature={TranslatePageFeature} />
             <RegisterFeature feature={DeletePageFeature} />
@@ -70,7 +63,6 @@ export const Extension = () => {
             <RegisterFeature feature={PageSettingsFeature} />
             <RegisterFeature feature={GetSettingsFeature} />
             <RegisterFeature feature={GetEcommerceSettingsFeature} />
-            <RegisterFeature feature={UpdateSettingsFeature} />
             <RegisterFeature feature={UpdateEcommerceSettingsFeature} />
             <AdminConfig>
                 <Security.Permissions
@@ -112,7 +104,6 @@ export const Extension = () => {
                         }
                     />
                     <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
-                    <NavigationExtension />
                 </HasPermission>
 
                 <HasPermission entity={"redirect"}>
@@ -129,9 +120,6 @@ export const Extension = () => {
                         }
                     />
                 </HasPermission>
-                <HasPermission entity={"settings"}>
-                    <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
-                </HasPermission>
                 <HasPermission entity={"integrations"}>
                     <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
                 </HasPermission>
@@ -145,11 +133,6 @@ export const Extension = () => {
 };
 
 Extension.displayName = "WbExtension";
-
-const SettingsMenuItem = () => {
-    const { showSettingsDialog } = useSettingsDialog();
-    return <Menu.Item text={"Settings"} onClick={showSettingsDialog} pinnable={true} />;
-};
 
 const IntegrationsMenuItem = () => {
     const { showIntegrationsDialog } = useIntegrationsDialog();
