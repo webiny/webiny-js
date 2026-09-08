@@ -9,16 +9,14 @@ import { FeatureFlag } from "@webiny/project";
  * neither extension is registered and nothing reaches either bundle — there is no dead UI to hide
  * and no runtime flag check to plumb through `toDto()`.
  *
- * Deliberately NOT added to `DefaultExtensions.tsx`. A non-licensed flag reads as enabled when a
- * licensed project leaves the key unset (see FeatureFlagsWithLicenseDecorator rule 6), so shipping
- * it there would switch it on for existing customers on upgrade. Registering it only from this
- * repo's own `webiny.config.tsx` is what makes it internal; the flag is the switch we flip.
- *
- * Promoting it to a real feature later means moving one line into `DefaultExtensions.tsx`.
+ * `CanUseExplicitly`, not `CanUse`: an unset flag has to mean OFF here. `CanUse` resolves an unset
+ * flag to ON for licensed projects, because the license decorator reads anything outside its
+ * LICENSE_CHECKS as `!isExplicitlyDisabled` — which would hand this to every existing customer on
+ * upgrade. `bugReporter: true` in the project config is the only way in.
  */
 export const BugReporter = () => {
     return (
-        <FeatureFlag.CanUse name={"bugReporter"}>
+        <FeatureFlag.CanUseExplicitly name={"bugReporter"}>
             <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
             <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
 
@@ -37,6 +35,6 @@ export const BugReporter = () => {
                 paramName={"BUG_REPORT_LABELS"}
                 value={process.env.BUG_REPORT_LABELS || "bug"}
             />
-        </FeatureFlag.CanUse>
+        </FeatureFlag.CanUseExplicitly>
     );
 };

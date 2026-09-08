@@ -12439,7 +12439,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/bug-reporter@workspace:packages/bug-reporter":
+"@webiny/bug-reporter@npm:0.0.0, @webiny/bug-reporter@workspace:packages/bug-reporter":
   version: 0.0.0-use.local
   resolution: "@webiny/bug-reporter@workspace:packages/bug-reporter"
   dependencies:
@@ -13199,6 +13199,7 @@ __metadata:
   resolution: "@webiny/project-template-base@workspace:packages/project-template-base"
   dependencies:
     "@webiny/ai-powerups": "npm:0.0.0"
+    "@webiny/bug-reporter": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
