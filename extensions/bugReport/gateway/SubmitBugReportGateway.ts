@@ -1,11 +1,12 @@
 import { MainGraphQLClient } from "webiny/admin";
 import { SubmitBugReportGateway as Abstraction } from "./abstractions.js";
+import type { IBugReportOutcome } from "../shared/types.js";
 import type { IBugReportPayload } from "../shared/types.js";
-import type { IFiledIssue } from "../shared/types.js";
 
 const REPORT_BUG = /* GraphQL */ `
     mutation ReportBug($input: JSON!) {
         reportBug(input: $input) {
+            mode
             number
             url
             error
@@ -15,6 +16,7 @@ const REPORT_BUG = /* GraphQL */ `
 
 interface IReportBugResponse {
     reportBug: {
+        mode: string | null;
         number: number | null;
         url: string | null;
         error: string | null;
@@ -24,7 +26,7 @@ interface IReportBugResponse {
 class SubmitBugReportGatewayImpl implements Abstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(payload: IBugReportPayload): Promise<IFiledIssue> {
+    async execute(payload: IBugReportPayload): Promise<IBugReportOutcome> {
         const response = await this.client.execute<IReportBugResponse>({
             query: REPORT_BUG,
             variables: { input: payload }
@@ -36,11 +38,15 @@ class SubmitBugReportGatewayImpl implements Abstraction.Interface {
             throw new Error(result.error);
         }
 
-        if (typeof result.number !== "number" || typeof result.url !== "string") {
-            throw new Error("The API filed the report but returned no issue.");
+        if (typeof result.url !== "string") {
+            throw new Error("The API accepted the report but returned no URL.");
         }
 
-        return { number: result.number, url: result.url };
+        if (result.mode === "compose") {
+            return { mode: "compose", url: result.url, number: null };
+        }
+
+        return { mode: "filed", url: result.url, number: result.number };
     }
 }
 

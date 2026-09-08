@@ -5,6 +5,7 @@ import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { SpeechDictation } from "../../speech/abstractions.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
+import type { IReportBugOutcomeVm } from "./abstractions.js";
 import type { IReportBugViewModel } from "./abstractions.js";
 import type { IReportedEnvironment } from "../../shared/types.js";
 import type { IReportedScreenshot } from "../../shared/types.js";
@@ -46,7 +47,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private capturedAt = 0;
     private status: string | null = null;
     private error: string | null = null;
-    private issueUrl: string | null = null;
+    private outcome: IReportBugOutcomeVm | null = null;
 
     constructor(
         private recorder: ActionRecorder.Interface,
@@ -71,7 +72,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             busy: this.status !== null,
             statusLabel: this.status,
             error: this.error,
-            issueUrl: this.issueUrl,
+            outcome: this.outcome,
             // A screenshot on its own is a report: the error text is often in the image.
             canSubmit: this.status === null && !this.isEmpty()
         };
@@ -129,7 +130,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         }
 
         try {
-            const issue = await this.gateway.execute({
+            const outcome = await this.gateway.execute({
                 description: this.description.trim(),
                 reportedAt: this.capturedAt,
                 events: this.events,
@@ -137,7 +138,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
                 screenshots
             });
 
-            this.markFiled(issue.url);
+            this.markDone(outcome.mode, outcome.url);
         } catch (error) {
             this.markFailed(describeFailure(error));
         }
@@ -147,7 +148,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.description = "";
         this.screenshots = [];
         this.error = null;
-        this.issueUrl = null;
+        this.outcome = null;
         this.status = null;
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
@@ -163,12 +164,17 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     private beginSubmission(): void {
         this.error = null;
-        this.status = "Filing the issue...";
+        // Deliberately vague: which ending we get is the API's call, not known until it answers.
+        this.status = "Writing up the report...";
     }
 
-    private markFiled(url: string): void {
+    private markDone(mode: "filed" | "compose", url: string): void {
         this.status = null;
-        this.issueUrl = url;
+        this.outcome = {
+            mode,
+            url,
+            remindToPasteScreenshot: mode === "compose" && this.screenshots.length > 0
+        };
     }
 
     private markFailed(message: string): void {

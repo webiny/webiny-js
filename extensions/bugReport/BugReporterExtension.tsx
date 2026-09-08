@@ -8,10 +8,10 @@ import { Admin, Api } from "webiny/extensions";
  * side holds the GitHub token and drafts the issue with the first provider configured in AI
  * Power-Ups, so nobody testing a deployed instance has to configure anything.
  *
- * Set these in the environment that builds the API. Missing token or repository means the
- * mutation refuses with a clear message rather than failing silently:
+ * All three are optional. Without a token the API drafts the report and hands back a prefilled
+ * GitHub "new issue" URL instead of filing it, which needs no credentials at all:
  *
- *   BUG_REPORT_GITHUB_TOKEN  fine-grained PAT with Issues + Contents write on the repository
+ *   BUG_REPORT_GITHUB_TOKEN  PAT with Issues + Contents write. Absent means the URL fallback.
  *   BUG_REPORT_REPOSITORY    owner/name, defaults to webiny/webiny-js
  *   BUG_REPORT_LABELS        comma separated, defaults to "bug"
  *

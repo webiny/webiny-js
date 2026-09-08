@@ -9,9 +9,6 @@ export interface ICreateIssueInput {
 }
 
 export interface IGitHubIssueGateway {
-    /* False when this environment has no token configured, so the caller can say so plainly. */
-    readonly configured: boolean;
-    readonly labels: string[];
     /* Commits an image to the assets branch and returns a URL GitHub renders in markdown. */
     uploadScreenshot(screenshot: IReportedScreenshot): Promise<string>;
     createIssue(input: ICreateIssueInput): Promise<IFiledIssue>;

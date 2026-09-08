@@ -41,3 +41,18 @@ export interface IFiledIssue {
     number: number;
     url: string;
 }
+
+/*
+ * Two ways a report can end, picked by whether the API has a GitHub token.
+ *
+ * "filed"   — the API created the issue and uploaded the screenshots. `number` is set.
+ * "compose" — no token, so the API returns a prefilled new-issue URL for the reporter to open
+ *             and submit themselves. Screenshots cannot ride along in a URL; they paste them.
+ */
+export interface IBugReportOutcome {
+    mode: "filed" | "compose";
+    /* The filed issue when "filed", the prefilled composer when "compose". */
+    url: string;
+    /* Only set when "filed". */
+    number: number | null;
+}

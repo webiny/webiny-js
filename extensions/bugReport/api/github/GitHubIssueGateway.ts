@@ -1,4 +1,5 @@
-import { BuildParams } from "webiny/api";
+import { BugReportConfig } from "../config/abstractions.js";
+import { TOOL_LABEL } from "../config/BugReportConfig.js";
 import { GitHubIssueGateway as Abstraction } from "./abstractions.js";
 import type { ICreateIssueInput } from "./abstractions.js";
 import type { IFiledIssue } from "../../shared/types.js";
@@ -12,17 +13,6 @@ const API_ROOT = "https://api.github.com";
  */
 const ASSETS_BRANCH = "bug-report-assets";
 
-/* Set from webiny.config.tsx, which reads them from the environment at build time. */
-const TOKEN_PARAM = "BUG_REPORT_GITHUB_TOKEN";
-const REPOSITORY_PARAM = "BUG_REPORT_REPOSITORY";
-const LABELS_PARAM = "BUG_REPORT_LABELS";
-
-/*
- * Always applied, on top of whatever BUG_REPORT_LABELS says, so these issues can be found and
- * filtered as a group. Not configurable on purpose: it is only useful if it is the same
- * everywhere.
- */
-const TOOL_LABEL = "reported-in-app";
 const TOOL_LABEL_COLOR = "1d76db";
 const TOOL_LABEL_DESCRIPTION = "Filed from the admin app by the bug reporter";
 
@@ -55,14 +45,6 @@ function buildScreenshotPath(mediaType: string): string {
     return `screenshots/${stamp}-${suffix}.${extension}`;
 }
 
-function readParam(params: BuildParams.Interface, key: string): string {
-    const value = params.get<string>(key);
-    if (typeof value !== "string") {
-        return "";
-    }
-    return value.trim();
-}
-
 async function readErrorMessage(response: Response): Promise<string> {
     try {
         const payload: Record<string, unknown> = await response.json();
@@ -76,40 +58,8 @@ async function readErrorMessage(response: Response): Promise<string> {
     return response.statusText;
 }
 
-function parseLabels(raw: string): string[] {
-    const labels: string[] = [];
-
-    for (const part of raw.split(",")) {
-        const label = part.trim();
-        if (label !== "") {
-            labels.push(label);
-        }
-    }
-
-    if (labels.length === 0) {
-        labels.push("bug");
-    }
-
-    if (!labels.includes(TOOL_LABEL)) {
-        labels.push(TOOL_LABEL);
-    }
-
-    return labels;
-}
-
 class GitHubIssueGatewayImpl implements Abstraction.Interface {
-    constructor(private params: BuildParams.Interface) {}
-
-    get configured(): boolean {
-        if (readParam(this.params, TOKEN_PARAM) === "") {
-            return false;
-        }
-        return readParam(this.params, REPOSITORY_PARAM).includes("/");
-    }
-
-    get labels(): string[] {
-        return parseLabels(readParam(this.params, LABELS_PARAM));
-    }
+    constructor(private config: BugReportConfig.Interface) {}
 
     async uploadScreenshot(screenshot: IReportedScreenshot): Promise<string> {
         const repository = this.readRepository();
@@ -216,7 +166,7 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
     }
 
     private readRepository(): IRepositoryRef {
-        return parseRepository(readParam(this.params, REPOSITORY_PARAM));
+        return parseRepository(this.config.repository);
     }
 
     private async exists(path: string): Promise<boolean> {
@@ -241,7 +191,7 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
 
     private buildHeaders(): Record<string, string> {
         return {
-            Authorization: `Bearer ${readParam(this.params, TOKEN_PARAM)}`,
+            Authorization: `Bearer ${this.config.token}`,
             Accept: "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "Content-Type": "application/json"
@@ -251,5 +201,5 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
 
 export const GitHubIssueGateway = Abstraction.createImplementation({
     implementation: GitHubIssueGatewayImpl,
-    dependencies: [BuildParams]
+    dependencies: [BugReportConfig]
 });

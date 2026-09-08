@@ -28,6 +28,8 @@ class BugReportGraphQLSchema implements GraphQLSchemaFactory.Interface {
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type BugReportResult {
+                "\`filed\` when the API created the issue, \`compose\` when it returned a prefilled URL."
+                mode: String
                 number: Int
                 url: String
                 error: String
@@ -44,11 +46,21 @@ class BugReportGraphQLSchema implements GraphQLSchemaFactory.Interface {
             resolver: (useCase: SubmitBugReportUseCase.Interface, logger: Logger.Interface) => {
                 return async ({ args }) => {
                     try {
-                        const issue = await useCase.execute(args.input);
-                        return { number: issue.number, url: issue.url, error: null };
+                        const outcome = await useCase.execute(args.input);
+                        return {
+                            mode: outcome.mode,
+                            number: outcome.number,
+                            url: outcome.url,
+                            error: null
+                        };
                     } catch (error) {
                         logger.error({ error }, "Filing a bug report failed.");
-                        return { number: null, url: null, error: describeFailure(error) };
+                        return {
+                            mode: null,
+                            number: null,
+                            url: null,
+                            error: describeFailure(error)
+                        };
                     }
                 };
             }

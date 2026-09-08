@@ -12,6 +12,7 @@ import { ReactComponent as MicOffIcon } from "webiny/admin/icons/mic_off.svg";
 import { ReactComponent as CloseIcon } from "webiny/admin/icons/close.svg";
 import { readPastedImage } from "../../capture/readPastedImage.js";
 import { BugReportFeature } from "../../feature.js";
+import { OutcomeDialog } from "./OutcomeDialog.js";
 
 const PLACEHOLDER = "Hey, this isn't working...";
 
@@ -44,29 +45,8 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
         };
     }, [vm.open, report]);
 
-    if (vm.issueUrl) {
-        return (
-            <Dialog
-                open={vm.open}
-                onOpenChange={() => report.close()}
-                title={"Issue filed"}
-                actions={
-                    <Button variant={"primary"} text={"Done"} onClick={() => report.close()} />
-                }
-            >
-                <div className={"flex flex-col gap-sm"}>
-                    <Text>{"Thanks. The report is on GitHub with everything attached."}</Text>
-                    <a
-                        href={vm.issueUrl}
-                        target={"_blank"}
-                        rel={"noreferrer"}
-                        className={"text-accent-primary underline"}
-                    >
-                        {vm.issueUrl}
-                    </a>
-                </div>
-            </Dialog>
-        );
+    if (vm.outcome) {
+        return <OutcomeDialog outcome={vm.outcome} open={vm.open} onClose={() => report.close()} />;
     }
 
     const micLabel = vm.listening ? "Stop dictating" : "Dictate";

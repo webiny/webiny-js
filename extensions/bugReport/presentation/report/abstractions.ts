@@ -1,5 +1,13 @@
 import { createAbstraction } from "webiny/admin";
 
+export interface IReportBugOutcomeVm {
+    /* "filed" — done, here is the issue. "compose" — open this and submit it yourself. */
+    mode: "filed" | "compose";
+    url: string;
+    /* Only in "compose" mode, and only when there was something to paste. */
+    remindToPasteScreenshot: boolean;
+}
+
 export interface IReportBugViewModel {
     open: boolean;
     description: string;
@@ -11,7 +19,7 @@ export interface IReportBugViewModel {
     busy: boolean;
     statusLabel: string | null;
     error: string | null;
-    issueUrl: string | null;
+    outcome: IReportBugOutcomeVm | null;
     canSubmit: boolean;
 }
 
