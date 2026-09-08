@@ -43,9 +43,15 @@ class ModelRolesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             f
                                 .object()
                                 .label(role.label)
+                                /*
+                                 * Both callbacks, not strings. A string here is a *field name* to
+                                 * read the value from, not literal text, so passing prose made the
+                                 * renderer look for a child field called "Cheap, low-latency
+                                 * work..." and render no description at all.
+                                 */
                                 .renderer("objectAccordionSingle", {
-                                    itemTitle: role.label,
-                                    itemDescription: role.description,
+                                    itemTitle: () => role.label,
+                                    itemDescription: () => role.description,
                                     open: true
                                 })
                                 .fields(rf => ({
