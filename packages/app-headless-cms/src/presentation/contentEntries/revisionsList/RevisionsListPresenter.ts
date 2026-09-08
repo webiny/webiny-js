@@ -124,11 +124,12 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
     }
 
     async publishRevision(revisionId: string): Promise<boolean> {
-        const confirmed = await this.confirmation.confirm(PUBLISH_REVISION_DIALOG, {
-            entry: { meta: { title: "" } }
-        });
+        const result = await this.confirmation.confirm<{ revisionDescription: string }>(
+            PUBLISH_REVISION_DIALOG,
+            { entry: { meta: { title: "" } } }
+        );
 
-        if (confirmed === false) {
+        if (result === false) {
             return false;
         }
 
@@ -137,16 +138,11 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         });
 
         try {
-            if (
-                confirmed &&
-                typeof confirmed === "object" &&
-                "revisionDescription" in confirmed &&
-                confirmed.revisionDescription
-            ) {
+            if (result?.revisionDescription) {
                 await this.updateRevisionDescriptionUseCase.execute({
                     model: this.model,
                     id: revisionId,
-                    revisionDescription: confirmed.revisionDescription as string
+                    revisionDescription: result.revisionDescription
                 });
             }
 
