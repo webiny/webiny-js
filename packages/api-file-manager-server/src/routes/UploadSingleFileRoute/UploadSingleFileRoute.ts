@@ -1,14 +1,11 @@
 import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, createHttpRoute } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import { isPathContained, toBuffer, parseMultipart, getBoundary } from "../utils.js";
 
 class UploadSingleFileRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/webiny-file-upload";
-
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
 
     public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
@@ -71,7 +68,10 @@ class UploadSingleFileRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const UploadSingleFileRoute = HttpRoute.createImplementation({
+export const UploadSingleFileRoute = createHttpRoute({
+    name: "UploadSingleFile",
+    method: "POST",
+    path: "/webiny-file-upload",
     implementation: UploadSingleFileRouteImpl,
     dependencies: [FileManagerServerConfig]
 });

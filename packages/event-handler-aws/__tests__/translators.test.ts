@@ -5,6 +5,7 @@ import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHand
 import { HttpFeature } from "@webiny/event-handler-core";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import { createHttpRoute, registerHttpRoute } from "@webiny/event-handler-core";
 
 const apiGwEvent = {
     httpMethod: "POST",
@@ -20,13 +21,14 @@ const apiGwEvent = {
 describe("ApiGatewayHttpRouterHandler", () => {
     const makeRoute = (statusCode: number, body: any) => {
         class MakeRouteImplementation implements HttpRoute.Interface {
-            readonly method = "POST";
-            readonly path = "/graphql";
             async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                 return { statusCode, body };
             }
         }
-        return HttpRoute.createImplementation({
+        return createHttpRoute({
+            name: "test:MakeRoute",
+            method: "POST",
+            path: "/graphql",
             implementation: MakeRouteImplementation,
             dependencies: []
         });
@@ -37,7 +39,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                container.register(makeRoute(200, { ok: true }));
+                registerHttpRoute(container, makeRoute(200, { ok: true }));
                 container.register(ApiGatewayHttpRouterHandler);
             }
         });
@@ -62,8 +64,6 @@ describe("ApiGatewayHttpRouterHandler", () => {
 
     it("should set isBase64Encoded for Buffer responses", async () => {
         class BufferRouteImplementation implements HttpRoute.Interface {
-            readonly method = "POST";
-            readonly path = "/graphql";
             async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                 return {
                     statusCode: 200,
@@ -72,7 +72,10 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 };
             }
         }
-        const bufferRoute = HttpRoute.createImplementation({
+        const bufferRoute = createHttpRoute({
+            name: "test:BufferRoute",
+            method: "POST",
+            path: "/graphql",
             implementation: BufferRouteImplementation,
             dependencies: []
         });
@@ -81,7 +84,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                container.register(bufferRoute);
+                registerHttpRoute(container, bufferRoute);
                 container.register(ApiGatewayHttpRouterHandler);
             }
         });

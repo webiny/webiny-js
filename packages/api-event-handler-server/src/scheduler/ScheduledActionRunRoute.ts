@@ -1,4 +1,4 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -18,9 +18,6 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * runs ExecuteScheduledActionUseCase. Mirrors the background-task run route.
  */
 class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/scheduled-action-run";
-
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
@@ -68,7 +65,10 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ScheduledActionRunRoute = HttpRoute.createImplementation({
+export const ScheduledActionRunRoute = createHttpRoute({
+    name: "ScheduledActionRun",
+    method: "POST",
+    path: "/scheduled-action-run",
     implementation: ScheduledActionRunRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
 });

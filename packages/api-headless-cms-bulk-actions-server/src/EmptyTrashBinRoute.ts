@@ -1,4 +1,4 @@
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, createHttpRoute } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
@@ -6,9 +6,6 @@ import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
 const INTERNAL_HEADER = "x-webiny-bulk-actions-token";
 
 class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/empty-trash-bins";
-
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly taskService: TaskService.Interface,
@@ -34,7 +31,10 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const EmptyTrashBinRoute = HttpRoute.createImplementation({
+export const EmptyTrashBinRoute = createHttpRoute({
+    name: "EmptyTrashBin",
+    method: "POST",
+    path: "/empty-trash-bins",
     implementation: EmptyTrashBinRouteImpl,
     dependencies: [TenantContext, TaskService, BulkActionsInternalToken]
 });

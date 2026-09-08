@@ -7,6 +7,7 @@ import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
 import { ScheduledActionRunRoute } from "./ScheduledActionRunRoute.js";
 import { ScheduledActionRecoverRoute } from "./ScheduledActionRecoverRoute.js";
+import { registerHttpRoute } from "@webiny/event-handler-core";
 
 const SCHEDULER_HEADER = "x-webiny-scheduler-token";
 
@@ -93,8 +94,8 @@ export function registerSchedulerServer(rootContainer: Container): void {
     rootContainer.registerInstance(SchedulerSingleton, service);
     rootContainer.registerInstance(SchedulerService, service);
 
-    rootContainer.register(ScheduledActionRunRoute);
-    rootContainer.register(ScheduledActionRecoverRoute);
+    registerHttpRoute(rootContainer, ScheduledActionRunRoute);
+    registerHttpRoute(rootContainer, ScheduledActionRecoverRoute);
 }
 
 /**

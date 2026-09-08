@@ -1,15 +1,12 @@
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, createHttpRoute } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import { isPathContained, toBuffer } from "../utils.js";
 
 class UploadPartRouteImpl implements HttpRoute.Interface {
-    public readonly method = "PUT";
-    public readonly path = "/webiny-file-upload/parts";
-
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
 
     public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
@@ -60,7 +57,10 @@ class UploadPartRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const UploadPartRoute = HttpRoute.createImplementation({
+export const UploadPartRoute = createHttpRoute({
+    name: "UploadPart",
+    method: "PUT",
+    path: "/webiny-file-upload/parts",
     implementation: UploadPartRouteImpl,
     dependencies: [FileManagerServerConfig]
 });

@@ -1,9 +1,17 @@
 import type { Container } from "@webiny/di";
-import { HttpRouter, HttpRoute, RouteNotFoundError } from "~/features/http/abstractions.js";
+import {
+    HttpRouter,
+    HttpRouteDefinition,
+    RouteNotFoundError
+} from "~/features/http/abstractions.js";
 import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
 import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
-import type { IHttpRoute, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
+import type {
+    IHttpRouteDefinition,
+    IHttpRequest,
+    IHttpResponse
+} from "~/features/http/abstractions.js";
 
 function matchPath(pattern: string, path: string): Record<string, string> | null {
     if (pattern.endsWith("/*")) {
@@ -36,40 +44,42 @@ function matchPath(pattern: string, path: string): Record<string, string> | null
 
 class HttpRouterImplClass implements HttpRouter.Interface {
     /**
-     * Takes the container, NOT `[HttpRoute, { multiple: true }]`.
+     * Takes the container so it can resolve the matched route — and ONLY the matched route.
      *
-     * Injecting the routes would construct every one of them while the router itself is being
-     * constructed. That used to be fatal: construction ran before the request-context initializers,
-     * so any route whose constructor reached a token an initializer registered (`FileModel`, a
-     * per-request `CmsModel`) threw "No registration found for ..." on EVERY request, including an
-     * OPTIONS preflight to an unrelated path — construction does not care which route matches.
+     * Route definitions are plain data (`method`, `path`, and the handler's abstraction), so
+     * matching costs nothing. Previously routes were resolved as instances to read their `path`,
+     * which constructed all of them plus their dependency graphs on every request: a static-asset
+     * request built the whole GraphQL engine, every contextual schema and the AI provider before
+     * discovering it wanted none of them.
      *
-     * That hazard is gone: those tokens are now providers with real implementations, resolvable at
-     * any point. What remains is cost — constructing all ~11 routes to match one path — so routes
-     * are still resolved inside `route()`. Injecting them is a viable cleanup, not a correctness fix.
-     *
-     * Still eager in that every route is constructed to path-match. Constructing only the matched
-     * route needs `method`/`path` to be readable without an instance, which is a bigger change.
+     * Resolving the winner through `resolve()` (not a bare constructor call) keeps it on the normal
+     * DI path, so a route can still be decorated.
      */
     constructor(private container: Container) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
-        for (const route of this.container.resolveAll(HttpRoute)) {
-            const params = this.match(route, request);
-            if (params !== null) {
-                const response = new HttpResponseBuilder();
-                const result = await route.handle({ ...request, pathParameters: params }, response);
-                return toHttpResponse(result, response);
+        for (const definition of this.container.resolveAll(HttpRouteDefinition)) {
+            const params = this.match(definition, request);
+            if (params === null) {
+                continue;
             }
+
+            const route = this.container.resolve(definition.handler);
+            const response = new HttpResponseBuilder();
+            const result = await route.handle({ ...request, pathParameters: params }, response);
+            return toHttpResponse(result, response);
         }
         throw new RouteNotFoundError(request.method, request.path);
     }
 
-    private match(route: IHttpRoute, request: IHttpRequest): Record<string, string> | null {
-        if (route.method !== request.method) {
+    private match(
+        definition: IHttpRouteDefinition,
+        request: IHttpRequest
+    ): Record<string, string> | null {
+        if (definition.method !== request.method) {
             return null;
         }
-        return matchPath(route.path, request.path);
+        return matchPath(definition.path, request.path);
     }
 }
 

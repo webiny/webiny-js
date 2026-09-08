@@ -103,8 +103,6 @@ export interface IHttpResponseBuilder {
 }
 
 export interface IHttpRoute {
-    readonly method: string;
-    readonly path: string;
     /**
      * Handle the request. Either return a response (a plain {@link IHttpResponse}, or the
      * {@link IHttpResponseBuilder} passed in as `response`), or mutate `response` and return
@@ -116,12 +114,34 @@ export interface IHttpRoute {
     ): Promise<IHttpResponse | IHttpResponseBuilder | void>;
 }
 
+/**
+ * What a route IS, separated from what it DOES.
+ *
+ * `method` and `path` are plain data, so the router can match a request without building anything.
+ * `handler` is the abstraction the matched route's implementation is registered under, resolved
+ * only once that route wins — which is the point of the split. Resolving every route just to read
+ * its path used to drag in each one's whole dependency graph, so a request for a static asset built
+ * the entire GraphQL engine, every contextual schema and the AI provider before finding its route.
+ *
+ * `handler` is a real abstraction rather than a constructor so the matched route resolves through
+ * normal DI, decorators included.
+ */
+export interface IHttpRouteDefinition {
+    readonly method: string;
+    readonly path: string;
+    readonly handler: Abstraction<IHttpRoute>;
+}
+
 export interface IHttpRouter {
     route(request: IHttpRequest): Promise<IHttpResponse>;
 }
 
-export const HttpRoute = new Abstraction<IHttpRoute>("HttpRoute");
+export const HttpRouteDefinition = new Abstraction<IHttpRouteDefinition>("HttpRouteDefinition");
 export const HttpRouter = new Abstraction<IHttpRouter>("HttpRouter");
+
+export namespace HttpRouteDefinition {
+    export type Interface = IHttpRouteDefinition;
+}
 
 export namespace HttpRoute {
     export type Interface = IHttpRoute;

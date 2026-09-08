@@ -1,24 +1,37 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
+import { Abstraction } from "@webiny/di";
+import { HttpRoute, HttpRouteDefinition, HttpRouter } from "~/features/http/abstractions.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
-function makeRoute(method: string, path: string, body: any = "ok"): HttpRoute.Interface {
+/** A route plus the method/path the router matches on, mirroring what `createHttpRoute` builds. */
+interface TestRoute {
+    method: string;
+    path: string;
+    route: HttpRoute.Interface;
+}
+
+function makeRoute(method: string, path: string, body: any = "ok"): TestRoute {
     return {
         method,
         path,
-        async handle(_req: IHttpRequest): Promise<IHttpResponse> {
-            return { statusCode: 200, body };
+        route: {
+            async handle(_req: IHttpRequest): Promise<IHttpResponse> {
+                return { statusCode: 200, body };
+            }
         }
     };
 }
 
-function makeRouter(...routes: HttpRoute.Interface[]): HttpRouter.Interface {
+function makeRouter(...routes: TestRoute[]): HttpRouter.Interface {
     const container = new Container();
-    for (const route of routes) {
-        container.registerInstance(HttpRoute, route);
+    for (const { method, path, route } of routes) {
+        // Each route gets its own handler abstraction, so only the matched one is resolved.
+        const handler = new Abstraction<HttpRoute.Interface>(`HttpRoute/${method}${path}`);
+        container.registerInstance(handler, route);
+        container.registerInstance(HttpRouteDefinition, { method, path, handler });
     }
     container.register(HttpRouterImpl);
     // The router resolves routes through the request container, the way ChildContainerFactory
@@ -50,11 +63,13 @@ describe("HttpRouterImpl", () => {
     });
 
     it("should extract :id path parameters", async () => {
-        const route: HttpRoute.Interface = {
+        const route: TestRoute = {
             method: "GET",
             path: "/users/:id",
-            async handle(r: IHttpRequest): Promise<IHttpResponse> {
-                return { statusCode: 200, body: r.pathParameters["id"] };
+            route: {
+                async handle(r: IHttpRequest): Promise<IHttpResponse> {
+                    return { statusCode: 200, body: r.pathParameters["id"] };
+                }
             }
         };
         const router = makeRouter(route);
@@ -63,11 +78,13 @@ describe("HttpRouterImpl", () => {
     });
 
     it("should extract multiple path parameters", async () => {
-        const route: HttpRoute.Interface = {
+        const route: TestRoute = {
             method: "GET",
             path: "/tenants/:tenantId/users/:userId",
-            async handle(r: IHttpRequest): Promise<IHttpResponse> {
-                return { statusCode: 200, body: r.pathParameters };
+            route: {
+                async handle(r: IHttpRequest): Promise<IHttpResponse> {
+                    return { statusCode: 200, body: r.pathParameters };
+                }
             }
         };
         const router = makeRouter(route);

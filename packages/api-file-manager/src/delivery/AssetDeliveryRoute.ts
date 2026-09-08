@@ -1,4 +1,4 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import {
     AssetRequestResolver,
@@ -10,9 +10,6 @@ import {
 const NO_CACHE = "no-cache, no-store, must-revalidate";
 
 class AssetDeliveryRouteImpl implements HttpRoute.Interface {
-    readonly method = "GET";
-    readonly path = "/files/*";
-
     constructor(private container: Container) {}
 
     async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
@@ -74,7 +71,10 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const AssetDeliveryRoute = HttpRoute.createImplementation({
+export const AssetDeliveryRoute = createHttpRoute({
+    name: "AssetDelivery",
+    method: "GET",
+    path: "/files/*",
     implementation: AssetDeliveryRouteImpl,
     dependencies: [RequestContainer]
 });

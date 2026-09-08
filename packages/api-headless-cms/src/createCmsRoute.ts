@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
@@ -19,9 +19,6 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
  */
 export function createCmsRoute(type: ApiEndpoint) {
     class CmsGraphQLRoute implements HttpRoute.Interface {
-        readonly method = "POST";
-        readonly path = CMS_PATHS[type];
-
         // public (not private): this class is returned from an exported factory, so its members
         // must be declarable in the emitted .d.ts — private parameter-properties on an exported
         // anonymous class type are a TS4094 error.
@@ -48,7 +45,11 @@ export function createCmsRoute(type: ApiEndpoint) {
         }
     }
 
-    return HttpRoute.createImplementation({
+    return createHttpRoute({
+        // One abstraction per endpoint, so manage/read/preview stay independently resolvable.
+        name: `Cms/${type}`,
+        method: "POST",
+        path: CMS_PATHS[type],
         implementation: CmsGraphQLRoute,
         dependencies: [RequestContainer, [GraphQLContextualSchema, { multiple: true }]]
     });

@@ -6,3 +6,5 @@ export * from "./HttpResponseBuilder.js";
 export * from "./invokeHttpRoute.js";
 export * from "./decorators/index.js";
 export * from "./feature.js";
+export * from "./createHttpRoute.js";
+export * from "./registerHttpRoute.js";

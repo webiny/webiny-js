@@ -1,13 +1,10 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import { HttpRoute, RequestContainer, createHttpRoute } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
 
 class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
-    readonly method = "GET";
-    readonly path = "/wb/redirects";
-
     constructor(private container: Container) {}
 
     async handle(_request: HttpRoute.Request, response: HttpRoute.Response) {
@@ -31,7 +28,10 @@ class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const WebsiteBuilderRedirectsRoute = HttpRoute.createImplementation({
+export const WebsiteBuilderRedirectsRoute = createHttpRoute({
+    name: "WebsiteBuilderRedirects",
+    method: "GET",
+    path: "/wb/redirects",
     implementation: WebsiteBuilderRedirectsRouteImpl,
     dependencies: [RequestContainer]
 });

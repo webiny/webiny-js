@@ -1,12 +1,9 @@
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, createHttpRoute } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { IGraphQLEngine } from "./abstractions.js";
 
 class GraphQLRouteImpl implements HttpRoute.Interface {
-    readonly method = "POST";
-    readonly path = "/graphql";
-
     constructor(private engine: IGraphQLEngine) {}
 
     async handle(request: IHttpRequest): Promise<IHttpResponse> {
@@ -19,7 +16,10 @@ class GraphQLRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const GraphQLRoute = HttpRoute.createImplementation({
+export const GraphQLRoute = createHttpRoute({
+    name: "GraphQL",
+    method: "POST",
+    path: "/graphql",
     implementation: GraphQLRouteImpl,
     dependencies: [GraphQLEngine]
 });

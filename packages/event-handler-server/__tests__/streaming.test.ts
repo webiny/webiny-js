@@ -3,6 +3,7 @@ import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse, HttpStreamSource } from "@webiny/event-handler-core";
 import { createServerHandler } from "~/createServerHandler.js";
 import { NodeHttpFeature } from "~/features/NodeHttpFeature.js";
+import { createHttpRoute, registerHttpRoute } from "@webiny/event-handler-core";
 
 const decoder = new TextDecoder();
 
@@ -16,14 +17,15 @@ function deferred() {
 
 function makeRoute(response: () => IHttpResponse) {
     class StreamRouteImplementation implements HttpRoute.Interface {
-        readonly method = "GET";
-        readonly path = "/stream";
         async handle(_req: IHttpRequest): Promise<IHttpResponse> {
             return response();
         }
     }
 
-    return HttpRoute.createImplementation({
+    return createHttpRoute({
+        name: "test:Stream",
+        method: "GET",
+        path: "/stream",
         implementation: StreamRouteImplementation,
         dependencies: []
     });
@@ -37,11 +39,11 @@ function streamResponse(source: HttpStreamSource): IHttpResponse {
     };
 }
 
-async function startServer(route: ReturnType<typeof HttpRoute.createImplementation>) {
+async function startServer(route: ReturnType<typeof createHttpRoute>) {
     const server = await createServerHandler({
         root: container => {
             NodeHttpFeature.register(container);
-            container.register(route);
+            registerHttpRoute(container, route);
         }
     });
 
