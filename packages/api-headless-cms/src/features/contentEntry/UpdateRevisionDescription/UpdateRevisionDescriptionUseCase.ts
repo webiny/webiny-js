@@ -7,14 +7,14 @@ import {
 } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
+import { UpdateRevisionRepository } from "~/features/contentEntry/UpdateRevision/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
-import { UpdateEntryRepository } from "../UpdateEntry/index.js";
 
 class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private eventPublisher: EventPublisher.Interface,
-        private repository: UpdateEntryRepository.Interface,
+        private repository: UpdateRevisionRepository.Interface,
         private accessControl: AccessControl.Interface,
         private getRevisionByIdUseCase: GetRevisionByIdUseCase.Interface
     ) {}
@@ -24,7 +24,6 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
         id: string,
         revisionDescription: string | undefined
     ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
-        // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
             return Result.fail(EntryNotAuthorizedError.fromModel(model));
@@ -44,7 +43,6 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
                 revisionDescription
             };
 
-            // Apply access control on the updated entry
             const canAccessEntry = await this.accessControl.canAccessEntry({
                 model,
                 entry,
@@ -55,7 +53,6 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
                 return Result.fail(EntryNotAuthorizedError.fromModel(model));
             }
 
-            // Publish before event
             await this.eventPublisher.publish(
                 new EntryBeforeUpdateRevisionDescriptionEvent({
                     entry,
@@ -65,13 +62,11 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
                 })
             );
 
-            // Persist updated entry
             const updateResult = await this.repository.execute(model, entry);
             if (updateResult.isFail()) {
                 return Result.fail(updateResult.error);
             }
 
-            // Publish after event
             await this.eventPublisher.publish(
                 new EntryAfterUpdateRevisionDescriptionEvent({
                     entry,
@@ -83,7 +78,6 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
 
             return Result.ok(entry);
         } catch (error) {
-            // Handle errors from createUpdateEntryData or other operations
             return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
@@ -92,5 +86,5 @@ class UpdateRevisionDescriptionUseCaseImpl implements UseCaseAbstraction.Interfa
 export const UpdateRevisionDescriptionUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: UpdateRevisionDescriptionUseCaseImpl,
-    dependencies: [EventPublisher, UpdateEntryRepository, AccessControl, GetRevisionByIdUseCase]
+    dependencies: [EventPublisher, UpdateRevisionRepository, AccessControl, GetRevisionByIdUseCase]
 });

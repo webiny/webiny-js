@@ -10,7 +10,7 @@ import type {
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { CreateEntryDataFactory } from "~/features/contentEntry/entryDataFactories/CreateEntryDataFactory/index.js";
 
 class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -65,9 +65,6 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             return Result.ok(entry);
         } catch (error) {
-            if (error.code === "VALIDATION_FAILED") {
-                return Result.fail(new EntryValidationError(error.message, error.data));
-            }
             return Result.fail(error as UseCaseAbstraction.Error);
         }
     }
