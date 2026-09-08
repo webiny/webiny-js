@@ -12657,7 +12657,6 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     markdown-to-jsx: "npm:^9.9.0"
     mobx: "npm:^6.16.1"
-    mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
