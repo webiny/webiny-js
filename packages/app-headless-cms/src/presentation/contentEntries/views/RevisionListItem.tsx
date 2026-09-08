@@ -15,6 +15,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import type { CmsContentEntryRevision } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { usePermission } from "~/admin/hooks/usePermission.js";
+import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { Routes } from "~/routes.js";
 
@@ -92,6 +93,7 @@ interface RevisionListItemProps {
 
 export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
+    const formPresenter = useContentEntryFormPresenter();
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
     const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
@@ -123,11 +125,26 @@ export const RevisionListItem = ({ revision }: RevisionListItemProps) => {
     };
 
     const handlePublishRevision = async () => {
-        await revisionsPresenter.publishRevision(revision.id);
+        const published = await revisionsPresenter.publishRevision(revision.id);
+        if (!published) {
+            return;
+        }
+        const currentEntryId = formPresenter.vm.entry?.id;
+        if (currentEntryId === revision.id) {
+            formPresenter.patchEntryMeta({ status: "published", locked: true });
+        } else if (currentEntryId) {
+            formPresenter.patchEntryMeta({ status: "unpublished" });
+        }
     };
 
     const handleUnpublishRevision = async () => {
-        await revisionsPresenter.unpublishRevision(revision.id);
+        const unpublished = await revisionsPresenter.unpublishRevision(revision.id);
+        if (!unpublished) {
+            return;
+        }
+        if (formPresenter.vm.entry?.id === revision.id) {
+            formPresenter.patchEntryMeta({ status: "unpublished" });
+        }
     };
 
     const handleDeleteRevision = async () => {
