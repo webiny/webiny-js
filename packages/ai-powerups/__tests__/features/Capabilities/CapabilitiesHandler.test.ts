@@ -99,6 +99,66 @@ describe("CapabilitiesHandler", () => {
         });
     });
 
+    /*
+     * The admin pre-fills the prompt textarea with our own text so flipping the switch shows you
+     * what you are about to edit. That default came back on every save regardless of the switch,
+     * so a project that never touched capabilities ended up storing verbatim copies of three of
+     * our prompts. A stored copy is a frozen copy, which is the trap append-by-default exists to
+     * avoid.
+     */
+    it("discards a prompt when the replace switch is off", async () => {
+        const stored = await handler.mapToStorage(
+            {
+                overrides: {
+                    "cms.compareEntryRevisions": {
+                        replacePrompt: false,
+                        guidance: "Webiny's own prompt, echoed back by the form."
+                    }
+                }
+            },
+            null
+        );
+
+        expect((stored as any).overrides).toEqual({});
+    });
+
+    it("keeps a prompt the project has explicitly taken over", async () => {
+        const stored = await handler.mapToStorage(
+            {
+                overrides: {
+                    "cms.compareEntryRevisions": {
+                        replacePrompt: true,
+                        guidance: "Our own house prompt."
+                    }
+                }
+            },
+            null
+        );
+
+        expect((stored as any).overrides["cms.compareEntryRevisions"]).toEqual({
+            replacePrompt: true,
+            guidance: "Our own house prompt."
+        });
+    });
+
+    it("keeps the rest of a row when only the prompt is discarded", async () => {
+        const stored = await handler.mapToStorage(
+            {
+                overrides: {
+                    "wb.translatePage": {
+                        additionalInstructions: "Never translate product names.",
+                        guidance: "Echoed default."
+                    }
+                }
+            },
+            null
+        );
+
+        expect((stored as any).overrides["wb.translatePage"]).toEqual({
+            additionalInstructions: "Never translate product names."
+        });
+    });
+
     it("round-trips an absent section to an empty override map", () => {
         expect(handler.mapFromStorage(undefined)).toEqual({ overrides: {} });
     });

@@ -40,6 +40,28 @@ const dropEmptyValues = (override: AiCapabilityOverride): AiCapabilityOverride =
         )
     ) as AiCapabilityOverride;
 
+/**
+ * Drops a prompt the project has not actually taken ownership of.
+ *
+ * The admin pre-fills the prompt textarea with our own text so that flipping the switch shows you
+ * what you are about to edit. That default came back on every save, switch on or off, so three
+ * capabilities ended up storing a verbatim copy of a prompt nobody had touched.
+ *
+ * Behaviour was still correct, because resolution ignores `guidance` unless `replacePrompt` is set.
+ * The damage was subtler: a stored copy is a *frozen* copy. Flip the switch on a year later and you
+ * would get whatever we shipped the day the row was first saved, not the current prompt, which is
+ * the exact trap the append-by-default design exists to avoid. Storing it only on explicit opt-in
+ * keeps "you own it from now on" true at the moment it starts being true.
+ */
+const dropUnownedPrompt = (override: AiCapabilityOverride): AiCapabilityOverride => {
+    if (override.replacePrompt) {
+        return override;
+    }
+
+    const { guidance: _discarded, ...rest } = override;
+    return rest;
+};
+
 class CapabilitiesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
     readonly name = "capabilities";
     readonly inputSchema = inputSchema;
@@ -52,9 +74,15 @@ class CapabilitiesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interfac
     async mapToStorage(internal: unknown): Promise<PersistedCapabilities> {
         const input = internal as CapabilitiesSettings;
 
+        /*
+         * Normalise before testing for emptiness, not after. A row holding nothing but the
+         * pre-filled prompt is empty once that prompt is discarded, and it should disappear rather
+         * than persist as an override of nothing.
+         */
         const entries = Object.entries(input.overrides ?? {})
-            .filter(([, override]) => override && !isEmptyOverride(override))
-            .map(([id, override]) => [id, dropEmptyValues(override)] as const);
+            .filter(([, override]) => Boolean(override))
+            .map(([id, override]) => [id, dropUnownedPrompt(dropEmptyValues(override))] as const)
+            .filter(([, override]) => !isEmptyOverride(override));
 
         return { overrides: Object.fromEntries(entries) };
     }
