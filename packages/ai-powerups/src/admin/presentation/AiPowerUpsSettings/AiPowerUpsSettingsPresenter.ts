@@ -49,14 +49,34 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
         this.errors = [];
 
         try {
-            // Groups that build fields from server data get to load it first. Both run in
-            // parallel; neither depends on the other.
-            const [data] = await Promise.all([
+            /*
+             * Groups that build fields from server data get to load it first, in parallel with the
+             * settings themselves.
+             *
+             * `allSettled`, not `all`: a group whose init fails must not take the screen down with
+             * it. One broken query used to leave the page with a heading, a Save button and no tabs
+             * at all, which hid the working sections and the personas someone came here to edit.
+             * Now the failure is reported and every other tab still renders.
+             */
+            const [data, initResults] = await Promise.all([
                 this.getSettings.execute(),
-                Promise.all(this.groups.map(group => group.init?.()))
+                Promise.allSettled(this.groups.map(group => group.init?.()))
             ]);
 
+            const initErrors = initResults.flatMap((result, index) => {
+                if (result.status !== "rejected") {
+                    return [];
+                }
+
+                const label = this.groups[index].label;
+                const reason =
+                    result.reason instanceof Error ? result.reason.message : String(result.reason);
+
+                return [`Could not load the "${label}" section: ${reason}`];
+            });
+
             runInAction(() => {
+                this.errors = initErrors;
                 this.form = this.buildForm();
                 this.form.setData(data);
             });
