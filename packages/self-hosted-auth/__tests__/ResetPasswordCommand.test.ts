@@ -19,11 +19,6 @@ vi.mock("inquirer", () => ({
     }
 }));
 
-/**
- * Covers the checks the command makes before it prompts for anything. Each of them exists to fail
- * with an explanation rather than let the operator type a password into a dead end.
- */
-
 interface ExtensionStub {
     params: unknown;
 }
@@ -60,6 +55,10 @@ const authExtension = (params: Record<string, unknown>) => ({
     "Project/SelfHostedAuth": [{ params }]
 });
 
+/**
+ * The checks the command makes before it prompts for anything. Each exists so a misconfiguration
+ * fails with an explanation, rather than letting the operator type a password into a dead end.
+ */
 describe("reset-password command", () => {
     it("takes the email as a required parameter and the API URL as an option", async () => {
         const definition = await setup({}).execute();
@@ -68,15 +67,10 @@ describe("reset-password command", () => {
         expect(definition.params).toEqual([
             expect.objectContaining({ name: "email", required: true })
         ]);
-        expect(definition.options).toEqual([expect.objectContaining({ name: "api-url" })]);
-    });
-
-    it("explains itself when self-hosted auth is not configured at all", async () => {
-        const definition = await setup({}).execute();
-
-        await expect(definition.handler({ email: "admin@example.com" })).rejects.toThrow(
-            /Self-hosted auth is not configured/
-        );
+        expect(definition.options).toEqual([
+            expect.objectContaining({ name: "api-url" }),
+            expect.objectContaining({ name: "signing-secret" })
+        ]);
     });
 
     it("refuses up front when the project turned the escape hatch off", async () => {
@@ -86,6 +80,16 @@ describe("reset-password command", () => {
 
         await expect(definition.handler({ email: "admin@example.com" })).rejects.toThrow(
             /CLI password reset is disabled/
+        );
+    });
+
+    it("lists every route to a signing secret when it has none", async () => {
+        const definition = await setup({}).execute();
+
+        await expect(
+            definition.handler({ email: "admin@example.com", apiUrl: "http://localhost:3002" })
+        ).rejects.toThrow(
+            /configure <SelfHostedAuth signingSecret.*WEBINY_SELF_HOSTED_SIGNING_SECRET.*--signing-secret/s
         );
     });
 
@@ -119,6 +123,7 @@ describe("reset-password command, talking to an API", () => {
 
     afterEach(() => {
         vi.unstubAllGlobals();
+        vi.unstubAllEnvs();
     });
 
     it("posts a token the API side can verify, to the configured origin", async () => {
@@ -210,6 +215,85 @@ describe("reset-password command, talking to an API", () => {
         await expect(definition.handler({ email: "admin@example.com" })).rejects.toThrow(
             /No credential found for "admin@example.com"\. \(CREDENTIAL_NOT_FOUND_FOR_EMAIL\)/
         );
+    });
+
+    /**
+     * The point of the overrides: reach an instance the local config knows nothing about, with its
+     * secret supplied from a secret manager rather than the repo.
+     */
+    it("signs with --signing-secret when the project config has no auth extension at all", async () => {
+        const fetchMock = respondWith({
+            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
+        });
+
+        const definition = await setup({}).execute();
+        await definition.handler({
+            email: "admin@example.com",
+            apiUrl: "https://api.example.com",
+            signingSecret: "prod-secret"
+        });
+
+        expect(fetchMock.mock.calls[0][0]).toBe("https://api.example.com/graphql");
+
+        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
+
+        expect(verifyCliResetToken({ secret: "prod-secret", token: sent.variables.token })).toEqual(
+            {
+                email: "admin@example.com"
+            }
+        );
+        expect(verifyCliResetToken({ secret: SECRET, token: sent.variables.token })).toBeNull();
+    });
+
+    it("prefers --signing-secret over the project config", async () => {
+        const fetchMock = respondWith({
+            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
+        });
+
+        const definition = await setup(configured).execute();
+        await definition.handler({ email: "admin@example.com", signingSecret: "override" });
+
+        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
+
+        expect(verifyCliResetToken({ secret: "override", token: sent.variables.token })).toEqual({
+            email: "admin@example.com"
+        });
+    });
+
+    it("falls back to the env var, but only when nothing else supplies a secret", async () => {
+        const fetchMock = respondWith({
+            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
+        });
+
+        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "from-env");
+
+        const definition = await setup({
+            "Infra/ApiUrl": [{ params: { url: "https://api.example.com" } }]
+        }).execute();
+        await definition.handler({ email: "admin@example.com" });
+
+        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
+
+        expect(verifyCliResetToken({ secret: "from-env", token: sent.variables.token })).toEqual({
+            email: "admin@example.com"
+        });
+    });
+
+    it("lets a configured project win over a stale env var", async () => {
+        const fetchMock = respondWith({
+            data: { selfHostedAuthCliResetPassword: { data: true, error: null } }
+        });
+
+        vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "stale");
+
+        const definition = await setup(configured).execute();
+        await definition.handler({ email: "admin@example.com" });
+
+        const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);
+
+        expect(verifyCliResetToken({ secret: SECRET, token: sent.variables.token })).toEqual({
+            email: "admin@example.com"
+        });
     });
 
     it("says the API is unreachable rather than surfacing a raw fetch failure", async () => {

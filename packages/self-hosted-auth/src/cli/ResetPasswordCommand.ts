@@ -21,10 +21,13 @@ import { isCliPasswordResetEnabled } from "~/shared/buildParams.js";
  *
  * Which instance it talks to: whatever the config resolves to on the machine running the command.
  * The self-hosted hosting type has no deploy environments, so there is a single `<Infra.ApiUrl>`
- * value, and `--api-url` overrides it for a one-off (say, resetting on a deployed box from a
- * laptop configured for localhost). The signing secret has the same property but no override, so
- * a reset against a deployed API needs the same `signingSecret` locally that the API was built
- * with. `explainError` says so when the token is refused, because that is the likeliest cause.
+ * value and a single `signingSecret`, both resolved locally. `--api-url` and `--signing-secret`
+ * (or the env var) override them, which is what makes it possible to reset on a deployed instance
+ * from a laptop configured for localhost, with the production secret coming out of a secret
+ * manager rather than the repo.
+ *
+ * The secret has to match whatever the target API was built with, or the token will not verify.
+ * `explainError` names that as the likely cause, since it is the one thing most easily got wrong.
  */
 
 /** Extension type ids, referenced as strings so the CLI need not import the React config modules. */
@@ -51,7 +54,16 @@ interface ProjectConfigLike {
 export interface IResetPasswordCommandParams {
     email: string;
     apiUrl?: string;
+    signingSecret?: string;
 }
+
+/**
+ * Env var read as the secret when neither `--signing-secret` nor the project config supplies one.
+ * The safer of the two overrides: a secret passed as a flag is visible in shell history and in
+ * the process list, whereas a secret manager can inject an env var into just this process
+ * (`op run -- yarn webiny reset-password ...`).
+ */
+const SIGNING_SECRET_ENV_VAR = "WEBINY_SELF_HOSTED_SIGNING_SECRET";
 
 const MUTATION_NAME = "selfHostedAuthCliResetPassword";
 
@@ -86,7 +98,8 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 "Set a self-hosted user's password directly, without going through the admin UI.",
             examples: [
                 "$0 reset-password admin@example.com",
-                "$0 reset-password admin@example.com --api-url=http://localhost:3002"
+                "$0 reset-password admin@example.com --api-url=https://api.example.com",
+                `${SIGNING_SECRET_ENV_VAR}=$(op read op://vault/webiny-prod/signing-secret) $0 reset-password admin@example.com --api-url=https://api.example.com`
             ],
             params: [
                 {
@@ -104,6 +117,14 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                         "<Infra.ApiUrl> value from webiny.config. Pass it to reset a password on " +
                         "a deployed instance from a machine configured for localhost.",
                     type: "string"
+                },
+                {
+                    name: "signing-secret",
+                    description:
+                        "JWT signing secret to sign the reset token with. Defaults to the " +
+                        `\`signingSecret\` from webiny.config, then to $${SIGNING_SECRET_ENV_VAR}. ` +
+                        "Prefer the env var: a flag is visible in shell history and the process list.",
+                    type: "string"
                 }
             ],
             handler: async params => {
@@ -114,28 +135,19 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 const projectConfig = await projectSdk.getProjectConfig();
 
                 const [authExtension] = projectConfig.extensionsByType(SELF_HOSTED_AUTH_EXTENSION);
-                if (!authExtension) {
-                    throw new Error(
-                        "Self-hosted auth is not configured. Add <SelfHostedAuth signingSecret={...} /> to webiny.config."
-                    );
-                }
+                const authParams = authExtension?.params as SelfHostedAuthParams | undefined;
 
-                const authParams = authExtension.params as unknown as SelfHostedAuthParams;
-
-                if (!isCliPasswordResetEnabled(authParams.cliPasswordReset)) {
+                // Only meaningful when the local config is the one describing the target instance.
+                // Someone overriding both the secret and the URL is aiming at a different instance
+                // entirely, whose own build decides whether the mutation exists.
+                if (authParams && !isCliPasswordResetEnabled(authParams.cliPasswordReset)) {
                     throw new Error(
                         "CLI password reset is disabled for this project. Remove " +
                             "`cliPasswordReset={false}` from <SelfHostedAuth /> to re-enable it."
                     );
                 }
 
-                if (!authParams.signingSecret) {
-                    throw new Error(
-                        "No JWT signing secret is configured. Check the `signingSecret` prop on " +
-                            "<SelfHostedAuth /> and the environment variable behind it."
-                    );
-                }
-
+                const signingSecret = this.resolveSigningSecret(params.signingSecret, authParams);
                 const apiUrl = this.resolveApiUrl(params.apiUrl, projectConfig);
 
                 const password = await this.promptForPassword(params.email);
@@ -143,7 +155,7 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 ui.info("Setting password for %s...", params.email);
 
                 const token = signCliResetToken({
-                    secret: authParams.signingSecret,
+                    secret: signingSecret,
                     email: params.email
                 });
 
@@ -152,6 +164,28 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 ui.success("Password updated for %s.", params.email);
             }
         };
+    }
+
+    /**
+     * Flag, then project config, then env var. The flag wins because it is the most deliberate
+     * thing the operator can do, and the env var comes last so a stale shell export cannot
+     * silently override a project that is correctly configured.
+     */
+    private resolveSigningSecret(
+        override: string | undefined,
+        authParams: SelfHostedAuthParams | undefined
+    ): string {
+        const secret = override || authParams?.signingSecret || process.env[SIGNING_SECRET_ENV_VAR];
+
+        if (!secret) {
+            throw new Error(
+                "No JWT signing secret available. Either configure <SelfHostedAuth " +
+                    `signingSecret={...} /> in webiny.config, set $${SIGNING_SECRET_ENV_VAR}, or ` +
+                    "pass --signing-secret. It has to match the secret the target API was built with."
+            );
+        }
+
+        return secret;
     }
 
     private resolveApiUrl(override: string | undefined, projectConfig: ProjectConfigLike): string {
@@ -274,16 +308,15 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
     private explainError(error: { code: string; message: string }, endpoint: string): string {
         const base = `${error.message} (${error.code})`;
 
-        // The token is signed with whatever `signingSecret` resolves to on THIS machine, and
-        // verified against whatever the API was built with. Those differ more often than anything
-        // else that produces this code, and the bare message gives no hint of it. Self-hosted has
-        // no deploy environments, so there is one config value and one env to get right.
+        // The token is signed with whatever secret resolved on THIS machine, and verified against
+        // whatever the API was built with. Those differ more often than anything else that
+        // produces this code, and the bare message gives no hint of it.
         if (error.code === "INVALID_RESET_TOKEN") {
             return (
-                `${base} The usual cause is a signing secret mismatch: the token was signed with ` +
-                `the \`signingSecret\` your local webiny.config resolves to, and ${endpoint} was ` +
-                "built with a different one. Check the environment variable behind it. A clock " +
-                "skew of over two minutes between this machine and the API will do it too."
+                `${base} The usual cause is a signing secret mismatch: the secret this command ` +
+                `signed with is not the one ${endpoint} was built with. Pass the right one with ` +
+                `--signing-secret or $${SIGNING_SECRET_ENV_VAR}. A clock skew of over two minutes ` +
+                "between this machine and the API will do it too."
             );
         }
 
