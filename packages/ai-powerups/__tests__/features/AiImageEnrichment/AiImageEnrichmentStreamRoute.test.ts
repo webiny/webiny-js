@@ -1,13 +1,17 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { HttpRoute, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
+import {
+    HttpRoute,
+    HttpStreamBody,
+    buildHttpRoute,
+    invokeHttpRoute
+} from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import {
     AiImageEnrichmentStreamRoute,
-    AiImageEnrichmentStreamRouteDefinition,
-    AiImageEnrichmentStreamRouteHandler
+    AiImageEnrichmentStreamRouteDefinition
 } from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
 import {
     ApplyImageEnrichmentUseCase,
@@ -87,9 +91,8 @@ describe("AiImageEnrichmentStreamRoute", () => {
         container.registerInstance(PrepareImageEnrichmentUseCase, prepare as any);
         container.registerInstance(ApplyImageEnrichmentUseCase, apply as any);
         container.registerInstance(Ai, ai as any);
-        container.register(AiImageEnrichmentStreamRoute);
 
-        route = container.resolve(AiImageEnrichmentStreamRouteHandler);
+        route = buildHttpRoute(container, AiImageEnrichmentStreamRoute);
     });
 
     it("should be a POST route with a file-scoped path", () => {

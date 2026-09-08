@@ -1,4 +1,5 @@
 import { Abstraction } from "@webiny/di";
+import type { Constructor } from "@webiny/di";
 import type { HttpStreamSource } from "./HttpStreamBody.js";
 
 export interface IHttpRequest {
@@ -117,19 +118,19 @@ export interface IHttpRoute {
 /**
  * What a route IS, separated from what it DOES.
  *
- * `method` and `path` are plain data, so the router can match a request without building anything.
- * `handler` is the abstraction the matched route's implementation is registered under, resolved
- * only once that route wins — which is the point of the split. Resolving every route just to read
- * its path used to drag in each one's whole dependency graph, so a request for a static asset built
- * the entire GraphQL engine, every contextual schema and the AI provider before finding its route.
+ * `method` and `path` are plain data, so the router matches a request without building anything.
+ * `handler` is the route's implementation class — declared with
+ * `HttpRouteHandler.createImplementation`, so it carries its own dependency metadata — and the
+ * router builds it only once this definition matches.
  *
- * `handler` is a real abstraction rather than a constructor so the matched route resolves through
- * normal DI, decorators included.
+ * Resolving every route just to read its path used to drag in each one's whole dependency graph, so
+ * a request for a static asset built the entire GraphQL engine, every contextual schema and the AI
+ * provider before finding the route it wanted.
  */
 export interface IHttpRouteDefinition {
     readonly method: string;
     readonly path: string;
-    readonly handler: Abstraction<IHttpRoute>;
+    readonly handler: Constructor<IHttpRoute>;
 }
 
 export interface IHttpRouter {
@@ -137,10 +138,20 @@ export interface IHttpRouter {
 }
 
 export const HttpRouteDefinition = new Abstraction<IHttpRouteDefinition>("HttpRouteDefinition");
+/**
+ * Declares a route's request handling. One shared abstraction: the router never resolves it from the
+ * container (that would build every route), it builds the ONE class a matched definition points at.
+ * Declaring implementations through it is what attaches their dependency metadata.
+ */
+export const HttpRouteHandler = new Abstraction<IHttpRoute>("HttpRouteHandler");
 export const HttpRouter = new Abstraction<IHttpRouter>("HttpRouter");
 
 export namespace HttpRouteDefinition {
     export type Interface = IHttpRouteDefinition;
+}
+
+export namespace HttpRouteHandler {
+    export type Interface = IHttpRoute;
 }
 
 export namespace HttpRoute {

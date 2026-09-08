@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core";
-import { HttpRoute, invokeHttpRoute } from "@webiny/event-handler-core";
+import { HttpRoute, buildHttpRoute, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import {
     BackgroundTaskRoute,
-    BackgroundTaskRouteDefinition,
-    BackgroundTaskRouteHandler
+    BackgroundTaskRouteDefinition
 } from "~/routes/BackgroundTaskRoute.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
@@ -16,8 +15,7 @@ const createRouteInstance = (): HttpRoute.Interface => {
     const container = new Container();
     container.registerInstance(RequestContainer, container);
     container.registerInstance(InternalToken, { value: TOKEN_VALUE });
-    container.register(BackgroundTaskRoute);
-    return container.resolve(BackgroundTaskRouteHandler);
+    return buildHttpRoute(container, BackgroundTaskRoute);
 };
 
 const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({

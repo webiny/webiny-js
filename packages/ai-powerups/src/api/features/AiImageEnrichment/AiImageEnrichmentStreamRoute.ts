@@ -1,4 +1,9 @@
-import { HttpRoute, HttpRouteDefinition, toSseFrame } from "@webiny/event-handler-core";
+import {
+    HttpRoute,
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    toSseFrame
+} from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { PrepareImageEnrichmentUseCase } from "./abstractions.js";
@@ -6,7 +11,6 @@ import type { IPreparedImageEnrichment } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
 import { readEnrichmentPartial } from "./readEnrichmentPartial.js";
 import { imageEnrichmentErrorStatusCode } from "./imageEnrichmentErrorStatusCode.js";
-import { createAbstraction } from "@webiny/feature/api";
 
 /**
  * Re-runs AI enrichment for a single file, streaming the model's output to the caller as
@@ -83,20 +87,14 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
     }
 }
 
-/** Its own abstraction, so the router can resolve THIS route and only this route. */
-export const AiImageEnrichmentStreamRouteHandler = createAbstraction<HttpRoute.Interface>(
-    "AiImageEnrichmentStreamRouteHandler"
-);
-
-export const AiImageEnrichmentStreamRoute =
-    AiImageEnrichmentStreamRouteHandler.createImplementation({
-        implementation: AiImageEnrichmentStreamRouteImpl,
-        dependencies: [PrepareImageEnrichmentUseCase, Ai]
-    });
+export const AiImageEnrichmentStreamRoute = HttpRouteHandler.createImplementation({
+    implementation: AiImageEnrichmentStreamRouteImpl,
+    dependencies: [PrepareImageEnrichmentUseCase, Ai]
+});
 
 /** What the router matches on. Plain data — reading it builds nothing. */
 export const AiImageEnrichmentStreamRouteDefinition: HttpRouteDefinition.Interface = {
     method: "POST",
     path: "/stream/fm/files/:fileId/enrich",
-    handler: AiImageEnrichmentStreamRouteHandler
+    handler: AiImageEnrichmentStreamRoute
 };

@@ -4,8 +4,7 @@ import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { createStreamLambdaHandler } from "~/createStreamLambdaHandler.js";
 import { FunctionUrlStreamFeature } from "~/features/FunctionUrlStreamFeature.js";
 import type { IRawResponseStream, IResponseStreamMetadata } from "~/streaming/awslambda.js";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
-import { Abstraction } from "@webiny/di";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 
 const decoder = new TextDecoder();
 
@@ -76,18 +75,17 @@ function makeRoute(handle: (request: IHttpRequest) => Promise<IHttpResponse>) {
     class TestRouteImplementation implements HttpRoute.Interface {
         handle = handle;
     }
-
-    const handler = new Abstraction<HttpRoute.Interface>("test:FunctionUrlStream");
+    const implementation = HttpRouteHandler.createImplementation({
+        implementation: TestRouteImplementation,
+        dependencies: []
+    });
 
     return {
-        implementation: handler.createImplementation({
-            implementation: TestRouteImplementation,
-            dependencies: []
-        }),
+        implementation,
         definition: {
             method: "POST",
             path: "/stream/test",
-            handler
+            handler: implementation
         } as HttpRouteDefinition.Interface
     };
 }
@@ -96,7 +94,6 @@ function makeHandler(route: ReturnType<typeof makeRoute>) {
     return createStreamLambdaHandler({
         root: container => {
             FunctionUrlStreamFeature.register(container);
-            container.register(route.implementation);
             container.registerInstance(HttpRouteDefinition, route.definition);
         }
     });

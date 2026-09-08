@@ -300,8 +300,6 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
             });
         });
 
-        const cmsRoute = createCmsRoute(config.type);
-        container.register(cmsRoute.implementation);
-        container.registerInstance(HttpRouteDefinition, cmsRoute.definition);
+        container.registerInstance(HttpRouteDefinition, createCmsRoute(config.type));
     }
 });

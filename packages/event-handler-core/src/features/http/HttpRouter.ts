@@ -6,6 +6,7 @@ import {
 } from "~/features/http/abstractions.js";
 import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
 import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
+import { buildHttpRoute } from "~/features/http/buildHttpRoute.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import type {
     IHttpRouteDefinition,
@@ -64,7 +65,7 @@ class HttpRouterImplClass implements HttpRouter.Interface {
                 continue;
             }
 
-            const route = this.container.resolve(definition.handler);
+            const route = buildHttpRoute(this.container, definition.handler);
             const response = new HttpResponseBuilder();
             const result = await route.handle({ ...request, pathParameters: params }, response);
             return toHttpResponse(result, response);

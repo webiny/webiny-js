@@ -3,8 +3,7 @@ import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse, HttpStreamSource } from "@webiny/event-handler-core";
 import { createServerHandler } from "~/createServerHandler.js";
 import { NodeHttpFeature } from "~/features/NodeHttpFeature.js";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
-import { Abstraction } from "@webiny/di";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 
 const decoder = new TextDecoder();
 
@@ -22,15 +21,18 @@ function makeRoute(response: () => IHttpResponse) {
             return response();
         }
     }
-
-    const handler = new Abstraction<HttpRoute.Interface>("test:Stream");
+    const implementation = HttpRouteHandler.createImplementation({
+        implementation: StreamRouteImplementation,
+        dependencies: []
+    });
 
     return {
-        implementation: handler.createImplementation({
-            implementation: StreamRouteImplementation,
-            dependencies: []
-        }),
-        definition: { method: "GET", path: "/stream", handler } as HttpRouteDefinition.Interface
+        implementation,
+        definition: {
+            method: "GET",
+            path: "/stream",
+            handler: implementation
+        } as HttpRouteDefinition.Interface
     };
 }
 
@@ -46,7 +48,6 @@ async function startServer(route: ReturnType<typeof makeRoute>) {
     const server = await createServerHandler({
         root: container => {
             NodeHttpFeature.register(container);
-            container.register(route.implementation);
             container.registerInstance(HttpRouteDefinition, route.definition);
         }
     });

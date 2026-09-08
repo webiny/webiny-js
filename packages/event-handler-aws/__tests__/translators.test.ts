@@ -5,8 +5,7 @@ import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHand
 import { HttpFeature } from "@webiny/event-handler-core";
 import { HttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { HttpRouteDefinition } from "@webiny/event-handler-core";
-import { Abstraction } from "@webiny/di";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 
 const apiGwEvent = {
     httpMethod: "POST",
@@ -26,16 +25,17 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 return { statusCode, body };
             }
         }
-        const handler = new Abstraction<HttpRoute.Interface>("test:MakeRoute");
+        const implementation = HttpRouteHandler.createImplementation({
+            implementation: MakeRouteImplementation,
+            dependencies: []
+        });
+
         return {
-            implementation: handler.createImplementation({
-                implementation: MakeRouteImplementation,
-                dependencies: []
-            }),
+            implementation,
             definition: {
                 method: "POST",
                 path: "/graphql",
-                handler
+                handler: implementation
             } as HttpRouteDefinition.Interface
         };
     };
@@ -46,7 +46,6 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
                 const route = makeRoute(200, { ok: true });
-                container.register(route.implementation);
                 container.registerInstance(HttpRouteDefinition, route.definition);
                 container.register(ApiGatewayHttpRouterHandler);
             }
@@ -80,16 +79,16 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 };
             }
         }
-        const bufferHandler = new Abstraction<HttpRoute.Interface>("test:BufferRoute");
+        const bufferImplementation = HttpRouteHandler.createImplementation({
+            implementation: BufferRouteImplementation,
+            dependencies: []
+        });
         const bufferRoute = {
-            implementation: bufferHandler.createImplementation({
-                implementation: BufferRouteImplementation,
-                dependencies: []
-            }),
+            implementation: bufferImplementation,
             definition: {
                 method: "POST",
                 path: "/graphql",
-                handler: bufferHandler
+                handler: bufferImplementation
             } as HttpRouteDefinition.Interface
         };
 
@@ -97,7 +96,6 @@ describe("ApiGatewayHttpRouterHandler", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                container.register(bufferRoute.implementation);
                 container.registerInstance(HttpRouteDefinition, bufferRoute.definition);
                 container.register(ApiGatewayHttpRouterHandler);
             }

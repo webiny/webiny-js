@@ -1,12 +1,16 @@
 import type { Container } from "@webiny/di";
-import { HttpRoute, HttpRouteDefinition, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRoute,
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
 import { BenchmarkAbstraction } from "@webiny/api";
 import { CmsSchemaExecutor } from "~/graphql/CmsSchemaExecutor.js";
 import type { ApiEndpoint } from "~/types/index.js";
-import { createAbstraction } from "@webiny/feature/api";
 
 const CMS_PATHS: Record<ApiEndpoint, string> = {
     manage: "/cms/manage",
@@ -18,7 +22,7 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
  * The HTTP route for a CMS GraphQL endpoint (manage/read/preview). Per request it runs the
  * contextual schemas, then executes the CMS sub-schema via CmsSchemaExecutor.
  */
-export function createCmsRoute(type: ApiEndpoint) {
+export function createCmsRoute(type: ApiEndpoint): HttpRouteDefinition.Interface {
     class CmsGraphQLRoute implements HttpRoute.Interface {
         // public (not private): this class is returned from an exported factory, so its members
         // must be declarable in the emitted .d.ts — private parameter-properties on an exported
@@ -46,20 +50,14 @@ export function createCmsRoute(type: ApiEndpoint) {
         }
     }
 
-    // One abstraction per endpoint, so manage/read/preview stay independently resolvable.
-    const handler = createAbstraction<HttpRoute.Interface>(`CmsRouteHandler/${type}`);
-
-    const implementation = handler.createImplementation({
+    const implementation = HttpRouteHandler.createImplementation({
         implementation: CmsGraphQLRoute,
         dependencies: [RequestContainer, [GraphQLContextualSchema, { multiple: true }]]
     });
 
-    const definition: HttpRouteDefinition.Interface = {
+    return {
         method: "POST",
         path: CMS_PATHS[type],
-        handler
+        handler: implementation
     };
-
-    // A generated route has to hand back both halves; the caller registers each.
-    return { implementation, definition };
 }

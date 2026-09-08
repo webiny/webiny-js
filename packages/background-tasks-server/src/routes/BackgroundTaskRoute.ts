@@ -1,4 +1,9 @@
-import { HttpRoute, HttpRouteDefinition, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRoute,
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
@@ -10,7 +15,6 @@ import type { Context } from "@webiny/background-tasks/api/types.js";
 import type { Container } from "@webiny/feature/api";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
 import { InternalToken } from "~/domain/InternalToken.js";
-import { createAbstraction } from "@webiny/feature/api";
 
 /* Shared between worker and route to gate access. */
 const INTERNAL_HEADER = "x-webiny-background-task-token";
@@ -61,12 +65,7 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
     }
 }
 
-/** Its own abstraction, so the router can resolve THIS route and only this route. */
-export const BackgroundTaskRouteHandler = createAbstraction<HttpRoute.Interface>(
-    "BackgroundTaskRouteHandler"
-);
-
-export const BackgroundTaskRoute = BackgroundTaskRouteHandler.createImplementation({
+export const BackgroundTaskRoute = HttpRouteHandler.createImplementation({
     implementation: BackgroundTaskRouteImpl,
     dependencies: [RequestContainer, InternalToken]
 });
@@ -75,5 +74,5 @@ export const BackgroundTaskRoute = BackgroundTaskRouteHandler.createImplementati
 export const BackgroundTaskRouteDefinition: HttpRouteDefinition.Interface = {
     method: "POST",
     path: "/background-task",
-    handler: BackgroundTaskRouteHandler
+    handler: BackgroundTaskRoute
 };

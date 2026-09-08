@@ -10,7 +10,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
-import { HttpRoute, HttpRouteDefinition, HttpRouter } from "~/features/http/abstractions.js";
+import {
+    HttpRoute,
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    HttpRouter
+} from "~/features/http/abstractions.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
@@ -50,30 +55,24 @@ describe("HttpRouter route construction", () => {
             }
         }
 
-        const CostlyHandler = new Abstraction<HttpRoute.Interface>("test:Costly");
-        container.register(
-            CostlyHandler.createImplementation({
-                implementation: CostlyRouteImpl,
-                dependencies: [Expensive]
-            })
-        );
+        const CostlyImpl = HttpRouteHandler.createImplementation({
+            implementation: CostlyRouteImpl,
+            dependencies: [Expensive]
+        });
         container.registerInstance(HttpRouteDefinition, {
             method: "POST",
             path: "/costly",
-            handler: CostlyHandler
+            handler: CostlyImpl
         });
 
-        const CheapHandler = new Abstraction<HttpRoute.Interface>("test:Cheap");
-        container.register(
-            CheapHandler.createImplementation({
-                implementation: CheapRouteImpl,
-                dependencies: []
-            })
-        );
+        const CheapImpl = HttpRouteHandler.createImplementation({
+            implementation: CheapRouteImpl,
+            dependencies: []
+        });
         container.registerInstance(HttpRouteDefinition, {
             method: "GET",
             path: "/cheap",
-            handler: CheapHandler
+            handler: CheapImpl
         });
 
         container.register(HttpRouterImpl);
@@ -107,7 +106,13 @@ describe("HttpRouter route construction", () => {
         expect(built).toEqual([]);
     });
 
-    it("resolves the matched route through DI, so it can be decorated", async () => {
+    /**
+     * Documents a known limitation of building the route from its class rather than resolving a
+     * per-route abstraction: decorators registered on the shared `HttpRouteHandler` do NOT reach
+     * routes. That is the price of not resolving the abstraction, which would build all of them.
+     * Nothing decorates routes today; a route that needs it has to get its own abstraction.
+     */
+    it("does not apply HttpRouteHandler decorators to routes", async () => {
         const container = new Container();
         const handle = vi.fn(async (): Promise<IHttpResponse> => ({
             statusCode: 200,
@@ -118,25 +123,20 @@ describe("HttpRouter route construction", () => {
             handle = handle;
         }
 
-        const DecoratedHandler = new Abstraction<HttpRoute.Interface>("test:Decorated");
-        container.register(
-            DecoratedHandler.createImplementation({
-                implementation: RouteImpl,
-                dependencies: []
-            })
-        );
         container.registerInstance(HttpRouteDefinition, {
             method: "GET",
             path: "/decorated",
-            handler: DecoratedHandler
+            handler: HttpRouteHandler.createImplementation({
+                implementation: RouteImpl,
+                dependencies: []
+            })
         });
 
         container.registerDecorator(
-            DecoratedHandler.createDecorator({
-                decorator: class {
-                    constructor(private readonly decoratee: { handle: typeof handle }) {}
+            HttpRouteHandler.createDecorator({
+                decorator: class implements HttpRoute.Interface {
+                    constructor(private readonly decoratee: HttpRoute.Interface) {}
                     async handle(): Promise<IHttpResponse> {
-                        await this.decoratee.handle();
                         return { statusCode: 200, body: "decorated" };
                     }
                 },
@@ -149,7 +149,7 @@ describe("HttpRouter route construction", () => {
 
         const result = await container.resolve(HttpRouter).route(req("GET", "/decorated"));
 
-        expect(result.body).toBe("decorated");
+        expect(result.body).toBe("original");
         expect(handle).toHaveBeenCalledOnce();
     });
 });

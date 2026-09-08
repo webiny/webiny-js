@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { Abstraction } from "@webiny/di";
-import { HttpRoute, HttpRouteDefinition, HttpRouter } from "~/features/http/abstractions.js";
+import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
+import { registerHttpRouteInstance } from "~/features/testing/index.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
@@ -28,10 +28,7 @@ function makeRoute(method: string, path: string, body: any = "ok"): TestRoute {
 function makeRouter(...routes: TestRoute[]): HttpRouter.Interface {
     const container = new Container();
     for (const { method, path, route } of routes) {
-        // Each route gets its own handler abstraction, so only the matched one is resolved.
-        const handler = new Abstraction<HttpRoute.Interface>(`HttpRoute/${method}${path}`);
-        container.registerInstance(handler, route);
-        container.registerInstance(HttpRouteDefinition, { method, path, handler });
+        registerHttpRouteInstance(container, { method, path, route });
     }
     container.register(HttpRouterImpl);
     // The router resolves routes through the request container, the way ChildContainerFactory

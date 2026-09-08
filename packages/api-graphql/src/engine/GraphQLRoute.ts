@@ -1,8 +1,7 @@
-import { HttpRoute, HttpRouteDefinition } from "@webiny/event-handler-core";
+import { HttpRoute, HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { IGraphQLEngine } from "./abstractions.js";
-import { createAbstraction } from "@webiny/feature/api";
 
 class GraphQLRouteImpl implements HttpRoute.Interface {
     constructor(private engine: IGraphQLEngine) {}
@@ -17,10 +16,7 @@ class GraphQLRouteImpl implements HttpRoute.Interface {
     }
 }
 
-/** Its own abstraction, so the router can resolve THIS route and only this route. */
-export const GraphQLRouteHandler = createAbstraction<HttpRoute.Interface>("GraphQLRouteHandler");
-
-export const GraphQLRoute = GraphQLRouteHandler.createImplementation({
+export const GraphQLRoute = HttpRouteHandler.createImplementation({
     implementation: GraphQLRouteImpl,
     dependencies: [GraphQLEngine]
 });
@@ -29,5 +25,5 @@ export const GraphQLRoute = GraphQLRouteHandler.createImplementation({
 export const GraphQLRouteDefinition: HttpRouteDefinition.Interface = {
     method: "POST",
     path: "/graphql",
-    handler: GraphQLRouteHandler
+    handler: GraphQLRoute
 };

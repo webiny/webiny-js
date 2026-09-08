@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { EmptyTrashBinRoute, EmptyTrashBinRouteDefinition } from "./EmptyTrashBinRoute.js";
+import { EmptyTrashBinRouteDefinition } from "./EmptyTrashBinRoute.js";
 import { uuid } from "@webiny/stdlib";
 import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
 import { HttpRouteDefinition } from "@webiny/event-handler-core";
@@ -10,7 +10,6 @@ export const EmptyTrashBinRouteFeature = createFeature({
     register: container => {
         const token = uuid();
         container.registerInstance(BulkActionsInternalToken, { value: token });
-        container.register(EmptyTrashBinRoute);
         container.registerInstance(HttpRouteDefinition, EmptyTrashBinRouteDefinition);
     }
 });

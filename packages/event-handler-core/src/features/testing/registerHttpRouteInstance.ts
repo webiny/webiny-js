@@ -1,6 +1,10 @@
-import { Abstraction } from "@webiny/di";
 import type { Container } from "@webiny/di";
-import { HttpRouteDefinition } from "~/features/http/abstractions.js";
+import { HttpRouteDefinition, HttpRouteHandler } from "~/features/http/abstractions.js";
+import type {
+    IHttpRequest,
+    IHttpResponse,
+    IHttpResponseBuilder
+} from "~/features/http/abstractions.js";
 import type { IHttpRoute } from "~/features/http/abstractions.js";
 
 export interface IRegisterHttpRouteInstanceParams {
@@ -10,20 +14,30 @@ export interface IRegisterHttpRouteInstanceParams {
 }
 
 /**
- * Registers an ALREADY-BUILT route object under a fresh handler abstraction, plus the definition
- * the router matches on.
+ * Registers a definition pointing at an ALREADY-BUILT route object.
  *
- * For tests that hand-roll a route as a literal rather than declaring one with `createHttpRoute`.
- * Production code should use `createHttpRoute` + `registerHttpRoute`, which lets the container
- * build the route and keeps its dependencies declared.
+ * For tests that hand-roll a route as a literal. The router builds routes from a class, so the
+ * literal is wrapped in a zero-dependency one that delegates to it. Production code declares its
+ * class with `HttpRouteHandler.createImplementation` and points the definition straight at it.
  */
 export function registerHttpRouteInstance(
     container: Container,
     params: IRegisterHttpRouteInstanceParams
 ): void {
-    const handler = new Abstraction<IHttpRoute>(`HttpRoute/test:${params.method}${params.path}`);
+    class DelegatingRoute implements HttpRouteHandler.Interface {
+        handle(
+            request: IHttpRequest,
+            response: IHttpResponseBuilder
+        ): Promise<IHttpResponse | IHttpResponseBuilder | void> {
+            return Promise.resolve(params.route.handle(request, response));
+        }
+    }
 
-    container.registerInstance(handler, params.route);
+    const handler = HttpRouteHandler.createImplementation({
+        implementation: DelegatingRoute,
+        dependencies: []
+    });
+
     container.registerInstance(HttpRouteDefinition, {
         method: params.method,
         path: params.path,

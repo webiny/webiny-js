@@ -1,7 +1,6 @@
-import { Abstraction } from "@webiny/di";
 import { describe, it, expect } from "vitest";
 import { createTestHttpHandler } from "~/features/testing/index.js";
-import { HttpRoute, HttpRouteDefinition } from "~/features/http/abstractions.js";
+import { HttpRoute, HttpRouteDefinition, HttpRouteHandler } from "~/features/http/abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
 class ThrowingRoute implements HttpRoute.Interface {
@@ -10,15 +9,14 @@ class ThrowingRoute implements HttpRoute.Interface {
     }
 }
 
-const ThrowingRouteHandler = new Abstraction<HttpRoute.Interface>("test:Throwing");
-const ThrowingRouteImpl = ThrowingRouteHandler.createImplementation({
+const ThrowingRouteImpl = HttpRouteHandler.createImplementation({
     implementation: ThrowingRoute,
     dependencies: []
 });
 const ThrowingRouteDefinition: HttpRouteDefinition.Interface = {
     method: "GET",
     path: "/boom",
-    handler: ThrowingRouteHandler
+    handler: ThrowingRouteImpl
 };
 
 class OkRoute implements HttpRoute.Interface {
@@ -27,22 +25,20 @@ class OkRoute implements HttpRoute.Interface {
     }
 }
 
-const OkRouteHandler = new Abstraction<HttpRoute.Interface>("test:Ok");
-const OkRouteImpl = OkRouteHandler.createImplementation({
+const OkRouteImpl = HttpRouteHandler.createImplementation({
     implementation: OkRoute,
     dependencies: []
 });
 const OkRouteDefinition: HttpRouteDefinition.Interface = {
     method: "GET",
     path: "/ok",
-    handler: OkRouteHandler
+    handler: OkRouteImpl
 };
 
 describe("HttpFeature error handling", () => {
     it("should return 500 when a route throws", async () => {
         const handler = createTestHttpHandler({
             root: container => {
-                container.register(ThrowingRouteImpl);
                 container.registerInstance(HttpRouteDefinition, ThrowingRouteDefinition);
             }
         });
@@ -63,7 +59,6 @@ describe("HttpFeature error handling", () => {
     it("should pass through successful responses", async () => {
         const handler = createTestHttpHandler({
             root: container => {
-                container.register(OkRouteImpl);
                 container.registerInstance(HttpRouteDefinition, OkRouteDefinition);
             }
         });

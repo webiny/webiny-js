@@ -6,10 +6,7 @@ import { ContentEntriesFeature } from "@webiny/api-headless-cms/features/content
 import { CmsWhereMapperFeature } from "@webiny/api-headless-cms/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "@webiny/api-headless-cms/features/sortMapper/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import {
-    WebsiteBuilderRedirectsRoute,
-    WebsiteBuilderRedirectsRouteDefinition
-} from "./rest/WebsiteBuilderRedirectsRoute.js";
+import { WebsiteBuilderRedirectsRouteDefinition } from "./rest/WebsiteBuilderRedirectsRoute.js";
 import { registerWebsiteBuilderGraphQL } from "./graphql/createGraphQL.js";
 // Redirects
 import { GetRedirectByIdFeature } from "./features/redirects/GetRedirectById/feature.js";
@@ -93,7 +90,6 @@ export const WebsiteBuilderFeature = createFeature({
         DeleteRedirectFeature.register(container);
         MoveRedirectFeature.register(container);
         InvalidateRedirectsCacheFeature.register(container);
-        container.register(WebsiteBuilderRedirectsRoute);
         container.registerInstance(HttpRouteDefinition, WebsiteBuilderRedirectsRouteDefinition);
 
         // Page features.
