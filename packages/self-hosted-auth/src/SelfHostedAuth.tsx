@@ -3,7 +3,10 @@ import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { AdminExtension, EnvVar, BuildParam } from "@webiny/project/extensions/index.js";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
-import { CLI_PASSWORD_RESET_BUILD_PARAM } from "./shared/buildParams.js";
+import {
+    CLI_PASSWORD_RESET_BUILD_PARAM,
+    SIGNING_SECRET_BUILD_PARAM
+} from "./shared/buildParams.js";
 
 /**
  * Config-time extension rendered in `webiny.config.tsx` (like `Cognito`). It only wires things by
@@ -45,7 +48,7 @@ export const SelfHostedAuth = defineExtension({
         return (
             <>
                 {/* JWT signing secret, read at runtime by TokenIssuer via BuildParams. */}
-                <BuildParam paramName="SelfHostedAuthSigningSecret" value={signingSecret} />
+                <BuildParam paramName={SIGNING_SECRET_BUILD_PARAM} value={signingSecret} />
                 {tokenExpiresIn && (
                     <BuildParam paramName="SelfHostedAuthTokenExpiresIn" value={tokenExpiresIn} />
                 )}

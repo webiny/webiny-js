@@ -51,9 +51,26 @@ const setup = (extensions: Record<string, ExtensionStub[]>) => {
     return container.resolve(CliCommandFactory);
 };
 
-const authExtension = (params: Record<string, unknown>) => ({
-    "Project/SelfHostedAuth": [{ params }]
+/**
+ * The command reads API build params, not the extensions that emit them, because only registered
+ * extension definitions survive `hydrateConfig` and neither `Project/SelfHostedAuth` nor
+ * `Infra/ApiUrl` registers one. Building the stub the same way keeps these tests honest: an
+ * earlier version stubbed `Project/SelfHostedAuth` and so passed while the real command could
+ * never read anything.
+ */
+const buildParams = (params: Record<string, unknown>) => ({
+    "Api/BuildParam": Object.entries(params).map(([paramName, value]) => ({
+        params: { paramName, value }
+    }))
 });
+
+const authExtension = (params: Record<string, unknown>) =>
+    buildParams({
+        ...(params.signingSecret ? { SelfHostedAuthSigningSecret: params.signingSecret } : {}),
+        ...(params.cliPasswordReset !== undefined
+            ? { SelfHostedAuthCliPasswordReset: params.cliPasswordReset }
+            : {})
+    });
 
 /**
  * The checks the command makes before it prompts for anything. Each exists so a misconfiguration
@@ -104,10 +121,10 @@ describe("reset-password command", () => {
 
 describe("reset-password command, talking to an API", () => {
     const SECRET = "s3cret";
-    const configured = {
-        ...authExtension({ signingSecret: SECRET }),
-        "Infra/ApiUrl": [{ params: { url: "http://localhost:3002/" } }]
-    };
+    const configured = buildParams({
+        SelfHostedAuthSigningSecret: SECRET,
+        WEBINY_API_URL: "http://localhost:3002/"
+    });
 
     const respondWith = (body: unknown, ok = true) => {
         const fetchMock = vi.fn(async () => ({
@@ -267,9 +284,9 @@ describe("reset-password command, talking to an API", () => {
 
         vi.stubEnv("WEBINY_SELF_HOSTED_SIGNING_SECRET", "from-env");
 
-        const definition = await setup({
-            "Infra/ApiUrl": [{ params: { url: "https://api.example.com" } }]
-        }).execute();
+        const definition = await setup(
+            buildParams({ WEBINY_API_URL: "https://api.example.com" })
+        ).execute();
         await definition.handler({ email: "admin@example.com" });
 
         const sent = JSON.parse((fetchMock.mock.calls[0][1] as { body: string }).body);

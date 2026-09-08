@@ -5,7 +5,11 @@ import {
     UiService
 } from "@webiny/cli-core/abstractions/index.js";
 import { signCliResetToken } from "~/shared/cliResetToken.js";
-import { isCliPasswordResetEnabled } from "~/shared/buildParams.js";
+import {
+    CLI_PASSWORD_RESET_BUILD_PARAM,
+    isCliPasswordResetEnabled,
+    SIGNING_SECRET_BUILD_PARAM
+} from "~/shared/buildParams.js";
 
 /**
  * `webiny reset-password <email>`, the lockout escape hatch for self-hosted projects.
@@ -30,22 +34,33 @@ import { isCliPasswordResetEnabled } from "~/shared/buildParams.js";
  * `explainError` names that as the likely cause, since it is the one thing most easily got wrong.
  */
 
-/** Extension type ids, referenced as strings so the CLI need not import the React config modules. */
-const SELF_HOSTED_AUTH_EXTENSION = "Project/SelfHostedAuth";
-const API_URL_EXTENSION = "Infra/ApiUrl";
+/**
+ * Everything this command needs from the config is read as an API build param, not off the
+ * extension that produced it.
+ *
+ * That is not a stylistic choice. `hydrateConfig` only keeps an extension whose *definition* is
+ * registered with the SDK, and silently drops the rest (GetProjectConfigService.ts:133-142).
+ * Neither `Project/SelfHostedAuth` nor `Infra/ApiUrl` registers its definition anywhere, so
+ * querying those types always returns an empty array. `Api/BuildParam` is registered
+ * (project/src/extensions/index.ts:139), and the values below are exactly what the extensions
+ * emit, so reading the build params reads what the API was actually built with. Do not "simplify"
+ * this back to `extensionsByType("Project/SelfHostedAuth")`.
+ *
+ * Referenced as a string so the CLI need not import the React config modules.
+ */
+const API_BUILD_PARAM_EXTENSION = "Api/BuildParam";
 
-interface SelfHostedAuthParams {
-    signingSecret: string;
-    cliPasswordReset?: boolean;
-}
+/** Owned by project-server's `Infra/ApiUrl`, hence a literal rather than a shared constant. */
+const API_URL_BUILD_PARAM = "WEBINY_API_URL";
 
-interface ApiUrlParams {
-    url: string;
+interface BuildParamParams {
+    paramName: string;
+    value: unknown;
 }
 
 /**
  * The slice of the project config this command uses. Typed structurally rather than imported,
- * for the same reason the extension types above are strings.
+ * for the same reason the extension type above is a string.
  */
 interface ProjectConfigLike {
     extensionsByType(type: string): Array<{ params: unknown }>;
@@ -131,24 +146,26 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
             handler: async params => {
                 const projectSdk = await this.getProjectSdkService.execute();
 
-                // Queried without tags: `Project/SelfHostedAuth` and `Infra/ApiUrl` are
-                // project-level, so an app- or cli-scoped query would filter them out.
+                // Queried without tags so nothing is filtered out: the build params carrying these
+                // values are tagged for the api app, not for the cli.
                 const projectConfig = await projectSdk.getProjectConfig();
 
-                const [authExtension] = projectConfig.extensionsByType(SELF_HOSTED_AUTH_EXTENSION);
-                const authParams = authExtension?.params as SelfHostedAuthParams | undefined;
+                const flag = this.readBuildParam(projectConfig, CLI_PASSWORD_RESET_BUILD_PARAM);
 
                 // Only meaningful when the local config is the one describing the target instance.
                 // Someone overriding both the secret and the URL is aiming at a different instance
                 // entirely, whose own build decides whether the mutation exists.
-                if (authParams && !isCliPasswordResetEnabled(authParams.cliPasswordReset)) {
+                if (flag !== undefined && !isCliPasswordResetEnabled(flag as boolean | string)) {
                     throw new Error(
                         "CLI password reset is disabled for this project. Remove " +
                             "`cliPasswordReset={false}` from <SelfHostedAuth /> to re-enable it."
                     );
                 }
 
-                const signingSecret = this.resolveSigningSecret(params.signingSecret, authParams);
+                const signingSecret = this.resolveSigningSecret(
+                    params.signingSecret,
+                    projectConfig
+                );
                 const apiUrl = this.resolveApiUrl(params.apiUrl, projectConfig);
 
                 const password = await this.promptForPassword(params.email);
@@ -176,9 +193,14 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
      */
     private resolveSigningSecret(
         override: string | undefined,
-        authParams: SelfHostedAuthParams | undefined
+        projectConfig: ProjectConfigLike
     ): string {
-        const secret = override || process.env[SIGNING_SECRET_ENV_VAR] || authParams?.signingSecret;
+        const fromConfig = this.readBuildParam(projectConfig, SIGNING_SECRET_BUILD_PARAM);
+
+        const secret =
+            override ||
+            process.env[SIGNING_SECRET_ENV_VAR] ||
+            (typeof fromConfig === "string" ? fromConfig : undefined);
 
         if (!secret) {
             throw new Error(
@@ -191,19 +213,33 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
         return secret;
     }
 
+    /**
+     * Reads one `Api/BuildParam` by name. See the note on `API_BUILD_PARAM_EXTENSION` for why the
+     * values come from here rather than from the extensions that emit them.
+     */
+    private readBuildParam(projectConfig: ProjectConfigLike, name: string): unknown {
+        const buildParams = projectConfig.extensionsByType(API_BUILD_PARAM_EXTENSION);
+
+        const match = buildParams.find(
+            buildParam => (buildParam.params as BuildParamParams).paramName === name
+        );
+
+        return match ? (match.params as BuildParamParams).value : undefined;
+    }
+
     private resolveApiUrl(override: string | undefined, projectConfig: ProjectConfigLike): string {
         if (override) {
             return override.replace(/\/+$/, "");
         }
 
-        const [apiUrlExtension] = projectConfig.extensionsByType(API_URL_EXTENSION);
-        if (!apiUrlExtension) {
+        const fromConfig = this.readBuildParam(projectConfig, API_URL_BUILD_PARAM);
+        if (typeof fromConfig !== "string" || !fromConfig) {
             throw new Error(
                 "No API URL configured. Add <Infra.ApiUrl url={...} /> to webiny.config, or pass --api-url."
             );
         }
 
-        const { url } = apiUrlExtension.params as ApiUrlParams;
+        const url = fromConfig;
 
         return url.replace(/\/+$/, "");
     }

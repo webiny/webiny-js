@@ -1,6 +1,7 @@
 import { createAbstraction, createFeature } from "@webiny/feature/api";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { verifyCliResetToken, type CliResetTokenClaims } from "~/shared/cliResetToken.js";
+import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
 
 export interface ICliResetTokenVerifier {
     /** Returns the claims a reset needs, or `null` if the token is not valid. */
@@ -27,7 +28,7 @@ class JwtCliResetTokenVerifier implements ICliResetTokenVerifier {
         // Same secret as login tokens. It is guaranteed to be set, because `TokenIssuer`
         // refuses to construct without it, so an empty value here means the whole module is
         // misconfigured, and `verify` failing closed is the right outcome.
-        this.secret = buildParams.get<string>("SelfHostedAuthSigningSecret") ?? "";
+        this.secret = buildParams.get<string>(SIGNING_SECRET_BUILD_PARAM) ?? "";
     }
 
     verify(token: string): CliResetTokenClaims | null {

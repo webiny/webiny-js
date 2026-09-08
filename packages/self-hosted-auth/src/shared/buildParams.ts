@@ -18,6 +18,14 @@
 export const CLI_PASSWORD_RESET_BUILD_PARAM = "SelfHostedAuthCliPasswordReset";
 
 /**
+ * Build param carrying the HS256 secret used to sign and verify both login tokens and CLI reset
+ * tokens. Named here because four places have to agree on it (the config that emits it,
+ * `TokenIssuer` and `CliResetTokenVerifier` that read it at runtime, and the CLI that reads it
+ * back out of the config), and a silent disagreement shows up only as a refused token.
+ */
+export const SIGNING_SECRET_BUILD_PARAM = "SelfHostedAuthSigningSecret";
+
+/**
  * Reads the flag the way both the API and the CLI need to read it. Only an explicit `false`
  * (boolean or the string a build param may serialize to) turns the feature off.
  */
