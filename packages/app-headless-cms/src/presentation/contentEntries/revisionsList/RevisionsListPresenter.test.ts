@@ -9,6 +9,7 @@ import { CmsModelContext as CmsModelContextImpl } from "~/features/contentEntry/
 import { ListRevisionsUseCase } from "~/features/contentEntry/listRevisions/abstractions.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/deleteEntryRevision/abstractions.js";
+import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractions.js";
@@ -100,6 +101,7 @@ function setup(): TestSetup {
     container.registerInstance(ListRevisionsUseCase, listRevisions);
     container.registerInstance(CreateRevisionFromUseCase, createRevisionFrom);
     container.registerInstance(DeleteEntryRevisionUseCase, deleteEntryRevision);
+    container.registerInstance(PublishEntryUseCase, { execute: vi.fn() });
     container.registerInstance(UnpublishEntryUseCase, { execute: vi.fn() });
     container.registerInstance(UpdateRevisionDescriptionUseCase, { execute: vi.fn() });
     container.registerInstance(Confirmation, confirmation as unknown as Confirmation.Interface);

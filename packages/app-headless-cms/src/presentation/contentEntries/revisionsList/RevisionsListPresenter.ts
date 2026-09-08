@@ -4,6 +4,7 @@ import { Confirmation } from "@webiny/app-admin/features/confirmation/abstractio
 import { ListRevisionsUseCase } from "~/features/contentEntry/listRevisions/abstractions.js";
 import { CreateRevisionFromUseCase } from "~/features/contentEntry/createRevisionFrom/abstractions.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/deleteEntryRevision/abstractions.js";
+import { PublishEntryUseCase } from "~/features/contentEntry/publishEntry/abstractions.js";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/unpublishEntry/abstractions.js";
 import { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/updateRevisionDescription/abstractions.js";
 import { CmsModelContext } from "~/features/contentEntry/abstractions.js";
@@ -13,6 +14,7 @@ import {
     type IRevisionsListViewModel
 } from "./abstractions.js";
 
+export const PUBLISH_REVISION_DIALOG = "publish-entry";
 export const UNPUBLISH_REVISION_DIALOG = "unpublish-entry";
 export const EDIT_REVISION_NOTE_DIALOG = "edit-revision-note";
 export const DELETE_REVISION_DIALOG = "delete-revision";
@@ -28,6 +30,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
         private listRevisionsUseCase: ListRevisionsUseCase.Interface,
         private createRevisionFromUseCase: CreateRevisionFromUseCase.Interface,
         private deleteEntryRevisionUseCase: DeleteEntryRevisionUseCase.Interface,
+        private publishEntryUseCase: PublishEntryUseCase.Interface,
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface,
         private updateRevisionDescriptionUseCase: UpdateRevisionDescriptionUseCase.Interface,
         private confirmation: Confirmation.Interface
@@ -38,6 +41,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             | "listRevisionsUseCase"
             | "createRevisionFromUseCase"
             | "deleteEntryRevisionUseCase"
+            | "publishEntryUseCase"
             | "unpublishEntryUseCase"
             | "updateRevisionDescriptionUseCase"
             | "confirmation"
@@ -47,6 +51,7 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             listRevisionsUseCase: false,
             createRevisionFromUseCase: false,
             deleteEntryRevisionUseCase: false,
+            publishEntryUseCase: false,
             unpublishEntryUseCase: false,
             updateRevisionDescriptionUseCase: false,
             confirmation: false,
@@ -111,6 +116,50 @@ class RevisionsListPresenterImpl implements IRevisionsListPresenter {
             return entry;
         } catch {
             return null;
+        } finally {
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
+    }
+
+    async publishRevision(revisionId: string): Promise<boolean> {
+        const confirmed = await this.confirmation.confirm(PUBLISH_REVISION_DIALOG, {
+            entry: { meta: { title: "" } }
+        });
+
+        if (confirmed === false) {
+            return false;
+        }
+
+        runInAction(() => {
+            this.loading = true;
+        });
+
+        try {
+            if (
+                confirmed &&
+                typeof confirmed === "object" &&
+                "revisionDescription" in confirmed &&
+                confirmed.revisionDescription
+            ) {
+                await this.updateRevisionDescriptionUseCase.execute({
+                    model: this.model,
+                    id: revisionId,
+                    revisionDescription: confirmed.revisionDescription as string
+                });
+            }
+
+            await this.publishEntryUseCase.execute({
+                model: this.model,
+                revisionId
+            });
+
+            await this.refreshRevisions(revisionId);
+
+            return true;
+        } catch {
+            return false;
         } finally {
             runInAction(() => {
                 this.loading = false;
@@ -243,6 +292,7 @@ export const RevisionsListPresenter = Abstraction.createImplementation({
         ListRevisionsUseCase,
         CreateRevisionFromUseCase,
         DeleteEntryRevisionUseCase,
+        PublishEntryUseCase,
         UnpublishEntryUseCase,
         UpdateRevisionDescriptionUseCase,
         Confirmation
