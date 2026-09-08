@@ -45,16 +45,15 @@ function matchPath(pattern: string, path: string): Record<string, string> | null
 
 class HttpRouterImplClass implements HttpRouter.Interface {
     /**
-     * Takes the container so it can resolve the matched route — and ONLY the matched route.
+     * Takes the container so it can build the matched route — and ONLY the matched route.
      *
-     * Route definitions are plain data (`method`, `path`, and the handler's abstraction), so
-     * matching costs nothing. Previously routes were resolved as instances to read their `path`,
-     * which constructed all of them plus their dependency graphs on every request: a static-asset
-     * request built the whole GraphQL engine, every contextual schema and the AI provider before
+     * A definition declares no dependencies, so resolving all of them to match a path is a handful
+     * of field assignments. Routes used to be resolved as instances just to read their `path`,
+     * which built every one of their dependency graphs on every request: a static-asset request
+     * constructed the whole GraphQL engine, every contextual schema and the AI provider before
      * discovering it wanted none of them.
      *
-     * Resolving the winner through `resolve()` (not a bare constructor call) keeps it on the normal
-     * DI path, so a route can still be decorated.
+     * See {@link buildHttpRoute} for how the winner is built, and what that costs.
      */
     constructor(private container: Container) {}
 
