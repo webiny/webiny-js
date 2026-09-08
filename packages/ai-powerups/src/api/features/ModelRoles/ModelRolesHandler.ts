@@ -5,9 +5,16 @@ import { AI_MODEL_ROLE_IDS } from "./roles.js";
 import { emptyAssignment } from "./types.js";
 import type { AiModelRoleAssignments, ModelRolesSettings, PersistedModelRoles } from "./types.js";
 
+/*
+ * The admin form sends `null`, not `""`, for a field nobody has touched, and an unfilled role is
+ * the normal state of two of the three. `nullish` keeps an untouched role from failing validation;
+ * `mapToStorage` is what normalises it to `""`.
+ */
+const formString = z.string().nullish();
+
 const assignmentSchema = z.object({
-    connectionId: z.string(),
-    model: z.string()
+    connectionId: formString,
+    model: formString
 });
 
 const inputSchema = z.object({

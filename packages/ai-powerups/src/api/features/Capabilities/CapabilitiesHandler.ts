@@ -3,13 +3,17 @@ import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
 import { AI_MODEL_ROLE_IDS } from "~/api/features/ModelRoles/index.js";
 import type { AiCapabilityOverride, CapabilitiesSettings, PersistedCapabilities } from "./types.js";
 
+/*
+ * Every field here is empty by default and the admin form sends `null` for an untouched one, so
+ * each has to accept it. `mapToStorage` drops the nulls rather than persisting them.
+ */
 const overrideSchema = z.object({
-    roleId: z.union([z.enum(AI_MODEL_ROLE_IDS), z.literal("")]).optional(),
-    connectionId: z.string().optional(),
-    model: z.string().optional(),
-    additionalInstructions: z.string().optional(),
-    replacePrompt: z.boolean().optional(),
-    guidance: z.string().optional()
+    roleId: z.union([z.enum(AI_MODEL_ROLE_IDS), z.literal("")]).nullish(),
+    connectionId: z.string().nullish(),
+    model: z.string().nullish(),
+    additionalInstructions: z.string().nullish(),
+    replacePrompt: z.boolean().nullish(),
+    guidance: z.string().nullish()
 });
 
 const inputSchema = z.object({
@@ -25,6 +29,17 @@ const isEmptyOverride = (override: AiCapabilityOverride): boolean =>
     !override.replacePrompt &&
     !override.guidance?.trim();
 
+/**
+ * Keeps `null` and `""` out of storage. The form sends both for untouched fields, and persisting
+ * them would mean every capability the project never configured still occupies a key.
+ */
+const dropEmptyValues = (override: AiCapabilityOverride): AiCapabilityOverride =>
+    Object.fromEntries(
+        Object.entries(override).filter(
+            ([, value]) => value !== null && value !== undefined && value !== ""
+        )
+    ) as AiCapabilityOverride;
+
 class CapabilitiesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
     readonly name = "capabilities";
     readonly inputSchema = inputSchema;
@@ -36,9 +51,10 @@ class CapabilitiesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interfac
 
     async mapToStorage(internal: unknown): Promise<PersistedCapabilities> {
         const input = internal as CapabilitiesSettings;
-        const entries = Object.entries(input.overrides ?? {}).filter(
-            ([, override]) => override && !isEmptyOverride(override)
-        );
+
+        const entries = Object.entries(input.overrides ?? {})
+            .filter(([, override]) => override && !isEmptyOverride(override))
+            .map(([id, override]) => [id, dropEmptyValues(override)] as const);
 
         return { overrides: Object.fromEntries(entries) };
     }

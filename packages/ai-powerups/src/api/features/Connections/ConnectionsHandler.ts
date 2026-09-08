@@ -15,7 +15,7 @@ const inputSchema = z.object({
             id: z.string().min(1),
             name: z.string().min(1),
             sdkName: z.string().min(1),
-            apiKey: z.string().optional()
+            apiKey: z.string().nullish()
         })
     )
 });
