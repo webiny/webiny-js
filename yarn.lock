@@ -12439,6 +12439,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/bug-reporter@workspace:packages/bug-reporter":
+  version: 0.0.0-use.local
+  resolution: "@webiny/bug-reporter@workspace:packages/bug-reporter"
+  dependencies:
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/ai-powerups": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    ai: "npm:^7.0.73"
+    mobx: "npm:^7.0.3"
+    react: "npm:18.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:^7.0.2"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/build-tools@npm:0.0.0, @webiny/build-tools@workspace:packages/build-tools":
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"

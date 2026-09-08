@@ -47,4 +47,9 @@ export interface IFeatureFlagsDto {
     aiPowerups?: boolean | IAiPowerupsOptions;
     abTesting?: boolean;
     remoteComponents?: boolean;
+    /**
+     * Internal. Gates @webiny/bug-reporter, which is not part of DefaultExtensions and so only
+     * reaches a project that registers <BugReporter /> itself.
+     */
+    bugReporter?: boolean;
 }

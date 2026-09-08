@@ -6,7 +6,7 @@ import { AwsExtensions } from "./webiny.config.aws.js";
 import { ServerExtensions } from "./webiny.config.server.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
-import { BugReporterExtension } from "@/extensions/bugReport/BugReporterExtension.js";
+import { BugReporter } from "@webiny/bug-reporter";
 
 /**
  * In this monorepo we develop both hosting types. The CLI bin sets WEBINY_HOSTING_TYPE ("aws" via
@@ -23,7 +23,8 @@ export const FeatureFlags = () => (
             fileManager: {
                 threatDetection: false
             },
-            recordLocking: false
+            recordLocking: false,
+            bugReporter: true
         }}
     />
 );
@@ -40,8 +41,10 @@ export const Extensions = () => {
             <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
             <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
             <Admin.Extension src={"@/extensions/commandPalette/index.tsx"} />
-            {/* Internal only: report a bug by talking to the app (cmd+shift+b). */}
-            <BugReporterExtension />
+            {/* Internal only: report a bug by talking to the app (cmd+shift+b).
+                Gated by the `bugReporter` flag below, and absent from DefaultExtensions,
+                so no customer project loads it. */}
+            <BugReporter />
             {/*<Admin.Extension src={"@/extensions/newEntryWizardDemo/index.tsx"} />*/}
 
             {/* Bulk actions demo: "Apply Discount" bulk action on Products (API + Admin) */}
