@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api/index.js";
 import { SqlCreateEntry } from "./SqlCreateEntry.js";
 import { SqlCreateEntryRevisionFrom } from "./SqlCreateEntryRevisionFrom.js";
 import { SqlUpdateEntry } from "./SqlUpdateEntry.js";
+import { SqlUpdateRevision } from "./SqlUpdateRevision.js";
 import { SqlDeleteEntry } from "./SqlDeleteEntry.js";
 import { SqlDeleteEntryRevision } from "./SqlDeleteEntryRevision.js";
 import { SqlDeleteMultipleEntries } from "./SqlDeleteMultipleEntries.js";
@@ -28,6 +29,7 @@ export const SqlEntryStorageOpsFeature = createFeature({
         container.register(SqlCreateEntry);
         container.register(SqlCreateEntryRevisionFrom);
         container.register(SqlUpdateEntry);
+        container.register(SqlUpdateRevision);
         container.register(SqlDeleteEntry);
         container.register(SqlDeleteEntryRevision);
         container.register(SqlDeleteMultipleEntries);

@@ -29,7 +29,7 @@ export function formatDateForDisplay(
             if (!value) {
                 return undefined;
             }
-            const isoStr = value as string;
+            const isoStr = value instanceof Date ? value.toISOString() : (value as string);
             const tzMatch = isoStr.match(/([+-]\d{2}:\d{2})$/);
             const tz = tzMatch ? `UTC${tzMatch[1]}` : "";
             const dateWithoutTz = isoStr.replace(/[+-]\d{2}:\d{2}$/, "");
@@ -164,7 +164,10 @@ export function getLocalTimezone(): string {
     return `${sign}${hours}:${minutes}`;
 }
 
-export function extractTimezone(isoString: string): string | undefined {
+export function extractTimezone(isoString: string | Date | unknown): string | undefined {
+    if (typeof isoString !== "string") {
+        return undefined;
+    }
     const match = isoString.match(/([+-]\d{2}:\d{2})$/);
     if (match) {
         return match[1];
