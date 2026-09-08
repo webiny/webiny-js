@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { HttpRoute, buildHttpRoute, invokeHttpRoute } from "@webiny/event-handler-core";
+import {
+    HttpRouteHandler,
+    RequestContainer,
+    buildHttpRoute,
+    invokeHttpRoute
+} from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
 import {
     BackgroundTaskRoute,
@@ -11,7 +15,7 @@ import { InternalToken } from "~/domain/InternalToken.js";
 
 const TOKEN_VALUE = "valid-token-abc";
 
-const createRouteInstance = (): HttpRoute.Interface => {
+const createRouteInstance = (): HttpRouteHandler.Interface => {
     const container = new Container();
     container.registerInstance(RequestContainer, container);
     container.registerInstance(InternalToken, { value: TOKEN_VALUE });

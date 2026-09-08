@@ -1,9 +1,4 @@
-import {
-    HttpRoute,
-    HttpRouteDefinition,
-    HttpRouteHandler,
-    toSseFrame
-} from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { PrepareImageEnrichmentUseCase } from "./abstractions.js";
@@ -21,7 +16,7 @@ import { imageEnrichmentErrorStatusCode } from "./imageEnrichmentErrorStatusCode
  * code. Only the AI call itself streams; once the first byte is out the status is committed to 200
  * and failures can only be reported as an `error` event.
  */
-class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
+class AiImageEnrichmentStreamRouteImpl implements HttpRouteHandler.Interface {
     constructor(
         private prepare: PrepareImageEnrichmentUseCase.Interface,
         private ai: Ai.Interface

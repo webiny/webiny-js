@@ -1,9 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse, HttpStreamSource } from "@webiny/event-handler-core";
 import { createServerHandler } from "~/createServerHandler.js";
 import { NodeHttpFeature } from "~/features/NodeHttpFeature.js";
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 
 const decoder = new TextDecoder();
 
@@ -16,7 +15,7 @@ function deferred() {
 }
 
 function makeRoute(response: () => IHttpResponse) {
-    class StreamRouteImplementation implements HttpRoute.Interface {
+    class StreamRouteImplementation implements HttpRouteHandler.Interface {
         async handle(_req: IHttpRequest): Promise<IHttpResponse> {
             return response();
         }

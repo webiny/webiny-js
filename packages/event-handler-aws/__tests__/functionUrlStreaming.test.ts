@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { createStreamLambdaHandler } from "~/createStreamLambdaHandler.js";
 import { FunctionUrlStreamFeature } from "~/features/FunctionUrlStreamFeature.js";
 import type { IRawResponseStream, IResponseStreamMetadata } from "~/streaming/awslambda.js";
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 
 const decoder = new TextDecoder();
 
@@ -72,7 +71,7 @@ function functionUrlEvent(method = "POST", path = "/stream/test") {
 }
 
 function makeRoute(handle: (request: IHttpRequest) => Promise<IHttpResponse>) {
-    class TestRouteImplementation implements HttpRoute.Interface {
+    class TestRouteImplementation implements HttpRouteHandler.Interface {
         handle = handle;
     }
     const implementation = HttpRouteHandler.createImplementation({

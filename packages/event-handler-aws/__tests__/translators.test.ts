@@ -2,10 +2,8 @@ import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import { ApiGatewayEventType } from "~/index.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
-import { HttpFeature } from "@webiny/event-handler-core";
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpFeature, HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
-import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 
 const apiGwEvent = {
     httpMethod: "POST",
@@ -20,7 +18,7 @@ const apiGwEvent = {
 
 describe("ApiGatewayHttpRouterHandler", () => {
     const makeRoute = (statusCode: number, body: any) => {
-        class MakeRouteImplementation implements HttpRoute.Interface {
+        class MakeRouteImplementation implements HttpRouteHandler.Interface {
             async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                 return { statusCode, body };
             }
@@ -70,7 +68,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
     });
 
     it("should set isBase64Encoded for Buffer responses", async () => {
-        class BufferRouteImplementation implements HttpRoute.Interface {
+        class BufferRouteImplementation implements HttpRouteHandler.Interface {
             async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                 return {
                     statusCode: 200,

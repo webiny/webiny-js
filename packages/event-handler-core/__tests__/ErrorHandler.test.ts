@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { createTestHttpHandler } from "~/features/testing/index.js";
-import { HttpRoute, HttpRouteDefinition, HttpRouteHandler } from "~/features/http/abstractions.js";
+import { HttpRouteDefinition, HttpRouteHandler } from "~/features/http/abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
 
-class ThrowingRoute implements HttpRoute.Interface {
+class ThrowingRoute implements HttpRouteHandler.Interface {
     async handle(_request: IHttpRequest): Promise<IHttpResponse> {
         throw new Error("route exploded");
     }
@@ -19,7 +19,7 @@ const ThrowingRouteDefinition: HttpRouteDefinition.Interface = {
     handler: ThrowingRouteImpl
 };
 
-class OkRoute implements HttpRoute.Interface {
+class OkRoute implements HttpRouteHandler.Interface {
     async handle(_request: IHttpRequest): Promise<IHttpResponse> {
         return { statusCode: 200, body: "ok" };
     }

@@ -152,10 +152,6 @@ export namespace HttpRouteDefinition {
 
 export namespace HttpRouteHandler {
     export type Interface = IHttpRoute;
-}
-
-export namespace HttpRoute {
-    export type Interface = IHttpRoute;
     /** The request handed to `handle()`. Shorthand for {@link IHttpRequest}. */
     export type Request = IHttpRequest;
     /**

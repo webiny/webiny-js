@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
+import { HttpRouteHandler, HttpRouter } from "~/features/http/abstractions.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpResponseBuilder, serializeCookie } from "~/features/http/HttpResponseBuilder.js";
@@ -23,7 +23,7 @@ const req = (method: string, path: string): IHttpRequest => ({
 
 /** The literals below still carry `method`/`path`; the router now reads them off the definition. */
 function makeRouter(
-    route: HttpRoute.Interface & { method: string; path: string }
+    route: HttpRouteHandler.Interface & { method: string; path: string }
 ): HttpRouter.Interface {
     const container = new Container();
     registerHttpRouteInstance(container, { method: route.method, path: route.path, route });

@@ -1,9 +1,9 @@
-import { HttpRoute, HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { GraphQLEngine } from "./abstractions.js";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import type { IGraphQLEngine } from "./abstractions.js";
 
-class GraphQLRouteImpl implements HttpRoute.Interface {
+class GraphQLRouteImpl implements HttpRouteHandler.Interface {
     constructor(private engine: IGraphQLEngine) {}
 
     async handle(request: IHttpRequest): Promise<IHttpResponse> {

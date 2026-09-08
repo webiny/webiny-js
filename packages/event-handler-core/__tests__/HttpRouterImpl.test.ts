@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { HttpRoute, HttpRouter } from "~/features/http/abstractions.js";
+import { HttpRouteHandler, HttpRouter } from "~/features/http/abstractions.js";
 import { registerHttpRouteInstance } from "~/features/testing/index.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
@@ -10,7 +10,7 @@ import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.j
 interface TestRoute {
     method: string;
     path: string;
-    route: HttpRoute.Interface;
+    route: HttpRouteHandler.Interface;
 }
 
 function makeRoute(method: string, path: string, body: any = "ok"): TestRoute {

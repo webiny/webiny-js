@@ -10,12 +10,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Abstraction } from "@webiny/di";
-import {
-    HttpRoute,
-    HttpRouteDefinition,
-    HttpRouteHandler,
-    HttpRouter
-} from "~/features/http/abstractions.js";
+import { HttpRouteDefinition, HttpRouteHandler, HttpRouter } from "~/features/http/abstractions.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
@@ -42,14 +37,14 @@ describe("HttpRouter route construction", () => {
             return { id: "expensive" };
         });
 
-        class CostlyRouteImpl implements HttpRoute.Interface {
+        class CostlyRouteImpl implements HttpRouteHandler.Interface {
             constructor(private readonly expensive: { id: string }) {}
             async handle(): Promise<IHttpResponse> {
                 return { statusCode: 200, body: this.expensive.id };
             }
         }
 
-        class CheapRouteImpl implements HttpRoute.Interface {
+        class CheapRouteImpl implements HttpRouteHandler.Interface {
             async handle(): Promise<IHttpResponse> {
                 return { statusCode: 200, body: "cheap" };
             }
@@ -119,7 +114,7 @@ describe("HttpRouter route construction", () => {
             body: "original"
         }));
 
-        class RouteImpl implements HttpRoute.Interface {
+        class RouteImpl implements HttpRouteHandler.Interface {
             handle = handle;
         }
 
@@ -134,8 +129,8 @@ describe("HttpRouter route construction", () => {
 
         container.registerDecorator(
             HttpRouteHandler.createDecorator({
-                decorator: class implements HttpRoute.Interface {
-                    constructor(private readonly decoratee: HttpRoute.Interface) {}
+                decorator: class implements HttpRouteHandler.Interface {
+                    constructor(private readonly decoratee: HttpRouteHandler.Interface) {}
                     async handle(): Promise<IHttpResponse> {
                         return { statusCode: 200, body: "decorated" };
                     }

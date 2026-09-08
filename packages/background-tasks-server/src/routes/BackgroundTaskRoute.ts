@@ -1,5 +1,4 @@
 import {
-    HttpRoute,
     HttpRouteDefinition,
     HttpRouteHandler,
     RequestContainer
@@ -19,13 +18,13 @@ import { InternalToken } from "~/domain/InternalToken.js";
 /* Shared between worker and route to gate access. */
 const INTERNAL_HEADER = "x-webiny-background-task-token";
 
-class BackgroundTaskRouteImpl implements HttpRoute.Interface {
+class BackgroundTaskRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: InternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         /* Reject requests without a matching internal token. */
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });

@@ -1,5 +1,4 @@
 import {
-    HttpRoute,
     HttpRouteDefinition,
     HttpRouteHandler,
     RequestContainer
@@ -9,10 +8,10 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/index.js";
 import { ActiveRedirectRestMapper } from "./ActiveRedirectRestMapper.js";
 
-class WebsiteBuilderRedirectsRouteImpl implements HttpRoute.Interface {
+class WebsiteBuilderRedirectsRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
-    async handle(_request: HttpRoute.Request, response: HttpRoute.Response) {
+    async handle(_request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         // TODO: declare these as constructor dependencies. They were resolved lazily because the
         // router used to construct every route on every request to path-match, which is no longer
         // true — a route is built only once its definition matches.

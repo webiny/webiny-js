@@ -1,5 +1,4 @@
 import {
-    HttpRoute,
     HttpRouteDefinition,
     HttpRouteHandler,
     RequestContainer
@@ -27,13 +26,13 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * NOTE: recovers ONE tenant per call. Boot recovery for additional (non-root) tenants would enumerate
  * tenants and call this per tenant — left as a follow-up; single/root-tenant deployments are covered.
  */
-class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
+class ScheduledActionRecoverRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }

@@ -1,6 +1,5 @@
 import type { Container } from "@webiny/di";
 import {
-    HttpRoute,
     HttpRouteDefinition,
     HttpRouteHandler,
     RequestContainer
@@ -23,7 +22,7 @@ const CMS_PATHS: Record<ApiEndpoint, string> = {
  * contextual schemas, then executes the CMS sub-schema via CmsSchemaExecutor.
  */
 export function createCmsRoute(type: ApiEndpoint) {
-    class CmsGraphQLRoute implements HttpRoute.Interface {
+    class CmsGraphQLRoute implements HttpRouteHandler.Interface {
         // public (not private): this class is returned from an exported factory, so its members
         // must be declarable in the emitted .d.ts — private parameter-properties on an exported
         // anonymous class type are a TS4094 error.

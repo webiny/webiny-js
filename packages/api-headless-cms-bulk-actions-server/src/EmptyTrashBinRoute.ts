@@ -1,18 +1,18 @@
-import { HttpRoute, HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
 
 const INTERNAL_HEADER = "x-webiny-bulk-actions-token";
 
-class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
+class EmptyTrashBinRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly taskService: TaskService.Interface,
         private readonly internalToken: BulkActionsInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }

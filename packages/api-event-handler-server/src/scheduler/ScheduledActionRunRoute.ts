@@ -1,5 +1,4 @@
 import {
-    HttpRoute,
     HttpRouteDefinition,
     HttpRouteHandler,
     RequestContainer
@@ -22,13 +21,13 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * CMS models via the request-context initializers + contextual schemas) for the action's tenant, then
  * runs ExecuteScheduledActionUseCase. Mirrors the background-task run route.
  */
-class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
+class ScheduledActionRunRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }
