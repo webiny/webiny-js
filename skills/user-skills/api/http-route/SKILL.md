@@ -151,85 +151,70 @@ request didn't match is never constructed.
 
 ## Decorating a route
 
-Decorate `HttpRouteDefinition` and match on `name` — the router resolves definitions, so your
-decorator sees every route in turn and decides which to change. `name` is `routeName`, or the value
-derived from path and method (`/my-route` + `GET` → `my-route-get`).
+Two hooks, both ordinary DI decorators.
+
+### Change what a route DOES
+
+Decorate `HttpRouteHandler`. It applies to every route, and `request.route.name` picks the one you
+mean:
 
 ```typescript
-import { HttpRouteDefinition } from "webiny/api";
+import { HttpRouteHandler } from "webiny/api";
 
-export default HttpRouteDefinition.createDecorator({
-  decorator: class implements HttpRouteDefinition.Interface {
-    constructor(private decoratee: HttpRouteDefinition.Interface) {}
+export default HttpRouteHandler.createDecorator({
+  decorator: class implements HttpRouteHandler.Interface {
+    constructor(private decoratee: HttpRouteHandler.Interface) {}
 
-    get name() {
-      return this.decoratee.name;
-    }
-    get method() {
-      return this.decoratee.method;
-    }
-    get path() {
-      return this.decoratee.path;
-    }
+    async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
+      if (request.route.name !== "my-route-get") {
+        return this.decoratee.handle(request, response);
+      }
 
-    get handler() {
-      return this.decoratee.name === "my-route-get" ? MyReplacementRoute : this.decoratee.handler;
+      if (request.headers["x-api-key"] !== "expected") {
+        return response.status(401).json({ message: "Not authorized." });
+      }
+
+      return this.decoratee.handle(request, response);
     }
   },
   dependencies: []
 });
 ```
 
-Decorating the definition, not the handler: the router builds a matched route's class directly
-rather than resolving `HttpRouteHandler`, which is what stops unmatched routes being built. A
-decorator on `HttpRouteHandler` therefore reaches nothing.
+Drop the `name` check and it wraps every route, which is what you want for timing or logging.
 
-To change what a route DOES rather than replace it, return a wrapper as the `handler` and let it
-build the original:
+`request.route` is `{ name, method, path }` of the matched route. `name` is `routeName`, or the
+value derived from path and method (`/my-route` + `GET` → `my-route-get`). A route can read it to
+find out its own identity too.
+
+### Change what a route IS
+
+Decorate `HttpRouteDefinition` when you need to alter the route itself — point it at a different
+handler, or move its path:
 
 ```typescript
-import { HttpRouteHandler, RequestContainer, buildHttpRoute } from "webiny/api";
+import { HttpRouteDefinition } from "webiny/api";
 
-get handler() {
-  if (this.decoratee.name !== "my-route-get") { return this.decoratee.handler; }
+export default HttpRouteDefinition.createDecorator({
+  decorator: class implements HttpRouteDefinition.Interface {
+    readonly name: string;
+    readonly method: string;
+    readonly path: string;
+    readonly handler: HttpRouteDefinition.Interface["handler"];
 
-  const inner = this.decoratee.handler;
-
-  class Wrapper implements HttpRouteHandler.Interface {
-    constructor(private container: Container) {}
-
-    async handle(request, response) {
-      // before
-      const result = await buildHttpRoute(this.container, inner).handle(request, response);
-      // after
-      return result;
+    constructor(decoratee: HttpRouteDefinition.Interface) {
+      this.name = decoratee.name;
+      this.method = decoratee.method;
+      this.path = decoratee.name === "my-route-get" ? "/moved" : decoratee.path;
+      this.handler = decoratee.handler;
     }
-  }
-
-  return HttpRouteHandler.createImplementation({
-    implementation: Wrapper,
-    dependencies: [RequestContainer]
-  });
-}
+  },
+  dependencies: []
+});
 ```
 
-The wrapper takes `RequestContainer` because it can't know the wrapped route's dependencies. That's
-the one case where reaching for the container is the right answer.
-
-Inside `handle()`, `request.route` tells you which route is running:
-
-```ts
-async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
-  if (request.route.name !== "my-route-get") {
-    return buildHttpRoute(this.container, inner).handle(request, response);
-  }
-  // ...only for that route
-}
-```
-
-So a wrapper can be applied to every route and still act on one, which is usually easier to read
-than selecting by `name` when wiring. `request.route` is `{ name, method, path }`, and any route can
-read it to find out its own identity.
+A decorator exposes the same properties as what it wraps, so it copies through the ones it doesn't
+change. Getters work too if you prefer them — these are plain properties, not methods.
 
 ## Key rules
 

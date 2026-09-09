@@ -1,10 +1,12 @@
 /**
  * Shows how a project decorates ONE route.
  *
- * Decorators do not reach `HttpRouteHandler` — the router builds the matched handler class directly
- * rather than resolving that shared abstraction, which is what keeps unmatched routes unbuilt (see
- * `HttpRouterLazyRoutes.test.ts`). `HttpRouteDefinition` is different: the router resolves it, so a
- * decorator sees every route in turn. `name` is how you tell which one you have.
+ * There are two places to hook in, and both work:
+ *
+ * - `HttpRouteHandler` — wraps a route's BEHAVIOUR. Applies to every route, and `request.route.name`
+ *   narrows it to one at request time. This is the plain form.
+ * - `HttpRouteDefinition` — changes what a route IS: swap its handler, move its path. Use it when
+ *   you need to alter the route rather than what it does.
  */
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
@@ -374,5 +376,46 @@ describe("decorating a route by name", () => {
         const result = await routerFor(container).route(req("GET", "/orders/7"));
 
         expect(result.body).toEqual({ name: "orders", method: "GET", path: "/orders/:id" });
+    });
+
+    /**
+     * The plain form: decorate `HttpRouteHandler` directly. No container, no `buildHttpRoute`, no
+     * definition wrapper. It applies to every route, and `request.route.name` picks the one to act
+     * on — which is why wrapping broadly and targeting narrowly are not in tension.
+     */
+    it("wraps behaviour with a plain handler decorator, targeted by name", async () => {
+        const container = setup();
+        const calls: string[] = [];
+
+        container.registerDecorator(
+            HttpRouteHandler.createDecorator({
+                decorator: class implements HttpRouteHandler.Interface {
+                    constructor(private readonly decoratee: HttpRouteHandler.Interface) {}
+
+                    async handle(
+                        request: HttpRouteHandler.Request,
+                        response: HttpRouteHandler.Response
+                    ) {
+                        if (request.route.name !== "orders") {
+                            return this.decoratee.handle(request, response);
+                        }
+
+                        calls.push("before");
+                        const result = await this.decoratee.handle(request, response);
+                        calls.push("after");
+                        return result;
+                    }
+                },
+                dependencies: []
+            })
+        );
+
+        const router = routerFor(container);
+
+        expect((await router.route(req("GET", "/orders"))).body).toBe("orders");
+        expect(calls).toEqual(["before", "after"]);
+
+        expect((await router.route(req("GET", "/invoices"))).body).toBe("invoices");
+        expect(calls).toEqual(["before", "after"]);
     });
 });
