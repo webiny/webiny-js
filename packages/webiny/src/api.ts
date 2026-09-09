@@ -15,7 +15,7 @@ export {
     GlobalKeyValueStore,
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
-export { HttpRouteHandler } from "@webiny/event-handler-core";
+export { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 export type { IHttpRequest, IHttpResponse, IHttpResponseBuilder } from "@webiny/event-handler-core";
 export { WebsocketsTransport } from "@webiny/api-websockets/transport/index.js";
 export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";

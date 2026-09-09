@@ -37,6 +37,7 @@ export const EmptyTrashBinRoute = HttpRouteHandler.createImplementation({
 });
 
 class EmptyTrashBinRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "empty-trash-bin";
     readonly method = "POST";
     readonly path = "/empty-trash-bins";
     readonly handler = EmptyTrashBinRoute;

@@ -128,6 +128,14 @@ export interface IHttpRoute {
  * provider before finding the route it wanted.
  */
 export interface IHttpRouteDefinition {
+    /**
+     * Identifies this route so a decorator can pick it out.
+     *
+     * Decorators DO reach `HttpRouteDefinition` (unlike `HttpRouteHandler`, which the router builds
+     * directly), so decorating it hands you every route in turn — `name` is how you tell which one
+     * you have, and whether to wrap its handler or pass it through.
+     */
+    readonly name: string;
     readonly method: string;
     readonly path: string;
     readonly handler: Constructor<IHttpRoute>;

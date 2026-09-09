@@ -74,6 +74,7 @@ export const UploadSingleFileRoute = HttpRouteHandler.createImplementation({
 });
 
 class UploadSingleFileRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "upload-single-file";
     readonly method = "POST";
     readonly path = "/webiny-file-upload";
     readonly handler = UploadSingleFileRoute;

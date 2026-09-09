@@ -36,6 +36,7 @@ export const WebsiteBuilderRedirectsRoute = HttpRouteHandler.createImplementatio
 });
 
 class WebsiteBuilderRedirectsRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "website-builder-redirects";
     readonly method = "GET";
     readonly path = "/wb/redirects";
     readonly handler = WebsiteBuilderRedirectsRoute;

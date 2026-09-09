@@ -50,12 +50,12 @@ Register it:
 
 ## Props reference
 
-| Prop        | Type     | Required | Description                                                              |
-| ----------- | -------- | -------- | ------------------------------------------------------------------------ |
-| `path`      | `string` | Yes      | Route path — must start with `/`                                         |
-| `method`    | `string` | Yes      | HTTP method (see below)                                                  |
-| `src`       | `string` | Yes      | Path to the handler file (must include `.ts`)                            |
-| `routeName` | `string` | No       | Pulumi resource name (kebab-case). Derived from path + method if omitted |
+| Prop        | Type     | Required | Description                                                                                                                           |
+| ----------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `path`      | `string` | Yes      | Route path — must start with `/`                                                                                                      |
+| `method`    | `string` | Yes      | HTTP method (see below)                                                                                                               |
+| `src`       | `string` | Yes      | Path to the handler file (must include `.ts`)                                                                                         |
+| `routeName` | `string` | No       | Route name (kebab-case). Derived from path + method if omitted. Doubles as the Pulumi resource name and the id a decorator matches on |
 
 Methods: `DELETE`, `GET`, `HEAD`, `PATCH`, `POST`, `PUT`, `OPTIONS`, `ANY`. Use `ANY` to match every
 method on a path.
@@ -148,6 +148,41 @@ milliseconds.
 At request time the router matches the definition (cheap — it holds only `method`, `path` and the
 handler class) and builds your handler only then, with its dependencies injected. A route your
 request didn't match is never constructed.
+
+## Decorating a route
+
+Decorate `HttpRouteDefinition` and match on `name` — the router resolves definitions, so your
+decorator sees every route in turn and decides which to change. `name` is `routeName`, or the value
+derived from path and method (`/my-route` + `GET` → `my-route-get`).
+
+```typescript
+import { HttpRouteDefinition } from "webiny/api";
+
+export default HttpRouteDefinition.createDecorator({
+  decorator: class implements HttpRouteDefinition.Interface {
+    constructor(private decoratee: HttpRouteDefinition.Interface) {}
+
+    get name() {
+      return this.decoratee.name;
+    }
+    get method() {
+      return this.decoratee.method;
+    }
+    get path() {
+      return this.decoratee.path;
+    }
+
+    get handler() {
+      return this.decoratee.name === "my-route-get" ? MyReplacementRoute : this.decoratee.handler;
+    }
+  },
+  dependencies: []
+});
+```
+
+Decorating the definition, not the handler: the router builds a matched route's class directly
+rather than resolving `HttpRouteHandler`, which is what stops unmatched routes being built. A
+decorator on `HttpRouteHandler` therefore reaches nothing.
 
 ## Key rules
 

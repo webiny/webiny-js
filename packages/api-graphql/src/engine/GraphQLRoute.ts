@@ -22,6 +22,7 @@ export const GraphQLRoute = HttpRouteHandler.createImplementation({
 });
 
 class GraphQLRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "graphql";
     readonly method = "POST";
     readonly path = "/graphql";
     readonly handler = GraphQLRoute;
