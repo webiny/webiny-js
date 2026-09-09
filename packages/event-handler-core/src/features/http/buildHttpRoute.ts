@@ -26,10 +26,10 @@ import type { IHttpRoute } from "~/features/http/abstractions.js";
  * simply calling `applyDecorators` like every other path), this can use it and `HttpRouteHandler`
  * decorators would start working without giving up lazy construction.
  *
- * A handler decorator still could not tell WHICH route it wraps from its constructor — every route
- * shares the abstraction and the instance carries no name. It does not need to: `request.route`
- * carries the matched route's `name`/`method`/`path`, so a decorator wired across all routes can
- * act on one by checking it per request.
+ * One decorator on `HttpRouteHandler` would then wrap EVERY route, because a decorator applies to
+ * every implementation registered under its abstraction and all routes share this one. That is not
+ * a limitation: `request.route` carries the matched route's `name`, so a decorator wired across all
+ * routes decides per request which ones it actually acts on.
  */
 export function buildHttpRoute(
     container: Container,
