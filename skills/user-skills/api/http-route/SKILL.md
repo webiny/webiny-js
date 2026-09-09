@@ -105,7 +105,7 @@ interface Request {
   pathParameters: Record<string, string>;
   body: any;
   /** Which route matched — `{ name, method, path }`. */
-  route: MatchedRoute;
+  route: MatchedRouteDefinition;
 }
 ```
 

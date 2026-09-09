@@ -7,7 +7,7 @@ import type { HttpStreamSource } from "./HttpStreamBody.js";
  * handlers. It is the definition without its `handler`, so a route (or anything wrapping one) can
  * tell WHICH route is running and act only on the one it cares about.
  */
-export interface IMatchedRoute {
+export interface IMatchedRouteDefinition {
     readonly name: string;
     readonly method: string;
     readonly path: string;
@@ -25,7 +25,7 @@ export interface IHttpRequest {
      * and always present by the time `handle()` runs. Handlers should take
      * {@link HttpRouteHandler.Request}, where it is required.
      */
-    route?: IMatchedRoute;
+    route?: IMatchedRouteDefinition;
 }
 
 export interface IHttpResponse {
@@ -179,9 +179,9 @@ export namespace HttpRouteHandler {
     export type Interface = IHttpRoute;
     /**
      * The request handed to `handle()`: an {@link IHttpRequest} that has been through the router,
-     * so {@link IMatchedRoute} is guaranteed rather than optional.
+     * so {@link IMatchedRouteDefinition} is guaranteed rather than optional.
      */
-    export type Request = IHttpRequest & { route: IMatchedRoute };
+    export type Request = IHttpRequest & { route: IMatchedRouteDefinition };
     /**
      * The response handed to `handle()` — the mutable builder, not the materialized
      * {@link IHttpResponse}. Shorthand for {@link IHttpResponseBuilder}.
