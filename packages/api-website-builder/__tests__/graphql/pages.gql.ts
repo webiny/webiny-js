@@ -234,19 +234,8 @@ export const GET_SETTINGS = /* GraphQL */ `
         websiteBuilder {
             getSettings {
                 data {
-                    previewDomain
+                    domain
                 }
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const UPDATE_SETTINGS = /* GraphQL */ `
-    mutation UpdateSettings($data: WbSettingsInput!) {
-        websiteBuilder {
-            updateSettings(data: $data) {
-                data
                 error ${ERROR_FIELD}
             }
         }
@@ -284,6 +273,43 @@ export const GET_PAGE_MODEL = /* GraphQL */ `
                     name
                 }
                 error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const GET_FRONTEND_SETTINGS = /* GraphQL */ `
+    query GetFrontendSettings {
+        frontend {
+            getSettings {
+                data {
+                    domain
+                    starterKits {
+                        id
+                        label
+                        config
+                    }
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_FRONTEND_SETTINGS = /* GraphQL */ `
+    mutation UpdateFrontendSettings($data: FrontendSettingsInput!) {
+        frontend {
+            updateSettings(data: $data) {
+                data
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }

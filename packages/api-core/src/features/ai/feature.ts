@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { OpenAiSdkFactory } from "./OpenAiSdkFactory.js";
 import { AnthropicSdkFactory } from "./AnthropicSdkFactory.js";
+import { GoogleSdkFactory } from "./GoogleSdkFactory.js";
 import { Ai } from "./Ai.js";
 import { AiModelRegistry } from "./AiModelRegistry.js";
 import { AiSdkTools } from "./AiSdkTools.js";
@@ -13,6 +14,7 @@ export const AiFeature = createFeature({
     register(container) {
         container.register(OpenAiSdkFactory);
         container.register(AnthropicSdkFactory);
+        container.register(GoogleSdkFactory);
         container.register(Ai);
         container.register(AiModelRegistry);
         container.register(AiSdkTools);

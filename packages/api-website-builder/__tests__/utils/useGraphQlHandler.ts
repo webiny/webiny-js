@@ -20,6 +20,9 @@ import { createWbSdk } from "~tests/utils/createWbSdk.js";
 import { createContextPlugin } from "@webiny/api";
 import { WbInvalidateCloudfrontCacheTaskDefinition } from "~/features/redirects/InvalidateRedirectsCache/WbInvalidateCloudfrontCacheTask.js";
 import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
+import { FrontendGetSettingsRepository } from "@webiny/frontend-settings/api/features/getSettings/FrontendGetSettingsRepository.js";
+import { DefaultStarterKitsProvider } from "@webiny/frontend-settings/api/features/starterKits/DefaultStarterKitsProvider.js";
+import { Extension as FrontendSettingsExtension } from "@webiny/frontend-settings/api/Extension.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -63,6 +66,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             createBackgroundTasks(),
             createContextPlugin(context => {
                 context.container.register(WbInvalidateCloudfrontCacheTaskDefinition);
+                context.container.register(DefaultStarterKitsProvider);
+                context.container.register(FrontendGetSettingsRepository);
+                FrontendSettingsExtension.register(context.container);
             }),
             createWebsiteBuilder(),
             plugins

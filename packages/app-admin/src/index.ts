@@ -68,6 +68,7 @@ export { DateFormatter } from "./features/dateFormatter/abstractions.js";
 export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";
 export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
 export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
+export { formatUtcOffset } from "./features/dateFormatter/formatUtcOffset.js";
 
 // Hooks
 export * from "./hooks/index.js";

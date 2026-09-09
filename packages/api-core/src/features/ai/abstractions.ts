@@ -9,6 +9,8 @@ import type { FlexibleSchema, ToolSet } from "ai";
 export interface IAiSdkModel {
     id: string; // raw model id, e.g. "claude-sonnet-4-5"
     name: string; // human-friendly name, e.g. "Claude Sonnet 4.5"
+    deprecated?: Date;
+    endOfLife?: Date;
 }
 
 export interface IAiSdk {
@@ -81,6 +83,8 @@ export interface AiModel {
     providerName: string; // e.g. "Anthropic"
     modelId: string; // e.g. "claude-sonnet-4-5"
     modelName: string; // e.g. "Claude Sonnet 4.5"
+    deprecated: Date | undefined;
+    endOfLife: Date | undefined;
 }
 
 export interface IAi {

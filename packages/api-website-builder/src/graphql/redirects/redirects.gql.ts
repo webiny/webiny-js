@@ -16,7 +16,7 @@ export const createRedirectsSchema = () => {
             WbQuery: {
                 listRedirects: async (_, args: any, context) => {
                     try {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const listRedirects = context.container.resolve(ListRedirectsUseCase);
                         const result = await listRedirects.execute(args);
 
@@ -34,7 +34,7 @@ export const createRedirectsSchema = () => {
             WbMutation: {
                 createRedirect: async (_, { data }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const createRedirect = context.container.resolve(CreateRedirectUseCase);
                         const result = await createRedirect.execute(data);
 
@@ -47,7 +47,7 @@ export const createRedirectsSchema = () => {
                 },
                 updateRedirect: async (_, { id, data }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const updateRedirect = context.container.resolve(UpdateRedirectUseCase);
                         const result = await updateRedirect.execute(id, data);
 
@@ -60,7 +60,7 @@ export const createRedirectsSchema = () => {
                 },
                 moveRedirect: async (_, { id, folderId }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const moveRedirect = context.container.resolve(MoveRedirectUseCase);
                         const result = await moveRedirect.execute({ id, folderId });
 
@@ -73,7 +73,7 @@ export const createRedirectsSchema = () => {
                 },
                 deleteRedirect: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const deleteRedirect = context.container.resolve(DeleteRedirectUseCase);
                         const result = await deleteRedirect.execute({ id });
 

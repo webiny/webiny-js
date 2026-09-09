@@ -30,6 +30,8 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
     private callbacks: Set<FolderChangeCallback> = new Set();
     private disposed = false;
 
+    private previousFolders: Folder[] = [];
+
     constructor(
         private foldersContext: FoldersContext.Interface,
         private foldersCache: FoldersCache.Interface,
@@ -42,9 +44,9 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         private getFolderLevelPermissionUseCase: GetFolderLevelPermissionUseCase.Interface,
         private formModelFactory: FormModelFactory.Interface
     ) {
-        makeAutoObservable<FolderTreePresenterImpl, "callbacks">(
+        makeAutoObservable<FolderTreePresenterImpl, "callbacks" | "previousFolders">(
             this,
-            { callbacks: false },
+            { callbacks: false, previousFolders: false },
             { autoBind: true }
         );
 
@@ -55,6 +57,32 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                     this.callbacks.forEach(cb => cb(folderId));
                 }
             }
+        );
+
+        reaction(
+            () => ({
+                folders: this.foldersCache.getItems(),
+                currentFolderId: this.currentFolderId
+            }),
+            ({ folders, currentFolderId }) => {
+                if (currentFolderId !== null) {
+                    const stillExists = folders.some(f => f.id === currentFolderId);
+                    // Skip when folders is empty *and* a reload is in flight — the cache is
+                    // cleared before being repopulated, so this is a transient state, not a
+                    // real "all folders were removed" event.
+                    const isTransientReloadClear = folders.length === 0 && this.loading;
+                    if (!stillExists && !isTransientReloadClear) {
+                        const resolvedId = this.resolveValidFolderId(
+                            currentFolderId,
+                            this.previousFolders
+                        );
+                        this.selectFolder(resolvedId);
+                    }
+                }
+
+                this.previousFolders = folders;
+            },
+            { fireImmediately: true }
         );
 
         void this.loadFolders();
@@ -261,10 +289,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
     }
 
     async deleteFolder(folderId: string): Promise<void> {
-        const folders = this.foldersCache.getItems();
-        const folder = folders.find(f => f.id === folderId);
-        const parentId = folder?.parentId ?? null;
-
         this.operation = {
             active: true,
             mode: "delete",
@@ -272,11 +296,10 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         };
 
         await this.deleteFolderUseCase.execute(folderId);
-        await this.loadFolders();
 
         runInAction(() => {
+            this.foldersCache.removeItems(f => f.id === folderId);
             this.operation = { active: false, mode: null };
-            this.currentFolderId = parentId;
         });
     }
 
@@ -296,6 +319,30 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                 this.loading = false;
             });
         }
+    }
+
+    private resolveValidFolderId(
+        folderId: string | null,
+        previousFolders: Folder[]
+    ): string | null {
+        let candidateId = folderId;
+        const visited = new Set<string>();
+
+        while (candidateId !== null) {
+            if (visited.has(candidateId)) {
+                return null;
+            }
+            visited.add(candidateId);
+
+            if (this.foldersCache.getItem(f => f.id === candidateId)) {
+                return candidateId;
+            }
+
+            const prev = previousFolders.find(f => f.id === candidateId);
+            candidateId = prev?.parentId ?? null;
+        }
+
+        return null;
     }
 
     private buildTree(): IFolderTreeNode[] {

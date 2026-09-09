@@ -45,10 +45,13 @@ const setupAcoContext = async (context: AcoContext): Promise<void> => {
 
     const getModel = container.resolve(GetModelUseCase);
 
-    await security.withoutAuthorization(async () => {
-        const folderModel = await getModel.execute(FOLDER_MODEL_ID);
-        container.registerInstance(FolderModelAbstraction, folderModel.value);
+    const folderModelResult = await security.withoutAuthorization(async () => {
+        return await getModel.execute(FOLDER_MODEL_ID);
     });
+    if (folderModelResult.isFail()) {
+        throw folderModelResult.error;
+    }
+    container.registerInstance(FolderModelAbstraction, folderModelResult.value);
 
     const getTenant = (): Tenant => {
         return tenancy.getCurrentTenant();

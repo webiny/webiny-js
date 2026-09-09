@@ -15,6 +15,9 @@ class MoveToFolderBulkActionImpl implements EntriesBulkAction.Interface {
         params: EntriesBulkAction.LoadDataParams
     ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listLatestEntries.execute(model, params);
+        if (entriesResult.isFail()) {
+            throw entriesResult.error;
+        }
 
         return entriesResult.value;
     }
