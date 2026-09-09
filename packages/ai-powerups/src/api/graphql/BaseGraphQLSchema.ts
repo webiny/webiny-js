@@ -25,6 +25,8 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 providerName: String!
                 modelId: String!
                 modelName: String!
+                deprecated: Date
+                endOfLife: Date
             }
 
             type AiPowerUpsQuery {
