@@ -1,4 +1,4 @@
-import { viewportManager } from "@webiny/website-builder-sdk";
+import { breakpointsStore } from "@webiny/website-builder-sdk";
 
 /**
  * Builds a stable, SSR-consistent class scoped to a single grid instance
@@ -38,9 +38,7 @@ export const createGridStackingCss = ({
         return "";
     }
 
-    const breakpoint = viewportManager
-        .getViewport()
-        .breakpoints.find(bp => bp.name === stackAtBreakpoint);
+    const breakpoint = breakpointsStore.getBreakpoint(stackAtBreakpoint);
 
     if (!breakpoint) {
         return "";

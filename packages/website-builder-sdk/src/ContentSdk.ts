@@ -17,7 +17,7 @@ import { ApiClient } from "~/dataProviders/ApiClient.js";
 import { DefaultDataProvider } from "~/dataProviders/DefaultDataProvider.js";
 import type { WebsiteBuilderThemeInput } from "./types/WebsiteBuilderTheme.js";
 import { Theme } from "./Theme.js";
-import { viewportManager } from "./ViewportManager.js";
+import { breakpointsStore } from "./BreakpointsStore.js";
 import type { IRedirects } from "~/IRedirects.js";
 import { RedirectsProvider } from "~/dataProviders/RedirectsProvider.js";
 
@@ -95,11 +95,13 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
         const theme = Theme.from(config.theme ?? {});
 
-        // Populate breakpoints on the server too, so SSR can generate
-        // breakpoint-aware CSS (e.g. Grid stacking media queries) from the
-        // real theme widths. The resize listener stays client-only (it's
-        // guarded in the ViewportManager constructor).
-        viewportManager.setBreakpoints(theme.breakpoints);
+        // Breakpoints are populated on the server too, so that SSR can generate
+        // breakpoint-aware CSS (Grid stacking media queries, for example) from
+        // the real theme widths. They are stored outside ViewportManager, which
+        // is a client module: importing it from a Server Component yields a
+        // client reference whose methods cannot be called. Keeping this in
+        // `breakpointsStore` lets `init()` run in any environment.
+        breakpointsStore.setBreakpoints(theme.breakpoints);
 
         let editingSdk;
         if (environment.isEditing()) {

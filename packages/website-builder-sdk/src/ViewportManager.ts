@@ -1,6 +1,7 @@
 "use client";
 import type { Breakpoint } from "~/types.js";
 import { environment } from "~/Environment.js";
+import { breakpointsStore } from "~/BreakpointsStore.js";
 
 export interface ViewportInfo {
     width: number;
@@ -20,20 +21,6 @@ export class ViewportManager {
     private isChanging: boolean;
     private changeTimer: number | null;
 
-    /**
-     * We need this fallback breakpoint for server environments.
-     */
-    private breakpoints: Breakpoint[] = [
-        {
-            name: "desktop",
-            title: "",
-            description: "",
-            icon: "",
-            minWidth: 0,
-            maxWidth: 4000
-        }
-    ];
-
     constructor(timeout: number = 150) {
         this.changeTimeout = timeout;
         this.changeStartSubscribers = new Set();
@@ -49,8 +36,13 @@ export class ViewportManager {
         }
     }
 
+    /**
+     * @deprecated Breakpoints live in `breakpointsStore`, which the server can
+     * write to as well. Call `breakpointsStore.setBreakpoints` instead. Kept as
+     * a delegate so existing callers keep working.
+     */
     public setBreakpoints(breakpoints: Breakpoint[]) {
-        this.breakpoints = breakpoints;
+        breakpointsStore.setBreakpoints(breakpoints);
     }
 
     public onViewportChangeStart(callback: (info: ViewportInfo) => void): () => void {
@@ -104,7 +96,8 @@ export class ViewportManager {
     }
 
     private getViewportInfo(): ViewportInfo {
-        const modes = [...this.breakpoints].reverse();
+        const breakpoints = breakpointsStore.getBreakpoints();
+        const modes = [...breakpoints].reverse();
         const viewport = environment.isClient()
             ? {
                   width: window.innerWidth,
@@ -126,7 +119,7 @@ export class ViewportManager {
 
         const [breakpoint] = modes.filter(mode => mode.maxWidth >= viewport.width);
 
-        return { ...viewport, breakpoint: breakpoint.name, breakpoints: this.breakpoints };
+        return { ...viewport, breakpoint: breakpoint.name, breakpoints };
     }
 
     private notifySubscribers(

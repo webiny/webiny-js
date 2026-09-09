@@ -9,6 +9,7 @@ export * from "./Logger.js";
 export * from "./FunctionConverter.js";
 export * from "./createInput.js";
 export * from "./MouseTracker.js";
+export * from "./BreakpointsStore.js";
 export * from "./ViewportManager.js";
 export * from "./messenger/Messenger.js";
 export * from "./messenger/MessageOrigin.js";
