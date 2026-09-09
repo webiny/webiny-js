@@ -103,15 +103,23 @@ export const sendEvent = async (event, properties = {}) => {
         wcpProperties.wcpProjectId = wcpProjectId;
     }
 
+    const installationProperties = {};
+    if (installationId) {
+        installationProperties.installation_id = installationId;
+    }
+
+    const hostingTypeProperties = {};
+    if (process.env.REACT_APP_WEBINY_HOSTING_TYPE) {
+        hostingTypeProperties.hostingType = process.env.REACT_APP_WEBINY_HOSTING_TYPE;
+    }
+
     return baseSendEvent({
         event,
         properties: {
             ...properties,
             ...wcpProperties,
-            ...(installationId ? { installation_id: installationId } : {}),
-            ...(process.env.REACT_APP_WEBINY_HOSTING_TYPE
-                ? { hostingType: process.env.REACT_APP_WEBINY_HOSTING_TYPE }
-                : {}),
+            ...installationProperties,
+            ...hostingTypeProperties,
             version: process.env.REACT_APP_WEBINY_VERSION,
             ci: process.env.REACT_APP_IS_CI === "true",
             newUser: process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true"
