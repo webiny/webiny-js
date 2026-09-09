@@ -104,8 +104,14 @@ interface Request {
   query: Record<string, string>;
   pathParameters: Record<string, string>;
   body: any;
+  /** Which route matched — `{ name, method, path }`. */
+  route: MatchedRoute;
 }
 ```
+
+`route` is what makes a decorator able to act on one route (see below), and lets a handler read its
+own identity. `method`/`path` on it are the route's PATTERN (`/orders/:orderId`), where the
+top-level `method`/`path` are the request's actual values (`/orders/abc123`).
 
 ## Response
 
