@@ -18,10 +18,25 @@ Code-style rules live in `ai-context/code-style/`, one rule per file (ESLint-sty
 - When building a single package, use `yarn build -p <package-name> --safe-replace`, e.g., `yarn build -p @webiny/api-core --safe-replace`. We use "--safe-replace" in order to not have our active bundling watch process break.
 - To build all packages, simply run `yarn build`.
 - To build all packages without caching, use `yarn build --no-cache `.
+- `generate-webiny-package` emits unformatted output. Run `npx oxfmt packages/<new-package>` right
+  after it, or the commit carries hundreds of lines of unrelated reflow.
+- `yarn format` / `yarn lint` can silently no-op (`command not found: oxfmt`). Prefer `npx oxfmt` and
+  `npx oxlint`, and check with repo-wide `yarn format:check` — oxfmt formats markdown too, so a
+  packages-only run leaves `*.md` failing CI.
 
 ## Testing
 
 - To test a package, use `yarn test packages/<package-name>`, e.g., `yarn test packages/api-core`
+- Storage-backed suites need a storage flag or they **silently skip**. Without it the run reports
+  something like `(920 tests | 920 skipped)` and still exits 0, which reads as a pass. Use
+  `WEBINY_STORAGE=sql yarn test packages/<package-name>` (sqlite-backed).
+- CI selects test jobs by **changed package**, so a PR touching only `api-aco` never runs the
+  `api-headless-cms` suite. "CI will catch it" is false for cross-package behaviour changes —
+  comment `/vitest` on the PR to run the full matrix.
+- A unit test that registers its own subject can't prove the production wiring registers it. When
+  adding a transport, route, or event handler, assert it from the composition root as well; two
+  inbound transports have shipped unwired (WebSockets push, EventBridge Scheduler) with green
+  per-transport tests.
 
 ## Commits
 

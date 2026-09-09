@@ -1,4 +1,8 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import {
     AssetRequestResolver,
@@ -9,13 +13,10 @@ import {
 
 const NO_CACHE = "no-cache, no-store, must-revalidate";
 
-class AssetDeliveryRouteImpl implements HttpRoute.Interface {
-    readonly method = "GET";
-    readonly path = "/files/*";
-
+class AssetDeliveryRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
-    async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         // Resolve asset-delivery collaborators lazily (request time), not as constructor deps.
         // HttpRouter eagerly constructs every route to match paths, and AssetProcessor's
         // PrivateFilesAssetProcessor decorator pulls in GetFileUseCase -> CMS entry repositories
@@ -74,7 +75,19 @@ class AssetDeliveryRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const AssetDeliveryRoute = HttpRoute.createImplementation({
+export const AssetDeliveryRoute = HttpRouteHandler.createImplementation({
     implementation: AssetDeliveryRouteImpl,
     dependencies: [RequestContainer]
+});
+
+class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "GET";
+    readonly path = "/files/*";
+    readonly handler = AssetDeliveryRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const AssetDeliveryRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: AssetDeliveryRouteDefinitionImpl,
+    dependencies: []
 });

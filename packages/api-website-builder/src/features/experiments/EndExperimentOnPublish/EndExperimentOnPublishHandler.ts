@@ -2,10 +2,10 @@ import { PageAfterPublishEventHandler } from "~/features/pages/PublishPage/abstr
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
-import { VariantModel } from "~/domain/variant/abstractions.js";
+import { VariantModelProvider } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";
 
@@ -23,16 +23,18 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
         private getEntry: GetEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private publishEntry: PublishEntryUseCase.Interface,
-        private experimentModel: ExperimentModel.Interface,
-        private variantModel: VariantModel.Interface
+        private experimentModelProvider: ExperimentModelProvider.Interface,
+        private variantModelProvider: VariantModelProvider.Interface
     ) {}
 
     async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
+        const experimentModel = await this.experimentModelProvider.get();
+        const variantModel = await this.variantModelProvider.get();
         const page = event.payload.page;
 
         // Find the page's running experiment (latest draft state) and publish it.
         const experimentResult = await this.getEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
+            experimentModel,
             {
                 where: {
                     latest: true,
@@ -49,11 +51,11 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
         }
 
         const experiment = EntryToExperimentMapper.toExperiment(experimentResult.value);
-        await this.publishEntry.execute(this.experimentModel, experiment.id);
+        await this.publishEntry.execute(experimentModel, experiment.id);
 
         // Publish its ready variants so their content goes live alongside the experiment.
         const variantsResult = await this.listLatestEntries.execute<CmsEntryWbVariantValues>(
-            this.variantModel,
+            variantModel,
             {
                 where: {
                     values: {
@@ -71,7 +73,7 @@ class EndExperimentOnPublishHandlerImpl implements PageAfterPublishEventHandler.
 
         for (const entry of variantsResult.value.entries) {
             const variant = EntryToVariantMapper.toVariant(entry);
-            await this.publishEntry.execute(this.variantModel, variant.id);
+            await this.publishEntry.execute(variantModel, variant.id);
         }
     }
 }
@@ -82,7 +84,7 @@ export const EndExperimentOnPublishHandler = PageAfterPublishEventHandler.create
         GetEntryUseCase,
         ListLatestEntriesUseCase,
         PublishEntryUseCase,
-        ExperimentModel,
-        VariantModel
+        ExperimentModelProvider,
+        VariantModelProvider
     ]
 });

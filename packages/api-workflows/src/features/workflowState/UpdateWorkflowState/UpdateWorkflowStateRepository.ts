@@ -1,7 +1,10 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
-import { WorkflowStateModel, WorkflowStateMapper } from "~/domain/workflowState/abstractions.js";
+import {
+    WorkflowStateModelProvider,
+    WorkflowStateMapper
+} from "~/domain/workflowState/abstractions.js";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     WorkflowStateNotFoundError,
@@ -14,13 +17,14 @@ class UpdateWorkflowStateRepositoryImpl implements Repository.Interface {
     constructor(
         private getEntryById: GetEntryByIdUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
-        private model: WorkflowStateModel.Interface,
+        private modelProvider: WorkflowStateModelProvider.Interface,
         private mapper: WorkflowStateMapper.Interface
     ) {}
 
     async execute(id: string, input: IUpdateWorkflowStateInput): Repository.Return {
+        const model = await this.modelProvider.get();
         const getResult = await this.getEntryById.execute<Omit<IWorkflowStateRecord, "id">>(
-            this.model,
+            model,
             id
         );
 
@@ -43,7 +47,7 @@ class UpdateWorkflowStateRepositoryImpl implements Repository.Interface {
         });
 
         try {
-            const updateResult = await this.updateEntry.execute<Repository.Input>(this.model, id, {
+            const updateResult = await this.updateEntry.execute<Repository.Input>(model, id, {
                 values: updatedValues
             });
 
@@ -61,5 +65,10 @@ class UpdateWorkflowStateRepositoryImpl implements Repository.Interface {
 
 export const UpdateWorkflowStateRepository = Repository.createImplementation({
     implementation: UpdateWorkflowStateRepositoryImpl,
-    dependencies: [GetEntryByIdUseCase, UpdateEntryUseCase, WorkflowStateModel, WorkflowStateMapper]
+    dependencies: [
+        GetEntryByIdUseCase,
+        UpdateEntryUseCase,
+        WorkflowStateModelProvider,
+        WorkflowStateMapper
+    ]
 });

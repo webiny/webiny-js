@@ -2,8 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createLambdaHandler } from "~/createLambdaHandler.js";
 import { ApiGatewayEventType } from "~/index.js";
 import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHandler.js";
-import { HttpFeature } from "@webiny/event-handler-core";
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpFeature, HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 
 const apiGwEvent = {
@@ -19,17 +18,24 @@ const apiGwEvent = {
 
 describe("ApiGatewayHttpRouterHandler", () => {
     const makeRoute = (statusCode: number, body: any) => {
-        class MakeRouteImplementation implements HttpRoute.Interface {
-            readonly method = "POST";
-            readonly path = "/graphql";
+        class MakeRouteImplementation implements HttpRouteHandler.Interface {
             async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                 return { statusCode, body };
             }
         }
-        return HttpRoute.createImplementation({
+        const implementation = HttpRouteHandler.createImplementation({
             implementation: MakeRouteImplementation,
             dependencies: []
         });
+
+        return {
+            implementation,
+            definition: {
+                method: "POST",
+                path: "/graphql",
+                handler: implementation
+            } as HttpRouteDefinition.Interface
+        };
     };
 
     it("should translate APIGatewayProxyEvent, route, and translate back", async () => {
@@ -37,7 +43,8 @@ describe("ApiGatewayHttpRouterHandler", () => {
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                container.register(makeRoute(200, { ok: true }));
+                const route = makeRoute(200, { ok: true });
+                container.registerInstance(HttpRouteDefinition, route.definition);
                 container.register(ApiGatewayHttpRouterHandler);
             }
         });
@@ -61,9 +68,7 @@ describe("ApiGatewayHttpRouterHandler", () => {
     });
 
     it("should set isBase64Encoded for Buffer responses", async () => {
-        class BufferRouteImplementation implements HttpRoute.Interface {
-            readonly method = "POST";
-            readonly path = "/graphql";
+        class BufferRouteImplementation implements HttpRouteHandler.Interface {
             async handle(_req: IHttpRequest): Promise<IHttpResponse> {
                 return {
                     statusCode: 200,
@@ -72,16 +77,24 @@ describe("ApiGatewayHttpRouterHandler", () => {
                 };
             }
         }
-        const bufferRoute = HttpRoute.createImplementation({
+        const bufferImplementation = HttpRouteHandler.createImplementation({
             implementation: BufferRouteImplementation,
             dependencies: []
         });
+        const bufferRoute = {
+            implementation: bufferImplementation,
+            definition: {
+                method: "POST",
+                path: "/graphql",
+                handler: bufferImplementation
+            } as HttpRouteDefinition.Interface
+        };
 
         const handler = createLambdaHandler({
             root: container => {
                 container.register(ApiGatewayEventType);
                 HttpFeature.register(container);
-                container.register(bufferRoute);
+                container.registerInstance(HttpRouteDefinition, bufferRoute.definition);
                 container.register(ApiGatewayHttpRouterHandler);
             }
         });

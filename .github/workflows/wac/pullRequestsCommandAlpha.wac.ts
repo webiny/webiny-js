@@ -17,7 +17,10 @@ const PR_SHA = "${{ needs.prBranch.outputs.pr-sha }}";
 const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: PR_BRANCH,
+    restoreOnly: true
+});
 const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
     workingDirectory: PR_BRANCH
 });
@@ -29,7 +32,7 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 // release), /alpha only ever publishes an alpha prerelease. There is no follow-up job.
 export const pullRequestsCommandAlpha = createSlashCommandWorkflow({
     command: "alpha",
-    name: "Pull Requests Command - Alpha Release",
+    name: "💬 PR Command - Alpha Release",
     comment:
         "Alpha release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     workflow: {

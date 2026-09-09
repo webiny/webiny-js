@@ -5,7 +5,7 @@ import type { UpdateFlpParams, UpdateFlpUseCase as UseCaseAbstraction } from "./
 import type { Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
 import type { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 import type { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
-import type { FolderModel } from "~/domain/folder/abstractions.js";
+import type { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 import type { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
@@ -27,7 +27,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     constructor(
         private flpCrud: AcoFlpCrud.Interface,
         private listFoldersUseCase: ListFoldersUseCase.Interface,
-        private folderModel: FolderModel.Interface,
+        private folderModelProvider: FolderModelProvider.Interface,
         private updateEntryUseCase: UpdateEntryUseCase.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
@@ -131,6 +131,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     }
 
     private async executeBatchUpdate(): Promise<void> {
+        const folderModel = await this.folderModelProvider.get();
         try {
             const items = Array.from(this.flpsToUpdate.entries()).map(
                 ([id, { slug, parentId, path, permissions }]) => {
@@ -154,7 +155,7 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
                 // Directly update the folder in CMS storage to bypass any folder update event triggers.
                 const entryId = EntryId.from(id);
                 const updateResult = await this.updateEntryUseCase.execute(
-                    this.folderModel,
+                    folderModel,
                     entryId.toString(),
                     { values: { path: data.path } }
                 );

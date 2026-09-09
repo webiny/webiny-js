@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { PageModel, type WbPage } from "~/domain/page/abstractions.js";
+import { PageModelProvider, type WbPage } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import {
     PageNotFoundError,
@@ -14,12 +14,13 @@ class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Inte
     constructor(
         private createRevisionFrom: CreateEntryRevisionFromUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private pageModel: PageModel.Interface
+        private pageModelProvider: PageModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         // First, get the existing page to validate it exists
-        const getResult = await this.getEntryById.execute<WbPage>(this.pageModel, params.id);
+        const getResult = await this.getEntryById.execute<WbPage>(pageModel, params.id);
 
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
@@ -29,7 +30,7 @@ class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Inte
         }
 
         // Create revision from the existing page
-        const result = await this.createRevisionFrom.execute(this.pageModel, params.id, {
+        const result = await this.createRevisionFrom.execute(pageModel, params.id, {
             location: getResult.value.location,
             values: {}
         });
@@ -52,5 +53,5 @@ class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Inte
 
 export const CreatePageRevisionFromRepository = RepositoryAbstraction.createImplementation({
     implementation: CreatePageRevisionFromRepositoryImpl,
-    dependencies: [CreateEntryRevisionFromUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [CreateEntryRevisionFromUseCase, GetEntryByIdUseCase, PageModelProvider]
 });

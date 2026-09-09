@@ -12,7 +12,7 @@ import type {
     IScheduledActionEntryValues,
     ScheduledActionType
 } from "~/shared/abstractions.js";
-import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
+import { ScheduledActionModelProvider, SchedulerService } from "~/shared/abstractions.js";
 import {
     InvalidScheduleDateError,
     ScheduledActionPersistenceError,
@@ -47,7 +47,7 @@ interface ICreateScheduleParams<T extends GenericRecord> {
 class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private model: ScheduledActionModel.Interface,
+        private modelProvider: ScheduledActionModelProvider.Interface,
         private schedulerService: SchedulerService.Interface,
         private getScheduledAction: GetScheduledActionUseCase.Interface,
         private createEntryUseCase: CreateEntryUseCase.Interface,
@@ -147,6 +147,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             namespace
         } = params;
         const { id: scheduleId } = parseIdentifier(initialId);
+        const model = await this.modelProvider.get();
 
         const scheduledBy: Identity = {
             id: identity.id,
@@ -156,7 +157,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Create CMS entry
         const createResult = await this.createEntryUseCase.execute<IScheduledActionEntryValues<T>>(
-            this.model,
+            model,
             {
                 id: scheduleId,
                 values: {
@@ -203,7 +204,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             // Rollback - delete CMS entry if the scheduler fails
             console.error(`Failed to create the schedule: ${scheduleId}. Rolling back...`);
 
-            await this.deleteEntryUseCase.execute(this.model, scheduleId, {
+            await this.deleteEntryUseCase.execute(model, scheduleId, {
                 force: true,
                 permanently: true
             });
@@ -229,9 +230,10 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Update CMS entry
+        const model = await this.modelProvider.get();
         const existingEntryId = ScheduledActionIdWithVersion.from(existing.id);
         const updateResult = await this.updateEntryUseCase.execute<IScheduledActionEntryValues<T>>(
-            this.model,
+            model,
             existingEntryId,
             {
                 values: {
@@ -281,7 +283,7 @@ export const ScheduleActionUseCase = UseCaseAbstraction.createImplementation({
     implementation: ScheduleActionUseCaseImpl,
     dependencies: [
         IdentityContext,
-        ScheduledActionModel,
+        ScheduledActionModelProvider,
         SchedulerService,
         GetScheduledActionUseCase,
         CreateEntryUseCase,

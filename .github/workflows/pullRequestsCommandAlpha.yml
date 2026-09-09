@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Alpha Release
+name: 💬 PR Command - Alpha Release
 'on': issue_comment
 concurrency:
   group: alpha-release-${{ github.event.issue.number }}
@@ -113,10 +113,11 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
@@ -134,7 +135,7 @@ jobs:
         with:
           name: run-build-cache
           path: run-build-cache.tzst
-          retention-days: 1
+          retention-days: 7
           compression-level: 0
           if-no-files-found: error
           overwrite: true
@@ -168,16 +169,23 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:

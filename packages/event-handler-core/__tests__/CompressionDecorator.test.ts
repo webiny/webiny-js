@@ -6,13 +6,13 @@ import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import { CompressionDecorator } from "~/features/http/decorators/CompressionDecorator.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpStreamBody } from "~/features/http/HttpStreamBody.js";
-import { HttpRoute } from "~/features/http/abstractions.js";
 import type {
     IHttpRequest,
     IHttpResponse,
     IHttpResponseBuilder,
     IHttpRoute
 } from "~/features/http/abstractions.js";
+import { registerHttpRouteInstance } from "~/features/testing/index.js";
 
 const req = (acceptEncoding?: string): IHttpRequest => ({
     method: "GET",
@@ -25,8 +25,12 @@ const req = (acceptEncoding?: string): IHttpRequest => ({
 
 const routerForRoute = (handle: IHttpRoute["handle"]) => {
     const container = new Container();
-    const route: IHttpRoute = { method: "GET", path: "/test", handle };
-    container.registerInstance(HttpRoute, route);
+    const route: IHttpRoute = { handle };
+    registerHttpRouteInstance(container, {
+        method: "GET",
+        path: "/test",
+        route
+    });
     container.register(HttpRouterImpl).inSingletonScope();
     container.registerDecorator(CompressionDecorator);
     // The router resolves routes through the request container, the way ChildContainerFactory wires

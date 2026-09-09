@@ -31,10 +31,22 @@ export interface IWorkflow extends IWorkflowValues {
 }
 
 // Abstractions
-export const WorkflowModel = createAbstraction<CmsModel>("WorkflowModel");
+/**
+ * Provides the tenant's workflow CMS model.
+ *
+ * A provider rather than the model itself: fetching a model is asynchronous and tenant-dependent,
+ * while DI resolution is synchronous — so an already-resolved `CmsModel` could only be supplied by a
+ * per-request hook running before every consumer. Consumers `await get()` at the point of use.
+ */
+export interface IWorkflowModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace WorkflowModel {
-    export type Interface = CmsModel;
+export const WorkflowModelProvider =
+    createAbstraction<IWorkflowModelProvider>("WorkflowModelProvider");
+
+export namespace WorkflowModelProvider {
+    export type Interface = IWorkflowModelProvider;
 }
 
 export interface IWorkflowMapper {

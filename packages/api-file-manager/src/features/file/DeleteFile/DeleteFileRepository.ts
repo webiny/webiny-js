@@ -1,21 +1,22 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
 import { DeleteFileRepository as RepositoryAbstraction } from "./abstractions.js";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModelProvider } from "~/domain/file/abstractions.js";
 import { FileNotFoundError, FilePersistenceError } from "~/domain/file/errors.js";
 import { File } from "~/domain/file/types.js";
 
 class DeleteFileRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private fileModel: FileModel.Interface
+        private fileModelProvider: FileModelProvider.Interface
     ) {}
 
     async delete(file: File): Promise<Result<void, RepositoryAbstraction.Error>> {
         // Files are not versioned, so we're always deleting the same revision
         const entryId = `${file.id}#0001`;
 
-        const result = await this.deleteEntry.execute(this.fileModel, entryId);
+        const fileModel = await this.fileModelProvider.get();
+        const result = await this.deleteEntry.execute(fileModel, entryId);
 
         if (result.isFail()) {
             const error = result.error;
@@ -31,5 +32,5 @@ class DeleteFileRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const DeleteFileRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteFileRepositoryImpl,
-    dependencies: [DeleteEntryUseCase, FileModel]
+    dependencies: [DeleteEntryUseCase, FileModelProvider]
 });

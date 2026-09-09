@@ -19,7 +19,7 @@ const SERVER_VARIANTS: ServerStorageOps[] = ["sqlite", "postgres"];
 
 export const pullRequestsCommandE2e = createSlashCommandWorkflow({
     command: "e2e",
-    name: "Pull Requests Command - E2E",
+    name: "💬 PR Command - E2E",
     comment: [
         "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
         "",

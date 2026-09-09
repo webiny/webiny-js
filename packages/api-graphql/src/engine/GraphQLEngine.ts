@@ -27,11 +27,6 @@ class GraphQLEngineImpl implements GraphQLEngineAbstraction.Interface {
         // Build context first — enhancers may be async (e.g. CMS storage init)
         const ctx = await this.buildContext();
 
-        // NOTE: the post-auth RequestContextInitializers (CMS facade, FileModel, ...) are run once
-        // per request by the HTTP layer (RequestContextInitializerDecorator in event-handler-core),
-        // before the router dispatches — so they cover every route, not just GraphQL. Their side-
-        // effects are container registrations, which persist and are resolvable here.
-
         // Run contextual schemas BEFORE composer.build() so that any CoreGraphQLSchemaFactory
         // registrations they make (e.g. ACO folder schema plugins) are picked up by GraphQLSchemaComposer.
         const extraSchemas = await this.buildContextualSchemas(ctx);

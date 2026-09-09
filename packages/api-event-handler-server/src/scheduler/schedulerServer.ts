@@ -5,8 +5,8 @@ import { BreeSchedulerService } from "@webiny/api-scheduler-server";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
-import { ScheduledActionRunRoute } from "./ScheduledActionRunRoute.js";
-import { ScheduledActionRecoverRoute } from "./ScheduledActionRecoverRoute.js";
+import { ScheduledActionRunRouteDefinition } from "./ScheduledActionRunRoute.js";
+import { ScheduledActionRecoverRouteDefinition } from "./ScheduledActionRecoverRoute.js";
 
 const SCHEDULER_HEADER = "x-webiny-scheduler-token";
 
@@ -93,8 +93,8 @@ export function registerSchedulerServer(rootContainer: Container): void {
     rootContainer.registerInstance(SchedulerSingleton, service);
     rootContainer.registerInstance(SchedulerService, service);
 
-    rootContainer.register(ScheduledActionRunRoute);
-    rootContainer.register(ScheduledActionRecoverRoute);
+    rootContainer.register(ScheduledActionRunRouteDefinition);
+    rootContainer.register(ScheduledActionRecoverRouteDefinition);
 }
 
 /**

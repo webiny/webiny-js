@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { CreateVariantRepository as RepositoryAbstraction } from "./abstractions/CreateVariantRepository.js";
-import { VariantModel } from "~/domain/variant/abstractions.js";
+import { VariantModelProvider } from "~/domain/variant/abstractions.js";
 import type { CmsEntryWbVariantValues } from "~/domain/variant/abstractions.js";
 import { EntryToVariantMapper } from "~/domain/variant/EntryToVariantMapper.js";
 import { VariantPersistenceError, VariantValidationError } from "~/domain/variant/errors.js";
@@ -9,10 +9,11 @@ import { VariantPersistenceError, VariantValidationError } from "~/domain/varian
 class CreateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
-        private variantModel: VariantModel.Interface
+        private variantModelProvider: VariantModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const variantModel = await this.variantModelProvider.get();
         const values: CmsEntryWbVariantValues = {
             experimentId: params.experimentId,
             name: params.name,
@@ -24,7 +25,7 @@ class CreateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
             extensions: params.content.extensions ?? {}
         };
 
-        const result = await this.createEntry.execute<CmsEntryWbVariantValues>(this.variantModel, {
+        const result = await this.createEntry.execute<CmsEntryWbVariantValues>(variantModel, {
             values
         });
 
@@ -41,5 +42,5 @@ class CreateVariantRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const CreateVariantRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateVariantRepositoryImpl,
-    dependencies: [CreateEntryUseCase, VariantModel]
+    dependencies: [CreateEntryUseCase, VariantModelProvider]
 });

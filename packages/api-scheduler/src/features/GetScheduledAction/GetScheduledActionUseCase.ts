@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { IScheduledAction, IScheduledActionEntryValues } from "~/shared/abstractions.js";
-import { ScheduledActionModel } from "~/shared/abstractions.js";
+import { ScheduledActionModelProvider } from "~/shared/abstractions.js";
 import {
     NotAuthorizedError,
     ScheduledActionNotFoundError,
@@ -25,7 +25,7 @@ import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
-        private model: ScheduledActionModel.Interface,
+        private modelProvider: ScheduledActionModelProvider.Interface,
         private permissions: SchedulerPermissions.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
@@ -38,10 +38,11 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new NotAuthorizedError());
         }
         const { id, namespace } = params;
+        const model = await this.modelProvider.get();
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
         const entryResult = await this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
-            this.model,
+            model,
             scheduleId
         );
 
@@ -75,5 +76,10 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetScheduledActionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetScheduledActionUseCaseImpl,
-    dependencies: [GetEntryByIdUseCase, ScheduledActionModel, SchedulerPermissions, IdentityContext]
+    dependencies: [
+        GetEntryByIdUseCase,
+        ScheduledActionModelProvider,
+        SchedulerPermissions,
+        IdentityContext
+    ]
 });

@@ -1,7 +1,7 @@
 import {
-    HttpRoute,
-    RequestContainer,
-    runRequestContextInitializers
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
 } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
@@ -21,16 +21,13 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * CMS models via the request-context initializers + contextual schemas) for the action's tenant, then
  * runs ExecuteScheduledActionUseCase. Mirrors the background-task run route.
  */
-class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/scheduled-action-run";
-
+class ScheduledActionRunRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }
@@ -43,8 +40,6 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
         try {
             this.container.resolve(RawTenantId).set(tenant);
             await this.container.resolve(RequestTenantLoader).establish();
-
-            await runRequestContextInitializers(this.container, { continueOnError: true });
 
             /* TODO: remove once legacy ctx is gone — resolve services directly from the container. */
             const ctx: Record<string, any> = { container: this.container };
@@ -74,7 +69,19 @@ class ScheduledActionRunRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ScheduledActionRunRoute = HttpRoute.createImplementation({
+export const ScheduledActionRunRoute = HttpRouteHandler.createImplementation({
     implementation: ScheduledActionRunRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
+});
+
+class ScheduledActionRunRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/scheduled-action-run";
+    readonly handler = ScheduledActionRunRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ScheduledActionRunRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ScheduledActionRunRouteDefinitionImpl,
+    dependencies: []
 });

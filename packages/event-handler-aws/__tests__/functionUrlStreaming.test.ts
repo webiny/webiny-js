@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { HttpRoute, HttpStreamBody } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, HttpStreamBody } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { createStreamLambdaHandler } from "~/createStreamLambdaHandler.js";
 import { FunctionUrlStreamFeature } from "~/features/FunctionUrlStreamFeature.js";
@@ -71,23 +71,29 @@ function functionUrlEvent(method = "POST", path = "/stream/test") {
 }
 
 function makeRoute(handle: (request: IHttpRequest) => Promise<IHttpResponse>) {
-    class TestRouteImplementation implements HttpRoute.Interface {
-        readonly method = "POST";
-        readonly path = "/stream/test";
+    class TestRouteImplementation implements HttpRouteHandler.Interface {
         handle = handle;
     }
-
-    return HttpRoute.createImplementation({
+    const implementation = HttpRouteHandler.createImplementation({
         implementation: TestRouteImplementation,
         dependencies: []
     });
+
+    return {
+        implementation,
+        definition: {
+            method: "POST",
+            path: "/stream/test",
+            handler: implementation
+        } as HttpRouteDefinition.Interface
+    };
 }
 
-function makeHandler(route: ReturnType<typeof HttpRoute.createImplementation>) {
+function makeHandler(route: ReturnType<typeof makeRoute>) {
     return createStreamLambdaHandler({
         root: container => {
             FunctionUrlStreamFeature.register(container);
-            container.register(route);
+            container.registerInstance(HttpRouteDefinition, route.definition);
         }
     });
 }

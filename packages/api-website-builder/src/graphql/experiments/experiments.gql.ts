@@ -22,7 +22,7 @@ import {
     IsExperimentPausedUseCase
 } from "~/features/experiments/ExperimentPause/index.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
-import { VariantModel } from "~/domain/variant/abstractions.js";
+import { VariantModelProvider } from "~/domain/variant/abstractions.js";
 import { CreateVariantUseCase } from "~/features/variants/CreateVariant/index.js";
 import { UpdateVariantUseCase } from "~/features/variants/UpdateVariant/index.js";
 import { DeleteVariantUseCase } from "~/features/variants/DeleteVariant/index.js";
@@ -201,11 +201,12 @@ export const addExperimentsSchema = (builder: IGraphQLSchemaBuilder): void => {
 
     builder.addResolver({
         path: "WbQuery.getVariantContent",
-        dependencies: [GetPublishedRevisionByEntryIdUseCase, VariantModel],
-        resolver(getPublished, variantModel) {
+        dependencies: [GetPublishedRevisionByEntryIdUseCase, VariantModelProvider],
+        resolver(getPublished, variantModelProvider) {
             return ({ args, context }) =>
                 resolve(async () => {
                     ensureAuthentication(context);
+                    const variantModel = await variantModelProvider.get();
                     const result = await getPublished.execute(variantModel, args.id);
                     if (result.isFail() || !result.value) {
                         throw new NotFoundError(`Published variant "${args.id}" was not found!`);

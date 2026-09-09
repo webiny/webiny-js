@@ -2,7 +2,7 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Vitest
+name: 💬 PR Command - Vitest
 'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
@@ -146,11 +146,12 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -171,7 +172,7 @@ jobs:
         with:
           name: run-build-cache
           path: run-build-cache.tzst
-          retention-days: 1
+          retention-days: 7
           compression-level: 0
           if-no-files-found: error
           overwrite: true
@@ -325,16 +326,23 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -496,16 +504,23 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -650,21 +665,19 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb-os,ddb
-      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
-      OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
-      OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
-      OPENSEARCH_PASSWORD: ${{ secrets.OPENSEARCH_PASSWORD }}
-      OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
+    services:
+      opensearch:
+        image: opensearchproject/opensearch:3.3.2
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: 'true'
+          OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx512m'
+        ports:
+          - '9200:9200'
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - name: Configure AWS Credentials
-        uses: >-
-          aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
-          aws-region: eu-central-1
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
@@ -679,16 +692,23 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -699,13 +719,31 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Wait for OpenSearch
+        run: >-
+          set -euo pipefail
+
+
+          for i in $(seq 1 60); do
+            if curl -sf "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s" > /dev/null; then
+              echo "OpenSearch is up:"
+              curl -s http://localhost:9200
+              exit 0
+            fi
+            sleep 5
+          done
+
+
+          echo "::error::OpenSearch did not answer on localhost:9200 within 5
+          minutes."
+
+          exit 1
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
     permissions:
       contents: read
       actions: write
-      id-token: write
   vitest-sql-constants:
     needs:
       - baseBranch
@@ -851,16 +889,23 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -1024,16 +1069,23 @@ jobs:
         id: yarn-cache-folder
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
         run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+      - uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
       - name: Download build cache
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:

@@ -7,7 +7,7 @@ import { ApiGatewayHttpRouterHandler } from "~/handlers/ApiGatewayHttpRouterHand
 /**
  * Registers the transport-only API Gateway infrastructure for a Lambda handler:
  * - ApiGatewayEventType (recognises API GW Lambda events)
- * - HttpFeature (HttpRouter + RequestContextInitializerDecorator + SecureHeadersDecorator)
+ * - HttpFeature (HttpRouter + SecureHeadersDecorator)
  * - ApiGatewayHttpRouterHandler (terminal: translates APIGw ↔ IHttpRequest, routes via HttpRouter)
  *
  * Auth/tenant establishment (the extract→load decorators, which depend on api-core) is NOT here —
