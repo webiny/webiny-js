@@ -1,14 +1,16 @@
-import { Route } from "webiny/api";
+import { HttpRouteHandler, Logger } from "webiny/api";
 
-class MyApiRouteImpl implements Route.Interface {
-    constructor() {}
+class MyApiRouteImpl implements HttpRouteHandler.Interface {
+    constructor(private logger: Logger.Interface) {}
 
-    async execute(request: Route.Request, reply: Route.Reply) {
-        return reply.send({ message: "Hello world!" });
+    async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
+        this.logger.info({ path: request.path }, "MyApiRoute handled a request.");
+
+        return response.status(200).json({ message: "Hello world!" });
     }
 }
 
-export default Route.createImplementation({
+export default HttpRouteHandler.createImplementation({
     implementation: MyApiRouteImpl,
-    dependencies: []
+    dependencies: [Logger]
 });
