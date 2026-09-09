@@ -3,6 +3,7 @@ import { serverGetProjectSdkService } from "./services/GetProjectSdkService.js";
 import { serverDefaultAppsService } from "./services/DefaultAppsService.js";
 import { serverWatchCommand } from "./features/WatchCommand.js";
 import { serverServeCommand } from "./features/ServeCommand.js";
+import { serveCommandWithTelemetry } from "./decorators/index.js";
 
 export const registerServerFeatures = (container: Container): void => {
     // Override GetProjectSdkService so server project features are wired into the ProjectSdk container.
@@ -16,4 +17,7 @@ export const registerServerFeatures = (container: Container): void => {
 
     // Serve command: run built apps as long-running servers (production).
     container.register(serverServeCommand).inSingletonScope();
+
+    // Self-hosted projects never deploy, so `serve` is the lifecycle event worth reporting.
+    container.registerDecorator(serveCommandWithTelemetry);
 };

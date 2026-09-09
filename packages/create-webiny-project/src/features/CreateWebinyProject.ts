@@ -90,6 +90,9 @@ export class CreateWebinyProject {
         console.log(`Initializing a new Webiny project in ${green(projectRootPath)}...`);
 
         const analytics = new Analytics();
+        // No `hostingType` here: in interactive mode the choice hasn't been made yet, and reporting
+        // the placeholder default would inflate "aws". Use `-end` / `-error` to segment by hosting
+        // type, and this event as the funnel denominator.
         await analytics.track("start");
 
         // AI agent selected during the hosting-type prompt (used for MCP setup + final messages).
@@ -98,6 +101,11 @@ export class CreateWebinyProject {
         // Hosting type. Resolved interactively below, or taken from `--hosting-type` in non-interactive
         // mode (defaults to "aws").
         let hostingType: HostingType = cliArgs.hostingType === "server" ? "server" : "aws";
+
+        // In interactive mode the value above is only a placeholder until the prompt below runs.
+        // Telemetry reports "unknown" while that's the case, so a failure before the prompt isn't
+        // counted as an AWS project.
+        let hostingTypeResolved = cliArgs.interactive === false;
 
         try {
             const taskItems: ListrTask[] = [
@@ -137,6 +145,7 @@ export class CreateWebinyProject {
             // Ask which hosting type to scaffold before anything hosting-specific is copied.
             if (cliArgs.interactive !== false) {
                 hostingType = await runHostingTypePrompt();
+                hostingTypeResolved = true;
                 console.log();
             }
 
@@ -189,7 +198,7 @@ export class CreateWebinyProject {
                 });
             }
 
-            await analytics.track("end");
+            await analytics.track("end", { hostingType });
         } catch (err) {
             const stage = "error";
             // Commenting out for now, as we don't have any graceful errors implemented yet.
@@ -198,6 +207,7 @@ export class CreateWebinyProject {
             // }
 
             await analytics.track(stage, {
+                hostingType: hostingTypeResolved ? hostingType : "unknown",
                 errorMessage: err.cause?.message || err.message,
                 errorStack: err.cause?.stack || err.stack
             });

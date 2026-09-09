@@ -2,10 +2,12 @@ import baseSendEvent from "./sendEvent.js";
 import { WTS } from "@webiny/wts-client/web";
 
 const STORAGE_MACHINE_ID = "wts_machine_id";
-const STORAGE_PROJECT_ID = "wts_project_id";
+// Storage key kept as-is: ids persisted by earlier versions still live under it, and renaming the
+// key would silently mint a new installation id for every existing admin session.
+const STORAGE_INSTALLATION_ID = "wts_project_id";
 
 let wtsInstance = null;
-let projectId = null;
+let installationId = null;
 let distinctId = null;
 
 /**
@@ -17,14 +19,16 @@ let distinctId = null;
  *   3. `process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID` (build-time fallback,
  *      set by `SetAdminAppEnvVarsBefore{Build,Watch}` from `~/.webiny/config`).
  *
- * Priority for `project_id` (installation_id):
+ * Priority for `installation_id`:
  *   1. URL param `iid` on first load. Persisted to localStorage.
  *   2. localStorage.
  *   3. `process.env.REACT_APP_WEBINY_INSTALLATION_ID` (build-time fallback,
  *      set from `<project>/package.json` → `webiny.installationId`).
  *
  * Attached as a super-property on every admin event so PostHog funnels can
- * group per-install.
+ * group per-install. The property name matches the one the CLI sends
+ * (`telemetry/cli.js`) so CLI and admin events for the same project join on a
+ * single property.
  */
 const initWts = () => {
     if (wtsInstance) {
@@ -32,7 +36,7 @@ const initWts = () => {
     }
 
     distinctId = process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID;
-    projectId = process.env.REACT_APP_WEBINY_INSTALLATION_ID || null;
+    installationId = process.env.REACT_APP_WEBINY_INSTALLATION_ID || null;
 
     if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
@@ -55,15 +59,16 @@ const initWts = () => {
 
         const iidFromUrl = params.get("iid");
         if (iidFromUrl) {
-            projectId = iidFromUrl;
+            installationId = iidFromUrl;
             try {
-                window.localStorage.setItem(STORAGE_PROJECT_ID, iidFromUrl);
+                window.localStorage.setItem(STORAGE_INSTALLATION_ID, iidFromUrl);
             } catch {
                 // ignore
             }
         } else {
             try {
-                projectId = window.localStorage.getItem(STORAGE_PROJECT_ID) || projectId;
+                installationId =
+                    window.localStorage.getItem(STORAGE_INSTALLATION_ID) || installationId;
             } catch {
                 // env-var value (set above) is used as fallback.
             }
@@ -103,7 +108,10 @@ export const sendEvent = async (event, properties = {}) => {
         properties: {
             ...properties,
             ...wcpProperties,
-            ...(projectId ? { project_id: projectId } : {}),
+            ...(installationId ? { installation_id: installationId } : {}),
+            ...(process.env.REACT_APP_WEBINY_HOSTING_TYPE
+                ? { hostingType: process.env.REACT_APP_WEBINY_HOSTING_TYPE }
+                : {}),
             version: process.env.REACT_APP_WEBINY_VERSION,
             ci: process.env.REACT_APP_IS_CI === "true",
             newUser: process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER === "true"
