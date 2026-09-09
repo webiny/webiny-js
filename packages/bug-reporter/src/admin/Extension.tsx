@@ -12,11 +12,11 @@ import { BugReportMount } from "./BugReportMount.js";
  *
  * See ../../README.md for setup.
  */
-export default function BugReporterAdminExtension() {
+export const Extension = () => {
     return (
         <>
             <RegisterFeature feature={BugReportFeature} />
             <BugReportMount />
         </>
     );
-}
+};
