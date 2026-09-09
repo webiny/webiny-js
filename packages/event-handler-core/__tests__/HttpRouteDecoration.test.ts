@@ -8,8 +8,10 @@
  */
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
+import type { Container as ContainerType } from "@webiny/di";
 import { HttpRouteDefinition, HttpRouteHandler, HttpRouter } from "~/features/http/abstractions.js";
 import { createHttpRouteDefinition } from "~/features/http/createHttpRouteDefinition.js";
+import { buildHttpRoute } from "~/features/http/buildHttpRoute.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import { HttpRouterImpl } from "~/features/http/HttpRouter.js";
 import type { IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
@@ -195,5 +197,93 @@ describe("decorating a route by name", () => {
         // Decorating definitions does not resurrect the eager-construction cost: the counted
         // route's handler is never built, because its definition never matched.
         expect(built).not.toHaveBeenCalled();
+    });
+
+    /**
+     * Wrapping a route's BEHAVIOUR, which a decorator on `HttpRouteHandler` would normally do.
+     *
+     * It cannot, so the definition stands in: return a wrapper class as the `handler`, and let it
+     * build the original with `buildHttpRoute`. The wrapper has to take `RequestContainer` because
+     * it cannot know the wrapped route's dependencies — the one place that is justified.
+     *
+     * This gets simpler if `resolveWithDependencies` (`buildHttpRoute.ts:26`) is ever replaced by a
+     * DI method that applies decorators; `HttpRouteHandler` decorators would then work directly.
+     */
+    it("can run before/after around the original handler", async () => {
+        const container = new Container();
+        const order: string[] = [];
+
+        class OrdersRoute implements HttpRouteHandler.Interface {
+            async handle(): Promise<IHttpResponse> {
+                order.push("original");
+                return { statusCode: 200, body: "orders" };
+            }
+        }
+
+        container.register(
+            createHttpRouteDefinition({
+                name: "orders",
+                method: "GET",
+                path: "/orders",
+                handler: HttpRouteHandler.createImplementation({
+                    implementation: OrdersRoute,
+                    dependencies: []
+                })
+            })
+        );
+
+        container.registerDecorator(
+            HttpRouteDefinition.createDecorator({
+                decorator: class implements HttpRouteDefinition.Interface {
+                    constructor(private readonly decoratee: HttpRouteDefinition.Interface) {}
+
+                    get name() {
+                        return this.decoratee.name;
+                    }
+                    get method() {
+                        return this.decoratee.method;
+                    }
+                    get path() {
+                        return this.decoratee.path;
+                    }
+                    get handler() {
+                        if (this.decoratee.name !== "orders") {
+                            return this.decoratee.handler;
+                        }
+
+                        const inner = this.decoratee.handler;
+
+                        class Wrapper implements HttpRouteHandler.Interface {
+                            constructor(private readonly container: ContainerType) {}
+
+                            async handle(
+                                request: IHttpRequest,
+                                response: HttpRouteHandler.Response
+                            ) {
+                                order.push("before");
+                                const result = await buildHttpRoute(this.container, inner).handle(
+                                    request,
+                                    response
+                                );
+                                order.push("after");
+                                return result;
+                            }
+                        }
+
+                        return HttpRouteHandler.createImplementation({
+                            implementation: Wrapper,
+                            dependencies: [RequestContainer]
+                        });
+                    }
+                },
+                dependencies: []
+            })
+        );
+
+        const router = routerFor(container);
+        const result = await router.route(req("GET", "/orders"));
+
+        expect(result.body).toBe("orders");
+        expect(order).toEqual(["before", "original", "after"]);
     });
 });

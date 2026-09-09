@@ -184,6 +184,38 @@ Decorating the definition, not the handler: the router builds a matched route's 
 rather than resolving `HttpRouteHandler`, which is what stops unmatched routes being built. A
 decorator on `HttpRouteHandler` therefore reaches nothing.
 
+To change what a route DOES rather than replace it, return a wrapper as the `handler` and let it
+build the original:
+
+```typescript
+import { HttpRouteHandler, RequestContainer, buildHttpRoute } from "webiny/api";
+
+get handler() {
+  if (this.decoratee.name !== "my-route-get") { return this.decoratee.handler; }
+
+  const inner = this.decoratee.handler;
+
+  class Wrapper implements HttpRouteHandler.Interface {
+    constructor(private container: Container) {}
+
+    async handle(request, response) {
+      // before
+      const result = await buildHttpRoute(this.container, inner).handle(request, response);
+      // after
+      return result;
+    }
+  }
+
+  return HttpRouteHandler.createImplementation({
+    implementation: Wrapper,
+    dependencies: [RequestContainer]
+  });
+}
+```
+
+The wrapper takes `RequestContainer` because it can't know the wrapped route's dependencies. That's
+the one case where reaching for the container is the right answer.
+
 ## Key rules
 
 - **Do not declare `method`/`path` in the handler file.** They come from the props. A handler that

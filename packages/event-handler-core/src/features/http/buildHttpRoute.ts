@@ -10,8 +10,20 @@ import type { IHttpRoute } from "~/features/http/abstractions.js";
  *
  * Deliberately NOT `container.resolve(HttpRouteHandler)`: every route shares that abstraction, so
  * resolving it returns — and therefore builds — all of them, which is the cost this arrangement
- * exists to avoid. The trade-off is that decorators registered on `HttpRouteHandler` do not apply
- * to routes; a route needing decoration has to be registered under an abstraction of its own.
+ * exists to avoid.
+ *
+ * The trade-off is decorators. `resolveWithDependencies` is the ONE resolve path in `@webiny/di`
+ * that never calls `applyDecorators` — `resolveInternal`, `resolveRegistration` and
+ * `resolveMultiple` all do. So decorators registered on `HttpRouteHandler` never reach a route.
+ *
+ * Decorate `HttpRouteDefinition` instead: the router resolves definitions normally, so decorators
+ * apply, and a definition's `name` identifies which route you have. To change a route's BEHAVIOUR
+ * rather than replace it, return a wrapper class as the definition's `handler` and let it call this
+ * function on the original — see the wrapping test in `HttpRouteDecoration.test.ts`.
+ *
+ * If `@webiny/di` ever grows a way to resolve a specific implementation through the decorating path
+ * (`resolve()` accepting an implementation, or a `resolveImplementation()`), this can use it and
+ * `HttpRouteHandler` decorators would start working without giving up lazy construction.
  */
 export function buildHttpRoute(
     container: Container,
