@@ -24,8 +24,6 @@ export interface IAiPowerUpsCapabilityOverride {
     connectionId?: string;
     model?: string;
     additionalInstructions?: string;
-    replacePrompt?: boolean;
-    guidance?: string;
 }
 
 export interface IAiPowerUpsSettings {

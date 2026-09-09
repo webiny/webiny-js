@@ -12,20 +12,20 @@ export interface AiCapabilityOverride {
     connectionId?: string;
     /** Pin an exact model. Only read when `connectionId` is also set. */
     model?: string;
-    /** Appended to the system prompt. The safe option, and the one the UI shows by default. */
+    /**
+     * Appended to the capability's prompt.
+     *
+     * The only prompt customisation there is, and deliberately so. Replacing a prompt outright
+     * used to be offered here and is not any more: for most capabilities the prompt *is* the output
+     * contract the surrounding code parses, so replacing it means replacing part of the
+     * implementation. Revision comparison regex-matches the HTML table its prompt specifies, and
+     * page translation `JSON.parse`s a shape its prompt dictates, both failing silently if the
+     * format goes away. Appending leaves the contract in place.
+     *
+     * A project that genuinely needs different behaviour decorates the use case in code, which is
+     * how the AI translation itself is built.
+     */
     additionalInstructions?: string;
-    /**
-     * The explicit opt-in for owning this capability's prompt. Kept separate from `guidance` so
-     * switching it off restores Webiny's prompt without the project having to clear the text they
-     * wrote, and switching it back on returns them to it.
-     */
-    replacePrompt?: boolean;
-    /**
-     * Replaces the capability's own guidance, and only when `replacePrompt` is set. Offered only
-     * for capabilities that declare `guidance`, because a project that sets this stops receiving
-     * our prompt improvements for this capability.
-     */
-    guidance?: string;
 }
 
 declare module "~/api/types.js" {

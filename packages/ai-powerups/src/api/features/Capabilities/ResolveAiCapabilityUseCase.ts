@@ -103,12 +103,9 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
             },
             roleId,
             fellBackToStandard,
-            // The switch is what decides, not the presence of text. A project that turns the
-            // override off keeps its draft in settings but goes back to running Webiny's prompt.
-            guidance:
-                override.replacePrompt && override.guidance?.trim()
-                    ? override.guidance
-                    : (capability.guidance ?? ""),
+            // Always the capability's own. Projects adjust prompts by appending, never by
+            // replacing, because for most capabilities the prompt is the output contract.
+            guidance: capability.guidance ?? "",
             additionalInstructions: override.additionalInstructions?.trim() ?? ""
         });
     }

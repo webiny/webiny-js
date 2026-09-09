@@ -33,11 +33,6 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 label: String!
                 description: String!
                 defaultRole: String!
-                """
-                The capability's own prompt guidance, when it has a fixed block a project can
-                replace. Null means only additional instructions apply.
-                """
-                guidance: String
             }
 
             type AiPowerUpsQuery {
@@ -122,8 +117,7 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                         id: c.id,
                         label: c.label,
                         description: c.description,
-                        defaultRole: c.defaultRole,
-                        guidance: c.guidance ?? null
+                        defaultRole: c.defaultRole
                     }));
             }
         });

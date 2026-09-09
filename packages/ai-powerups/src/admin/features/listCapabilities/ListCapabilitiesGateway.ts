@@ -10,7 +10,6 @@ const LIST_CAPABILITIES = /* GraphQL */ `
                 label
                 description
                 defaultRole
-                guidance
             }
         }
     }

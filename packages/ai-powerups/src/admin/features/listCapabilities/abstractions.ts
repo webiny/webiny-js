@@ -5,8 +5,6 @@ export interface AiCapability {
     label: string;
     description: string;
     defaultRole: string;
-    /** Null when the capability's prompt is assembled per request and cannot be replaced. */
-    guidance: string | null;
 }
 
 export interface IListCapabilitiesGateway {

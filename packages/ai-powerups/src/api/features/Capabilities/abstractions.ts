@@ -16,13 +16,13 @@ export interface IAiCapability {
     /** Which role supplies the model when the project has not overridden this capability. */
     readonly defaultRole: AiModelRoleId;
     /**
-     * The static system-prompt block, for capabilities whose prompt is a fixed piece of text a
-     * project could sensibly replace outright.
+     * The capability's fixed system-prompt block, owned by the code and not configurable.
      *
      * Leave it undefined when the prompt is assembled per request (from a content model schema, a
-     * component catalog, a persona). The settings screen then offers only "additional
-     * instructions", because offering a full replacement for a prompt the code rebuilds every call
-     * would just be a way to break generation.
+     * component catalog, a persona) and the use case builds its own system text instead.
+     *
+     * Either way a project can only append to it, via `additionalInstructions`. These prompts carry
+     * the output contract the surrounding code parses, so they are implementation, not settings.
      */
     readonly guidance?: string;
 }
@@ -45,7 +45,7 @@ export interface IResolvedAiCapability {
     roleId: AiModelRoleId | null;
     /** True when the requested role was empty and `standard` filled in for it. */
     fellBackToStandard: boolean;
-    /** The capability's guidance, or the project's replacement for it. */
+    /** The capability's own guidance. Empty when it assembles its prompt per request. */
     guidance: string;
     /** Project text to append to the system prompt. Empty when unset. */
     additionalInstructions: string;

@@ -133,37 +133,8 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             "Appended to this feature's prompt. Use this for house style and standing rules."
                         )
                         .note(
-                            "Appending is the safe option: you keep receiving prompt improvements from Webiny."
-                        ),
-
-                    /*
-                     * A full replacement is offered only where the prompt is fixed text. Where the code
-                     * assembles it per request (from a content model schema, say), letting someone
-                     * replace it is just a way to break generation, so the field is not rendered.
-                     */
-                    ...(capability.guidance
-                        ? {
-                              replacePrompt: cf
-                                  .boolean()
-                                  .label("Replace the prompt entirely")
-                                  .renderer("switch")
-                                  .description(
-                                      "Advanced. Your text replaces Webiny's prompt for this feature."
-                                  )
-                                  .note(
-                                      "Once you replace it, improvements Webiny makes to this prompt no longer reach you. You own it from then on."
-                                  ),
-                              guidance: cf
-                                  .text()
-                                  .label("Prompt")
-                                  .renderer("textarea", { rows: 14 })
-                                  .hiddenWhen(({ form }) => !this.isReplacing(form, capability.id))
-                                  .defaultValue(capability.guidance)
-                                  .description(
-                                      "The full prompt sent for this feature. Additional instructions are still appended below it."
-                                  )
-                          }
-                        : {})
+                            "Appending keeps Webiny's prompt in place, including the output format the feature depends on."
+                        )
                 }))
         );
     }
@@ -176,17 +147,11 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
     private getOverride(
         form: FormModel.Interface,
         capabilityId: string
-    ): { connectionId?: string; replacePrompt?: boolean } {
+    ): { connectionId?: string } {
         const data = form.getData() as {
-            capabilities?: {
-                overrides?: Record<string, { connectionId?: string; replacePrompt?: boolean }>;
-            };
+            capabilities?: { overrides?: Record<string, { connectionId?: string }> };
         };
         return data.capabilities?.overrides?.[capabilityId] ?? {};
-    }
-
-    private isReplacing(form: FormModel.Interface, capabilityId: string): boolean {
-        return this.getOverride(form, capabilityId).replacePrompt === true;
     }
 
     private getPinnedConnection(

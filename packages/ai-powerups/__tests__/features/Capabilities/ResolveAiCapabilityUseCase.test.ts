@@ -216,28 +216,16 @@ describe("ResolveAiCapabilityUseCase", () => {
         expect(result.value.additionalInstructions).toBe("");
     });
 
-    it("keeps our guidance while the replace switch is off, even with text saved", async () => {
+    it("ignores a prompt override, because there is no such thing any more", async () => {
         const result = await resolver(
             settings({
                 overrides: {
-                    "test.capability": { guidance: "Their prompt.", replacePrompt: false }
+                    "test.capability": { guidance: "Mine now." } as Overrides[string]
                 }
             })
         ).execute("test.capability");
 
         expect(result.value.guidance).toBe("Webiny guidance.");
-    });
-
-    it("uses their guidance once the replace switch is on", async () => {
-        const result = await resolver(
-            settings({
-                overrides: {
-                    "test.capability": { guidance: "Their prompt.", replacePrompt: true }
-                }
-            })
-        ).execute("test.capability");
-
-        expect(result.value.guidance).toBe("Their prompt.");
     });
 
     it("passes additional instructions through, trimmed", async () => {
