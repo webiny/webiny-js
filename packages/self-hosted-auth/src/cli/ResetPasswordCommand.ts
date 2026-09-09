@@ -4,12 +4,7 @@ import {
     GetProjectSdkService,
     UiService
 } from "@webiny/cli-core/abstractions/index.js";
-import { signCliResetToken } from "~/shared/cliResetToken.js";
-import {
-    CLI_PASSWORD_RESET_BUILD_PARAM,
-    isCliPasswordResetEnabled,
-    SIGNING_SECRET_BUILD_PARAM
-} from "~/shared/buildParams.js";
+import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
 
 /**
  * `webiny reset-password <email>`, the lockout escape hatch for self-hosted projects.
@@ -150,18 +145,10 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 // values are tagged for the api app, not for the cli.
                 const projectConfig = await projectSdk.getProjectConfig();
 
-                const flag = this.readBuildParam(projectConfig, CLI_PASSWORD_RESET_BUILD_PARAM);
-
-                // Only meaningful when the local config is the one describing the target instance.
-                // Someone overriding both the secret and the URL is aiming at a different instance
-                // entirely, whose own build decides whether the mutation exists.
-                if (flag !== undefined && !isCliPasswordResetEnabled(flag as boolean | string)) {
-                    throw new Error(
-                        "CLI password reset is disabled for this project. Remove " +
-                            "`cliPasswordReset={false}` from <SelfHostedAuth /> to re-enable it."
-                    );
-                }
-
+                // No `cliPasswordReset` check here. `<SelfHostedAuth>` does not render the
+                // `Cli/Command` extension when the flag is off, so a disabled project has no such
+                // command to invoke and any guard at this point is unreachable. The API's own
+                // build decides whether the mutation exists, which is the enforcement that counts.
                 const signingSecret = this.resolveSigningSecret(
                     params.signingSecret,
                     projectConfig
@@ -171,6 +158,11 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
                 const password = await this.promptForPassword(params.email);
 
                 ui.info("Setting password for %s...", params.email);
+
+                // Imported here, not at the top of the file, for the same reason as `inquirer`
+                // below: config validation imports this module on every CLI invocation to check it
+                // exports a command, and only this one command needs `jsonwebtoken`.
+                const { signCliResetToken } = await import("~/shared/cliResetToken.js");
 
                 const token = signCliResetToken({
                     secret: signingSecret,

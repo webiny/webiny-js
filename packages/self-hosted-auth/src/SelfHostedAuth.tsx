@@ -58,7 +58,15 @@ export const SelfHostedAuth = defineExtension({
                     value={cliPasswordResetEnabled}
                 />
                 {/* Lockout escape hatch: `webiny reset-password <email>`. Loaded by path, like the
-                    admin extension below, so webiny.config.tsx pulls in no CLI code itself. */}
+                    admin extension below, so webiny.config.tsx pulls in no CLI code itself.
+
+                    Disabling drops the command as well as the mutation, so `reset-password` is not
+                    a command at all in a project that turned it off. One consequence: the
+                    `--api-url` / `--signing-secret` overrides cannot be used from such a project
+                    to reach some other instance that still has it enabled. Since the flag lives in
+                    the one shared config, any instance built from it lacks the mutation anyway, so
+                    that combination only arises against an instance built before the flag flipped.
+                    `callApi` explains that case when it happens. */}
                 {cliPasswordResetEnabled && (
                     <CliCommand src={import.meta.dirname + "/cli/ResetPasswordCommand.js"} />
                 )}

@@ -90,14 +90,34 @@ describe("reset-password command", () => {
         ]);
     });
 
-    it("refuses up front when the project turned the escape hatch off", async () => {
+    /**
+     * There is deliberately no "refuses when the flag is off" case. `<SelfHostedAuth>` does not
+     * render the `Cli/Command` extension when the flag is off, so the command does not exist to be
+     * invoked, and a handler-level guard would be unreachable. An earlier version had both, and the
+     * test passed only because it registered the command by hand.
+     */
+    it("ignores the flag build param, since a disabled project has no command to run", async () => {
         const definition = await setup(
-            authExtension({ signingSecret: "s3cret", cliPasswordReset: false })
+            buildParams({
+                SelfHostedAuthSigningSecret: "s3cret",
+                SelfHostedAuthCliPasswordReset: false,
+                WEBINY_API_URL: "http://localhost:3002"
+            })
         ).execute();
 
-        await expect(definition.handler({ email: "admin@example.com" })).rejects.toThrow(
-            /CLI password reset is disabled/
+        // Gets as far as the prompt and the request, rather than refusing on the flag.
+        vi.stubGlobal(
+            "fetch",
+            vi.fn(async () => {
+                throw new Error("ECONNREFUSED");
+            })
         );
+
+        await expect(definition.handler({ email: "admin@example.com" })).rejects.toThrow(
+            /Could not reach the API/
+        );
+
+        vi.unstubAllGlobals();
     });
 
     it("lists every route to a signing secret when it has none", async () => {
