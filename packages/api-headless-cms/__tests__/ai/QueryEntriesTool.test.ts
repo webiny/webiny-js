@@ -5,6 +5,8 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import { QueryEntriesTool } from "~/features/ai/QueryEntriesTool.js";
+import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
+import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import type { CmsEntryListParams, CmsModel } from "~/types/index.js";
 
 const productModel = {
@@ -20,7 +22,13 @@ const productModel = {
         { fieldId: "price", type: "number", label: "Price", validation: [] },
         // Deliberately prefixed by "price" — proves longest-match routing, not startsWith chaos.
         { fieldId: "price_range", type: "text", label: "Price range", validation: [] },
-        { fieldId: "onSale", type: "boolean", label: "On sale", validation: [] }
+        { fieldId: "onSale", type: "boolean", label: "On sale", validation: [] },
+        /*
+         * Underscored, and its first segment is NOT itself a field. `price_range` does not catch the
+         * bug this guards: reading the segment before the first `_` yields `price`, which happens to
+         * be a real field, so it routed correctly by accident. `on_sale` yields `on`, which is not.
+         */
+        { fieldId: "on_sale", type: "boolean", label: "On sale (legacy)", validation: [] }
     ]
 } as unknown as CmsModel;
 
@@ -45,6 +53,13 @@ const resolveTool = () => {
             });
         }
     } as unknown as ListLatestEntriesUseCase.Interface);
+
+    /*
+     * The real mappers, not stubs. The routing these tests assert IS the mappers' behaviour now that
+     * the tool delegates to them, so stubbing would leave both sides untested.
+     */
+    CmsWhereMapperFeature.register(container);
+    CmsSortMapperFeature.register(container);
 
     container.register(QueryEntriesTool);
 
@@ -89,9 +104,26 @@ describe("queryEntries where routing", () => {
         });
     });
 
-    it("passes AND/OR through untouched", async () => {
-        const where = { AND: [{ onSale: true }], OR: [{ status: "draft" }] };
-        expect(await whereFor(where)).toEqual(where);
+    it("nests a field whose id contains an underscore", async () => {
+        expect(await whereFor({ on_sale: true })).toEqual({ values: { on_sale: true } });
+    });
+
+    it("nests an underscored field carrying an operator", async () => {
+        expect(await whereFor({ on_sale_not: true })).toEqual({
+            values: { on_sale_not: true }
+        });
+    });
+
+    it("routes fields inside AND/OR, not just at the top level", async () => {
+        /*
+         * The nesting has to happen inside the branches too. Passing them through whole left
+         * `onSale` unqualified, and the CMS rejects an unqualified model field with "there is no
+         * field with the fieldId onSale" — the same failure the top-level routing exists to prevent.
+         */
+        expect(await whereFor({ AND: [{ onSale: true }], OR: [{ status: "draft" }] })).toEqual({
+            AND: [{ values: { onSale: true } }],
+            OR: [{ status: "draft" }]
+        });
     });
 
     it("respects an explicitly nested `values` object", async () => {
@@ -128,8 +160,29 @@ describe("queryEntries sort mapping", () => {
         ]);
     });
 
-    it("passes through anything without a direction suffix", async () => {
-        expect(await sortFor(["nonsense"])).toEqual(["nonsense"]);
+    it("prefixes an underscored field id", async () => {
+        // The old pattern excluded `_` from the field name, so this matched nothing and was dropped.
+        expect(await sortFor(["on_sale_DESC"])).toEqual(["values_on_sale_DESC"]);
+    });
+
+    it("rejects a directive it cannot read instead of dropping it", async () => {
+        /*
+         * The mapper discards what it cannot parse. Left alone that runs the query unsorted while the
+         * model reports it as sorted, so the tool refuses and says what the format is.
+         */
+        const { tool } = resolveTool();
+
+        await expect(tool.execute({ modelId: "product", sort: ["nonsense"] })).rejects.toThrow(
+            /must be `<fieldId>_ASC` or `<fieldId>_DESC`/
+        );
+    });
+
+    it("rejects a partly unreadable list rather than silently sorting by the rest", async () => {
+        const { tool } = resolveTool();
+
+        await expect(
+            tool.execute({ modelId: "product", sort: ["price_DESC", "nonsense"] })
+        ).rejects.toThrow(/nonsense/);
     });
 });
 

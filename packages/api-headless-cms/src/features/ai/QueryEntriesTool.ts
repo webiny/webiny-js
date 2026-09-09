@@ -3,10 +3,10 @@ import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
+import { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
+import { CmsSortMapper } from "~/features/sortMapper/abstractions.js";
 import type { CmsEntryListParams } from "~/types/index.js";
 import type { CmsEntryListSort } from "~/types/index.js";
-import type { CmsEntryListWhere } from "~/types/index.js";
-import type { CmsModel } from "~/types/index.js";
 
 /**
  * Hard ceiling on returned entries. A model asking for "all products" would otherwise pull an entire
@@ -72,74 +72,6 @@ interface QueryEntriesResult {
 }
 
 /**
- * The CMS splits `where` into two levels: entry meta fields (id, status, savedOn, ...) sit at the top,
- * while the model's own fields must be nested under `values`. An LLM has no way to know that — and
- * `describeContentModel` hands it a FLAT list of fieldIds, so a flat filter is exactly what it writes.
- * Rather than documenting the split and hoping, we accept the flat form and route each key by whether
- * its field belongs to the model.
- *
- * A key is `<fieldId>` or `<fieldId>_<operator>`; the longest matching fieldId wins, so a model with
- * both `price` and `price_range` cannot be mis-routed. `AND`/`OR` are passed through untouched — they
- * carry nested filter objects, not field references.
- */
-const LOGICAL_KEYS = new Set(["AND", "OR"]);
-
-const splitWhere = (where: Record<string, unknown>, model: CmsModel): Record<string, unknown> => {
-    const fieldIds = model.fields.map(field => field.fieldId).sort((a, b) => b.length - a.length);
-
-    const top: Record<string, unknown> = {};
-    const values: Record<string, unknown> = {};
-
-    for (const [key, value] of Object.entries(where)) {
-        if (LOGICAL_KEYS.has(key)) {
-            top[key] = value;
-            continue;
-        }
-
-        // An explicitly nested `values` object is respected as-is — a caller that already knows the
-        // shape should not be second-guessed.
-        if (key === "values" && typeof value === "object" && value !== null) {
-            Object.assign(values, value as Record<string, unknown>);
-            continue;
-        }
-
-        const matched = fieldIds.find(fieldId => key === fieldId || key.startsWith(`${fieldId}_`));
-
-        if (matched) {
-            values[key] = value;
-        } else {
-            top[key] = value;
-        }
-    }
-
-    if (Object.keys(values).length > 0) {
-        top["values"] = values;
-    }
-
-    return top;
-};
-
-/**
- * Sort has the same two-level split as `where`, with a different spelling: the CMS sorter for a model
- * field is `values_<fieldId>_<DIR>`, while entry meta fields sort as `<fieldId>_<DIR>`. Callers give us
- * the flat `<fieldId>_<DIR>` form (that is what describeContentModel's field IDs invite), so prefix the
- * ones that name a model field and leave the rest alone.
- */
-const mapSort = (sort: string[], model: CmsModel): string[] => {
-    const fieldIds = new Set(model.fields.map(field => field.fieldId));
-
-    return sort.map(directive => {
-        const match = /^(.*)_(ASC|DESC)$/.exec(directive);
-        if (!match) {
-            return directive;
-        }
-
-        const [, field, direction] = match;
-        return fieldIds.has(field) ? `values_${field}_${direction}` : directive;
-    });
-};
-
-/**
  * Reads entries for one model.
  *
  * Uses the LATEST revisions (the manage-API view), not published ones — an editor asking "which
@@ -149,6 +81,10 @@ const mapSort = (sort: string[], model: CmsModel): string[] => {
  * `where` is passed through to the CMS rather than re-modelled as a Zod schema: the valid keys depend
  * entirely on the model's fields, which are only known at runtime. An invalid filter surfaces as a
  * tool error the model can correct, which is why `describeContentModel` is named in the description.
+ *
+ * `where` and `sort` arrive FLAT and go through `CmsWhereMapper`/`CmsSortMapper`, which nest the
+ * model's own fields under `values` and leave entry meta at the top. The flat form is what a model
+ * writes, because `describeContentModel` hands it a flat list of fieldIds.
  */
 class QueryEntriesToolImpl implements IAiSdkTool<Input> {
     readonly name = "queryEntries";
@@ -160,7 +96,9 @@ class QueryEntriesToolImpl implements IAiSdkTool<Input> {
 
     constructor(
         private getModel: GetModelUseCase.Interface,
-        private listLatestEntries: ListLatestEntriesUseCase.Interface
+        private listLatestEntries: ListLatestEntriesUseCase.Interface,
+        private whereMapper: CmsWhereMapper.Interface,
+        private sortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(input: Input): Promise<QueryEntriesResult> {
@@ -172,16 +110,42 @@ class QueryEntriesToolImpl implements IAiSdkTool<Input> {
             );
         }
 
+        const model = modelResult.value;
+
         const params: CmsEntryListParams = {
             limit: Math.min(input.limit ?? DEFAULT_LIMIT, MAX_LIMIT)
         };
 
         if (input.where) {
-            params.where = splitWhere(input.where, modelResult.value) as CmsEntryListWhere;
+            const where = this.whereMapper.map({ fields: model.fields, input: input.where });
+
+            if (where) {
+                params.where = where;
+            }
         }
 
         if (input.sort?.length) {
-            params.sort = mapSort(input.sort, modelResult.value) as CmsEntryListSort;
+            /*
+             * `CmsEntryListSort` is a template-literal type, while the schema yields plain strings
+             * because a model writes whatever it likes. Casting here is safe only because of the
+             * check below, which refuses the call if the mapper could not read every directive.
+             */
+            const requested = input.sort as CmsEntryListSort;
+            const sort = this.sortMapper.map({ fields: model.fields, input: requested });
+
+            /*
+             * The mapper drops a directive it cannot parse. Silence is the wrong answer here: the
+             * query would run unsorted and the model would present the result as sorted. Comparing
+             * lengths rather than re-checking the format keeps this in step with whatever the mapper
+             * accepts.
+             */
+            if (!sort || sort.length !== input.sort.length) {
+                throw new Error(
+                    `Could not read every sort directive in [${input.sort.join(", ")}]. Each one must be \`<fieldId>_ASC\` or \`<fieldId>_DESC\`, using a field ID from describeContentModel.`
+                );
+            }
+
+            params.sort = sort;
         }
 
         if (input.search) {
@@ -196,7 +160,7 @@ class QueryEntriesToolImpl implements IAiSdkTool<Input> {
             params.after = input.after;
         }
 
-        const result = await this.listLatestEntries.execute(modelResult.value, params);
+        const result = await this.listLatestEntries.execute(model, params);
 
         if (result.isFail()) {
             throw new Error(`Could not query "${input.modelId}" entries: ${result.error.message}`);
@@ -225,5 +189,5 @@ class QueryEntriesToolImpl implements IAiSdkTool<Input> {
 
 export const QueryEntriesTool = AiSdkTool.createImplementation({
     implementation: QueryEntriesToolImpl,
-    dependencies: [GetModelUseCase, ListLatestEntriesUseCase]
+    dependencies: [GetModelUseCase, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
 });
