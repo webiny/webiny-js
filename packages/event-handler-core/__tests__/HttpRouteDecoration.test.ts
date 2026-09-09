@@ -286,4 +286,93 @@ describe("decorating a route by name", () => {
         expect(result.body).toBe("orders");
         expect(order).toEqual(["before", "original", "after"]);
     });
+
+    /**
+     * Targeting a single route WITHOUT selecting it at decoration time.
+     *
+     * The wrapper is applied to every route uniformly — the decorator doesn't inspect `name` at all
+     * — and decides per request by reading `request.route.name`. This is the shape a plain
+     * `HttpRouteHandler` decorator would have if DI applied decorators to
+     * `resolveWithDependencies`: identical body, no name check when wiring.
+     */
+    it("targets one route from a wrapper applied to all of them", async () => {
+        const container = setup();
+        const wrapped: string[] = [];
+
+        container.registerDecorator(
+            HttpRouteDefinition.createDecorator({
+                decorator: class implements HttpRouteDefinition.Interface {
+                    readonly name: string;
+                    readonly method: string;
+                    readonly path: string;
+                    readonly handler: HttpRouteDefinition.Interface["handler"];
+
+                    constructor(decoratee: HttpRouteDefinition.Interface) {
+                        this.name = decoratee.name;
+                        this.method = decoratee.method;
+                        this.path = decoratee.path;
+
+                        const inner = decoratee.handler;
+
+                        class Wrapper implements HttpRouteHandler.Interface {
+                            constructor(private readonly container: ContainerType) {}
+
+                            async handle(
+                                request: HttpRouteHandler.Request,
+                                response: HttpRouteHandler.Response
+                            ) {
+                                const route = buildHttpRoute(this.container, inner);
+
+                                // Wired for every route; acts on one.
+                                if (request.route.name !== "orders") {
+                                    return route.handle(request, response);
+                                }
+
+                                wrapped.push(request.route.name);
+                                return { statusCode: 200, body: "intercepted" };
+                            }
+                        }
+
+                        this.handler = HttpRouteHandler.createImplementation({
+                            implementation: Wrapper,
+                            dependencies: [RequestContainer]
+                        });
+                    }
+                },
+                dependencies: []
+            })
+        );
+
+        const router = routerFor(container);
+
+        expect((await router.route(req("GET", "/orders"))).body).toBe("intercepted");
+        expect((await router.route(req("GET", "/invoices"))).body).toBe("invoices");
+        expect(wrapped).toEqual(["orders"]);
+    });
+
+    it("tells a route its own name, method and path", async () => {
+        const container = new Container();
+
+        class SelfAwareRoute implements HttpRouteHandler.Interface {
+            async handle(request: HttpRouteHandler.Request): Promise<IHttpResponse> {
+                return { statusCode: 200, body: request.route };
+            }
+        }
+
+        container.register(
+            createHttpRouteDefinition({
+                name: "orders",
+                method: "GET",
+                path: "/orders/:id",
+                handler: HttpRouteHandler.createImplementation({
+                    implementation: SelfAwareRoute,
+                    dependencies: []
+                })
+            })
+        );
+
+        const result = await routerFor(container).route(req("GET", "/orders/7"));
+
+        expect(result.body).toEqual({ name: "orders", method: "GET", path: "/orders/:id" });
+    });
 });

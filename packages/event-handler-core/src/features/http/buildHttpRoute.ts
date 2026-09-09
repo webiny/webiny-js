@@ -26,10 +26,10 @@ import type { IHttpRoute } from "~/features/http/abstractions.js";
  * simply calling `applyDecorators` like every other path), this can use it and `HttpRouteHandler`
  * decorators would start working without giving up lazy construction.
  *
- * That buys CROSS-CUTTING decoration — every route wrapped the same way, for timing or logging.
- * It does NOT replace decorating the definition: a handler decorator receives only the route
- * instance, which carries no name, so it cannot tell which route it is wrapping. Targeting one
- * route stays a definition-level job.
+ * A handler decorator still could not tell WHICH route it wraps from its constructor — every route
+ * shares the abstraction and the instance carries no name. It does not need to: `request.route`
+ * carries the matched route's `name`/`method`/`path`, so a decorator wired across all routes can
+ * act on one by checking it per request.
  */
 export function buildHttpRoute(
     container: Container,

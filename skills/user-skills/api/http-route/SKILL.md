@@ -216,6 +216,21 @@ get handler() {
 The wrapper takes `RequestContainer` because it can't know the wrapped route's dependencies. That's
 the one case where reaching for the container is the right answer.
 
+Inside `handle()`, `request.route` tells you which route is running:
+
+```ts
+async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
+  if (request.route.name !== "my-route-get") {
+    return buildHttpRoute(this.container, inner).handle(request, response);
+  }
+  // ...only for that route
+}
+```
+
+So a wrapper can be applied to every route and still act on one, which is usually easier to read
+than selecting by `name` when wiring. `request.route` is `{ name, method, path }`, and any route can
+read it to find out its own identity.
+
 ## Key rules
 
 - **Do not declare `method`/`path` in the handler file.** They come from the props. A handler that

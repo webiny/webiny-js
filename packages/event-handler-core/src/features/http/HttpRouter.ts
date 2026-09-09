@@ -66,7 +66,19 @@ class HttpRouterImplClass implements HttpRouter.Interface {
 
             const route = buildHttpRoute(this.container, definition.handler);
             const response = new HttpResponseBuilder();
-            const result = await route.handle({ ...request, pathParameters: params }, response);
+            const result = await route.handle(
+                {
+                    ...request,
+                    pathParameters: params,
+                    // Lets a route — or anything wrapping one — know which route is running.
+                    route: {
+                        name: definition.name,
+                        method: definition.method,
+                        path: definition.path
+                    }
+                },
+                response
+            );
             return toHttpResponse(result, response);
         }
         throw new RouteNotFoundError(request.method, request.path);
