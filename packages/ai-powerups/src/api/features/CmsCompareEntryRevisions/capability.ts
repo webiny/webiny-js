@@ -3,9 +3,9 @@ import { AiCapability } from "~/api/features/Capabilities/index.js";
 export const CMS_COMPARE_ENTRY_REVISIONS_CAPABILITY = "cms.compareEntryRevisions";
 
 /**
- * The whole system prompt is fixed text, so a project can replace it outright. The output contract
- * lives in here too, which is exactly why replacing it is behind an opt-in: drop the HTML table
- * shape and the comparison dialog has nothing to render.
+ * The output contract lives in this prompt: the use case regex-matches the HTML table it specifies
+ * to build the summary, down to the literal "No differences detected" sentence and a count of
+ * `<tr>` tags, and the dialog styles those classes. That is why a project can only append to it.
  */
 const guidance = `You are a content intelligence assistant specialized in version comparison for headless CMS platforms.
 
