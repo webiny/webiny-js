@@ -91,13 +91,24 @@ customer data. Screenshots are not filtered, but you took them, so you know what
 ```
 cmd+shift+b
   → the dialog opens; type or dictate, paste screenshots
-  → reportBug mutation carries the text, events, environment and images to the API
-  ↓ API
-  → the first AI Power-Ups provider drafts title / summary / steps from the words + timeline
-  ├─ token set → images go to the bug-report-assets branch, the issue is created,
-  │              and its URL comes back
-  └─ no token  → a prefilled issues/new URL comes back for the reporter to open
+  → POST /stream/bug-report carries the text, events, environment and images
+  ↓ API, streaming back as it goes
+  → "drafting"    the first AI Power-Ups provider writes title / summary / steps
+  ├─ token set
+  │    → "uploading 1 of 2"   each image to the bug-report-assets branch
+  │    → "creating"           the issue itself
+  │    → "filed"              with the issue URL
+  └─ no token
+       → "compose"            with a prefilled issues/new URL to open
 ```
+
+The response is server-sent events, not a GraphQL mutation. Drafting calls a model and filing
+makes several GitHub round trips, so a report takes long enough that the dialog has to say what
+it is doing rather than sit on a spinner. Closing the dialog aborts the request.
+
+A background task would be wrong twice over: there is somebody watching, and the payload carries
+base64 screenshots, routinely megabytes, which cannot fit in a task's persisted `input` under
+DynamoDB's 400 kB item cap.
 
 The model writes five fields: `title`, `summary`, `stepsToReproduce`, `expected`, `actual`.
 Everything else in the body is assembled by `api/composeIssueBody.ts` from what was recorded,
@@ -131,11 +142,12 @@ capture/               pasted images and environment             (admin)
 speech/                dictation                                 (admin)
 presentation/report/   presenter and dialogs                     (admin)
 commands/              the command palette entry                 (admin)
-gateway/               the reportBug mutation client             (admin)
+gateway/               the SSE client for /stream/bug-report     (admin)
 api/config/            build params, and which mode they imply   (api)
 api/drafter/           the AI Power-Ups call                     (api)
 api/github/            filed mode: uploads and issue creation    (api)
 api/buildComposeUrl.ts compose mode: the prefilled URL           (api)
+api/SubmitBugReportRoute.ts  the SSE route that orchestrates it   (api)
 ```
 
 ## Known rough edges

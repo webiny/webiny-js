@@ -43,16 +43,14 @@ export interface IFiledIssue {
 }
 
 /*
- * Two ways a report can end, picked by whether the API has a GitHub token.
- *
- * "filed"   — the API created the issue and uploaded the screenshots. `number` is set.
- * "compose" — no token, so the API returns a prefilled new-issue URL for the reporter to open
- *             and submit themselves. Screenshots cannot ride along in a URL; they paste them.
+ * Streamed back while the report is being processed. Drafting calls a model and filing makes
+ * several GitHub round trips, which together take long enough that the dialog has to say what it
+ * is doing. Exactly one terminal event ends the stream: `filed`, `compose` or `error`.
  */
-export interface IBugReportOutcome {
-    mode: "filed" | "compose";
-    /* The filed issue when "filed", the prefilled composer when "compose". */
-    url: string;
-    /* Only set when "filed". */
-    number: number | null;
-}
+export type BugReportStreamEvent =
+    | { type: "drafting" }
+    | { type: "uploading"; index: number; total: number }
+    | { type: "creating" }
+    | { type: "filed"; url: string; number: number }
+    | { type: "compose"; url: string }
+    | { type: "error"; message: string };

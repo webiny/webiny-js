@@ -48,16 +48,22 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private status: string | null = null;
     private error: string | null = null;
     private outcome: IReportBugOutcomeVm | null = null;
+    private controller: AbortController | null = null;
 
     constructor(
         private recorder: ActionRecorder.Interface,
         private gateway: SubmitBugReportGateway.Interface,
         private dictation: SpeechDictation.Interface
     ) {
-        makeAutoObservable<ReportBugPresenterImpl, "recorder" | "gateway" | "dictation">(this, {
+        // `controller` is machinery, not state anything renders, so it stays out of the map.
+        makeAutoObservable<
+            ReportBugPresenterImpl,
+            "recorder" | "gateway" | "dictation" | "controller"
+        >(this, {
             recorder: false,
             gateway: false,
-            dictation: false
+            dictation: false,
+            controller: false
         });
     }
 
@@ -85,6 +91,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     close(): void {
         this.stopDictation();
+        this.abort();
         this.isOpen = false;
     }
 
@@ -129,19 +136,67 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             }
         }
 
-        try {
-            const outcome = await this.gateway.execute({
-                description: this.description.trim(),
-                reportedAt: this.capturedAt,
-                events: this.events,
-                environment: this.environment,
-                screenshots
-            });
+        const controller = new AbortController();
+        this.controller = controller;
 
-            this.markDone(outcome.mode, outcome.url);
+        const payload = {
+            description: this.description.trim(),
+            reportedAt: this.capturedAt,
+            events: this.events,
+            environment: this.environment,
+            screenshots
+        };
+
+        try {
+            for await (const event of this.gateway.execute(payload, controller.signal)) {
+                this.apply(event);
+            }
         } catch (error) {
-            this.markFailed(describeFailure(error));
+            // A close() mid-flight aborts the read, which is not something to report back.
+            if (!controller.signal.aborted) {
+                this.markFailed(describeFailure(error));
+            }
         }
+
+        this.controller = null;
+    }
+
+    /*
+     * Each event either updates what the dialog says it is doing, or ends the run. A stream that
+     * stops without a terminal event leaves `status` set, so the dialog stays busy rather than
+     * silently looking finished.
+     */
+    private apply(event: SubmitBugReportGateway.Event): void {
+        if (event.type === "drafting") {
+            this.setStatus("Writing up the report...");
+            return;
+        }
+        if (event.type === "uploading") {
+            this.setStatus(`Uploading screenshot ${event.index} of ${event.total}...`);
+            return;
+        }
+        if (event.type === "creating") {
+            this.setStatus("Creating the issue...");
+            return;
+        }
+        if (event.type === "error") {
+            this.markFailed(event.message);
+            return;
+        }
+
+        this.markDone(event.type, event.url);
+    }
+
+    private setStatus(status: string): void {
+        this.status = status;
+    }
+
+    private abort(): void {
+        if (!this.controller) {
+            return;
+        }
+        this.controller.abort();
+        this.controller = null;
     }
 
     private reset(): void {
