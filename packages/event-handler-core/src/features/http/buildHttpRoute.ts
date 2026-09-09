@@ -22,8 +22,14 @@ import type { IHttpRoute } from "~/features/http/abstractions.js";
  * function on the original — see the wrapping test in `HttpRouteDecoration.test.ts`.
  *
  * If `@webiny/di` ever grows a way to resolve a specific implementation through the decorating path
- * (`resolve()` accepting an implementation, or a `resolveImplementation()`), this can use it and
- * `HttpRouteHandler` decorators would start working without giving up lazy construction.
+ * (`resolve()` accepting an implementation, a `resolveImplementation()`, or `resolveWithDependencies`
+ * simply calling `applyDecorators` like every other path), this can use it and `HttpRouteHandler`
+ * decorators would start working without giving up lazy construction.
+ *
+ * That buys CROSS-CUTTING decoration — every route wrapped the same way, for timing or logging.
+ * It does NOT replace decorating the definition: a handler decorator receives only the route
+ * instance, which carries no name, so it cannot tell which route it is wrapping. Targeting one
+ * route stays a definition-level job.
  */
 export function buildHttpRoute(
     container: Container,
