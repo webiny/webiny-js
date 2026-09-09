@@ -12546,7 +12546,6 @@ __metadata:
     "@webiny/di": "npm:^1.1.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-server": "npm:0.0.0"
-    "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^6.0.0"
     tsx: "npm:4.23.12"
     typescript: "npm:^7.0.2"
