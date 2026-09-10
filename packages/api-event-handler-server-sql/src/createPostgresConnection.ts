@@ -2,6 +2,7 @@ import fs from "node:fs";
 import knex, { type Knex } from "knex";
 import type { ConnectionOptions } from "node:tls";
 import { toBoolean } from "@webiny/stdlib";
+import { withKnexDefaults } from "@webiny/api-core-sql";
 
 export interface CreatePostgresConnectionOptions {
     host?: string;
@@ -156,11 +157,13 @@ export function createPostgresConnection(options: CreatePostgresConnectionOption
         connectionConfig.keepAliveInitialDelayMillis = keepAliveInitialDelayMillis;
     }
 
-    return knex({
-        client: "pg",
-        connection: {
-            ...connectionConfig,
-            ...options.connection
-        }
-    });
+    return knex(
+        withKnexDefaults({
+            client: "pg",
+            connection: {
+                ...connectionConfig,
+                ...options.connection
+            }
+        })
+    );
 }

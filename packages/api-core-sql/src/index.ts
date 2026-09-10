@@ -6,6 +6,7 @@ export { createApiCoreSql } from "./createApiCoreSql.js";
 export { ApiCoreSqlFeature } from "./ApiCoreSqlFeature.js";
 export type { ApiCoreSqlConfig } from "./ApiCoreSqlFeature.js";
 export { getSqlTablePrefix } from "./getSqlTablePrefix.js";
+export { datesToIsoStrings, withKnexDefaults } from "./knexDefaults.js";
 export { SqlServiceManifestLoader } from "./serviceDiscovery/index.js";
 
 export { KnexClient } from "./feature/KnexClient/index.js";

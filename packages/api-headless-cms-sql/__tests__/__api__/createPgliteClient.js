@@ -1,6 +1,7 @@
 import knexLib from "knex";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
+import { withKnexDefaults } from "@webiny/api-core-sql";
 
 export async function createKnex() {
     const db = await PGlite.create();
@@ -10,15 +11,17 @@ export async function createKnex() {
     global.__testPglite = db;
     global.__testPgliteServer = server;
 
-    return knexLib({
-        client: "pg",
-        connection: {
-            host: "127.0.0.1",
-            port: server.port,
-            database: "postgres"
-        },
-        pool: { min: 1, max: 1 }
-    });
+    return knexLib(
+        withKnexDefaults({
+            client: "pg",
+            connection: {
+                host: "127.0.0.1",
+                port: server.port,
+                database: "postgres"
+            },
+            pool: { min: 1, max: 1 }
+        })
+    );
 }
 
 export async function dropAllTables(knex) {

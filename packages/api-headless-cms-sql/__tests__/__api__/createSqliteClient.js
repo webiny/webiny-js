@@ -1,13 +1,16 @@
 import knexLib from "knex";
+import { withKnexDefaults } from "@webiny/api-core-sql";
 
 export function createKnex() {
-    return knexLib({
-        client: "better-sqlite3",
-        connection: {
-            filename: ":memory:"
-        },
-        useNullAsDefault: true
-    });
+    return knexLib(
+        withKnexDefaults({
+            client: "better-sqlite3",
+            connection: {
+                filename: ":memory:"
+            },
+            useNullAsDefault: true
+        })
+    );
 }
 
 export async function dropAllTables(knex) {
