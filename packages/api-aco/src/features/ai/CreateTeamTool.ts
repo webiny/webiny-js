@@ -3,13 +3,22 @@ import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
 import { CreateTeam } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
 import { ListRolesUseCase } from "@webiny/api-core/features/security/roles/ListRoles/index.js";
+import { descriptionOnCreate } from "@webiny/api-core/features/security/shared/index.js";
 
 const inputSchema = z.object({
     name: z.string().describe("Human-readable team name, e.g. 'Marketing'."),
     slug: z
         .string()
         .describe("URL-safe identifier, e.g. 'marketing'. Lowercase, hyphens instead of spaces."),
-    description: z.string().describe("What the team is for. Shown in the admin UI."),
+    /*
+     * Optional and capped, mirroring the use case's own schema. Requiring it made the model invent a
+     * description for every team; `CreateTeam` treats an absent one as empty via `descriptionOnCreate`.
+     */
+    description: z
+        .string()
+        .max(500)
+        .optional()
+        .describe("What the team is for. Shown in the admin UI. Omit it if the user did not say."),
     roles: z
         .array(z.string())
         .describe(
@@ -76,7 +85,8 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
         const result = await this.createTeam.execute({
             name: input.name,
             slug: input.slug,
-            description: input.description,
+            // An omitted description becomes "", the same mapping the use case applies to its own input.
+            description: descriptionOnCreate(input.description),
             roles: input.roles
         });
 
