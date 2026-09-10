@@ -239,6 +239,48 @@ written before that point carries no ids until its next save, so the differ need
 behaviour for absent ids and for the absent-to-present transition — which must read as identity
 being established, not as wholesale replacement.
 
+### 3b — delivered
+
+143 unit tests passing, build and lint clean.
+
+The differ is parameterised over a `FieldDescriptor` tree rather than over `CmsModel`, so `core/`
+still carries no CMS import and every behaviour is testable from hand-written descriptors and
+hand-written values. `cms/model/toFieldDescriptors.ts` projects a real model onto it.
+
+```
+core/diff/
+  descriptors.ts    FieldDescriptor tree, template resolution, label lookup
+  contentHash.ts    identity-stripped hashing
+  matchItems.ts     three-pass item matching + longest increasing subsequence
+  diffValues.ts     the two-tree walk
+  rollUp.ts         the cap
+```
+
+**Item matching runs in three passes of decreasing confidence** — stable id, then content hash,
+then a positional zip. The third pass was not in the brief and is load-bearing on this branch: with
+no ids and no content match, editing one item of a list of objects would otherwise report a removal
+plus an addition for what was a single edit. Since `next` has no stable ids at all, that is the
+ordinary case here, not an edge case. The zip is gated on at least one side lacking an id, so
+id-bearing lists stay strict.
+
+**Two interpretations worth confirming, both marked in tests:**
+
+- **A moved block is still descended into.** "Structural operations at block level without
+  descending" is applied to additions, removals and template replacements — an added block is one
+  entry, not one per field inside it. A moved block exists on both sides, so its move is reported
+  _and_ its contents compared: dragging a block and editing it in one save is two things, and a
+  reader wants both.
+- **The cap keeps the first N entries and collapses the remainder** to their nearest common
+  ancestor, labelled from the model. Collapsing rather than dropping is what keeps the record
+  honest — the reader is told more changed and where. When the overflow is a single entry its own
+  path is its common ancestor, so nothing is summarised away and only `truncated` is set.
+
+**One documented boundary of the churn rule.** It recognises a new id whose _content_ matches
+something that disappeared. When content changed too, and both sides carry ids, nothing is left to
+match on and the block reports as removed plus added. Reporting it as an edit would mean assuming
+position implies identity, which is the assumption stable ids exist to remove. The cost is narrow:
+an import that rewrites every id _and_ edits some blocks reports those blocks as replaced.
+
 ---
 
 ## Checkpoint 4 — publishing workflow activity
