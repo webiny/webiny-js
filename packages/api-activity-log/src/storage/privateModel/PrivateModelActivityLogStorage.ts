@@ -13,11 +13,14 @@ import { entryToRecord, recordToValues } from "./ActivityRecordMapper.js";
 const DEFAULT_LIMIT = 50;
 
 /**
- * Bounds `deleteAllForTarget`. At 50 records a pass this clears 10,000 records per invocation,
- * comfortably more than a single entry accumulates, while still terminating if a backend keeps
- * returning records it has reported as deleted.
+ * Bounds one `deleteAllForTarget` call to 20 pages, so roughly a thousand records.
+ *
+ * Kept small deliberately. Each pass costs a full model read on the DynamoDB-only backend, and the
+ * caller is a background task that has to regain control often enough to check its own timeout —
+ * a chunk that runs for the whole Lambda budget would be killed mid-flight instead of continuing
+ * cleanly. Finishing the job is the task's business, not this method's.
  */
-const MAX_DELETE_PASSES = 200;
+const MAX_DELETE_PASSES = 20;
 
 /**
  * Activity records stored one-per-entry in a private CMS model.
@@ -92,16 +95,18 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
     async deleteAllForTarget(target: ActivityTarget) {
         try {
             const model = await this.modelProvider.get();
+            let deleted = 0;
 
             // Each pass re-reads from the start rather than following a cursor, because deleting
             // the page just read shifts the offset that this backend's cursor encodes.
             //
-            // That is the same shape as EmptyTrashBinTaskDefinition's loop, minus the two things
-            // wrong with it. A failed delete returns instead of being swallowed, so the loop
-            // cannot spin on a record it will never remove; and the pass budget bounds it even if
-            // a backend reports a record as deleted while still returning it, which eventual
-            // consistency makes possible. Running out of passes is reported as unfinished work,
-            // not as success, so the caller comes back for the rest.
+            // That is the same shape as EmptyTrashBinTaskDefinition's loop, without the two things
+            // wrong with it. A failed delete returns rather than being swallowed, so the loop
+            // cannot spin on a record it will never remove. And the pass budget bounds the chunk
+            // even if a backend keeps returning records it has reported as deleted, which
+            // eventual consistency makes possible — reported as unfinished work rather than as
+            // success, with the count of what was removed so the caller can tell progress from a
+            // stall.
             for (let pass = 0; pass < MAX_DELETE_PASSES; pass++) {
                 const page = await this.list({ target, limit: DEFAULT_LIMIT });
 
@@ -110,30 +115,28 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
                 }
 
                 if (page.value.records.length === 0) {
-                    return Result.ok();
+                    return Result.ok({ finished: true, deleted });
                 }
 
                 for (const record of page.value.records) {
-                    const deleted = await this.deleteEntry.execute(model, record.id, {
+                    const outcome = await this.deleteEntry.execute(model, record.id, {
                         permanently: true
                     });
 
-                    // Already gone is the outcome we wanted, and is expected whenever a previous
-                    // invocation stopped part-way through this target.
-                    if (deleted.isFail() && deleted.error.code !== "Cms/Entry/NotFound") {
-                        return Result.fail(new ActivityLogPersistenceError(deleted.error));
+                    if (outcome.isFail()) {
+                        // Already gone is the outcome we wanted, and is expected whenever a
+                        // previous invocation stopped part-way through this target.
+                        if (outcome.error.code !== "Cms/Entry/NotFound") {
+                            return Result.fail(new ActivityLogPersistenceError(outcome.error));
+                        }
+                        continue;
                     }
+
+                    deleted++;
                 }
             }
 
-            return Result.fail(
-                new ActivityLogPersistenceError(
-                    new Error(
-                        `Did not finish deleting activity records for ${target.type} "${target.id}" ` +
-                            `within ${MAX_DELETE_PASSES} passes. Records remain; invoke again to continue.`
-                    )
-                )
-            );
+            return Result.ok({ finished: false, deleted });
         } catch (error) {
             return Result.fail(new ActivityLogPersistenceError(error as Error));
         }

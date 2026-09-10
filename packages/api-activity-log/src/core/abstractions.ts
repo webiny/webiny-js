@@ -19,6 +19,13 @@ export interface IActivityLogListResult {
     hasMore: boolean;
 }
 
+export interface IActivityLogDeletionProgress {
+    /** False when records remain and the caller should invoke again. */
+    finished: boolean;
+    /** How many records this call removed. Zero alongside `finished: false` means no progress. */
+    deleted: number;
+}
+
 /**
  * The whole storage surface, deliberately narrow.
  *
@@ -38,10 +45,18 @@ export interface IActivityLogStorage {
     ): Promise<Result<IActivityLogListResult, ActivityLogReadError>>;
 
     /**
-     * Remove every record for a target. Idempotent, so a caller that times out part-way through
-     * can simply be invoked again.
+     * Remove records for a target, in a bounded chunk. Idempotent, so a caller that stops
+     * part-way through can simply invoke again.
+     *
+     * Reports progress rather than only success or failure, because its caller is a background
+     * task that has to tell three outcomes apart: finished, more remain, and broken. Collapsing
+     * the middle case into either of the others is what makes a cleanup loop spin — which is the
+     * defect `EmptyTrashBinTaskDefinition` has, where a persistently failing delete is swallowed
+     * and the loop re-reads the same page until the timeout check breaks it.
      */
-    deleteAllForTarget(target: ActivityTarget): Promise<Result<void, ActivityLogPersistenceError>>;
+    deleteAllForTarget(
+        target: ActivityTarget
+    ): Promise<Result<IActivityLogDeletionProgress, ActivityLogPersistenceError>>;
 }
 
 export const ActivityLogStorage = createAbstraction<IActivityLogStorage>("ActivityLog/Storage");
@@ -50,4 +65,5 @@ export namespace ActivityLogStorage {
     export type Interface = IActivityLogStorage;
     export type ListParams = IActivityLogListParams;
     export type ListResult = IActivityLogListResult;
+    export type DeletionProgress = IActivityLogDeletionProgress;
 }

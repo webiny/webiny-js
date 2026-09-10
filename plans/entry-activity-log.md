@@ -220,6 +220,41 @@ pattern being deliberately declined.
 **Two coverage guards**, as tests, not conventions: every entry write use case publishes an event;
 every entry event has a handler or an explicit, named opt-out.
 
+### 3a — delivered
+
+278 unit tests passing, build and lint clean, `adio` clean.
+
+Twelve thin handlers over a shared `EntryActivityRecorder`, the purge task, the coverage guards.
+
+**Failure containment is tested from nine angles**, since it is the requirement that matters most:
+storage returning a failed `Result`, rejecting, and throwing synchronously; identity resolution
+throwing; source resolution throwing; a malformed model, a malformed entry, and model fields that
+are not the shape the type claims. Every one asserts `record()` resolves. The failure is reported
+to the console rather than swallowed silently.
+
+**Source labelling needed the task probe, which is a finding rather than a design choice.**
+Identity alone cannot distinguish a scheduled publish from a hand-clicked one: `TaskControl` and
+`ExecuteScheduledActionUseCase` both impersonate the initiating human, so both writes arrive with
+the same identity of the same type. Without a probe, every machine-executed write would be recorded
+as that editor having done it by hand. `TaskExecutionContext` is the intent channel that already
+exists — its presence answers "is a task running", its store's task answers "which one" — so source
+resolves to `task:<definitionId>`, falling back to the identity type. It is an _optional_ DI
+dependency, because a project that has not registered background tasks must not make the recorder
+unconstructable.
+
+**Scheduled publishing verified, not assumed.** `PublishActionHandler` injects and calls
+`PublishEntryUseCase` / `UnpublishEntryUseCase` / `RepublishEntryUseCase`, so a scheduled publish
+executing does fire the ordinary entry events and is captured. Scheduling and cancelling still
+reach no entry event and remain out of scope.
+
+**`deleteAllForTarget` now reports progress** — `{ finished, deleted }` rather than `void`. The task
+has to tell three outcomes apart: finished, more remain, and broken. Collapsing the middle case is
+precisely what makes `EmptyTrashBinTaskDefinition` spin, and the purge task's loop is tested against
+that: it stops on a stall (work remaining, nothing deleted) rather than retrying forever.
+
+**The tier gate could not be closed.** See the pre-pull-request items; the interim state is a
+required `enabled` parameter with no default, so nothing self-registers.
+
 ### 3b — the differ
 
 A pure function over two value trees, which is what makes it testable independently of whether the
@@ -424,13 +459,29 @@ a representative model, skipped with a warning if the registry ever stops buildi
 
 Deferred decisions that must be closed before the pull request opens, not carried into it.
 
-- **The tier gate.** `ActivityLogAppFeature` calls `isEnabled("activityLog")`, and an unknown flag
-  name resolves to _enabled_ for anyone holding any license, so as written the gate reads as if it
-  works while gating nothing. Harmless today only because nothing registers the feature yet.
-  Closing it means adding `activityLog` to `KnownFeatureFlag` and to `LICENSE_CHECKS` behind a new
-  `canUseActivityLog()` in `packages/wcp` — and the WCP-issued license payload has to carry
-  `features.activityLog` before it can be switched on for anyone, which is a change outside this
-  repository.
+- **The tier gate. Blocked, reported at the end of Checkpoint 3a rather than improvised.**
+
+  It was meant to close there, and the reason it cannot is worth recording: **there is no public
+  way to gate on a feature-flag name the platform does not already know.** `isEnabled` answers
+  _true_ for an unregistered name as long as any licence exists (`LICENSE_CHECKS` rule 6),
+  `isExplicitlyDisabled` answers false, and `toDto()` re-derives only the names already in
+  `IFeatureFlagsDto`. Every route runs through other packages.
+
+  Closing it needs: `activityLog` in `IFeatureFlagsDto`, `KnownFeatureFlag` and
+  `FeatureFlags.toDto()` (`packages/feature-flags`); `canUseActivityLog()` on `ILicense`,
+  `License`, `NullLicense` and `ReactLicense` (`packages/wcp`, `packages/app-admin`); an
+  `ACTIVITY_LOG` entry in `PROJECT_PACKAGE_FEATURE_NAME`, `WCP_FEATURE_LABEL` and
+  `ProjectPackageFeatures` (`packages/wcp`); and the flag added to both `LICENSE_CHECKS` maps
+  (`packages/api-core`, `packages/project`). Five packages, and it changes the shape of an
+  externally issued licence.
+
+  It also **cannot ever evaluate true until WCP issues `features.activityLog`**, which is outside
+  this repository — so the entitlement is a commercial decision as much as a technical one.
+
+  **Interim state, deliberately not a fake gate:** `ActivityLogAppFeature` takes a required
+  `enabled` parameter with no default. Nothing registers unless a caller states intent, so the
+  feature cannot switch itself on, and the missing wiring is visible at the call site instead of
+  hidden behind a lookup that lies.
 
 Then the pull request against `next`, conventional-commit title.
 
