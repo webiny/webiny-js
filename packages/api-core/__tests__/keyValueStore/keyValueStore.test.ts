@@ -177,6 +177,28 @@ describe("KeyValueStore Feature", () => {
                 expect(getResult.value).toEqual({ count: 2 });
             });
         });
+
+        describe("expiresAt", () => {
+            it("should still return a value whose expiry is in the future", async () => {
+                const expiresAt = new Date(Date.now() + 60_000);
+
+                await globalKeyValueStore.set("session/fresh", { token: "abc" }, { expiresAt });
+
+                const getResult = await globalKeyValueStore.get("session/fresh");
+                expect(getResult.isOk()).toBe(true);
+                expect(getResult.value).toEqual({ token: "abc" });
+            });
+
+            it("should treat a value whose expiry has passed as missing", async () => {
+                const expiresAt = new Date(Date.now() - 60_000);
+
+                await globalKeyValueStore.set("session/stale", { token: "abc" }, { expiresAt });
+
+                const getResult = await globalKeyValueStore.get("session/stale");
+                expect(getResult.isFail()).toBe(true);
+                expect(getResult.error.code).toBe("KeyValueStore/KeyNotFound");
+            });
+        });
     });
 
     describe("KeyValueStore (Tenant-aware)", () => {
