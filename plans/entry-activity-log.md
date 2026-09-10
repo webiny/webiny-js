@@ -571,6 +571,58 @@ containers; presentation in components that the follow-up can replace outright.
 Cover: the grouped timeline, an expanded save, structural changes, review transitions, both
 filters, pagination, the empty state, and an entry that predates the feature.
 
+### Delivered
+
+`packages/app-activity-log`, 73 tests over the shaping layer. Builds, lints and `adio` clean.
+
+**All the shaping is pure and tested; none of it is in a component.** `src/timeline/` has no React
+in it at all:
+
+```
+src/timeline/
+  deriveTimelineState.ts   which empty state, and whether coverage is complete
+  collapseConsecutive.ts   merging runs of saves into one row
+  groupByRevision.ts       grouping under revisions, ordering, version parsing
+  describeChange.ts        deep paths into readable text
+  summariseItem.ts         what a closed row states, and what expanding discloses
+src/hooks/
+  buildTimelineView.ts     the whole pipeline as one pure function
+  useActivityTimeline.ts   fetching, paging, filtering — state only
+```
+
+The components arrange what those return and decide nothing. That is the difference between the
+handover replacing layout and the handover being a rewrite.
+
+**The two pre-feature states are three states, following review.** The distinction that matters is
+not "empty versus predates" but which of three statements is true:
+
+| Situation                       | State                             | What it says                                                         |
+| ------------------------------- | --------------------------------- | -------------------------------------------------------------------- |
+| Filter matches nothing          | `empty-filtered`                  | No activity matches these filters                                    |
+| No records at all               | `empty-unrecorded`                | We have no record of this entry's history                            |
+| Records, but no creation record | `populated` + `coverage: partial` | Shows the activity, plus: history before this point was not recorded |
+
+The third is the common one after an upgrade — created before the feature, edited yesterday — and
+it needs the activity _and_ the boundary, not one or the other.
+
+**Coverage is discriminated on the presence of an `entry.create` record, not on a date.** A date
+comparison against the entry's `createdOn` cannot separate the second row from the third: both have
+a `createdOn` earlier than their first record. Coverage is also deliberately not asserted while a
+filter is active or pages remain, since the creation record may simply be filtered out or on a
+later page — claiming partial coverage there would print a "not recorded" boundary over a complete
+history.
+
+**Two decisions worth naming, both in pure functions rather than components:**
+
+- **Only saves collapse.** A run of saves by one person is one editing session. Two publishes are
+  two publishes, and a publish followed by an unpublish is a story — merging distinct actions, or
+  the same action by different people, would make the timeline shorter and wrong. Two _redacted_
+  actors never merge either: that would assert they were the same person, which is exactly what a
+  reader without actor identity may not know.
+- **A closed row says how much changed, not what.** The field list is what expanding is for, and
+  an expanded row states `valuesAvailable: false` as a field rather than leaving an empty space to
+  be read as a bug.
+
 ---
 
 ## Checkpoint 7 — tests and pull request
