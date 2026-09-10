@@ -57,7 +57,7 @@ const harness = (options: HarnessOptions = {}) => {
             ? Result.ok({ modelId: "article", fields: [] } as unknown as CmsModel)
             : Result.fail(new Error("no such model") as never)
     );
-    const getTargetEntry = vi.fn(async () => {
+    const getTargetEntry = vi.fn(async (_model: CmsModel, _where: { id: string }) => {
         if (!entryReadable) {
             return Result.fail({ code: "Cms/Entry/NotAuthorized" } as never);
         }
@@ -66,7 +66,9 @@ const harness = (options: HarnessOptions = {}) => {
         }
         return Result.ok({ id: "abc#0003", entryId: "abc" } as never);
     });
-    const list = vi.fn(async () => Result.ok({ records, cursor: null, hasMore: false }));
+    const list = vi.fn(async (_params: ActivityLogStorage.ListParams) =>
+        Result.ok({ records, cursor: null, hasMore: false })
+    );
 
     container.registerInstance(ActivityLogPermissions, {
         canAccess: async (entityId: string) => (entityId === "actor" ? actor : timeline)
@@ -310,7 +312,9 @@ describe("the changeset filter", () => {
     });
 
     it("receives the resolved model, so a filter can resolve paths to fields", async () => {
-        const filter = { filter: vi.fn(async (records: ActivityRecord[]) => records) };
+        const filter = {
+            filter: vi.fn(async (records: ActivityRecord[], _model: CmsModel) => records)
+        };
         const { useCase } = harness({ filter });
 
         await useCase.execute(params);
@@ -322,7 +326,7 @@ describe("the changeset filter", () => {
 describe("pagination", () => {
     it("passes the cursor through untouched and hands back the storage cursor", async () => {
         const container = new Container();
-        const list = vi.fn(async () =>
+        const list = vi.fn(async (_params: ActivityLogStorage.ListParams) =>
             Result.ok({ records: [record()], cursor: "opaque-next", hasMore: true })
         );
 

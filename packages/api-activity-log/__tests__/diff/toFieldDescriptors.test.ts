@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsDynamicZoneTemplate,
+    CmsModelField
+} from "@webiny/api-headless-cms/types/index.js";
 import { modelToFieldDescriptors, toFieldDescriptors } from "~/cms/model/toFieldDescriptors.js";
 import { diffValues } from "~/core/diff/diffValues.js";
 import { summarise } from "./descriptorHelpers.js";
@@ -14,6 +17,21 @@ const field = (overrides: Partial<CmsModelField> & { fieldId: string }): CmsMode
         listValidation: [],
         ...overrides
     }) as CmsModelField;
+
+/**
+ * A dynamic-zone template. Only `id`, `name` and `fields` matter here; the rest of the type is
+ * GraphQL and admin-layout metadata that neither the differ nor the AST converter reads.
+ */
+const template = (
+    overrides: Partial<CmsDynamicZoneTemplate> & { id: string; name: string }
+): CmsDynamicZoneTemplate => ({
+    gqlTypeName: overrides.name,
+    description: "",
+    fields: [],
+    layout: [],
+    validation: [],
+    ...overrides
+});
 
 describe("toFieldDescriptors", () => {
     it("projects a scalar field", () => {
@@ -77,7 +95,11 @@ describe("toFieldDescriptors", () => {
                 list: true,
                 settings: {
                     templates: [
-                        { id: "hero", name: "Hero", fields: [field({ fieldId: "headline" })] }
+                        template({
+                            id: "hero",
+                            name: "Hero",
+                            fields: [field({ fieldId: "headline" })]
+                        })
                     ]
                 }
             })
@@ -155,7 +177,11 @@ describe("toFieldDescriptors, end to end through the differ", () => {
                     list: true,
                     settings: {
                         templates: [
-                            { id: "hero", name: "Hero", fields: [field({ fieldId: "headline" })] }
+                            template({
+                                id: "hero",
+                                name: "Hero",
+                                fields: [field({ fieldId: "headline" })]
+                            })
                         ]
                     }
                 })

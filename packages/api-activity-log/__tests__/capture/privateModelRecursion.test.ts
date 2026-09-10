@@ -23,7 +23,7 @@ import { WORKFLOW_STATE_MODEL_ID } from "@webiny/api-workflows/domain/workflowSt
  */
 
 const model = (modelId: string, isPrivate: boolean): CmsModel =>
-    ({ modelId, isPrivate, fields: [] }) as CmsModel;
+    ({ modelId, isPrivate, fields: [] }) as unknown as CmsModel;
 
 const entry = (): CmsEntry => ({ id: "abc#0001", entryId: "abc", values: {} }) as CmsEntry;
 

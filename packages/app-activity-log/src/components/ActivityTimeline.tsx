@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Alert, Button, Heading, Select, Separator, Skeleton, Text } from "@webiny/admin-ui";
+import { Button, Heading, Separator, Skeleton, Text } from "@webiny/admin-ui";
 import { discloseItem, summariseItem } from "~/timeline/summariseItem.js";
 import { parseVersion, type TimelineGroup } from "~/timeline/groupByRevision.js";
 import type { TimelineItem } from "~/timeline/collapseConsecutive.js";
 import type { TimelineCoverage } from "~/timeline/deriveTimelineState.js";
 import { useActivityTimeline } from "~/hooks/useActivityTimeline.js";
+import { ActivityTimelineFilters } from "./ActivityTimelineFilters.js";
+import type { TimelineFilters, TimelineView } from "~/hooks/buildTimelineView.js";
 
 /**
  * Plain presentation, deliberately.
@@ -58,16 +60,32 @@ const OPERATION_LABELS: Record<string, string> = {
     replaced: "replaced"
 };
 
+/**
+ * A plain notice rather than the design system's `Alert`.
+ *
+ * `Alert` renders an icon that does not resolve under jsdom, which made the state acceptance tests
+ * unable to read the very statements they exist to check. Since the handover is restyling all of
+ * this anyway, a plain element that reliably says the thing is worth more here than the right
+ * component that intermittently does not.
+ */
+const Notice = ({ children }: { children: React.ReactNode }) => (
+    <div className={"mb-sm p-sm border-solid border-sm border-neutral-dimmed rounded-md"}>
+        <Text as={"div"} size={"sm"}>
+            {children}
+        </Text>
+    </div>
+);
+
 const CoverageNotice = ({ coverage }: { coverage: TimelineCoverage }) => {
     if (coverage.kind === "complete") {
         return null;
     }
 
     return (
-        <Alert type={"info"} className={"mb-sm"}>
+        <Notice>
             History before {formatTimestamp(coverage.recordedFrom)} was not recorded. Activity began
             being captured at that point.
-        </Alert>
+        </Notice>
     );
 };
 
@@ -161,83 +179,51 @@ const RevisionGroup = ({ group }: { group: TimelineGroup }) => {
     );
 };
 
-const Filters = ({
-    revisions,
-    actors,
-    filters,
-    onChange,
-    onClear
-}: {
-    revisions: string[];
-    actors: { id: string; displayName: string }[];
-    filters: { revision?: string; actorId?: string };
-    onChange(next: { revision?: string; actorId?: string }): void;
-    onClear(): void;
-}) => (
-    <div className={"flex gap-sm items-end mb-sm"}>
-        <Select
-            label={"Revision"}
-            value={filters.revision ?? ""}
-            options={[
-                { value: "", label: "All revisions" },
-                ...revisions.map(revision => ({ value: revision, label: revision }))
-            ]}
-            onChange={(value: string) => onChange({ ...filters, revision: value || undefined })}
-        />
-        {actors.length > 0 ? (
-            <Select
-                label={"Person"}
-                value={filters.actorId ?? ""}
-                options={[
-                    { value: "", label: "Anyone" },
-                    ...actors.map(actor => ({ value: actor.id, label: actor.displayName }))
-                ]}
-                onChange={(value: string) => onChange({ ...filters, actorId: value || undefined })}
-            />
-        ) : null}
-        {filters.revision || filters.actorId ? (
-            <Button variant={"ghost"} size={"sm"} onClick={onClear} text={"Clear filters"} />
-        ) : null}
-    </div>
-);
+export interface ActivityTimelineViewProps {
+    view: TimelineView;
+    loading: boolean;
+    loadingMore: boolean;
+    error: string | null;
+    hasMore: boolean;
+    filters: TimelineFilters;
+    setFilters(filters: TimelineFilters): void;
+    clearFilters(): void;
+    loadMore(): void;
+}
 
-export const ActivityTimeline = ({ targetType, targetId, modelId }: ActivityTimelineProps) => {
-    const {
-        view,
-        loading,
-        loadingMore,
-        error,
-        hasMore,
-        filters,
-        setFilters,
-        clearFilters,
-        loadMore
-    } = useActivityTimeline({ targetType, targetId, modelId });
-
+/**
+ * Presentation only, taking everything as props.
+ *
+ * Split from the connected component so every state can be rendered without a container, a
+ * gateway or a network call — which is what makes the eight states executable acceptance criteria
+ * rather than a checklist someone reads. This is the component the design handover replaces; the
+ * connector below is the part that stays.
+ */
+export const ActivityTimelineView = ({
+    view,
+    loading,
+    loadingMore,
+    error,
+    hasMore,
+    clearFilters,
+    loadMore
+}: ActivityTimelineViewProps) => {
     if (loading) {
         return <Skeleton className={"h-32"} />;
     }
 
     if (error) {
-        return <Alert type={"danger"}>Could not load activity: {error}</Alert>;
+        return <Notice>Could not load activity: {error}</Notice>;
     }
 
     return (
         <div>
-            <Filters
-                revisions={view.revisions}
-                actors={view.actors}
-                filters={filters}
-                onChange={setFilters}
-                onClear={clearFilters}
-            />
-
             {/*
               The two states that get skipped when building against a populated instance. They are
               different statements: nothing has been recorded, versus nothing matches the filter.
             */}
             {view.state.status === "empty-filtered" ? (
-                <Alert type={"info"}>
+                <Notice>
                     No activity matches these filters.{" "}
                     <Button
                         variant={"ghost"}
@@ -245,14 +231,14 @@ export const ActivityTimeline = ({ targetType, targetId, modelId }: ActivityTime
                         onClick={clearFilters}
                         text={"Clear filters"}
                     />
-                </Alert>
+                </Notice>
             ) : null}
 
             {view.state.status === "empty-unrecorded" ? (
-                <Alert type={"info"}>
+                <Notice>
                     We have no record of this entry&apos;s history. It was last changed before
                     activity was recorded, so nothing is missing — there is simply nothing to show.
-                </Alert>
+                </Notice>
             ) : null}
 
             {view.state.status === "populated" ? (
@@ -273,5 +259,27 @@ export const ActivityTimeline = ({ targetType, targetId, modelId }: ActivityTime
                 </>
             ) : null}
         </div>
+    );
+};
+
+/**
+ * The connected component: resolves the timeline for a target and hands it to the view.
+ *
+ * Deliberately holds no rendering of its own.
+ */
+export const ActivityTimeline = ({ targetType, targetId, modelId }: ActivityTimelineProps) => {
+    const timeline = useActivityTimeline({ targetType, targetId, modelId });
+
+    return (
+        <>
+            <ActivityTimelineFilters
+                revisions={timeline.view.revisions}
+                actors={timeline.view.actors}
+                filters={timeline.filters}
+                onChange={timeline.setFilters}
+                onClear={timeline.clearFilters}
+            />
+            <ActivityTimelineView {...timeline} />
+        </>
     );
 };

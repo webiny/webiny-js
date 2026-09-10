@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
 import type {
+    CmsDynamicZoneTemplate,
     CmsModelAst,
     CmsModelFieldAstNode,
     CmsModelField
@@ -35,6 +36,21 @@ const field = (overrides: Partial<CmsModelField> & { fieldId: string }): CmsMode
         listValidation: [],
         ...overrides
     }) as CmsModelField;
+
+/**
+ * A dynamic-zone template. Only `id`, `name` and `fields` matter here; the rest of the type is
+ * GraphQL and admin-layout metadata that neither the differ nor the AST converter reads.
+ */
+const template = (
+    overrides: Partial<CmsDynamicZoneTemplate> & { id: string; name: string }
+): CmsDynamicZoneTemplate => ({
+    gqlTypeName: overrides.name,
+    description: "",
+    fields: [],
+    layout: [],
+    validation: [],
+    ...overrides
+});
 
 /** A model exercising every shape that nests: object, list of objects, dynamic zone, scalars. */
 const representativeModel = {
@@ -79,7 +95,7 @@ const representativeModel = {
             list: true,
             settings: {
                 templates: [
-                    {
+                    template({
                         id: "hero",
                         name: "Hero",
                         fields: [
@@ -90,8 +106,8 @@ const representativeModel = {
                                 settings: { fields: [field({ fieldId: "url" })] }
                             })
                         ]
-                    },
-                    { id: "text", name: "Text", fields: [field({ fieldId: "body" })] }
+                    }),
+                    template({ id: "text", name: "Text", fields: [field({ fieldId: "body" })] })
                 ]
             }
         })

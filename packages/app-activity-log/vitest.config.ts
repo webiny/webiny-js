@@ -3,6 +3,6 @@ import { createTestConfig } from "../../testing";
 export default async () => {
     return createTestConfig({
         path: import.meta.dirname,
-        vitestConfig: { fileParallelism: true }
+        vitestConfig: { environment: "jsdom", fileParallelism: true }
     });
 };

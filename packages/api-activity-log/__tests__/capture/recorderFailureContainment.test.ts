@@ -5,10 +5,12 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import { ActivityLogPersistenceError } from "~/core/errors.js";
+import type { ActivityRecordInput } from "~/core/types.js";
 import {
     ActivitySourceResolver,
     ActivityWriter,
-    EntryActivityRecorder
+    EntryActivityRecorder,
+    type IWriteActivityParams
 } from "~/cms/recorder/abstractions.js";
 import { ActivityWriter as ActivityWriterImpl } from "~/cms/recorder/ActivityWriter.js";
 import { EntryActivityRecorder as EntryActivityRecorderImpl } from "~/cms/recorder/EntryActivityRecorder.js";
@@ -33,7 +35,7 @@ const entry = (overrides: Partial<CmsEntry> = {}): CmsEntry =>
     ({ id: "abc#0001", entryId: "abc", values: {}, ...overrides }) as CmsEntry;
 
 const writerHarness = (
-    appendImpl: (...args: unknown[]) => unknown,
+    appendImpl: (record: ActivityRecordInput) => unknown,
     options: { identityThrows?: boolean; sourceThrows?: boolean } = {}
 ) => {
     const container = new Container();
@@ -73,7 +75,9 @@ const writerHarness = (
     return { writer: container.resolve(ActivityWriter), append };
 };
 
-const recorderHarness = (writeImpl: (...args: unknown[]) => unknown = async () => undefined) => {
+const recorderHarness = (
+    writeImpl: (params: IWriteActivityParams) => unknown = async () => undefined
+) => {
     const container = new Container();
     const write = vi.fn(writeImpl);
 

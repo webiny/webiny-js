@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { Result } from "@webiny/feature/api";
 import type { ActivityLogStorage } from "~/core/abstractions.js";
 import type { ActivityRecordInput } from "~/core/types.js";
 
@@ -29,11 +30,12 @@ export interface StorageUnderTest {
  * A conformance suite must never let a failed call look like an empty one: `records.length === 0`
  * and "the query blew up" are different findings and only one of them is a bug in the caller.
  */
-const unwrap = <T>(result: { isOk(): boolean; value?: T; error?: unknown }, what: string): T => {
-    if (!result.isOk()) {
-        throw new Error(`${what} failed: ${String((result as { error?: unknown }).error)}`);
+const unwrap = <T, E>(result: Result<T, E>, what: string): T => {
+    if (result.isFail()) {
+        throw new Error(`${what} failed: ${String(result.error)}`);
     }
-    return result.value as T;
+
+    return result.value;
 };
 
 let targetCounter = 0;
@@ -196,7 +198,10 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                     let guard = 0;
 
                     do {
-                        const page = unwrap(
+                        // Annotated rather than inferred: `cursor` is narrowed inside the loop by
+                        // the assignment below, which depends on this call, and TypeScript reads
+                        // that as circular and falls back to `any`.
+                        const page: ActivityLogStorage.ListResult = unwrap(
                             await storage.list({
                                 target: { type: "cms-entry", id: targetId },
                                 limit: 3,

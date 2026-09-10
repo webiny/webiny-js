@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
-import { ActivityWriter, ReviewActivityRecorder } from "~/cms/recorder/abstractions.js";
+import {
+    ActivityWriter,
+    type IRecordReviewActivityParams,
+    type IWriteActivityParams,
+    ReviewActivityRecorder
+} from "~/cms/recorder/abstractions.js";
 import { ReviewActivityRecorder as ReviewActivityRecorderImpl } from "~/cms/review/ReviewActivityRecorder.js";
 import { WorkflowStateApproveStepHandler } from "@webiny/api-workflows/features/workflowState/ApproveWorkflowStateStep/events.js";
 import { WorkflowStateRejectHandler } from "@webiny/api-workflows/features/workflowState/RejectWorkflowStateStep/events.js";
@@ -21,7 +26,7 @@ const state = (overrides: Record<string, unknown> = {}) =>
         ...overrides
     }) as never;
 
-const harness = (writeImpl: (...args: unknown[]) => unknown = async () => undefined) => {
+const harness = (writeImpl: (params: IWriteActivityParams) => unknown = async () => undefined) => {
     const container = new Container();
     const write = vi.fn(writeImpl);
 
@@ -146,7 +151,7 @@ describe("terminal record state pairing", () => {
 
     const handlerHarness = (impl: unknown, abstraction: unknown) => {
         const container = new Container();
-        const record = vi.fn(async () => undefined);
+        const record = vi.fn(async (_params: IRecordReviewActivityParams) => undefined);
 
         container.registerInstance(ReviewActivityRecorder, {
             record
