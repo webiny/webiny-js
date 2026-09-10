@@ -212,7 +212,10 @@ entry field — it passes `entry` and `storageEntry` through whole.
 the integration test ran: `SqlCreateEntry.ts:35-42` assigns them from `status` and only then deletes
 them from the in-memory object — the insert has already captured them, so they become columns and
 come back on read. Measured stored field sets: **ddb writes exactly the eleven declared fields; SQL
-writes thirteen**, the eleven plus these two. Both are derived from `status`, which the shape pins,
+writes thirteen**, the eleven plus these two. The difference is a modelling one: DynamoDB duplicates
+the record per role and encodes the role in the sort key (`REV#0001` / `L` / `P`), so a simple entry
+is two items; SQL keeps one row per revision and marks the roles with `isLatest` / `isPublished`
+columns, so a simple entry is one row. Both columns are derived from `status`, which the shape pins,
 so they carry no new state and nothing needs to change in the shape. The integration test pins the
 persisted field set per backend so a third extra cannot appear unnoticed.
 

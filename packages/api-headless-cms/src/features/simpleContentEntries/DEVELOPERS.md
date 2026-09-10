@@ -249,22 +249,41 @@ refuse it.
 
 ## What actually lands in storage
 
-Two items per entry, not one: `SK = REV#0001` and `SK = L`. The `L` item cannot be dropped —
-`DdbEsListEntries` and `DdbListEntries` read the latest-item partition, so an entry without it would
-be invisible to list. The saving here is envelope size, not item count.
+The two backends model "which revision is latest / published" differently, so a simple entry looks
+different in each — and neither difference is something this feature chose.
 
-Measured stored field sets:
+**DynamoDB duplicates the record per role.** The role lives in the sort key, so one entry becomes
+several items holding the same data: `REV#0001` for the revision, `L` for latest, and `P` for
+published. A simple entry is therefore **two items** — `REV#0001` and `L`, never `P`, because
+`status` is pinned to `"draft"` and the operations only write the published item when
+`status === "published"`.
 
-| Backend | Fields | Notes                                         |
-| ------- | ------ | --------------------------------------------- |
-| `ddb`   | 11     | Exactly the declared shape.                   |
-| `sql`   | 13     | The eleven plus `isLatest` and `isPublished`. |
+The `L` item cannot be dropped: list reads the latest-item partition
+(`createGSIPartitionKey(model, "L")`), so an entry without it would be invisible to `listEntries`.
+The saving on this backend is envelope size, not item count.
 
-The two SQL extras are not inputs we supply: `SqlCreateEntry` assigns them from `status` and only
-then deletes them from the in-memory object, so the insert has already captured them and they come
-back on read. Both derive from `status`, which the shape pins, so they carry no new state.
-`simpleEntries.test.ts` pins the persisted field set per backend so a third extra cannot appear
-unnoticed.
+**SQL keeps one row per revision and marks the roles with flags.** There is no duplication: a table
+can hold many revisions of an entry, and `isLatest` / `isPublished` say which of them currently holds
+each role. Reads select on those columns (`queryHelpers.ts`,
+`SqlGetPublishedRevisionByEntryId.ts`), and publishing transfers the flag — `SqlPublishEntry` clears
+`isPublished` on the previously published row before setting it on the new one. A simple entry is
+therefore **one row**, permanently `isLatest = true` and `isPublished = false`.
+
+That is where the field-count difference comes from:
+
+| Backend | Written per entry         | Stored fields                                  |
+| ------- | ------------------------- | ---------------------------------------------- |
+| `ddb`   | 2 items (`REV#0001`, `L`) | 11 — exactly the declared shape                |
+| `sql`   | 1 row                     | 13 — the eleven plus `isLatest`, `isPublished` |
+
+The two SQL columns are not inputs we supply. `SqlCreateEntry` assigns them from `status` and only
+then deletes them from the in-memory object, so the insert has already captured them. They are the
+flag-model equivalent of DynamoDB's separate `L` and `P` items, and for a simple entry both are fully
+determined — one revision that is always latest and never published — so they carry no state the
+shape does not already pin.
+
+`simpleEntries.test.ts` pins the persisted field set per backend, allowing exactly these two known
+extras, so a third would fail the suite rather than pass unnoticed.
 
 ## Deliberately absent
 
