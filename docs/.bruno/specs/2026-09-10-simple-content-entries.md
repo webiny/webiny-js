@@ -117,7 +117,15 @@ export interface ICreateSimpleEntryInput<TValues> { id?: string; values: TValues
 export interface IUpdateSimpleEntryInput<TValues> { values: TValues; }
 export interface ISimpleEntryWhere { id?: string; entryId?: string; }
 export interface IGetSimpleEntryParams { where: ISimpleEntryWhere; }
-export interface IListSimpleEntriesParams { where?: ISimpleEntryWhere; sort?: string[]; limit?: number; after?: string | null; }
+/**
+ * `sort` is deliberately not `string[]`. A simple model gets its own OpenSearch index, so every
+ * dropped meta field is unmapped there and sorting on one fails at query time. Only fields the
+ * shape actually carries are sortable.
+ */
+export type SimpleEntrySortableField = "id" | "createdOn" | `values.${string}`;
+export type SimpleEntrySort = `${SimpleEntrySortableField}_${"ASC" | "DESC"}`;
+
+export interface IListSimpleEntriesParams { where?: ISimpleEntryWhere; sort?: SimpleEntrySort[]; limit?: number; after?: string | null; }
 export interface IListSimpleEntriesMeta { cursor: string | null; hasMoreItems: boolean; totalCount: number; }
 export interface IListSimpleEntriesResult<TValues> { items: ISimpleCmsEntry<TValues>[]; meta: IListSimpleEntriesMeta; }
 ```

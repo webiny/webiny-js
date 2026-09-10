@@ -10,7 +10,10 @@ rather than adding a layer. No phase is done until its verification passes.
 
 ---
 
-## Phase 0 — Cross-backend field audit
+## Phase 0 — Cross-backend field audit — DONE (2026-09-10)
+
+Results are in the design doc. Verdict: the eleven-field shape holds, no additions. The index-mapping
+risk was withdrawn and replaced by a sort-field constraint, now enforced in the type.
 
 **The only phase that can still change the design.** Everything after it assumes the eleven-field
 shape is final, and that shape is currently verified against the DynamoDB backend only.

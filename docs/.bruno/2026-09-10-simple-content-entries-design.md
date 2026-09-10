@@ -182,3 +182,61 @@ One consequence worth recording: with no GraphQL layer and no events, a simple e
 hook of any kind. Anything that later needs to react to one — a change feed, an audit trail, a cache
 invalidation — has to add events to these slices first. That is cheap to do, but it is not free, and
 nothing will surface the gap until something needs it.
+
+---
+
+## Phase 0 — cross-backend field audit (complete, 2026-09-10)
+
+**Verdict: the eleven-field shape holds. No additions.**
+
+Backends are `ddb`, `ddb-es`, `sql` and `pg-os`. `pg-os` turned out not to be a backend at all —
+`PgOsCreateEntry` is a `createDecorator` wrapping an `inner` implementation, calling it and then
+writing an OpenSearch sync record (`packages/api-headless-cms-pg-os/src/operations/entry/PgOsCreateEntry.ts`).
+Its field requirements are SQL's plus the sync writer's, and `SyncHelpers.writeSyncForEntry` reads no
+entry field — it passes `entry` and `storageEntry` through whole.
+
+| Field | Read by | Evidence |
+| --- | --- | --- |
+| `id` | ddb, ddb-es, sql | `createPartitionKey` → `parseIdentifier` (ddb `keys.ts:18-22`, ddb-es `keys.ts:7-11`); `DdbUpdateEntry` `entry.id`; `SqlUpdateEntry` `storageEntry.id`; `SqlDeleteEntry` `entry.id` |
+| `entryId` | ddb, ddb-es | `DdbDeleteEntry` / `DdbEsDeleteEntry` — `entry.id \|\| entry.entryId` |
+| `tenant` | ddb, ddb-es | every key builder; `dataLoaders.clearAll({ tenant })` |
+| `modelId` | ddb | `createGSIPartitionKey` (ddb `keys.ts:44-48`). ddb-es keys never use it |
+| `version` | ddb, ddb-es | `createRevisionSortKey` → `REV#${zeroPad(version)}` |
+| `status` | ddb, ddb-es, sql | `DdbCreateEntry`, `DdbUpdateEntry`, ddb-es equivalents, `SqlCreateEntry.ts:36` |
+| `locked` | ddb, ddb-es | `DdbCreateEntry`, `DdbUpdateEntry`, `DdbEsCreateEntry` (which also mutates it) |
+| `expiresAt` | ddb | all three ddb key builders. Absent from ddb-es keys |
+| `values` | all | the payload |
+| `createdOn`, `createdBy` | none | present by requirement, not by storage constraint |
+
+**`isLatest` / `isPublished` are not required fields.** They looked like an addition on SQL, but
+`SqlCreateEntry.ts:35-42` *assigns* them from `status`, uses them, then deletes them. Transient and
+derived from a field already in the shape.
+
+**ddb-es needs strictly less than ddb.** Its key builders take only `id`, `tenant` and `version` — no
+`modelId`, no `expiresAt`, and no GSI attributes, because listing is answered by OpenSearch rather
+than a GSI. The union is driven entirely by the DynamoDB-only backend.
+
+### The index-mapping risk, resolved and replaced
+
+The design anticipated that a field the index mapping expects and the shape omits would fail at index
+time. That is not how it works: `prepareEntryToIndex` returns `{ ...storageEntry, values, rawValues }`
+(`entryIndexHelpers.ts`), mandating no meta field, and a document missing a mapped field indexes
+fine. That risk is withdrawn.
+
+What replaces it is narrower and real. The index name is
+`[shared ? "root" : tenant, "headless-cms", modelId].join("-")`
+(`DefaultCmsModelOpenSearchIndexProvider.ts`) — **one index per model**, with `shared` controlling
+only whether it is tenant- or root-prefixed. A simple model therefore gets its own index in which
+every dropped meta field is **unmapped**, because nothing in that index ever writes one.
+
+Consequences:
+
+- **Default listing works.** `createElasticsearchSort` falls back to `[{ "id.keyword": { order: "asc" } }]`
+  when no sort is given (`sort.ts:48-56`), and `id` is in the shape. `search_after` pagination uses
+  the sort value of the last hit, so it works too.
+- **Sorting by a dropped meta field fails at query time**, not silently — OpenSearch rejects a sort on
+  an unmapped field. `savedOn_DESC`, a normal CMS sort, is the obvious trap.
+- **Filtering by a dropped meta field matches nothing** rather than erroring.
+
+**Action taken:** `IListSimpleEntriesParams.sort` is typed to the fields that exist rather than
+`string[]`, turning a runtime OpenSearch error into a compile error. See the spec.
