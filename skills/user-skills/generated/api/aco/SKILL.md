@@ -1,8 +1,7 @@
 ---
 name: webiny-api-aco-catalog
-context: webiny-api
 description: >
-  API — ACO — 30 abstractions.
+  API — ACO — 32 abstractions.
   Folder event handlers and use cases.
 ---
 
@@ -74,6 +73,19 @@ Folder event handlers and use cases.
 **Import:** `import { FilterStorageOperations } from "webiny/api/aco/folder"`
 **Source:** `@webiny/api-aco/features/folder/shared/abstractions.ts`
 **Description:** Storage operations for folder filtering.
+
+---
+
+**Name:** `FlpStorageOperations`
+**Import:** `import { FlpStorageOperations } from "webiny/api/aco/folder"`
+**Source:** `@webiny/api-aco/features/folder/shared/abstractions.ts`
+
+---
+
+**Name:** `Folder`
+**Kind:** type
+**Import:** `import type { Folder } from "webiny/api/aco/folder"`
+**Source:** `@webiny/api-aco/folder/folder.types.ts`
 
 ---
 

@@ -79,7 +79,10 @@ export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => 
             editor.registerCommand(
                 TOGGLE_LINK_COMMAND,
                 payload => {
-                    setIsLink(!!payload);
+                    // Only open the editor when there's a real range selection inside the
+                    // editor. Otherwise (e.g. the link button clicked with no cursor in the
+                    // editor) there's nothing to anchor to and the dialog jumps to (0, 0).
+                    setIsLink(!!payload && $isRangeSelection($getSelection()));
                     return false;
                 },
                 COMMAND_PRIORITY_CRITICAL

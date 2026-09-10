@@ -1,5 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { LoginUseCase } from "~/api/features/Login/index.js";
 
 /**

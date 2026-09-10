@@ -46,6 +46,15 @@ const ContentModelGroupsView = lazy(
 
 const { Route } = AdminConfig;
 
+// Shared leading breadcrumb for the CMS list routes.
+const CmsBreadcrumbsRoot = () => (
+    <AdminConfig.Breadcrumb
+        name={"cms"}
+        label={"Headless CMS"}
+        to={{ route: Routes.ContentModels.List }}
+    />
+);
+
 export const RoutesConfig = () => {
     return (
         <AdminConfig>
@@ -57,6 +66,8 @@ export const RoutesConfig = () => {
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>
                             </Helmet>
+                            <CmsBreadcrumbsRoot />
+                            <AdminConfig.Breadcrumb name={"cms.groups"} label={"Model Groups"} />
                             <Loader>
                                 <ContentModelGroupsView />
                             </Loader>
@@ -72,6 +83,8 @@ export const RoutesConfig = () => {
                             <Helmet>
                                 <title>{t`Content`}</title>
                             </Helmet>
+                            {/* Breadcrumbs (Headless CMS › Model › folder path) are emitted
+                                dynamically from within the entries view. */}
                             <CompositionScope name={"cms"}>
                                 <ContentEntriesRouteAdapter />
                             </CompositionScope>
@@ -100,6 +113,8 @@ export const RoutesConfig = () => {
                     <SecureRoute permission={"cms.contentModel"}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
+                            <CmsBreadcrumbsRoot />
+                            <AdminConfig.Breadcrumb name={"cms.models"} label={"Models"} />
                             <Loader>
                                 <ContentModelsView />
                             </Loader>

@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryUseCase as UseCaseAbstraction, MoveEntryToBinUseCase } from "./abstractions.js";
 import { DeleteEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -113,8 +112,7 @@ class DeleteEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const DeleteEntryUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const DeleteEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeleteEntryUseCaseImpl,
     dependencies: [
         MoveEntryToBinUseCase,

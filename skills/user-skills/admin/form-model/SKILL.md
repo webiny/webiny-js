@@ -1,6 +1,5 @@
 ---
 name: webiny-form-model
-context: webiny-admin
 description: >
   Building forms with the FormModel system — field types, renderers, layout, validation,
   conditional rules, computed fields, and dynamic zones. Use this skill when the developer
@@ -37,7 +36,7 @@ fields.text().renderer("codeEditor", { language: "html", height: 300 })
 fields.text().options([
     { label: "Option A", value: "a" },
     { label: "Option B", value: "b" }
-])  // auto-switches to "dropdown" renderer
+])  // auto-switches to "select" renderer
 fields.text().options([...]).renderer("radioButtons")
 fields.text().list().options([...]).renderer("checkboxes")
 
@@ -249,34 +248,34 @@ Template visibility can be conditional:
 
 These are available on **all** field types:
 
-| Method                        | Description                                               |
-| ----------------------------- | --------------------------------------------------------- |
-| `.label(text)`                | Field label                                               |
-| `.description(text)`          | Description text below the field                          |
-| `.help(text)`                 | Help text                                                 |
-| `.note(text)`                 | Supplementary note                                        |
-| `.placeholder(text)`          | Input placeholder                                         |
-| `.defaultValue(value)`        | Default value (can be a function for dynamic defaults)    |
-| `.required(message?)`         | Mark as required                                          |
-| `.requiredWhen(fn, message?)` | Conditionally required based on other field values        |
-| `.schema(zodSchema)`          | Zod validation schema                                     |
-| `.renderer(name, settings?)`  | Override the default renderer                             |
-| `.options([...])`             | Add value options (auto-switches text/number to dropdown) |
-| `.list()`                     | Convert to array field                                    |
-| `.hidden()`                   | Hide the field (value still in form data)                 |
-| `.hiddenWhen(fn)`             | Conditionally hide based on form state                    |
-| `.disabled(value?)`           | Disable the field                                         |
-| `.disabledWhen(fn)`           | Conditionally disable based on form state                 |
-| `.rules([...])`               | Conditional visibility/disable rules                      |
-| `.computed(fn)`               | Always-computed value from other fields                   |
-| `.computedUntilDirty(fn)`     | Computed until user edits the field                       |
-| `.beforeChange(fn)`           | Transform value before change                             |
-| `.afterChange(fn)`            | Side effects after value changes                          |
-| `.afterSetValue(fn)`          | Side effects after programmatic value set                 |
-| `.onBlur(fn)`                 | Blur event callback                                       |
-| `.cloneValue(fn)`             | Custom clone logic for list item duplication              |
-| `.context(fn)`                | Inject reactive context from other fields into the VM     |
-| `.tags([...])`                | Tag the field for programmatic lookup                     |
+| Method                        | Description                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| `.label(text)`                | Field label                                             |
+| `.description(text)`          | Description text below the field                        |
+| `.help(text)`                 | Help text                                               |
+| `.note(text)`                 | Supplementary note                                      |
+| `.placeholder(text)`          | Input placeholder                                       |
+| `.defaultValue(value)`        | Default value (can be a function for dynamic defaults)  |
+| `.required(message?)`         | Mark as required                                        |
+| `.requiredWhen(fn, message?)` | Conditionally required based on other field values      |
+| `.schema(zodSchema)`          | Zod validation schema                                   |
+| `.renderer(name, settings?)`  | Override the default renderer                           |
+| `.options([...])`             | Add value options (auto-switches text/number to select) |
+| `.list()`                     | Convert to array field                                  |
+| `.hidden()`                   | Hide the field (value still in form data)               |
+| `.hiddenWhen(fn)`             | Conditionally hide based on form state                  |
+| `.disabled(value?)`           | Disable the field                                       |
+| `.disabledWhen(fn)`           | Conditionally disable based on form state               |
+| `.rules([...])`               | Conditional visibility/disable rules                    |
+| `.computed(fn)`               | Always-computed value from other fields                 |
+| `.computedUntilDirty(fn)`     | Computed until user edits the field                     |
+| `.beforeChange(fn)`           | Transform value before change                           |
+| `.afterChange(fn)`            | Side effects after value changes                        |
+| `.afterSetValue(fn)`          | Side effects after programmatic value set               |
+| `.onBlur(fn)`                 | Blur event callback                                     |
+| `.cloneValue(fn)`             | Custom clone logic for list item duplication            |
+| `.context(fn)`                | Inject reactive context from other fields into the VM   |
+| `.tags([...])`                | Tag the field for programmatic lookup                   |
 
 ## Renderers
 
@@ -290,7 +289,9 @@ These are available on **all** field types:
 | `textareas`               | text (list)                | `{ addItemLabel?: string }`                                     | List of textareas                                            |
 | `tags`                    | text (list)                | —                                                               | Comma-separated tag input                                    |
 | `codeEditor`              | text                       | `{ language?: string; height?: number }`                        | Code editor with syntax highlighting                         |
-| `dropdown`                | text, number               | —                                                               | Select dropdown (auto-selected when `.options()` is used)    |
+| `select`                  | text, number               | —                                                               | Select dropdown (auto-selected when `.options()` is used)    |
+| `multiSelect`             | text (list), number (list) | `{ showSelectionCount?: boolean }`                              | Multi-select dropdown (requires `.options()` + `.list()`)    |
+| `dropdown`                | text, number               | —                                                               | **Deprecated** alias for `select`                            |
 | `radioButtons`            | text, number               | —                                                               | Radio button group (requires `.options()`)                   |
 | `checkboxes`              | text (list), number (list) | —                                                               | Checkbox group (requires `.options()` + `.list()`)           |
 | `numberInput`             | number                     | —                                                               | Number input (default for number)                            |
@@ -313,7 +314,7 @@ These are available on **all** field types:
 
 ### Automatic Renderer Switching
 
-- Calling `.options()` on text/number fields switches to `dropdown`
+- Calling `.options()` on text/number fields switches to `select`
 - Calling `.list()` on datetime switches to `dateTimeInputs`
 - Calling `.list()` on object switches to `objectAccordionMultiple`
 - Calling `.template()` on object switches to `dynamicZone`
@@ -759,7 +760,7 @@ form.vm.setData(); // replace all form data
 ### FormErrors Component
 
 ```typescript
-import { FormErrors } from "@webiny/app-admin";
+import { FormErrors } from "webiny/admin/form";
 
 <FormErrors form={presenter.vm.form} className="my-4" />
 ```

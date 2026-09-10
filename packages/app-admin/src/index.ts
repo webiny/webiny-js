@@ -33,9 +33,6 @@ export { Sorting as TableSorting } from "./config/table/Sorting.js";
 
 export type { AdminProps } from "./base/Admin.js";
 
-// Plugins
-export * from "./base/plugins/AddGraphQLQuerySelection.js";
-
 // Permissions
 export * from "./permissions/index.js";
 
@@ -64,13 +61,51 @@ export { ToolsFeature } from "./features/tools/feature.js";
 export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
 
+export { DateFormatter } from "./features/dateFormatter/abstractions.js";
+export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/abstractions.js";
+export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
+export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
+
+export { StringFormatter } from "./features/stringFormatter/abstractions.js";
+export type { IStringFormatter } from "./features/stringFormatter/abstractions.js";
+export { StringFormatterFeature } from "./features/stringFormatter/feature.js";
+export { useStringFormatter } from "./features/stringFormatter/useStringFormatter.js";
+
+// Fine-grained, decoratable transform behind StringFormatter.slugify(). Decorate this to change slug
+// logic without touching the rest of the string formatter.
+export { Slugify } from "./features/slugify/abstractions.js";
+export type { ISlugify } from "./features/slugify/abstractions.js";
+
 // Hooks
 export * from "./hooks/index.js";
-export { useWcp } from "./presentation/wcp/useWcp.js";
+export { useFeatureFlags } from "./presentation/featureFlags/useFeatureFlags.js";
 export { useTenantContext } from "./presentation/tenancy/useTenantContext.js";
 export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
 export { useAuthentication } from "./presentation/security/hooks/useAuthentication.js";
 export { useBuildParams } from "./presentation/buildParams/useBuildParams.js";
+
+// Command palette (DI-based command registration)
+export {
+    Command,
+    CommandPaletteFeature,
+    CommandPalettePresenter
+} from "./presentation/commandPalette/index.js";
+export type {
+    ICommand,
+    CommandDetailProps,
+    CommandItemVm,
+    ActiveCommandVm,
+    CommandPaletteViewModel
+} from "./presentation/commandPalette/index.js";
+
+// Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
+// anywhere in a view; the header renders every mounted one as the trail.
+export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";
+export type {
+    BreadcrumbProps,
+    BreadcrumbConfig,
+    BreadcrumbLink
+} from "./config/AdminConfig/Breadcrumbs.js";
 
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
@@ -141,6 +176,7 @@ export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
 // Import all field renderers to ensure their module augmentations are applied.
 import "./base/Base/FieldRenderers/InputRenderer.js";
 import "./base/Base/FieldRenderers/SelectRenderer.js";
+import "./base/Base/FieldRenderers/MultiSelectRenderer.js";
 import "./base/Base/FieldRenderers/TextareaRenderer.js";
 import "./base/Base/FieldRenderers/SwitchRenderer.js";
 import "./base/Base/FieldRenderers/NumberInputRenderer.js";

@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPublishedEntriesByIdsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetPublishedEntriesByIdsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -40,8 +39,7 @@ class GetPublishedEntriesByIdsUseCaseImpl implements UseCaseAbstraction.Interfac
     }
 }
 
-export const GetPublishedEntriesByIdsUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetPublishedEntriesByIdsUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetPublishedEntriesByIdsUseCaseImpl,
     dependencies: [GetPublishedEntriesByIdsRepository, AccessControl]
 });

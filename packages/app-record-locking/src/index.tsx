@@ -1,6 +1,6 @@
 import React from "react";
 import { RegisterFeature } from "@webiny/app-admin";
-import { useWcp } from "@webiny/app-admin";
+import { useFeatureFlags } from "@webiny/app-admin";
 import { RecordLockingFeature } from "~/features/feature.js";
 import { RecordLockingPermissionsFeature } from "~/features/permissions/feature.js";
 import { RecordLockingPresenterFeature } from "~/presentation/entryLocking/feature.js";
@@ -9,9 +9,9 @@ import { SecurityPermissions } from "~/SecurityPermissions.js";
 import { RecordLockingModule } from "~/RecordLockingModule.js";
 
 export const RecordLocking = () => {
-    const wcp = useWcp();
+    const featureFlags = useFeatureFlags();
 
-    if (!wcp.canUseRecordLocking()) {
+    if (!featureFlags.isEnabled("recordLocking")) {
         return null;
     }
 

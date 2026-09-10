@@ -1,14 +1,14 @@
 import React, { useMemo } from "react";
 import { AdminConfig } from "~/config/AdminConfig.js";
-import { useWcp } from "~/presentation/wcp/useWcp.js";
+import { useFeatureFlags } from "~/presentation/featureFlags/useFeatureFlags.js";
 import type { EntityDefinition } from "~/permissions/types.js";
 import { ReactComponent as PermissionsIcon } from "@webiny/icons/security.svg";
 
 const { Security } = AdminConfig;
 
 export const SecurityPermissions = () => {
-    const wcp = useWcp();
-    const teams = wcp.canUseTeams();
+    const featureFlags = useFeatureFlags();
+    const teams = featureFlags.isEnabled("advancedAccessControlLayer.teams");
 
     const schema = useMemo(() => {
         const entities: EntityDefinition[] = [

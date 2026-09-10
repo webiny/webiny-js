@@ -3,6 +3,7 @@ import type { BindingsApi } from "~/BindingsApi.js";
 import type { ShorthandCssProperties } from "./types/ShorthandCssProperties.js";
 import type { InputFactory } from "~/createInput.js";
 import type { Breakpoint } from "~/types/WebsiteBuilderTheme.js";
+import type { ActiveExperiment, VariantContent } from "~/experiments/types.js";
 export type { WebsiteBuilderTheme, Breakpoint } from "./types/WebsiteBuilderTheme.js";
 
 type CSSProperties = CSS.Properties<string | number>;
@@ -245,6 +246,7 @@ export type ComponentManifest = {
     hideFromToolbar?: boolean;
     hideStyleSettings?: string[];
     autoApplyStyles?: boolean;
+    applyDefaultStyles?: boolean;
     tags: string[];
     constraints?: ComponentConstraint[];
     descendantConstraints?: ComponentConstraint[];
@@ -449,6 +451,9 @@ export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
     listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
+    getPageExperiment(path: string): Promise<ActiveExperiment | null>;
+    getVariantContent(variantId: string): Promise<VariantContent | null>;
+    getExperimentPaused(experimentId: string): Promise<boolean>;
 }
 
 export interface IEnvironment {

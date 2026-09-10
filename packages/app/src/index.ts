@@ -1,10 +1,3 @@
-export { AddQuerySelectionPlugin } from "./plugins/AddQuerySelectionPlugin.js";
-export { ApolloLinkPlugin } from "./plugins/ApolloLinkPlugin.js";
-export {
-    ApolloCacheObjectIdPlugin,
-    type ApolloCacheObject
-} from "./plugins/ApolloCacheObjectIdPlugin.js";
-
 // Composition - we re-export this for ease of use
 export * from "@webiny/react-composition";
 export type { HigherOrderComponent, ComposeProps, ComposableFC } from "@webiny/react-composition";

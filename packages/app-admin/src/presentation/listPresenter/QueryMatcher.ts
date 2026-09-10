@@ -1,4 +1,4 @@
-import { makeObservable, observable, computed, action } from "mobx";
+import { makeObservable, observableRef, computed, action } from "mobx";
 import type { IDataSourceQuery } from "./abstractions.js";
 
 type ItemPredicate<TRow> = (item: TRow, value: unknown) => boolean;
@@ -53,7 +53,7 @@ export class QueryMatcher<TRow> {
         this.localFilterKeys = new Set(Object.keys(config.localFilters));
 
         makeObservable<QueryMatcher<TRow>, "_matcher">(this, {
-            _matcher: observable.ref,
+            _matcher: observableRef,
             matcher: computed,
             updateFromQuery: action,
             appendResultKeys: action

@@ -9,6 +9,7 @@ import { DynamicZoneFieldType } from "./fields/DynamicZoneFieldType.js";
 import { NumberFieldType } from "./fields/NumberFieldType.js";
 import { BooleanFieldType } from "./fields/BooleanFieldType.js";
 import { FileFieldType } from "./fields/FileFieldType.js";
+import { AssetFieldType } from "./fields/AssetFieldType.js";
 import { DateTimeFieldType } from "./fields/DateTimeFieldType.js";
 import { JsonFieldType } from "./fields/JsonFieldType.js";
 import { SearchableJsonFieldType } from "./fields/SearchableJsonFieldType.js";
@@ -34,6 +35,7 @@ export const ModelBuilderFeature = createFeature({
         container.register(NumberFieldType);
         container.register(BooleanFieldType);
         container.register(FileFieldType);
+        container.register(AssetFieldType);
         container.register(DateTimeFieldType);
         container.register(JsonFieldType);
         container.register(SearchableJsonFieldType);

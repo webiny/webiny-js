@@ -1,6 +1,6 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
-import { compress } from "@webiny/utils/features/compression/legacy/gzip.js";
+import { compressJson } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { CmsGenerateEntryContentUseCase } from "~/api/features/CmsGenerateEntryContent/index.js";
 import type { GenerateEntryContentTelemetry } from "~/api/features/CmsGenerateEntryContent/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
@@ -14,6 +14,7 @@ export interface ICmsGenerateEntryContentTaskInput {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGenerateEntryContentTaskInput> {
@@ -40,16 +41,24 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
             return controller.response.aborted();
         }
 
-        const result = await this.generateEntryContent.execute({
-            prompt: input.prompt,
-            modelId: input.modelId,
-            projectId: input.projectId,
-            excludedFileIds: input.excludedFileIds,
-            readerPersonaId: input.readerPersonaId,
-            writerPersonaId: input.writerPersonaId
-        });
-
         const identity = this.identityContext.getIdentity();
+
+        let result;
+        try {
+            result = await this.generateEntryContent.execute({
+                prompt: input.prompt,
+                modelId: input.modelId,
+                projectId: input.projectId,
+                excludedFileIds: input.excludedFileIds,
+                readerPersonaId: input.readerPersonaId,
+                writerPersonaId: input.writerPersonaId,
+                additionalFileIds: input.additionalFileIds
+            });
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            await this.sendErrorToUser(identity.id, message);
+            return controller.response.error({ message });
+        }
 
         if (result.isFail()) {
             await this.sendErrorToUser(identity.id, result.error.message);
@@ -59,7 +68,9 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
             });
         }
 
-        const compressed = await compress(result.value.output);
+        // Serialize at the transport edge: the use case returns structured values; the
+        // websocket stream carries a gzip+base64 JSON string that the Admin app decodes.
+        const compressed = await compressJson(result.value.values);
         const payload = compressed.toString("base64");
 
         await this.sendContentToUser(identity.id, payload, result.value.telemetry);

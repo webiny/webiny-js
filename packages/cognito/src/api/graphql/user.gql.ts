@@ -1,5 +1,5 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses.js";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/api-graphql/responses.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";

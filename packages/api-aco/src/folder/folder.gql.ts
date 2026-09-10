@@ -1,5 +1,5 @@
-import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses.js";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import { ErrorResponse, ListResponse } from "@webiny/api-graphql/responses.js";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql/plugins/GraphQLSchemaPlugin.js";
 
 import type { CreateFolderTypeDefsParams } from "./createFolderTypeDefs.js";
 import { createFolderTypeDefs } from "./createFolderTypeDefs.js";
@@ -14,7 +14,7 @@ import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/abstractions
 import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/abstractions.js";
 import { GetFolderHierarchyUseCase } from "~/features/folder/GetFolderHierarchy/abstractions.js";
 import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folder/ListFolderLevelPermissionsTargets/abstractions.js";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import { ValuesSelectionGenerator } from "@webiny/api-headless-cms/features/contentModel/ValuesSelectionGenerator/abstractions.js";
 
 export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
@@ -43,7 +43,7 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                 getFolderModel(_, __, context) {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        const model = context.container.resolve(FolderModel);
+                        const model = await context.container.resolve(FolderModelProvider).get();
                         const generator = context.container.resolve(ValuesSelectionGenerator);
                         return {
                             ...model,

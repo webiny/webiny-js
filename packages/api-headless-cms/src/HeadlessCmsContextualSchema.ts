@@ -1,5 +1,5 @@
-import { GraphQLContextualSchema } from "@webiny/handler-graphql";
-import type { IGraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextualSchema } from "@webiny/api-graphql";
+import type { IGraphQLContextualSchema } from "@webiny/api-graphql";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { getSchema } from "~/graphql/getSchema.js";

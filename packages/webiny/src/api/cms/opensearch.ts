@@ -1,3 +1,7 @@
+export {
+    CmsModelOpenSearchIndexProvider,
+    CmsModelOpenSearchIndex
+} from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchUtilsFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchUtilsFeature.js";
 export {
     CmsEntryOpenSearchFieldIndexRegistry,

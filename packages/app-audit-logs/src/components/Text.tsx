@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { Text as BaseText, Heading } from "@webiny/admin-ui";
 import type { HeadingLevels } from "@webiny/admin-ui";
 
@@ -44,23 +43,19 @@ const sizeMap: Partial<Record<TypographyT, "sm" | "md">> = {
     overline: "sm"
 };
 
-const Typography = ({ use = "body2", children, className, style }: TypographyProps) => {
+export const Text = ({ use = "body2", children, className, style }: TypographyProps) => {
+    const classes = `whitespace-nowrap overflow-hidden text-ellipsis ${className ?? ""}`.trim();
+
     if (use in headingLevelMap) {
         return (
-            <Heading level={headingLevelMap[use]} className={className} style={style}>
+            <Heading level={headingLevelMap[use]} className={classes} style={style}>
                 {children}
             </Heading>
         );
     }
     return (
-        <BaseText size={sizeMap[use] ?? "md"} className={className} style={style}>
+        <BaseText size={sizeMap[use] ?? "md"} className={classes} style={style}>
             {children}
         </BaseText>
     );
 };
-
-export const Text = styled(Typography)`
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`;

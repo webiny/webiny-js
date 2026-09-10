@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetTargetScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { IScheduledAction, IScheduledActionEntryValues } from "~/shared/abstractions.js";
-import { ScheduledActionModel } from "~/shared/abstractions.js";
+import { ScheduledActionModelProvider } from "~/shared/abstractions.js";
 import {
     NotAuthorizedError,
     ScheduledActionNotFoundError,
@@ -27,7 +27,7 @@ import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constant
 class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
-        private model: ScheduledActionModel.Interface,
+        private modelProvider: ScheduledActionModelProvider.Interface,
         private permissions: SchedulerPermissions.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
@@ -72,6 +72,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
      * We always need to fetch both publish and unpublish actions because we don't know the type of the action that is being searched for.
      */
     private async getRecord<T extends GenericRecord>(params: UseCaseAbstraction.Params) {
+        const model = await this.modelProvider.get();
         const schedulePublishId = ScheduledActionId.from({
             namespace: params.namespace,
             targetId: params.id,
@@ -79,7 +80,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         });
         const publishResult = await this.getEntryByIdUseCase.execute<
             IScheduledActionEntryValues<T>
-        >(this.model, ScheduledActionIdWithVersion.from(schedulePublishId));
+        >(model, ScheduledActionIdWithVersion.from(schedulePublishId));
         if (publishResult.isOk()) {
             return publishResult;
         }
@@ -89,7 +90,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
             actionType: SCHEDULED_ACTION_UNPUBLISH
         });
         return this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
-            this.model,
+            model,
             ScheduledActionIdWithVersion.from(scheduleUnpublishId)
         );
     }
@@ -97,5 +98,10 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
 
 export const GetTargetScheduledActionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetTargetScheduledActionUseCaseImpl,
-    dependencies: [GetEntryByIdUseCase, ScheduledActionModel, SchedulerPermissions, IdentityContext]
+    dependencies: [
+        GetEntryByIdUseCase,
+        ScheduledActionModelProvider,
+        SchedulerPermissions,
+        IdentityContext
+    ]
 });

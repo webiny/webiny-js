@@ -1,17 +1,10 @@
 import path from "node:path";
-import type { IHttpResponse } from "@webiny/event-handler-core";
 
 export const isPathContained = (filePath: string, storagePath: string): boolean => {
     const resolved = path.resolve(filePath);
     const root = path.resolve(storagePath);
     return resolved === root || resolved.startsWith(root + path.sep);
 };
-
-export const json = (statusCode: number, data: unknown): IHttpResponse => ({
-    statusCode,
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(data)
-});
 
 /* Normalise a transport request body into a Buffer. */
 export const toBuffer = (body: unknown): Buffer => {

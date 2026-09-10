@@ -5,7 +5,8 @@ import { ListEntriesFactory } from "./ListEntriesFactory.js";
 import { FilterEntriesByFolderFactory } from "./FilterEntriesByFolderFactory.js";
 import { decorateIfModelAuthorizationEnabled } from "./decorateIfModelAuthorizationEnabled.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import { StorageOperations } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetRevisionByIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
+import { GetLatestRevisionByEntryIdStorageOperation } from "@webiny/api-headless-cms/features/shared/storageOperations/entry/GetLatestRevisionByEntryIdStorageOperation.js";
 
 type Context = AcoContext;
 
@@ -23,7 +24,10 @@ export class CmsEntriesCrudDecorators {
     public decorate() {
         const context = this.context;
         const folderLevelPermissions = context.container.resolve(FolderLevelPermissions);
-        const storageOperations = context.container.resolve(StorageOperations);
+        const getRevisionById = context.container.resolve(GetRevisionByIdStorageOperation);
+        const getLatestRevisionByEntryId = context.container.resolve(
+            GetLatestRevisionByEntryIdStorageOperation
+        );
 
         const filterEntriesByFolder = new FilterEntriesByFolderFactory(folderLevelPermissions);
         const listEntriesHandler = new ListEntriesFactory(folderLevelPermissions);
@@ -132,7 +136,7 @@ export class CmsEntriesCrudDecorators {
             async (...allParams) => {
                 const [decoratee, model, id, input, options] = allParams;
 
-                const entry = await storageOperations.entries.getRevisionById(model, {
+                const entry = await getRevisionById.execute(model, {
                     id
                 });
 
@@ -154,7 +158,7 @@ export class CmsEntriesCrudDecorators {
 
         decorateIfModelAuthorizationEnabled(context, "updateEntry", async (...allParams) => {
             const [decoratee, model, id, input, meta, options] = allParams;
-            const entry = await storageOperations.entries.getRevisionById(model, {
+            const entry = await getRevisionById.execute(model, {
                 id
             });
 
@@ -175,7 +179,7 @@ export class CmsEntriesCrudDecorators {
         decorateIfModelAuthorizationEnabled(context, "deleteEntry", async (...allParams) => {
             const [decoratee, model, id, options] = allParams;
 
-            const entry = await storageOperations.entries.getLatestRevisionByEntryId(model, {
+            const entry = await getLatestRevisionByEntryId.execute(model, {
                 id
             });
 
@@ -199,7 +203,7 @@ export class CmsEntriesCrudDecorators {
             async (...allParams) => {
                 const [decoratee, model, id] = allParams;
 
-                const entry = await storageOperations.entries.getRevisionById(model, {
+                const entry = await getRevisionById.execute(model, {
                     id
                 });
 
@@ -225,7 +229,7 @@ export class CmsEntriesCrudDecorators {
             /**
              * First we need to check if user has access to the entries existing folder.
              */
-            const entry = await storageOperations.entries.getRevisionById(model, {
+            const entry = await getRevisionById.execute(model, {
                 id
             });
 

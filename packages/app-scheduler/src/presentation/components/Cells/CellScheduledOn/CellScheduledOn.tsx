@@ -1,6 +1,7 @@
 import React from "react";
 import { SchedulerListConfig } from "~/presentation/configs/index.js";
 import { makeDecoratable } from "@webiny/react-composition";
+import { useDateFormatter } from "@webiny/app-admin";
 
 export interface ICellScheduledOnLabelProps {
     dateTime: Date | undefined;
@@ -9,11 +10,12 @@ export interface ICellScheduledOnLabelProps {
 export const CellScheduledOnLabel = makeDecoratable(
     "Scheduler.CellScheduledOnLabel",
     ({ dateTime }: ICellScheduledOnLabelProps) => {
+        const dateFormatter = useDateFormatter();
         if (!dateTime) {
             return <>Missing publish or unpublish date.</>;
         }
 
-        return <>{dateTime.toLocaleString()}</>;
+        return <>{dateFormatter.format(dateTime)}</>;
     }
 );
 

@@ -1,12 +1,7 @@
 import React, { useCallback } from "react";
-import styled from "@emotion/styled";
 import { ReactComponent as FilterIcon } from "@webiny/icons/filter_list.svg";
 import { ReactComponent as CloseFilterIcon } from "@webiny/icons/filter_list_off.svg";
 import { IconButton } from "@webiny/admin-ui";
-
-const ButtonWrapper = styled("div")`
-    margin-left: 8px;
-`;
 
 interface IconProps {
     showingFilters?: boolean;
@@ -33,12 +28,13 @@ export const ButtonFilters = ({ showingFilters, hideFilters, showFilters }: Butt
     }, [showingFilters]);
 
     return (
-        <ButtonWrapper>
+        <div className={"ml-sm"}>
             <IconButton
+                variant={"secondary"}
                 icon={<IconComponent showingFilters={showingFilters} />}
                 onClick={toggleFilters}
                 data-testid="audit-logs.toggle-filters"
             />
-        </ButtonWrapper>
+        </div>
     );
 };

@@ -1,6 +1,10 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { CmsModel } from "~/types.js";
-import type { CmsReferenceEntry, CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
+import type {
+    CmsReferenceEntry,
+    CmsReferenceEntryPatch,
+    CmsReferenceValue
+} from "~/features/contentEntry/refTypes.js";
 
 export interface IRefDetailedPresenterInitConfig {
     modelIds: string[];
@@ -19,6 +23,7 @@ export interface IRefDetailedPresenter {
     init(config: IRefDetailedPresenterInitConfig): Promise<void>;
     resolveValues(values: CmsReferenceValue[]): Promise<void>;
     addEntries(entries: CmsReferenceEntry[]): void;
+    patchEntry(patch: CmsReferenceEntryPatch): void;
     removeEntry(entryId: string): void;
     loadMore(): void;
     dispose(): void;

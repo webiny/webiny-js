@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { UpdateGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UpdateGroupRepository } from "./abstractions.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/abstractions.js";
@@ -135,8 +134,7 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const UpdateGroupUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const UpdateGroupUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateGroupUseCaseImpl,
     dependencies: [
         EventPublisher,

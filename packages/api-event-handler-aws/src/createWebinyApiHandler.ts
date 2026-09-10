@@ -2,132 +2,65 @@
  * DI-native Webiny API handler for the AWS Lambda transport — storage-agnostic BASE.
  *
  * The ROOT container wires the AWS transport (API Gateway HTTP + auth/tenant loaders, background-task
- * and WebSocket Lambda invocations, DynamoDB, Cognito, storage). The per-request feature stack is the
- * transport-AGNOSTIC `registerApiRequestStack` from `@webiny/api-event-handler-core`, with the two
- * AWS-specific interleave points supplied as hooks (real-time WebSockets transport + scheduler
- * transport). The storage variant is injected via `registerRootStorage` / `registerRequestStorage`
- * by a thin variant package (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring
- * in real packages (not an app template) is what makes it unit/integration testable.
+ * and WebSocket Lambda invocations, DynamoDB, Cognito, storage). Everything that is not
+ * transport-specific — database, identity providers, storage, and the transport-AGNOSTIC per-request
+ * feature stack — lives in `composition/`, shared with the response-streaming handler
+ * (`createWebinyStreamApiHandler`) so the two roots cannot drift. The storage variant is injected via
+ * `registerRootStorage` / `registerRequestStorage` by a thin variant package
+ * (`@webiny/api-event-handler-aws-ddb`, `-aws-ddb-os`). Keeping the wiring in real packages (not an app
+ * template) is what makes it unit/integration testable.
  */
-import type { Container } from "@webiny/di";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import {
-    createLambdaHandler,
-    ApiGatewayFeature,
-    BackgroundTaskEventType,
-    WebSocketEventType
-} from "@webiny/event-handler-aws";
-import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { registerExtensions } from "@webiny/handler";
-import { DynamoDBCoreFeature } from "@webiny/db-dynamodb";
-import { registerApiRequestStack } from "@webiny/api-event-handler-core";
-import { WebsocketsAwsFeature } from "@webiny/api-websockets-aws";
-import { SchedulerAwsFeature } from "@webiny/api-scheduler-aws";
-import { FileManagerS3Feature } from "@webiny/api-file-manager-s3";
-import { WebSocketLambdaHandler } from "@webiny/api-websockets";
-// CognitoIdpFeature must be in the root container so the request auth step
-// (ApiGatewayIdentityLoaderDecorator → RequestIdentityLoader) sees CognitoIdentityProvider
-// when it is first instantiated. Extensions register in the child/request container — too late.
-import { CognitoIdpFeature } from "@webiny/cognito/api/features/CognitoIdp/feature.js";
+import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
+import {
+    registerInboundEventTypes,
+    registerWebinyApiChild,
+    registerWebinyApiRoot
+} from "~/composition/index.js";
+import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
-export interface RegisterRootStorageContext {
-    documentClient: ReturnType<typeof getDocumentClient>;
-}
+export type { RegisterRootStorageContext } from "~/composition/index.js";
 
-export interface CreateWebinyApiHandlerConfig {
-    /**
-     * Project-defined extensions, applied at register() time. This is the one project-specific
-     * input; everything else is standard AWS/env wiring owned by this package.
-     */
-    extensions: () => Parameters<typeof registerExtensions>[1];
-    /**
-     * DynamoDB document client. Defaults to the standard AWS client (`getDocumentClient()`).
-     * Injectable so integration tests can point the handler at a local (dynalite) DynamoDB.
-     */
-    documentClient?: ReturnType<typeof getDocumentClient>;
-    /**
-     * Register the storage-variant features in the ROOT container: the CMS storage operations, the
-     * DDB storage registries, and (for the OpenSearch variant) the OpenSearch core. Supplied by the
-     * variant package.
-     */
-    registerRootStorage: (
-        container: Container,
-        ctx: RegisterRootStorageContext
-    ) => void | Promise<void>;
-    /**
-     * Register any request-phase storage features that must run BEFORE `HeadlessCmsFeature` builds
-     * its storage — e.g. `DbRegistryFeature` for the DDB+ES variant. Optional (DDB-only needs none).
-     */
-    registerRequestStorage?: (container: Container) => void | Promise<void>;
-}
+export type CreateWebinyApiHandlerConfig = WebinyApiCompositionConfig;
 
 export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
-    const documentClient = config.documentClient ?? getDocumentClient();
-
     return createLambdaHandler({
         root: async container => {
             // ── Transport ──────────────────────────────────────────────
             // ApiGatewayFeature registers the HTTP transport (event type + router + HttpFeature).
             ApiGatewayFeature.register(container);
 
-            // ── Auth + tenant (extract → shared load) ──────────────────
-            // These decorators depend on api-core (RequestIdentityLoader/RequestTenantLoader), so
+            // ── Tenant + auth (extract → shared load) ──────────────────
+            // These decorators depend on api-core (RequestTenantLoader/RequestIdentityLoader), so
             // they live in this composition layer, not event-handler-aws. registerDecorator applies
-            // LATER registrations as the OUTER wrapper (whose execute() runs first). Identity must be
-            // established before tenant, so register tenant first (inner) and identity last (outer)
-            // → identity runs, then tenant, then the router.
-            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
+            // LATER registrations as the OUTER wrapper (whose execute() runs first). TENANT must be
+            // established before IDENTITY: API-key authentication resolves the key by tenant partition
+            // (ApiKeysRepository reads TenantContext.getTenant()), so identity establishment depends on
+            // the tenant. The reverse is not true — RequestTenantLoader has no identity dependency. So
+            // register identity first (inner) and tenant last (outer) → tenant runs, then identity,
+            // then the router.
             container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
+            container.registerDecorator(ApiGatewayTenantLoaderDecorator);
 
-            // Background task invocations (Step Functions → Lambda directly). BackgroundTasksAwsFeature
-            // registers the Lambda handler + StepFunctionService (the AWS dispatch transport).
-            container.register(BackgroundTaskEventType);
-            BackgroundTasksAwsFeature.register(container);
+            // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
+            // WebSockets) with its handler. Kept in one function so the set is testable and an
+            // inbound transport can't be half-wired.
+            registerInboundEventTypes(container);
 
-            // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
-            // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
-            // matched") so $connect fails and no connection is ever registered → no server→client push.
-            container.register(WebSocketEventType);
-            container.register(WebSocketLambdaHandler);
-
-            // ── Database ───────────────────────────────────────────────
-            DynamoDBCoreFeature.register(container, {
-                documentClient
-            });
-
-            // ── Identity providers ─────────────────────────────────────
-            // Must be in root so the request auth step can authenticate
-            // requests before the GraphQL engine runs.
-            CognitoIdpFeature.register(container);
-
-            // ── Storage (variant-specific: CMS storage ops, DDB registries, OpenSearch core) ──
-            await config.registerRootStorage(container, { documentClient });
+            // Resolved here rather than at factory time: one bundle exports BOTH this handler and the
+            // streaming one, so building the client eagerly would open a second DynamoDB client on
+            // every cold start. `root` runs once, lazily.
+            await registerWebinyApiRoot(
+                container,
+                config,
+                config.documentClient ?? getDocumentClient()
+            );
         },
 
-        request: async container => {
-            // The per-request feature stack is transport-agnostic (shared with the server transport).
-            // The AWS-specific interleave points are supplied as the `transports` adapters.
-            await registerApiRequestStack(container, {
-                extensions: config.extensions,
-                registerRequestStorage: config.registerRequestStorage,
-                transports: {
-                    // Real AWS WebSocket transport (API Gateway Management API), registered right after
-                    // WebsocketsFeature so it overrides the NullWebsocketsTransport.
-                    realtime: c => {
-                        WebsocketsAwsFeature.register(c);
-                    },
-                    // Scheduler transport: the scheduler-aws extension (EventBridge Scheduler).
-                    scheduler: c => {
-                        SchedulerAwsFeature.register(c);
-                    },
-                    // File-manager storage transport: S3 (asset delivery + S3 file operations + schema).
-                    fileManager: c => {
-                        FileManagerS3Feature.register(c, {});
-                    }
-                }
-            });
+        child: async container => {
+            await registerWebinyApiChild(container, config);
         }
     });
 }

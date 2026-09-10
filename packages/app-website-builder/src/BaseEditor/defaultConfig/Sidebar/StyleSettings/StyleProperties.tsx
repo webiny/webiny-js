@@ -17,7 +17,14 @@ export const StyleProperties = () => {
         return null;
     }
 
-    return <ElementStyleProperties element={element} />;
+    return (
+        <>
+            <div className={"pt-md mb-md px-sm"}>
+                <ElementPreview element={element} />
+            </div>
+            <ElementStyleProperties element={element} />
+        </>
+    );
 };
 
 const defaultHidden: string[] = [];
@@ -35,9 +42,6 @@ const ElementStyleProperties = ({ element }: { element: DocumentElement }) => {
 
     return (
         <>
-            <div className={"pt-md mb-md px-sm"}>
-                <ElementPreview element={element} />
-            </div>
             <StyleAccordion>
                 {isHidden(StyleSettings.Layout) ? null : <Layout elementId={element.id} />}
                 {isHidden(StyleSettings.MarginPadding) ? null : (

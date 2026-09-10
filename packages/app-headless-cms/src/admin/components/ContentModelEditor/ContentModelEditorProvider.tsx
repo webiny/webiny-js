@@ -190,6 +190,7 @@ export const ContentModelEditorProvider = ({
 
     const getContentModel = async (id: string): Promise<void> => {
         const data = await getModelUseCase.execute({ modelId: id });
+        data.settings = data.settings || {};
         await setData(() => data, false);
         setPristine(true);
     };

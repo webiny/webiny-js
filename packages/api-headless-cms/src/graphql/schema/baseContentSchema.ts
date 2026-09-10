@@ -9,7 +9,7 @@ import {
     RefInputScalar,
     TimeScalar,
     IconScalar
-} from "@webiny/handler-graphql/builtInTypes/index.js";
+} from "@webiny/api-graphql/builtInTypes/index.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { RevisionIdScalar } from "~/graphql/scalars/RevisionId.js";

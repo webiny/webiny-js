@@ -12,6 +12,9 @@ class FileFieldTypeImpl implements CmsFieldType.Interface {
     allowPredefinedValues = false;
     validators = ["required"];
     listValidators = ["minLength", "maxLength"];
+    // Superseded by the Asset field. Hidden from the palette unless a model already
+    // uses a file field, so existing models remain editable (backwards compatible).
+    deprecated = true;
 
     createField() {
         return {

@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import { DataFieldBuilder } from "./FieldBuilder.js";
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import type { FieldTypeValidator } from "./fieldTypeValidator.js";
@@ -188,8 +187,7 @@ class TextFieldTypeFactory implements IFieldTypeFactory {
     }
 }
 
-export const TextFieldType = createImplementation({
-    abstraction: FieldType,
+export const TextFieldType = FieldType.createImplementation({
     implementation: TextFieldTypeFactory,
     dependencies: []
 });

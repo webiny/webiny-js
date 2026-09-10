@@ -14,9 +14,6 @@ const CUSTOM_HANDLERS = {
     // Ignore "i18n" package.
     i18n: () => [],
 
-    // TODO: bring back project-utils tests.
-    "project-utils": () => [],
-
     "api-tenancy": () => {
         return ["packages/api-tenancy --storage=ddb"];
     },

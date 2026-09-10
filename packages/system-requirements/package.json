@@ -14,9 +14,9 @@
   "author": "Webiny Ltd.",
   "description": "Contains utilities for checking system requirements for Webiny projects",
   "dependencies": {
-    "chalk": "^5.6.2",
+    "chalk": "^6.0.0",
     "cli-table3": "^0.6.5",
-    "execa": "^10.0.0",
+    "execa": "^10.0.1",
     "semver": "^7.8.5"
   },
   "license": "MIT",

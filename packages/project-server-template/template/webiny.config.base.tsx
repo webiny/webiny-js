@@ -1,7 +1,11 @@
 import React from "react";
 import { ProjectServer } from "@webiny/project-server/extensions/ProjectServer.js";
 import { DefaultExtensions } from "@webiny/project-template-base";
-import { Extensions as WebinyConfigTsx } from "../../webiny.config.js";
+import { FeatureFlagsGate } from "@webiny/project";
+import * as WebinyConfig from "../../webiny.config.js";
+
+const FeatureFlags = "FeatureFlags" in WebinyConfig ? WebinyConfig.FeatureFlags : null;
+const WebinyConfigTsx = WebinyConfig.Extensions;
 
 /**
  * Server hosting-type project composition. Mirrors the AWS hosting type's base config, but renders the
@@ -12,9 +16,12 @@ import { Extensions as WebinyConfigTsx } from "../../webiny.config.js";
 export const Extensions = () => {
     return (
         <>
-            <ProjectServer />
-            <DefaultExtensions />
-            <WebinyConfigTsx />
+            {FeatureFlags ? <FeatureFlags /> : null}
+            <FeatureFlagsGate skip={!FeatureFlags}>
+                <ProjectServer />
+                <DefaultExtensions />
+                <WebinyConfigTsx />
+            </FeatureFlagsGate>
         </>
     );
 };

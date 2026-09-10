@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-languages-catalog
-context: webiny-api
 description: >
   admin/languages — 2 abstractions.
 ---

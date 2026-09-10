@@ -8,7 +8,7 @@ import { View, Grid } from "./components/View.js";
 /*
  * Login screen for the self-hosted IdP. Visually mirrors the Cognito sign-in screen, but instead of
  * Amplify it exchanges email/password for a JWT via the `selfHostedAuthLogin` GraphQL mutation, then
- * hands the token to app-admin's auth pipeline (LogInUseCase → sets the Apollo Bearer token provider
+ * hands the token to app-admin's auth pipeline (LogInUseCase → sets the Bearer token provider
  * and fetches the identity/permissions via the shared LogInRepository).
  */
 

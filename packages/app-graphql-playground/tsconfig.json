@@ -5,7 +5,7 @@
     { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../plugins" }
+    { "path": "../feature" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -20,8 +20,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
     }
   }
 }

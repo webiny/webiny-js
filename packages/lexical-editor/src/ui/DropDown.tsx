@@ -1,20 +1,34 @@
 import type { ReactNode } from "react";
 import * as React from "react";
 import { DropdownMenu } from "radix-ui";
+import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
+import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 
 export function DropDownItem({
     children,
     className,
     onClick,
-    title
+    title,
+    selected
 }: {
     children: React.ReactNode;
     className: string;
     onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
     title?: string;
+    selected?: boolean;
 }) {
+    // Selectable items (those passing `selected`) reserve a leading check slot so labels
+    // stay aligned whether or not they're selected — matching admin-ui's DropdownMenu.
+    const hasCheckSlot = selected !== undefined;
     return (
         <button className={className} onClick={onClick} title={title} type="button">
+            {hasCheckSlot ? (
+                selected ? (
+                    <CheckIcon className="item-check" />
+                ) : (
+                    <span className="item-check" aria-hidden="true" />
+                )
+            ) : null}
             {children}
         </button>
     );
@@ -25,6 +39,7 @@ interface DropDownProps {
     buttonAriaLabel?: string;
     buttonClassName: string;
     buttonIconClassName?: string;
+    buttonIcon?: ReactNode;
     buttonLabel?: string;
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
@@ -37,6 +52,7 @@ export function DropDown({
     buttonAriaLabel,
     buttonClassName,
     buttonIconClassName,
+    buttonIcon,
     children,
     showScroll = true
 }: DropDownProps): React.JSX.Element {
@@ -49,11 +65,13 @@ export function DropDown({
                     aria-label={buttonAriaLabel || buttonLabel}
                     className={buttonClassName}
                 >
-                    {buttonIconClassName && <span className={buttonIconClassName} />}
+                    {buttonIcon
+                        ? buttonIcon
+                        : buttonIconClassName && <span className={buttonIconClassName} />}
                     {buttonLabel && (
                         <span className="text dropdown-button-text">{buttonLabel}</span>
                     )}
-                    <i className="chevron-down" />
+                    <ChevronDownIcon className="chevron-down" />
                 </button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Portal>

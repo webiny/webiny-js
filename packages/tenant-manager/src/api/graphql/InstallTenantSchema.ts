@@ -1,6 +1,6 @@
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { Response } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { Response } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
 import { CreateAndInstallTenantUseCase } from "../features/CreateAndInstallTenant/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";

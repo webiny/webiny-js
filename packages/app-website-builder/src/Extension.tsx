@@ -58,6 +58,7 @@ export const Extension = () => {
             <RegisterFeature feature={DeletePageRevisionFeature} />
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
+            {/*<AbTesting />*/}
             <RegisterFeature feature={UnpublishPageFeature} />
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />
@@ -98,6 +99,8 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"page"}>
+                    {/* Breadcrumbs (Website Builder › Pages › folder path) are emitted
+                        dynamically from within PagesList. */}
                     <Route route={Routes.Pages.List} element={<PagesList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
                     <Menu
@@ -116,7 +119,16 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"redirect"}>
-                    <Route route={Routes.Redirects.List} element={<RedirectsList />} />
+                    <Route
+                        route={Routes.Redirects.List}
+                        element={
+                            <>
+                                <AdminConfig.Breadcrumb name={"wb"} label={"Website Builder"} />
+                                <AdminConfig.Breadcrumb name={"wb.redirects"} label={"Redirects"} />
+                                <RedirectsList />
+                            </>
+                        }
+                    />
                     <Menu
                         name="wb.redirects"
                         parent={"wb"}

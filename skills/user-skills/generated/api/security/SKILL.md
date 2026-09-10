@@ -1,6 +1,5 @@
 ---
 name: webiny-api-security-catalog
-context: webiny-api
 description: >
   API — Security & Auth — 53 abstractions.
   Authentication, API keys, roles, users, teams event handlers and use cases.

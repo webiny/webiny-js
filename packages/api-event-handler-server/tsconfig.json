@@ -5,6 +5,8 @@
     { "path": "../api-core" },
     { "path": "../api-event-handler-core" },
     { "path": "../api-file-manager-server" },
+    { "path": "../api-graphql" },
+    { "path": "../api-headless-cms-bulk-actions-server" },
     { "path": "../api-scheduler" },
     { "path": "../api-scheduler-server" },
     { "path": "../api-websockets-server" },
@@ -12,9 +14,7 @@
     { "path": "../event-handler-core" },
     { "path": "../event-handler-server" },
     { "path": "../feature" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" },
-    { "path": "../utils" }
+    { "path": "../handler" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,6 +29,14 @@
       "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
       "@webiny/api-file-manager-server/*": ["../api-file-manager-server/src/*"],
       "@webiny/api-file-manager-server": ["../api-file-manager-server/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms-bulk-actions-server/*": [
+        "../api-headless-cms-bulk-actions-server/src/*"
+      ],
+      "@webiny/api-headless-cms-bulk-actions-server": [
+        "../api-headless-cms-bulk-actions-server/src"
+      ],
       "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-scheduler-server/*": ["../api-scheduler-server/src/*"],
@@ -44,11 +52,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/handler": ["../handler/src"]
     }
   }
 }

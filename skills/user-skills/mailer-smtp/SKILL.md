@@ -15,7 +15,7 @@ Add `<Api.Mailer.Smtp ... />` to your `webiny.config.tsx` to configure SMTP emai
 ## Core Pattern
 
 ```tsx
-import { Api } from "@webiny/project-aws/api";
+import { Api } from "webiny/extensions";
 
 <Api.Mailer.Smtp
     host={"smtp.example.com"}
@@ -46,7 +46,7 @@ Place this inside the JSX returned by your config component in `webiny.config.ts
 
 ```tsx
 import React from "react";
-import { Api, Admin, Core } from "@webiny/project-aws/api";
+import { Api, Admin, Core } from "webiny/extensions";
 
 const MyConfig = () => {
   return (

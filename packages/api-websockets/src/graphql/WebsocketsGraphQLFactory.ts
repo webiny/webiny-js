@@ -1,6 +1,6 @@
-import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import { WebsocketsListConnectionsUseCase } from "~/features/ListConnections/abstractions.js";

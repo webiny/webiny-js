@@ -1,5 +1,5 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import {
     JsonScalar,
     LongScalar,
@@ -10,7 +10,7 @@ import {
     DateTimeScalar,
     DateScalar,
     TimeScalar
-} from "@webiny/handler-graphql/builtInTypes/index.js";
+} from "@webiny/api-graphql/builtInTypes/index.js";
 
 const BASE_TYPES = `
     type Query

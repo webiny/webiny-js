@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetGroupRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -39,8 +38,7 @@ class GetGroupUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const GetGroupUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetGroupUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetGroupUseCaseImpl,
     dependencies: [GetGroupRepository, AccessControl]
 });

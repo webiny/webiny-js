@@ -1,5 +1,5 @@
 import "tsx/esm";
-import { Properties, toObject } from "@webiny/react-properties";
+import { AsyncProperties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -10,6 +10,7 @@ import { ProjectModel } from "~/models/ProjectModel.js";
 import { toImportSpecifier } from "~/utils/index.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
+import { FeatureFlagsProvider } from "./FeatureFlagsContext.js";
 import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
 
 const sendError = (err: Error) => {
@@ -58,7 +59,20 @@ const { Extensions } = await import(
     toImportSpecifier(project.paths.webinyConfigBaseFile.toString())
 );
 
+const RENDER_TIMEOUT_MS = 30_000;
+
+const timeout = setTimeout(() => {
+    sendError(
+        new Error(
+            `Config rendering timed out after ${RENDER_TIMEOUT_MS}ms. ` +
+                `This usually means an <Await> promise never settled.`
+        )
+    );
+    process.exit(1);
+}, RENDER_TIMEOUT_MS);
+
 const onChange = debounce((value: any) => {
+    clearTimeout(timeout);
     sendSuccess(toObject(value));
     process.exit(0);
 });
@@ -75,12 +89,14 @@ const reactRoot = createRoot(root);
 
 reactRoot.render(
     <WcpProjectLicenseProvider>
-        <EnvProvider>
-            <ProductionEnvironmentsCollector>
-                <Properties onChange={onChange}>
-                    <Extensions />
-                </Properties>
-            </ProductionEnvironmentsCollector>
-        </EnvProvider>
+        <FeatureFlagsProvider>
+            <EnvProvider>
+                <ProductionEnvironmentsCollector>
+                    <AsyncProperties onChange={onChange}>
+                        <Extensions />
+                    </AsyncProperties>
+                </ProductionEnvironmentsCollector>
+            </EnvProvider>
+        </FeatureFlagsProvider>
     </WcpProjectLicenseProvider>
 );

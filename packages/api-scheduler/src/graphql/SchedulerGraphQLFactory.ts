@@ -1,7 +1,7 @@
-import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
-import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { ErrorResponse, ListResponse, Response } from "@webiny/api-graphql/responses.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";

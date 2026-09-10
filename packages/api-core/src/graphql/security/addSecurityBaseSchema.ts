@@ -1,4 +1,4 @@
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 
 export const addSecurityBaseSchema = (builder: IGraphQLSchemaBuilder): void => {
     builder.addTypeDefs(/* GraphQL */ `

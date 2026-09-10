@@ -7,6 +7,7 @@
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-file-manager-aco/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-headless-cms-aco/tsconfig.build.json" },
     { "path": "../api-headless-cms-scheduler/tsconfig.build.json" },
@@ -21,9 +22,7 @@
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../background-tasks/tsconfig.build.json" },
-    { "path": "../event-handler-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../webhooks/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -43,6 +42,8 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-file-manager-aco/*": ["../api-file-manager-aco/src/*"],
       "@webiny/api-file-manager-aco": ["../api-file-manager-aco/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-headless-cms-aco/*": ["../api-headless-cms-aco/src/*"],
@@ -71,12 +72,8 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/webhooks/*": ["../webhooks/src/*"],
       "@webiny/webhooks": ["../webhooks/src"]
     }

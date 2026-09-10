@@ -1,21 +1,21 @@
 import React from "react";
 import { Components } from "@webiny/app-workflows";
-import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
+import { InternalContentEntryEditorConfig } from "@webiny/app-headless-cms";
 
 const {
     ContentReview: { WorkflowStateTooltip }
 } = Components;
 
-const { Actions } = ContentEntryEditorConfig;
+const { Actions } = InternalContentEntryEditorConfig;
 
 export const CmsEntryFormTooltipButton = () => {
     return (
-        <ContentEntryEditorConfig>
+        <InternalContentEntryEditorConfig>
             <Actions.ButtonAction
                 before={"save"}
                 name={"workflowStateTooltip"}
                 element={<WorkflowStateTooltip />}
             />
-        </ContentEntryEditorConfig>
+        </InternalContentEntryEditorConfig>
     );
 };

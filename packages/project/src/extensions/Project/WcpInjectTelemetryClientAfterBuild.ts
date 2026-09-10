@@ -50,6 +50,35 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
 
             const telemetryCodeAsString = await response.text();
 
+            // The downloaded wrapper re-exports only `handler`, but the AWS api bundle also exports
+            // `streamHandler` — the entry point of the response-streaming Lambda. Without this
+            // re-export that function has no handler to load and fails at cold start.
+            //
+            // Two constraints shape how it's done:
+            //
+            // 1. UNWRAPPED. `streamHandler` carries the marker `awslambda.streamifyResponse` attaches,
+            //    and the runtime inspects the exported function for it; routing it through a telemetry
+            //    wrapper function would strip the marker and silently downgrade the function to
+            //    buffered responses. Re-exporting the same function object keeps the marker — at the
+            //    cost of no telemetry for that function, which is the right trade.
+            //
+            // 2. Via a NAMESPACE import, not `export { streamHandler } from ...`. This injection also
+            //    runs for the self-hosted api build, whose bundle has no `streamHandler` (streaming is
+            //    native there, with no Lambda involved), and a named re-export of a missing binding is
+            //    a hard ESM error that would break the whole handler. A namespace access just yields
+            //    `undefined`, which nothing on that path reads.
+            //
+            // BACKLOGGED, not settled. String-appending to an artifact downloaded from another repo
+            // means a change to the shape of `clients/latest.mjs` breaks the build on customers'
+            // machines. The agreed fix is one line on the WCP side — `export * from "./_handler.mjs"`
+            // right after that file's own import, which passes through every bundle export unwrapped
+            // (the explicit `export { handler }` still shadows the star, and `export *` re-exports
+            // nothing on the self-hosted bundle). When that ships, this whole append goes away.
+            const wrapperCode =
+                telemetryCodeAsString +
+                '\nimport * as _webinyBuiltHandlers from "./_handler.mjs";\n' +
+                "export const streamHandler = _webinyBuiltHandlers.streamHandler;\n";
+
             // 2. Wrap the initially built code with the telemetry client code.
             for (let i = 0; i < handlersPaths.length; i++) {
                 const current = handlersPaths[i];
@@ -60,7 +89,7 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
                 fs.renameSync(builtHandlerPath, renamedHandlerPath);
 
                 // 2.2 Write downloaded telemetry client code as a new `handler.js`.
-                fs.writeFileSync(builtHandlerPath, telemetryCodeAsString);
+                fs.writeFileSync(builtHandlerPath, wrapperCode);
             }
 
             logger.info("WCP telemetry client injected successfully.");

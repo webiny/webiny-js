@@ -8,6 +8,7 @@ export { Accordion } from "@webiny/admin-ui/Accordion/index.js";
 export { Alert } from "@webiny/admin-ui/Alert/index.js";
 export { AutoComplete } from "@webiny/admin-ui/AutoComplete/index.js";
 export { Avatar } from "@webiny/admin-ui/Avatar/index.js";
+export { BetaBadge } from "@webiny/admin-ui/BetaBadge/BetaBadge.js";
 export { Button, CopyButton, IconButton } from "@webiny/admin-ui/Button/index.js";
 export { Card } from "@webiny/admin-ui/Card/index.js";
 export { Checkbox } from "@webiny/admin-ui/Checkbox/index.js";

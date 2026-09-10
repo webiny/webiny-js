@@ -1,11 +1,14 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 import {
-    NODE_VERSION,
-    BUILD_PACKAGES_RUNNER,
+    ACTION,
     AWS_REGION,
-    runNodeScript,
-    addToOutputs
+    BUILD_PACKAGES_RUNNER,
+    NODE_VERSION,
+    OPENSEARCH_SERVICE,
+    addToOutputs,
+    createWaitForOpenSearchStep,
+    runNodeScript
 } from "./utils/index.js";
 import {
     createGlobalBuildCacheSteps,
@@ -25,8 +28,7 @@ import {
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
 const installBuildSteps = createInstallBuildSteps({
-    workingDirectory: DIR_WEBINY_JS,
-    rebuildDependents: true
+    workingDirectory: DIR_WEBINY_JS
 });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -71,15 +73,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
+    const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-        if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
-            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        }
     }
 
     const runJob: NormalJob = createJob({
@@ -97,11 +96,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env,
         if: `needs.${jobNames.constants}.outputs.vitest-test-commands != '[]'`,
         awsAuth: !!storageOps,
+        ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
             ...installBuildSteps,
+            ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
             {
                 name: "Run tests",
                 run: "${{ matrix.testCommand.cmd }}",
@@ -130,26 +131,6 @@ export const pullRequests = createWorkflow({
         "cancel-in-progress": true
     },
     jobs: {
-        validateCommits: createJob({
-            name: "Validate commit messages",
-            if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.4.2" }]
-        }),
-        // Don't allow "feat" commits to be merged into "dev" branch.
-        validateCommitsDev: createJob({
-            name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
-            if: "github.base_ref == 'dev'",
-            steps: [
-                {
-                    uses: "webiny/action-conventional-commits@v1.4.2",
-                    with: {
-                        // If dev, use "dev" commit types, otherwise use "next" commit types.
-                        "allowed-commit-types":
-                            "fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip"
-                    }
-                }
-            ]
-        }),
         constants: createJob({
             name: "Create constants",
             outputs: {
@@ -188,7 +169,7 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed files",
                     id: "detect-changed-files",
-                    uses: "dorny/paths-filter@v4",
+                    uses: ACTION.pathsFilter,
                     with: {
                         filters: "changed:\n  - 'packages/**/*'\n",
                         "list-files": "json"
@@ -243,7 +224,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "API bundle size limit",
-                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-4718592} bytes"'
+                    run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
                 },
                 {
                     name: "Build api",

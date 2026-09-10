@@ -31,7 +31,10 @@ describe("Lexical State Transformer", () => {
                     __textFormat: 0,
                     __textStyle: "",
                     __tag: "h1",
-                    __styleId: "heading1"
+                    __styleId: "heading1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<h1 dir="ltr"><span style="white-space: pre-wrap;">Test CMS Title</span></h1>'
             },
@@ -54,7 +57,10 @@ describe("Lexical State Transformer", () => {
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><br></p>'
             },
@@ -77,7 +83,10 @@ describe("Lexical State Transformer", () => {
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><span style="white-space: pre-wrap;">Testing a </span><a href="https://space.com" rel="noreferrer" dir="ltr"><span style="white-space: pre-wrap;">link</span></a><span style="white-space: pre-wrap;"> for parsing</span></p>'
             },
@@ -100,7 +109,10 @@ describe("Lexical State Transformer", () => {
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><span style="white-space: pre-wrap;">Test CMS Paragraph</span></p>'
             },
@@ -123,7 +135,10 @@ describe("Lexical State Transformer", () => {
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><br></p>'
             },
@@ -146,7 +161,10 @@ describe("Lexical State Transformer", () => {
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "quote"
+                    __styleId: "quote",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<blockquote dir="ltr"><span style="white-space: pre-wrap;">Test quote from lexical </span><strong style="white-space: pre-wrap;">CMS</strong></blockquote>'
             },
@@ -169,7 +187,10 @@ describe("Lexical State Transformer", () => {
                     __dir: "ltr",
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<p dir="ltr"><br></p>'
             },
@@ -195,7 +216,10 @@ describe("Lexical State Transformer", () => {
                     __styleId: "",
                     __listType: "bullet",
                     __tag: "ul",
-                    __start: 1
+                    __start: 1,
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: '<ul dir="ltr"><li value="1" dir="ltr"><span style="white-space: pre-wrap;">List item 1</span></li><li value="2" dir="ltr"><span style="white-space: pre-wrap;">List item 2</span></li><li value="3" dir="ltr"><span style="white-space: pre-wrap;">List item 3</span></li></ul>'
             },
@@ -218,7 +242,10 @@ describe("Lexical State Transformer", () => {
                     __dir: null,
                     __textFormat: 0,
                     __textStyle: "",
-                    __styleId: "paragraph1"
+                    __styleId: "paragraph1",
+                    __className: undefined,
+                    __slotHost: null,
+                    __slots: null
                 },
                 html: "<p><br></p>"
             }

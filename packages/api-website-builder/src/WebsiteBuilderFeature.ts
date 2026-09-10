@@ -1,19 +1,12 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
-import {
-    ModelBuilderFeature,
-    ModelsProvider
-} from "@webiny/api-headless-cms/features/modelBuilder/index.js";
+import { ModelBuilderFeature } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
 import { StorageFeature } from "@webiny/api-headless-cms/features/storage/index.js";
 import { ContentModelFeature } from "@webiny/api-headless-cms/features/contentModel/ContentModelFeature.js";
 import { ContentEntriesFeature } from "@webiny/api-headless-cms/features/contentEntry/ContentEntriesFeature.js";
 import { CmsWhereMapperFeature } from "@webiny/api-headless-cms/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "@webiny/api-headless-cms/features/sortMapper/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { WebsiteBuilderRedirectsRoute } from "./rest/WebsiteBuilderRedirectsRoute.js";
+import { WebsiteBuilderRedirectsRouteDefinition } from "./rest/WebsiteBuilderRedirectsRoute.js";
 import { registerWebsiteBuilderGraphQL } from "./graphql/createGraphQL.js";
 // Redirects
 import { GetRedirectByIdFeature } from "./features/redirects/GetRedirectById/feature.js";
@@ -50,13 +43,19 @@ import { ApiKeyInstallerFeature } from "./features/installer/feature.js";
 import { NextjsFeature } from "./features/nextjs/feature.js";
 import { NuxtFeature } from "./features/nuxt/feature.js";
 import { WbWebhooksFeature } from "./features/webhooks/feature.js";
+import { ExperimentFeature } from "./features/experiments/feature.js";
+import { VariantFeature } from "./features/variants/feature.js";
 import { NextjsGraphQLSchema } from "./graphql/nextjs/NextjsGraphQLSchema.js";
 import { NuxtGraphQLSchema } from "./graphql/nuxt/NuxtGraphQLSchema.js";
 // Models
-import { PAGE_MODEL_ID, PageModelPlugin } from "~/domain/page/page.model.js";
-import { REDIRECT_MODEL_ID, RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
-import { PageModel } from "~/domain/page/abstractions.js";
-import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { PageModelPlugin } from "~/domain/page/page.model.js";
+import { RedirectModelPlugin } from "~/domain/redirect/redirect.model.js";
+import { ExperimentModelPlugin } from "~/domain/experiment/experiment.model.js";
+import { VariantModelPlugin } from "~/domain/variant/variant.model.js";
+import { RedirectModelProvider } from "~/features/redirects/RedirectModelProvider.js";
+import { VariantModelProvider } from "~/features/variants/VariantModelProvider.js";
+import { ExperimentModelProvider } from "~/features/experiments/ExperimentModelProvider.js";
+import { PageModelProvider } from "~/features/pages/PageModelProvider.js";
 
 export const WebsiteBuilderFeature = createFeature({
     name: "WebsiteBuilder",
@@ -75,6 +74,8 @@ export const WebsiteBuilderFeature = createFeature({
         // WB model factories so ModelsProvider can build CmsModel instances.
         container.register(PageModelPlugin);
         container.register(RedirectModelPlugin);
+        container.register(ExperimentModelPlugin);
+        container.register(VariantModelPlugin);
 
         // Permissions.
         WbPermissionsFeature.register(container);
@@ -88,7 +89,7 @@ export const WebsiteBuilderFeature = createFeature({
         DeleteRedirectFeature.register(container);
         MoveRedirectFeature.register(container);
         InvalidateRedirectsCacheFeature.register(container);
-        container.register(WebsiteBuilderRedirectsRoute);
+        container.register(WebsiteBuilderRedirectsRouteDefinition);
 
         // Page features.
         GetPageByIdFeature.register(container);
@@ -111,6 +112,10 @@ export const WebsiteBuilderFeature = createFeature({
         TranslatePageFeature.register(container);
         MovePageFeature.register(container);
 
+        // A/B testing — experiments and variants.
+        ExperimentFeature.register(container);
+        VariantFeature.register(container);
+
         // Misc features + framework GraphQL (Next.js / Nuxt).
         ApiKeyInstallerFeature.register(container);
         NextjsFeature.register(container);
@@ -119,55 +124,15 @@ export const WebsiteBuilderFeature = createFeature({
         container.register(NextjsGraphQLSchema);
         container.register(NuxtGraphQLSchema);
 
-        // Static WB GraphQL schema (base + pages + redirects).
+        // Static WB GraphQL schema (base + pages + redirects + experiments).
         registerWebsiteBuilderGraphQL(container);
 
-        // Per-request resolution of the WB CmsModel instances (Page/Redirect) for the GraphQL path.
-        // The REST route path uses setupWebsiteBuilderModels() (runs for all transports, pre-routing).
-        container.registerInstance(RequestContextInitializer, {
-            async init(ctx: Record<string, any>) {
-                const requestContainer = ctx.container as Container;
-                const identityContext = requestContainer.resolve(IdentityContext);
-                const getModel = requestContainer.resolve(GetModelUseCase);
-
-                await identityContext.withoutAuthorization(async () => {
-                    const [pageModel, redirectModel] = await Promise.all([
-                        getModel.execute(PAGE_MODEL_ID),
-                        getModel.execute(REDIRECT_MODEL_ID)
-                    ]);
-
-                    requestContainer.registerInstance(PageModel, pageModel.value);
-                    requestContainer.registerInstance(RedirectModel, redirectModel.value);
-                });
-            }
-        });
+        // The per-tenant redirect model is resolved on demand — see RedirectModelProvider. The
+        // remaining models are still pushed in by the initializer below, until they are converted
+        // too.
+        container.register(RedirectModelProvider);
+        container.register(VariantModelProvider);
+        container.register(ExperimentModelProvider);
+        container.register(PageModelProvider);
     }
 });
-
-/**
- * Resolves the WB CmsModel instances (Page/Redirect) from the registered ModelFactory plugins and
- * exposes them by token for the redirect REST route + page features. Must run in the `request`
- * callback after WebsiteBuilderFeature.register() and HeadlessCmsFeature.register().
- *
- * Storage operations, AccessControl, the entry transforms and SearchableFieldsProvider are provided
- * by HeadlessCmsFeature.register() for every event, so WB no longer builds its own.
- */
-export async function setupWebsiteBuilderModels(container: Container): Promise<void> {
-    const modelsProvider = container.resolve(ModelsProvider);
-    const tenantCtx = container.resolve(TenantContext);
-    // getTenant() is typed non-null but returns null before the tenant is set during routing;
-    // fall back to "root" for code-defined model building (the per-request tenant is applied later
-    // when DynamoDB queries run).
-    const tenantId = (tenantCtx.getTenant() as any)?.id ?? "root";
-    const models = await modelsProvider.list(tenantId);
-
-    const redirectModel = models.find(m => m.modelId === REDIRECT_MODEL_ID);
-    const pageModel = models.find(m => m.modelId === PAGE_MODEL_ID);
-
-    if (redirectModel) {
-        container.registerInstance(RedirectModel, redirectModel);
-    }
-    if (pageModel) {
-        container.registerInstance(PageModel, pageModel);
-    }
-}

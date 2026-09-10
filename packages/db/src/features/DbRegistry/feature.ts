@@ -7,7 +7,7 @@ import { DbRegistry } from "./DbRegistry.js";
  * this feature twice on the same container creates a second DbRegistry singleton and orphans the
  * first. That breaks consumers that register into DbRegistry at different times (e.g. the CMS
  * storage `beforeInit` registers entities into registration #1, while a later resolve — like the
- * api-elasticsearch-tasks sync — gets the empty registration #2). Registering once per container
+ * search-index-tasks sync — gets the empty registration #2). Registering once per container
  * keeps a single shared instance.
  */
 const registeredContainers = new WeakSet<object>();

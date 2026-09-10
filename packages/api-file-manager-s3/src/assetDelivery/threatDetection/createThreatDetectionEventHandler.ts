@@ -11,7 +11,7 @@ import type { ITenantContext } from "@webiny/api-core/features/tenancy/TenantCon
 import type { IGetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/abstractions.js";
 import type { EventContext, NextFunction } from "@webiny/event-handler-core";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { processThreatScanResult } from "./processThreatScanResult.js";
 import { ObjectKey } from "./ObjectKey.js";
@@ -35,7 +35,7 @@ class ThreatDetectionEventBridgeLambdaHandlerImpl implements EventBridgeEventHan
             return { success: true };
         }
 
-        if (!this.container.resolve(WcpContext).canUseFileManagerThreatDetection()) {
+        if (!this.container.resolve(FeatureFlags).get().isEnabled("fileManager.threatDetection")) {
             return { success: true };
         }
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import slugify from "slugify";
+import { useStringFormatter } from "@webiny/app-admin/features/stringFormatter/useStringFormatter.js";
 import { Grid, Input } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import type { GenericFormData } from "@webiny/form";
@@ -26,6 +26,7 @@ interface FormComponentProps {
 const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
     const [parentId, setParentId] = useState<string | null>(currentParentId);
     const form = useForm();
+    const stringFormatter = useStringFormatter();
 
     const generateSlug = () => {
         if (form.data.slug || !form.data.title) {
@@ -33,15 +34,7 @@ const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
         }
 
         // We want to update slug only when the folder is first being created.
-        form.setValue(
-            "slug",
-            slugify(form.data.title, {
-                replacement: "-",
-                lower: true,
-                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
-                trim: false
-            })
-        );
+        form.setValue("slug", stringFormatter.slugify(form.data.title));
     };
 
     return (

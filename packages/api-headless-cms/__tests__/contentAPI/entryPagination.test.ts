@@ -4,6 +4,7 @@ import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { CmsEntry } from "~/types";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { HeadlessCms } from "~/features/shared/abstractions.js";
+import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 
 const NUMBER_OF_FRUITS = 200;
 
@@ -62,14 +63,15 @@ describe("entry pagination", () => {
             manager,
             models: ["fruit"]
         });
-        const cms = manager.getContext().container.resolve(HeadlessCms);
-        const storageOperations = cms.storageOperations;
+        const container = manager.getContext().container;
+        const cms = container.resolve(HeadlessCms);
+        const createEntry = container.resolve(CreateEntryStorageOperation);
 
         const models = await cms.listModels();
         const model = models.find(m => m.modelId === "fruit")!;
         for (let i = 1; i <= NUMBER_OF_FRUITS; i++) {
             const fruit = createFruitData(i);
-            await storageOperations.entries.create(model, {
+            await createEntry.execute(model, {
                 storageEntry: fruit,
                 entry: fruit
             });

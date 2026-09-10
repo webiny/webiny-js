@@ -1,8 +1,10 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createPersonEntries, createPersonModel, deletePersonModel } from "./helpers";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import type { HeadlessCmsStorageOperations } from "~/types";
+import type { Container } from "@webiny/di";
+import { ListEntriesStorageOperation } from "~/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
+import { GetEntriesByIdsStorageOperation } from "~/features/shared/storageOperations/entry/GetEntriesByIdsStorageOperation.js";
+import { GetRevisionsStorageOperation } from "~/features/shared/storageOperations/entry/GetRevisionsStorageOperation.js";
 
 vi.setConfig({
     testTimeout: 100_000
@@ -13,25 +15,25 @@ describe("Entries storage operations", () => {
         path: "manage"
     });
 
-    let storageOperations: HeadlessCmsStorageOperations;
+    let container: Container;
 
     /**
      * Storage operations are created by a DI factory during context initialization.
-     * We invoke a query to trigger context init, then capture the storage operations.
+     * We invoke a query to trigger context init, then capture the container.
      */
     beforeEach(async () => {
         await handler.isInstalledQuery();
         const context = handler.getContext();
-        storageOperations = context.container.resolve(HeadlessCms).storageOperations;
+        container = context.container;
 
         await deletePersonModel({
-            storageOperations
+            container
         });
     });
 
     afterEach(async () => {
         await deletePersonModel({
-            storageOperations
+            container
         });
     });
 
@@ -40,7 +42,7 @@ describe("Entries storage operations", () => {
         const amount = 45;
         const results = await createPersonEntries({
             amount,
-            storageOperations,
+            container,
             maxRevisions: 3
         });
         /**
@@ -65,7 +67,8 @@ describe("Entries storage operations", () => {
             /**
              * We fetch revisions of each first entry.
              */
-            const resultRevisions = await storageOperations.entries.getRevisions(personModel, {
+            const getRevisions = container.resolve(GetRevisionsStorageOperation);
+            const resultRevisions = await getRevisions.execute(personModel, {
                 id: first.id
             });
             /**
@@ -94,11 +97,12 @@ describe("Entries storage operations", () => {
         const amount = 10;
         await createPersonEntries({
             amount,
-            storageOperations,
+            container,
             maxRevisions: 1
         });
 
-        const result = await storageOperations.entries.list(personModel, {
+        const listEntries = container.resolve(ListEntriesStorageOperation);
+        const result = await listEntries.execute(personModel, {
             where: {
                 values: {
                     name_contains: "person "
@@ -121,13 +125,14 @@ describe("Entries storage operations", () => {
         const amount = 51;
         const results = await createPersonEntries({
             amount,
-            storageOperations,
+            container,
             maxRevisions: 1
         });
 
         const items = Object.values(results);
 
-        const records = await storageOperations.entries.getByIds(personModel, {
+        const getEntriesByIds = container.resolve(GetEntriesByIdsStorageOperation);
+        const records = await getEntriesByIds.execute(personModel, {
             ids: items.map(result => result.last.id)
         });
 

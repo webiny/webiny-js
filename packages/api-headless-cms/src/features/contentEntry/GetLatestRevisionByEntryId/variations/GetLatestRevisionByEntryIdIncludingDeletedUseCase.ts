@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetLatestRevisionByEntryIdIncludingDeletedUseCase as UseCaseAbstraction } from "../abstractions.js";
 import { GetLatestRevisionByEntryIdBaseUseCase } from "../abstractions.js";
 import type {
@@ -26,8 +25,8 @@ class GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl
     }
 }
 
-export const GetLatestRevisionByEntryIdIncludingDeletedUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
-    implementation: GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl,
-    dependencies: [GetLatestRevisionByEntryIdBaseUseCase]
-});
+export const GetLatestRevisionByEntryIdIncludingDeletedUseCase =
+    UseCaseAbstraction.createImplementation({
+        implementation: GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl,
+        dependencies: [GetLatestRevisionByEntryIdBaseUseCase]
+    });

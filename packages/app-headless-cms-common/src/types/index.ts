@@ -65,6 +65,7 @@ export interface CmsDynamicZoneTemplate {
     layout: CmsEditorFieldsLayout;
     validation: CmsModelFieldValidator[];
     tags?: string[];
+    componentName?: string;
 }
 
 export type CmsContentEntryStatusType = "draft" | "published" | "unpublished";

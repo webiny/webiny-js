@@ -144,9 +144,9 @@ Note: `GraphQLSchemaFactory` implementations typically have `dependencies: []` b
 Full pattern using `Response` / `ErrorResponse` wrappers and UseCase injection:
 
 ```typescript
-import { Response } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { Response } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import { GetCurrentEntityUseCase } from "../features/getCurrentEntity/abstractions.js";
 
 class GetCurrentEntitySchema implements GraphQLSchemaFactory.Interface {
@@ -262,8 +262,8 @@ builder.addResolver<{ entityId: string }>({
 When GraphQL inputs must reflect CMS model fields (e.g., an extensible "extensions" object):
 
 ```typescript
-import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
-import { Response, ErrorResponse } from "@webiny/handler-graphql";
+import { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
+import { Response, ErrorResponse } from "@webiny/api-graphql";
 import { PluginsContainer } from "@webiny/api-headless-cms/legacy/abstractions.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
@@ -385,7 +385,7 @@ export default PermissionTransformer.createImplementation({
 - Resolver `dependencies` array lists DI abstractions; resolver function receives resolved instances in same order
 - Type the resolver args generic: `builder.addResolver<{ input: UseCaseAbstraction.Input }>`
 - The root Query/Mutation types define a namespace type (e.g., `MyPackageQuery`, `MyPackageMutation`) extended by individual schemas
-- Use `Response` for success, `ErrorResponse` for failure (from `@webiny/handler-graphql`)
+- Use `Response` for success, `ErrorResponse` for failure (from `@webiny/api-graphql`)
 - Export as `default`
 
 ## Quick Reference
@@ -398,7 +398,7 @@ Return:       Promise<GraphQLSchemaFactory.SchemaBuilder>
 Export:       GraphQLSchemaFactory.createImplementation({ implementation, dependencies })
 Register:     <Api.Extension src={"@/extensions/mySchema/MyGraphQLSchema.ts"} />
 Deploy:       yarn webiny deploy api --env=dev
-Response:     import { Response, ErrorResponse } from "@webiny/handler-graphql"
+Response:     import { Response, ErrorResponse } from "@webiny/api-graphql"
 ```
 
 ## Related Skills

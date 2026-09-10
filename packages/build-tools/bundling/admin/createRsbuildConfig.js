@@ -45,7 +45,12 @@ export const createRsbuildConfig = ({ cwd }) => {
                 }
             }
         },
-        server: { port: process.env.PORT || 3001, host: "0.0.0.0" },
+        // Port precedence matches the served admin app (`webiny serve admin`): an explicit
+        // WEBINY_ADMIN_PORT wins, then a PORT injected by the environment, then the 3001 default.
+        server: {
+            port: process.env.WEBINY_ADMIN_PORT || process.env.PORT || 3001,
+            host: "0.0.0.0"
+        },
         html: {
             template: paths.projectRootFolder + "/public/index.html"
         },
@@ -159,7 +164,9 @@ const getEnvVars = () => {
     // Provide values one by one, not as a single process.env object,
     // because otherwise plugin will put a big JSON object every time process.env is used in code.
     // This way minifier also removes redundant code on prod (like if(process.env.NODE_ENV === 'development')).
-    const envVarsAsStrings = {};
+    const envVarsAsStrings = {
+        "process.env": "{}"
+    };
     for (const key of Object.keys(raw)) {
         envVarsAsStrings[`process.env.${key}`] = JSON.stringify(raw[key]);
     }

@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-lexical-catalog
-context: webiny-api
 description: >
   admin/lexical — 17 abstractions.
 ---

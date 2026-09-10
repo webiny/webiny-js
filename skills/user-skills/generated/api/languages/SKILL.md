@@ -1,6 +1,5 @@
 ---
 name: webiny-api-languages-catalog
-context: webiny-api
 description: >
   api/languages — 2 abstractions.
 ---

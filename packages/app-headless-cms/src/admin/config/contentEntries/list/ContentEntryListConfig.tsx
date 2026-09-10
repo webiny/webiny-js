@@ -53,7 +53,8 @@ export function useContentEntryListConfig() {
                 bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])],
-                sidebarFooter: [...(browser.sidebarFooter || [])]
+                sidebarFooter: [...(browser.sidebarFooter || [])],
+                breadcrumbRoot: browser.breadcrumbRoot
             }
         }),
         [config]

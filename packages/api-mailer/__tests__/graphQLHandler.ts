@@ -1,6 +1,6 @@
 import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";
 import { MailerFeature } from "~/MailerFeature.js";
@@ -10,7 +10,7 @@ import {
     AuthenticatedIdentity
 } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { sleep, until, createPermissions } from "./context/helpers";
 import type { CreateHandlerParams } from "./contextHandler";
@@ -56,7 +56,7 @@ export const createGraphQLHandler = (params?: CreateHandlerParams) => {
         root: container => {
             container.register(createTestAuthorizer(permissions));
         },
-        request: async container => {
+        child: async container => {
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, {});
             GraphQLEngineFeature.register(container);

@@ -1,64 +1,14 @@
-import styled from "@emotion/styled";
-import { css } from "@emotion/css";
-import { Text } from "~/components/Text.js";
-import { ActionType } from "~/types.js";
+import { ActionType } from "@webiny/common-audit-logs";
 
-const ACTION_TYPES_COLORS_MAP = {
-    YELLOW: [ActionType.UPDATE],
-    RED: [ActionType.DELETE, ActionType.UNPUBLISH, ActionType.MOVE_TO_TRASH]
-};
+const YELLOW_ACTIONS: string[] = [ActionType.UPDATE];
+const RED_ACTIONS: string[] = [ActionType.DELETE, ActionType.UNPUBLISH, ActionType.MOVE_TO_TRASH];
 
-export const ActionWrapper = styled.div<{ value: ActionType }>`
-    padding: 0 8px;
-    width: fit-content;
-    border: 1px solid;
-    border-radius: 5px;
-
-    ${({ value: actionType }) => {
-        // Yellow.
-        if (ACTION_TYPES_COLORS_MAP.YELLOW.includes(actionType)) {
-            return `
-                background-color: #fac42810;
-                border-color: #fac428;
-                color: #fac428;
-            `;
-        }
-
-        // Red.
-        if (ACTION_TYPES_COLORS_MAP.RED.includes(actionType)) {
-            return `
-                background-color: #ff000010;
-                border-color: #ff0000;
-                color: #ff0000;
-            `;
-        }
-
-        // Green.
-        return `
-            background-color: #00ccb010;
-            border-color: #00ccb0;
-            color: #00ccb0;
-        `;
-    }}
-`;
-
-export const wideColumn = css`
-    width: auto !important;
-`;
-
-export const appColumn = css`
-    width: 280px !important;
-`;
-
-export const previewColumn = css`
-    width: 100px !important;
-`;
-
-export const TextGray = styled(Text)`
-    color: "#616161";
-`;
-
-export const TimezoneText = styled(TextGray)`
-    padding-left: 6px;
-    padding-right: 6px;
-`;
+export function getActionColorClasses(value: string): string {
+    if (YELLOW_ACTIONS.includes(value)) {
+        return "bg-warning-100 border-warning-500 text-warning-700";
+    }
+    if (RED_ACTIONS.includes(value)) {
+        return "bg-destructive-100 border-destructive-500 text-destructive-700";
+    }
+    return "bg-success-100 border-success-500 text-success-700";
+}

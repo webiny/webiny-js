@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import {
     type IUpdateEntryDataFactory,
     type IUpdateEntryDataResponse,
@@ -143,8 +142,7 @@ class UpdateEntryDataFactoryImpl implements IUpdateEntryDataFactory {
     }
 }
 
-export const UpdateEntryDataFactory = createImplementation({
-    abstraction: FactoryAbstraction,
+export const UpdateEntryDataFactory = FactoryAbstraction.createImplementation({
     implementation: UpdateEntryDataFactoryImpl,
     dependencies: [CmsContext, IdentityContext]
 });

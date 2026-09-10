@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import {
     type IValidateEntryUserCaseExecuteResult,
     ValidateEntryUseCase as UseCaseAbstraction
@@ -76,8 +76,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const ValidateEntryUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const ValidateEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: ValidateEntryUseCaseImpl,
     dependencies: [AccessControl, GetRevisionByIdUseCase, CmsContext]
 });

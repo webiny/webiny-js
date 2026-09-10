@@ -17,7 +17,11 @@ export interface CreatePostgresConnectionOptions {
 }
 
 const envBool = (name: string): boolean | undefined => {
-    return toBoolean(process.env[name]);
+    const value = process.env[name];
+    // Only convert when the var is actually set — an unset var must stay `undefined`, not become
+    // `false`. Callers rely on the `undefined` distinction (e.g. the SSL config is only applied when a
+    // WEBINY_PG_SSL* var is explicitly present); returning `false` for unset would always trigger it.
+    return value === undefined ? undefined : toBoolean(value);
 };
 
 const envInt = (name: string): number | undefined => {

@@ -55,7 +55,9 @@ export const MultiFilePickerRenderer = createFieldRenderer<"multiFilePicker">(({
                     showFileManager((files: FileManagerFileItem[]) => {
                         const newValues = files.map(fileManagerItemToValue);
                         if (replaceIndex === -1) {
-                            field.onChange([...currentValues, ...newValues]);
+                            const existingIds = new Set(currentValues.map(v => v.id));
+                            const unique = newValues.filter(v => !existingIds.has(v.id));
+                            field.onChange([...currentValues, ...unique]);
                         } else {
                             field.onChange([
                                 ...currentValues.slice(0, replaceIndex),

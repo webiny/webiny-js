@@ -5,10 +5,12 @@ import { SchedulePublishActionGateway } from "~/features/schedulePublishAction/a
 import { ScheduleUnpublishActionGateway } from "~/features/scheduleUnpublishAction/abstractions.js";
 import { ScheduleActionType } from "~/types.js";
 import type { SchedulerEntry } from "~/types.js";
+import { DateFormatter } from "@webiny/app-admin";
 import {
     ScheduleDialogPresenter as Abstraction,
     type IScheduleDialogPresenter,
     type IScheduleDialogPresenterViewModel,
+    type IScheduleDialogRescheduling,
     type IScheduleDialogPresenterLoadParams,
     type IScheduleDialogPresenterScheduleParams,
     type IScheduleDialogPresenterCancelParams
@@ -22,7 +24,8 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
         private readonly getGateway: GetScheduledActionGateway.Interface,
         private readonly cancelGateway: CancelScheduledActionGateway.Interface,
         private readonly publishGateway: SchedulePublishActionGateway.Interface,
-        private readonly unpublishGateway: ScheduleUnpublishActionGateway.Interface
+        private readonly unpublishGateway: ScheduleUnpublishActionGateway.Interface,
+        private readonly dateFormatter: DateFormatter.Interface
     ) {
         makeAutoObservable(this);
     }
@@ -30,8 +33,23 @@ class ScheduleDialogPresenterImpl implements IScheduleDialogPresenter {
     get vm(): IScheduleDialogPresenterViewModel {
         return {
             loading: this.loading,
-            entry: this.entry
+            entry: this.entry,
+            rescheduling: this.getRescheduling()
         };
+    }
+
+    private getRescheduling(): IScheduleDialogRescheduling | null {
+        const entry = this.entry;
+        if (!entry) {
+            return null;
+        }
+        const scheduleOn = entry.publishOn || entry.unpublishOn;
+        if (!scheduleOn) {
+            return null;
+        }
+        const actionName =
+            entry.actionType === ScheduleActionType.publish ? "publish" : "unpublish";
+        return { actionName, scheduleOn: this.dateFormatter.format(scheduleOn) };
     }
 
     async load(params: IScheduleDialogPresenterLoadParams): Promise<void> {
@@ -104,6 +122,7 @@ export const ScheduleDialogPresenter = Abstraction.createImplementation({
         GetScheduledActionGateway,
         CancelScheduledActionGateway,
         SchedulePublishActionGateway,
-        ScheduleUnpublishActionGateway
+        ScheduleUnpublishActionGateway,
+        DateFormatter
     ]
 });

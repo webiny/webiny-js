@@ -1,6 +1,6 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql";
+import { Response, ErrorResponse } from "@webiny/api-graphql";
 import { ListLanguagesUseCase } from "~/api/features/ListLanguages/index.js";
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 
 class LanguagesGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(

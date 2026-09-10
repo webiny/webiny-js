@@ -1,5 +1,6 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
-import slugify from "slugify";
+import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import { FormModelFactory } from "~/features/formModel/abstractions.js";
 import type { IFormModel } from "~/features/formModel/abstractions.js";
@@ -34,7 +35,8 @@ class RolesPresenterImpl implements IRolesPresenter {
         private createRoleUseCase: CreateRoleUseCase.Interface,
         private updateRoleUseCase: UpdateRoleUseCase.Interface,
         private deleteRoleUseCase: DeleteRoleUseCase.Interface,
-        private cache: RolesListCache.Interface
+        private cache: RolesListCache.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {
         this._form = this.buildForm(false, false);
         makeAutoObservable<
@@ -46,6 +48,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             | "updateRoleUseCase"
             | "deleteRoleUseCase"
             | "cache"
+            | "stringFormatter"
         >(this, {
             formModelFactory: false,
             listRolesUseCase: false,
@@ -54,6 +57,7 @@ class RolesPresenterImpl implements IRolesPresenter {
             updateRoleUseCase: false,
             deleteRoleUseCase: false,
             cache: false,
+            stringFormatter: false,
             vm: computed
         });
     }
@@ -106,7 +110,7 @@ class RolesPresenterImpl implements IRolesPresenter {
                 this._form.setData({
                     name: role.name,
                     slug: role.slug,
-                    description: role.description,
+                    description: role.description ?? "",
                     permissions: role.permissions || []
                 });
             });
@@ -164,14 +168,16 @@ class RolesPresenterImpl implements IRolesPresenter {
                     this._form.setData({
                         name: role.name,
                         slug: role.slug,
-                        description: role.description,
+                        description: role.description ?? "",
                         permissions: role.permissions || []
                     });
                 });
                 return role;
             }
-        } catch {
-            return null;
+            // Errors deliberately propagate to the caller, which reports them to the user. This
+            // used to be a bare `catch { return null }`, and `null` is also what `save()` returns
+            // when client-side validation fails - so a rejected request looked to the view exactly
+            // like a form that had not been submitted, and failed silently.
         } finally {
             runInAction(() => {
                 this._saving = false;
@@ -203,14 +209,7 @@ class RolesPresenterImpl implements IRolesPresenter {
                         if (slugValue || !value) {
                             return;
                         }
-                        form.field("slug").setValue(
-                            slugify(String(value), {
-                                replacement: "-",
-                                lower: true,
-                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
-                                trim: false
-                            })
-                        );
+                        form.field("slug").setValue(this.stringFormatter.slugify(String(value)));
                     }),
                 slug: fields
                     .text()
@@ -221,6 +220,9 @@ class RolesPresenterImpl implements IRolesPresenter {
                     .text()
                     .label("Description")
                     .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .renderer("textarea")
                     .disabled(!canModify),
                 permissions: fields
@@ -253,6 +255,7 @@ export const RolesPresenter = Abstraction.createImplementation({
         CreateRoleUseCase,
         UpdateRoleUseCase,
         DeleteRoleUseCase,
-        RolesListCache
+        RolesListCache,
+        StringFormatter
     ]
 });

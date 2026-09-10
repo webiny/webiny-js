@@ -1,8 +1,7 @@
 ---
 name: webiny-api-file-manager-catalog
-context: webiny-api
 description: >
-  API — File Manager — 28 abstractions.
+  API — File Manager — 48 abstractions.
   File event handlers and use cases.
 ---
 
@@ -18,6 +17,98 @@ File event handlers and use cases.
 4. See `webiny-use-case-pattern` or `webiny-event-handler-pattern` skills for implementation patterns
 
 ## Abstractions
+
+---
+
+**Name:** `Asset`
+**Import:** `import { Asset } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/delivery/AssetDelivery/Asset.ts`
+
+---
+
+**Name:** `AssetAuthorizer`
+**Import:** `import { AssetAuthorizer } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetAuthorizer.ts`
+
+---
+
+**Name:** `AssetContentsReader`
+**Import:** `import { AssetContentsReader } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetContentsReader.ts`
+
+---
+
+**Name:** `AssetData`
+**Kind:** type
+**Import:** `import type { AssetData } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/delivery/AssetDelivery/Asset.ts`
+
+---
+
+**Name:** `AssetFactory`
+**Import:** `import { AssetFactory } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/Asset/abstractions.ts`
+
+---
+
+**Name:** `AssetOutputStrategy`
+**Import:** `import { AssetOutputStrategy } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetOutputStrategy.ts`
+
+---
+
+**Name:** `AssetProcessor`
+**Import:** `import { AssetProcessor } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetProcessor.ts`
+
+---
+
+**Name:** `AssetReply`
+**Import:** `import { AssetReply } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/delivery/AssetDelivery/abstractions/AssetReply.ts`
+
+---
+
+**Name:** `AssetRequest`
+**Import:** `import { AssetRequest } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.ts`
+
+---
+
+**Name:** `AssetRequestFactory`
+**Import:** `import { AssetRequestFactory } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/AssetRequest/abstractions.ts`
+
+---
+
+**Name:** `AssetRequestOptions`
+**Kind:** type
+**Import:** `import type { AssetRequestOptions } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/delivery/AssetDelivery/AssetRequest.ts`
+
+---
+
+**Name:** `AssetRequestResolver`
+**Import:** `import { AssetRequestResolver } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetRequestResolver.ts`
+
+---
+
+**Name:** `AssetResolver`
+**Import:** `import { AssetResolver } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetResolver.ts`
+
+---
+
+**Name:** `AssetType`
+**Import:** `import { AssetType } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.ts`
+
+---
+
+**Name:** `createAssetDeliveryPluginLoader`
+**Import:** `import { createAssetDeliveryPluginLoader } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/delivery/AssetDelivery/createAssetDeliveryPluginLoader.ts`
 
 ---
 
@@ -122,13 +213,18 @@ File event handlers and use cases.
 **Name:** `FileUrlGenerator`
 **Import:** `import { FileUrlGenerator } from "webiny/api/file-manager/file"`
 **Source:** `@webiny/api-file-manager/features/file/FileUrlGenerator/abstractions.ts`
-**Description:** Generate URLs for uploaded files.
 
 ---
 
 **Name:** `FmPermissions`
 **Import:** `import { FmPermissions } from "webiny/api/file-manager/permissions"`
 **Source:** `@webiny/api-file-manager/features/shared/abstractions.ts`
+
+---
+
+**Name:** `GetFileByUrlUseCase`
+**Import:** `import { GetFileByUrlUseCase } from "webiny/api/file-manager/file"`
+**Source:** `@webiny/api-file-manager/features/file/GetFileByUrl/abstractions.ts`
 
 ---
 
@@ -150,6 +246,20 @@ File event handlers and use cases.
 **Import:** `import { GetSettingsUseCase } from "webiny/api/file-manager/settings"`
 **Source:** `@webiny/api-file-manager/features/settings/GetSettings/abstractions.ts`
 **Description:** Retrieve file manager settings.
+
+---
+
+**Name:** `IAssetType`
+**Kind:** type
+**Import:** `import type { IAssetType } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.ts`
+
+---
+
+**Name:** `IAssetTypeHandler`
+**Kind:** type
+**Import:** `import type { IAssetTypeHandler } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/abstractions/AssetType.ts`
 
 ---
 
@@ -181,6 +291,12 @@ File event handlers and use cases.
 
 ---
 
+**Name:** `ObjectKey`
+**Import:** `import { ObjectKey } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/ObjectKey/abstractions.ts`
+
+---
+
 **Name:** `SettingsAfterUpdateEventHandler`
 **Import:** `import { SettingsAfterUpdateEventHandler } from "webiny/api/file-manager/settings"`
 **Source:** `@webiny/api-file-manager/features/settings/UpdateSettings/events.ts`
@@ -192,6 +308,12 @@ File event handlers and use cases.
 **Import:** `import { SettingsBeforeUpdateEventHandler } from "webiny/api/file-manager/settings"`
 **Source:** `@webiny/api-file-manager/features/settings/UpdateSettings/events.ts`
 **Description:** Hook into settings lifecycle before settings are updated.
+
+---
+
+**Name:** `StreamAssetReply`
+**Import:** `import { StreamAssetReply } from "webiny/api/file-manager/assetDelivery"`
+**Source:** `@webiny/api-file-manager/features/assetDelivery/StreamAssetReply/abstractions.ts`
 
 ---
 

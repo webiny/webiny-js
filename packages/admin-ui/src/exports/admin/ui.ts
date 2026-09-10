@@ -17,6 +17,9 @@ export { AutoComplete } from "~/AutoComplete/index.js";
 // Avatar
 export { Avatar } from "~/Avatar/index.js";
 
+// Beta Badge
+export { BetaBadge } from "~/BetaBadge/BetaBadge.js";
+
 // Button
 export { Button, CopyButton, IconButton } from "~/Button/index.js";
 

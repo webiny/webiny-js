@@ -1,7 +1,5 @@
 import React, { useMemo, useEffect } from "react";
 import { DiContainerProvider, useFeature } from "@webiny/app";
-import { plugins } from "@webiny/plugins";
-import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 
 interface TenancyProviderProps {
@@ -15,17 +13,9 @@ export const TenancyProvider = (props: TenancyProviderProps) => {
         return new URLSearchParams(window.location.search).get("tenantId");
     }, []);
 
-    // Handle query string on mount
     useEffect(() => {
         if (tenantId) {
             service.setTenant(tenantId);
-        }
-
-        // Register plugin for current tenant
-        const currentTenant = service.getCurrentTenant();
-        if (currentTenant) {
-            // TODO: remove this once we can decorate the GQL client!
-            plugins.register(new TenantHeaderLinkPlugin(currentTenant));
         }
     }, [tenantId]);
 

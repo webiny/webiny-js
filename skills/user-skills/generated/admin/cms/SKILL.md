@@ -1,8 +1,7 @@
 ---
 name: webiny-admin-cms-catalog
-context: webiny-api
 description: >
-  admin/cms — 74 abstractions.
+  admin/cms — 56 abstractions.
 ---
 
 # admin/cms
@@ -17,16 +16,22 @@ description: >
 
 ---
 
+**Name:** `BulkActionFeature`
+**Import:** `import { BulkActionFeature } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/bulkAction/feature.ts`
+
+---
+
+**Name:** `BulkActionUseCase`
+**Import:** `import { BulkActionUseCase } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/bulkAction/abstractions.ts`
+
+---
+
 **Name:** `CmsContentEntry`
 **Kind:** type
 **Import:** `import type { CmsContentEntry } from "webiny/admin/cms"`
 **Source:** `@webiny/app-headless-cms-common/types/index.ts`
-
----
-
-**Name:** `CmsContentFormRenderer`
-**Import:** `import { CmsContentFormRenderer } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsContentFormRenderer.tsx`
 
 ---
 
@@ -57,46 +62,10 @@ description: >
 
 ---
 
-**Name:** `CmsModelFieldRenderer`
-**Import:** `import { CmsModelFieldRenderer } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldRenderer.tsx`
-
----
-
-**Name:** `CmsModelFieldType`
-**Import:** `import { CmsModelFieldType } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldType.tsx`
-
----
-
-**Name:** `CmsModelFieldValidator`
-**Import:** `import { CmsModelFieldValidator } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldValidator.tsx`
-
----
-
 **Name:** `CmsModelLayoutField`
 **Kind:** type
 **Import:** `import type { CmsModelLayoutField } from "webiny/admin/cms"`
 **Source:** `@webiny/app-headless-cms-common/types/index.ts`
-
----
-
-**Name:** `CmsModelLayoutFieldRenderer`
-**Import:** `import { CmsModelLayoutFieldRenderer } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsModelLayoutFieldRenderer.tsx`
-
----
-
-**Name:** `CmsModelLayoutFieldType`
-**Import:** `import { CmsModelLayoutFieldType } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsModelLayoutFieldType.tsx`
-
----
-
-**Name:** `ContentEntry`
-**Import:** `import { ContentEntry } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry.tsx`
 
 ---
 
@@ -108,25 +77,25 @@ description: >
 
 **Name:** `ContentEntryForm`
 **Import:** `import { ContentEntryForm } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryForm.tsx`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.ts`
 
 ---
 
-**Name:** `ContentEntryFormMeta`
-**Import:** `import { ContentEntryFormMeta } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/FullScreenContentEntryHeaderLeft.tsx`
+**Name:** `ContentEntryFormContent`
+**Import:** `import { ContentEntryFormContent } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.ts`
 
 ---
 
-**Name:** `ContentEntryFormPreview`
-**Import:** `import { ContentEntryFormPreview } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormPreview.tsx`
+**Name:** `ContentEntryFormModelModifier`
+**Import:** `import { ContentEntryFormModelModifier } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.ts`
 
 ---
 
-**Name:** `ContentEntryFormTitle`
-**Import:** `import { ContentEntryFormTitle } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/FullScreenContentEntryHeaderLeft.tsx`
+**Name:** `ContentEntryFormPresenter`
+**Import:** `import { ContentEntryFormPresenter } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/form/abstractions.ts`
 
 ---
 
@@ -136,33 +105,21 @@ description: >
 
 ---
 
-**Name:** `DefaultLayout`
-**Import:** `import { DefaultLayout } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/DefaultLayout.tsx`
-
----
-
 **Name:** `Divider`
 **Import:** `import { Divider } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `DropDown`
 **Import:** `import { DropDown } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `DropDownItem`
 **Import:** `import { DropDownItem } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
-
----
-
-**Name:** `DynamicZoneContainer`
-**Import:** `import { DynamicZoneContainer } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -205,21 +162,29 @@ description: >
 
 ---
 
-**Name:** `Fields`
-**Import:** `import { Fields } from "webiny/admin/cms/field-renderers/common"`
-**Source:** `@webiny/app-headless-cms-common/index.ts`
+**Name:** `GetEntryGraphQLFieldSelection`
+**Import:** `import { GetEntryGraphQLFieldSelection } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/getEntry/abstractions.ts`
 
 ---
 
 **Name:** `getNodeFromSelection`
 **Import:** `import { getNodeFromSelection } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
-**Name:** `Header`
-**Import:** `import { Header } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/Header/index.tsx`
+**Name:** `IGetEntryGraphQLFieldSelection`
+**Kind:** type
+**Import:** `import type { IGetEntryGraphQLFieldSelection } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/getEntry/abstractions.ts`
+
+---
+
+**Name:** `IListEntriesGraphQLFieldSelection`
+**Kind:** type
+**Import:** `import type { IListEntriesGraphQLFieldSelection } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/listEntries/abstractions.ts`
 
 ---
 
@@ -232,7 +197,13 @@ description: >
 **Name:** `Klass`
 **Kind:** type
 **Import:** `import type { Klass } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
+
+---
+
+**Name:** `LexicalEditor`
+**Import:** `import { LexicalEditor } from "webiny/admin/cms/lexical"`
+**Source:** `@webiny/app-headless-cms/admin/components/LexicalCmsEditor/LexicalEditor.tsx`
 
 ---
 
@@ -242,58 +213,47 @@ description: >
 
 ---
 
+**Name:** `LexicalEditorProps`
+**Kind:** type
+**Import:** `import type { LexicalEditorProps } from "webiny/admin/cms/lexical"`
+**Source:** `@webiny/app-headless-cms/admin/components/LexicalCmsEditor/LexicalEditor.tsx`
+
+---
+
 **Name:** `LexicalHtmlRenderer`
 **Import:** `import { LexicalHtmlRenderer } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `LexicalNode`
 **Kind:** type
 **Import:** `import type { LexicalNode } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
-**Name:** `MultiValueContainer`
-**Import:** `import { MultiValueContainer } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
-
----
-
-**Name:** `MultiValueItem`
-**Import:** `import { MultiValueItem } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
-
----
-
-**Name:** `MultiValueItemContainer`
-**Import:** `import { MultiValueItemContainer } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
-
----
-
-**Name:** `MultiValueItemContainer`
-**Import:** `import { MultiValueItemContainer } from "webiny/admin/cms/field-renderers/object"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/object/MultiValueItemContainer.tsx`
-
----
-
-**Name:** `ParentFieldProvider`
-**Import:** `import { ParentFieldProvider } from "webiny/admin/cms/field-renderers/common"`
-**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/ParentValue.tsx`
-
----
-
-**Name:** `ParentValueIndexProvider`
-**Import:** `import { ParentValueIndexProvider } from "webiny/admin/cms/field-renderers/common"`
-**Source:** `@webiny/app-headless-cms-common/index.ts`
+**Name:** `ListEntriesGraphQLFieldSelection`
+**Import:** `import { ListEntriesGraphQLFieldSelection } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/listEntries/abstractions.ts`
 
 ---
 
 **Name:** `PermissionsEditor`
 **Import:** `import { PermissionsEditor } from "webiny/admin/cms/model"`
 **Source:** `@webiny/app-headless-cms/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.tsx`
+
+---
+
+**Name:** `PublishEntryConfirmDialog`
+**Import:** `import { PublishEntryConfirmDialog } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/admin/components/Dialogs/PublishEntryConfirmDialog.tsx`
+
+---
+
+**Name:** `RevisionsListPresenter`
+**Import:** `import { RevisionsListPresenter } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/revisionsList/abstractions.ts`
 
 ---
 
@@ -309,117 +269,70 @@ description: >
 
 ---
 
-**Name:** `SingletonContentEntry`
-**Import:** `import { SingletonContentEntry } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/SingletonContentEntry.tsx`
+**Name:** `TableRowMapper`
+**Import:** `import { TableRowMapper } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/views/Table/abstractions.ts`
 
 ---
 
-**Name:** `SingleValueItemContainer`
-**Import:** `import { SingleValueItemContainer } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/SingleValueDynamicZone.tsx`
+**Name:** `UnpublishEntryConfirmDialog`
+**Import:** `import { UnpublishEntryConfirmDialog } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/admin/components/Dialogs/UnpublishEntryConfirmDialog.tsx`
 
 ---
 
-**Name:** `TemplateGallery`
-**Import:** `import { TemplateGallery } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
-**Description:** We're wrapping each component with `withShouldRender`, because they're all decoratable, and `withShouldRender` attaches a
-conditional decorator, which optionally takes a `modelIds` prop, so you can control on which models that component will be decorated.
+**Name:** `useContentEntriesPresenter`
+**Import:** `import { useContentEntriesPresenter } from "webiny/admin/cms/entry/list"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/list/useContentEntriesPresenter.tsx`
 
 ---
 
-**Name:** `TemplateIcon`
-**Import:** `import { TemplateIcon } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon.tsx`
-
----
-
-**Name:** `TemplateProvider`
-**Import:** `import { TemplateProvider } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
-
----
-
-**Name:** `useCms`
-**Import:** `import { useCms } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/admin/hooks/useCms.ts`
-
----
-
-**Name:** `useContentEntriesList`
-**Import:** `import { useContentEntriesList } from "webiny/admin/cms/entry/list"`
-**Source:** `@webiny/app-headless-cms/admin/hooks/index.ts`
-
----
-
-**Name:** `useContentEntry`
-**Import:** `import { useContentEntry } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/views/contentEntries/hooks/index.ts`
-
----
-
-**Name:** `useContentEntryForm`
-**Import:** `import { useContentEntryForm } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/useContentEntryForm.ts`
+**Name:** `useContentEntryFormPresenter`
+**Import:** `import { useContentEntryFormPresenter } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.tsx`
 
 ---
 
 **Name:** `useCurrentElement`
 **Import:** `import { useCurrentElement } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useCurrentSelection`
 **Import:** `import { useCurrentSelection } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useDeriveValueFromSelection`
 **Import:** `import { useDeriveValueFromSelection } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
-
----
-
-**Name:** `useFieldAccessControlRules`
-**Import:** `import { useFieldAccessControlRules } from "webiny/admin/cms/model"`
-**Source:** `@webiny/app-headless-cms-common/Fields/index.ts`
-**Description:** Hook that evaluates access control rules for the current identity.
-Does not require `bindParentName` — only identity-based permissions.
-
----
-
-**Name:** `useFieldEffectiveRules`
-**Import:** `import { useFieldEffectiveRules } from "webiny/admin/cms/model"`
-**Source:** `@webiny/app-headless-cms-common/Fields/index.ts`
-**Description:** Composes useParentRules and useFieldRules into a single hook
-that returns the effective (intersected) rules.
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useFontColorPicker`
 **Import:** `import { useFontColorPicker } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useIsMounted`
 **Import:** `import { useIsMounted } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
-
----
-
-**Name:** `useLazyQuery`
-**Import:** `import { useLazyQuery } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/admin/hooks/useLazyQuery.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useLexicalEditorConfig`
 **Import:** `import { useLexicalEditorConfig } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
+
+---
+
+**Name:** `useModel`
+**Import:** `import { useModel } from "webiny/admin/cms/entry/editor"`
+**Source:** `@webiny/app-headless-cms/admin/components/ModelProvider/index.ts`
+**Description:** Get model from the current context.
 
 ---
 
@@ -430,50 +343,26 @@ that returns the effective (intersected) rules.
 
 ---
 
-**Name:** `useMutation`
-**Import:** `import { useMutation } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/admin/hooks/useMutation.ts`
-
----
-
 **Name:** `usePermission`
 **Import:** `import { usePermission } from "webiny/admin/cms"`
 **Source:** `@webiny/app-headless-cms/admin/hooks/usePermission.ts`
 
 ---
 
-**Name:** `useQuery`
-**Import:** `import { useQuery } from "webiny/admin/cms"`
-**Source:** `@webiny/app-headless-cms/admin/hooks/useQuery.ts`
-
----
-
 **Name:** `useRichTextEditor`
 **Import:** `import { useRichTextEditor } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
-
----
-
-**Name:** `useSingletonContentEntry`
-**Import:** `import { useSingletonContentEntry } from "webiny/admin/cms/entry/editor"`
-**Source:** `@webiny/app-headless-cms/admin/views/contentEntries/hooks/useSingletonContentEntry.ts`
-
----
-
-**Name:** `useTemplate`
-**Import:** `import { useTemplate } from "webiny/admin/cms/field-renderers/dynamic-zone"`
-**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useTextAlignmentAction`
 **Import:** `import { useTextAlignmentAction } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useTypographyAction`
 **Import:** `import { useTypographyAction } from "webiny/admin/cms/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---

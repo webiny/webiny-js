@@ -1,8 +1,8 @@
-import { createImplementation, Result } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import { GetPublishedRevisionByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetPublishedRevisionByEntryIdStorageOperation } from "~/features/shared/storageOperations/entry/GetPublishedRevisionByEntryIdStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -12,7 +12,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getPublishedRevisionByEntryIdStorage: GetPublishedRevisionByEntryIdStorageOperation.Interface
     ) {}
 
     public async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -21,10 +21,9 @@ class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstracti
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Get published revision from storage
-            const storageEntry =
-                await this.storageOperations.entries.getPublishedRevisionByEntryId<T>(model, {
-                    id: entryId
-                });
+            const storageEntry = await this.getPublishedRevisionByEntryIdStorage.execute<T>(model, {
+                id: entryId
+            });
 
             if (!storageEntry || storageEntry.wbyDeleted) {
                 return Result.fail(new EntryNotFoundError(entryId));
@@ -40,8 +39,7 @@ class GetPublishedRevisionByEntryIdRepositoryImpl implements RepositoryAbstracti
     }
 }
 
-export const GetPublishedRevisionByEntryIdRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetPublishedRevisionByEntryIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPublishedRevisionByEntryIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, GetPublishedRevisionByEntryIdStorageOperation]
 });

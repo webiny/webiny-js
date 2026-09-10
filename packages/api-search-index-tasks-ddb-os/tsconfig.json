@@ -1,0 +1,30 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-opensearch-aws" },
+    { "path": "../api-search-index-tasks" },
+    { "path": "../api-search-index-tasks-os" },
+    { "path": "../db-dynamodb" },
+    { "path": "../feature" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-opensearch-aws/*": ["../api-opensearch-aws/src/*"],
+      "@webiny/api-opensearch-aws": ["../api-opensearch-aws/src"],
+      "@webiny/api-search-index-tasks/*": ["../api-search-index-tasks/src/*"],
+      "@webiny/api-search-index-tasks": ["../api-search-index-tasks/src"],
+      "@webiny/api-search-index-tasks-os/*": ["../api-search-index-tasks-os/src/*"],
+      "@webiny/api-search-index-tasks-os": ["../api-search-index-tasks-os/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
+    }
+  }
+}

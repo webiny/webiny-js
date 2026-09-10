@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionsByEntryIdUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetRevisionsByEntryIdRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -40,8 +39,7 @@ class GetRevisionsByEntryIdUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const GetRevisionsByEntryIdUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetRevisionsByEntryIdUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetRevisionsByEntryIdUseCaseImpl,
     dependencies: [GetRevisionsByEntryIdRepository, AccessControl]
 });

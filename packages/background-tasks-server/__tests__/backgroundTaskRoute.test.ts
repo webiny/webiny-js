@@ -1,19 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteHandler, RequestContainer, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
-import { BackgroundTaskRoute } from "~/routes/BackgroundTaskRoute.js";
+import {
+    BackgroundTaskRoute,
+    BackgroundTaskRouteDefinition
+} from "~/routes/BackgroundTaskRoute.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
 const TOKEN_VALUE = "valid-token-abc";
 
-const createRouteInstance = (): HttpRoute.Interface => {
+const createRouteInstance = (): HttpRouteHandler.Interface => {
     const container = new Container();
     container.registerInstance(RequestContainer, container);
     container.registerInstance(InternalToken, { value: TOKEN_VALUE });
-    container.register(BackgroundTaskRoute);
-    return container.resolve(HttpRoute);
+    return container.resolveImplementation(BackgroundTaskRoute);
 };
 
 const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({
@@ -36,10 +37,12 @@ const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({
 
 describe("BackgroundTaskRoute", () => {
     it("should have correct method and path", () => {
-        const route = createRouteInstance();
+        // The definition is what the router matches on; it has no dependencies, so building it
+        // costs nothing and never touches the route itself.
+        const definition = new BackgroundTaskRouteDefinition();
 
-        expect(route.method).toBe("POST");
-        expect(route.path).toBe("/background-task");
+        expect(definition.method).toBe("POST");
+        expect(definition.path).toBe("/background-task");
     });
 
     it("should reject requests without token header", async () => {
@@ -49,10 +52,10 @@ describe("BackgroundTaskRoute", () => {
             headers: { "content-type": "application/json" }
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(403);
-        expect(response.body.error).toBe("Forbidden.");
+        expect(JSON.parse(response.body).error).toBe("Forbidden.");
     });
 
     it("should reject requests with wrong token", async () => {
@@ -65,7 +68,7 @@ describe("BackgroundTaskRoute", () => {
             }
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(403);
     });
@@ -75,10 +78,10 @@ describe("BackgroundTaskRoute", () => {
 
         const request = makeRequest({ body: null });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);
-        expect(response.body.error).toBe("Missing webinyTaskId in request body.");
+        expect(JSON.parse(response.body).error).toBe("Missing webinyTaskId in request body.");
     });
 
     it("should reject requests with empty body", async () => {
@@ -86,10 +89,10 @@ describe("BackgroundTaskRoute", () => {
 
         const request = makeRequest({ body: {} });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);
-        expect(response.body.error).toBe("Missing webinyTaskId in request body.");
+        expect(JSON.parse(response.body).error).toBe("Missing webinyTaskId in request body.");
     });
 
     it("should reject requests missing webinyTaskId", async () => {
@@ -99,7 +102,7 @@ describe("BackgroundTaskRoute", () => {
             body: { tenant: "root", definitionId: "test" }
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);
     });
@@ -111,9 +114,9 @@ describe("BackgroundTaskRoute", () => {
 
         /* Passes token + body validation but fails deeper (container has no tenant/runner setup).
          * Expect 500, not 403 or 400 — proves validation layer works. */
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(500);
-        expect(response.body.status).toBe("error");
+        expect(JSON.parse(response.body).status).toBe("error");
     });
 });

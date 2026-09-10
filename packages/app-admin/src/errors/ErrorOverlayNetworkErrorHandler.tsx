@@ -1,8 +1,8 @@
 import React from "react";
-import createErrorOverlay from "@webiny/app/plugins/NetworkErrorLinkPlugin/createErrorOverlay.js";
-import { ErrorOverlay } from "@webiny/app/plugins/NetworkErrorLinkPlugin/ErrorOverlay.js";
-import { LocalAwsLambdaTimeoutMessage } from "@webiny/app/plugins/NetworkErrorLinkPlugin/LocalAwsLambdaTimeoutMessage.js";
-import { GqlErrorOverlay } from "@webiny/app/plugins/NetworkErrorLinkPlugin/GqlErrorOverlay.js";
+import createErrorOverlay from "@webiny/app/errors/overlay/createErrorOverlay.js";
+import { ErrorOverlay } from "@webiny/app/errors/overlay/ErrorOverlay.js";
+import { LocalAwsLambdaTimeoutMessage } from "@webiny/app/errors/overlay/LocalAwsLambdaTimeoutMessage.js";
+import { GqlErrorOverlay } from "@webiny/app/errors/overlay/GqlErrorOverlay.js";
 import { EnvConfig } from "@webiny/app/features/envConfig/index.js";
 import { NetworkErrorEvent, NetworkErrorEventHandler } from "@webiny/app/errors/index.js";
 import { TenantIsDisabled } from "~/errors/TenantIsDisabled.js";

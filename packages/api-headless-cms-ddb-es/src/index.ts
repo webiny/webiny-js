@@ -1,1 +1,1 @@
-export { registerCmsOpenSearchStorageOperations, HeadlessCmsDdbEsFeature } from "./feature.js";
+export { HeadlessCmsDdbEsFeature } from "./feature.js";

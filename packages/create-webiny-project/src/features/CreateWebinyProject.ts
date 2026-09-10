@@ -232,9 +232,9 @@ export class CreateWebinyProject {
             console.log();
             console.log(
                 yellow(
-                    "⚠ The self-hosted (server) hosting type is in ALPHA. It is designed for local\n" +
-                        "  development via `webiny watch`. Standalone production packaging is still a\n" +
-                        "  work in progress (tracked in webiny-js#5429)."
+                    "⚠ The self-hosted (server) hosting type is in ALPHA. It's for local\n" +
+                        "  development and testing with `webiny watch api` / `webiny watch admin`.\n" +
+                        "  It's still maturing, so expect some rough edges."
                 )
             );
             console.log();
@@ -246,9 +246,12 @@ export class CreateWebinyProject {
 
             console.log(
                 [
-                    `Start your project in development mode by running: ${green(
-                        `cd ${projectName} && yarn webiny watch`
-                    )}`,
+                    `First, enter the project directory: ${green(`cd ${projectName}`)}`,
+                    "",
+                    "Then start development mode. Watching all apps at once isn't supported yet,",
+                    `so run the API and Admin apps separately, each in its own terminal: ${green(
+                        "yarn webiny watch api"
+                    )} and ${green("yarn webiny watch admin")}.`,
                     "",
                     `To see all of the available CLI commands, run ${green(
                         "yarn webiny --help"

@@ -1,5 +1,4 @@
 import zod from "zod";
-import { ActionType } from "~/types.js";
 
 export const auditLogSchema = zod.object({
     id: zod.string(),
@@ -15,7 +14,7 @@ export const auditLogSchema = zod.object({
         return value;
     }, zod.date()),
     app: zod.string(),
-    action: zod.nativeEnum(ActionType),
+    action: zod.string(),
     message: zod.string(),
     entity: zod.string(),
     entityId: zod.string(),

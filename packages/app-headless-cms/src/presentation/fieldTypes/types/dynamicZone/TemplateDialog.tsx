@@ -6,7 +6,8 @@ import type { CmsDynamicZoneTemplate } from "~/types.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { Tags } from "@webiny/admin-ui";
-import { Alert, Dialog, Grid, Input, Textarea } from "@webiny/admin-ui";
+import { Alert, Dialog, Grid, Input, Select, Textarea } from "@webiny/admin-ui";
+import { useLivePreviewPresenter } from "~/presentation/contentEntries/preview/useLivePreviewPresenter.js";
 
 const typeNameValidator = (value: string) => {
     const regex = new RegExp("^[A-Z]+[_0-9A-Za-z]+$");
@@ -32,6 +33,9 @@ interface TemplateDialogProps {
 
 export const TemplateDialog = (props: TemplateDialogProps) => {
     const [showWarning, setWarning] = useState(false);
+    const livePreview = useLivePreviewPresenter();
+    const components = livePreview.vm.components;
+    console.log("[TemplateDialog] components:", components.length, components);
     const newTemplate = !props.template;
     const dialogTitle = newTemplate ? "Add Template" : "Edit Template";
     const submitLabel = newTemplate ? "Add Template" : "Update Template";
@@ -72,9 +76,6 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
 
     const nameOnBlur = (form: FormAPI<CmsDynamicZoneTemplate>) => () => {
         if (!form.data.gqlTypeName) {
-            /**
-             * There is a possibility that name is undefined, so let's check for it.
-             */
             const name = form.data.name;
             if (!name) {
                 return;
@@ -93,7 +94,7 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
             data={props.template}
             onChange={onFormChange}
         >
-            {({ Bind, submit, form }) => (
+            {({ Bind, submit, form, data: formData }) => (
                 <Dialog
                     open={true}
                     onClose={props.onClose}
@@ -152,6 +153,32 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
                                 <Tags label={"Tags"} />
                             </Bind>
                         </Grid.Column>
+                        {components.length > 0 ? (
+                            <>
+                                <Grid.Column span={12}>
+                                    <Bind name={"componentName"}>
+                                        <Select
+                                            label={"Frontend Component"}
+                                            description={
+                                                "Select the frontend component that renders this template."
+                                            }
+                                            note={
+                                                components.find(
+                                                    c => c.name === formData.componentName
+                                                )?.description
+                                            }
+                                            options={[
+                                                { value: "", label: "None" },
+                                                ...components.map(c => ({
+                                                    value: c.name,
+                                                    label: c.label
+                                                }))
+                                            ]}
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                            </>
+                        ) : null}
                     </Grid>
                 </Dialog>
             )}

@@ -50,6 +50,7 @@ import { UploadProgress } from "~/presentation/FileList/components/Upload/index.
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
 import { OverlayProvider, useOverlay } from "./OverlayContext.js";
 import { RouteParamsSync } from "./RouteParamsSync.js";
+import { FileManagerBreadcrumbs } from "./FileManagerBreadcrumbs.js";
 
 import type { FmFile } from "~/features/shared/types.js";
 import type {
@@ -97,6 +98,44 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         toast.showSuccessToast({ title: "File upload complete." });
     };
 
+    useEffect(() => {
+        const handlePaste = (e: ClipboardEvent) => {
+            const items = e.clipboardData?.items;
+            if (!items) {
+                return;
+            }
+
+            const files: SelectedFile[] = [];
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].kind === "file") {
+                    const file = items[i].getAsFile();
+                    if (file) {
+                        const name =
+                            file.name && file.name !== "image.png"
+                                ? file.name
+                                : `pasted-${Date.now()}.${file.type.split("/")[1] || "png"}`;
+
+                        files.push({
+                            id: String(Date.now()) + "-" + i,
+                            name,
+                            type: file.type,
+                            size: file.size,
+                            src: { file, base64: null }
+                        });
+                    }
+                }
+            }
+
+            if (files.length > 0) {
+                e.preventDefault();
+                void uploadFiles(files);
+            }
+        };
+
+        document.addEventListener("paste", handlePaste);
+        return () => document.removeEventListener("paste", handlePaste);
+    }, [actions]);
+
     const onError = useCallback((errors: FileError[]) => {
         const message = outputFileSelectionError(errors);
         if (message) {
@@ -131,14 +170,14 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 
         if (vm.viewMode === "table") {
             return (
-                <ScrollArea onScroll={loadMoreOnScroll}>
+                <ScrollArea className={"h-full"} onScroll={loadMoreOnScroll}>
                     <FileTable />
                 </ScrollArea>
             );
         }
 
         return (
-            <ScrollArea onScroll={loadMoreOnScroll}>
+            <ScrollArea className={"h-full"} onScroll={loadMoreOnScroll}>
                 <FileGrid />
             </ScrollArea>
         );
@@ -158,7 +197,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                     <FileDetailsDrawer />
                     <SplitView namespace={"fm/file/list"}>
                         <LeftPanel span={2}>
-                            <div className={"flex flex-col h-main-content"}>
+                            <div className={"flex flex-col h-full"}>
                                 <div className={"py-sm px-md"}>
                                     <Heading level={5}>{t`File Manager`}</Heading>
                                 </div>
@@ -201,13 +240,10 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                             </div>
                         </LeftPanel>
                         <RightPanel span={10}>
-                            <div
-                                className={"flex flex-col relative"}
-                                style={{ height: "calc(100vh - 45px" }}
-                            >
+                            <div className={"flex flex-col relative h-full overflow-hidden"}>
                                 <FileManagerHeader browseFiles={browseFiles} />
                                 <div
-                                    className={"flex-1"}
+                                    className={"flex-1 min-h-0 overflow-hidden"}
                                     {...getDropZoneProps({
                                         onDragEnter: () => actions.setDragging(true),
                                         onDrop: () => actions.setDragging(false),
@@ -300,7 +336,7 @@ const FileManagerViewInner = observer(
         }, [overlay, onChange, onClose, multiple, accept]);
 
         useEffect(() => {
-            presenter.init({ scope });
+            presenter.init({ scope, accept: accept ?? undefined });
             return () => presenter.dispose();
         }, [presenter, overlay, scope]);
 
@@ -311,6 +347,7 @@ const FileManagerViewInner = observer(
                         <FileManagerViewLayout />
                         {children}
                         {!overlayConfig && <RouteParamsSync />}
+                        {!overlayConfig && <FileManagerBreadcrumbs />}
                     </FileManagerPresenterProvider>
                 </FileManagerViewWithConfig>
             </DialogsProvider>

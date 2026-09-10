@@ -139,7 +139,7 @@ const fieldSchema = zod.object({
     rules: zod
         .array(
             zod.object({
-                type: zod.enum(["accessControl", "entryValue"]),
+                type: zod.enum(["accessControl", "condition"]),
                 target: shortString,
                 operator: shortString,
                 value: zod.union([zod.string(), zod.number(), zod.boolean(), zod.null()]),
@@ -219,7 +219,8 @@ export const createModelCreateValidation = () => {
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
-        defaultFields: zod.boolean().nullish()
+        defaultFields: zod.boolean().nullish(),
+        settings: zod.looseObject({}).optional().nullish().default({})
     });
 };
 
@@ -244,7 +245,8 @@ export const createModelUpdateValidation = () => {
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
-        tags: zod.array(shortString).optional()
+        tags: zod.array(shortString).optional(),
+        settings: zod.looseObject({}).optional().nullish()
     });
 };
 

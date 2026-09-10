@@ -23,7 +23,7 @@ export const SplitView = ({
 }: SplitViewProps) => {
     const localStorage = useLocalStorage();
 
-    const layout = useLocalStorageValue<Layout>(namespace);
+    const layout = useLocalStorageValue<Layout>(`${namespace}/panels`);
 
     const saveLayout = useCallback(
         (layout: Layout) => {

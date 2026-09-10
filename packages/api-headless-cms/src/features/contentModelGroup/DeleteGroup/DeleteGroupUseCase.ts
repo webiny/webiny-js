@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { DeleteGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteGroupRepository } from "./abstractions.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/abstractions.js";
@@ -90,8 +89,7 @@ class DeleteGroupUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const DeleteGroupUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const DeleteGroupUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeleteGroupUseCaseImpl,
     dependencies: [EventPublisher, DeleteGroupRepository, GetGroupUseCase, AccessControl]
 });

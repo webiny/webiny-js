@@ -8,7 +8,8 @@
  */
 
 .Placeholder__root {
-  font-size: 15px;
+  /* No fixed font-size: it inherits, or is set by the paragraph typography class
+     applied by RichTextEditor so the placeholder matches the real text. */
   margin-top: -20px;
   color: #999;
   overflow: hidden;

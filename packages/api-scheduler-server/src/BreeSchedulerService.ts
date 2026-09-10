@@ -1,5 +1,4 @@
 import Bree from "bree";
-import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebinyError } from "@webiny/error";
 import {
@@ -9,11 +8,11 @@ import {
 } from "@webiny/api-scheduler/shared/abstractions.js";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 
-// bree loads this worker file at runtime, resolved relative to this module's own dist. Works in
-// `webiny watch`; shipping a standalone server build requires externalizing this package so the
-// worker travels in node_modules — tracked in https://github.com/webiny/webiny-js/issues/5429.
-const jobsDir = join(dirname(fileURLToPath(import.meta.url)), "jobs");
-const workerPath = join(jobsDir, "pollWorker.js");
+// bree loads this file at runtime via `new Worker(path)`. Referencing it through `new URL` (rather
+// than path.join) makes the app bundler emit pollWorker into build/ as an asset, resolved relative
+// to this module (the server build sets assetPrefix "auto"); fileURLToPath then hands bree a plain
+// path string. Un-bundled (dev), import.meta.url is real and it resolves to the dist/jobs file.
+const workerPath = fileURLToPath(new URL("./jobs/pollWorker.js", import.meta.url));
 
 export interface IPendingAction {
     id: string;

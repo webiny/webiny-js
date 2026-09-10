@@ -8,14 +8,16 @@ import { TableNameResolverConfig } from "@webiny/api-headless-cms-sql/features/t
 import { TableNameResolverFeature } from "@webiny/api-headless-cms-sql/features/tableNameResolver/feature.js";
 import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
-import {
-    CmsEntryOpenSearchFieldIndexFeature,
-    CmsEntryOpenSearchFieldIndexRegistry
-} from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { CmsEntryOpenSearchFieldIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsEntryOpenSearchFieldIndex/index.js";
+import { CmsModelOpenSearchIndexFeature } from "@webiny/api-headless-cms-utils-os/features/CmsModelOpenSearchIndex/feature.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { SyncTableManagerFeature } from "../src/features/syncTableManager/feature.js";
 import { SyncTableManager } from "../src/features/syncTableManager/abstractions.js";
-import { createSyncWriter } from "../src/operations/entry/syncWriter.js";
+import { SyncWriterFeature } from "../src/features/SyncWriter/feature.js";
+import { WriteLatest } from "../src/features/SyncWriter/abstractions/WriteLatest.js";
+import { WritePublished } from "../src/features/SyncWriter/abstractions/WritePublished.js";
+import { RemoveLatest } from "../src/features/SyncWriter/abstractions/RemoveLatest.js";
+import { RemovePublished } from "../src/features/SyncWriter/abstractions/RemovePublished.js";
 import type { ISyncRow } from "../src/types.js";
 
 const createModel = (overrides = {}) => ({
@@ -58,8 +60,16 @@ describe("SyncWriter", () => {
 
         knex = knexLib({
             client: "pg",
-            connection: { host: "127.0.0.1", port: server.port, database: "postgres" },
-            pool: { min: 1, max: 1 }
+            connection: {
+                host: "127.0.0.1",
+                // @ts-expect-error
+                port: server.port,
+                database: "postgres"
+            },
+            pool: {
+                min: 1,
+                max: 1
+            }
         });
 
         return async () => {
@@ -73,11 +83,6 @@ describe("SyncWriter", () => {
         const container = new Container();
         container.registerInstance(KnexClient, { client: knex });
         container.registerInstance(TableNameResolverConfig, { sharedTables: false });
-        /**
-         * The default/compressed/encrypted field index implementations depend on the GraphQL
-         * model field registry to check field searchability. Our test models have no fields,
-         * so an empty stub is enough - we don't need to pull in the whole GraphQL feature.
-         */
         container.registerInstance(CmsModelFieldToGraphQLRegistry, {
             get: () => undefined,
             getAll: () => []
@@ -85,32 +90,35 @@ describe("SyncWriter", () => {
         TableNameResolverFeature.register(container);
         CompressionFeature.register(container);
         CmsEntryOpenSearchFieldIndexFeature.register(container);
+        CmsModelOpenSearchIndexFeature.register(container);
         SyncTableManagerFeature.register(container);
+        SyncWriterFeature.register(container);
 
         const syncTableManager = container.resolve(SyncTableManager);
         const compressionHandler = container.resolve(CompressionHandler);
-        const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+        const writeLatest = container.resolve(WriteLatest);
+        const writePublished = container.resolve(WritePublished);
+        const removeLatest = container.resolve(RemoveLatest);
+        const removePublished = container.resolve(RemovePublished);
 
         return {
             syncTableManager,
             compressionHandler,
-            syncWriter: createSyncWriter({
-                knex,
-                syncTableManager,
-                fieldIndexRegistry,
-                compressionHandler
-            })
+            writeLatest,
+            writePublished,
+            removeLatest,
+            removePublished
         };
     };
 
     it("should write a latest sync record", async () => {
-        const { syncTableManager, syncWriter, compressionHandler } = setup();
+        const { syncTableManager, writeLatest, compressionHandler } = setup();
         await syncTableManager.ensureTable();
 
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await syncWriter.writeLatest({ model, entry, storageEntry: entry });
+        await writeLatest.execute({ model, entry, storageEntry: entry });
 
         const rows: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rows).toHaveLength(1);
@@ -133,13 +141,13 @@ describe("SyncWriter", () => {
     });
 
     it("should write a published sync record", async () => {
-        const { syncTableManager, syncWriter } = setup();
+        const { syncTableManager, writePublished } = setup();
         await syncTableManager.ensureTable();
 
         const model = createModel() as any;
         const entry = createEntry({ status: "published" }) as any;
 
-        await syncWriter.writePublished({ model, entry, storageEntry: entry });
+        await writePublished.execute({ model, entry, storageEntry: entry });
 
         const rows: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rows).toHaveLength(1);
@@ -148,50 +156,50 @@ describe("SyncWriter", () => {
     });
 
     it("should delete the row for removeLatest", async () => {
-        const { syncTableManager, syncWriter } = setup();
+        const { syncTableManager, writeLatest, removeLatest } = setup();
         await syncTableManager.ensureTable();
 
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await syncWriter.writeLatest({ model, entry, storageEntry: entry });
+        await writeLatest.execute({ model, entry, storageEntry: entry });
 
         const rowsBefore: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rowsBefore).toHaveLength(1);
 
-        await syncWriter.removeLatest({ model, entryId: entry.entryId });
+        await removeLatest.execute({ model, entryId: entry.entryId });
 
         const rowsAfter: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rowsAfter).toHaveLength(0);
     });
 
     it("should delete the row for removePublished", async () => {
-        const { syncTableManager, syncWriter } = setup();
+        const { syncTableManager, writePublished, removePublished } = setup();
         await syncTableManager.ensureTable();
 
         const model = createModel() as any;
         const entry = createEntry({ status: "published" }) as any;
 
-        await syncWriter.writePublished({ model, entry, storageEntry: entry });
+        await writePublished.execute({ model, entry, storageEntry: entry });
 
         const rowsBefore: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rowsBefore).toHaveLength(1);
 
-        await syncWriter.removePublished({ model, entryId: entry.entryId });
+        await removePublished.execute({ model, entryId: entry.entryId });
 
         const rowsAfter: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rowsAfter).toHaveLength(0);
     });
 
     it("should upsert on conflict (same id) instead of duplicating rows", async () => {
-        const { syncTableManager, syncWriter } = setup();
+        const { syncTableManager, writeLatest } = setup();
         await syncTableManager.ensureTable();
 
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await syncWriter.writeLatest({ model, entry, storageEntry: entry });
-        await syncWriter.writeLatest({
+        await writeLatest.execute({ model, entry, storageEntry: entry });
+        await writeLatest.execute({
             model,
             entry: { ...entry, values: { title: "Updated" } },
             storageEntry: { ...entry, values: { title: "Updated" } }
@@ -203,14 +211,14 @@ describe("SyncWriter", () => {
     });
 
     it("should delete row on remove after write", async () => {
-        const { syncTableManager, syncWriter } = setup();
+        const { syncTableManager, writeLatest, removeLatest } = setup();
         await syncTableManager.ensureTable();
 
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await syncWriter.writeLatest({ model, entry, storageEntry: entry });
-        await syncWriter.removeLatest({ model, entryId: entry.entryId });
+        await writeLatest.execute({ model, entry, storageEntry: entry });
+        await removeLatest.execute({ model, entryId: entry.entryId });
 
         const rows: ISyncRow[] = await knex(syncTableManager.getTableName());
         expect(rows).toHaveLength(0);

@@ -1,6 +1,5 @@
 ---
 name: webiny-use-case-pattern
-context: webiny-api
 description: >
   UseCase implementation pattern — DI, Result handling, error types, decorators, CMS repositories,
   entry mappers, and schema-based permissions. Use this skill to implement, inject, override, or
@@ -22,7 +21,7 @@ interface SomeUseCase.Interface {
 ```
 
 - **Input** — a typed object specific to the use case
-- **Result** — always returns `Result<T, E>` from `@webiny/feature/api`
+- **Result** — always returns `Result<T, E>` from `webiny/api`
 - **Error** — extends `BaseError` with a unique `code`
 
 ## How to Use a UseCase
@@ -98,7 +97,7 @@ Every feature defines errors extending `BaseError`. Never use generic `Error` fo
 
 ```ts
 // domain/errors.ts
-import { BaseError } from "@webiny/feature/api";
+import { BaseError } from "webiny/api";
 
 export class EntityNotFoundError extends BaseError {
   override readonly code = "Entity/NotFound" as const;
@@ -128,8 +127,8 @@ Define an `IErrors` interface mapping error names to types, then create a union 
 
 ```ts
 // features/createEntity/abstractions.ts
-import { createAbstraction, Result } from "@webiny/feature/api";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { createAbstraction, Result } from "webiny/api";
+import { NotAuthorizedError } from "webiny/api/security";
 import {
   EntityPersistenceError,
   EntityModelNotFoundError,
@@ -215,9 +214,9 @@ import {
   CreateEntityUseCase as UseCaseAbstraction,
   CreateEntityRepository
 } from "./abstractions.js";
-import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { Result } from "webiny/api";
+import { IdentityContext } from "webiny/api/security";
+import { NotAuthorizedError } from "webiny/api/security";
 import { Entity } from "~/shared/Entity.js";
 import { EntityId } from "~/api/domain/EntityId.js";
 
@@ -271,9 +270,9 @@ Repositories use CMS use cases to persist data. Always resolve the CMS model fir
 import { Entity } from "~/shared/Entity.js";
 import { EntityCreationError, EntityModelNotFoundError } from "~/api/domain/errors.js";
 import { CreateEntityRepository as RepositoryAbstraction } from "./abstractions.js";
-import { Result } from "@webiny/feature/api";
-import { CreateEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model";
+import { Result } from "webiny/api";
+import { CreateEntryUseCase } from "webiny/api/cms/entry";
+import { GetModelUseCase } from "webiny/api/cms/model";
 import { ENTITY_MODEL_ID } from "~/shared/constants.js";
 
 class CreateEntityRepository implements RepositoryAbstraction.Interface {
@@ -313,14 +312,14 @@ export default RepositoryAbstraction.createImplementation({
 ### Common CMS Use Cases for Repositories
 
 ```ts
-import { CreateEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { GetEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { UpdateEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model";
-import { ListModelsUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
+import { CreateEntryUseCase } from "webiny/api/cms/entry";
+import { GetEntryByIdUseCase } from "webiny/api/cms/entry";
+import { GetEntryUseCase } from "webiny/api/cms/entry";
+import { UpdateEntryUseCase } from "webiny/api/cms/entry";
+import { ListLatestEntriesUseCase } from "webiny/api/cms/entry";
+import { EntryId } from "webiny/api/cms/entry";
+import { GetModelUseCase } from "webiny/api/cms/model";
+import { ListModelsUseCase } from "webiny/api/cms/model";
 ```
 
 **Rules:**
@@ -364,9 +363,9 @@ Decorators add cross-cutting concerns (authorization, logging, validation) witho
 ```ts
 // features/getEntityById/decorators/GetEntityByIdWithAuthorization.ts
 import { GetEntityByIdUseCase } from "../abstractions.js";
-import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import { Result } from "webiny/api";
+import { IdentityContext } from "webiny/api/security";
+import { NotAuthorizedError } from "webiny/api/security";
 
 class GetEntityByIdWithAuthorizationImpl implements GetEntityByIdUseCase.Interface {
   constructor(
@@ -392,7 +391,7 @@ export const GetEntityByIdWithAuthorization = GetEntityByIdUseCase.createDecorat
 
 ```ts
 // features/getEntityById/feature.ts
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api";
 import GetEntityByIdUseCase from "./GetEntityByIdUseCase.js";
 import GetEntityByIdRepository from "./GetEntityByIdRepository.js";
 import { GetEntityByIdWithAuthorization } from "./decorators/GetEntityByIdWithAuthorization.js";

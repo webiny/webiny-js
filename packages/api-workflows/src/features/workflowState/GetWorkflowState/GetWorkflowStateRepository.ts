@@ -1,6 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
-import { WorkflowStateModel, WorkflowStateMapper } from "~/domain/workflowState/abstractions.js";
+import {
+    WorkflowStateModelProvider,
+    WorkflowStateMapper
+} from "~/domain/workflowState/abstractions.js";
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     WorkflowStateNotFoundError,
@@ -11,13 +14,14 @@ import { GetWorkflowStateRepository as Repository } from "./abstractions.js";
 class GetWorkflowStateRepositoryImpl implements Repository.Interface {
     constructor(
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private model: WorkflowStateModel.Interface,
+        private modelProvider: WorkflowStateModelProvider.Interface,
         private mapper: WorkflowStateMapper.Interface
     ) {}
 
     async execute(id: string): Repository.Return {
+        const model = await this.modelProvider.get();
         const entryResult = await this.getEntryById.execute<Omit<IWorkflowStateRecord, "id">>(
-            this.model,
+            model,
             id
         );
 
@@ -38,5 +42,5 @@ class GetWorkflowStateRepositoryImpl implements Repository.Interface {
 
 export const GetWorkflowStateRepository = Repository.createImplementation({
     implementation: GetWorkflowStateRepositoryImpl,
-    dependencies: [GetEntryByIdUseCase, WorkflowStateModel, WorkflowStateMapper]
+    dependencies: [GetEntryByIdUseCase, WorkflowStateModelProvider, WorkflowStateMapper]
 });

@@ -1,6 +1,5 @@
 ---
 name: webiny-api-key-value-store-catalog
-context: webiny-api
 description: >
   api/key-value-store — 2 abstractions.
 ---

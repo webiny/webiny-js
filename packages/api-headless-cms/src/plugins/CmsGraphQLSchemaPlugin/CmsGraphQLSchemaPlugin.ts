@@ -1,8 +1,8 @@
 import type {
     GraphQLSchemaPluginConfig as BaseGraphQLSchemaPluginConfig,
     IGraphQLSchemaPlugin
-} from "@webiny/handler-graphql";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+} from "@webiny/api-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/api-graphql";
 import type { CmsContext } from "~/types/index.js";
 
 export type ICmsGraphQLSchemaPlugin<T extends CmsContext = CmsContext> = IGraphQLSchemaPlugin<T>;

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/api/testing/until.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/abstractions.js";
@@ -16,7 +16,7 @@ import {
 } from "@webiny/api-scheduler/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "@webiny/api-scheduler/features/CancelScheduledAction/index.js";
 import { useHandler } from "./__mocks/handler/useHandler.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { mockClient } from "aws-sdk-client-mock";
 import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";

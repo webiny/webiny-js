@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
+import { Response, ErrorResponse } from "@webiny/api-graphql/responses.js";
 import type { CmsEntryResolverFactory as ResolverFactory } from "~/types/index.js";
 import { RepublishEntryUseCase } from "~/features/contentEntry/RepublishEntry/index.js";
 

@@ -1,9 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import type { ImageFormat } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 
 export interface IS3AssetDeliveryConfig {
     presignedUrlTtl: number;
     imageResizeWidths: number[];
+    imageQuality?: Partial<Record<ImageFormat, number>>;
     assetStreamingMaxSize: number;
 }
 

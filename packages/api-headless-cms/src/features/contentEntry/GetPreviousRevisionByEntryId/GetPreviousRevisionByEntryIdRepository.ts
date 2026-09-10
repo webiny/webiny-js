@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPreviousRevisionByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
@@ -8,7 +7,7 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetPreviousRevisionParams
 } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetPreviousRevisionStorageOperation } from "~/features/shared/storageOperations/entry/GetPreviousRevisionStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -18,7 +17,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getPreviousRevisionStorage: GetPreviousRevisionStorageOperation.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
@@ -26,10 +25,7 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
-            const entry = await this.storageOperations.entries.getPreviousRevision<T>(
-                model,
-                params
-            );
+            const entry = await this.getPreviousRevisionStorage.execute<T>(model, params);
 
             if (!entry) {
                 return Result.fail(new EntryNotFoundError(params.entryId));
@@ -45,8 +41,7 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
     }
 }
 
-export const GetPreviousRevisionByEntryIdRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetPreviousRevisionByEntryIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPreviousRevisionByEntryIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, GetPreviousRevisionStorageOperation]
 });

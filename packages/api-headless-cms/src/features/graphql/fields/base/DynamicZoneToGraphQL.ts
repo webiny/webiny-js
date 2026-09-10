@@ -10,7 +10,7 @@ import type {
 } from "~/types/index.js";
 import type { ValidateChildFieldsParams } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types/modelAst.js";
-import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver } from "@webiny/api-graphql/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
@@ -129,11 +129,18 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             templates
         });
 
+        const templateIds = templateTypes.map(type => {
+            return `extend type ${type} {
+                _templateId: ID!
+            }
+            `;
+        });
+
         typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
 
         return {
             fields: `${field.fieldId}: ${field.list ? `[${unionTypeName}!]` : unionTypeName}`,
-            typeDefs: typeDefs.join("\n")
+            typeDefs: typeDefs.concat(templateIds).join("\n")
         };
     }
 

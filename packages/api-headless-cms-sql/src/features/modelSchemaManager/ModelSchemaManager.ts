@@ -49,6 +49,7 @@ class ModelSchemaManagerImpl implements ModelSchemaManagerAbstraction.Interface 
                 table.text("createdBy");
                 table.text("createdOn");
                 table.text("savedOn");
+                table.text("settings");
             });
         }
 

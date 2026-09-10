@@ -6,7 +6,13 @@ import {
 } from "./BaseFieldBuilder.js";
 import { LayoutFieldBuilder } from "./LayoutFieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
-import type { CmsIcon, CmsModelField, CmsModelLayout, CmsModelLayoutCell } from "~/types/index.js";
+import type {
+    CmsIcon,
+    CmsModelField,
+    CmsModelLayout,
+    CmsModelLayoutCell,
+    FieldRule
+} from "~/types/index.js";
 
 interface ITab {
     id: string;
@@ -15,6 +21,7 @@ interface ITab {
     description: string;
     fields: CmsModelField[];
     layout: CmsModelLayout;
+    rules?: FieldRule[];
 }
 
 interface ITabConfig {
@@ -23,6 +30,7 @@ interface ITabConfig {
     description?: string;
     fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
     layout?: string[][];
+    rules?: FieldRule[];
 }
 
 export interface IUiTabsFieldBuilder extends LayoutFieldBuilder<"uiTabs"> {
@@ -65,7 +73,8 @@ class TabsFieldBuilder extends LayoutFieldBuilder<"uiTabs"> implements IUiTabsFi
             icon: config.icon,
             description: config.description || "",
             fields,
-            layout
+            layout,
+            rules: config.rules
         });
 
         return this;
@@ -81,7 +90,8 @@ class TabsFieldBuilder extends LayoutFieldBuilder<"uiTabs"> implements IUiTabsFi
                 id: tab.id,
                 label: tab.label,
                 icon: tab.icon || null,
-                layout: tab.layout
+                layout: tab.layout,
+                rules: tab.rules
             });
         }
 
@@ -92,7 +102,8 @@ class TabsFieldBuilder extends LayoutFieldBuilder<"uiTabs"> implements IUiTabsFi
                 label: this.config.label,
                 description: this.config.description || null,
                 help: this.config.help || null,
-                tabs: layoutTabs
+                tabs: layoutTabs,
+                rules: this.config.rules
             },
             fields: hoistedFields
         };

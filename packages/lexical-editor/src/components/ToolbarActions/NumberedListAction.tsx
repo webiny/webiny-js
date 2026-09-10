@@ -4,6 +4,8 @@ import { $isListNode } from "@webiny/lexical-nodes";
 import { INSERT_ORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "~/commands/index.js";
 import { useRichTextEditor } from "~/hooks/useRichTextEditor.js";
 import { useCurrentElement } from "~/hooks/useCurrentElement.js";
+import { ReactComponent as NumberedListIcon } from "@webiny/icons/format_list_numbered.svg";
+import cn from "clsx";
 
 export const NumberedListAction = () => {
     const { element } = useCurrentElement();
@@ -33,10 +35,10 @@ export const NumberedListAction = () => {
     return (
         <button
             onClick={() => formatNumberedList()}
-            className={"popup-item spaced " + (isNumbered ? "active" : "")}
+            className={cn("popup-item", "spaced", { active: isNumbered })}
             aria-label="Format text as numbered list"
         >
-            <i className="icon numbered-list" />
+            <NumberedListIcon className="icon" />
         </button>
     );
 };

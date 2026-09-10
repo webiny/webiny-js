@@ -1,6 +1,5 @@
 ---
 name: webiny-local-development
-context: webiny-extensions
 description: >
   Deploying, developing locally, managing environments, and debugging Webiny projects.
   Use this skill when the developer asks about deployment commands (deploy, destroy, info),

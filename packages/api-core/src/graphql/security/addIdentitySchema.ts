@@ -1,5 +1,5 @@
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { AfterLoginEvent } from "~/features/security/login/index.js";
 import { GetIdentityProfileUseCase } from "~/features/users/GetIdentityProfile/index.js";

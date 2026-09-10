@@ -1,9 +1,9 @@
 export { NotAuthorizedResponse } from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
-export { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+export { GraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 export {
     ErrorResponse,
     ListResponse,
     Response,
     NotFoundResponse,
     ListErrorResponse
-} from "@webiny/handler-graphql/responses.js";
+} from "@webiny/api-graphql/responses.js";

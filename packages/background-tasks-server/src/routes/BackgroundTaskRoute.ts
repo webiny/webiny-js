@@ -1,10 +1,9 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import {
-    HttpRoute,
-    RequestContainer,
-    runRequestContextInitializers
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
 } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
     RequestTenantLoader
@@ -19,35 +18,22 @@ import { InternalToken } from "~/domain/InternalToken.js";
 /* Shared between worker and route to gate access. */
 const INTERNAL_HEADER = "x-webiny-background-task-token";
 
-class BackgroundTaskRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/background-task";
-
+class BackgroundTaskRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: InternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         /* Reject requests without a matching internal token. */
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return {
-                statusCode: 403,
-                body: {
-                    error: "Forbidden."
-                }
-            };
+            return response.status(403).json({ error: "Forbidden." });
         }
 
         const taskEvent = request.body;
 
         if (!taskEvent || !taskEvent.webinyTaskId) {
-            return {
-                statusCode: 400,
-                body: {
-                    error: "Missing webinyTaskId in request body."
-                }
-            };
+            return response.status(400).json({ error: "Missing webinyTaskId in request body." });
         }
 
         try {
@@ -55,8 +41,6 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
                 this.container.resolve(RawTenantId).set(taskEvent.tenant);
                 await this.container.resolve(RequestTenantLoader).establish();
             }
-
-            await runRequestContextInitializers(this.container, { continueOnError: true });
 
             /* TODO: remove once legacy ctx is gone — resolve services directly from the container. */
             const ctx: Record<string, any> = { container: this.container };
@@ -71,28 +55,29 @@ class BackgroundTaskRouteImpl implements HttpRoute.Interface {
             const runner = new TaskRunner(ctx as Context, timer, new TaskEventValidation());
             const result = await runner.run(taskEvent);
 
-            return {
-                statusCode: 200,
-                headers: { "content-type": "application/json" },
-                body: result
-            };
+            return response.json(result);
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             console.error(`Background task route error: ${message}`);
-            return {
-                statusCode: 500,
-                body: {
-                    status: "error",
-                    error: {
-                        message
-                    }
-                }
-            };
+            return response.status(500).json({ status: "error", error: { message } });
         }
     }
 }
 
-export const BackgroundTaskRoute = HttpRoute.createImplementation({
+export const BackgroundTaskRoute = HttpRouteHandler.createImplementation({
     implementation: BackgroundTaskRouteImpl,
     dependencies: [RequestContainer, InternalToken]
+});
+
+class BackgroundTaskRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "background-task";
+    readonly method = "POST";
+    readonly path = "/background-task";
+    readonly handler = BackgroundTaskRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const BackgroundTaskRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: BackgroundTaskRouteDefinitionImpl,
+    dependencies: []
 });

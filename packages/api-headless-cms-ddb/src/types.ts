@@ -1,14 +1,8 @@
 import type {
-    CmsContext,
-    CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
-    HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
+    CmsEntryValues,
+    CmsModel,
+    CmsStorageEntry
 } from "@webiny/api-headless-cms/types/index.js";
-import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { ITable } from "@webiny/db-dynamodb";
-
-export type { CmsContext };
-
-export type { IGroupEntity, IModelEntity, IEntryEntity };
 
 export enum ENTITIES {
     GROUPS = "CmsGroups",
@@ -16,33 +10,27 @@ export enum ENTITIES {
     ENTRIES = "CmsEntries"
 }
 
-export interface StorageOperationsFactoryParams {
-    table?: string;
-    container: CmsContext["container"];
-}
-
-export interface IHeadlessCmsStorageOperationsGetEntitiesResult {
-    groups: IGroupEntity;
-    models: IModelEntity;
-    entries: IEntryEntity;
-}
-
-export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
-    getTable: () => ITable;
-    getEntities: () => IHeadlessCmsStorageOperationsGetEntitiesResult;
-}
-
-export interface StorageOperationsFactory {
-    (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
-}
-
-export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: IDataLoadersHandler;
-}
-
 export interface DataLoadersHandlerInterfaceClearAllParams {
     tenant: string;
 }
+
+export interface DataLoadersHandlerDataLoaderParams {
+    model: Pick<CmsModel, "tenant" | "modelId">;
+    ids: readonly string[];
+}
+
 export interface IDataLoadersHandler {
+    getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
+    getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoadersHandlerDataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]>;
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

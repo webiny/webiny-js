@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { ErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import type { CmsEntryResolverFactory as ResolverFactory } from "~/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";

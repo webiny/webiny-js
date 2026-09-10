@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-router-catalog
-context: webiny-api
 description: >
   admin/router — 6 abstractions.
 ---

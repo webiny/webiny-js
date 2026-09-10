@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { License } from "@webiny/wcp";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
 import { registerApiCoreStorageOperations } from "@webiny/api-core";

@@ -9,7 +9,7 @@ class BlogModelImpl implements ModelFactory.Interface {
                 .public({
                     modelId: BLOG_MODEL_ID,
                     name: "Blog",
-                    group: "blog"
+                    group: "ungrouped"
                 })
                 .icon("far/newspaper")
                 .description("Blog posts")
@@ -134,6 +134,7 @@ class BlogModelImpl implements ModelFactory.Interface {
                 .titleFieldId("title")
                 .singularApiName("Blog")
                 .pluralApiName("Blogs")
+                .settings({ aiEntryWizard: true })
         ];
     }
 }

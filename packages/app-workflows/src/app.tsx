@@ -1,5 +1,5 @@
 import React from "react";
-import { RegisterFeature, Wcp } from "@webiny/app-admin";
+import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { SecurityPermissions } from "~/presentation/permissions/index.js";
 import { WorkflowsPermissionsFeature } from "~/features/permissions/feature.js";
 import { WorkflowsFeature } from "~/features/feature.js";
@@ -10,8 +10,14 @@ import { WorkflowsEditorPresenterFeature } from "~/presentation/workflowsEditor/
 import { ContentReviews } from "~/presentation/ContentReviews.js";
 
 export const WorkflowsAdminApp = () => {
+    const featureFlags = useFeatureFlags();
+
+    if (!featureFlags.isEnabled("advancedPublishingWorkflow")) {
+        return null;
+    }
+
     return (
-        <Wcp.CanUseWorkflows>
+        <>
             <RegisterFeature feature={WorkflowsPermissionsFeature} />
             <RegisterFeature feature={WorkflowsFeature} />
             <RegisterFeature feature={WorkflowStatePresenterFeature} />
@@ -20,6 +26,6 @@ export const WorkflowsAdminApp = () => {
             <RegisterFeature feature={WorkflowsEditorPresenterFeature} />
             <SecurityPermissions />
             <ContentReviews />
-        </Wcp.CanUseWorkflows>
+        </>
     );
 };

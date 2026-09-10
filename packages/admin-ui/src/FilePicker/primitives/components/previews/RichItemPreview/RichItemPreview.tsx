@@ -8,6 +8,8 @@ import type { FilePreviewDefaultProps } from "../../types.js";
 
 type RichItemPreviewProps = FilePreviewDefaultProps & {
     preview?: "thumbnail" | "file-type" | "placeholder";
+    /** Optional custom image renderer for the thumbnail (e.g. a cropped preview). */
+    renderImage?: (args: { url: string; name: string }) => React.ReactNode;
 };
 
 const DecoratableRichItemPreview = ({
@@ -19,6 +21,7 @@ const DecoratableRichItemPreview = ({
     value,
     variant,
     preview,
+    renderImage,
     ...props
 }: RichItemPreviewProps) => {
     return (
@@ -35,7 +38,12 @@ const DecoratableRichItemPreview = ({
                     className="flex items-center justify-between flex-1 cursor-pointer gap-sm-extra self-stretch min-w-0"
                     onClick={onReplaceItem}
                 >
-                    <RichItemThumbnail {...value} disabled={disabled} preview={preview} />
+                    <RichItemThumbnail
+                        {...value}
+                        disabled={disabled}
+                        preview={preview}
+                        renderImage={renderImage}
+                    />
                     <ItemDescription item={value} disabled={disabled} />
                 </div>
 

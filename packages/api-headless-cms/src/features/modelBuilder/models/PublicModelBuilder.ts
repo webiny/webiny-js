@@ -146,7 +146,8 @@ export class PublicModelBuilder extends BaseModelBuilder {
                 imageFieldId: this.publicConfig.imageFieldId,
                 layout,
                 fields,
-                tags: this.getTags()
+                tags: this.getTags(),
+                settings: this.config.settings || {}
             },
             { validateLayout: false }
         );

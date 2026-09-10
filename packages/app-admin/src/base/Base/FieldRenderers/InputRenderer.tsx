@@ -20,6 +20,7 @@ export const InputRenderer = createFieldRenderer(({ field }) => {
                 note={field.note}
                 required={field.required}
                 disabled={field.disabled}
+                autoFocus={field.autoFocus}
                 validation={field.validation}
                 onBlur={() => field.onBlur()}
             />

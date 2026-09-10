@@ -2,7 +2,12 @@ import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { type FieldBuildResult } from "./BaseFieldBuilder.js";
 import { DataFieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
-import type { CmsIcon, CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
+import type {
+    CmsIcon,
+    CmsModelField,
+    CmsModelFieldValidation,
+    CmsModelLayoutCell
+} from "~/types/index.js";
 
 interface IDynamicZoneTemplate {
     id: string;
@@ -10,13 +15,15 @@ interface IDynamicZoneTemplate {
     gqlTypeName: string;
     icon: CmsIcon | undefined;
     description: string;
+    componentName?: string;
     fields: any[];
-    layout: string[][];
+    layout: CmsModelLayoutCell[][];
     validation: CmsModelFieldValidation[];
 }
 
 export interface IDynamicZoneFieldBuilder extends DataFieldBuilder<"dynamicZone"> {
     required(message?: string): this;
+
     template(
         id: string,
         config: {
@@ -24,6 +31,7 @@ export interface IDynamicZoneFieldBuilder extends DataFieldBuilder<"dynamicZone"
             gqlTypeName: string;
             icon?: CmsIcon;
             description?: string;
+            componentName?: string;
             fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
             layout?: string[][];
         }
@@ -35,6 +43,7 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
     gqlTypeName: string;
     icon?: CmsIcon;
     description?: string;
+    componentName?: string;
     fields: (registry: IFieldBuilderRegistry) => Record<string, BaseFieldBuilder<any>>;
     layout?: string[][];
 }
@@ -60,16 +69,23 @@ class DynamicZoneFieldBuilder
     public template(id: string, config: IDynamicZoneFieldBuilderTemplateConfig): this {
         const fieldBuilders = config.fields(this.registry);
         const fields: CmsModelField[] = [];
+        const layoutReplacements = new Map<string, CmsModelLayoutCell>();
 
         for (const [key, fieldBuilder] of Object.entries(fieldBuilders)) {
             fieldBuilder.fieldId(key);
             const result: FieldBuildResult = (fieldBuilder as any).build();
-            if (result.type === "data") {
+            if (result.type === "layout") {
+                layoutReplacements.set(key, result.layoutCell);
+                if (result.fields) {
+                    fields.push(...result.fields);
+                }
+            } else {
                 fields.push(result.field);
-            } else if (result.fields) {
-                fields.push(...result.fields);
             }
         }
+
+        const rawLayout: string[][] = config.layout || [];
+        const layout = rawLayout.map(row => row.map(cell => layoutReplacements.get(cell) ?? cell));
 
         this.templates.push({
             id,
@@ -77,8 +93,9 @@ class DynamicZoneFieldBuilder
             gqlTypeName: config.gqlTypeName,
             icon: config.icon,
             description: config.description || "",
+            componentName: config.componentName,
             fields,
-            layout: config.layout || [],
+            layout,
             validation: []
         });
 
@@ -89,7 +106,7 @@ class DynamicZoneFieldBuilder
         // Set templates in settings before building
         this.config.settings = this.config.settings || {};
         this.config.settings.templates = this.templates;
-        this.config.listValidation = [{ name: "dynamicZone", message: "" }];
+        this.config.listValidation = [];
         return super.build();
     }
 }

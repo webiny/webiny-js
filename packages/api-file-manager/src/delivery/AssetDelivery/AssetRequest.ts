@@ -2,7 +2,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface AssetRequestOptions {
     original?: boolean;
-    width?: number;
+    [key: string]: unknown;
 }
 
 export type AssetRequestContext<T extends GenericRecord = GenericRecord> = T & {

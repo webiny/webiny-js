@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CreateFileRepository as RepositoryAbstraction } from "./abstractions.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { File, FileInput } from "~/domain/file/types.js";
 import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
 import { FileNotAuthorizedError, FilePersistenceError } from "~/domain/file/errors.js";
@@ -10,12 +10,13 @@ import { FileInputToEntryInputMapper } from "~/features/file/shared/FileInputToE
 class CreateFileRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
-        private fileModel: FileModel.Interface
+        private fileModelProvider: FileModelProvider.Interface
     ) {}
 
     async execute(data: FileInput): Promise<Result<File, RepositoryAbstraction.Error>> {
+        const fileModel = await this.fileModelProvider.get();
         const result = await this.createEntry.execute(
-            this.fileModel,
+            fileModel,
             FileInputToEntryInputMapper.toEntry(data)
         );
 
@@ -34,5 +35,5 @@ class CreateFileRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const CreateFileRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateFileRepositoryImpl,
-    dependencies: [CreateEntryUseCase, FileModel]
+    dependencies: [CreateEntryUseCase, FileModelProvider]
 });

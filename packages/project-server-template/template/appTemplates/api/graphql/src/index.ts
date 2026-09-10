@@ -6,11 +6,16 @@
  * transport, with the self-hosted JWT identity provider. This file only supplies project-specific
  * extensions + the SQL (Knex) connection.
  *
- * The default connection is a local SQLite file (`createSqliteConnection`, driven by
- * `<Infra.Sqlite filename="..." />` → WEBINY_SQL_FILENAME). A real deployment can swap this for its
- * own Knex client (Postgres/MySQL) passed straight to `createSqlApiHandler`.
+ * The connection factory below is generated at build time from the DB infra extension
+ * (`<Infra.Sqlite>` / `<Infra.Postgres>`) in webiny.config.tsx — see GenerateApiDbConnection, which
+ * decorates the workspace build. It replaces the `__WEBINY_DB_FACTORY__` import with the chosen
+ * factory, rewriting the specifier to that factory's own module path so only the selected driver is
+ * traced into the bundle (the other database driver and its native binary stay out of the deploy
+ * artifact). The placeholder imports the real package here so the template parses, lints, and passes
+ * dependency checks before substitution.
  */
-import { createSqlApiHandler, createSqliteConnection } from "@webiny/api-event-handler-server-sql";
+import { createSqlApiHandler } from "@webiny/api-event-handler-server-sql";
+import { __WEBINY_DB_FACTORY__ } from "@webiny/api-event-handler-server-sql";
 import { extensions } from "./extensions";
 
-export const handler = createSqlApiHandler({ extensions, knex: createSqliteConnection() });
+export const handler = createSqlApiHandler({ extensions, knex: __WEBINY_DB_FACTORY__() });

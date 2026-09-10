@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-graphql-client-catalog
-context: webiny-api
 description: >
   admin/graphql-client — 1 abstractions.
 ---

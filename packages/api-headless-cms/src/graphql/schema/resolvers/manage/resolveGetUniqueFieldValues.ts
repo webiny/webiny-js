@@ -1,4 +1,4 @@
-import { ListErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
+import { ListErrorResponse, Response } from "@webiny/api-graphql/responses.js";
 import type {
     CmsEntryListParams,
     CmsEntryResolverFactory as ResolverFactory

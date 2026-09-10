@@ -47,14 +47,10 @@ export const LogsView = () => {
 
     return (
         <div className={"flex flex-col h-main-content"}>
-            <Header
-                title="Audit Logs"
-                showingFilters={list.showingFilters}
-                showFilters={list.showFilters}
-                hideFilters={list.hideFilters}
-            />
+            <Header title="Audit Logs">
+                <Filters setWhere={list.setWhere} />
+            </Header>
             <div className={"flex-1 min-h-0"}>
-                <Filters showingFilters={list.showingFilters} setWhere={list.setWhere} />
                 {list.records.length === 0 && !list.isListLoading ? (
                     <EmptyView title={t`No results found.`} action={null} />
                 ) : (

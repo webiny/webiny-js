@@ -28,7 +28,10 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             showLogs,
             showStackTrace,
             installVersion,
-            force
+            force,
+            registry,
+            packageManager,
+            skipDependencyGuard
         } = params;
 
         if (!skipChecks) {
@@ -73,6 +76,9 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             logLevel ? `--logLevel=${logLevel}` : "--logLevel=debug",
             installVersion ? `--installVersion=${installVersion}` : "",
             force ? "--force" : "",
+            registry ? `--registry=${registry}` : "",
+            packageManager ? `--packageManager=${packageManager}` : "",
+            skipDependencyGuard ? "--skipDependencyGuard" : "",
             "--json"
         ].filter(Boolean);
 

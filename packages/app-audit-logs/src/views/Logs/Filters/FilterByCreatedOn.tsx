@@ -1,44 +1,42 @@
 import React from "react";
-import { format } from "date-fns";
-import { Input } from "@webiny/admin-ui";
+import { DatePicker } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
-import { TimestampFiltersContainer } from "./styled.js";
 
-const formatDateTime = (date: string) => {
-    if (!date) {
-        return "";
-    }
-
-    return format(new Date(date), "yyyy-MM-dd'T'HH:mm");
-};
-
-const getValidFilterValue = (value: string): Date | undefined => {
-    if (value === "") {
-        return undefined;
-    }
-
-    return new Date(value);
-};
+const now = new Date();
 
 export const FilterByCreatedOn = () => {
     const bindFrom = useBind({
-        name: "createdOn_gte",
-        beforeChange(value, cb) {
-            cb(getValidFilterValue(value));
-        }
+        name: "createdOn_gte"
     });
 
     const bindTo = useBind({
-        name: "createdOn_lte",
-        beforeChange(value, cb) {
-            cb(getValidFilterValue(value));
-        }
+        name: "createdOn_lte"
     });
 
     return (
-        <TimestampFiltersContainer>
-            <Input {...bindFrom} value={formatDateTime(bindFrom.value)} type="datetime-local" />
-            <Input {...bindTo} value={formatDateTime(bindTo.value)} type="datetime-local" />
-        </TimestampFiltersContainer>
+        <div className={"flex flex-col gap-md"}>
+            <DatePicker
+                label={"Created from"}
+                type="dateTimeLocal"
+                value={bindFrom.value ?? undefined}
+                onChange={value => {
+                    bindFrom.onChange(value ?? undefined);
+                }}
+                placeholder="Select date"
+                size="md"
+                maxDate={now}
+            />
+            <DatePicker
+                label={"Created to"}
+                type="dateTimeLocal"
+                value={bindTo.value ?? undefined}
+                onChange={value => {
+                    bindTo.onChange(value ?? undefined);
+                }}
+                placeholder="Select date"
+                size="md"
+                maxDate={now}
+            />
+        </div>
     );
 };

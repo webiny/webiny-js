@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { ListGroupsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListGroupsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -39,8 +38,7 @@ class ListGroupsUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const ListGroupsUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const ListGroupsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListGroupsUseCaseImpl,
     dependencies: [ListGroupsRepository, AccessControl]
 });

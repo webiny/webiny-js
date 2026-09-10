@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetPreviousRevisionByEntryIdBaseUseCase as BaseUseCaseAbstraction } from "./abstractions.js";
 import { GetPreviousRevisionByEntryIdRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -46,8 +45,7 @@ class GetPreviousRevisionByEntryIdUseCaseImpl implements BaseUseCaseAbstraction.
     }
 }
 
-export const BaseUseCase = createImplementation({
-    abstraction: BaseUseCaseAbstraction,
+export const BaseUseCase = BaseUseCaseAbstraction.createImplementation({
     implementation: GetPreviousRevisionByEntryIdUseCaseImpl,
     dependencies: [GetPreviousRevisionByEntryIdRepository, AccessControl]
 });

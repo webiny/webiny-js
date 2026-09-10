@@ -15,16 +15,16 @@
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/mcp": "0.0.0",
-    "@webiny/stdlib": "^0.0.12",
+    "@webiny/stdlib": "^0.0.17",
     "@webiny/system-requirements": "0.0.0",
     "@webiny/telemetry": "0.0.0",
-    "chalk": "^5.6.2",
-    "execa": "^10.0.0",
+    "chalk": "^6.0.0",
+    "execa": "^10.0.1",
     "find-up": "^8.0.0",
-    "fs-extra": "^11.3.6",
-    "inquirer": "^14.0.2",
-    "js-yaml": "^5.2.1",
-    "listr2": "^10.2.2",
+    "fs-extra": "^11.4.0",
+    "inquirer": "^14.1.0",
+    "js-yaml": "^5.3.0",
+    "listr2": "^11.0.0",
     "load-json-file": "^7.0.1",
     "ora": "9.4.1",
     "os": "0.1.2",
@@ -32,13 +32,13 @@
     "type-fest": "^5.8.0",
     "validate-npm-package-name": "^8.0.0",
     "write-json-file": "^7.0.0",
-    "yargs": "^18.0.0",
+    "yargs": "^18.1.0",
     "yesno": "^0.4.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/validate-npm-package-name": "^4.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

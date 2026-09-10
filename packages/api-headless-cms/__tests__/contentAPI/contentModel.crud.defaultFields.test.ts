@@ -113,7 +113,7 @@ describe("content model default fields", () => {
                             },
                             {
                                 fieldId: "image",
-                                type: "file",
+                                type: "asset",
                                 label: "Image",
                                 settings: {
                                     imagesOnly: true
@@ -149,7 +149,7 @@ describe("content model default fields", () => {
                             },
                             {
                                 fieldId: "image",
-                                type: "file",
+                                type: "asset",
                                 label: "Image",
                                 settings: {
                                     imagesOnly: true

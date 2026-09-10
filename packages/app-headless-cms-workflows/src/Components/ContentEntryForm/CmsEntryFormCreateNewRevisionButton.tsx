@@ -2,14 +2,14 @@ import React, { useCallback } from "react";
 import { useFeature } from "@webiny/app";
 import { useRoute } from "@webiny/app";
 import { useToast } from "@webiny/admin-ui";
-import { ContentEntryEditorConfig, usePermission } from "@webiny/app-headless-cms";
+import { InternalContentEntryEditorConfig, usePermission } from "@webiny/app-headless-cms";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionsListFeature } from "@webiny/app-headless-cms/presentation/contentEntries/revisionsList/feature.js";
 import { ReactComponent as NewReleaseIcon } from "@webiny/icons/new_releases.svg";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { OptionsMenuItem } from "@webiny/app-admin";
 
-const { Actions } = ContentEntryEditorConfig;
+const { Actions } = InternalContentEntryEditorConfig;
 
 const CreateNewRevisionMenuItem = () => {
     const toast = useToast();
@@ -56,13 +56,13 @@ const CreateNewRevisionMenuItem = () => {
 
 export const CmsEntryFormCreateNewRevisionButton = () => {
     return (
-        <ContentEntryEditorConfig>
+        <InternalContentEntryEditorConfig>
             <IsModelPublishable>
                 <Actions.MenuItemAction
                     name={"createNewRevision"}
                     element={<CreateNewRevisionMenuItem />}
                 />
             </IsModelPublishable>
-        </ContentEntryEditorConfig>
+        </InternalContentEntryEditorConfig>
     );
 };

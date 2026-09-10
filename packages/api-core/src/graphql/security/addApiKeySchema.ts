@@ -1,5 +1,5 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+import { Response, ErrorResponse } from "@webiny/api-graphql/responses.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { CreateApiKeyUseCase } from "~/features/security/apiKeys/CreateApiKey/index.js";
 import { UpdateApiKeyUseCase } from "~/features/security/apiKeys/UpdateApiKey/index.js";
 import { DeleteApiKeyUseCase } from "~/features/security/apiKeys/DeleteApiKey/index.js";

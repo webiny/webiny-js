@@ -1,4 +1,4 @@
-import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver } from "@webiny/api-graphql/types.js";
 import type { CmsModelField } from "~/types/index.js";
 
 interface ResolverArgs {

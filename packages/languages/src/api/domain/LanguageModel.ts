@@ -41,7 +41,7 @@ class LanguageModelFactory implements ModelFactory.Interface {
                         "Controls the text direction. Most languages read left-to-right, but some (like Arabic and Hebrew) read right-to-left."
                     )
                     .defaultValue("ltr")
-                    .renderer("dropdown")
+                    .renderer("select")
                     .required()
                     .predefinedValues([
                         {

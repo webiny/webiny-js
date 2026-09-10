@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { until } from "@webiny/api/testing/until.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
 import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";

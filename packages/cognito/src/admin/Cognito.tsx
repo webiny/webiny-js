@@ -28,6 +28,7 @@ const CognitoIdP = (props: CognitoAdminProps) => {
                         route={Routes.Users.List}
                         element={
                             <AdminLayout title={"Admin Users"}>
+                                <AdminConfig.Breadcrumb name={"users"} label={"Users"} />
                                 <UsersView />
                             </AdminLayout>
                         }
@@ -37,6 +38,7 @@ const CognitoIdP = (props: CognitoAdminProps) => {
                         route={Routes.Users.Account}
                         element={
                             <AdminLayout title={"User Account"}>
+                                <AdminConfig.Breadcrumb name={"account"} label={"Account"} />
                                 <UserAccountForm />
                             </AdminLayout>
                         }

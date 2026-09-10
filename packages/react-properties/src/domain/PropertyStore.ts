@@ -33,6 +33,18 @@ export class PropertyStore {
         this.processQueue();
     }, 0);
 
+    notify(): void {
+        this.scheduleFlush.cancel();
+        if (this.queue.length > 0) {
+            this.processQueue();
+        } else {
+            const properties = this.allProperties;
+            for (const listener of this.listeners) {
+                listener(properties);
+            }
+        }
+    }
+
     get allProperties(): Property[] {
         return this.order.filter(id => this.map.has(id)).map(id => this.map.get(id)!);
     }

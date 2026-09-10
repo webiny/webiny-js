@@ -87,12 +87,53 @@ const validatePredefinedValue = (field: CmsModelField, value: any | any[]): stri
     return "Value sent does not match any of the available predefined values.";
 };
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TIME_RE = /^\d{2}:\d{2}(:\d{2})?$/;
+const DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+
+const validateDatetimeFormat = (field: CmsModelField, value: any): string | null => {
+    if (field.type !== "datetime") {
+        return null;
+    }
+    if (value === null || value === undefined || value === "") {
+        return null;
+    }
+    if (typeof value !== "string") {
+        return null;
+    }
+
+    const dateType = field.settings?.type;
+
+    switch (dateType) {
+        case "date":
+            if (!DATE_RE.test(value)) {
+                return `Invalid date format for field "${field.fieldId}". Expected YYYY-MM-DD.`;
+            }
+            return null;
+        case "time":
+            if (!TIME_RE.test(value)) {
+                return `Invalid time format for field "${field.fieldId}". Expected HH:mm or HH:mm:ss.`;
+            }
+            return null;
+        case "dateTimeWithTimezone":
+        case "dateTimeWithoutTimezone":
+            if (!DATETIME_RE.test(value)) {
+                return `Invalid dateTime format for field "${field.fieldId}". Expected ISO 8601 dateTime.`;
+            }
+            return null;
+        default:
+            return null;
+    }
+};
+
 const getFieldValidation = (
     listValidation?: CmsModelFieldValidation[]
 ): CmsModelFieldValidation[] => {
     if (!listValidation?.length) {
         return [];
     }
+    // Filter out the legacy "dynamicZone" validator that was never implemented.
+    // Existing models may still have it in their persisted listValidation data.
     return listValidation.filter(item => item.name !== "dynamicZone");
 };
 /**
@@ -119,6 +160,10 @@ const runFieldMultipleValuesValidations = async <TValues extends CmsEntryValues 
         return null;
     }
     for (const value of values) {
+        const datetimeError = validateDatetimeFormat(field, value);
+        if (datetimeError) {
+            return datetimeError;
+        }
         const valueError = await validateValue(params, getFieldValidation(field.validation), value);
         if (valueError) {
             return valueError;
@@ -138,6 +183,10 @@ const runFieldValueValidations = async <TValues extends CmsEntryValues = CmsEntr
 ): Promise<string | null> => {
     const { values, field } = params;
     const value = values[field.fieldId as keyof TValues];
+    const datetimeError = validateDatetimeFormat(field, value);
+    if (datetimeError) {
+        return datetimeError;
+    }
     const error = await validateValue(params, field.validation || [], value);
     if (error) {
         return error;

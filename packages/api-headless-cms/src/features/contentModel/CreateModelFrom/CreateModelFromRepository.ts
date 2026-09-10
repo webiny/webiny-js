@@ -11,7 +11,8 @@ import {
     ModelPersistenceError,
     ModelValidationError
 } from "~/domain/contentModel/errors.js";
-import { CmsContext, StorageOperations } from "~/features/shared/abstractions.js";
+import { CmsContext } from "~/features/shared/abstractions.js";
+import { CreateModelStorageOperation } from "~/features/shared/storageOperations/model/CreateModelStorageOperation.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import {
     validateExistingModelId,
@@ -64,7 +65,7 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
         private readonly modelCache: ModelCache.Interface,
         private readonly pluginModelsProvider: PluginModelsProvider.Interface,
         private readonly modelsFetcher: ModelsFetcher.Interface,
-        private readonly storageOperations: StorageOperations.Interface,
+        private readonly createModel: CreateModelStorageOperation.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly cmsContext: CmsContext.Interface,
         private readonly modelFieldCompression: ModelFieldCompression.Interface
@@ -163,7 +164,7 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
             const fields = await this.modelFieldCompression.compress(model.fields);
 
             // Persist to storage
-            await this.storageOperations.models.create({
+            await this.createModel.execute({
                 model: {
                     ...model,
                     fields
@@ -186,7 +187,7 @@ export const CreateModelFromRepository = RepositoryAbstraction.createImplementat
         ModelCache,
         PluginModelsProvider,
         ModelsFetcher,
-        StorageOperations,
+        CreateModelStorageOperation,
         TenantContext,
         CmsContext,
         ModelFieldCompression

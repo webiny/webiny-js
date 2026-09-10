@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { RestoreEntryFromBinUseCase as UseCaseAbstraction } from "./abstractions.js";
@@ -138,8 +137,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const RestoreEntryFromBinUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const RestoreEntryFromBinUseCase = UseCaseAbstraction.createImplementation({
     implementation: RestoreEntryFromBinUseCaseImpl,
     dependencies: [
         RestoreEntryFromBinRepository,

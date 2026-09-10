@@ -21,10 +21,10 @@ jobs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -40,23 +40,31 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   build:
     name: Build
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.event.inputs.branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.event.inputs.branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -66,13 +74,16 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ github.event.inputs.branch }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write
   npmReleaseBeta:
     needs:
       - constants
@@ -85,19 +96,24 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       BETA_VERSION: ${{ vars.BETA_VERSION }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      - uses: actions/cache@v5
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.event.inputs.branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.event.inputs.branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -120,6 +136,9 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=beta --tag=${{ github.event.inputs.tag }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
   npmReleaseLatest:
     needs:
       - constants
@@ -133,19 +152,25 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       LATEST_VERSION: ${{ vars.LATEST_VERSION }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      - uses: actions/cache@v5
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Resolve Yarn cache folder
+        id: yarn-cache-folder
+        working-directory: ${{ github.event.inputs.branch }}
+        run: echo "path=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
-          path: ${{ github.event.inputs.branch }}/.yarn/cache
+          path: ${{ steps.yarn-cache-folder.outputs.path }}
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
+          restore-keys: yarn-${{ runner.os }}-
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -170,3 +195,66 @@ jobs:
           yarn release --type=latest --sourceTag=${{ github.event.inputs.tag }}
           --createGithubRelease=true
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+  notifySlackOnFailure:
+    name: Notify Slack on failure
+    needs:
+      - constants
+      - build
+      - npmReleaseBeta
+      - npmReleaseLatest
+    if: failure()
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      LABEL: 📦 Release
+      RUN_URL: >-
+        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+        github.run_id }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Notify Slack
+        run: >-
+          set -euo pipefail
+
+
+          [ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not
+          configured, skipping." && exit 0
+
+
+          # Name the jobs that actually failed, so the message says something
+          without
+
+          # anyone having to open the run first.
+
+          FAILED=$(gh api --paginate "repos/${{ github.repository
+          }}/actions/runs/${{ github.run_id }}/jobs" \
+            --jq '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")')
+          [ -n "$FAILED" ] || FAILED="unknown job"
+
+
+          # Built with jq, not string interpolation: job names here contain
+          double quotes
+
+          # (`NPM release ("latest" tag)`) and would produce invalid JSON
+          otherwise.
+
+          jq -nc --arg label "$LABEL" --arg failed "$FAILED" --arg url
+          "$RUN_URL" \
+            '{ text: ":rotating_light: \($label) failed: \($failed)\n\($url)" }' \
+            > /tmp/slack-payload.json
+
+          curl -s -o /dev/null -X POST \
+            -H "Content-type: application/json" \
+            --data @/tmp/slack-payload.json \
+            "$SLACK_RELEASE_CHANNEL_WEBHOOK"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write

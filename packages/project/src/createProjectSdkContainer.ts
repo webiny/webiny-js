@@ -56,6 +56,7 @@ import {
     projectInfoService,
     projectSdkParamsService,
     setProjectIdService,
+    stackOutputCacheService,
     stdioService,
     uiService,
     validateProjectConfigService,
@@ -105,6 +106,7 @@ export const createProjectSdkContainer = async (
     container.register(projectInfoService).inSingletonScope();
     container.register(projectSdkParamsService).inSingletonScope();
     container.register(setProjectIdService).inSingletonScope();
+    container.register(stackOutputCacheService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
     container.register(validateProjectConfigService).inSingletonScope();

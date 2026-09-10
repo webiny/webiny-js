@@ -78,7 +78,7 @@ export const StarterKitConfigDialog = ({ open, onClose }: Props) => {
             size={"xl"}
             bodyPadding={false}
             onOpenChange={onClose}
-            title={"Configure Starter Kit"}
+            title={"Configure Frontend"}
             actions={<Dialog.CancelAction text={"Close"} />}
             showCloseButton={true}
             dismissible={true}

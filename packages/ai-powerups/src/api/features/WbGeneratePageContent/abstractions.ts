@@ -8,6 +8,7 @@ export interface WbGeneratePageContentParams {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 export interface GenerationTelemetry {

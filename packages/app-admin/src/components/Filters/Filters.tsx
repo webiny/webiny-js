@@ -37,11 +37,13 @@ export const Filters = <T extends GenericFiltersData = GenericFiltersData>(
             >
                 <Form data={props.data} onChange={props.onChange}>
                     {() => (
-                        <div className={"w-full flex gap-sm flex-wrap"}>
+                        <div className={"w-full grid grid-cols-4 gap-sm items-center"}>
                             {props.filters.map(filter => (
-                                <div key={filter.name}>{filter.element}</div>
+                                <div key={filter.name} className={"empty:hidden min-w-0"}>
+                                    {filter.element}
+                                </div>
                             ))}
-                            {props.children}
+                            {props.children && <div>{props.children}</div>}
                         </div>
                     )}
                 </Form>

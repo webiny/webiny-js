@@ -27,6 +27,7 @@ import { WB_PAGE_APP } from "~/constants.js";
 import { Routes } from "~/routes.js";
 import { PageListWithConfig } from "../configs/index.js";
 import { DocumentList } from "./DocumentList.js";
+import { WbPagesBreadcrumbs } from "./WbPagesBreadcrumbs.js";
 
 const PagesListInner = observer(() => {
     const { presenter } = useFeature(PageListPresenterFeature);
@@ -42,6 +43,7 @@ const PagesListInner = observer(() => {
     return (
         <DialogsProvider>
             <PageListWithConfig>
+                <WbPagesBreadcrumbs />
                 <DocumentList />
                 <RouteParamsSync
                     route={Routes.Pages.List}

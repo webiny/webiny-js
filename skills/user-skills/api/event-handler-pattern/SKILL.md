@@ -1,6 +1,5 @@
 ---
 name: webiny-event-handler-pattern
-context: webiny-api
 description: >
   EventHandler implementation pattern — handle method, event payloads, filtering, DI,
   domain event definition, publishing events from UseCases, and reacting to external events.
@@ -112,8 +111,7 @@ Event payloads and handler abstractions live in `abstractions.ts`. The `events.t
 
 ```ts
 // features/disableEntity/abstractions.ts
-import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { createAbstraction, type DomainEvent } from "webiny/api";
 import type { Entity } from "~/shared/Entity.js";
 // Forward declaration — actual classes are in events.ts
 import type { EntityBeforeDisableEvent, EntityAfterDisableEvent } from "./events.js";
@@ -128,6 +126,10 @@ export interface EntityAfterDisablePayload {
 }
 
 // Handler Abstractions — one per event
+interface IEventHandler<TEvent extends DomainEvent<any>> {
+  handle(event: TEvent): Promise<void>;
+}
+
 export const EntityBeforeDisableEventHandler = createAbstraction<
   IEventHandler<EntityBeforeDisableEvent>
 >("MyPackage/EntityBeforeDisableEventHandler");
@@ -153,7 +155,7 @@ Event classes import payload types and handler abstractions from `abstractions.t
 
 ```ts
 // features/disableEntity/events.ts
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "webiny/api";
 import { EntityBeforeDisableEventHandler, EntityAfterDisableEventHandler } from "./abstractions.js";
 import type { EntityBeforeDisablePayload, EntityAfterDisablePayload } from "./abstractions.js";
 
@@ -178,7 +180,7 @@ export class EntityAfterDisableEvent extends DomainEvent<EntityAfterDisablePaylo
 
 ```ts
 // features/disableEntity/DisableEntityUseCase.ts
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "webiny/api";
 import { EntityBeforeDisableEvent, EntityAfterDisableEvent } from "./events.js";
 
 class DisableEntityUseCase implements UseCaseAbstraction.Interface {
@@ -222,7 +224,7 @@ To react to events from other packages (e.g., CMS entry deletion), implement the
 
 ```ts
 // features/cleanupOnEntryDelete/CleanupOnEntryDeleteHandler.ts
-import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events.js";
+import { EntryAfterDeleteEventHandler } from "webiny/api/cms/entry";
 import { CleanupService } from "../cleanupService/abstractions.js";
 import { MY_MODEL_ID } from "~/shared/constants.js";
 

@@ -5,10 +5,15 @@ export type FeatureDefinition<TRegister = void> = [TRegister] extends [void]
           name: string;
           register(container: Container): void;
       }
-    : {
-          name: string;
-          register(container: Container, context: TRegister): void;
-      };
+    : undefined extends TRegister
+      ? {
+            name: string;
+            register(container: Container, context?: TRegister): void;
+        }
+      : {
+            name: string;
+            register(container: Container, context: TRegister): void;
+        };
 
 export function createFeature<TRegister = void>(
     def: FeatureDefinition<TRegister>

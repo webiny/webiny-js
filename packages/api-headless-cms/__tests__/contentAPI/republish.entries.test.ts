@@ -1,4 +1,3 @@
-import { HeadlessCms } from "~/features/shared/abstractions.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mdbid } from "@webiny/utils";
 import type { CmsEntry, CmsModel } from "~/types";
@@ -6,6 +5,9 @@ import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandle
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
+import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
+import { ListEntriesStorageOperation } from "~/features/shared/storageOperations/entry/ListEntriesStorageOperation.js";
+import { GetEntryStorageOperation } from "~/features/shared/storageOperations/entry/GetEntryStorageOperation.js";
 
 interface CreateEntryResult {
     entry: CmsEntry;
@@ -256,7 +258,10 @@ describe("Republish entries", () => {
         const { applePublished, bananaPublished } = await createPublishedCategories();
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
         const context = categoryManager.getContext();
-        const storageOperations = context.container.resolve(HeadlessCms).storageOperations;
+        const container = context.container;
+        const createEntryStorage = container.resolve(CreateEntryStorageOperation);
+        const listEntries = container.resolve(ListEntriesStorageOperation);
+        const getEntry = container.resolve(GetEntryStorageOperation);
 
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",
@@ -283,12 +288,12 @@ describe("Republish entries", () => {
             5
         );
 
-        const galaRecord = await storageOperations.entries.create(productModel, {
+        const galaRecord = await createEntryStorage.execute(productModel, {
             entry: galaEntry,
             storageEntry: galaEntry
         });
 
-        const goldenRecord = await storageOperations.entries.create(productModel, {
+        const goldenRecord = await createEntryStorage.execute(productModel, {
             entry: goldenEntry,
             storageEntry: goldenEntry
         });
@@ -358,7 +363,7 @@ describe("Republish entries", () => {
          * And now we need to go directly into storage and check that values on the product records are ok.
          * We must call both latest and published.
          */
-        const latestProducts = await storageOperations.entries.list(productModel, {
+        const latestProducts = await listEntries.execute(productModel, {
             where: {
                 latest: true
             },
@@ -395,7 +400,7 @@ describe("Republish entries", () => {
             totalCount: 2
         });
 
-        const latestGalaRecord = await storageOperations.entries.get(productModel, {
+        const latestGalaRecord = await getEntry.execute(productModel, {
             where: {
                 id: galaRecord.id,
                 latest: true
@@ -413,7 +418,7 @@ describe("Republish entries", () => {
             }
         });
 
-        const latestGoldenRecord = await storageOperations.entries.get(productModel, {
+        const latestGoldenRecord = await getEntry.execute(productModel, {
             where: {
                 id: goldenRecord.id,
                 latest: true
@@ -431,7 +436,7 @@ describe("Republish entries", () => {
             }
         });
 
-        const publishedProducts = await storageOperations.entries.list(productModel, {
+        const publishedProducts = await listEntries.execute(productModel, {
             where: {
                 published: true
             },
@@ -468,7 +473,7 @@ describe("Republish entries", () => {
             totalCount: 2
         });
 
-        const publishedGalaRecord = await storageOperations.entries.get(productModel, {
+        const publishedGalaRecord = await getEntry.execute(productModel, {
             where: {
                 id: galaRecord.id,
                 published: true
@@ -486,7 +491,7 @@ describe("Republish entries", () => {
             }
         });
 
-        const publishedGoldenRecord = await storageOperations.entries.get(productModel, {
+        const publishedGoldenRecord = await getEntry.execute(productModel, {
             where: {
                 id: goldenRecord.id,
                 published: true

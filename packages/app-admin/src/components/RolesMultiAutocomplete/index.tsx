@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { MultiAutoComplete } from "@webiny/admin-ui";
-import { LIST_ROLES } from "./graphql.js";
-import { useQuery } from "@apollo/react-hooks";
+import { useFeature } from "@webiny/app";
+import { observer } from "mobx-react-lite";
+import { RolesAutocompletePresenterFeature } from "~/presentation/accessManagement/roles/rolesAutocomplete/feature.js";
 
 type RolesMultiAutocompleteProps = Omit<
     React.ComponentProps<typeof MultiAutoComplete>,
@@ -10,46 +11,40 @@ type RolesMultiAutocompleteProps = Omit<
     onChange?: (values: string[]) => void;
 };
 
-export const RolesMultiAutocomplete = ({ onChange, ...props }: RolesMultiAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_ROLES);
-    const rawOptions = loading || !data ? [] : data.security.roles.data;
+export const RolesMultiAutocomplete = observer(
+    ({ onChange, ...props }: RolesMultiAutocompleteProps) => {
+        const { presenter } = useFeature(RolesAutocompletePresenterFeature);
 
-    const options = useMemo(
-        () => rawOptions.map((role: any) => ({ label: role.name, value: role.id })),
-        [rawOptions]
-    );
+        useEffect(() => {
+            presenter.init();
+        }, [presenter]);
 
-    const onValuesChange = useCallback((ids: string[]) => onChange?.(ids), [onChange]);
+        const onValuesChange = useCallback((ids: string[]) => onChange?.(ids), [onChange]);
 
-    /**
-     * This is required because the Bind, which currently wraps this component passes "values" as "value" prop, not "values".
-     * "values" is added to safeguard for future changes. When we move to new forms, remove this part.
-     */
-    const values = useMemo(() => {
-        const selected = Array.isArray(props.values)
-            ? props.values
-            : Array.isArray(props.value)
-              ? props.value
-              : [];
+        const values = useMemo(() => {
+            const selected = Array.isArray(props.values)
+                ? props.values
+                : Array.isArray(props.value)
+                  ? props.value
+                  : [];
 
-        return selected
-            .map(s => {
+            return selected.reduce<string[]>((acc, s) => {
                 if (typeof s === "string") {
-                    return s;
-                } else if (typeof s === "object") {
-                    return s?.id;
+                    acc.push(s);
+                } else if (typeof s === "object" && s?.id) {
+                    acc.push(s.id);
                 }
-                return null;
-            })
-            .filter((s): s is string => !!s);
-    }, [props.values, props.value]);
+                return acc;
+            }, []);
+        }, [props.values, props.value]);
 
-    return (
-        <MultiAutoComplete
-            {...props}
-            options={options}
-            values={loading ? undefined : (values as string[] | undefined)}
-            onValuesChange={onValuesChange}
-        />
-    );
-};
+        return (
+            <MultiAutoComplete
+                {...props}
+                options={presenter.vm.options}
+                values={presenter.vm.loading ? undefined : values}
+                onValuesChange={onValuesChange}
+            />
+        );
+    }
+);

@@ -1,5 +1,5 @@
-import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { ErrorResponse, GraphQLSchemaPlugin, ListResponse } from "@webiny/handler-graphql";
+import { ErrorResponse, ListResponse } from "@webiny/api-graphql";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
 import { redirectsTypeDefs } from "~/graphql/redirects/redirects.typeDefs.js";
@@ -9,86 +9,103 @@ import { UpdateRedirectUseCase } from "~/features/redirects/UpdateRedirect/index
 import { DeleteRedirectUseCase } from "~/features/redirects/DeleteRedirect/index.js";
 import { MoveRedirectUseCase } from "~/features/redirects/MoveRedirect/index.js";
 
-export const createRedirectsSchema = () => {
-    const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
-        typeDefs: redirectsTypeDefs,
-        resolvers: {
-            WbQuery: {
-                listRedirects: async (_, args: any, context) => {
-                    try {
-                        ensureAuthentication(context);
-                        const listRedirects = context.container.resolve(ListRedirectsUseCase);
-                        const result = await listRedirects.execute(args);
+export const addRedirectsSchema = (builder: IGraphQLSchemaBuilder): void => {
+    builder.addTypeDefs(redirectsTypeDefs);
 
-                        if (result.isFail()) {
-                            throw result.error;
-                        }
+    builder.addResolver({
+        path: "WbQuery.listRedirects",
+        dependencies: [ListRedirectsUseCase],
+        resolver(listRedirects) {
+            return async ({ args, context }) => {
+                try {
+                    ensureAuthentication(context);
+                    const result = await listRedirects.execute(args);
 
-                        const { redirects, meta } = result.value;
-                        return new ListResponse(redirects, meta);
-                    } catch (e) {
-                        return new ErrorResponse(e);
+                    if (result.isFail()) {
+                        throw result.error;
                     }
+
+                    const { redirects, meta } = result.value;
+                    return new ListResponse(redirects, meta);
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
-            },
-            WbMutation: {
-                createRedirect: async (_, { data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const createRedirect = context.container.resolve(CreateRedirectUseCase);
-                        const result = await createRedirect.execute(data);
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                updateRedirect: async (_, { id, data }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const updateRedirect = context.container.resolve(UpdateRedirectUseCase);
-                        const result = await updateRedirect.execute(id, data);
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return result.value;
-                    });
-                },
-                moveRedirect: async (_, { id, folderId }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const moveRedirect = context.container.resolve(MoveRedirectUseCase);
-                        const result = await moveRedirect.execute({ id, folderId });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return true;
-                    });
-                },
-                deleteRedirect: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        const deleteRedirect = context.container.resolve(DeleteRedirectUseCase);
-                        const result = await deleteRedirect.execute({ id });
-
-                        if (result.isFail()) {
-                            throw new Error(result.error.message);
-                        }
-
-                        return true;
-                    });
-                }
-            }
+            };
         }
     });
 
-    pageGraphQL.name = "wb.graphql.redirects";
+    builder.addResolver({
+        path: "WbMutation.createRedirect",
+        dependencies: [CreateRedirectUseCase],
+        resolver(createRedirect) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await createRedirect.execute(args.data);
 
-    return pageGraphQL;
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.updateRedirect",
+        dependencies: [UpdateRedirectUseCase],
+        resolver(updateRedirect) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await updateRedirect.execute(args.id, args.data);
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return result.value;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.moveRedirect",
+        dependencies: [MoveRedirectUseCase],
+        resolver(moveRedirect) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await moveRedirect.execute({
+                        id: args.id,
+                        folderId: args.folderId
+                    });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return true;
+                });
+        }
+    });
+
+    builder.addResolver({
+        path: "WbMutation.deleteRedirect",
+        dependencies: [DeleteRedirectUseCase],
+        resolver(deleteRedirect) {
+            return ({ args, context }) =>
+                resolve(async () => {
+                    ensureAuthentication(context);
+                    const result = await deleteRedirect.execute({ id: args.id });
+
+                    if (result.isFail()) {
+                        throw new Error(result.error.message);
+                    }
+
+                    return true;
+                });
+        }
+    });
 };

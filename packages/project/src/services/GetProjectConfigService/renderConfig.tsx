@@ -61,6 +61,11 @@ export async function renderConfig(params: RenderConfigParams) {
             env
         });
 
+        // Uncomment to forward the worker's console output to the parent process (useful for
+        // debugging the config render — e.g. feature flag resolution, extension registration).
+        // childProcess.stdout?.pipe(process.stdout);
+        // childProcess.stderr?.pipe(process.stderr);
+
         // The only message we expect to receive is the parsed project config.
         childProcess.on("message", (message: RenderConfigWorkerMessageDto) => {
             if (message.type === "error") {

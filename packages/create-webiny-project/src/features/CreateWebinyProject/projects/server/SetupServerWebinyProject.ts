@@ -6,27 +6,7 @@ import { GetProjectRootPath } from "../../../../services/index.js";
 import { ServerProjectParams } from "./types.js";
 import { GetTemplatesFolderPath } from "../../../../services/GetTemplatesFolderPath.js";
 import { addProjectDependencies } from "../addProjectDependencies.js";
-
-const DOT_ENV = `# Self-hosted (server) hosting-type environment variables.
-# The values below are safe dev defaults. CHANGE the secrets before any real deployment.
-
-# Ports the API and Admin servers listen on during \`webiny watch\` / \`webiny serve\`.
-WEBINY_API_PORT=3002
-WEBINY_ADMIN_PORT=3001
-
-# Public origin of the API (used by the Admin app + for file-upload URLs).
-WEBINY_API_URL=http://localhost:3002
-
-# SQLite database file (relative paths resolve against the project root).
-WEBINY_SQL_FILENAME=./.webiny/server.sqlite
-
-# Local file storage for uploaded files + upload signing secret.
-WEBINY_LOCAL_STORAGE_PATH=./.webiny/storage
-WEBINY_UPLOAD_SECRET=dev-only-insecure-upload-secret
-
-# JWT signing secret for the built-in self-hosted identity provider.
-WEBINY_SELF_HOSTED_AUTH_SECRET=dev-only-insecure-secret
-`;
+import { addProjectScripts } from "../addProjectScripts.js";
 
 export class SetupServerWebinyProject {
     async execute(cliArgs: CliParams): Promise<ServerProjectParams> {
@@ -40,6 +20,8 @@ export class SetupServerWebinyProject {
         const getProjectRoot = new GetProjectRootPath();
         const projectRootFolderPath = getProjectRoot.execute(cliArgs);
 
+        // Copies the storage-specific template files into the project — `webiny.config.tsx` and a
+        // `.env.example` (all vars commented; the project runs on config defaults with no `.env`).
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
         // Server (self-hosted) hosting-type dependencies. The `webiny` CLI (server bin) sets
@@ -53,8 +35,12 @@ export class SetupServerWebinyProject {
             "@webiny/self-hosted-auth": "latest"
         });
 
-        // Write the `.env` with the server hosting-type dev defaults.
-        fs.writeFileSync(path.join(projectRootFolderPath, ".env"), DOT_ENV);
+        // Self-hosted watches every default app in a single process, so `yarn dev` is all a developer
+        // needs to get the whole project running locally. Server-only — on AWS the apps are watched
+        // separately, so there's no single command to alias.
+        addProjectScripts(projectRootFolderPath, {
+            dev: "webiny watch"
+        });
 
         return serverArgs;
     }

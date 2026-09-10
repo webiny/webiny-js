@@ -16,7 +16,7 @@ type State = {
 const state: State = {
     listenerAttached: false,
     zIndex: null,
-    handlers: {}
+    handlers: Object.create(null)
 };
 
 function triggerHotkeys(e: KeyboardEvent) {
@@ -39,7 +39,7 @@ function registerZIndex({ zIndex, keys }: HookProps) {
     }
 
     if (!state.handlers[zIndex]) {
-        state.handlers[zIndex] = {};
+        state.handlers[zIndex] = Object.create(null);
     }
 
     if (!keys || Object.keys(keys).length === 0) {
@@ -88,21 +88,24 @@ export function useHotkeys(props: HookProps) {
     const prevPropsRef = useRef<HookProps | undefined>();
     const firstRenderRef = useRef(true);
 
-    useEffect(function () {
-        if (firstRenderRef.current || prevPropsRef.current?.disabled !== disabled) {
-            firstRenderRef.current = false;
-            if (disabled) {
-                unregisterZIndex(props);
-            } else {
-                registerZIndex(props);
+    useEffect(
+        function () {
+            if (firstRenderRef.current || prevPropsRef.current?.disabled !== disabled) {
+                firstRenderRef.current = false;
+                if (disabled) {
+                    unregisterZIndex(props);
+                } else {
+                    registerZIndex(props);
+                }
             }
-        }
 
-        if (!disabled && typeof keys === "object") {
-            Object.assign(state.handlers[zIndex], keys);
-        }
-        prevPropsRef.current = { ...props };
-    });
+            if (!disabled && typeof keys === "object") {
+                Object.assign(state.handlers[zIndex], keys);
+            }
+            prevPropsRef.current = { ...props };
+        },
+        [keys]
+    );
 
     useEffect(function () {
         return function () {

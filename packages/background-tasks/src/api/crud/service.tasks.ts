@@ -9,7 +9,7 @@ import type {
 } from "~/api/types.js";
 import { TasksCrud } from "~/api/TasksCrud.js";
 import { TaskDataStatus, TaskLogItemType } from "~/api/types.js";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/api-graphql";
 import { createService } from "~/api/service/index.js";
 import type { IServiceInfo } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";

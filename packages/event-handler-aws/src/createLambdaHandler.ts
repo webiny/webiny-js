@@ -1,11 +1,11 @@
-import { createHandler } from "@webiny/event-handler-core";
+import { HandlerApp } from "@webiny/event-handler-core";
 import type { HandlerSetup } from "@webiny/event-handler-core";
 import type { Context } from "@webiny/aws-sdk/types/index.js";
 import { awsLambdaTransport } from "./AwsLambdaTransport.js";
 
 export interface CreateLambdaHandlerOptions {
     root: HandlerSetup;
-    request?: HandlerSetup;
+    child?: HandlerSetup;
 }
 
 /**
@@ -14,11 +14,11 @@ export interface CreateLambdaHandlerOptions {
  * lives in {@link awsLambdaTransport}; everything else is the shared handler loop.
  */
 export function createLambdaHandler(options: CreateLambdaHandlerOptions) {
-    const handle = createHandler({
+    const app = HandlerApp.init({
         root: options.root,
-        request: options.request,
+        child: options.child,
         transport: awsLambdaTransport
     });
 
-    return (event: any, context?: Context): Promise<any> => handle(event, context);
+    return (event: any, context?: Context): Promise<any> => app.handle(event, context);
 }

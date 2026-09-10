@@ -1,4 +1,4 @@
-import { type Container, createFeature } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { CancelScheduledActionOnEntryChangeFeature } from "~/features/CancelScheduledActionOnEntryChange/feature.js";
 import { NamespaceHandler } from "~/features/NamespaceHandler/NamespaceHandler.js";
 import { PublishEntryActionHandler } from "~/features/PublishActionHandler/PublishEntryActionHandler.js";
@@ -8,7 +8,7 @@ import { ScheduleUnpublishEntryUseCase } from "~/features/ScheduleUnpublishEntry
 
 export const CmsSchedulerFeature = createFeature({
     name: "CmsScheduler",
-    register(container: Container) {
+    register(container) {
         // Pure DI registration (was a request-time ContextPlugin — none of it needs ctx/post-auth).
         container.register(NamespaceHandler);
         container.register(PublishEntryActionHandler);

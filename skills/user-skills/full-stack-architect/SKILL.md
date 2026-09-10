@@ -1,6 +1,5 @@
 ---
 name: webiny-full-stack-architect
-context: webiny-extensions
 description: >
   Full-stack extension skeleton and registration pattern. Use this skill when creating
   an extension that spans both API and Admin — the top-level component with Api.Extension
@@ -13,6 +12,20 @@ description: >
 ## TL;DR
 
 A full-stack extension bundles **API** and **Admin** into a single package with a shared domain layer. The top-level component registers both sides via `<Api.Extension>` and `<Admin.Extension>`, which point to separate entry-point files. Each side follows its own layered architecture pattern — see **webiny-api-architect** and **webiny-admin-architect** skills for details.
+
+## Working Context
+
+This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are the same — only the import convention and registration mechanism differ.
+
+|                         | Extensions (`extensions/`)                                                         | Core (`packages/`)                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Imports**             | `webiny/api`, `webiny/admin`, `webiny/admin/ui`                                    | `@webiny/feature/api`, `@webiny/app-admin`, `@webiny/admin-ui`          |
+| **Catalog paths**       | Use the `Import:` path                                                             | Use the `Source:` path                                                  |
+| **Registration**        | `<Api.Extension src={...}>` / `<Admin.Extension src={...}>` in `webiny.config.tsx` | `createFeature` registered directly by the package's module initializer |
+| **Entry point export**  | Files targeted by Extension `src` MUST use `export default`                        | No restriction — features are registered programmatically               |
+| **Top-level component** | Required — composes `<Api.Extension>` + `<Admin.Extension>`                        | Not applicable — each package registers its own features                |
+
+Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 
 ## RULE — Extension Entry Points
 

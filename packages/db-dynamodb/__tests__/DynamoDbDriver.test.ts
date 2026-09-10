@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import DynamoDbDriver from "~/DynamoDbDriver";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "~/testing/getDocumentClient.js";
 
 describe("DynamoDbDriver", () => {
     const __testing = "aTestingTag";

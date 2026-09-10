@@ -1,9 +1,8 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetRevisionByIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryPersistenceError, EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import { GetRevisionByIdStorageOperation } from "~/features/shared/storageOperations/entry/GetRevisionByIdStorageOperation.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
 /**
@@ -13,7 +12,7 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private getRevisionByIdStorage: GetRevisionByIdStorageOperation.Interface
     ) {}
 
     async execute<T extends CmsEntryValues = CmsEntryValues>(
@@ -22,7 +21,7 @@ class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
             // Fetch from storage
-            const storageEntry = await this.storageOperations.entries.getRevisionById<T>(model, {
+            const storageEntry = await this.getRevisionByIdStorage.execute<T>(model, {
                 id
             });
 
@@ -40,8 +39,7 @@ class GetRevisionByIdRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const GetRevisionByIdRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const GetRevisionByIdRepository = RepositoryAbstraction.createImplementation({
     implementation: GetRevisionByIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, GetRevisionByIdStorageOperation]
 });

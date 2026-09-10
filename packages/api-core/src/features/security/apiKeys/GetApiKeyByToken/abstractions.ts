@@ -12,7 +12,7 @@ type GetApiKeyByTokenError =
     | ApiKeysRepository.Error;
 
 export interface IGetApiKeyByToken {
-    execute(token: string): Promise<Result<ApiKey | null, GetApiKeyByTokenError>>;
+    execute(token: string): Promise<Result<ApiKey, GetApiKeyByTokenError>>;
 }
 
 /** Retrieve an API key by its token value. */

@@ -10,10 +10,15 @@ import { CmsEntryOpenSearchOperatorListFeature } from "./CmsEntryOpenSearchOpera
 import { CmsEntryOpenSearchExecFilteringFeature } from "./CmsEntryOpenSearchExecFiltering/feature.js";
 import { CmsEntryOpenSearchBodyBuilderFeature } from "./CmsEntryOpenSearchBodyBuilder/feature.js";
 import { CmsEntryOpenSearchValueSearchFeature } from "./CmsEntryOpenSearchValueSearch/feature.js";
+import { ModelAfterCreateHandler } from "./CmsEntryOpenSearchIndexCreate/ModelAfterCreateHandler.js";
+import { ModelAfterCreateFromHandler } from "./CmsEntryOpenSearchIndexCreate/ModelAfterCreateFromHandler.js";
+import { ModelAfterDeleteHandler } from "./CmsEntryOpenSearchIndexDelete/ModelAfterDeleteHandler.js";
+import { CmsModelOpenSearchIndexFeature } from "./CmsModelOpenSearchIndex/index.js";
 
 export const CmsEntryOpenSearchUtilsFeature = createFeature({
     name: "Cms/Entry/OpenSearch/UtilsFeature",
     register: container => {
+        CmsModelOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchFieldIndexFeature.register(container);
         CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
@@ -25,5 +30,10 @@ export const CmsEntryOpenSearchUtilsFeature = createFeature({
         CmsEntryOpenSearchExecFilteringFeature.register(container);
         CmsEntryOpenSearchBodyBuilderFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
+
+        // Model lifecycle event handlers for OpenSearch index management
+        container.register(ModelAfterCreateHandler);
+        container.register(ModelAfterCreateFromHandler);
+        container.register(ModelAfterDeleteHandler);
     }
 });

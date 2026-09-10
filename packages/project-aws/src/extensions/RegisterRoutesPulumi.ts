@@ -3,18 +3,7 @@ import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import { ApiRoute } from "./ApiRoute.js";
 import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
-
-function deriveRouteName(routePath: string, method: string): string {
-    // /asd/{id}/xs + POST → asd-xs-post
-    const pathPart = routePath
-        .replace(/^\//, "")
-        .replace(/\{[^}]*\}/g, "")
-        .replace(/\/+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .toLowerCase();
-
-    return `${pathPart}-${method.toLowerCase()}`;
-}
+import { deriveRouteName, toApiGatewayPath } from "./routePath.js";
 
 class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
@@ -35,7 +24,8 @@ class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
             const name = routeName ?? deriveRouteName(routePath, method);
             graphqlModule.addRoute({
                 name,
-                path: routePath as `/${string}`,
+                // The prop accepts `:id` too; API Gateway only understands `{id}`.
+                path: toApiGatewayPath(routePath) as `/${string}`,
                 method
             });
         }

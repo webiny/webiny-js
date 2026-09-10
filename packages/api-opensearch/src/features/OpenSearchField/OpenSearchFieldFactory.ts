@@ -1,10 +1,10 @@
 import { OpenSearchFieldFactory as Abstraction } from "./abstractions/OpenSearchFieldFactory.js";
-import type { OpenSearchField } from "./abstractions/OpenSearchField.js";
-import { OpenSearchFieldImpl } from "./OpenSearchFieldImpl.js";
+import type { OpenSearchField as OpenSearchFieldAbstraction } from "./abstractions/OpenSearchField.js";
+import { OpenSearchField } from "./OpenSearchField.js";
 
 class OpenSearchFieldFactoryImpl implements Abstraction.Interface {
-    public create(params: OpenSearchField.Params): OpenSearchField.Interface {
-        return new OpenSearchFieldImpl(params);
+    public create(params: OpenSearchFieldAbstraction.Params): OpenSearchFieldAbstraction.Interface {
+        return OpenSearchField.create(params);
     }
 }
 

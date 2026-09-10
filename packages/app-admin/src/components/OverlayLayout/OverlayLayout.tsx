@@ -42,17 +42,14 @@ export const OverlayLayout: React.FC<OverlayLayoutProps> = ({
             <OverlayRoot visible={visible} onExited={onExited}>
                 <OverlayBackdrop visible={visible} hideOverlay={hideOverlay} />
                 <OverlayContent visible={visible}>
-                    <>
-                        <OverlayHeader
-                            start={barLeft}
-                            middle={barMiddle}
-                            end={barRight}
-                            variant={variant}
-                            hideOverlay={hideOverlay}
-                        />
-
-                        {children}
-                    </>
+                    <OverlayHeader
+                        start={barLeft}
+                        middle={barMiddle}
+                        end={barRight}
+                        variant={variant}
+                        hideOverlay={hideOverlay}
+                    />
+                    <div className={"flex-1 min-h-0 overflow-hidden"}>{children}</div>
                 </OverlayContent>
             </OverlayRoot>
         </Portal>

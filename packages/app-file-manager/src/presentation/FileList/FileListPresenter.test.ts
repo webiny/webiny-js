@@ -211,7 +211,8 @@ function createMockFileDetailsPresenter(): IFileDetailsPresenter {
             permissions: { canEdit: true, canDelete: true }
         },
         loadFile: vi.fn().mockResolvedValue(undefined),
-        saveFile: vi.fn().mockResolvedValue(undefined)
+        saveFile: vi.fn().mockResolvedValue(undefined),
+        setFile: vi.fn()
     };
 }
 

@@ -122,7 +122,34 @@ export class License implements ILicense {
         );
     }
 
+    canUseAiPageTranslation(): boolean {
+        return (
+            this.license.package.features.aiPowerups?.options?.websiteBuilder?.pageTranslation ===
+            true
+        );
+    }
+
     canUseAiLexicalGeneration(): boolean {
         return this.license.package.features.aiPowerups?.options?.lexicalGeneration === true;
+    }
+
+    canUseAiEntryGeneration(): boolean {
+        return this.license.package.features.aiPowerups?.options?.cms?.entryGeneration === true;
+    }
+
+    canUseAiEntryComparison(): boolean {
+        return this.license.package.features.aiPowerups?.options?.cms?.entryComparison === true;
+    }
+
+    canUseAiEntryTranslation(): boolean {
+        return this.license.package.features.aiPowerups?.options?.cms?.entryTranslation === true;
+    }
+
+    canUseAbTesting(): boolean {
+        return this.canUseFeature("abTesting");
+    }
+
+    canUseRemoteComponents(): boolean {
+        return this.canUseFeature("remoteComponents");
     }
 }

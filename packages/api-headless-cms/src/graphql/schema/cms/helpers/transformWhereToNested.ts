@@ -1,3 +1,5 @@
+const FORBIDDEN_KEYS = new Set(["__proto__", "prototype", "constructor"]);
+
 /**
  * Transforms a flat where object with dot-notation keys into a nested object.
  * Keys without dots are passed through unchanged.
@@ -21,40 +23,52 @@ export const transformWhereToNested = (
         return undefined;
     }
 
-    const result: Record<string, unknown> = {};
-
-    for (const [key, value] of Object.entries(where)) {
-        // Handle logical operators recursively.
+    return Object.entries(where).reduce<Record<string, unknown>>((result, [key, value]) => {
         if (key === "AND" || key === "OR") {
-            if (Array.isArray(value)) {
-                result[key] = value.map(item =>
-                    transformWhereToNested(item as Record<string, unknown>)
-                );
-            } else {
-                result[key] = value;
+            if (!Array.isArray(value)) {
+                return {
+                    ...result,
+                    [key]: value
+                };
             }
-            continue;
+            return {
+                ...result,
+                [key]: value.map(item => transformWhereToNested(item))
+            };
         }
 
         const dotIndex = key.indexOf(".");
+
         if (dotIndex === -1) {
-            // No dot — pass through unchanged.
-            result[key] = value;
-        } else {
-            // Dot-notation key — expand into nested object.
-            const head = key.slice(0, dotIndex);
-            const tail = key.slice(dotIndex + 1);
-
-            if (result[head] === undefined) {
-                result[head] = {};
+            if (FORBIDDEN_KEYS.has(key)) {
+                throw new Error(`Invalid where key: "${key}".`);
             }
-
-            const nested = result[head] as Record<string, unknown>;
-            // Recursively expand in case of multiple levels of nesting.
-            const expanded = transformWhereToNested({ [tail]: value }) as Record<string, unknown>;
-            Object.assign(nested, expanded);
+            return {
+                ...result,
+                [key]: value
+            };
         }
-    }
 
-    return result;
+        const head = key.slice(0, dotIndex);
+        const tail = key.slice(dotIndex + 1);
+
+        if (FORBIDDEN_KEYS.has(head)) {
+            throw new Error(`Invalid where key: "${head}".`);
+        }
+
+        if (Object.hasOwn(result, head)) {
+            return {
+                ...result,
+                [head]: {
+                    ...(result[head] as Record<string, unknown>),
+                    ...transformWhereToNested({ [tail]: value })
+                }
+            };
+        }
+
+        return {
+            ...result,
+            [head]: transformWhereToNested({ [tail]: value })
+        };
+    }, {});
 };

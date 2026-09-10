@@ -1,4 +1,4 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 
 class CmsResponseTypeDefs implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -24,6 +24,11 @@ class CmsResponseTypeDefs implements CoreGraphQLSchemaFactory.Interface {
 
             type CmsDeleteResponse {
                 data: Boolean
+                error: CmsError
+            }
+
+            type CmsModelResponse {
+                data: JSON
                 error: CmsError
             }
         `);

@@ -27,9 +27,9 @@
     "@webiny/api-headless-cms-testing": "0.0.0",
     "@webiny/api-opensearch": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
+    "@webiny/wcp": "0.0.0",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "publishConfig": {
     "access": "public"

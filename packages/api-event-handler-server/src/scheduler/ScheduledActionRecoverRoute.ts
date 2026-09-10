@@ -1,10 +1,9 @@
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import {
-    HttpRoute,
-    RequestContainer,
-    runRequestContextInitializers
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
 } from "@webiny/event-handler-core";
-import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/handler-graphql";
+import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import {
     RawTenantId,
     RequestTenantLoader
@@ -27,18 +26,15 @@ const INTERNAL_HEADER = "x-webiny-scheduler-token";
  * NOTE: recovers ONE tenant per call. Boot recovery for additional (non-root) tenants would enumerate
  * tenants and call this per tenant — left as a follow-up; single/root-tenant deployments are covered.
  */
-class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/scheduled-action-recover";
-
+class ScheduledActionRecoverRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly container: Container,
         private readonly internalToken: SchedulerInternalToken.Interface
     ) {}
 
-    public async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
-            return { statusCode: 403, body: { error: "Forbidden." } };
+            return response.status(403).json({ error: "Forbidden." });
         }
 
         try {
@@ -46,15 +42,13 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
             if (!tenant) {
                 const rootResult = await this.container.resolve(GetRootTenantUseCase).execute();
                 if (rootResult.isFail()) {
-                    return { statusCode: 200, body: { status: "ok", recovered: 0 } };
+                    return response.json({ status: "ok", recovered: 0 });
                 }
                 tenant = rootResult.value.id;
             }
 
             this.container.resolve(RawTenantId).set(tenant);
             await this.container.resolve(RequestTenantLoader).establish();
-
-            await runRequestContextInitializers(this.container, { continueOnError: true });
 
             const ctx: Record<string, any> = { container: this.container };
             for (const enhancer of this.container.resolveAll(GraphQLContextEnhancer)) {
@@ -77,10 +71,9 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
                 );
 
             if (listResult.isFail()) {
-                return {
-                    statusCode: 500,
-                    body: { status: "error", error: { message: listResult.error.message } }
-                };
+                return response
+                    .status(500)
+                    .json({ status: "error", error: { message: listResult.error.message } });
             }
 
             const pending = listResult.value.items.map(action => ({
@@ -92,20 +85,29 @@ class ScheduledActionRecoverRouteImpl implements HttpRoute.Interface {
 
             await this.container.resolve(SchedulerSingleton).recover(pending);
 
-            return {
-                statusCode: 200,
-                headers: { "content-type": "application/json" },
-                body: { status: "ok", recovered: pending.length }
-            };
+            return response.json({ status: "ok", recovered: pending.length });
         } catch (err) {
             const message = err instanceof Error ? err.message : String(err);
             console.error(`Scheduled action recover route error: ${message}`);
-            return { statusCode: 500, body: { status: "error", error: { message } } };
+            return response.status(500).json({ status: "error", error: { message } });
         }
     }
 }
 
-export const ScheduledActionRecoverRoute = HttpRoute.createImplementation({
+export const ScheduledActionRecoverRoute = HttpRouteHandler.createImplementation({
     implementation: ScheduledActionRecoverRouteImpl,
     dependencies: [RequestContainer, SchedulerInternalToken]
+});
+
+class ScheduledActionRecoverRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "scheduled-action-recover";
+    readonly method = "POST";
+    readonly path = "/scheduled-action-recover";
+    readonly handler = ScheduledActionRecoverRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ScheduledActionRecoverRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ScheduledActionRecoverRouteDefinitionImpl,
+    dependencies: []
 });

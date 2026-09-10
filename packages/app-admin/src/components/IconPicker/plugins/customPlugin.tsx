@@ -1,23 +1,15 @@
 import React from "react";
-import { useApolloClient } from "@apollo/react-hooks";
 import { observer } from "mobx-react-lite";
 import { Button } from "@webiny/admin-ui";
+import { useFeature } from "@webiny/app";
 import type { FileManagerFileItem } from "~/base/ui/FileManager.js";
 import { FileManager } from "~/base/ui/FileManager.js";
 import { IconPickerTab } from "../IconPickerTab.js";
 import { useIcon } from "../index.js";
 import { useIconPicker } from "../IconPickerPresenterProvider.js";
 import { IconPickerConfig } from "../config/index.js";
-import type { ListCustomIconsQueryResponse } from "./graphql.js";
-import { LIST_CUSTOM_ICONS } from "./graphql.js";
+import { CustomIconsPresenterFeature } from "~/presentation/iconPicker/customIcons/feature.js";
 import type { Icon } from "../types.js";
-
-/**
- * NOTE: Avoid using `@emotion/styled` in icon renderer components across all plugins.
- * This is crucial for serializing component rendering into a string value as plain HTML,
- * which is necessary for usage in the website application. Please use inline styles here
- * to ensure proper serialization.
- */
 
 const CustomIcon = () => {
     const { icon, size } = useIcon<Icon>();
@@ -102,37 +94,11 @@ const CustomIconTab = observer(() => {
 });
 
 export const CustomIconPlugin = () => {
-    const client = useApolloClient();
+    const { presenter } = useFeature(CustomIconsPresenterFeature);
 
     return (
         <IconPickerConfig>
-            <IconPickerConfig.IconPack
-                name="custom"
-                provider={async () => {
-                    const { data: response } = await client.query<ListCustomIconsQueryResponse>({
-                        query: LIST_CUSTOM_ICONS,
-                        variables: {
-                            limit: 10000
-                        }
-                    });
-
-                    if (!response) {
-                        throw new Error("Network error while listing custom icons.");
-                    }
-
-                    const { data, error } = response.fileManager.listFiles;
-
-                    if (!data) {
-                        throw new Error(error?.message || "Could not fetch custom icons.");
-                    }
-
-                    return data.map(customIcon => ({
-                        type: "custom",
-                        name: customIcon.name,
-                        value: customIcon.src
-                    }));
-                }}
-            />
+            <IconPickerConfig.IconPack name="custom" provider={() => presenter.load()} />
             <IconPickerConfig.IconType name={"custom"}>
                 <IconPickerConfig.IconType.Icon element={<CustomIcon />} />
                 <IconPickerConfig.IconType.Tab element={<CustomIconTab />} />

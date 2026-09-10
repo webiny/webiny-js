@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { MultiAutoComplete } from "@webiny/admin-ui";
-import { LIST_TEAMS } from "./graphql.js";
-import { useQuery } from "@apollo/react-hooks";
+import { useFeature } from "@webiny/app";
+import { observer } from "mobx-react-lite";
+import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
 type TeamsMultiAutocompleteProps = Omit<
     React.ComponentProps<typeof MultiAutoComplete>,
@@ -10,46 +11,41 @@ type TeamsMultiAutocompleteProps = Omit<
     onChange?: (values: string[]) => void;
 };
 
-export const TeamsMultiAutocomplete = ({ onChange, ...props }: TeamsMultiAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_TEAMS);
-    const rawOptions = loading || !data?.security?.teams?.data ? [] : data.security.teams.data;
+export const TeamsMultiAutocomplete = observer(
+    ({ onChange, ...props }: TeamsMultiAutocompleteProps) => {
+        const { presenter } = useFeature(TeamsAutocompletePresenterFeature);
 
-    const options = useMemo(
-        () => rawOptions.map((team: any) => ({ label: team.name, value: team.id })),
-        [rawOptions]
-    );
+        useEffect(() => {
+            presenter.init();
+        }, [presenter]);
 
-    const onValuesChange = useCallback((ids: string[]) => onChange?.(ids), [onChange]);
-    /**
-     * This is required because the Bind, which currently wraps this component passes "values" as "value" prop, not "values".
-     * "values" is added to safeguard for future changes. When we move to new forms, remove this part.
-     */
-    const values = useMemo(() => {
-        const selected = Array.isArray(props.values)
-            ? props.values
-            : Array.isArray(props.value)
-              ? props.value
-              : [];
+        const onValuesChange = useCallback((ids: string[]) => onChange?.(ids), [onChange]);
 
-        return selected
-            .map(s => {
+        const values = useMemo(() => {
+            const selected = Array.isArray(props.values)
+                ? props.values
+                : Array.isArray(props.value)
+                  ? props.value
+                  : [];
+
+            return selected.reduce<string[]>((acc, s) => {
                 if (typeof s === "string") {
-                    return s;
-                } else if (typeof s === "object") {
-                    return s?.id;
+                    acc.push(s);
+                } else if (typeof s === "object" && s?.id) {
+                    acc.push(s.id);
                 }
-                return null;
-            })
-            .filter((s): s is string => !!s);
-    }, [props.values, props.value]);
+                return acc;
+            }, []);
+        }, [props.values, props.value]);
 
-    return (
-        <MultiAutoComplete
-            uniqueValues
-            {...props}
-            options={options}
-            values={loading ? undefined : (values as string[] | undefined)}
-            onValuesChange={onValuesChange}
-        />
-    );
-};
+        return (
+            <MultiAutoComplete
+                uniqueValues
+                {...props}
+                options={presenter.vm.options}
+                values={presenter.vm.loading ? undefined : values}
+                onValuesChange={onValuesChange}
+            />
+        );
+    }
+);

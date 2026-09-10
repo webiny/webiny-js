@@ -14,6 +14,7 @@ export type WebsiteBuilderTheme = {
     colors: ColorStyle[];
     fontSizes?: FontSizes;
     typography: Typography;
+    allowCustomColors?: boolean;
 };
 type KnownKeys = "desktop" | "tablet" | "mobile";
 
@@ -102,4 +103,8 @@ export type WebsiteBuilderThemeInput = {
      * ]
      */
     typography?: Typography;
+    /**
+     * Allow custom color selection (ChromePicker) in the Lexical editor's font color toolbar action.
+     */
+    allowCustomColors?: boolean;
 };

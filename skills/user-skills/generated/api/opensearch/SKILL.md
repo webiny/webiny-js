@@ -1,8 +1,7 @@
 ---
 name: webiny-api-opensearch-catalog
-context: webiny-api
 description: >
-  api/opensearch — 4 abstractions.
+  api/opensearch — 10 abstractions.
 ---
 
 # api/opensearch
@@ -36,8 +35,44 @@ description: >
 
 ---
 
-**Name:** `OpenSearchContext`
-**Import:** `import { OpenSearchContext } from "webiny/api/opensearch"`
-**Source:** `@webiny/api-opensearch/features/OpenSearchContext/abstraction.ts`
+**Name:** `OpenSearchField`
+**Import:** `import { OpenSearchField } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchField/abstractions/OpenSearchField.ts`
+
+---
+
+**Name:** `OpenSearchFieldAll`
+**Import:** `import { OpenSearchFieldAll } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchField/abstractions/OpenSearchField.ts`
+
+---
+
+**Name:** `OpenSearchFieldFactory`
+**Import:** `import { OpenSearchFieldFactory } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchField/abstractions/OpenSearchFieldFactory.ts`
+
+---
+
+**Name:** `OpenSearchIndex`
+**Import:** `import { OpenSearchIndex } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchIndex/abstractions/OpenSearchIndex.ts`
+
+---
+
+**Name:** `OpenSearchIndexRegistry`
+**Import:** `import { OpenSearchIndexRegistry } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchIndex/abstractions/OpenSearchIndexRegistry.ts`
+
+---
+
+**Name:** `OpenSearchQueryBuilderOperator`
+**Import:** `import { OpenSearchQueryBuilderOperator } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperator.ts`
+
+---
+
+**Name:** `OpenSearchQueryBuilderOperatorRegistry`
+**Import:** `import { OpenSearchQueryBuilderOperatorRegistry } from "webiny/api/opensearch"`
+**Source:** `@webiny/api-opensearch/features/OpenSearchQueryBuilderOperator/abstractions/OpenSearchQueryBuilderOperatorRegistry.ts`
 
 ---

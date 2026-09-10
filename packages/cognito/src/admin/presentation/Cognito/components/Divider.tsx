@@ -1,7 +1,8 @@
 import React from "react";
 import { Separator, Text } from "@webiny/admin-ui";
+import { makeDecoratable } from "@webiny/app-admin";
 
-export const Divider = () => {
+export const Divider = makeDecoratable("CognitoDivider", () => {
     return (
         <div className={"relative my-lg"}>
             <div className={"absolute inset-0 flex items-center"}>
@@ -14,4 +15,4 @@ export const Divider = () => {
             </div>
         </div>
     );
-};
+});

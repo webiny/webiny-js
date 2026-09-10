@@ -1,6 +1,6 @@
 import { BaseFieldBuilder } from "~/features/modelBuilder/index.js";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
-import { FieldBuilderRegistry } from "../abstractions.js";
+import { FieldBuilderRegistry, type IModelSettings } from "../abstractions.js";
 import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
 
 /**
@@ -12,6 +12,7 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
         modelId?: string;
         name?: string;
         tags?: string[];
+        settings?: IModelSettings;
     } = {};
 
     protected isSingleEntry = false;
@@ -36,6 +37,11 @@ export abstract class BaseModelBuilder<TBuild = CmsModelPlugin> {
 
     tags(tags: string[]): this {
         this.config.tags = tags;
+        return this;
+    }
+
+    settings(settings: Partial<IModelSettings>): this {
+        this.config.settings = { ...(this.config.settings || {}), ...settings };
         return this;
     }
 

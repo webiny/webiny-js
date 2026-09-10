@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/api-graphql";
 import type {
     CmsContext,
     CmsEntry,
@@ -12,7 +12,7 @@ import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { getEntryDescription } from "~/utils/getEntryDescription.js";
 import { getEntryImage } from "~/utils/getEntryImage.js";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
-import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver } from "@webiny/api-graphql/types.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";

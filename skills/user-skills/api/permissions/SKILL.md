@@ -1,6 +1,5 @@
 ---
 name: webiny-api-permissions
-context: webiny-api
 description: >
   Schema-based permission system for API features. Use this skill when implementing
   authorization in use cases, defining permission schemas with createPermissionSchema,

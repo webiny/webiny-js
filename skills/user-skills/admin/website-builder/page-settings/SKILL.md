@@ -1,6 +1,5 @@
 ---
 name: webiny-page-settings-extensions
-context: webiny-extensions
 description: >
   Extending the Website Builder page settings with custom settings groups and modifiers.
   Use this skill when the developer wants to add a new tab/group to the page settings

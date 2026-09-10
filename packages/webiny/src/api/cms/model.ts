@@ -3,8 +3,12 @@ export { ModelBuilder } from "@webiny/api-headless-cms/features/modelBuilder/mod
 export { DataFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { LayoutFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
 export { FieldType } from "@webiny/api-headless-cms/features/modelBuilder/fields/abstractions.js";
+export { type IAssetFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/AssetFieldType.js";
 export type { IFieldRendererRegistry } from "@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.js";
-export type { IFieldBuilderRegistry } from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
+export type {
+    IFieldBuilderRegistry,
+    IModelSettings
+} from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
 export { LayoutBuilder } from "@webiny/api-headless-cms/features/modelBuilder/LayoutBuilder.js";
 export type { FieldTypeValidator } from "@webiny/api-headless-cms/features/modelBuilder/fields/fieldTypeValidator.js";
 export type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
@@ -31,3 +35,5 @@ export {
 } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 export { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
 export { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/abstractions.js";
+export { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
+export { CmsModelToJsonSchemaConverter } from "@webiny/api-headless-cms/utils/index.js";

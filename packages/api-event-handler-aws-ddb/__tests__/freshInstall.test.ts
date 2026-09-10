@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createAwsDdbApiHandler } from "~/createWebinyApiHandler.js";
 
 /**

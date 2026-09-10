@@ -33,7 +33,7 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
             }
 
             return {
-                label: fields.text().label("Label").required(),
+                label: fields.text().label("Label").required().autoFocus(),
                 fieldId: fieldIdBuilder,
                 list: fields
                     .boolean()

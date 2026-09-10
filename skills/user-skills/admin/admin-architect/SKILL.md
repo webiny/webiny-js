@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-architect
-context: webiny-extensions
 description: >
   Admin-side architecture patterns for Webiny extensions. Use this skill when building
   frontend features with headless features (UseCase/Repository/Gateway), presentation
@@ -16,6 +15,19 @@ description: >
 Admin extensions are React components that register headless features (business logic with no UI) and presentation features (MobX presenters, React hooks, components). Headless features live in `admin/features/` and follow **UseCase → Repository → Gateway** layering. Presentation features live in `admin/presentation/` and add a **Presenter** (MobX view model) layer on top. Both use `createFeature` and `createAbstraction` from `webiny/admin`.
 
 **All features — both headless and presentation — MUST provide a `resolve` function** in `createFeature`. This is how the `useFeature` hook accesses resolved instances from the DI container. Without `resolve`, the feature cannot be consumed from React.
+
+## Working Context
+
+This skill applies to both **extension developers** (working in `extensions/`) and **core developers** (working in `packages/`). The architecture patterns are identical — only imports differ.
+
+|                   | Extensions (`extensions/`)                                                              | Core (`packages/`)                                                                                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Imports**       | `webiny/admin`, `webiny/admin/ui`, `webiny/admin/cms/entry/editor`                      | `@webiny/app`, `@webiny/admin-ui`, `@webiny/app-headless-cms/...`                                                                                                                                     |
+| **Catalog paths** | Use the `Import:` path                                                                  | Use the `Source:` path                                                                                                                                                                                |
+| **MobX wrapper**  | `createReactiveComponent` from `webiny/admin`                                           | `createReactiveComponent` from `@webiny/app-admin` (never import `observer` from `mobx-react-lite` directly — the only exception is `@webiny/app-admin` itself, which is the source of the re-export) |
+| **Entry point**   | React component as `export default` in a file targeted by `<Admin.Extension src={...}>` | React component registered by the package initializer                                                                                                                                                 |
+
+Detect which context you're in by checking the file path: `extensions/` → extension mode, `packages/` → core mode.
 
 ## Admin Directory Structure
 
@@ -388,11 +400,11 @@ export const NextjsConfigRepository = RepositoryAbstraction.createImplementation
 
 ## Gateway Implementation (GraphQL)
 
-Gateways handle external I/O. Use `GraphQLClient` for GraphQL calls:
+Gateways handle external I/O. Use `MainGraphQLClient` for GraphQL calls:
 
 ```ts
 import { NextjsConfigGateway as GatewayAbstraction } from "./abstractions.js";
-import { GraphQLClient } from "@webiny/app/features/graphqlClient";
+import { MainGraphQLClient } from "webiny/admin";
 
 const GET_NEXTJS_CONFIG = /* GraphQL */ `
   query GetNextjsConfig {
@@ -418,7 +430,7 @@ type GetNextjsConfigResponse = {
 };
 
 class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
-  constructor(private client: GraphQLClient.Interface) {}
+  constructor(private client: MainGraphQLClient.Interface) {}
 
   async getConfig(): Promise<string> {
     const response = await this.client.execute<GetNextjsConfigResponse>({
@@ -436,7 +448,7 @@ class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
 
 export const NextjsConfigGateway = GatewayAbstraction.createImplementation({
   implementation: NextjsGraphQLGateway,
-  dependencies: [GraphQLClient]
+  dependencies: [MainGraphQLClient]
 });
 ```
 
@@ -445,7 +457,7 @@ export const NextjsConfigGateway = GatewayAbstraction.createImplementation({
 - Define the GraphQL query as a string constant with `/* GraphQL */` comment for syntax highlighting
 - Type the response shape explicitly
 - Handle the `data`/`error` envelope pattern
-- Inject `GraphQLClient` from `@webiny/app/features/graphqlClient`
+- Inject `MainGraphQLClient` from `webiny/admin` — it's preconfigured for the main GQL endpoint
 
 ## Composite Features (Aggregating Child Features)
 
@@ -599,6 +611,22 @@ export const ResponseStatus = ({ presenter }: Props) => {
 3. **React is a dumb view layer** — components read `presenter.vm` and call presenter methods. No business logic, no data fetching, no state derivation in components.
 
 4. **Pass presenter to child components** — child components receive the full `presenter`, not split `vm` + `actions` props. The child reads what it needs from `presenter.vm`.
+
+5. **Use `createReactiveComponent` for MobX-observed components** — never import `observer` from `mobx-react-lite` directly. Use `createReactiveComponent` from `webiny/admin` (extensions) or from `@webiny/app-admin` (core packages). The **only** exception is `@webiny/app-admin` itself, which is the source of the re-export.
+
+**Bad:**
+
+```tsx
+import { observer } from "mobx-react-lite";
+export const MyComponent = observer(({ presenter }: Props) => { ... });
+```
+
+**Good:**
+
+```tsx
+import { createReactiveComponent } from "webiny/admin";
+export const MyComponent = createReactiveComponent(({ presenter }: Props) => { ... });
+```
 
 ## Key Rules
 

@@ -1,4 +1,4 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 
 class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
     async execute(
@@ -22,6 +22,7 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                     fields: [String!]!
                     preview: Boolean
                 ): CmsListResponse!
+                getModel(modelId: ID!): CmsModelResponse!
             }
 
             extend type Query {

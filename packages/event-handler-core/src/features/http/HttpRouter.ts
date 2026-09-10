@@ -1,5 +1,17 @@
-import { HttpRouter, HttpRoute, RouteNotFoundError } from "~/features/http/abstractions.js";
-import type { IHttpRoute, IHttpRequest, IHttpResponse } from "~/features/http/abstractions.js";
+import type { Container } from "@webiny/di";
+import {
+    HttpRouter,
+    HttpRouteDefinition,
+    RouteNotFoundError
+} from "~/features/http/abstractions.js";
+import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
+import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
+import { RequestContainer } from "~/features/events/RequestContainer.js";
+import type {
+    IHttpRouteDefinition,
+    IHttpRequest,
+    IHttpResponse
+} from "~/features/http/abstractions.js";
 
 function matchPath(pattern: string, path: string): Record<string, string> | null {
     if (pattern.endsWith("/*")) {
@@ -31,36 +43,60 @@ function matchPath(pattern: string, path: string): Record<string, string> | null
 }
 
 class HttpRouterImplClass implements HttpRouter.Interface {
-    // TODO: revisit eager route construction.
-    // Injecting [HttpRoute, { multiple: true }] constructs EVERY registered route on each request
-    // just to path-match, so a route's constructor runs even when its path doesn't match. Any route
-    // whose constructor pulls a request-time-registered token (e.g. CMS use-cases needing
-    // EntryFromStorageTransform / a per-request CmsModel) then throws "No registration found" before
-    // any handler runs. Current routes work around this by resolving such deps lazily inside handle()
-    // (AssetDeliveryRoute, WebsiteBuilderRedirectsRoute) or by pre-registering them before routing.
-    // The systemic fix is to construct only the matched route lazily (inject route factories/thunks,
-    // or resolve HttpRoute by matched path on demand) so this workaround isn't required per route.
-    constructor(private routes: IHttpRoute[]) {}
+    /**
+     * Takes the container so it can build the matched route — and ONLY the matched route.
+     *
+     * A definition declares no dependencies, so resolving all of them to match a path is a handful
+     * of field assignments. Routes used to be resolved as instances just to read their `path`,
+     * which built every one of their dependency graphs on every request: a static-asset request
+     * constructed the whole GraphQL engine, every contextual schema and the AI provider before
+     * discovering it wanted none of them.
+     *
+     * `resolveImplementation` asks for exactly the matched route's class: it reads that route's
+     * dependencies from its own metadata, resolves them here, and applies decorators registered
+     * for `HttpRouteHandler`, so a route stays decoratable.
+     */
+    constructor(private container: Container) {}
 
     async route(request: IHttpRequest): Promise<IHttpResponse> {
-        for (const route of this.routes) {
-            const params = this.match(route, request);
-            if (params !== null) {
-                return route.handle({ ...request, pathParameters: params });
+        for (const definition of this.container.resolveAll(HttpRouteDefinition)) {
+            const params = this.match(definition, request);
+            if (params === null) {
+                continue;
             }
+
+            const route = this.container.resolveImplementation(definition.handler);
+            const response = new HttpResponseBuilder();
+            const result = await route.handle(
+                {
+                    ...request,
+                    pathParameters: params,
+                    // Lets a route — or anything wrapping one — know which route is running.
+                    route: {
+                        name: definition.name,
+                        method: definition.method,
+                        path: definition.path
+                    }
+                },
+                response
+            );
+            return toHttpResponse(result, response);
         }
         throw new RouteNotFoundError(request.method, request.path);
     }
 
-    private match(route: IHttpRoute, request: IHttpRequest): Record<string, string> | null {
-        if (route.method !== request.method) {
+    private match(
+        definition: IHttpRouteDefinition,
+        request: IHttpRequest
+    ): Record<string, string> | null {
+        if (definition.method !== request.method) {
             return null;
         }
-        return matchPath(route.path, request.path);
+        return matchPath(definition.path, request.path);
     }
 }
 
 export const HttpRouterImpl = HttpRouter.createImplementation({
     implementation: HttpRouterImplClass,
-    dependencies: [[HttpRoute, { multiple: true }]]
+    dependencies: [RequestContainer]
 });

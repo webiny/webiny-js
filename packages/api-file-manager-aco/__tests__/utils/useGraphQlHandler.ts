@@ -2,10 +2,10 @@ import { getIntrospectionQuery } from "graphql";
 import { createTestHttpHandler } from "@webiny/event-handler-core/features/testing";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
-import { GraphQLEngineFeature } from "@webiny/handler-graphql";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { GraphQLEngineFeature } from "@webiny/api-graphql";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
@@ -17,7 +17,6 @@ import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { AuthTriggerHandler } from "@webiny/api-core-testing";
 import { RootTenantInitializer } from "@webiny/api-core-testing";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
-import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
@@ -49,7 +48,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const apiAcoStorage = getStorageOps<any>("aco");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+    const cmsStorage = getStorageOps("cms");
 
     const resolvedIdentity = identity ?? defaultIdentity;
     const resolvedPermissions = (permissions ?? [{ name: "*" }]) as SecurityPermission[];
@@ -63,8 +62,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(
+        child: async container => {
+            const wcpLicense = await WcpLicenseLoader.load(
                 params.testProjectLicense ?? createTestWcpLicense()
             );
 

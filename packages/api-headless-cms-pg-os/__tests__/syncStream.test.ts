@@ -24,7 +24,7 @@ describe("PG-to-OpenSearch sync stream", () => {
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await setup.syncWriter.writeLatest({ model, entry, storageEntry: entry });
+        await setup.writeLatest.execute({ model, entry, storageEntry: entry });
 
         expect(setup.capturedEvents).toHaveLength(1);
         expect(setup.capturedEvents[0].type).toBe("INSERT");
@@ -49,13 +49,13 @@ describe("PG-to-OpenSearch sync stream", () => {
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await setup.syncWriter.writeLatest({ model, entry, storageEntry: entry });
+        await setup.writeLatest.execute({ model, entry, storageEntry: entry });
 
         await syncEventHandler.process(setup.capturedEvents);
         setup.capturedEvents.length = 0;
 
         const updatedEntry = { ...entry, values: { title: "Updated Title" } };
-        await setup.syncWriter.writeLatest({
+        await setup.writeLatest.execute({
             model,
             entry: updatedEntry,
             storageEntry: updatedEntry
@@ -79,14 +79,14 @@ describe("PG-to-OpenSearch sync stream", () => {
         const model = createModel() as any;
         const entry = createEntry() as any;
 
-        await setup.syncWriter.writeLatest({ model, entry, storageEntry: entry });
+        await setup.writeLatest.execute({ model, entry, storageEntry: entry });
 
         const indexName = setup.capturedEvents[0].index;
 
         await syncEventHandler.process(setup.capturedEvents);
         setup.capturedEvents.length = 0;
 
-        await setup.syncWriter.removeLatest({ model, entryId: entry.entryId });
+        await setup.removeLatest.execute({ model, entryId: entry.entryId });
 
         expect(setup.capturedEvents).toHaveLength(1);
         expect(setup.capturedEvents[0].type).toBe("REMOVE");
@@ -112,7 +112,7 @@ describe("PG-to-OpenSearch sync stream", () => {
                 id: `entry${i}#0001`,
                 entryId: `entry${i}`
             }) as any;
-            await setup.syncWriter.writeLatest({ model, entry, storageEntry: entry });
+            await setup.writeLatest.execute({ model, entry, storageEntry: entry });
         }
 
         expect(setup.capturedEvents).toHaveLength(5);
@@ -134,7 +134,7 @@ describe("PG-to-OpenSearch sync stream", () => {
         const model = createModel() as any;
         const entry = createEntry({ status: "published" }) as any;
 
-        await setup.syncWriter.writeEntry({ model, entry, storageEntry: entry });
+        await setup.writeEntry.execute({ model, entry, storageEntry: entry });
 
         expect(setup.capturedEvents).toHaveLength(2);
         const ids = setup.capturedEvents.map(e => e.id).sort();
@@ -167,7 +167,7 @@ describe("PG-to-OpenSearch sync stream", () => {
                 id: `entry${i}#0001`,
                 entryId: `entry${i}`
             }) as any;
-            await setup.syncWriter.writeLatest({ model, entry, storageEntry: entry });
+            await setup.writeLatest.execute({ model, entry, storageEntry: entry });
         }
 
         setup.capturedEvents.length = 0;

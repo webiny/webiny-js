@@ -1,4 +1,4 @@
-export type StorageOps = "sqlite";
+export type StorageOps = "sqlite" | "postgres";
 export type AiAgent = string | "other";
 
 export interface ServerProjectParams {

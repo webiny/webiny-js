@@ -99,3 +99,4 @@ export { CreateUnpublishEntryDataFactory } from "@webiny/api-headless-cms/featur
 export { UpdateEntryDataFactory } from "@webiny/api-headless-cms/features/contentEntry/entryDataFactories/UpdateEntryDataFactory/abstractions.js";
 export { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 export { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
+export { EntriesBulkAction } from "@webiny/api-headless-cms-bulk-actions/features/EntriesBulkAction/abstractions.js";

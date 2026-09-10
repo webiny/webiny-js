@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
 import { GetLatestEntriesByIdsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetLatestEntriesByIdsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
@@ -40,8 +39,7 @@ class GetLatestEntriesByIdsUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const GetLatestEntriesByIdsUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const GetLatestEntriesByIdsUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetLatestEntriesByIdsUseCaseImpl,
     dependencies: [GetLatestEntriesByIdsRepository, AccessControl]
 });

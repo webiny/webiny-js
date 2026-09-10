@@ -3,6 +3,8 @@ import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@webiny/lexical-nodes";
 import { getNodeFromSelection } from "~/hooks/useCurrentElement.js";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
+import { ReactComponent as LinkIcon } from "@webiny/icons/link.svg";
+import cn from "clsx";
 
 export const LinkAction = () => {
     const { editor } = useRichTextEditor();
@@ -25,10 +27,10 @@ export const LinkAction = () => {
     return (
         <button
             onClick={insertLink}
-            className={"popup-item spaced " + (isLink ? "active" : "")}
+            className={cn("popup-item", "spaced", { active: isLink })}
             aria-label="Insert link"
         >
-            <i className="format link" />
+            <LinkIcon className="format" />
         </button>
     );
 };

@@ -1,5 +1,3 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { Worker } from "node:worker_threads";
 import type { WorkerToParentMessage } from "~/worker/TaskOrchestratorMessage.js";
 import { TaskService } from "@webiny/background-tasks/api/domain/TaskService.js";
@@ -43,19 +41,12 @@ class WorkerServiceImpl implements TaskService.Interface {
             return null;
         }
 
-        // Resolve the worker entry from this module's own dist directory via `path.join`.
-        // We deliberately AVOID `new URL("../worker/workerEntry.js", import.meta.url)`: the app
-        // bundler rewrites that expression to a publicPath-based asset URL
-        // ("/static/assets/workerEntry.<hash>.js") that `new Worker()` can't load as a filesystem
-        // path. `path.join` off `import.meta.url` (which resolves to this file inside dist) is left
-        // untouched by the bundler and points at the real, node-resolvable dist worker.
-        //
-        // NOTE: this works in `webiny watch` (dist resolves via the monorepo). Shipping a standalone
-        // server build requires this package to be externalized so the worker file travels in
-        // node_modules — tracked in https://github.com/webiny/webiny-js/issues/5429.
-        const currentDir = path.dirname(fileURLToPath(import.meta.url));
-        const workerPath = path.join(currentDir, "..", "worker", "workerEntry.js");
-        const worker = new Worker(workerPath);
+        // Resolved relative to this module (import.meta.url), not the process cwd, so it works no
+        // matter where the server is launched. The app bundler recognizes this exact shape and emits
+        // the worker as its own chunk into build/ (the server build sets assetPrefix "auto" so the
+        // chunk URL resolves relative to the running handler — see createRsbuildConfig). Un-bundled
+        // (dev), import.meta.url is the real dist file and this resolves to dist/worker/workerEntry.js.
+        const worker = new Worker(new URL("../worker/workerEntry.js", import.meta.url));
 
         const handle: WorkerHandle = {
             worker,

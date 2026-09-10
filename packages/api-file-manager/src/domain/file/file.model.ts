@@ -1,17 +1,19 @@
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 
 export const FILE_MODEL_ID = process.env.WEBINY_API_LEGACY_MODELS ? "fmFile" : "wbyFmFile";
 
 class FilePrivateModelImpl implements ModelFactory.Interface {
-    public constructor(private wcp: WcpContext.Interface) {}
+    public constructor(private featureFlags: FeatureFlags.Interface) {}
 
     public async execute(builder: ModelFactory.Builder) {
         const model = builder.private({
             modelId: FILE_MODEL_ID,
             name: "FmFile"
         });
-        const privateFiles = this.wcp.canUsePrivateFiles();
+        const privateFiles = this.featureFlags
+            .get()
+            .isEnabled("advancedAccessControlLayer.privateFiles");
 
         model.fields(fields => ({
             name: fields.text().label("Name").required("Value is required."),
@@ -30,7 +32,11 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
                             width: fields.number().label("Width"),
                             height: fields.number().label("Height"),
                             format: fields.text().label("Format"),
-                            orientation: fields.number().label("Orientation")
+                            orientation: fields.number().label("Orientation"),
+                            crop: fields.json().label("Crop"),
+                            focalPoint: fields.json().label("Focal point"),
+                            alt: fields.text().label("Alt text"),
+                            caption: fields.text().label("Caption")
                         })),
                     // Store complete raw EXIF as JSON
                     exif: fields.searchableJson().label("EXIF Data"),
@@ -78,5 +84,5 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
 
 export const FileModel = ModelFactory.createImplementation({
     implementation: FilePrivateModelImpl,
-    dependencies: [WcpContext]
+    dependencies: [FeatureFlags]
 });

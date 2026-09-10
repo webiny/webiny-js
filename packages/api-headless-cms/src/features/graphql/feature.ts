@@ -12,6 +12,7 @@ import { RefFieldToGraphQL } from "./fields/base/RefToGraphQL.js";
 import { SearchableJsonFieldToGraphQL } from "./fields/base/SearchableJsonToGraphQL.js";
 import { TextFieldToGraphQL } from "./fields/base/TextToGraphQL.js";
 import { RichTextFieldToGraphQL } from "./fields/base/RichTextToGraphQL.js";
+import { AssetFieldToGraphQL } from "./fields/base/AssetToGraphQL.js";
 
 export const GraphQLFeature = createFeature({
     name: "Cms/GraphQLFeature",
@@ -28,6 +29,7 @@ export const GraphQLFeature = createFeature({
         container.register(RichTextFieldToGraphQL);
         container.register(SearchableJsonFieldToGraphQL);
         container.register(TextFieldToGraphQL);
+        container.register(AssetFieldToGraphQL);
 
         container.register(CmsModelFieldToGraphQLRegistry).inSingletonScope();
     }

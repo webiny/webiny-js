@@ -14,6 +14,11 @@ const { Menu, Route } = AdminConfig;
 
 const beta = <Menu.Link.Badge text="BETA" />;
 
+// Shared leading breadcrumb for all webhook routes.
+const WebhooksBreadcrumbsRoot = () => (
+    <AdminConfig.Breadcrumb name="webhooks" label="Webhooks" to={{ route: Routes.List }} />
+);
+
 export const WebhookRoutes = () => {
     const { getLink } = useRouter();
 
@@ -24,6 +29,7 @@ export const WebhookRoutes = () => {
                     route={Routes.List}
                     element={
                         <AdminLayout title="Webhooks">
+                            <WebhooksBreadcrumbsRoot />
                             <WebhookListView />
                         </AdminLayout>
                     }
@@ -32,6 +38,11 @@ export const WebhookRoutes = () => {
                     route={Routes.Deliveries}
                     element={
                         <AdminLayout title="Delivery Log">
+                            <WebhooksBreadcrumbsRoot />
+                            <AdminConfig.Breadcrumb
+                                name="webhooks.deliveries"
+                                label="Delivery Log"
+                            />
                             <WebhookDeliveriesPage />
                         </AdminLayout>
                     }
@@ -40,6 +51,8 @@ export const WebhookRoutes = () => {
                     route={Routes.Settings}
                     element={
                         <AdminLayout title="Webhook Settings">
+                            <WebhooksBreadcrumbsRoot />
+                            <AdminConfig.Breadcrumb name="webhooks.settings" label="Settings" />
                             <WebhookSettingsView />
                         </AdminLayout>
                     }
@@ -48,6 +61,8 @@ export const WebhookRoutes = () => {
                     route={Routes.Form}
                     element={
                         <AdminLayout title="Webhooks">
+                            <WebhooksBreadcrumbsRoot />
+                            <AdminConfig.Breadcrumb name="webhooks.form" label="Webhook" />
                             <WebhookFormView />
                         </AdminLayout>
                     }

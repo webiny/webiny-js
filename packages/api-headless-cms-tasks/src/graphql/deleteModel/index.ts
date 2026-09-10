@@ -1,17 +1,14 @@
 import zod from "zod";
-import type { RequestContextInitializer } from "@webiny/event-handler-core";
-import {
-    CmsGraphQLSchemaPlugin,
-    CmsGraphQLSchemaFactory,
-    isHeadlessCmsReady
-} from "@webiny/api-headless-cms";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
 import type { HcmsTasksContext } from "~/types.js";
-import { createResolverDecorator } from "@webiny/handler-graphql";
-import { ErrorResponse } from "@webiny/handler-graphql";
-import { resolve } from "@webiny/handler-graphql";
-import { Response } from "@webiny/handler-graphql";
+import { createResolverDecorator } from "@webiny/api-graphql";
+import { ErrorResponse } from "@webiny/api-graphql";
+import { resolve } from "@webiny/api-graphql";
+import { Response } from "@webiny/api-graphql";
 import { createZodError } from "@webiny/utils";
 import type { IDeleteCmsModelTask } from "~/features/DeleteModelTask/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
@@ -47,14 +44,26 @@ const getValidation = zod
     })
     .readonly();
 
-export const createDeleteModelGraphQl = <
-    T extends HcmsTasksContext = HcmsTasksContext
->(): RequestContextInitializer.Interface => ({
-    async init(inputContext: T) {
-        const ready = await isHeadlessCmsReady(inputContext);
+/**
+ * Contributes the fullyDeleteModel schema. Previously a `RequestContextInitializer` that built the
+ * plugin and then registered a `CmsGraphQLSchemaFactory` holding it; since `execute()` is already
+ * awaited by `generateSchema`, the readiness check and the plugin construction can simply live
+ * there instead.
+ */
+class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interface {
+    constructor(
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly headlessCms: HeadlessCms.Interface,
+        private readonly logger: Logger.Interface
+    ) {}
 
-        if (!ready || !inputContext.container.resolve(HeadlessCms).MANAGE) {
-            return;
+    async execute() {
+        type T = HcmsTasksContext;
+
+        // On a fresh project there is no tenant until installation completes; and the delete-model
+        // schema only belongs on the MANAGE endpoint. (`isHeadlessCmsReady` only checks the tenant.)
+        if (!this.tenantContext.getTenant() || !this.headlessCms.MANAGE) {
+            return [];
         }
 
         const plugin = new CmsGraphQLSchemaPlugin<T>({
@@ -114,7 +123,10 @@ export const createDeleteModelGraphQl = <
                                 .resolve(DeleteModelOperations)
                                 .isModelBeingDeleted(model.modelId);
                         } catch (ex) {
-                            console.error(ex);
+                            this.logger.error(
+                                { error: ex, modelId: model.modelId },
+                                "Failed to read the delete-model status."
+                            );
                         }
                         return true;
                     }
@@ -201,8 +213,11 @@ export const createDeleteModelGraphQl = <
             }
         });
         plugin.name = "headless-cms.graphql.fullyDeleteModel";
-        inputContext.container.registerInstance(CmsGraphQLSchemaFactory, {
-            execute: () => [plugin]
-        });
+        return [plugin];
     }
+}
+
+export const DeleteModelGraphQLSchemaFactoryImpl = CmsGraphQLSchemaFactory.createImplementation({
+    implementation: DeleteModelGraphQLSchemaFactory,
+    dependencies: [TenantContext, HeadlessCms, Logger]
 });

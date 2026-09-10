@@ -11,11 +11,6 @@ export default {
             "@emotion/react",
             "@svgr/webpack",
             "@types/react",
-            //"@webiny/cli",
-            "apollo-cache",
-            "apollo-client",
-            "apollo-link",
-            "apollo-utilities",
             "graphql",
             "react-dom"
         ],

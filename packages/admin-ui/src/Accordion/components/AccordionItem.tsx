@@ -19,6 +19,7 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     interactive?: boolean;
     locked?: boolean;
     draggable?: boolean;
+    dragHandleRef?: (element: HTMLElement | null) => void;
     actions?: React.ReactNode;
     children: React.ReactNode;
 }

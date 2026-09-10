@@ -1,6 +1,7 @@
 import type { DragEventHandler } from "react";
 import React, { useMemo } from "react";
 import { useContainer } from "@webiny/app";
+import { useModelEditor } from "~/admin/hooks/index.js";
 import Draggable from "../Draggable.js";
 import { IconButton } from "@webiny/admin-ui";
 import { GridItem } from "./GridItem.js";
@@ -65,10 +66,23 @@ interface FieldsSidebarProps {
 
 export const FieldsSidebar = ({ onFieldDragStart, onCollapse }: FieldsSidebarProps) => {
     const container = useContainer();
+    const { data: model } = useModelEditor();
 
     const fieldTypes = useMemo(() => {
-        return container.resolveAll(CmsFieldType).filter(ft => !ft.hideInAdmin);
-    }, [container]);
+        const existingTypes = new Set((model?.fields ?? []).map(f => f.type));
+        return container.resolveAll(CmsFieldType).filter(ft => {
+            if (ft.hideInAdmin) {
+                return false;
+            }
+            // Deprecated field types (e.g. "file", superseded by "asset") are only
+            // offered when the model already contains a field of that type, so
+            // existing models stay editable while new fields use the replacement.
+            if (ft.deprecated) {
+                return existingTypes.has(ft.type);
+            }
+            return true;
+        });
+    }, [container, model?.fields]);
 
     const layoutFieldTypes = useMemo(() => {
         return container.resolveAll(CmsLayoutFieldType);

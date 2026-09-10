@@ -10,6 +10,14 @@ import type { IAiSdk } from "./abstractions.js";
 import type { IAiConnection } from "./abstractions.js";
 import type { IAiConnectionInline } from "./abstractions.js";
 import type { LanguageModel } from "ai";
+import { mdbid } from "@webiny/utils/mdbid.js";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
+import {
+    AiBeforeGenerateTextEvent,
+    AiAfterGenerateTextEvent,
+    AiGenerateTextErrorEvent,
+    AiBeforeStreamTextEvent
+} from "./events.js";
 
 function toAiModel(factory: IAiSdkFactory, modelId: string, modelName: string): AiModel {
     return {
@@ -26,22 +34,49 @@ class AiImpl implements AiAbstraction.Interface {
 
     constructor(
         private readonly sdkFactories: AiSdkFactory.Interface[],
-        private readonly connectionFactories: AiConnectionFactory.Interface[]
+        private readonly connectionFactories: AiConnectionFactory.Interface[],
+        private readonly eventPublisher: EventPublisher.Interface
     ) {}
 
-    generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
+    async generateText(params: AiGenerateTextParams): ReturnType<typeof generateText> {
         const { model, connection, ...rest } = params;
-        return this.resolveLanguageModel(model, connection).then(resolvedModel => {
-            // Cast required: spreading the discriminated Prompt union loses its narrowing.
-            return generateText({ model: resolvedModel, ...rest } as Parameters<
+        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        const requestId = mdbid();
+
+        await this.eventPublisher.publish(new AiBeforeGenerateTextEvent({ requestId, params }));
+
+        const start = performance.now();
+
+        try {
+            const result = await generateText({ model: resolvedModel, ...rest } as Parameters<
                 typeof generateText
             >[0]);
-        });
+
+            const duration = performance.now() - start;
+
+            await this.eventPublisher.publish(
+                new AiAfterGenerateTextEvent({ requestId, params, result, duration })
+            );
+
+            return result;
+        } catch (err) {
+            const duration = performance.now() - start;
+            const error = err instanceof Error ? err : new Error(String(err));
+
+            await this.eventPublisher.publish(
+                new AiGenerateTextErrorEvent({ requestId, params, error, duration })
+            );
+
+            throw err;
+        }
     }
 
     async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
         const { model, connection, ...rest } = params;
         const resolvedModel = await this.resolveLanguageModel(model, connection);
+
+        await this.eventPublisher.publish(new AiBeforeStreamTextEvent({ params }));
+
         // Cast required: spreading the discriminated Prompt union loses its narrowing.
         return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
     }
@@ -163,6 +198,7 @@ export const Ai = createImplementation({
     implementation: AiImpl,
     dependencies: [
         [AiSdkFactory, { multiple: true }],
-        [AiConnectionFactory, { multiple: true }]
+        [AiConnectionFactory, { multiple: true }],
+        EventPublisher
     ]
 });

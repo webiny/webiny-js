@@ -1,4 +1,4 @@
-import { WcpContext } from "~/features/wcp/WcpContext/index.js";
+import { FeatureFlags } from "~/features/featureFlags/abstractions.js";
 import type { SecurityRole } from "~/types/security.js";
 import { Identity } from "~/features/security/IdentityContext/index.js";
 import { PermissionsProcessor } from "./abstractions.js";
@@ -12,7 +12,7 @@ export type TeamId = string | undefined;
 
 class GetPermissionsFromGroupsAndTeamsImpl implements PermissionsProcessor.Interface {
     constructor(
-        private wcpContext: WcpContext.Interface,
+        private featureFlags: FeatureFlags.Interface,
         private usersRepository: AdminUsersRepository.Interface,
         private rolesRepository: RolesRepository.Interface,
         private teamsRepository: TeamsRepository.Interface
@@ -47,7 +47,7 @@ class GetPermissionsFromGroupsAndTeamsImpl implements PermissionsProcessor.Inter
             loadedRoles.push(...loadedRolesByIds);
         }
 
-        if (this.wcpContext.canUseTeams()) {
+        if (this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams")) {
             teamIds.push(...(user.teams ?? []));
 
             const filteredTeamIds = teamIds.filter(Boolean) as string[];
@@ -90,5 +90,5 @@ class GetPermissionsFromGroupsAndTeamsImpl implements PermissionsProcessor.Inter
 
 export const GetPermissionsFromIdentity = PermissionsProcessor.createImplementation({
     implementation: GetPermissionsFromGroupsAndTeamsImpl,
-    dependencies: [WcpContext, AdminUsersRepository, RolesRepository, TeamsRepository]
+    dependencies: [FeatureFlags, AdminUsersRepository, RolesRepository, TeamsRepository]
 });

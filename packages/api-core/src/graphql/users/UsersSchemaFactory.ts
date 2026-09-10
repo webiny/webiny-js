@@ -1,12 +1,12 @@
-import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.js";
 import {
     ErrorResponse,
     ListErrorResponse,
     ListResponse,
     NotFoundResponse,
     Response
-} from "@webiny/handler-graphql/responses.js";
-import type { IGraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSchemaBuilder/abstractions.js";
+} from "@webiny/api-graphql/responses.js";
+import type { IGraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import type { AdminUser } from "~/types/users.js";
 import { GetUserUseCase } from "~/features/users/GetUser/index.js";
 import NotAuthorizedResponse from "~/graphql/security/NotAuthorizedResponse.js";

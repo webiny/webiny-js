@@ -7,6 +7,7 @@ export interface CmsGenerateEntryContentParams {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 export interface GenerateEntryContentTelemetry {
@@ -18,15 +19,21 @@ export interface GenerateEntryContentTelemetry {
     imageTagsInPrompt: string[];
 }
 
-export interface GenerateEntryContentResult {
-    output: string;
+export interface GenerateEntryContentResult<TValues = Record<string, any>> {
+    /**
+     * The generated entry values, keyed by fieldId. Callers that consume the result
+     * directly (e.g. a bulk action) can read fields straight off this object; transport
+     * edges (the background task / websocket stream) serialize it themselves. Pass a type
+     * argument to `execute` to shape this (e.g. `execute<{ aiSummary?: string }>`).
+     */
+    values: TValues;
     telemetry: GenerateEntryContentTelemetry;
 }
 
 export interface ICmsGenerateEntryContentUseCase {
-    execute(
+    execute<TValues = Record<string, any>>(
         params: CmsGenerateEntryContentParams
-    ): Promise<Result<GenerateEntryContentResult, Error>>;
+    ): Promise<Result<GenerateEntryContentResult<TValues>, Error>>;
 }
 
 export const CmsGenerateEntryContentUseCase = createAbstraction<ICmsGenerateEntryContentUseCase>(
