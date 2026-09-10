@@ -88,6 +88,7 @@ export const AiImageEnrichmentStreamRoute = HttpRouteHandler.createImplementatio
 });
 
 class AiImageEnrichmentStreamRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "ai-image-enrichment-stream";
     readonly method = "POST";
     readonly path = "/stream/fm/files/:fileId/enrich";
     readonly handler = AiImageEnrichmentStreamRoute;

@@ -75,6 +75,7 @@ export const ScheduledActionRunRoute = HttpRouteHandler.createImplementation({
 });
 
 class ScheduledActionRunRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "scheduled-action-run";
     readonly method = "POST";
     readonly path = "/scheduled-action-run";
     readonly handler = ScheduledActionRunRoute;

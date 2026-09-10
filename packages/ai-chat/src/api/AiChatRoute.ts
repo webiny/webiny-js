@@ -53,6 +53,7 @@ export const AiChatRoute = HttpRouteHandler.createImplementation({
 });
 
 class AiChatRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "ai-chat";
     readonly method = "POST";
     readonly path = "/ai/chat";
     readonly handler = AiChatRoute;

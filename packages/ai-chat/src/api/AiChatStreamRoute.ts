@@ -50,6 +50,7 @@ export const AiChatStreamRoute = HttpRouteHandler.createImplementation({
 });
 
 class AiChatStreamRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "ai-chat-stream";
     readonly method = "POST";
     /*
      * Under `/stream/*` because that prefix is what reaches a transport able to stream. On AWS,

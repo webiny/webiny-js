@@ -100,6 +100,7 @@ export const ScheduledActionRecoverRoute = HttpRouteHandler.createImplementation
 });
 
 class ScheduledActionRecoverRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "scheduled-action-recover";
     readonly method = "POST";
     readonly path = "/scheduled-action-recover";
     readonly handler = ScheduledActionRecoverRoute;
