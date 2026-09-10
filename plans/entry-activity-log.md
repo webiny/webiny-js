@@ -487,6 +487,12 @@ them, and the filter carries a boxed comment pointing at it.
 
 ## Checkpoint 5 — read API
 
+**The authorisation proposal is `plans/entry-activity-log-read-authorisation.md`**, delivered ahead
+of any implementation as the brief requires. It covers the two permissions and how they compose,
+where they live and how they are named, the tier question, where a field filter would attach, the
+delivery API, and what changed paths leak on their own — plus what would be built if approved
+unchanged, and the two questions it does not settle.
+
 A GraphQL query for one target: newest first, cursor paginated, filterable by revision and actor.
 Takes target type and target id, not entry id.
 
