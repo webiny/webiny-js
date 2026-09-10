@@ -185,4 +185,71 @@ describe("WebsocketsConnectionRegistry (SQL)", () => {
             expect(rows[0].connectionId).toBe("conn-default");
         });
     });
+
+    describe("timestamp columns", () => {
+        /* Builds the table in its pre-migration shape, with `datetime` timestamp columns. */
+        const createLegacyTable = async () => {
+            await knex.schema.createTable("WebsocketsConnections", table => {
+                table.text("connectionId").notNullable().primary();
+                table.text("identityId").notNullable();
+                table.text("identityDisplayName").notNullable();
+                table.text("identityType").notNullable();
+                table.text("tenant").notNullable();
+                table.text("endpoint").notNullable();
+                table.datetime("connectedOn").notNullable();
+                table.datetime("lastSeen").nullable();
+            });
+        };
+
+        it("should create the timestamp columns as text", async () => {
+            await registry.register(makeRegisterParams("conn-1"));
+
+            const columns = await knex("WebsocketsConnections").columnInfo();
+            expect(columns.connectedOn.type).toBe("text");
+            expect(columns.lastSeen.type).toBe("text");
+        });
+
+        it("should read timestamps back as ISO strings, not Date objects", async () => {
+            const params = makeRegisterParams("conn-1");
+            await registry.register(params);
+
+            const [connection] = await registry.listViaIdentity("user1");
+
+            expect(typeof connection.connectedOn).toBe("string");
+            expect(connection.connectedOn).toBe(params.connectedOn);
+        });
+
+        it("should migrate legacy datetime columns to text", async () => {
+            await createLegacyTable();
+
+            const before = await knex("WebsocketsConnections").columnInfo();
+            expect(before.connectedOn.type).toBe("datetime");
+
+            /* Any registry call brings the schema up to date before touching the table. */
+            await registry.register(makeRegisterParams("conn-1"));
+
+            const after = await knex("WebsocketsConnections").columnInfo();
+            expect(after.connectedOn.type).toBe("text");
+            expect(after.lastSeen.type).toBe("text");
+        });
+
+        it("should keep rows written before the migration readable", async () => {
+            await createLegacyTable();
+            await knex("WebsocketsConnections").insert({
+                connectionId: "conn-legacy",
+                identityId: "user1",
+                identityDisplayName: "User One",
+                identityType: "admin",
+                tenant: "root",
+                endpoint: "https://example.com/dev",
+                connectedOn: "2024-01-01T00:00:00.000Z",
+                lastSeen: null
+            });
+
+            const connections = await registry.listViaIdentity("user1");
+
+            expect(connections).toHaveLength(1);
+            expect(typeof connections[0].connectedOn).toBe("string");
+        });
+    });
 });

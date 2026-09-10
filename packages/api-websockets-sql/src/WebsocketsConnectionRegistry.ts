@@ -10,29 +10,13 @@ interface ConnectionRow {
     identityType: string;
     tenant: string;
     endpoint: string;
-    // `connectedOn` is written as a UTC ISO string, but `datetime` columns are read back in a
-    // driver-specific shape — a `Date` (node-postgres / some sqlite clients) or a `T`/`Z`-less
-    // "2026-08-04 17:02:06". `toData` normalizes it back to a canonical ISO string.
-    connectedOn: string | Date;
-    lastSeen: string | Date | null;
+    // Timestamps are UTC ISO strings, never `Date` objects. They're stored in text columns so the
+    // value we read back is the value we wrote, on every driver. See `ensureTable`.
+    connectedOn: string;
+    lastSeen: string | null;
 }
 
 const BASE_TABLE_NAME = "WebsocketsConnections";
-
-/**
- * Normalize a stored `datetime` value back to a canonical UTC ISO string. Drivers return this column
- * either as a `Date` or as a `T`/`Z`-less string; both represent a UTC wall-clock (that's how it was
- * written), so a `Date` maps straight through `toISOString()` and the space form is read as UTC.
- */
-const toIsoString = (value: string | Date): string => {
-    if (value instanceof Date) {
-        return value.toISOString();
-    }
-    const normalized =
-        value.includes(" ") && !value.includes("T") ? `${value.replace(" ", "T")}Z` : value;
-    const parsed = new Date(normalized);
-    return Number.isNaN(parsed.getTime()) ? value : parsed.toISOString();
-};
 
 class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
     private readonly knex;
@@ -47,9 +31,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         event: ConnectionRegistry.RegisterParams
     ): Promise<ConnectionRegistry.Data> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const row: ConnectionRow = {
                 connectionId: event.connectionId,
@@ -76,9 +58,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async unregister(event: ConnectionRegistry.UnregisterParams): Promise<void> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const existing = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -108,9 +88,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listViaConnections(connections: string[]): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const rows = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -128,9 +106,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listViaIdentity(identity: string): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const rows = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -148,9 +124,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listViaTenant(tenant: string): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const rows = await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -168,9 +142,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listAll(): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const rows = await this.knex.client<ConnectionRow>(this.tableName).select("*");
 
@@ -185,9 +157,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async updateLastSeen(connectionId: string): Promise<void> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             await this.knex
                 .client<ConnectionRow>(this.tableName)
@@ -204,9 +174,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
 
     public async listStale(olderThan: Date): Promise<ConnectionRegistry.Data[]> {
         try {
-            await this.ensureTable();
-            await this.migrateTable();
-            await this.migrateLastSeen();
+            await this.ensureSchema();
 
             const threshold = olderThan.toISOString();
 
@@ -224,6 +192,14 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         }
     }
 
+    /** Creates the table if needed, then brings an older one up to the current shape. */
+    private async ensureSchema(): Promise<void> {
+        await this.ensureTable();
+        await this.migrateTable();
+        await this.migrateLastSeen();
+        await this.migrateTimestampsToText();
+    }
+
     private async ensureTable(): Promise<void> {
         const exists = await this.knex.client.schema.hasTable(this.tableName);
         if (exists) {
@@ -237,8 +213,14 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
             table.text("identityType").notNullable();
             table.text("tenant").notNullable();
             table.text("endpoint").notNullable();
-            table.datetime("connectedOn").notNullable();
-            table.datetime("lastSeen").nullable();
+            // Text, not `datetime`. We always write UTC ISO strings, and a `datetime` column makes
+            // the driver decide what comes back out: node-postgres and some sqlite clients return a
+            // `Date`, others a "2026-08-04 17:02:06" with no `T` or `Z`. Text keeps the value
+            // identical on the way out, which matches how the DynamoDB registry stores it and keeps
+            // `Date` objects out of the domain entirely. ISO-8601 UTC strings still sort
+            // chronologically, so range queries on these columns behave as expected.
+            table.text("connectedOn").notNullable();
+            table.text("lastSeen").nullable();
             table.index(["identityId"]);
             table.index(["tenant"]);
         });
@@ -272,7 +254,28 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
         }
 
         await this.knex.client.schema.alterTable(this.tableName, table => {
-            table.datetime("lastSeen").nullable();
+            table.text("lastSeen").nullable();
+        });
+    }
+
+    /**
+     * Converts the timestamp columns from `datetime` to text on tables created before that change.
+     * Existing values keep whatever shape the driver rendered them as, which may not be ISO. Those
+     * rows fall outside the recency window and get cleaned up on the next sweep, and clients
+     * re-register on reconnect, so the data heals itself without a backfill.
+     */
+    private async migrateTimestampsToText(): Promise<void> {
+        const columns = await this.knex.client(this.tableName).columnInfo();
+        const type = String(columns.connectedOn?.type ?? "").toLowerCase();
+
+        // Already text on a fresh table, or on one that has been through this migration.
+        if (type.includes("text") || type.includes("char")) {
+            return;
+        }
+
+        await this.knex.client.schema.alterTable(this.tableName, table => {
+            table.text("connectedOn").notNullable().alter();
+            table.text("lastSeen").nullable().alter();
         });
     }
 
@@ -286,7 +289,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
             },
             tenant: row.tenant,
             endpoint: row.endpoint,
-            connectedOn: toIsoString(row.connectedOn)
+            connectedOn: row.connectedOn
         };
     }
 }
