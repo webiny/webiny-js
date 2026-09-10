@@ -101,6 +101,7 @@
     "./api/cms/graphql": "./api/cms/graphql.js",
     "./api/cms/group": "./api/cms/group.js",
     "./api/cms/model": "./api/cms/model.js",
+    "./api/cms/simpleEntry": "./api/cms/simpleEntry.js",
     "./api/cms/storage": "./api/cms/storage.js",
     "./api/cms/validation": "./api/cms/validation.js",
     "./api/cms/scheduler": "./api/cms/scheduler.js",
@@ -151,7 +152,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "b865d3c6274af4d5db33f8106494be269645eb17ec9755b2f49c00117e3a0f0e",
+  "exportGenerationHash": "7339e30def207b690e1e6a2d83370ab658568c28b9f9aff365e51676c71ab320",
   "webiny": {
     "publishFrom": "dist"
   }
