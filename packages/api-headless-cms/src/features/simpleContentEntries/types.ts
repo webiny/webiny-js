@@ -1,4 +1,4 @@
-import type { CmsEntryValues, CmsIdentity } from "~/types/index.js";
+import type { CmsEntryValues, CmsIdentity, CmsModel } from "~/types/index.js";
 import type {
     SIMPLE_ENTRY_EXPIRES_AT,
     SIMPLE_ENTRY_LOCKED,
@@ -75,4 +75,29 @@ export interface IListSimpleEntriesMeta {
 export interface IListSimpleEntriesResult<TValues extends CmsEntryValues = CmsEntryValues> {
     items: ISimpleCmsEntry<TValues>[];
     meta: IListSimpleEntriesMeta;
+}
+
+/**
+ * The simple entry CRUD surface on the HeadlessCms facade. Reached through code; there is no
+ * GraphQL layer for simple entries.
+ */
+export interface ICmsSimpleEntryContext {
+    simpleCreateEntry<TValues extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        input: ICreateSimpleEntryInput<TValues>
+    ): Promise<ISimpleCmsEntry<TValues>>;
+    simpleUpdateEntry<TValues extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string,
+        input: IUpdateSimpleEntryInput<TValues>
+    ): Promise<ISimpleCmsEntry<TValues>>;
+    simpleGetEntry<TValues extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params: IGetSimpleEntryParams
+    ): Promise<ISimpleCmsEntry<TValues>>;
+    simpleListEntries<TValues extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        params?: IListSimpleEntriesParams
+    ): Promise<IListSimpleEntriesResult<TValues>>;
+    simpleDeleteEntry(model: CmsModel, id: string): Promise<void>;
 }

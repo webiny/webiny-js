@@ -3,6 +3,7 @@ import { MoveEntryRepository as RepositoryAbstraction } from "./abstractions.js"
 import { MoveEntryStorageOperation } from "~/features/shared/storageOperations/entry/MoveEntryStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * MoveEntryRepository - Handles storage operations for moving entries.
@@ -19,6 +20,8 @@ class MoveEntryRepositoryImpl implements RepositoryAbstraction.Interface {
         id: string,
         folderId: string
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        assertRegularModel(model);
+
         try {
             await this.moveEntryStorage.execute(model, id, folderId);
             return Result.ok();

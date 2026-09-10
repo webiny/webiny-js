@@ -5,6 +5,7 @@ import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import type { CmsModelToAstConverter } from "~/utils/contentModelAst/CmsModelToAstConverter.js";
 import type { ICmsModelFieldToGraphQLRegistry } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQLRegistry.js";
+import type { ICmsSimpleEntryContext } from "~/features/simpleContentEntries/types.js";
 import type { CmsEntryContext } from "./context.js";
 import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./modelField.js";
 import type {
@@ -40,7 +41,8 @@ export interface CmsError {
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
-export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryContext {
+export interface HeadlessCms
+    extends CmsGroupContext, CmsModelContext, CmsEntryContext, ICmsSimpleEntryContext {
     /**
      * API type
      */

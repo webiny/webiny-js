@@ -3,6 +3,7 @@ import { DeleteMultipleEntriesRepository as RepositoryAbstraction } from "./abst
 import { DeleteMultipleEntriesStorageOperation } from "~/features/shared/storageOperations/entry/DeleteMultipleEntriesStorageOperation.js";
 import type { CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * DeleteMultipleEntriesRepository - Handles storage operations for deleting multiple entries.
@@ -20,6 +21,8 @@ class DeleteMultipleEntriesRepositoryImpl implements RepositoryAbstraction.Inter
         model: CmsModel,
         entryIds: string[]
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        assertRegularModel(model);
+
         try {
             await this.deleteMultipleEntriesStorage.execute(model, {
                 entries: entryIds

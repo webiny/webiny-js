@@ -45,6 +45,7 @@ import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
 import { createModelsCrud } from "~/crud/contentModel.crud.js";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
+import { createSimpleContentEntryCrud } from "~/crud/simpleContentEntry.crud.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import {
     CmsGraphQLSchemaPlugin,
@@ -249,6 +250,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
                     ...createModelGroupsCrud({ context: cmsContext }),
                     ...createModelsCrud({ context: cmsContext }),
                     ...createContentEntryCrud({ context: cmsContext }),
+                    ...createSimpleContentEntryCrud({ context: cmsContext }),
                     export: { ...createExportCrud(cmsContext) },
                     importing: { ...createImportCrud(cmsContext) }
                 } as HeadlessCms.Interface;

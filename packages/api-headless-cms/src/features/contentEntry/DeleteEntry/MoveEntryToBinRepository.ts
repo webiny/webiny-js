@@ -4,6 +4,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { MoveToBinStorageOperation } from "~/features/shared/storageOperations/entry/MoveToBinStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * MoveEntryToBinRepository - Handles storage operations for soft deleting entries.
@@ -19,6 +20,8 @@ class MoveEntryToBinRepositoryImpl implements RepositoryAbstraction.Interface {
         entry: CmsEntry;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
         const { model, entry } = params;
+
+        assertRegularModel(model);
 
         try {
             const storageEntry = await this.entryToStorageTransform(model, entry);
