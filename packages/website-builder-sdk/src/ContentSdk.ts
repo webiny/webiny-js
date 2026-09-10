@@ -95,11 +95,9 @@ export class ContentSdk implements IContentSdk, IRedirects {
 
         const theme = Theme.from(config.theme ?? {});
 
-        // Populate breakpoints on the server too, so SSR can generate
-        // breakpoint-aware CSS (e.g. Grid stacking media queries) from the
-        // real theme widths. The resize listener stays client-only (it's
-        // guarded in the ViewportManager constructor).
-        viewportManager.setBreakpoints(theme.breakpoints);
+        if (environment.isClient()) {
+            viewportManager.setBreakpoints(theme.breakpoints);
+        }
 
         let editingSdk;
         if (environment.isEditing()) {
