@@ -11,26 +11,44 @@ Design, spec and plan live in `docs/.bruno/` (`2026-09-10-simple-content-entries
 
 ## The entry shape
 
-`ISimpleCmsEntry` (`types.ts`) has eleven fields. Seven are the payload and identity; four are
-**pinned** — they exist only because the storage operations read them, and they are frozen constants
-rather than state. They use literal types, so writing anything else is a compile error.
+`ISimpleCmsEntry` (`types.ts`) has eleven fields. Seven carry identity and payload; four are
+**pinned** — they exist because the storage operations read them, and they never hold any value but
+the one below.
 
 | Field       | Why it exists                                                                                                                                            |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`        | `<entryId>#0001`. The storage key builders run `parseIdentifier` over it, so the revision suffix has to be there even though there is only one revision. |
 | `entryId`   | `DeleteEntry` falls back to `entry.id \|\| entry.entryId`.                                                                                               |
-| `tenant`    | Every key builder, plus data-loader cache clearing.                                                                                                      |
+| `tenant`    | Every key builder — `createBasePartitionKey` throws without it.                                                                                          |
 | `modelId`   | The DynamoDB GSI partition key.                                                                                                                          |
 | `values`    | The payload.                                                                                                                                             |
 | `createdOn` | Required by us, not by storage.                                                                                                                          |
 | `createdBy` | Required by us, not by storage.                                                                                                                          |
-| `version`   | **Pinned to `1`.** Feeds `REV#${zeroPad(version)}`.                                                                                                      |
-| `status`    | **Pinned to `"draft"`.** Create and update branch on `status === "published"`.                                                                           |
-| `locked`    | **Pinned to `false`.** Create and update write it explicitly.                                                                                            |
-| `expiresAt` | **Pinned to `null`.** Present in all three DynamoDB key builders.                                                                                        |
+| `version`   | **Always `1`.** Feeds `REV#${zeroPad(version)}`.                                                                                                         |
+| `status`    | **Always `"draft"`.**                                                                                                                                    |
+| `locked`    | **Always `false`.**                                                                                                                                      |
+| `expiresAt` | **Always `null`.**                                                                                                                                       |
 
 The 26 remaining entry- and revision-level meta fields are not stored. `createdOn` and `createdBy`
 are the only two of the 28 that survive.
+
+### The invariant
+
+**A simple entry is always a single unpublished draft. It is never published and never locked.**
+Nothing may change that, and four things make sure of it:
+
+1. **Literal types.** `status: "draft"`, `locked: false`, `version: 1`, `expiresAt: null` — assigning
+   anything else does not compile.
+2. **`readonly`.** Reassigning one on an existing entry does not compile either.
+3. **`assertSimpleEntryInvariants`**, called by both write repositories before anything reaches
+   storage. A violation throws `SimpleEntryInvariantError`, so no caller can persist a broken entry
+   — not through CRUD, not through a use case resolved straight from the container.
+4. **`assertRegularModel`** on the twelve mutating regular repositories, so `publishEntry`,
+   `unpublishEntry` and the rest refuse a simple model outright. There is no operation anywhere that
+   could publish or lock one.
+
+The update factory re-applies all four from the constants rather than copying them off the original,
+so even a stored record that somehow broke the invariant cannot carry it forward.
 
 ## The five use cases
 

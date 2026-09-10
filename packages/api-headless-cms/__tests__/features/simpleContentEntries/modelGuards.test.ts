@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 import { assertSimpleModel } from "~/features/simpleContentEntries/domain/assertSimpleModel.js";
+import { assertSimpleEntryInvariants } from "~/features/simpleContentEntries/domain/assertSimpleEntryInvariants.js";
 import { SIMPLE_MODEL_TAG } from "~/features/simpleContentEntries/constants.js";
 import type { CmsModel } from "~/types/index.js";
+import type { ISimpleCmsEntry } from "~/features/simpleContentEntries/types.js";
 
 const model = (tags?: string[]): CmsModel => {
     return { modelId: "someModel", tags } as unknown as CmsModel;
@@ -146,5 +148,57 @@ describe("model guards", () => {
             // Every name in MUTATING must actually exist on disk.
             expect(MUTATING.filter(rel => !found.includes(rel))).toEqual([]);
         });
+    });
+});
+
+describe("simple entry invariants", () => {
+    const draft = (): ISimpleCmsEntry => {
+        return {
+            id: "abc123#0001",
+            entryId: "abc123",
+            tenant: "root",
+            modelId: "simpleModel",
+            createdOn: "2026-01-01T00:00:00.000Z",
+            createdBy: { id: "id-1", displayName: "John", type: "admin" },
+            values: {},
+            version: 1,
+            status: "draft",
+            locked: false,
+            expiresAt: null
+        };
+    };
+
+    it("accepts a well formed draft", () => {
+        expect(() => assertSimpleEntryInvariants(draft())).not.toThrow();
+    });
+
+    /*
+     * Breaking the invariant needs a cast, because the literal types reject it at compile time.
+     * The cast is the point: it proves the runtime guard catches what the type system cannot, such
+     * as a record coming back out of storage.
+     */
+    it.each([
+        ["status", "published"],
+        ["status", "unpublished"],
+        ["locked", true],
+        ["version", 2],
+        ["expiresAt", 1234567890]
+    ])("refuses %s = %s", (field, value) => {
+        const tampered = { ...draft(), [field]: value } as unknown as ISimpleCmsEntry;
+
+        expect(() => assertSimpleEntryInvariants(tampered)).toThrow(/cannot have|is always/);
+    });
+
+    it("reports the InvariantViolated code and the offending field", () => {
+        const tampered = { ...draft(), status: "published" } as unknown as ISimpleCmsEntry;
+
+        try {
+            assertSimpleEntryInvariants(tampered);
+            expect.unreachable("should have thrown");
+        } catch (error) {
+            expect(error.code).toBe("Cms/SimpleEntry/InvariantViolated");
+            expect(error.data.field).toBe("status");
+            expect(error.data.value).toBe("published");
+        }
     });
 });

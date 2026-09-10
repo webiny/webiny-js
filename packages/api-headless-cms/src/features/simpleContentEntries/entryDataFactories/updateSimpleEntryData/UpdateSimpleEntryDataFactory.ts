@@ -1,5 +1,11 @@
 import { cleanInputValues } from "~/features/contentEntry/entryDataFactories/cleanInputValues.js";
 import { EntryDataProcessor } from "~/features/contentEntry/entryDataProcessor/index.js";
+import {
+    SIMPLE_ENTRY_EXPIRES_AT,
+    SIMPLE_ENTRY_LOCKED,
+    SIMPLE_ENTRY_STATUS,
+    SIMPLE_ENTRY_VERSION
+} from "~/features/simpleContentEntries/constants.js";
 import type {
     ISimpleCmsEntry,
     IUpdateSimpleEntryInput
@@ -30,12 +36,18 @@ class UpdateSimpleEntryDataFactoryImpl implements FactoryAbstraction.Interface {
         });
 
         /*
-         * Identity and the pinned fields are carried over untouched. There is no savedOn or
-         * modifiedOn to refresh - a simple entry records only when it was created.
+         * Identity and the creation stamp are carried over; there is no savedOn or modifiedOn to
+         * refresh, because a simple entry records only when it was created. The pinned fields are
+         * re-applied from the constants rather than spread from the original, so a stored record
+         * that somehow broke the invariant cannot propagate it through an update.
          */
         const entry: ISimpleCmsEntry<TValues> = {
             ...original,
-            values
+            values,
+            version: SIMPLE_ENTRY_VERSION,
+            status: SIMPLE_ENTRY_STATUS,
+            locked: SIMPLE_ENTRY_LOCKED,
+            expiresAt: SIMPLE_ENTRY_EXPIRES_AT
         };
 
         return {

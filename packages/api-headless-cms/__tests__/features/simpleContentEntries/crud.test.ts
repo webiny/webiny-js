@@ -162,6 +162,62 @@ describe("simple entry CRUD surface", () => {
         ).rejects.toMatchObject({ code: "Cms/SimpleEntry/NotFound" });
     });
 
+    /*
+     * The invariant has to survive a hostile record, not just a well behaved one. A simple entry
+     * cannot be published or locked, so a stored record claiming otherwise must not be able to
+     * propagate that through an update.
+     */
+    it("normalizes a stored record that broke the invariant", async () => {
+        const model = createModel();
+        const created = await crud.simpleCreateEntry(model, { values: { title: "Hello" } });
+
+        // Simulate a record that somehow became published and locked in storage.
+        Object.assign(stored!, { status: "published", locked: true, version: 3, expiresAt: 99 });
+
+        const updated = await crud.simpleUpdateEntry(model, created.id, {
+            values: { title: "Changed" }
+        });
+
+        expect(updated.status).toBe("draft");
+        expect(updated.locked).toBe(false);
+        expect(updated.version).toBe(1);
+        expect(updated.expiresAt).toBeNull();
+
+        // And what reached storage is a draft too, not the tampered values.
+        expect(stored).toMatchObject({
+            status: "draft",
+            locked: false,
+            version: 1,
+            expiresAt: null
+        });
+    });
+
+    it("cannot persist a published or locked entry through a repository", async () => {
+        const model = createModel();
+        const { CreateSimpleEntryRepository } =
+            await import("~/features/simpleContentEntries/createSimpleEntry/index.js");
+        const repository = container.resolve(CreateSimpleEntryRepository);
+
+        const published = {
+            id: "x#0001",
+            entryId: "x",
+            tenant: "root",
+            modelId: "simpleModel",
+            createdOn: "2026-01-01T00:00:00.000Z",
+            createdBy: { id: "id-1", displayName: "John", type: "admin" },
+            values: {},
+            version: 1,
+            status: "published",
+            locked: true,
+            expiresAt: null
+        };
+
+        await expect(repository.execute(model, published as never)).rejects.toMatchObject({
+            code: "Cms/SimpleEntry/InvariantViolated"
+        });
+        expect(stored).toBeNull();
+    });
+
     it("refuses an untagged model on every method that writes", async () => {
         const regular = createModel([]);
 

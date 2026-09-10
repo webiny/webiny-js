@@ -23,13 +23,14 @@ export interface ISimpleCmsEntry<TValues extends CmsEntryValues = CmsEntryValues
     createdBy: CmsIdentity;
     values: TValues;
     /*
-     * Pinned. Literal types rather than `number`/`string`/`boolean` so that writing anything else
-     * is a compile error instead of a surprise at runtime.
+     * Pinned and readonly. A simple entry is always a single unpublished draft: literal types make
+     * writing any other value a compile error, and `readonly` makes reassigning one a compile error
+     * too. assertSimpleEntryInvariants enforces the same thing at runtime.
      */
-    version: typeof SIMPLE_ENTRY_VERSION;
-    status: typeof SIMPLE_ENTRY_STATUS;
-    locked: typeof SIMPLE_ENTRY_LOCKED;
-    expiresAt: typeof SIMPLE_ENTRY_EXPIRES_AT;
+    readonly version: typeof SIMPLE_ENTRY_VERSION;
+    readonly status: typeof SIMPLE_ENTRY_STATUS;
+    readonly locked: typeof SIMPLE_ENTRY_LOCKED;
+    readonly expiresAt: typeof SIMPLE_ENTRY_EXPIRES_AT;
 }
 
 export interface ICreateSimpleEntryInput<TValues extends CmsEntryValues = CmsEntryValues> {

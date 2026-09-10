@@ -46,6 +46,7 @@ export { UpdateSimpleEntryDataFactory } from "~/features/simpleContentEntries/en
  */
 export {
     ModelIsSimpleError,
+    SimpleEntryInvariantError,
     ModelNotSimpleError,
     SimpleEntryNotAuthorizedError,
     SimpleEntryNotFoundError,

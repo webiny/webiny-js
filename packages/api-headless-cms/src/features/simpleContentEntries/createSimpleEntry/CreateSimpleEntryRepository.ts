@@ -2,6 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { assertSimpleModel } from "~/features/simpleContentEntries/domain/assertSimpleModel.js";
+import { assertSimpleEntryInvariants } from "~/features/simpleContentEntries/domain/assertSimpleEntryInvariants.js";
 import { SimpleEntryPersistenceError } from "~/features/simpleContentEntries/domain/errors/index.js";
 import type { ISimpleCmsEntry } from "~/features/simpleContentEntries/types.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
@@ -18,6 +19,7 @@ class CreateSimpleEntryRepositoryImpl implements RepositoryAbstraction.Interface
         entry: ISimpleCmsEntry
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
         assertSimpleModel(model);
+        assertSimpleEntryInvariants(entry);
 
         try {
             /*
