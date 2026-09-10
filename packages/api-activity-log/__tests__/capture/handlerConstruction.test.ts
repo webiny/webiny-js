@@ -25,6 +25,7 @@ import { ActivityLogStorage } from "~/core/abstractions.js";
 import { ActivitySourceResolver, EntryActivityRecorder } from "~/cms/recorder/abstractions.js";
 import { ActivityLogModelProvider } from "~/storage/privateModel/abstractions.js";
 import { ActivityLogAppFeature } from "~/ActivityLogAppFeature.js";
+import { extractRequiredTokens } from "./extractRequiredTokens.js";
 
 /**
  * Construction is a separate failure mode from execution, and the containment suite cannot see it.
@@ -58,8 +59,9 @@ const ALWAYS_PRESENT = new Set([
     "DeleteEntryUseCase",
     "GetModelUseCase",
     "CmsWhereMapper",
-    // Entry read authorisation. Registered by the CMS, which this feature requires outright.
-    "AccessControl"
+    // Reads the target within its model, which both authorises and validates membership.
+    // Registered by the CMS, which this feature requires outright.
+    "GetLatestRevisionByEntryIdIncludingDeletedUseCase"
 ]);
 
 /** Abstractions the feature registers itself, so they are present whenever it is. */
@@ -213,23 +215,8 @@ describe("guard 4 — no required dependency outside the platform contract", () 
         for (const file of sourceFiles()) {
             const source = readFileSync(file, "utf8");
 
-            // Matches the dependency array and stops at its own closing bracket, tolerating one
-            // level of nesting for `[Token, { optional: true }]`. An earlier version ran to the
-            // next `})` in the file, which in a GraphQL factory swept up every capitalised
-            // identifier after the array — a guard that cries wolf trains people to widen the
-            // allowlist to silence it, which is exactly what it exists to prevent.
-            for (const match of source.matchAll(/dependencies:\s*\[((?:[^[\]]|\[[^\]]*\])*)\]/g)) {
-                const body = match[1]!;
-
-                // Strip optional declarations — `[Token, { optional: true }]` — before collecting.
-                const withoutOptional = body.replace(
-                    /\[\s*[A-Za-z]+\s*,\s*\{[^}]*optional:\s*true[^}]*\}\s*\]/g,
-                    ""
-                );
-
-                for (const token of withoutOptional.matchAll(/\b([A-Z][A-Za-z]+)\b/g)) {
-                    found.push({ file: file.slice(SRC.length + 1), token: token[1]! });
-                }
+            for (const token of extractRequiredTokens(source)) {
+                found.push({ file: file.slice(SRC.length + 1), token });
             }
         }
 

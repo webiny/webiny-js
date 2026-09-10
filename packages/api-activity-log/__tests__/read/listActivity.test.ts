@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
@@ -34,6 +34,8 @@ interface HarnessOptions {
     actor?: boolean;
     modelFound?: boolean;
     entryReadable?: boolean;
+    /** The target does not live in the supplied model. */
+    targetInModel?: boolean;
     records?: ActivityRecord[];
     filter?: ActivityChangesetFilter.Interface;
 }
@@ -44,6 +46,7 @@ const harness = (options: HarnessOptions = {}) => {
         actor = true,
         modelFound = true,
         entryReadable = true,
+        targetInModel = true,
         records = [record()]
     } = options;
 
@@ -54,7 +57,15 @@ const harness = (options: HarnessOptions = {}) => {
             ? Result.ok({ modelId: "article", fields: [] } as unknown as CmsModel)
             : Result.fail(new Error("no such model") as never)
     );
-    const canAccessEntry = vi.fn(async () => entryReadable);
+    const getTargetEntry = vi.fn(async () => {
+        if (!entryReadable) {
+            return Result.fail({ code: "Cms/Entry/NotAuthorized" } as never);
+        }
+        if (!targetInModel) {
+            return Result.fail({ code: "Cms/Entry/NotFound" } as never);
+        }
+        return Result.ok({ id: "abc#0003", entryId: "abc" } as never);
+    });
     const list = vi.fn(async () => Result.ok({ records, cursor: null, hasMore: false }));
 
     container.registerInstance(ActivityLogPermissions, {
@@ -65,9 +76,9 @@ const harness = (options: HarnessOptions = {}) => {
         execute: getModel
     } as unknown as GetModelUseCase.Interface);
 
-    container.registerInstance(AccessControl, {
-        canAccessEntry
-    } as unknown as AccessControl.Interface);
+    container.registerInstance(GetLatestRevisionByEntryIdIncludingDeletedUseCase, {
+        execute: getTargetEntry
+    } as unknown as GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface);
 
     container.registerInstance(ActivityLogStorage, {
         append: vi.fn(),
@@ -86,7 +97,7 @@ const harness = (options: HarnessOptions = {}) => {
     return {
         useCase: container.resolve(ListActivityUseCase),
         getModel,
-        canAccessEntry,
+        getTargetEntry,
         list
     };
 };
@@ -151,12 +162,12 @@ describe("check order does not leak existence", () => {
         expect(getModel).not.toHaveBeenCalled();
     });
 
-    it("does not consult entry access when the permission is absent", async () => {
-        const { useCase, canAccessEntry } = harness({ timeline: false });
+    it("does not read the target when the permission is absent", async () => {
+        const { useCase, getTargetEntry } = harness({ timeline: false });
 
         await useCase.execute(params);
 
-        expect(canAccessEntry).not.toHaveBeenCalled();
+        expect(getTargetEntry).not.toHaveBeenCalled();
     });
 
     it("reports a missing target and a forbidden one indistinguishably to the unauthorised", async () => {
@@ -322,9 +333,9 @@ describe("pagination", () => {
             execute: async () =>
                 Result.ok({ modelId: "article", fields: [] } as unknown as CmsModel)
         } as unknown as GetModelUseCase.Interface);
-        container.registerInstance(AccessControl, {
-            canAccessEntry: async () => true
-        } as unknown as AccessControl.Interface);
+        container.registerInstance(GetLatestRevisionByEntryIdIncludingDeletedUseCase, {
+            execute: async () => Result.ok({ id: "abc#0003" } as never)
+        } as unknown as GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface);
         container.registerInstance(ActivityLogStorage, {
             append: vi.fn(),
             list,
@@ -341,5 +352,46 @@ describe("pagination", () => {
             cursor: "opaque-next",
             hasMore: true
         });
+    });
+});
+
+describe("the target must live in the supplied model", () => {
+    // `modelId` is caller-supplied and storage keys records on target id alone, so authorising
+    // against the supplied model while retrieving by target id would let a reader authorise
+    // against a model they can read and pull activity from one they cannot.
+
+    it("denies when the target is not in the supplied model", async () => {
+        const { useCase, list } = harness({ targetInModel: false });
+
+        const result = await useCase.execute(params);
+
+        expect(result.isFail()).toBe(true);
+        expect(result.isFail() && result.error.code).toBe("ActivityLog/TargetNotFound");
+        expect(list).not.toHaveBeenCalled();
+    });
+
+    it("reads the target within the supplied model, not by id alone", async () => {
+        const { useCase, getTargetEntry } = harness();
+
+        await useCase.execute(params);
+
+        expect(getTargetEntry.mock.calls[0]![0]).toMatchObject({ modelId: "article" });
+        expect(getTargetEntry.mock.calls[0]![1]).toEqual({ id: "abc" });
+    });
+
+    it("never reaches storage when the target read fails", async () => {
+        const { useCase, list } = harness({ entryReadable: false });
+
+        await useCase.execute(params);
+
+        expect(list).not.toHaveBeenCalled();
+    });
+
+    it("still serves a trashed target, whose history is often the point", async () => {
+        // Hence the IncludingDeleted variant: this feature records trashing and restoring, so a
+        // binned entry's timeline has to remain readable.
+        const { useCase } = harness();
+
+        expect((await useCase.execute(params)).isOk()).toBe(true);
     });
 });
