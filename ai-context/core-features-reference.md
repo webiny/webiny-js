@@ -461,6 +461,52 @@ Injectable factories that transform raw input into domain `CmsEntry` objects. Li
 - **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/shared/abstractions.ts`
 - **Usage:** Access to plugin-defined models
 
+### Simple Content Entry Features
+
+A simple content entry is a normal CMS entry with the revision and publishing dimensions removed: eleven fields instead of the full envelope, always a single unpublished draft. A model opts in by carrying `SIMPLE_MODEL_TAG` in `model.tags`, which also makes the twelve mutating regular entry repositories refuse it. Everything below is re-exported from one curated module, `@webiny/api-headless-cms/exports/api/cms/simpleEntry.js`, and mirrored into the `webiny` barrel as `webiny/api/cms/simpleEntry`. See `packages/api-headless-cms/src/features/simpleContentEntries/DEVELOPERS.md`.
+
+#### CreateSimpleEntryUseCase
+
+- **Import:** `import { CreateSimpleEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/simpleEntry.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/simpleContentEntries/createSimpleEntry/abstractions/CreateSimpleEntryUseCase.ts`
+- **Usage:** Create a simple entry. Returns `Result<ISimpleCmsEntry, Error>`; never throws for an expected failure.
+
+#### UpdateSimpleEntryUseCase
+
+- **Import:** `import { UpdateSimpleEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/simpleEntry.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/simpleContentEntries/updateSimpleEntry/abstractions/UpdateSimpleEntryUseCase.ts`
+- **Usage:** Update a simple entry in place. Only `values` changes; identity, the creation stamp and the pinned fields are carried over. Creates no second revision.
+
+#### GetSimpleEntryUseCase
+
+- **Import:** `import { GetSimpleEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/simpleEntry.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/simpleContentEntries/getSimpleEntry/abstractions/GetSimpleEntryUseCase.ts`
+- **Usage:** Read one simple entry by `{ where: { id } }` or `{ where: { entryId } }`. **Never returns `null`** — absence is `SimpleEntryNotFoundError`.
+
+#### ListSimpleEntriesUseCase
+
+- **Import:** `import { ListSimpleEntriesUseCase } from "@webiny/api-headless-cms/exports/api/cms/simpleEntry.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/simpleContentEntries/listSimpleEntries/abstractions/ListSimpleEntriesUseCase.ts`
+- **Usage:** List simple entries, paginated by the search backend. `sort` is restricted to `id`, `createdOn` and `values.*` because a simple model gets its own index where dropped meta fields are unmapped. The repository pins `latest: true` — OpenSearch requires `latest` or `published` and refuses to default it, while DynamoDB defaults silently.
+
+#### DeleteSimpleEntryUseCase
+
+- **Import:** `import { DeleteSimpleEntryUseCase } from "@webiny/api-headless-cms/exports/api/cms/simpleEntry.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/simpleContentEntries/deleteSimpleEntry/abstractions/DeleteSimpleEntryUseCase.ts`
+- **Usage:** Permanently delete a simple entry. No bin.
+
+#### CreateSimpleEntryDataFactory / UpdateSimpleEntryDataFactory
+
+- **Import:** `import { CreateSimpleEntryDataFactory } from "@webiny/api-headless-cms/exports/api/cms/simpleEntry.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/simpleContentEntries/entryDataFactories/`
+- **Usage:** Build the reduced domain entry for create and update. Injectable singletons, token scope `"Cms/SimpleEntry/<FactoryName>"`. Both re-apply `version: 1`, `status: "draft"`, `locked: false`, `expiresAt: null` from constants rather than copying them off an existing record.
+
+#### EntryDataProcessor
+
+- **Import:** `import { EntryDataProcessor } from "@webiny/api-headless-cms/features/contentEntry/entryDataProcessor/index.js"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/entryDataProcessor/abstractions/EntryDataProcessor.ts`
+- **Usage:** Injectable service wrapping the two entry value preparation steps — `validateOrThrow` and `mapReferenceFields` — so data factories do not import from `~/crud/`. Singleton. Used by `CreateEntryDataFactory` and both simple entry factories; the other four regular factories still import directly.
+
 ---
 
 ## Tenancy Features (Api-Core)
