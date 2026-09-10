@@ -21,6 +21,8 @@ class ActivityRecordModelImpl implements ModelFactory.Interface {
                     name: "Activity Log"
                 })
                 .fields(fields => ({
+                    // Sort and pagination key. See ActivityRecordValues.sequence.
+                    sequence: fields.text().label("Sequence").required("Sequence is required."),
                     targetType: fields
                         .text()
                         .label("Target Type")

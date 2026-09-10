@@ -1,3 +1,4 @@
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type {
     ActivityRecord,
@@ -13,8 +14,21 @@ import type { ActivityRecordValues } from "./abstractions.js";
  * Kept as a free function pair rather than a class because it holds no state and is the seam a
  * replacement storage mechanism throws away wholesale.
  */
+/**
+ * Sort key for one record: its timestamp, then a random suffix.
+ *
+ * ISO-8601 UTC strings sort lexicographically in time order, so prefixing with the timestamp keeps
+ * the ordering right, and the suffix makes the key unique. Uniqueness is the point — a keyset
+ * cursor over a non-unique key drops every record that shares the boundary value, and a bulk
+ * action writes many records inside a single millisecond.
+ */
+const sequenceFor = (timestamp: string): string => {
+    return `${timestamp}#${generateAlphaNumericLowerCaseId(8)}`;
+};
+
 export const recordToValues = (record: ActivityRecordInput): ActivityRecordValues => {
     return {
+        sequence: sequenceFor(record.timestamp),
         targetType: record.targetType,
         targetId: record.targetId,
         revision: record.revision,
@@ -43,6 +57,10 @@ const readChangeset = (value: unknown): ChangesetEntry[] => {
             typeof item === "object" &&
             typeof (item as ChangesetEntry).path === "string"
     );
+};
+
+export const sequenceOf = (entry: CmsEntry<ActivityRecordValues>): string => {
+    return entry.values.sequence;
 };
 
 export const entryToRecord = (entry: CmsEntry<ActivityRecordValues>): ActivityRecord => {

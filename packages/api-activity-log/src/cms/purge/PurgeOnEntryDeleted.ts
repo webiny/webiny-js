@@ -28,12 +28,27 @@ import {
  * hit again on any later deletion of the same target.
  */
 class PurgeOnEntryDeletedImpl implements EntryAfterDeleteEventHandler.Interface {
-    constructor(private taskService: TaskService.Interface) {}
+    constructor(private taskService?: TaskService.Interface) {}
 
     async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
         const { model, entry, permanent } = event.payload;
 
         if (!permanent || model.isPrivate) {
+            return;
+        }
+
+        // Background tasks may not be registered. A guard inside `handle` is not enough on its
+        // own — a required constructor dependency throws while the event publisher is *resolving*
+        // handlers, before any guard can run, which would fail every permanent delete inside the
+        // write. Hence the optional dependency, and hence this check.
+        if (!this.taskService) {
+            this.reportFailure(
+                entry,
+                new Error(
+                    "TaskService is not registered, so activity record cleanup cannot be " +
+                        "scheduled. Register the background tasks feature."
+                )
+            );
             return;
         }
 
@@ -74,5 +89,5 @@ class PurgeOnEntryDeletedImpl implements EntryAfterDeleteEventHandler.Interface 
 
 export const PurgeOnEntryDeleted = EntryAfterDeleteEventHandler.createImplementation({
     implementation: PurgeOnEntryDeletedImpl,
-    dependencies: [TaskService]
+    dependencies: [[TaskService, { optional: true }]]
 });

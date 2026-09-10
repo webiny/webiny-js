@@ -11,7 +11,7 @@
     "url": "https://github.com/webiny/webiny-js.git",
     "directory": "packages/api-activity-log"
   },
-  "description": "Activity log \u2014 an append-only timeline of modifications made to a target, built on top of the Headless CMS.",
+  "description": "Activity log — an append-only timeline of modifications made to a target, built on top of the Headless CMS.",
   "license": "MIT",
   "author": "Webiny Ltd.",
   "dependencies": {
@@ -22,8 +22,14 @@
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
+    "@webiny/api-core-testing": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^1.0.2",
+    "@webiny/event-handler-core": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/wcp": "0.0.0",
+    "graphql": "^16.14.2",
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"

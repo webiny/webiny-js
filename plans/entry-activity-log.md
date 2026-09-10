@@ -153,6 +153,40 @@ src/
   just read shifts the offset the cursor encodes, and it returns a failure rather than success when
   it runs out of passes, so unfinished work is visible to the caller.
 
+### The conformance suite
+
+`__tests__/conformance/storageConformance.ts` is a parameterised suite defined against
+`ActivityLogStorage` and nothing else — no models, no entries, no cursor it can read. The
+private-model adapter runs it today against a real CMS and a real storage backend; a replacement
+store runs the same file unchanged, so the swap is verified rather than assumed. Adding a second
+implementation costs one ten-line file.
+
+It covers ordering, cursor stability while records are appended between pages, same-millisecond
+ordering, revision and actor filtering (separately and combined), target isolation, purge
+completeness and idempotency, and empty-target behaviour. It runs on both `sql` and `ddb`, with no
+storage flag required — nothing silently skips.
+
+**It immediately caught two defects that 278 unit tests had missed**, both invisible without real
+storage:
+
+- **Every `list` call was broken.** `sort: ["timestamp_DESC"]` throws "Sorting field does not exist
+  in the content model". Model fields sort as `values_<fieldId>_<ORDER>` — underscore-separated,
+  and `extractSort` matches a bare name only against top-level meta fields. The read path had never
+  once succeeded.
+- **A permanent delete would have failed whenever background tasks were not registered.**
+  `TaskService` was a required constructor dependency of `PurgeOnEntryDeleted`, and the event
+  publisher _constructs_ handlers before any of them run, so the `isPrivate` guard inside `handle`
+  could never be reached. Now optional, which is the only form of the guard that works.
+
+**The cursor is opaque, and now genuinely so.** The CMS cursor is a base64-encoded _offset_
+(`DdbListEntries.ts:165-173`, paginating by `slice(start, end)`), which is wrong twice for this
+dataset: unstable under append, since a record arriving between two page reads shifts every later
+record down and re-shows page one's tail — the ordinary case on an append-only log read
+newest-first — and meaningless to any other store. So the adapter mints its own cursor from a
+private `sequence` key (timestamp plus a random suffix, so it cannot tie inside one millisecond)
+and pages by keyset. The CMS cursor never crosses the interface, callers treat the value as a
+string, and each implementation is free to define its own format.
+
 **Two decisions raised in the Checkpoint 2 report, both since resolved:**
 
 - **Persisted hashes: dropped.** See the record shape section above. The hasher and its per-target
@@ -454,6 +488,31 @@ Until then the positional zip covers the same case, because at least one side al
 than through `ModelToAstConverter`, which needs the GraphQL field-type registry that capture cannot
 rely on. The drift risk is covered by an agreement test pinning both to the same field structure on
 a representative model, skipped with a warning if the registry ever stops building standalone.
+
+### What is not behind the storage abstraction
+
+The interface makes the _data path_ swappable and the conformance suite proves a replacement
+satisfies it. These are the parts that sit outside it and will need work at swap time, listed so
+the swap is not costed as though the abstraction covered everything.
+
+- **Private model registration.** `ActivityRecordModel` is a CMS `ModelFactory` registered by
+  `ActivityLogAppFeature`. A different store makes it dead weight, but removing it has to be
+  sequenced against the records already in it — dropping the registration first orphans them where
+  nothing can reach them, since the reader would already be pointed elsewhere.
+- **The adapter-private ordering key.** `sequence` exists because this backend needs a unique,
+  lexicographically-ordered sort key. A replacement will have its own notion of order and its own
+  cursor format; neither is part of the contract, and neither transfers.
+- **Deployment and upgrade for the new store.** A dedicated table or index does not exist: it needs
+  Pulumi infrastructure, and existing installations need it created on upgrade. There is no
+  migration framework on `next`, so records already written to the private model must either be
+  moved by a one-off task or knowingly abandoned — and permanent retention means abandoning them
+  discards the whole history the feature exists to keep.
+- **Chunk sizing in the purge task.** `MAX_DELETE_PASSES` is tuned to a backend whose every page
+  costs a full model read. A store with real pagination will want a different bound, and the task's
+  timeout budget was chosen against the current cost.
+- **Read authorisation.** Not a storage concern in any implementation. Private models set
+  `authorization: false`, so the current store enforces nothing, and whatever Checkpoint 5 builds
+  must not assume a future store will either.
 
 ### Pre-pull-request items
 
