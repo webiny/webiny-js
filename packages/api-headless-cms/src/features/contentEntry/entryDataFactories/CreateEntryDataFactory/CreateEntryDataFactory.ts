@@ -3,7 +3,7 @@ import {
     type ICreateEntryDataFactory,
     type ICreateEntryDataResponse
 } from "./abstractions.js";
-import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
+import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type {
@@ -16,8 +16,6 @@ import type {
 import { getDate } from "~/utils/date.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import WebinyError from "@webiny/error";
-import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation.js";
-import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { createIdentifier, mdbid } from "@webiny/utils";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../statuses.js";
 import { getIdentity } from "~/utils/identity.js";
@@ -25,6 +23,7 @@ import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
 import { getExpiresAt } from "../expiresAt.js";
 import { cleanInputValues } from "../cleanInputValues.js";
+import { EntryDataProcessor } from "~/features/contentEntry/entryDataProcessor/index.js";
 
 const createEntryId = (input: CreateCmsEntryInput) => {
     let entryId = mdbid();
@@ -53,7 +52,7 @@ const createEntryId = (input: CreateCmsEntryInput) => {
 
 class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
     public constructor(
-        private readonly cmsContext: CmsContext.Interface,
+        private readonly entryDataProcessor: EntryDataProcessor.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly accessControl: AccessControl.Interface
@@ -66,15 +65,13 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
     ): Promise<ICreateEntryDataResponse<TValues>> {
         const initialValues = cleanInputValues<TValues>(model, rawInput.values || ({} as TValues));
 
-        await validateModelEntryDataOrThrow({
-            context: this.cmsContext,
+        await this.entryDataProcessor.validateOrThrow<TValues>({
             model,
             values: initialValues,
             skipValidation: options?.skipValidation
         });
 
-        const values = await referenceFieldsMapping<TValues>({
-            context: this.cmsContext,
+        const values = await this.entryDataProcessor.mapReferenceFields<TValues>({
             model,
             values: initialValues,
             validateEntries: true
@@ -236,5 +233,5 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
 
 export const CreateEntryDataFactory = FactoryAbstraction.createImplementation({
     implementation: CreateEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext, AccessControl]
+    dependencies: [EntryDataProcessor, IdentityContext, TenantContext, AccessControl]
 });

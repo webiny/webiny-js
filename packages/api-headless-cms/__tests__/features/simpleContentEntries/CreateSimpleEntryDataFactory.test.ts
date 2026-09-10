@@ -4,6 +4,7 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
+import { EntryDataProcessorFeature } from "~/features/contentEntry/entryDataProcessor/feature.js";
 import { SimpleEntryDataFactoriesFeature } from "~/features/simpleContentEntries/entryDataFactories/SimpleEntryDataFactoriesFeature.js";
 import { CreateSimpleEntryDataFactory } from "~/features/simpleContentEntries/entryDataFactories/createSimpleEntryData/index.js";
 import { ENTRY_META_FIELDS } from "~/constants.js";
@@ -49,6 +50,16 @@ const createModel = (): CmsModel => {
                 storageId: "text@titleFieldId",
                 type: "text",
                 label: "Title"
+            },
+            {
+                id: "statusFieldId",
+                fieldId: "reviewStatus",
+                storageId: "text@statusFieldId",
+                type: "text",
+                label: "Review status",
+                settings: {
+                    defaultValue: "pending"
+                }
             }
         ]
     } as unknown as CmsModel;
@@ -60,6 +71,7 @@ describe("CreateSimpleEntryDataFactory", () => {
     beforeEach(() => {
         container = new Container();
         ValidationFeature.register(container);
+        EntryDataProcessorFeature.register(container);
         SimpleEntryDataFactoriesFeature.register(container);
 
         container.registerInstance(CmsContext, { container } as unknown as CmsContext.Interface);
@@ -133,6 +145,15 @@ describe("CreateSimpleEntryDataFactory", () => {
     it("applies the model's field defaults to missing values", async () => {
         const entry = await create({ values: {} });
 
-        expect(entry.values).toEqual({ title: undefined });
+        expect(entry.values.reviewStatus).toBe("pending");
+    });
+
+    it("reduces values to the model's own fields and drops anything else", async () => {
+        const entry = await create({
+            values: { title: "Hello", notAField: "should not survive" }
+        });
+
+        expect(Object.keys(entry.values).sort()).toEqual(["reviewStatus", "title"]);
+        expect(entry.values.title).toBe("Hello");
     });
 });

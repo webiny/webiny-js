@@ -2,10 +2,8 @@ import WebinyError from "@webiny/error";
 import { createIdentifier, mdbid } from "@webiny/utils";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import { cleanInputValues } from "~/features/contentEntry/entryDataFactories/cleanInputValues.js";
-import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation.js";
-import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
+import { EntryDataProcessor } from "~/features/contentEntry/entryDataProcessor/index.js";
 import { getDate } from "~/utils/date.js";
 import { getIdentity } from "~/utils/identity.js";
 import {
@@ -25,7 +23,7 @@ const ID_PATTERN = /^([a-zA-Z0-9])([a-zA-Z0-9-]+)([a-zA-Z0-9])$/;
 
 class CreateSimpleEntryDataFactoryImpl implements FactoryAbstraction.Interface {
     public constructor(
-        private readonly cmsContext: CmsContext.Interface,
+        private readonly entryDataProcessor: EntryDataProcessor.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly tenantContext: TenantContext.Interface
     ) {}
@@ -36,14 +34,12 @@ class CreateSimpleEntryDataFactoryImpl implements FactoryAbstraction.Interface {
     ): Promise<FactoryAbstraction.Response<TValues>> {
         const initialValues = cleanInputValues<TValues>(model, rawInput.values || ({} as TValues));
 
-        await validateModelEntryDataOrThrow({
-            context: this.cmsContext,
+        await this.entryDataProcessor.validateOrThrow<TValues>({
             model,
             values: initialValues
         });
 
-        const values = await referenceFieldsMapping<TValues>({
-            context: this.cmsContext,
+        const values = await this.entryDataProcessor.mapReferenceFields<TValues>({
             model,
             values: initialValues,
             validateEntries: true
@@ -93,5 +89,5 @@ class CreateSimpleEntryDataFactoryImpl implements FactoryAbstraction.Interface {
 
 export const CreateSimpleEntryDataFactory = FactoryAbstraction.createImplementation({
     implementation: CreateSimpleEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext]
+    dependencies: [EntryDataProcessor, IdentityContext, TenantContext]
 });
