@@ -10,7 +10,6 @@ import type {
 } from "~/features/simpleContentEntries/types.js";
 import type {
     CmsEntryListSort,
-    CmsEntryListWhere,
     CmsEntryStorageOperationsListParams,
     CmsEntryValues,
     CmsModel
@@ -46,7 +45,18 @@ class ListSimpleEntriesRepositoryImpl implements RepositoryAbstraction.Interface
                 after: params.after,
                 limit,
                 sort: (params.sort ?? DEFAULT_SORT) as CmsEntryListSort,
-                where: (params.where ?? {}) as CmsEntryListWhere,
+                where: {
+                    ...(params.where ?? {}),
+                    /*
+                     * A simple entry has exactly one revision, which is always the latest and never
+                     * published. The search backend requires one of `latest` / `published` and
+                     * refuses to default it (createInitialQuery throws OPENSEARCH_UNSUPPORTED_QUERY),
+                     * while DynamoDB quietly defaults to latest - so passing neither works on one
+                     * backend and fails on the other. Spread into a fresh object because both
+                     * backends delete these keys from whatever they are handed.
+                     */
+                    latest: true
+                },
                 fields: this.searchableFieldsProvider({ fields: model.fields })
             };
 

@@ -7,6 +7,7 @@ import { GetLatestRevisionByEntryIdStorageOperation } from "~/features/shared/st
 import { CreateSimpleEntryUseCase } from "~/features/simpleContentEntries/createSimpleEntry/index.js";
 import { UpdateSimpleEntryUseCase } from "~/features/simpleContentEntries/updateSimpleEntry/index.js";
 import { GetSimpleEntryUseCase } from "~/features/simpleContentEntries/getSimpleEntry/index.js";
+import { ListSimpleEntriesUseCase } from "~/features/simpleContentEntries/listSimpleEntries/index.js";
 import { DeleteSimpleEntryUseCase } from "~/features/simpleContentEntries/deleteSimpleEntry/index.js";
 import { SIMPLE_MODEL_TAG } from "~/features/simpleContentEntries/constants.js";
 import { ENTRY_META_FIELDS } from "~/constants.js";
@@ -233,6 +234,80 @@ describe("Simple content entries - storage integration", () => {
 
         expect(revisions).toHaveLength(1);
         expect(revisions[0].version).toBe(1);
+    });
+
+    /*
+     * On a search-backed deployment list is answered by OpenSearch, not DynamoDB, so these two are
+     * the only tests here that exercise the search path at all. OpenSearch indexes near-real-time
+     * and DdbEsListEntries silently returns an empty page on index_not_found_exception, so a naive
+     * assertion could pass while proving nothing - hence the bounded retry.
+     */
+    const listUntil = async (model: CmsModel, expected: number) => {
+        for (let attempt = 0; attempt < 40; attempt++) {
+            const result = await container
+                .resolve(ListSimpleEntriesUseCase)
+                .execute(model, { limit: 10 });
+            if (result.isFail()) {
+                throw result.error;
+            }
+            if (result.value.items.length === expected) {
+                return result.value;
+            }
+            await new Promise(resolve => setTimeout(resolve, 250));
+        }
+        throw new Error(`Timed out waiting for ${expected} listed entries.`);
+    };
+
+    it("lists the entries it created", async () => {
+        const model = createSimpleModel();
+        await create({ title: "One", note: "n" });
+        await create({ title: "Two", note: "n" });
+        await create({ title: "Three", note: "n" });
+
+        const listed = await listUntil(model, 3);
+
+        expect(listed.items).toHaveLength(3);
+        expect(listed.meta.totalCount).toBe(3);
+        expect(listed.items.map(item => item.values.title).sort()).toEqual(["One", "Three", "Two"]);
+        for (const item of listed.items) {
+            expect(item.status).toBe("draft");
+            expect(item.locked).toBe(false);
+        }
+    });
+
+    it("paginates with a cursor", async () => {
+        const model = createSimpleModel();
+        await create({ title: "One", note: "n" });
+        await create({ title: "Two", note: "n" });
+        await create({ title: "Three", note: "n" });
+
+        await listUntil(model, 3);
+
+        const first = await container
+            .resolve(ListSimpleEntriesUseCase)
+            .execute(model, { limit: 2 });
+        if (first.isFail()) {
+            throw first.error;
+        }
+
+        expect(first.value.items).toHaveLength(2);
+        expect(first.value.meta.hasMoreItems).toBe(true);
+        expect(first.value.meta.cursor).toBeTruthy();
+
+        const second = await container
+            .resolve(ListSimpleEntriesUseCase)
+            .execute(model, { limit: 2, after: first.value.meta.cursor });
+        if (second.isFail()) {
+            throw second.error;
+        }
+
+        expect(second.value.items).toHaveLength(1);
+        expect(second.value.meta.hasMoreItems).toBe(false);
+
+        // No entry appears on both pages.
+        const firstIds = first.value.items.map(item => item.id);
+        const secondIds = second.value.items.map(item => item.id);
+        expect(firstIds.filter(id => secondIds.includes(id))).toEqual([]);
     });
 
     it("deletes permanently, leaving nothing behind", async () => {
