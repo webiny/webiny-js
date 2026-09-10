@@ -144,6 +144,18 @@ describe("simple entry CRUD surface", () => {
         ).rejects.toMatchObject({ code: "Cms/SimpleEntry/NotFound" });
     });
 
+    it("resolves use cases through the public export surface", async () => {
+        // The re-exported abstraction must be the same token the feature registered, otherwise a
+        // consumer importing from exports/api/cms/simpleEntry.js resolves nothing.
+        const surface = await import("~/exports/api/cms/simpleEntry.js");
+
+        expect(() => container.resolve(surface.CreateSimpleEntryUseCase)).not.toThrow();
+        expect(() => container.resolve(surface.GetSimpleEntryUseCase)).not.toThrow();
+        expect(() => container.resolve(surface.ListSimpleEntriesUseCase)).not.toThrow();
+        expect(() => container.resolve(surface.UpdateSimpleEntryUseCase)).not.toThrow();
+        expect(() => container.resolve(surface.DeleteSimpleEntryUseCase)).not.toThrow();
+    });
+
     it("throws rather than returning a failed Result", async () => {
         await expect(
             crud.simpleGetEntry(createModel(), { where: { id: "nope#0001" } })
@@ -160,5 +172,52 @@ describe("simple entry CRUD surface", () => {
         await expect(crud.simpleGetEntry(regular, { where: { id: "x#0001" } })).rejects.toThrow(
             /is not a simple model/
         );
+    });
+});
+
+describe("public export surface", () => {
+    /*
+     * exports/api/cms/simpleEntry.js is the path other packages import from, the way
+     * background-tasks and tenant-manager import exports/api/cms/entry.js. If a re-export path
+     * rots this fails here rather than in a consumer.
+     */
+    it("re-exports the five use cases, the factories and the tag", async () => {
+        const surface = await import("~/exports/api/cms/simpleEntry.js");
+
+        expect(surface.SIMPLE_MODEL_TAG).toBe("cms:simple");
+
+        for (const name of [
+            "CreateSimpleEntryUseCase",
+            "UpdateSimpleEntryUseCase",
+            "GetSimpleEntryUseCase",
+            "ListSimpleEntriesUseCase",
+            "DeleteSimpleEntryUseCase",
+            "CreateSimpleEntryDataFactory",
+            "UpdateSimpleEntryDataFactory"
+        ]) {
+            expect(surface[name], `${name} should be exported`).toBeDefined();
+        }
+    });
+
+    it("re-exports the failure contract", async () => {
+        const surface = await import("~/exports/api/cms/simpleEntry.js");
+
+        for (const name of [
+            "ModelIsSimpleError",
+            "ModelNotSimpleError",
+            "SimpleEntryNotAuthorizedError",
+            "SimpleEntryNotFoundError",
+            "SimpleEntryPersistenceError",
+            "SimpleEntryValidationError"
+        ]) {
+            expect(surface[name], `${name} should be exported`).toBeDefined();
+        }
+    });
+
+    it("does not leak the repositories", async () => {
+        const surface = await import("~/exports/api/cms/simpleEntry.js");
+
+        const leaked = Object.keys(surface).filter(key => key.endsWith("Repository"));
+        expect(leaked).toEqual([]);
     });
 });
