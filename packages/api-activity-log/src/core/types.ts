@@ -53,17 +53,27 @@ export type ActivityAction = ActivityEntryAction | ActivityReviewAction;
  */
 export type ChangesetOperation = "added" | "removed" | "moved" | "replaced";
 
+/**
+ * One changed field.
+ *
+ * Deliberately carries no hash, which is a departure from the original brief. Hashes are computed
+ * and used inside the differ but never persisted, for three reasons. Nothing reads a stored hash
+ * across records: a no-op save is already signalled by an empty changeset. A stored hash leaks the
+ * new value of a low-cardinality field to anyone who can read the timeline — and for the lowest
+ * cardinality fields the changeset entry leaks it regardless, since recording that a boolean
+ * changed states its new value. And the one genuine consumer, detecting a revert to a previous
+ * value, is not specified.
+ *
+ * This is a one-way door for records written before it is revisited: a hash cannot be computed
+ * retroactively from a record that never stored one, so adding hashes later would give revert
+ * detection only from that point onward. Accepted.
+ */
 export interface ChangesetEntry {
     /**
      * Fully qualified path from the target root. Item ids are unique only within a single array,
      * never within an entry, so an unqualified path is ambiguous.
      */
     path: string;
-    /**
-     * Hash of the value at `path` after the change. Never the value itself, and never the value
-     * before the change.
-     */
-    hash: string;
     /**
      * Field label as it read at the moment of the write, so the timeline stays legible after the
      * model is renamed or the field is removed.

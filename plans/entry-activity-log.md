@@ -69,14 +69,35 @@ depend on CMS-entry semantics, on `list`-with-filter, or on the model being quer
 displayName), `action`, `source`, `correlationId`, `changeset`. Target type always `cms-entry` in
 v1 but stored, not implied.
 
-**Changeset entry.** `path`, `hash`, `label` (captured at write time so the timeline survives model
+**Changeset entry.** `path`, `label` (captured at write time so the timeline survives model
 changes), and `operation` for structural changes. No values, ever — not before, not after, not
 truncated.
 
-**Hashing.** A deterministic serialiser, specified and unit-tested in isolation: sorted keys,
-`null` and `undefined` collapsed to one representation, empty string and absent collapsed to one
-representation, one canonical number format. Salted per target so hashes cannot be compared across
-entries or brute-forced back to values.
+**No persisted hash — a deliberate departure from the original brief** (decided 2026-09-10).
+The brief specified a hash per changed field. Three reasons it is not stored:
+
+- **Nothing reads it.** A no-op save is already signalled by an empty changeset, so hashes are not
+  needed for suppression, and no consumer compares a stored hash against another record's.
+- **It leaks the very thing the feature promises not to store.** With any derivable salt, a
+  low-cardinality field's new value is recoverable by hashing the candidates — a boolean is two
+  guesses. And for the lowest-cardinality fields the changeset entry leaks it anyway: recording
+  that a boolean changed states its new value.
+- **The one genuine consumer is speculative.** Detecting a revert to a previous value is the only
+  use that needs persisted hashes, and it is not specified. Introducing a secret, choosing its
+  source on AWS, choosing it again for Standalone, and carrying a recoverable-value leak in the
+  meantime is too much cost for a feature nobody has asked for.
+
+**One-way door, accepted.** A hash cannot be computed retroactively for a record that never stored
+one, so if revert detection is specified later it will work only from that point forward.
+
+**Hashing stays inside the differ.** Subtree short-circuiting and id-churn detection both compare
+two trees hashed fresh within a single save, so they are unaffected. With nothing persisted there is
+nothing to salt against — a constant salt cancels out inside one comparison — so hashing is a pure
+function, not an injectable service.
+
+**The deterministic serialiser is still specified and unit-tested in isolation**: sorted keys,
+`null` / `undefined` / empty string collapsed to one representation, one canonical number format,
+and type tags so a numeric string cannot collide with a number.
 
 **Path encoding.** Id-keyed segments for repeatable-object and dynamic-zone items, with a defined
 encoding for items that carry no id — both cases exist on `next` and both persist after #5606
@@ -88,7 +109,7 @@ tests for hash determinism. No capture, no read API.
 
 ### Delivered
 
-`packages/api-activity-log`, 53 unit tests passing, builds and lints clean, `adio` clean.
+`packages/api-activity-log`, 55 unit tests passing, builds and lints clean, `adio` clean.
 
 Only the API package was scaffolded. `app-activity-log` arrives at Checkpoint 6 rather than being
 created empty five checkpoints early.
@@ -106,7 +127,7 @@ src/
     types.ts                 record shape, action unions, changeset entry
     errors.ts
     paths.ts                 path encoding, common-parent roll-up
-    hashing/                 canonicalize, ValueHasher, ActivityHashSalt
+    hashing/                 canonicalize, hashValue (pure, differ-internal)
   storage/privateModel/      the replaceable adapter
   ActivityLogAppFeature.ts
 ```
@@ -132,8 +153,12 @@ src/
   just read shifts the offset the cursor encodes, and it returns a failure rather than success when
   it runs out of passes, so unfinished work is visible to the caller.
 
-**Two decisions raised rather than taken** — see the Checkpoint 2 report: the hash salt's source
-(target-derived is brute-forceable for low-cardinality fields) and the tier gate's license wiring.
+**Two decisions raised in the Checkpoint 2 report, both since resolved:**
+
+- **Persisted hashes: dropped.** See the record shape section above. The hasher and its per-target
+  salt abstraction went with them — with nothing stored, the salt secured nothing.
+- **Tier gate: deferred to just before the pull request** (decided 2026-09-10). Left as written for
+  now. See the pre-pull-request items in Checkpoint 7; this must not ship as-is.
 
 ---
 
@@ -316,6 +341,27 @@ not below it, because unlike the read cost it appears on a customer's bill every
 only under load.
 
 **5. `ForceDeleteDecorator`** as a deliberate capture gap.
+
+**6. No persisted hash per changed field — a deliberate departure from the brief.** State the
+reasoning, not just the fact, so it can be revisited if revert detection is ever specified: nothing
+reads a stored hash across records because an empty changeset already signals a no-op save; a
+stored hash leaks a low-cardinality field's new value, which the changeset entry leaks anyway for
+the lowest-cardinality fields; and the only consumer that needs persistence is unspecified. Say
+plainly that this is a one-way door for records written in the meantime — a hash cannot be computed
+retroactively — and that this was accepted. Hashing itself is unaffected and still runs inside the
+differ.
+
+### Pre-pull-request items
+
+Deferred decisions that must be closed before the pull request opens, not carried into it.
+
+- **The tier gate.** `ActivityLogAppFeature` calls `isEnabled("activityLog")`, and an unknown flag
+  name resolves to _enabled_ for anyone holding any license, so as written the gate reads as if it
+  works while gating nothing. Harmless today only because nothing registers the feature yet.
+  Closing it means adding `activityLog` to `KnownFeatureFlag` and to `LICENSE_CHECKS` behind a new
+  `canUseActivityLog()` in `packages/wcp` — and the WCP-issued license payload has to carry
+  `features.activityLog` before it can be switched on for anyone, which is a change outside this
+  repository.
 
 Then the pull request against `next`, conventional-commit title.
 

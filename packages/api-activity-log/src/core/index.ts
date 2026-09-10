@@ -1,7 +1,7 @@
 export { ActivityLogStorage } from "./abstractions.js";
 export { ActivityLogPersistenceError, ActivityLogReadError } from "./errors.js";
-export { ActivityHashSalt, ActivityValueHasher } from "./hashing/abstractions.js";
 export { canonicalize } from "./hashing/canonicalize.js";
+export { hashValue } from "./hashing/hashValue.js";
 export {
     commonParentPath,
     encodePath,

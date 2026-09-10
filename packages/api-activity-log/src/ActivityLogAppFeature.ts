@@ -1,6 +1,5 @@
 import { type Container, createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { HashingFeature } from "~/core/hashing/feature.js";
 import { ActivityRecordModel } from "~/storage/privateModel/ActivityRecordModel.js";
 import { PrivateModelStorageFeature } from "~/storage/privateModel/feature.js";
 
@@ -24,7 +23,6 @@ export const ActivityLogAppFeature = createFeature({
 
         container.register(ActivityRecordModel);
 
-        HashingFeature.register(container);
         PrivateModelStorageFeature.register(container);
     }
 });
