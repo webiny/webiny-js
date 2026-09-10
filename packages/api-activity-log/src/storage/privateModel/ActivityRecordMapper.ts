@@ -15,15 +15,39 @@ import type { ActivityRecordValues } from "./abstractions.js";
  * replacement storage mechanism throws away wholesale.
  */
 /**
- * Sort key for one record: its timestamp, then a random suffix.
+ * Sort key for one record: timestamp, then an intra-millisecond tick, then a random suffix.
  *
- * ISO-8601 UTC strings sort lexicographically in time order, so prefixing with the timestamp keeps
- * the ordering right, and the suffix makes the key unique. Uniqueness is the point — a keyset
- * cursor over a non-unique key drops every record that shares the boundary value, and a bulk
- * action writes many records inside a single millisecond.
+ * All three parts are load-bearing, and the key needs two different properties that one part
+ * cannot provide together:
+ *
+ *   - **Unique**, or a keyset cursor drops every record sharing the boundary value.
+ *   - **Monotonic**, or records written inside one millisecond come back scrambled.
+ *
+ * A timestamp alone is neither: `toISOString()` has millisecond precision and a bulk action writes
+ * many records inside one. A timestamp plus a random suffix is unique but not ordered, which shows
+ * up as a timeline that lists rapid saves out of sequence. So the tick orders writes within a
+ * millisecond for this process, and the random suffix keeps the key unique across processes, where
+ * sub-millisecond ordering is undefined anyway.
+ *
+ * Fixed width on the tick matters: the comparison is lexicographic, so `10` must not sort before
+ * `9`.
  */
+const TICK_WIDTH = 6;
+
+let lastTimestamp = "";
+let tick = 0;
+
 const sequenceFor = (timestamp: string): string => {
-    return `${timestamp}#${generateAlphaNumericLowerCaseId(8)}`;
+    if (timestamp === lastTimestamp) {
+        tick++;
+    } else {
+        lastTimestamp = timestamp;
+        tick = 0;
+    }
+
+    const orderedTick = String(tick).padStart(TICK_WIDTH, "0");
+
+    return `${timestamp}#${orderedTick}#${generateAlphaNumericLowerCaseId(6)}`;
 };
 
 export const recordToValues = (record: ActivityRecordInput): ActivityRecordValues => {

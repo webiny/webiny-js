@@ -153,7 +153,21 @@ src/
   just read shifts the offset the cursor encodes, and it returns a failure rather than success when
   it runs out of passes, so unfinished work is visible to the caller.
 
-### The conformance suite
+### The conformance suite is a merge requirement, not an artefact
+
+**No storage adapter merges without running the conformance suite green, the append-stability test
+included.** That is a gate, not a recommendation.
+
+The reason to state it that strongly is that the suite is simultaneously the reason to trust a swap
+and the reason to distrust any adapter that ships without it. Both defects it found on its first
+run were in code that had already been reported as complete and tested, and both were invisible to
+278 unit tests because those tests exercise fakes. An adapter that has not run this suite has not
+demonstrated it can store and page an append-only log; it has only demonstrated that it compiles.
+
+A third defect surfaced on a later run, which makes the same point again: the ordering test failed
+intermittently because the sort key was unique but not monotonic, so records written inside one
+millisecond came back scrambled. It had passed earlier by luck. Any adapter can get this wrong, and
+only a suite that runs repeatedly against real storage will say so.
 
 `__tests__/conformance/storageConformance.ts` is a parameterised suite defined against
 `ActivityLogStorage` and nothing else — no models, no entries, no cursor it can read. The
@@ -251,8 +265,22 @@ Note also that the inline best-effort cleanup pattern used by workflows and the 
 (list with `limit: 10000`, loop, swallow errors) does not scale to this dataset. That is the
 pattern being deliberately declined.
 
-**Two coverage guards**, as tests, not conventions: every entry write use case publishes an event;
-every entry event has a handler or an explicit, named opt-out.
+**Four guards**, as tests, not conventions:
+
+1. Every entry write use case publishes an event.
+2. Every entry event has a handler or an explicit, named opt-out.
+3. **Every handler and service constructs against the bare minimum** — a container holding only the
+   platform abstractions the feature may assume, with background tasks deliberately absent.
+4. **No required dependency outside the platform contract**, read from the source, so a handler
+   nobody remembered to add to guard 3 still cannot introduce one unnoticed.
+
+Guards 3 and 4 exist because construction is a failure mode of its own. `EventPublisher` resolves
+every handler for an event before invoking any of them, so a required dependency that is not
+registered throws _inside the write_, before any guard in `handle` and before any `try` in the
+recorder exists to catch it. Every test in the containment suite exercises an already-constructed
+handler, so none of them can see it. `PurgeOnEntryDeleted` shipped with exactly that defect —
+`TaskService` required, its own `isPrivate` guard unreachable, every permanent delete failing in
+any project without background tasks.
 
 ### 3a — delivered
 
@@ -513,6 +541,13 @@ the swap is not costed as though the abstraction covered everything.
 - **Read authorisation.** Not a storage concern in any implementation. Private models set
   `authorization: false`, so the current store enforces nothing, and whatever Checkpoint 5 builds
   must not assume a future store will either.
+
+**9. The cursor fix is a worked example of an already-filed defect.** The offset cursor replaced in
+this adapter is the same defect class as the pre-existing entry-list cursor issue filed separately
+— `encodeCursor(start + limit)` with `slice(start, end)`, emitted even when the result set is
+exhausted. The keyset approach here (a unique, monotonic sort key plus `_lt`, and a cursor returned
+only when another page exists) is a worked example for anyone taking that on, on a dataset where
+the instability is unmissable rather than intermittent.
 
 ### Pre-pull-request items
 
