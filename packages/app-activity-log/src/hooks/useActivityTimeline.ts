@@ -40,6 +40,10 @@ export interface UseActivityTimelineParams {
      * timeline in place, without the loading state — see `writeSignature`.
      */
     writeToken?: string;
+    /** The revision the form is showing, so its group can be marked current. */
+    currentRevision?: string;
+    /** The current revision's publishing status, which only the form knows. */
+    currentStatus?: string | null;
 }
 
 export interface UseActivityTimelineResult {
@@ -268,8 +272,15 @@ export const useActivityTimeline = (
     const clearFilters = useCallback(() => setFilters({}), []);
 
     const view = useMemo(
-        () => buildTimelineView({ records, filters, hasMore }),
-        [records, filters, hasMore]
+        () =>
+            buildTimelineView({
+                records,
+                filters,
+                hasMore,
+                currentRevision: params.currentRevision,
+                currentStatus: params.currentStatus
+            }),
+        [records, filters, hasMore, params.currentRevision, params.currentStatus]
     );
 
     return {

@@ -1,6 +1,6 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import { ActivityTimelineView } from "~/components/ActivityTimeline.js";
 import { buildTimelineView } from "~/hooks/buildTimelineView.js";
@@ -18,6 +18,14 @@ import type { TimelineRecord } from "~/timeline/types.js";
  * If one of these breaks during the handover, the fix is to make the new component say the same
  * thing — not to delete the test.
  */
+
+/**
+ * Automatic cleanup is not configured in this repo's vitest setup, so without this every render
+ * stays in `document.body` and `screen` queries see earlier tests' markup. It shows up as
+ * "found multiple elements" the moment two tests describe a similar row — a false failure that
+ * would otherwise be worked around by making assertions less specific.
+ */
+afterEach(cleanup);
 
 let seq = 0;
 
@@ -44,6 +52,8 @@ const renderState = (
     options: {
         filters?: TimelineFilters;
         hasMore?: boolean;
+        currentRevision?: string;
+        currentStatus?: string | null;
         loading?: boolean;
         refreshing?: boolean;
         error?: string | null;
@@ -55,7 +65,13 @@ const renderState = (
     const rendered = render(
         <AdminUiProvider>
             <ActivityTimelineView
-                view={buildTimelineView({ records, filters, hasMore })}
+                view={buildTimelineView({
+                    records,
+                    filters,
+                    hasMore,
+                    currentRevision: options.currentRevision,
+                    currentStatus: options.currentStatus
+                })}
                 loading={options.loading ?? false}
                 loadingMore={false}
                 refreshing={options.refreshing ?? false}
@@ -105,9 +121,9 @@ describe("the eight states", () => {
 
         // Closed: how much changed, not what.
         expect(text()).not.toContain("Title");
-        expect(text()).toContain("2 fields changed");
+        expect(text()).toContain("edited 2 fields");
 
-        fireEvent.click(screen.getByRole("button", { name: /fields changed/ }));
+        fireEvent.click(screen.getByRole("button", { name: /edited 2 fields/ }));
 
         expect(text()).toContain("Title");
         expect(text()).toContain("Body");
@@ -117,9 +133,9 @@ describe("the eight states", () => {
         // Stated rather than left as an empty space, which would read as a bug.
         const { text } = renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
 
-        fireEvent.click(screen.getByRole("button", { name: /field changed/ }));
+        fireEvent.click(screen.getByRole("button", { name: /edited 1 field/ }));
 
-        expect(text()).toContain("Values are not recorded");
+        expect(text()).toContain("Values from this save are not recorded");
     });
 
     it("3. structural changes name the operation", () => {
@@ -131,7 +147,11 @@ describe("the eight states", () => {
             })
         ]);
 
-        fireEvent.click(screen.getByRole("button", { name: /field changed/ }));
+        // The sentence names the structural operation before anything is expanded, because adding
+        // a block is one editorial action rather than a field count.
+        expect(text()).toContain("added a block");
+
+        fireEvent.click(screen.getByRole("button", { name: /added a block/ }));
 
         expect(text()).toContain("added");
     });
@@ -145,7 +165,8 @@ describe("the eight states", () => {
             })
         ]);
 
-        expect(text()).toContain("Review step approved");
+        expect(text()).toContain("approved a review step");
+        expect(text()).toContain("Step approved");
         expect(text()).toContain("Legal review");
     });
 
@@ -242,6 +263,122 @@ describe("refreshing after a save", () => {
     });
 });
 
+describe("the design's reading of a revision", () => {
+    it("says how much happened in a revision and when, without expanding anything", () => {
+        const at = (day: number) => new Date(Date.UTC(2026, 8, day, 10)).toISOString();
+        const { text } = renderState([
+            record({ timestamp: at(2) }),
+            record({ timestamp: at(1), action: "entry.publish" })
+        ]);
+
+        expect(text()).toContain("2 saves");
+        expect(text()).toContain("1–2 Sep");
+    });
+
+    it("marks the revision the form is showing", () => {
+        // Not derived from the records: a review transition can land on an older revision, so the
+        // newest record is not evidence of which revision is current.
+        const { text } = renderState([record({ revision: "abc#0002" })], {
+            currentRevision: "abc#0002",
+            currentStatus: "draft"
+        });
+
+        expect(text()).toContain("Current");
+        expect(text()).toContain("draft");
+    });
+
+    it("does not mark a revision current when the form is on another one", () => {
+        const { text } = renderState([record({ revision: "abc#0001" })], {
+            currentRevision: "abc#0002"
+        });
+
+        expect(text()).not.toContain("Current");
+    });
+
+    it("names who was involved in the revision", () => {
+        const { text } = renderState([record()]);
+
+        expect(text()).toContain("Ada Editor");
+    });
+});
+
+describe("deep field paths, as the design resolves them", () => {
+    it("leads with the field and places it with a path", () => {
+        // Treatment B. The changed thing is what a reader is looking for; the containers are how
+        // they place it. A full inline path is precise and scans terribly.
+        const { text } = renderState([
+            record({
+                changeset: [
+                    { path: "pageBody.testimonials#a1b2c3.heading", label: "Heading" },
+                    { path: "title", label: "Title" }
+                ]
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /edited 2 fields/ }));
+
+        expect(text()).toContain("Heading");
+        expect(text()).toContain("Page body");
+        expect(text()).toContain("Testimonials");
+    });
+
+    it("gives a positional item its number and an identified one none", () => {
+        // A stable id says *which* block changed but not where it sits, and its position may since
+        // have moved. Inventing one would be a guess a reader would act on.
+        const positional = renderState([
+            record({ changeset: [{ path: "sections[2].title", label: "Title" }] })
+        ]);
+        fireEvent.click(screen.getByRole("button", { name: /edited 1 field/ }));
+        expect(positional.text()).toContain("item 3");
+
+        positional.unmount();
+
+        const identified = renderState([
+            record({ changeset: [{ path: "sections#a1b2c3.title", label: "Title" }] })
+        ]);
+        fireEvent.click(screen.getByRole("button", { name: /edited 1 field/ }));
+        expect(identified.text()).not.toContain("item ");
+    });
+});
+
+describe("non-human activity", () => {
+    it("keeps the person's name on a scheduled write and says what ran", () => {
+        // The design's hardest attribution case: the person's name is right, and they were not
+        // there. Both facts have to be on the row.
+        const { text } = renderState([
+            record({ action: "entry.publish", source: "task:cmsEntriesScheduledPublish" })
+        ]);
+
+        expect(text()).toContain("Ada Editor");
+        expect(text()).toContain("Automated");
+        expect(text()).toContain("background task");
+    });
+
+    it("reads an API-key write as a machine", () => {
+        const { text } = renderState([
+            record({
+                source: "api-key",
+                actor: { id: "key-1", type: "api-key", displayName: "content-sync" },
+                changeset: [{ path: "slug", label: "Slug" }]
+            })
+        ]);
+
+        expect(text()).toContain("content-sync");
+        expect(text()).toContain("API key");
+    });
+});
+
+describe("the route to compare", () => {
+    it("offers compare at the revision boundary and admits what it cannot show", () => {
+        // The honesty problem the design named: a reader looking at Tuesday's save wants to see
+        // Tuesday, and that state no longer exists anywhere.
+        const { text } = renderState([record()]);
+
+        expect(text()).toContain("Compare revisions");
+        expect(text()).toContain("not comparable");
+    });
+});
+
 describe("states around loading and failure", () => {
     it("renders while loading without throwing", () => {
         expect(() => renderState([], { loading: true })).not.toThrow();
@@ -264,7 +401,9 @@ describe("collapsing, as the reader sees it", () => {
             record({ timestamp: "2026-09-10T10:10:00.000Z" })
         ]);
 
-        expect(text()).toContain("Saved ×3");
+        // The save count leads, because "6 fields across 4 saves" and "6 fields in one save" are
+        // different editorial events.
+        expect(text()).toContain("made 3 saves");
     });
 
     it("does not merge two redacted actors into one row", () => {
@@ -276,7 +415,8 @@ describe("collapsing, as the reader sees it", () => {
             record({ timestamp: "2026-09-10T10:15:00.000Z", actor: redacted })
         ]);
 
-        expect(text()).not.toContain("Saved ×2");
-        expect(screen.getAllByText("Someone")).toHaveLength(2);
+        expect(text()).not.toContain("made 2 saves");
+        // Two rows, plus the revision header's own list of who was involved.
+        expect(screen.getAllByText("Someone").length).toBeGreaterThanOrEqual(2);
     });
 });

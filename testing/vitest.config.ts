@@ -119,11 +119,25 @@ export default defineConfig(async () => {
 
     return {
         resolve: {
-            alias: {
-                "graphql/language/index.js": "graphql/language/index.js",
-                "graphql/language/ast.js": "graphql/language/ast.js",
-                graphql: "graphql/index.js"
-            },
+            alias: [
+                /**
+                 * `@webiny/icons` ships raw `.svg` files that a real build turns into React
+                 * components through a bundler plugin. Vitest has no such plugin, so the import
+                 * resolves to something without a `ReactComponent` export and React throws while
+                 * rendering it — which makes every design-system component that uses an icon
+                 * unrenderable in tests, the accordion and the tag among them.
+                 *
+                 * Scoped to `@webiny/icons` so a project-local svg imported for its URL is
+                 * untouched.
+                 */
+                {
+                    find: /^@webiny\/icons\/.*\.svg$/,
+                    replacement: path.resolve(import.meta.dirname, "./svgStub.tsx")
+                },
+                { find: "graphql/language/index.js", replacement: "graphql/language/index.js" },
+                { find: "graphql/language/ast.js", replacement: "graphql/language/ast.js" },
+                { find: /^graphql$/, replacement: "graphql/index.js" }
+            ],
             tsconfigPaths: true
         },
         test: {
