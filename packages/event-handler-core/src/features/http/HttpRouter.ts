@@ -6,7 +6,6 @@ import {
 } from "~/features/http/abstractions.js";
 import { HttpResponseBuilder } from "~/features/http/HttpResponseBuilder.js";
 import { toHttpResponse } from "~/features/http/invokeHttpRoute.js";
-import { buildHttpRoute } from "~/features/http/buildHttpRoute.js";
 import { RequestContainer } from "~/features/events/RequestContainer.js";
 import type {
     IHttpRouteDefinition,
@@ -53,7 +52,9 @@ class HttpRouterImplClass implements HttpRouter.Interface {
      * constructed the whole GraphQL engine, every contextual schema and the AI provider before
      * discovering it wanted none of them.
      *
-     * See {@link buildHttpRoute} for how the winner is built, and what that costs.
+     * `resolveImplementation` asks for exactly the matched route's class: it reads that route's
+     * dependencies from its own metadata, resolves them here, and applies decorators registered
+     * for `HttpRouteHandler`, so a route stays decoratable.
      */
     constructor(private container: Container) {}
 
@@ -64,7 +65,7 @@ class HttpRouterImplClass implements HttpRouter.Interface {
                 continue;
             }
 
-            const route = buildHttpRoute(this.container, definition.handler);
+            const route = this.container.resolveImplementation(definition.handler);
             const response = new HttpResponseBuilder();
             const result = await route.handle(
                 {
