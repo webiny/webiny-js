@@ -13,6 +13,7 @@ import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
 import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
+import { SimpleContentEntriesFeature } from "~/features/simpleContentEntries/SimpleContentEntriesFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
@@ -123,6 +124,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         StorageFeature.register(container);
         CmsInstallerFeature.register(container);
         ContentEntriesFeature.register(container);
+        SimpleContentEntriesFeature.register(container);
         ContentModelFeature.register(container);
         ContentModelGroupFeature.register(container);
         ModelBuilderFeature.register(container);
