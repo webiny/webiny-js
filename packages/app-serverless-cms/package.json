@@ -16,6 +16,7 @@
     "@emotion/react": "^11.14.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
+    "@webiny/app-activity-log": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-ui": "0.0.0",
     "@webiny/app-audit-logs": "0.0.0",

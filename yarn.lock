@@ -10333,7 +10333,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-activity-log@workspace:packages/api-activity-log":
+"@webiny/api-activity-log@npm:0.0.0, @webiny/api-activity-log@workspace:packages/api-activity-log":
   version: 0.0.0-use.local
   resolution: "@webiny/api-activity-log@workspace:packages/api-activity-log"
   dependencies:
@@ -10585,6 +10585,7 @@ __metadata:
   resolution: "@webiny/api-event-handler-core@workspace:packages/api-event-handler-core"
   dependencies:
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-activity-log": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
@@ -11700,7 +11701,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-activity-log@workspace:packages/app-activity-log":
+"@webiny/app-activity-log@npm:0.0.0, @webiny/app-activity-log@workspace:packages/app-activity-log":
   version: 0.0.0-use.local
   resolution: "@webiny/app-activity-log@workspace:packages/app-activity-log"
   dependencies:
@@ -12122,6 +12123,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
+    "@webiny/app-activity-log": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-admin-ui": "npm:0.0.0"
     "@webiny/app-audit-logs": "npm:0.0.0"

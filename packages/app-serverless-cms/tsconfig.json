@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-aco" },
+    { "path": "../app-activity-log" },
     { "path": "../app-admin" },
     { "path": "../app-admin-ui" },
     { "path": "../app-audit-logs" },
@@ -38,6 +39,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
       "@webiny/app-aco": ["../app-aco/src"],
+      "@webiny/app-activity-log/*": ["../app-activity-log/src/*"],
+      "@webiny/app-activity-log": ["../app-activity-log/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-admin-ui/*": ["../app-admin-ui/src/*"],
