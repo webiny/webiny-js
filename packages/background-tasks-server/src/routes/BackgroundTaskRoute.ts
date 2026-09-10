@@ -70,6 +70,7 @@ export const BackgroundTaskRoute = HttpRouteHandler.createImplementation({
 });
 
 class BackgroundTaskRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "background-task";
     readonly method = "POST";
     readonly path = "/background-task";
     readonly handler = BackgroundTaskRoute;

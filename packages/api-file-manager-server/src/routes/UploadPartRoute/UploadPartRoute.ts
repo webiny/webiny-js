@@ -63,6 +63,7 @@ export const UploadPartRoute = HttpRouteHandler.createImplementation({
 });
 
 class UploadPartRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "upload-part";
     readonly method = "PUT";
     readonly path = "/webiny-file-upload/parts";
     readonly handler = UploadPartRoute;
