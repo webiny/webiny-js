@@ -16,15 +16,15 @@ interface RoleSummary {
  * Resolves role names to the IDs `createTeam` takes. Separate from the write, so the user approves a
  * team with roles that were looked up rather than guessed.
  *
- * Returns the slug too, because it is what a human recognises and what the admin UI shows, but `id`
- * is the field a team stores. The two are easy to confuse and nothing at the type level separates
- * them, so both the description and `createTeam` name the distinction explicitly.
+ * Returns the slug too, because it is what a human recognises and what the admin UI shows, while
+ * `id` is what a team actually stores. Nothing at the type level separates the two, so `createTeam`
+ * accepts either and resolves it rather than making the caller guess which one that field wants.
  */
 class ListRolesToolImpl implements IAiSdkTool<Record<string, never>> {
     readonly name = "listRoles";
     readonly title = "List roles";
     readonly description =
-        "Lists the security roles in this project. Call this before createTeam and pass the `id` of each role you want, NOT the `slug`. A team stores role IDs, and a slug silently grants nothing.";
+        "Lists the security roles in this project. Call this before createTeam and pass the `id` of each role you want. A slug also works, but a value that is neither is rejected.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: true, idempotentHint: true };
 

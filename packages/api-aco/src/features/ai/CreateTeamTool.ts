@@ -22,7 +22,7 @@ const inputSchema = z.object({
     roles: z
         .array(z.string())
         .describe(
-            "Role IDs — the `id` field from listRoles, NOT the slug. Resolve them with listRoles first; a team whose roles do not resolve grants nothing."
+            "Roles from listRoles. Prefer the `id`; a `slug` is accepted and resolved for you. Resolve them with listRoles first, since an unknown value is rejected rather than stored."
         )
 });
 
@@ -45,7 +45,7 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
     readonly name = "createTeam";
     readonly title = "Create team";
     readonly description =
-        "Creates a team with a set of roles. Call listRoles first and pass the role IDs it returns — do not guess them, and do not pass slugs. Requires user approval.";
+        "Creates a team with a set of roles. Call listRoles first and pass what it returns; do not guess role identifiers. Requires user approval.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: false };
 
@@ -56,10 +56,14 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
 
     async execute(input: Input): Promise<CreatedTeam> {
         /*
-         * `team.roles` holds role IDs, not slugs — see GetPermissionsFromIdentity, which resolves them
-         * against the roles repository. The create schema is `z.array(z.string())`, so a slug is
-         * accepted and then silently resolves to nothing: the team exists and grants no permissions.
-         * Reject anything that is not a known role ID rather than write a team that looks fine.
+         * `team.roles` stores role IDs, and only IDs: GetPermissionsFromIdentity resolves them with
+         * `id_in` against the roles repository. Elsewhere in the same area a team is identified by
+         * SLUG (folder permission targets are `team:<slug>`), so which identifier a given field wants
+         * is not guessable, and `z.array(z.string())` accepts either. A slug stored here resolves to
+         * no role at all: the team exists, looks right in the UI, and grants nothing.
+         *
+         * So resolve rather than refuse. Both forms map to the ID the field needs, and only a value
+         * that is neither is an error, which is the one case the caller genuinely has to fix.
          */
         const rolesResult = await this.listRoles.execute();
 
@@ -67,19 +71,26 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
             throw new Error(`Could not verify the roles: ${rolesResult.error.message}`);
         }
 
-        const knownIds = new Set(rolesResult.value.map(role => role.id));
-        const unknown = input.roles.filter(role => !knownIds.has(role));
+        const byId = new Map(rolesResult.value.map(role => [role.id, role.id]));
+        const bySlug = new Map(rolesResult.value.map(role => [role.slug, role.id]));
+
+        const unknown: string[] = [];
+
+        // Id first, so a slug that happens to equal some other role's id cannot hijack it.
+        const roleIds = input.roles.map(role => {
+            const resolved = byId.get(role) ?? bySlug.get(role);
+
+            if (!resolved) {
+                unknown.push(role);
+                return role;
+            }
+
+            return resolved;
+        });
 
         if (unknown.length > 0) {
-            const bySlug = new Map(rolesResult.value.map(role => [role.slug, role.id]));
-            const hints = unknown.map(role => {
-                const id = bySlug.get(role);
-                return id
-                    ? `"${role}" is a slug; its id is "${id}"`
-                    : `"${role}" is not a known role`;
-            });
-
-            throw new Error(`Roles must be IDs from listRoles. ${hints.join("; ")}.`);
+            const names = unknown.map(role => `"${role}"`).join(", ");
+            throw new Error(`Not a known role id or slug: ${names}. Call listRoles first.`);
         }
 
         const result = await this.createTeam.execute({
@@ -87,7 +98,7 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
             slug: input.slug,
             // An omitted description becomes "", the same mapping the use case applies to its own input.
             description: descriptionOnCreate(input.description),
-            roles: input.roles
+            roles: roleIds
         });
 
         if (result.isFail()) {
@@ -100,7 +111,8 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
             id: team.id,
             name: team.name,
             slug: team.slug,
-            roles: input.roles
+            // The resolved IDs, so the caller sees what was actually stored.
+            roles: roleIds
         };
     }
 }
