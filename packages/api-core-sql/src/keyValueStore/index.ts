@@ -13,7 +13,9 @@ interface IKeyValueRow {
     key: string;
     scope: string;
     value: string;
-    expiresAt: Date | null;
+    // A UTC ISO string in both directions. Callers hand us a `Date`, which we convert on the way in,
+    // and `withKnexDefaults` converts whatever the driver returns on the way out.
+    expiresAt: string | null;
 }
 
 interface CreateStorageOperationsParams {
@@ -79,7 +81,7 @@ export const createStorageOperations = (
 
             try {
                 const scopedKey = createScopedKey(key, scope);
-                const expiresAt = options?.expiresAt ?? null;
+                const expiresAt = options?.expiresAt?.toISOString() ?? null;
 
                 const row: IKeyValueRow = {
                     scopedKey,
