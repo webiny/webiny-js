@@ -12680,16 +12680,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/di@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@webiny/di@npm:1.0.2"
-  dependencies:
-    reflect-metadata: "npm:^0.2.2"
-  checksum: 10/50c98ed6a0c00bca21e1f2a03b78ac7f221b0bacf5e33683dd51bfd2462ccd9787ec59cb540f487e3d1cafc0399a026dfd68a560a60f9b7c350c66152bcc6f0d
-  languageName: node
-  linkType: hard
-
-"@webiny/di@npm:^1.1.0":
+"@webiny/di@npm:^1.0.2, @webiny/di@npm:^1.1.0":
   version: 1.1.0
   resolution: "@webiny/di@npm:1.1.0"
   dependencies:
