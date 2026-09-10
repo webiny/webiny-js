@@ -58,8 +58,8 @@ code; no GraphQL, no admin UI, no domain events.
 
 - Branch: `claude/simple-content-entries`, 17 commits ahead of `next`, PR #5678 open as draft
 - Checks: `oxfmt --check`, `oxlint`, `adio`, `check-ts-configs`, `yarn build` — all green
-- Tests: 996 passed / 0 failed on **sql** and on **ddb-os**; DynamoDB run in progress at handoff
-  time (its earlier 994 predates the last two integration tests)
+- Tests: **996 passed / 0 failed on every reachable backend** — ddb (412s), sql (264s), ddb-os
+  (686s). Identical totals on all three, so the OpenSearch list fix regressed nothing.
 - Logs for every run are in the session scratchpad under `test-results/`, each with a header
   recording backend, target, commit and timestamps
 
