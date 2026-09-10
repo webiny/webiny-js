@@ -1,19 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
-import { HttpRoute, invokeHttpRoute } from "@webiny/event-handler-core";
+import {
+    HttpRouteHandler,
+    RequestContainer,
+    buildHttpRoute,
+    invokeHttpRoute
+} from "@webiny/event-handler-core";
 import type { IHttpRequest } from "@webiny/event-handler-core";
-import { BackgroundTaskRoute } from "~/routes/BackgroundTaskRoute.js";
+import {
+    BackgroundTaskRoute,
+    BackgroundTaskRouteDefinition
+} from "~/routes/BackgroundTaskRoute.js";
 import { InternalToken } from "~/domain/InternalToken.js";
 
 const TOKEN_VALUE = "valid-token-abc";
 
-const createRouteInstance = (): HttpRoute.Interface => {
+const createRouteInstance = (): HttpRouteHandler.Interface => {
     const container = new Container();
     container.registerInstance(RequestContainer, container);
     container.registerInstance(InternalToken, { value: TOKEN_VALUE });
-    container.register(BackgroundTaskRoute);
-    return container.resolve(HttpRoute);
+    return buildHttpRoute(container, BackgroundTaskRoute);
 };
 
 const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({
@@ -36,10 +42,12 @@ const makeRequest = (overrides: Partial<IHttpRequest> = {}): IHttpRequest => ({
 
 describe("BackgroundTaskRoute", () => {
     it("should have correct method and path", () => {
-        const route = createRouteInstance();
+        // The definition is what the router matches on; it has no dependencies, so building it
+        // costs nothing and never touches the route itself.
+        const definition = new BackgroundTaskRouteDefinition();
 
-        expect(route.method).toBe("POST");
-        expect(route.path).toBe("/background-task");
+        expect(definition.method).toBe("POST");
+        expect(definition.path).toBe("/background-task");
     });
 
     it("should reject requests without token header", async () => {

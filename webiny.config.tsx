@@ -64,7 +64,14 @@ export const Extensions = () => {
             <Infra.Api.MaxBundleSize size={6291456} />
 
             {/* Api 👇 */}
-            {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
+            <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
+            {/* Written with `:orderId` on purpose: API Gateway needs `{orderId}` and the router
+                needs `:orderId`, and the extension converts for each. Either spelling should work. */}
+            <Api.Route
+                method={"GET"}
+                path={"/my-api-echo/:orderId"}
+                src={"/extensions/MyApiEchoRoute.ts"}
+            />
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered

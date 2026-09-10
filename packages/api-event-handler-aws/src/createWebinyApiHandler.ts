@@ -11,18 +11,14 @@
  * template) is what makes it unit/integration testable.
  */
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import {
-    createLambdaHandler,
-    ApiGatewayFeature,
-    BackgroundTaskEventType,
-    EventBridgeEventType,
-    WebSocketEventType
-} from "@webiny/event-handler-aws";
-import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
-import { BulkActionsEventBridgeLambdaHandlerFeature } from "@webiny/api-headless-cms-bulk-actions-aws";
+import { createLambdaHandler, ApiGatewayFeature } from "@webiny/event-handler-aws";
 import { ApiGatewayIdentityLoaderDecorator } from "~/handlers/ApiGatewayIdentityLoaderDecorator.js";
 import { ApiGatewayTenantLoaderDecorator } from "~/handlers/ApiGatewayTenantLoaderDecorator.js";
-import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
+import {
+    registerInboundEventTypes,
+    registerWebinyApiChild,
+    registerWebinyApiRoot
+} from "~/composition/index.js";
 import type { WebinyApiCompositionConfig } from "~/composition/index.js";
 
 export type { RegisterRootStorageContext } from "~/composition/index.js";
@@ -48,21 +44,10 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             container.registerDecorator(ApiGatewayIdentityLoaderDecorator);
             container.registerDecorator(ApiGatewayTenantLoaderDecorator);
 
-            // Background task invocations (Step Functions → Lambda directly). BackgroundTasksAwsFeature
-            // registers the Lambda handler + StepFunctionService (the AWS dispatch transport).
-            container.register(BackgroundTaskEventType);
-            BackgroundTasksAwsFeature.register(container);
-
-            // EventBridge invocations (e.g. scheduled empty-trash-bin). Without the event type the
-            // dispatcher can't match an EventBridge-shaped event; without the handler the container
-            // can't resolve EventBridgeEventHandler.
-            container.register(EventBridgeEventType);
-            BulkActionsEventBridgeLambdaHandlerFeature.register(container);
-
-            // WebSocket invocations (API Gateway WebSocket → this Lambda: $connect/$disconnect/$default).
-            // Without the event type + handler, the DI dispatcher can't match a WS event ("No event type
-            // matched") so $connect fails and no connection is ever registered → no server→client push.
-            container.register(WebSocketEventType);
+            // Every non-HTTP invocation shape (background tasks, EventBridge, scheduled actions,
+            // WebSockets) with its handler. Kept in one function so the set is testable and an
+            // inbound transport can't be half-wired.
+            registerInboundEventTypes(container);
 
             // Resolved here rather than at factory time: one bundle exports BOTH this handler and the
             // streaming one, so building the client eagerly would open a second DynamoDB client on

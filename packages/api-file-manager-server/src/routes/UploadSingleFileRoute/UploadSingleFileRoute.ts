@@ -1,17 +1,14 @@
 import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { verifyUploadToken } from "~/utils/uploadToken.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 import { isPathContained, toBuffer, parseMultipart, getBoundary } from "../utils.js";
 
-class UploadSingleFileRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/webiny-file-upload";
-
+class UploadSingleFileRouteImpl implements HttpRouteHandler.Interface {
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         const storagePath = this.config.storagePath;
         const secret = this.config.uploadSecret;
 
@@ -71,7 +68,19 @@ class UploadSingleFileRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const UploadSingleFileRoute = HttpRoute.createImplementation({
+export const UploadSingleFileRoute = HttpRouteHandler.createImplementation({
     implementation: UploadSingleFileRouteImpl,
     dependencies: [FileManagerServerConfig]
+});
+
+class UploadSingleFileRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/webiny-file-upload";
+    readonly handler = UploadSingleFileRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const UploadSingleFileRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: UploadSingleFileRouteDefinitionImpl,
+    dependencies: []
 });

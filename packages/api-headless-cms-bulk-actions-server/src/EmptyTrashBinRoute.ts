@@ -1,21 +1,18 @@
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/abstractions.js";
 import { BulkActionsInternalToken } from "./BulkActionsInternalToken.js";
 
 const INTERNAL_HEADER = "x-webiny-bulk-actions-token";
 
-class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/empty-trash-bins";
-
+class EmptyTrashBinRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly tenantContext: TenantContext.Interface,
         private readonly taskService: TaskService.Interface,
         private readonly internalToken: BulkActionsInternalToken.Interface
     ) {}
 
-    public async handle(request: HttpRoute.Request, response: HttpRoute.Response) {
+    public async handle(request: HttpRouteHandler.Request, response: HttpRouteHandler.Response) {
         if (request.headers[INTERNAL_HEADER] !== this.internalToken.value) {
             return response.status(403).json({ error: "Forbidden." });
         }
@@ -34,7 +31,19 @@ class EmptyTrashBinRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const EmptyTrashBinRoute = HttpRoute.createImplementation({
+export const EmptyTrashBinRoute = HttpRouteHandler.createImplementation({
     implementation: EmptyTrashBinRouteImpl,
     dependencies: [TenantContext, TaskService, BulkActionsInternalToken]
+});
+
+class EmptyTrashBinRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/empty-trash-bins";
+    readonly handler = EmptyTrashBinRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const EmptyTrashBinRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: EmptyTrashBinRouteDefinitionImpl,
+    dependencies: []
 });

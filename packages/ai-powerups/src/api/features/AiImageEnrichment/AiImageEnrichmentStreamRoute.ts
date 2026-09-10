@@ -1,4 +1,4 @@
-import { HttpRoute, toSseFrame } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { PrepareImageEnrichmentUseCase } from "./abstractions.js";
@@ -16,10 +16,7 @@ import { imageEnrichmentErrorStatusCode } from "./imageEnrichmentErrorStatusCode
  * code. Only the AI call itself streams; once the first byte is out the status is committed to 200
  * and failures can only be reported as an `error` event.
  */
-class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
-    readonly method = "POST";
-    readonly path = "/stream/fm/files/:fileId/enrich";
-
+class AiImageEnrichmentStreamRouteImpl implements HttpRouteHandler.Interface {
     constructor(
         private prepare: PrepareImageEnrichmentUseCase.Interface,
         private ai: Ai.Interface
@@ -85,7 +82,19 @@ class AiImageEnrichmentStreamRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const AiImageEnrichmentStreamRoute = HttpRoute.createImplementation({
+export const AiImageEnrichmentStreamRoute = HttpRouteHandler.createImplementation({
     implementation: AiImageEnrichmentStreamRouteImpl,
     dependencies: [PrepareImageEnrichmentUseCase, Ai]
+});
+
+class AiImageEnrichmentStreamRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/stream/fm/files/:fileId/enrich";
+    readonly handler = AiImageEnrichmentStreamRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const AiImageEnrichmentStreamRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: AiImageEnrichmentStreamRouteDefinitionImpl,
+    dependencies: []
 });

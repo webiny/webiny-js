@@ -6,6 +6,7 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateRoleValidation } from "./schema.js";
 import { RoleBeforeUpdateEvent, RoleAfterUpdateEvent } from "./events.js";
 import type { Role, UpdateRoleInput } from "../shared/types.js";
+import { descriptionOnUpdate } from "../../shared/description.js";
 import {
     NotAuthorizedError,
     CannotUpdatePluginRolesError,
@@ -50,16 +51,26 @@ class UpdateRoleUseCaseImpl implements UseCase.Interface {
             return Result.fail(new CannotUpdatePluginRolesError());
         }
 
+        // `description` is pulled out of the spread because it is the one field that accepts null.
+        // Normalising it here keeps null out of both the entity and the published events, whose
+        // input type declares `description?: string`.
+        const { description, ...rest } = validation.data;
+
+        const changes: UpdateRoleInput = {
+            ...rest,
+            ...descriptionOnUpdate(description)
+        };
+
         const updatedRole: Role = {
             ...existingRole,
-            ...validation.data
+            ...changes
         };
 
         await this.eventPublisher.publish(
             new RoleBeforeUpdateEvent({
                 original: existingRole,
                 updated: updatedRole,
-                input: validation.data
+                input: changes
             })
         );
 
@@ -73,7 +84,7 @@ class UpdateRoleUseCaseImpl implements UseCase.Interface {
             new RoleAfterUpdateEvent({
                 original: existingRole,
                 updated: updatedRole,
-                input: validation.data
+                input: changes
             })
         );
 

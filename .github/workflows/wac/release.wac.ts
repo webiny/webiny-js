@@ -1,6 +1,6 @@
 import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils";
-import { createJob } from "./jobs";
+import { createJob, createSlackFailureJob } from "./jobs";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -146,6 +146,10 @@ export const release = createWorkflow({
                     { "working-directory": BRANCH_NAME }
                 )
             ]
+        }),
+        notifySlackOnFailure: createSlackFailureJob({
+            needs: ["constants", "build", "npmReleaseBeta", "npmReleaseLatest"],
+            label: "📦 Release"
         })
     }
 });
