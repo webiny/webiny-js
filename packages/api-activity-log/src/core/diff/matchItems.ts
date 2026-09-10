@@ -84,19 +84,25 @@ export const longestIncreasingSubsequence = (values: number[]): Set<number> => {
 /**
  * Pairs up the items of two lists, in three passes of decreasing confidence.
  *
- * 1. **By stable id.** The authoritative match when both sides carry ids.
- * 2. **By content hash**, among whatever is left. This is one rule serving two situations that
- *    look different but are the same problem: an import that rewrote every id, and an entry
- *    written before stable ids existed being saved for the first time afterwards. In both, an
- *    unmatched item whose content equals an unmatched item on the other side is that item.
- * 3. **Whatever remains** is a genuine addition or removal.
+ * 1. **By stable id.** The authoritative match when both sides carry ids. Matched first-unused-wins
+ *    rather than assumed unique, because ids are only guaranteed unique within one array and
+ *    duplicating a block copies its nested ids verbatim.
+ * 2. **By content hash**, among whatever is left. One rule serving two situations that look
+ *    different but are the same problem: an import that rewrote every id, and an entry written
+ *    before stable ids existed being saved for the first time afterwards. In both, an unmatched
+ *    item whose content equals an unmatched item on the other side is that item.
+ * 3. **By position, anchored between confirmed matches.** Needed because a branch without stable
+ *    ids reaches here for every ordinary nested edit, which would otherwise report as a removal
+ *    plus an addition.
  *
- * Ids are matched first-unused-wins rather than assumed unique, because they are only guaranteed
- * unique within one array and duplicating a block copies its nested ids verbatim.
+ * Whatever remains after all three is a genuine addition or removal.
  */
 export const matchItems = (beforeItems: unknown[], afterItems: unknown[]): ItemMatching => {
     const pairs: MatchedPair[] = [];
     const usedBefore = new Set<number>();
+    const added: number[] = [];
+
+    // ---- Pass 1: stable id -------------------------------------------------------------------
 
     const byId = new Map<string, number[]>();
     beforeItems.forEach((item, index) => {
@@ -114,7 +120,6 @@ export const matchItems = (beforeItems: unknown[], afterItems: unknown[]): ItemM
 
     const unmatchedAfter: number[] = [];
 
-    // Pass 1 — stable id.
     afterItems.forEach((item, afterIndex) => {
         const id = idOf(item);
         const bucket = id === undefined ? undefined : byId.get(id);
@@ -129,27 +134,26 @@ export const matchItems = (beforeItems: unknown[], afterItems: unknown[]): ItemM
         pairs.push({ beforeIndex, afterIndex, inOrder: true });
     });
 
-    // Pass 2 — content hash, over what pass 1 could not place.
-    const leftoverBefore = beforeItems
-        .map((_, index) => index)
-        .filter(index => !usedBefore.has(index));
+    // ---- Pass 2: content hash ----------------------------------------------------------------
 
     const beforeHashes = new Map<string, number[]>();
-    for (const index of leftoverBefore) {
-        const hash = contentHash(beforeItems[index]);
+    beforeItems.forEach((item, index) => {
+        if (usedBefore.has(index)) {
+            return;
+        }
+        const hash = contentHash(item);
         const bucket = beforeHashes.get(hash);
         if (bucket) {
             bucket.push(index);
         } else {
             beforeHashes.set(hash, [index]);
         }
-    }
+    });
 
     const stillUnmatchedAfter: number[] = [];
 
     for (const afterIndex of unmatchedAfter) {
-        const hash = contentHash(afterItems[afterIndex]);
-        const bucket = beforeHashes.get(hash);
+        const bucket = beforeHashes.get(contentHash(afterItems[afterIndex]));
         const beforeIndex = bucket?.find(candidate => !usedBefore.has(candidate));
 
         if (beforeIndex === undefined) {
@@ -161,61 +165,99 @@ export const matchItems = (beforeItems: unknown[], afterItems: unknown[]): ItemM
         pairs.push({ beforeIndex, afterIndex, inOrder: true });
     }
 
-    // Pass 3 — zip whatever is left, in order, where identity cannot decide.
+    // ---- Pass 3: position, anchored between confirmed matches ---------------------------------
     //
-    // This is the ordinary case on a branch without stable ids, not an edge case: with no ids and
-    // no content match, editing one item of a list of objects would otherwise report a removal
-    // plus an addition for what was a single edit. Zipping the leftovers in order reports it as
-    // the edit it was.
+    // Anchoring is the whole point. A flat zip over the leftover sets pairs across the confirmed
+    // matches that separate them: insert a block at the top and edit a different block lower down,
+    // and the leftovers are one original on the left against an inserted item and an edited item
+    // on the right. Zipped flat, the inserted block is paired with the edited block's original —
+    // reporting field changes inside something that was just inserted, and reporting the block
+    // that actually changed as an addition. Right counts, wrong items.
     //
-    // Gated on at least one side lacking an id. When both items carry ids and neither passes 1
-    // nor 2 matched them, identity has spoken: they are different blocks, and a removal plus an
-    // addition is the correct answer rather than a guess.
-    const added: number[] = [];
-    let beforeCursor = 0;
+    // So the confirmed matches partition both lists, and leftovers may only pair with leftovers
+    // inside the same gap. Only the order-preserving backbone of the confirmed matches can serve
+    // as boundaries: a match that moved would produce overlapping gaps.
+    //
+    // Within one gap there is nothing left to distinguish the candidates — no id, no equal
+    // content — so they pair in order. That keeps the shape of the answer right (the counts of
+    // edits, additions and removals) while leaving which leftover is "the same item" arbitrary,
+    // which is the honest position when identity is absent.
 
-    const nextZippableBefore = (afterIndex: number): number | undefined => {
-        while (beforeCursor < beforeItems.length) {
-            const candidate = beforeCursor++;
+    const isZippable = (beforeIndex: number, afterIndex: number): boolean => {
+        const bothContainers =
+            isContainer(beforeItems[beforeIndex]) && isContainer(afterItems[afterIndex]);
 
-            if (usedBefore.has(candidate)) {
-                continue;
-            }
+        // When both items carry ids and neither pass 1 nor pass 2 matched them, identity has
+        // spoken: they are different blocks, and a removal plus an addition is the answer.
+        const identityIsSilent =
+            idOf(beforeItems[beforeIndex]) === undefined ||
+            idOf(afterItems[afterIndex]) === undefined;
 
-            const bothContainers =
-                isContainer(beforeItems[candidate]) && isContainer(afterItems[afterIndex]);
-            const identityIsSilent =
-                idOf(beforeItems[candidate]) === undefined ||
-                idOf(afterItems[afterIndex]) === undefined;
-
-            if (bothContainers && identityIsSilent) {
-                return candidate;
-            }
-
-            // Not zippable: put it back, so a later after-item is not skipped past it.
-            beforeCursor = candidate;
-            return undefined;
-        }
-
-        return undefined;
+        return bothContainers && identityIsSilent;
     };
 
-    for (const afterIndex of stillUnmatchedAfter) {
-        const beforeIndex = nextZippableBefore(afterIndex);
+    const orderedMatches = [...pairs].sort((a, b) => a.afterIndex - b.afterIndex);
+    const backbone = longestIncreasingSubsequence(orderedMatches.map(pair => pair.beforeIndex));
+    const anchors = orderedMatches.filter((_, position) => backbone.has(position));
 
-        if (beforeIndex === undefined) {
-            added.push(afterIndex);
-            continue;
+    const unusedBeforeIn = (low: number, high: number): number[] => {
+        const indices: number[] = [];
+        for (let index = low + 1; index < high; index++) {
+            if (!usedBefore.has(index)) {
+                indices.push(index);
+            }
         }
+        return indices;
+    };
 
-        usedBefore.add(beforeIndex);
-        pairs.push({ beforeIndex, afterIndex, inOrder: true });
+    const zipGap = (beforeLow: number, beforeHigh: number, afterLow: number, afterHigh: number) => {
+        const candidates = unusedBeforeIn(beforeLow, beforeHigh);
+        const targets = stillUnmatchedAfter.filter(index => index > afterLow && index < afterHigh);
+
+        let cursor = 0;
+
+        for (const afterIndex of targets) {
+            let paired = false;
+
+            while (cursor < candidates.length) {
+                const beforeIndex = candidates[cursor]!;
+
+                if (!isZippable(beforeIndex, afterIndex)) {
+                    // Leave this candidate in place: a later item in the same gap may take it.
+                    break;
+                }
+
+                usedBefore.add(beforeIndex);
+                pairs.push({ beforeIndex, afterIndex, inOrder: true });
+                cursor++;
+                paired = true;
+                break;
+            }
+
+            if (!paired) {
+                added.push(afterIndex);
+            }
+        }
+    };
+
+    let beforeLow = -1;
+    let afterLow = -1;
+
+    for (const anchor of anchors) {
+        zipGap(beforeLow, anchor.beforeIndex, afterLow, anchor.afterIndex);
+        beforeLow = anchor.beforeIndex;
+        afterLow = anchor.afterIndex;
     }
 
-    // Everything still unclaimed on the before side is gone.
+    zipGap(beforeLow, beforeItems.length, afterLow, afterItems.length);
+
+    // ---- Whatever is left ---------------------------------------------------------------------
+
     const removed = beforeItems.map((_, index) => index).filter(index => !usedBefore.has(index));
 
-    // Order detection runs over the survivors in their after-order.
+    added.sort((a, b) => a - b);
+
+    // Order detection runs over every survivor, in their after-order.
     pairs.sort((a, b) => a.afterIndex - b.afterIndex);
     const keptInPlace = longestIncreasingSubsequence(pairs.map(pair => pair.beforeIndex));
     pairs.forEach((pair, position) => {

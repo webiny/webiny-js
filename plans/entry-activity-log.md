@@ -263,6 +263,22 @@ plus an addition for what was a single edit. Since `next` has no stable ids at a
 ordinary case here, not an edge case. The zip is gated on at least one side lacking an id, so
 id-bearing lists stay strict.
 
+**The zip is anchored between confirmed matches, not flat over the leftover sets.** This was a real
+defect, caught by review and fixed. A flat zip pairs across the matches that separate the
+leftovers: insert a block at the top and edit a different block lower down, and the leftovers are
+one original on the left against an inserted item and an edited item on the right. Zipped flat, the
+inserted block pairs with the edited block's original — reporting field changes inside something
+just inserted, and reporting the block that actually changed as an addition. Right counts, wrong
+items, on every list on this branch.
+
+So the confirmed matches partition both lists and leftovers may only pair inside the same gap. Only
+the order-preserving backbone of those matches can serve as a boundary, since a match that moved
+would produce overlapping gaps. Within one gap nothing distinguishes the candidates — no id, no
+equal content — so they pair in order: the counts of edits, additions and removals are right, and
+which leftover is "the same item" stays arbitrary, which is the honest position when identity is
+absent. Insert-plus-edit and delete-plus-edit with uneven leftovers on both sides are covered by
+tests at both the matching and the path level.
+
 **Two interpretations worth confirming, both marked in tests:**
 
 - **A moved block is still descended into.** "Structural operations at block level without
@@ -392,6 +408,17 @@ the lowest-cardinality fields; and the only consumer that needs persistence is u
 plainly that this is a one-way door for records written in the meantime — a hash cannot be computed
 retroactively — and that this was accepted. Hashing itself is unaffected and still runs inside the
 differ.
+
+**7. The churn rule's boundary.** The rule recognises a new id whose content survived. When content
+changed too _and both sides carry ids_, nothing is left to match on and the block reports as
+removed plus added. Note the timing explicitly: this limitation only takes effect once stable ids
+exist on both sides, so it **arrives with the forward-merge rather than being current behaviour**.
+Until then the positional zip covers the same case, because at least one side always lacks an id.
+
+**8. Two interpreters of model structure.** `toFieldDescriptors` reads the model directly rather
+than through `ModelToAstConverter`, which needs the GraphQL field-type registry that capture cannot
+rely on. The drift risk is covered by an agreement test pinning both to the same field structure on
+a representative model, skipped with a warning if the registry ever stops building standalone.
 
 ### Pre-pull-request items
 

@@ -331,6 +331,51 @@ describe("diffValues", () => {
 
             expect(summarise(result.changeset)).toEqual(["sections[0].title"]);
         });
+
+        it("attributes an insertion and an unrelated edit to the right items", () => {
+            // The case a flat positional zip gets wrong: it pairs the inserted block with the
+            // edited block's original, reporting field changes inside something just inserted and
+            // reporting the block that actually changed as an addition.
+            const result = diffValues(
+                fields,
+                { sections: [{ title: "A" }, { title: "B" }, { title: "C" }] },
+                {
+                    sections: [
+                        { title: "NEW" },
+                        { title: "A" },
+                        { title: "B-edited" },
+                        { title: "C" }
+                    ]
+                }
+            );
+
+            expect(summarise(result.changeset)).toEqual(["added sections[0]", "sections[2].title"]);
+        });
+
+        it("attributes a deletion and an unrelated edit to the right items", () => {
+            const result = diffValues(
+                fields,
+                {
+                    sections: [{ title: "A" }, { title: "B" }, { title: "C" }, { title: "D" }]
+                },
+                { sections: [{ title: "A" }, { title: "B-edited" }, { title: "D" }] }
+            );
+
+            expect(summarise(result.changeset)).toEqual([
+                "removed sections[2]",
+                "sections[1].title"
+            ]);
+        });
+
+        it("keeps edits on both sides of an untouched block in their own places", () => {
+            const result = diffValues(
+                fields,
+                { sections: [{ title: "A" }, { title: "KEEP" }, { title: "B" }] },
+                { sections: [{ title: "A2" }, { title: "KEEP" }, { title: "B2" }] }
+            );
+
+            expect(summarise(result.changeset)).toEqual(["sections[0].title", "sections[2].title"]);
+        });
     });
 
     describe("dynamic zones", () => {

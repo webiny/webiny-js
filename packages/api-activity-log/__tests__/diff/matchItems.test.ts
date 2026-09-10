@@ -125,6 +125,85 @@ describe("matchItems", () => {
         });
     });
 
+    describe("pass 3 is anchored between confirmed matches", () => {
+        // A flat zip pairs across the matches that separate the leftovers, which attributes an
+        // edit to a block that was inserted and reports the block that actually changed as an
+        // addition. Every one of these is ordinary editing on a branch with no stable ids.
+
+        it("insert at the top plus an edit lower down: uneven leftovers, one gap each", () => {
+            const matching = matchItems(
+                [{ t: "A" }, { t: "B" }, { t: "C" }],
+                [{ t: "NEW" }, { t: "A" }, { t: "B-edited" }, { t: "C" }]
+            );
+
+            // A and C anchor by content. NEW sits before the A anchor, so it has no candidate
+            // and is an addition. B pairs with B-edited inside the gap between A and C.
+            expect(pairsOf(matching)).toEqual(["0->1", "1->2", "2->3"]);
+            expect(matching.added).toEqual([0]);
+            expect(matching.removed).toEqual([]);
+        });
+
+        it("delete plus an edit in one save: two leftovers left, one right", () => {
+            const matching = matchItems(
+                [{ t: "A" }, { t: "B" }, { t: "C" }, { t: "D" }],
+                [{ t: "A" }, { t: "B-edited" }, { t: "D" }]
+            );
+
+            // A and D anchor. Inside the gap, B pairs with B-edited and C is left over.
+            expect(pairsOf(matching)).toEqual(["0->0", "1->1", "3->2"]);
+            expect(matching.added).toEqual([]);
+            expect(matching.removed).toEqual([2]);
+        });
+
+        it("does not pair a leftover with one on the far side of an anchor", () => {
+            // The only leftovers are in different gaps, so neither may claim the other.
+            const matching = matchItems([{ t: "GONE" }, { t: "A" }], [{ t: "A" }, { t: "NEW" }]);
+
+            expect(pairsOf(matching)).toEqual(["1->0"]);
+            expect(matching.added).toEqual([1]);
+            expect(matching.removed).toEqual([0]);
+        });
+
+        it("two insertions and an edit in the same gap keep the counts right", () => {
+            const matching = matchItems(
+                [{ t: "A" }, { t: "B" }, { t: "C" }],
+                [{ t: "A" }, { t: "N1" }, { t: "N2" }, { t: "B-edited" }, { t: "C" }]
+            );
+
+            // One edit and two additions. Which of the three gap leftovers is treated as the
+            // edited one is arbitrary without identity — the shape of the answer is what holds.
+            expect(matching.pairs).toHaveLength(3);
+            expect(matching.added).toHaveLength(2);
+            expect(matching.removed).toEqual([]);
+        });
+
+        it("edits either side of an untouched block stay in their own gaps", () => {
+            const matching = matchItems(
+                [{ t: "A" }, { t: "KEEP" }, { t: "B" }],
+                [{ t: "A-edited" }, { t: "KEEP" }, { t: "B-edited" }]
+            );
+
+            expect(pairsOf(matching)).toEqual(["0->0", "1->1", "2->2"]);
+            expect(matching.added).toEqual([]);
+            expect(matching.removed).toEqual([]);
+        });
+
+        it("zips within the trailing gap after the last anchor", () => {
+            const matching = matchItems([{ t: "A" }, { t: "B" }], [{ t: "A" }, { t: "B-edited" }]);
+
+            expect(pairsOf(matching)).toEqual(["0->0", "1->1"]);
+        });
+
+        it("zips within the leading gap before the first anchor", () => {
+            const matching = matchItems(
+                [{ t: "A" }, { t: "KEEP" }],
+                [{ t: "A-edited" }, { t: "KEEP" }]
+            );
+
+            expect(pairsOf(matching)).toEqual(["0->0", "1->1"]);
+        });
+    });
+
     describe("additions and removals", () => {
         it("reports a leftover after-item as added", () => {
             const matching = matchItems([item("a")], [item("a"), item("b")]);
