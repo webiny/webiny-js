@@ -257,11 +257,13 @@ export const createApiPulumiApp = () => {
 
             const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
             if (apiCustomDomains) {
-                const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
+                const { domains, sslMethod, certificateArn, minimumProtocolVersion } =
+                    apiCustomDomains.params;
                 applyCustomDomain(cloudfront, {
                     domains,
                     sslSupportMethod: sslMethod,
-                    acmCertificateArn: certificateArn
+                    acmCertificateArn: certificateArn,
+                    minimumProtocolVersion
                 });
             }
 
