@@ -1,6 +1,13 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { ActivityEntryAction } from "~/core/types.js";
+import type {
+    ActivityAction,
+    ActivityEntryAction,
+    ActivityReviewAction,
+    ActivitySubject,
+    ChangesetEntry
+} from "~/core/types.js";
+import type { IWorkflowState } from "@webiny/api-workflows/domain/workflowState/abstractions.js";
 
 export interface IRecordEntryActivityParams {
     model: CmsModel;
@@ -51,4 +58,58 @@ export const ActivitySourceResolver = createAbstraction<IActivitySourceResolver>
 
 export namespace ActivitySourceResolver {
     export type Interface = IActivitySourceResolver;
+}
+
+export interface IWriteActivityParams {
+    targetId: string;
+    revision: string;
+    action: ActivityAction;
+    correlationId?: string;
+    changeset?: ChangesetEntry[];
+    truncated?: boolean;
+    subject?: ActivitySubject;
+    hasNote?: boolean;
+}
+
+/**
+ * Writes one record. Never throws — see the implementation for why that is stated in the type.
+ */
+export interface IActivityWriter {
+    write(params: IWriteActivityParams): Promise<void>;
+}
+
+export const ActivityWriter = createAbstraction<IActivityWriter>("ActivityLog/ActivityWriter");
+
+export namespace ActivityWriter {
+    export type Interface = IActivityWriter;
+    export type Params = IWriteActivityParams;
+}
+
+export interface IRecordReviewActivityParams {
+    /** The workflow state as it is after the action. */
+    state: IWorkflowState;
+    action: ActivityReviewAction;
+    /** Whether the actor attached a note. Its content is never passed in, let alone stored. */
+    hasNote?: boolean;
+    /** Shared with the terminal record a final approval or rejection also produces. */
+    correlationId?: string;
+}
+
+/**
+ * Records publishing workflow activity against the entry under review.
+ *
+ * Never throws, for the same reason as the entry recorder: APW handlers run inline inside the
+ * workflow write.
+ */
+export interface IReviewActivityRecorder {
+    record(params: IRecordReviewActivityParams): Promise<void>;
+}
+
+export const ReviewActivityRecorder = createAbstraction<IReviewActivityRecorder>(
+    "ActivityLog/ReviewActivityRecorder"
+);
+
+export namespace ReviewActivityRecorder {
+    export type Interface = IReviewActivityRecorder;
+    export type Params = IRecordReviewActivityParams;
 }

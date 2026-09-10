@@ -64,7 +64,10 @@ export const recordToValues = (record: ActivityRecordInput): ActivityRecordValue
         source: record.source,
         correlationId: record.correlationId,
         changeset: record.changeset,
-        truncated: record.truncated
+        truncated: record.truncated,
+        subjectId: record.subject?.id ?? null,
+        subjectLabel: record.subject?.label ?? null,
+        hasNote: record.hasNote ?? null
     };
 };
 
@@ -105,6 +108,12 @@ export const entryToRecord = (entry: CmsEntry<ActivityRecordValues>): ActivityRe
         source: values.source,
         correlationId: values.correlationId,
         changeset: readChangeset(values.changeset),
-        truncated: values.truncated === true
+        truncated: values.truncated === true,
+        ...(values.subjectId
+            ? { subject: { id: values.subjectId, label: values.subjectLabel ?? "" } }
+            : {}),
+        ...(values.hasNote === null || values.hasNote === undefined
+            ? {}
+            : { hasNote: values.hasNote })
     };
 };

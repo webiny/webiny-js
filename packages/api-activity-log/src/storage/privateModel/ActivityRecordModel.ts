@@ -55,6 +55,11 @@ class ActivityRecordModelImpl implements ModelFactory.Interface {
                         .label("Correlation ID")
                         .required("Correlation ID is required."),
                     changeset: fields.json().label("Changeset"),
+                    // Which part of the target the action concerned, e.g. a workflow step.
+                    subjectId: fields.text().label("Subject ID"),
+                    subjectLabel: fields.text().label("Subject Label"),
+                    // Whether a note was attached. Never the note itself.
+                    hasNote: fields.boolean().label("Has Note"),
                     truncated: fields.boolean().label("Changeset Truncated")
                 }))
         ];

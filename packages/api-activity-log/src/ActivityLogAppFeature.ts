@@ -2,6 +2,7 @@ import { type Container, createFeature } from "@webiny/feature/api";
 import { CaptureFeature } from "~/cms/capture/feature.js";
 import { PurgeFeature } from "~/cms/purge/feature.js";
 import { RecorderFeature } from "~/cms/recorder/feature.js";
+import { ReviewCaptureFeature } from "~/cms/review/feature.js";
 import { ActivityRecordModel } from "~/storage/privateModel/ActivityRecordModel.js";
 import { PrivateModelStorageFeature } from "~/storage/privateModel/feature.js";
 
@@ -54,6 +55,7 @@ export const ActivityLogAppFeature = createFeature<IActivityLogAppFeatureParams>
         PrivateModelStorageFeature.register(container);
         RecorderFeature.register(container);
         CaptureFeature.register(container);
+        ReviewCaptureFeature.register(container);
         PurgeFeature.register(container);
     }
 });

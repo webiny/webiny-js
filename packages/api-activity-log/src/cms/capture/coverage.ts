@@ -72,3 +72,58 @@ export const KNOWN_CAPTURE_GAPS: Record<string, string> = {
         "Delegates to UpdateEntryUseCase, so it is captured by that path rather than being a gap. " +
         "Listed because it looks like a separate write path and is not."
 };
+
+/**
+ * Publishing workflow events, same contract as the entry events above.
+ *
+ * The notable entry is the opt-out for `workflowState.afterUpdate`, which is where the brief's
+ * design would have subscribed. It is excluded for two independent reasons, both verified against
+ * the source rather than assumed:
+ *
+ *   - **It is incomplete.** `afterUpdate` is published only by `UpdateWorkflowStateUseCase`, and
+ *     approve, reject, start and take-over all inject `UpdateWorkflowStateRepository` directly,
+ *     bypassing the use case. Diffing it would therefore miss every step transition — that is,
+ *     essentially the whole review.
+ *   - **It would double-count.** `CancelWorkflowState` is the one action that goes *through* the
+ *     use case, so it publishes both `afterUpdate` and `cancel`.
+ *
+ * The action events are the complete set: the GraphQL surface exposes exactly create, startStep,
+ * approveStep, rejectStep, cancel and takeOverStep, and there is no `updateWorkflowState`
+ * mutation, so no step state can change without one of them firing.
+ */
+export const CAPTURED_WORKFLOW_EVENTS: Record<string, string> = {
+    "workflowState.afterCreate": "RecordReviewSubmitted",
+    "workflowState.startStep": "RecordReviewStepStarted",
+    "workflowState.approveStep": "RecordReviewStepApproved",
+    "workflowState.reject": "RecordReviewStepRejected",
+    "workflowState.takeOverStep": "RecordReviewStepTakenOver",
+    "workflowState.cancel": "RecordReviewCancelled",
+    "workflowState.afterDelete": "RecordReviewDeleted"
+};
+
+export const WORKFLOW_OPT_OUT_RULES: OptOutRule[] = [
+    {
+        matches: eventType => eventType === "workflowState.afterUpdate",
+        label: "workflowState.afterUpdate",
+        reason:
+            "Incomplete and redundant. Published only by UpdateWorkflowStateUseCase, which the " +
+            "four step actions bypass by writing through the repository directly, so it misses " +
+            "every step transition. Cancel goes through the use case and so publishes both this " +
+            "and its own event, meaning subscribing to both would double-count cancellations."
+    },
+    {
+        matches: eventType => eventType.startsWith("workflow."),
+        label: "workflow definition events",
+        reason:
+            "These describe a workflow being defined or reconfigured, not anything happening to " +
+            "a content entry. An entry timeline is the wrong place for them; they belong to " +
+            "model-level change tracking, which is explicitly out of scope."
+    },
+    {
+        matches: eventType => /\.before[A-Z]/.test(eventType),
+        label: "workflow before-events",
+        reason:
+            "A record describes what happened. Capturing before an operation would write records " +
+            "for transitions that then failed."
+    }
+];

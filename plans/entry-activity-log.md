@@ -398,17 +398,90 @@ an import that rewrites every id _and_ edits some blocks reports those blocks as
 
 ## Checkpoint 4 — publishing workflow activity
 
-Confirm on `next` first: that `ApwContentReviewContent` still carries target id, content type and
-model id, and that change requests still reach an entry in two hops through a step. The prior
-reading was from published types at 5.44.
+**The brief's premises for this checkpoint were void, and confirming them was the instruction that
+caught it.** They described APW as it was at 5.44. `packages/api-apw` no longer exists;
+`ApwContentReviewContent` has zero occurrences on this branch. APW is now `api-workflows` plus
+`api-headless-cms-workflows`, built on a `wbyWorkflowState` private CMS model. Four corrections
+follow, and the record shape and action list are written against the verified model rather than
+the brief.
 
-There are no events for review actions, so transitions come from diffing step status across a
-content review update. Log: submitted for review, step approved (naming the step), step rejected,
-change request opened / resolved / reopened, sign-off provided / withdrawn, review deleted. No
-comments, in any form.
+**1. One hop, not two.** `targetId` and `targetRevisionId` sit directly on the workflow state, so
+reaching the entry needs no traversal through a step. `app` is `cms.<modelId>`, and
+`getModelIdFromAppName()` both resolves the model and — by returning null for anything else —
+filters non-CMS targets out.
 
-One record per meaningful transition — a final approval that completes one step and activates the
-next produces two records.
+**2. There are events for the review actions.** The brief said there were none.
+`workflowState.approveStep`, `.reject`, `.startStep`, `.takeOverStep` and `.cancel` all exist,
+alongside `afterCreate` / `afterUpdate` / `afterDelete`.
+
+**3. Capture subscribes to the action events, not to `afterUpdate`** — the opposite of the brief's
+mechanism, for reasons verified in the source. `afterUpdate` is published _only_ by
+`UpdateWorkflowStateUseCase`, and approve, reject, start and take-over all inject
+`UpdateWorkflowStateRepository` directly, bypassing it. Diffing `afterUpdate` would therefore have
+missed every step transition — essentially the entire review. It is also redundant where it does
+fire: `CancelWorkflowState` goes through the use case, so cancelling publishes both. The action
+events are complete: the GraphQL surface is exactly `createWorkflowState`, `startWorkflowStateStep`,
+`approveWorkflowStateStep`, `rejectWorkflowStateStep`, `cancelWorkflowState` and
+`takeOverWorkflowStateStep`, with no `updateWorkflowState` mutation, so no step state can change
+without one of them firing.
+
+**4. Change requests and sign-off are dropped, not approximated.** Both were `api-apw` concepts and
+have zero occurrences across `api-workflows`, `app-workflows` and `api-headless-cms-workflows`.
+There is nothing to map them onto, so they are absent rather than represented by the nearest
+equivalent.
+
+### The action list
+
+Submitted for review, step started, step approved (naming the step), step rejected, step taken
+over, review cancelled, review reaching approved or rejected overall, review deleted.
+
+**Step taken over is in deliberately**: it changes who owns a decision mid-review without moving
+the step's state, which is exactly the kind of thing someone asks about months later.
+
+**Step started is in because approval does not activate the next step on this branch.**
+`WorkflowState.approve()` approves the active step and sets the record state, and nothing more —
+picking up the next step is its own action with its own event. Without recording it, a timeline
+would jump from one approval to the next with the intervening handover invisible.
+
+**Record-level state is recorded only when terminal.** A non-final approval moves the record to
+`pending`, which merely mirrors the step transition and is derivable from it. A terminal `approved`
+or `rejected` is different in kind: it is the state that gates publishing, so it is the
+governance-relevant fact rather than a derived one.
+
+**One record per meaningful transition.** A final approval still produces two records, as the brief
+expected — but for a different reason than it gave. Not because approval activates the next step,
+which it does not, but because "this step is approved" and "the review is approved" are two facts.
+They share a correlation id.
+
+### Two record-shape additions
+
+- **`subject`** — `{ id, label }`, the part of the target an action concerned. "Step approved" is
+  useless without saying which step, and the label is captured at write time so a record stays
+  legible after a workflow is reconfigured and its steps renamed.
+- **`hasNote`** — a boolean. Steps carry a scalar `comment`, the reviewer's approval or rejection
+  note. Its **content is never recorded**: author-written free text about the content is precisely
+  what "no content values ever" exists to exclude, and it is the field most likely to hold
+  something sensitive. Presence is recorded because a rejection with an explanation and a bare
+  rejection are materially different in an audit trail, and presence alone leaks nothing.
+
+### Delivered
+
+389 tests. Seven handlers over a `ReviewActivityRecorder`, plus the coverage guard extended to APW.
+
+**Failure containment was consolidated rather than duplicated.** Both recorders now sit on a shared
+`ActivityWriter` that owns actor resolution, source labelling, correlation ids, persistence and the
+containment. A second copy of the containment would have been a second chance to forget that a
+synchronous throw is not a rejection.
+
+**Website Builder targets are out of scope for this checkpoint and skipped audibly**, with a log
+line rather than silently, so the gap reads as a decision instead of as capture that never fires.
+
+**The private-model filter is now asserted, not assumed.** It is load-bearing for two things beyond
+noise: activity records are themselves private-model entries, so capturing them would recurse
+unboundedly inside a save; and `wbyWorkflowState` is a private model, so capturing it would report
+every review transition twice, against the workflow-state entry rather than the entry under
+review. Both model ids are named explicitly in the test, imported from the packages that define
+them, and the filter carries a boxed comment pointing at it.
 
 ---
 
@@ -548,6 +621,13 @@ this adapter is the same defect class as the pre-existing entry-list cursor issu
 exhausted. The keyset approach here (a unique, monotonic sort key plus `_lt`, and a cursor returned
 only when another page exists) is a worked example for anyone taking that on, on a dataset where
 the instability is unmissable rather than intermittent.
+
+**10. The workflow premises were corrected, and the PR should say so.** The brief described APW at
+5.44 — `ApwContentReviewContent`, a two-hop path to the entry, no events for review actions, and
+change requests and sign-off as first-class concepts. None of that holds on this branch. A reviewer
+comparing the code to the brief will otherwise conclude the implementation drifted, when in fact
+the brief predated the APW rewrite. State the four corrections and that they were verified in
+source, so the PR does not read as though it was built against APW 5.44.
 
 ### Pre-pull-request items
 

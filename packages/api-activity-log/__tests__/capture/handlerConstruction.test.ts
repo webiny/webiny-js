@@ -65,7 +65,9 @@ const SELF_REGISTERED = new Set([
     "ActivityLogStorage",
     "ActivityLogModelProvider",
     "ActivitySourceResolver",
-    "EntryActivityRecorder"
+    "ActivityWriter",
+    "EntryActivityRecorder",
+    "ReviewActivityRecorder"
 ]);
 
 /**

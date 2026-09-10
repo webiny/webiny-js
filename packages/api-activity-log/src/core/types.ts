@@ -33,16 +33,26 @@ export type ActivityEntryAction =
     | "entry.restore"
     | "entry.delete";
 
-/** Publishing workflow actions, derived from step-status diffing rather than from events. */
+/**
+ * Publishing workflow actions.
+ *
+ * Taken from APW's own domain events, not from diffing. The brief specified diffing step status
+ * across a content review update, which was correct for APW at 5.44 and is not correct on this
+ * branch — see the Checkpoint 4 notes in the plan.
+ *
+ * "Change request" and "sign-off" are deliberately absent: those concepts existed in the
+ * `api-apw` package, which no longer exists, and there is nothing on this branch to map them
+ * onto. They are dropped rather than approximated with the nearest equivalent.
+ */
 export type ActivityReviewAction =
     | "review.submitted"
+    | "review.step.started"
     | "review.step.approved"
     | "review.step.rejected"
-    | "review.changeRequest.opened"
-    | "review.changeRequest.resolved"
-    | "review.changeRequest.reopened"
-    | "review.signOff.provided"
-    | "review.signOff.withdrawn"
+    | "review.step.takenOver"
+    | "review.cancelled"
+    | "review.approved"
+    | "review.rejected"
     | "review.deleted";
 
 export type ActivityAction = ActivityEntryAction | ActivityReviewAction;
@@ -90,6 +100,18 @@ export interface ActivityActor {
 }
 
 /**
+ * The part of a target an action was about, when it was not about the target as a whole.
+ *
+ * A review transition needs this: "step approved" is not useful without saying which step. The
+ * label is captured at write time for the same reason changeset labels are — a workflow can be
+ * reconfigured and its steps renamed, and an old record should stay legible.
+ */
+export interface ActivitySubject {
+    id: string;
+    label: string;
+}
+
+/**
  * One record. Immutable once written.
  */
 export interface ActivityRecord {
@@ -110,6 +132,18 @@ export interface ActivityRecord {
     changeset: ChangesetEntry[];
     /** True when the changeset hit the cap and was rolled up to a common parent. */
     truncated: boolean;
+    /** Present when the action concerned one part of the target, such as a workflow step. */
+    subject?: ActivitySubject;
+    /**
+     * Whether the actor attached a note — an approval or rejection comment.
+     *
+     * The note's *content* is never stored. It is author-written free text about the content,
+     * which is precisely what "no content values ever" exists to exclude, and the field most
+     * likely to hold something sensitive. Its presence is recorded because a rejection with an
+     * explanation and a bare rejection are materially different in an audit trail, and presence
+     * on its own leaks nothing.
+     */
+    hasNote?: boolean;
 }
 
 /** A record before storage assigns it an id. */

@@ -17,6 +17,8 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-workflows": "0.0.0",
+    "@webiny/api-workflows": "0.0.0",
     "@webiny/background-tasks": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0"

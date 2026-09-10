@@ -37,4 +37,7 @@ export interface ActivityRecordValues {
     correlationId: string;
     changeset: unknown;
     truncated: boolean;
+    subjectId: string | null;
+    subjectLabel: string | null;
+    hasNote: boolean | null;
 }
