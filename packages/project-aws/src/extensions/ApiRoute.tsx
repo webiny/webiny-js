@@ -8,7 +8,7 @@ import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.
 import { ExtensionSrcResolver } from "@webiny/project/utils/index.js";
 import { ApiPulumi } from "~/pulumi/extensions/ApiPulumi.js";
 import { createPathResolver } from "@webiny/project";
-import { toRouterPath } from "./routePath.js";
+import { deriveRouteName, toRouterPath } from "./routePath.js";
 
 const p = createPathResolver(import.meta.dirname);
 
@@ -31,6 +31,8 @@ export const ApiRoute = defineExtension({
             // generated below from the props here, so the route the gateway forwards to and the
             // route the router matches cannot drift apart.
             src: zodSrcPath({ project }),
+            // Doubles as the route's DI name, so a decorator on HttpRouteDefinition can pick this
+            // route out by it. Derived from path + method when omitted, same as the Pulumi name.
             routeName: z.string().optional()
         });
     },
@@ -105,9 +107,10 @@ export const ApiRoute = defineExtension({
         // leave the route unreachable: it deploys, API Gateway forwards to the Lambda, and dispatch
         // finds nothing. The path is converted to the router's `:param` syntax.
         const routerPath = toRouterPath(params.path);
+        const routeName = params.routeName ?? deriveRouteName(params.path, params.method);
 
         pluginsArray.addElement(
-            `\ncreateRegisterExtensionPlugin(ctx => {\n\tctx.container.register(\n\t\tcreateHttpRouteDefinition({\n\t\t\tmethod: "${params.method}",\n\t\t\tpath: "${routerPath}",\n\t\t\thandler: ${alias}\n\t\t})\n\t);\n})`
+            `\ncreateRegisterExtensionPlugin(ctx => {\n\tctx.container.register(\n\t\tcreateHttpRouteDefinition({\n\t\t\tname: "${routeName}",\n\t\t\tmethod: "${params.method}",\n\t\t\tpath: "${routerPath}",\n\t\t\thandler: ${alias}\n\t\t})\n\t);\n})`
         );
 
         await source.save();

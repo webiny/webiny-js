@@ -18,7 +18,7 @@
     "@ai-sdk/openai": "^4.0.45",
     "@webiny/api": "0.0.0",
     "@webiny/api-graphql": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/feature-flags": "0.0.0",

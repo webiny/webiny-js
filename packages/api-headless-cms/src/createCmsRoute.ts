@@ -55,6 +55,7 @@ export function createCmsRoute(type: ApiEndpoint) {
     });
 
     class CmsRouteDefinition implements HttpRouteDefinition.Interface {
+        readonly name = `cms-${type}`;
         readonly method = "POST";
         readonly path = CMS_PATHS[type];
         readonly handler = implementation;

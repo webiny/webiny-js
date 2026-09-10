@@ -15,8 +15,6 @@ export {
     GlobalKeyValueStore,
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
-export { HttpRouteHandler } from "@webiny/event-handler-core";
-export type { IHttpRequest, IHttpResponse, IHttpResponseBuilder } from "@webiny/event-handler-core";
 export { WebsocketsTransport } from "@webiny/api-websockets/transport/index.js";
 export { WebsocketsListConnectionsUseCase } from "@webiny/api-websockets/features/ListConnections/abstractions.js";
 export { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
@@ -28,6 +26,16 @@ export { WebsocketsRunner } from "@webiny/api-websockets/runner/WebsocketsRunner
 export { WebsocketsRouteHandler } from "@webiny/api-websockets/features/Routes/abstractions.js";
 export { WebsocketsResponse } from "@webiny/api-websockets/response/index.js";
 export type { WebsocketsError } from "@webiny/api-websockets/features/shared/errors.js";
+export {
+    HttpRouteDefinition,
+    HttpRouteHandler
+} from "@webiny/event-handler-core/features/http/abstractions.js";
+export type {
+    IHttpRequest,
+    IHttpResponse,
+    IHttpResponseBuilder,
+    IMatchedRouteDefinition
+} from "@webiny/event-handler-core/features/http/abstractions.js";
 export { createFeature, createAbstraction, Result, BaseError } from "@webiny/feature/api/index.js";
 export { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 export { Compression } from "@webiny/utils/features/compression/abstractions/Compression.js";

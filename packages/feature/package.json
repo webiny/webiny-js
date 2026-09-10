@@ -38,7 +38,7 @@
     "publishFrom": "dist"
   },
   "dependencies": {
-    "@webiny/di": "^1.0.2"
+    "@webiny/di": "^1.1.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

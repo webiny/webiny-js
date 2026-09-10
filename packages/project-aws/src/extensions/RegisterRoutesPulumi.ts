@@ -3,20 +3,7 @@ import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import { ApiRoute } from "./ApiRoute.js";
 import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
-import { toApiGatewayPath } from "./routePath.js";
-
-function deriveRouteName(routePath: string, method: string): string {
-    // /asd/{id}/xs + POST → asd-xs-post. Strips parameters in either syntax.
-    const pathPart = routePath
-        .replace(/^\//, "")
-        .replace(/\{[^}]*\}/g, "")
-        .replace(/(^|\/):[^/]+/g, "$1")
-        .replace(/\/+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .toLowerCase();
-
-    return `${pathPart}-${method.toLowerCase()}`;
-}
+import { deriveRouteName, toApiGatewayPath } from "./routePath.js";
 
 class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
