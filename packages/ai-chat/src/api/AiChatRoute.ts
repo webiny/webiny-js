@@ -1,4 +1,4 @@
-import { HttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { AiChatUseCase } from "./abstractions.js";
@@ -14,10 +14,7 @@ const BAD_REQUEST_MESSAGE =
  * Kept alongside the streaming route for callers that cannot read a stream. It buffers the whole
  * answer, so a multi-tool question returns once, after several seconds of silence.
  */
-class AiChatRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    public readonly path = "/ai/chat";
-
+class AiChatRouteImpl implements HttpRouteHandler.Interface {
     public constructor(
         private readonly aiChat: AiChatUseCase.Interface,
         private readonly logger: Logger.Interface
@@ -50,7 +47,19 @@ class AiChatRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const AiChatRoute = HttpRoute.createImplementation({
+export const AiChatRoute = HttpRouteHandler.createImplementation({
     implementation: AiChatRouteImpl,
     dependencies: [AiChatUseCase, Logger]
+});
+
+class AiChatRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    readonly path = "/ai/chat";
+    readonly handler = AiChatRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const AiChatRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: AiChatRouteDefinitionImpl,
+    dependencies: []
 });

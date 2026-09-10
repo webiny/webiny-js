@@ -1,4 +1,4 @@
-import { HttpRoute, toSseFrame } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { AiChatUseCase } from "./abstractions.js";
 import type { AiChatEvent } from "./events.js";
@@ -27,16 +27,7 @@ async function* toSseFrames(events: AsyncIterable<AiChatEvent>): AsyncIterable<s
  * Failures after the first byte cannot become a status code, since the response has already committed
  * to 200, so the use case reports them as `error` events and the stream ends normally.
  */
-class AiChatStreamRouteImpl implements HttpRoute.Interface {
-    public readonly method = "POST";
-    /*
-     * Under `/stream/*` because that prefix is what reaches a transport able to stream. On AWS,
-     * CloudFront routes `/stream/*` to the Lambda Function URL origin; everything else goes to API
-     * Gateway, which buffers the whole response no matter how the route produced it. A path outside
-     * this prefix still works, it just silently arrives all at once.
-     */
-    public readonly path = "/stream/ai/chat";
-
+class AiChatStreamRouteImpl implements HttpRouteHandler.Interface {
     public constructor(private readonly aiChat: AiChatUseCase.Interface) {}
 
     public async handle(
@@ -53,7 +44,25 @@ class AiChatStreamRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const AiChatStreamRoute = HttpRoute.createImplementation({
+export const AiChatStreamRoute = HttpRouteHandler.createImplementation({
     implementation: AiChatStreamRouteImpl,
     dependencies: [AiChatUseCase]
+});
+
+class AiChatStreamRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly method = "POST";
+    /*
+     * Under `/stream/*` because that prefix is what reaches a transport able to stream. On AWS,
+     * CloudFront routes `/stream/*` to the Lambda Function URL origin; everything else goes to API
+     * Gateway, which buffers the whole response no matter how the route produced it. A path outside
+     * this prefix still works, it just silently arrives all at once.
+     */
+    readonly path = "/stream/ai/chat";
+    readonly handler = AiChatStreamRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const AiChatStreamRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: AiChatStreamRouteDefinitionImpl,
+    dependencies: []
 });

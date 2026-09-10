@@ -2,8 +2,8 @@ import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
 import { EnvAiChatProvider } from "./EnvAiChatProvider.js";
-import { AiChatRoute } from "./AiChatRoute.js";
-import { AiChatStreamRoute } from "./AiChatStreamRoute.js";
+import { AiChatRouteDefinition } from "./AiChatRoute.js";
+import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 
 /**
  * Enough steps for the deepest expected chain: list models, describe one, query it, answer — plus room
@@ -31,8 +31,12 @@ export const AiChatFeature = createFeature({
         container.register(EnvAiChatProvider);
         container.register(AiChatUseCase);
 
-        // Buffered and streamed. A client picks by URL; see AiChatStreamRoute for why both exist.
-        container.register(AiChatRoute);
-        container.register(AiChatStreamRoute);
+        /*
+         * Buffered and streamed. A client picks by URL; see AiChatStreamRoute for why both exist.
+         * Only the definitions are registered: the router matches on those and builds the handler
+         * they name only once a request actually hits the path.
+         */
+        container.register(AiChatRouteDefinition);
+        container.register(AiChatStreamRouteDefinition);
     }
 });
