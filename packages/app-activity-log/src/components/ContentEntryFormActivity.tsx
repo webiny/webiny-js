@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Heading } from "@webiny/admin-ui";
 import { ContentEntryFormContent } from "@webiny/app-headless-cms/presentation/contentEntries/views/layout/index.js";
 import { useContentEntryFormPresenter } from "@webiny/app-headless-cms/presentation/contentEntries/form/useContentEntryFormPresenter.js";
+import { writeSignature } from "~/timeline/writeSignature.js";
 import { ActivityTimeline } from "./ActivityTimeline.js";
 
 /**
@@ -14,6 +15,10 @@ import { ActivityTimeline } from "./ActivityTimeline.js";
  *
  * Hidden for a new entry: there is no target id yet, so there is nothing to ask about. Asking
  * would produce a `TargetNotFound` on every unsaved form.
+ *
+ * The write signature is what makes the timeline refresh on save. The form replaces its own entry
+ * with the one the mutation returned, so a save, a publish, an unpublish and a new revision all
+ * change this value — and the observer re-renders with it.
  */
 export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(Original => {
     return observer(function ContentEntryFormActivityDecorator(props) {
@@ -35,6 +40,7 @@ export const ContentEntryFormActivity = ContentEntryFormContent.createDecorator(
                         targetType={"cms-entry"}
                         targetId={entry.entryId}
                         modelId={model.modelId}
+                        writeToken={writeSignature(entry)}
                     />
                 </div>
             </>

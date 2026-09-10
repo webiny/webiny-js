@@ -45,6 +45,7 @@ const renderState = (
         filters?: TimelineFilters;
         hasMore?: boolean;
         loading?: boolean;
+        refreshing?: boolean;
         error?: string | null;
     } = {}
 ) => {
@@ -57,6 +58,7 @@ const renderState = (
                 view={buildTimelineView({ records, filters, hasMore })}
                 loading={options.loading ?? false}
                 loadingMore={false}
+                refreshing={options.refreshing ?? false}
                 error={options.error ?? null}
                 hasMore={hasMore}
                 filters={filters}
@@ -220,6 +222,23 @@ describe("the eight states", () => {
         const { text } = renderState([record({ action: "entry.create" })]);
 
         expect(text()).not.toContain("was not recorded");
+    });
+});
+
+describe("refreshing after a save", () => {
+    it("keeps the rows on screen and says it is updating", () => {
+        // The reason a save refreshes in place rather than through the loading state: swapping the
+        // reader's rows for a skeleton on every save would feel worse than not refreshing at all.
+        const { text } = renderState([record({ action: "entry.create" })], { refreshing: true });
+
+        expect(text()).toContain("Updating");
+        expect(text()).toContain("Revision 2");
+    });
+
+    it("says nothing when it is not refreshing", () => {
+        const { text } = renderState([record()]);
+
+        expect(text()).not.toContain("Updating");
     });
 });
 

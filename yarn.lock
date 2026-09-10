@@ -11712,6 +11712,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^1.0.2"
     "@webiny/feature": "npm:0.0.0"
     mobx-react-lite: "npm:^5.0.3"
     react: "npm:18.3.1"

@@ -14,4 +14,6 @@ export type { TimelineGroup } from "./groupByRevision.js";
 export { discloseItem, summariseItem } from "./summariseItem.js";
 export type { ItemDisclosure, ItemSummary } from "./summariseItem.js";
 export { isRedactedActor } from "./types.js";
+export { writeSignature } from "./writeSignature.js";
+export type { WrittenTarget } from "./writeSignature.js";
 export type { TimelineActor, TimelineChange, TimelineRecord, TimelineSubject } from "./types.js";

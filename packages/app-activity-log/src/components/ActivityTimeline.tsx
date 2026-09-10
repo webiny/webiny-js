@@ -21,6 +21,8 @@ export interface ActivityTimelineProps {
     targetType: string;
     targetId: string;
     modelId: string;
+    /** Changes when the target is written, which refreshes the timeline in place. */
+    writeToken?: string;
 }
 
 const formatTimestamp = (iso: string): string => {
@@ -183,6 +185,7 @@ export interface ActivityTimelineViewProps {
     view: TimelineView;
     loading: boolean;
     loadingMore: boolean;
+    refreshing: boolean;
     error: string | null;
     hasMore: boolean;
     filters: TimelineFilters;
@@ -203,6 +206,7 @@ export const ActivityTimelineView = ({
     view,
     loading,
     loadingMore,
+    refreshing,
     error,
     hasMore,
     clearFilters,
@@ -218,6 +222,18 @@ export const ActivityTimelineView = ({
 
     return (
         <div>
+            {/*
+              Announced rather than shown as a spinner, and above the rows rather than replacing
+              them. A save refreshes the timeline in place, and swapping the reader's rows for a
+              loading state on every save is the thing that would make the refresh feel worse than
+              not having it.
+            */}
+            {refreshing ? (
+                <Text as={"div"} size={"sm"} className={"text-neutral-strong"} role={"status"}>
+                    Updating…
+                </Text>
+            ) : null}
+
             {/*
               The two states that get skipped when building against a populated instance. They are
               different statements: nothing has been recorded, versus nothing matches the filter.
@@ -267,8 +283,13 @@ export const ActivityTimelineView = ({
  *
  * Deliberately holds no rendering of its own.
  */
-export const ActivityTimeline = ({ targetType, targetId, modelId }: ActivityTimelineProps) => {
-    const timeline = useActivityTimeline({ targetType, targetId, modelId });
+export const ActivityTimeline = ({
+    targetType,
+    targetId,
+    modelId,
+    writeToken
+}: ActivityTimelineProps) => {
+    const timeline = useActivityTimeline({ targetType, targetId, modelId, writeToken });
 
     return (
         <>
