@@ -2,7 +2,10 @@ import { type Container, createFeature } from "@webiny/feature/api";
 import { CaptureFeature } from "~/cms/capture/feature.js";
 import { PurgeFeature } from "~/cms/purge/feature.js";
 import { RecorderFeature } from "~/cms/recorder/feature.js";
+import { ListActivityFeature } from "~/features/listActivity/feature.js";
+import { ActivityLogPermissionsFeature } from "~/features/permissions/feature.js";
 import { ReviewCaptureFeature } from "~/cms/review/feature.js";
+import { ActivityLogGraphQLFactory } from "~/graphql/ActivityLogGraphQLFactory.js";
 import { ActivityRecordModel } from "~/storage/privateModel/ActivityRecordModel.js";
 import { PrivateModelStorageFeature } from "~/storage/privateModel/feature.js";
 
@@ -53,7 +56,10 @@ export const ActivityLogAppFeature = createFeature<IActivityLogAppFeatureParams>
         container.register(ActivityRecordModel);
 
         PrivateModelStorageFeature.register(container);
+        ActivityLogPermissionsFeature.register(container);
         RecorderFeature.register(container);
+        ListActivityFeature.register(container);
+        container.register(ActivityLogGraphQLFactory);
         CaptureFeature.register(container);
         ReviewCaptureFeature.register(container);
         PurgeFeature.register(container);

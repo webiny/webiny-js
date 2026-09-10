@@ -488,10 +488,63 @@ them, and the filter carries a boxed comment pointing at it.
 ## Checkpoint 5 — read API
 
 **The authorisation proposal is `plans/entry-activity-log-read-authorisation.md`**, delivered ahead
-of any implementation as the brief requires. It covers the two permissions and how they compose,
-where they live and how they are named, the tier question, where a field filter would attach, the
-delivery API, and what changed paths leak on their own — plus what would be built if approved
-unchanged, and the two questions it does not settle.
+of any implementation as the brief requires, and **approved with three corrections** (sven,
+2026-09-10) that are folded in below.
+
+### Decisions
+
+- **The revision-join hole: accepted and documented**, with the scope written into the
+  `activityLog.actor` permission's own `description` rather than only in the proposal — someone
+  reads that text while configuring a role, so it has to be true there. Two arguments strengthened
+  the case beyond the proposal's: removing the revision would **not** close the join, since a
+  reader could still match a record's timestamp against each revision's `savedOn`, so it breaks
+  grouping and the revision filter and buys nothing; and the leak is **partial**, because
+  `revisionSavedBy` names only the _last_ saver of a revision while this feature exists precisely
+  because a revision holds many saves by several people. The permission is not failing to protect
+  something — it is declining to hide a name the platform already shows elsewhere.
+- **Check order corrected.** The proposal had the model resolved before the permission was
+  checked, which makes the query an existence oracle: an unauthorised caller learns whether a
+  target exists from `NotFound` versus `NotAuthorized`. The order is now permission → resolve
+  model → `canAccessEntry`, and four tests hold it there.
+- **`description` added to the permission schema.** `EntityDefinition` had `title` but no
+  description, in either the api-core or the app-admin schema, and `PermissionsGroup` rendered no
+  such text. Four small additive edits across two packages now surface it in the role editor.
+
+### Open, tied to the AACL work rather than to this feature
+
+Neither needs settling before the read API, and both should be settled before the filter is
+written. Settling them now — against an entitlement that does not exist, for a filter nobody can
+write yet — would be guessing.
+
+- **Roll-up entries under a restricted subtree.** Past the cap a changeset collapses to a common
+  parent, which names no field and cannot be cleanly filtered.
+- **Count leakage from a fully-filtered changeset.** "Four fields changed, none of which you may
+  see" reveals a magnitude.
+
+Sven's leaning, recorded as non-binding: keep the roll-up entry and keep the count, on the same
+logic as the actor placeholder — a redacted record tells the truth and a missing one does not.
+
+### Delivered
+
+408 tests. The permission schema, the permissions feature, `ListActivityUseCase` with the corrected
+check order, the `ActivityChangesetFilter` abstraction with its pass-through implementation, and
+the GraphQL query.
+
+**Manage-side only by construction, not by a conditional.** The query lives on the core admin
+schema, following `api-scheduler`. The CMS read and preview endpoints are separate schemas built by
+the CMS itself, so a query registered here _cannot_ appear on them — a stronger guarantee than an
+endpoint check, which someone could later invert.
+
+**`modelId` is a third argument, and it is unavoidable.** The query takes target type and target id
+as the brief specifies, but authorisation runs `canAccessEntry({ model })` and the model cannot be
+derived from a bare target id without first reading the entry — which is the very thing being
+authorised. Every CMS read takes a model for the same reason.
+
+**Guard 4 caught a defect in itself.** Adding the read path made it report twelve offenders, of
+which four were real and eight were the guard's own regex running past the dependency array in the
+GraphQL factory and sweeping up every capitalised identifier after it. Fixed to match its own
+closing bracket: a guard that cries wolf trains people to widen the allowlist to silence it, which
+is what it exists to prevent.
 
 A GraphQL query for one target: newest first, cursor paginated, filterable by revision and actor.
 Takes target type and target id, not entry id.

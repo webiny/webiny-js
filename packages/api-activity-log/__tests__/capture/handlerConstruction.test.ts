@@ -57,7 +57,9 @@ const ALWAYS_PRESENT = new Set([
     "ListLatestEntriesUseCase",
     "DeleteEntryUseCase",
     "GetModelUseCase",
-    "CmsWhereMapper"
+    "CmsWhereMapper",
+    // Entry read authorisation. Registered by the CMS, which this feature requires outright.
+    "AccessControl"
 ]);
 
 /** Abstractions the feature registers itself, so they are present whenever it is. */
@@ -67,7 +69,10 @@ const SELF_REGISTERED = new Set([
     "ActivitySourceResolver",
     "ActivityWriter",
     "EntryActivityRecorder",
-    "ReviewActivityRecorder"
+    "ReviewActivityRecorder",
+    "ActivityLogPermissions",
+    "ActivityChangesetFilter",
+    "ListActivityUseCase"
 ]);
 
 /**
@@ -208,7 +213,12 @@ describe("guard 4 — no required dependency outside the platform contract", () 
         for (const file of sourceFiles()) {
             const source = readFileSync(file, "utf8");
 
-            for (const match of source.matchAll(/dependencies:\s*\[([\s\S]*?)\]\s*\n?\s*\}\)/g)) {
+            // Matches the dependency array and stops at its own closing bracket, tolerating one
+            // level of nesting for `[Token, { optional: true }]`. An earlier version ran to the
+            // next `})` in the file, which in a GraphQL factory swept up every capitalised
+            // identifier after the array — a guard that cries wolf trains people to widen the
+            // allowlist to silence it, which is exactly what it exists to prevent.
+            for (const match of source.matchAll(/dependencies:\s*\[((?:[^[\]]|\[[^\]]*\])*)\]/g)) {
                 const body = match[1]!;
 
                 // Strip optional declarations — `[Token, { optional: true }]` — before collecting.
