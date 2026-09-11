@@ -29,3 +29,4 @@ export {
     CommandPalettePresenter
 } from "@webiny/app-admin/presentation/commandPalette/index.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";
+export { usePreviewDomain } from "../admin/usePreviewDomain.js";
