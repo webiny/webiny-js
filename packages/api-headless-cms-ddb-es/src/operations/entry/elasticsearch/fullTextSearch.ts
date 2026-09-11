@@ -85,7 +85,15 @@ export const applyFullTextSearch = (params: Params): void => {
             } else if (field.systemField) {
                 return field.path || field.field.storageId;
             }
-            return `values.${field.path || field.field.storageId}`;
+            const path = `values.${field.path || field.field.storageId}`;
+            /**
+             * Searchable JSON fields are indexed as objects, so the actual searchable values
+             * live on the nested keys. Target them all via a wildcard.
+             */
+            if (field.type === "searchable-json") {
+                return `${path}.*`;
+            }
+            return path;
         },
         fields,
         query,
