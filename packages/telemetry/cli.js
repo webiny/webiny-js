@@ -33,6 +33,15 @@ export const sendEvent = async ({ event, version, properties }) => {
         installationProperties.installation_id = installationId;
     }
 
+    // Which hosting type the project runs on ("aws" or "server"). Both CLI bins set this marker at
+    // startup (`cli-aws/src/bin.ts`, `cli-server/src/bin.ts`), so every CLI event can be segmented
+    // by hosting type without each call site passing it along. Omitted when unset rather than
+    // defaulted to "aws", because a missing marker means an unknown caller, not an AWS project.
+    const hostingTypeProperties = {};
+    if (process.env.WEBINY_HOSTING_TYPE) {
+        hostingTypeProperties.hostingType = process.env.WEBINY_HOSTING_TYPE;
+    }
+
     const packageJsonPath = path.join(import.meta.dirname, "package.json");
     const packageJson = loadJsonFileSync(packageJsonPath);
 
@@ -42,6 +51,7 @@ export const sendEvent = async ({ event, version, properties }) => {
             ...properties,
             ...wcpProperties,
             ...installationProperties,
+            ...hostingTypeProperties,
             version: version || packageJson.version,
             ci: isCI,
             newUser: Boolean(globalConfig.get("newUser"))
