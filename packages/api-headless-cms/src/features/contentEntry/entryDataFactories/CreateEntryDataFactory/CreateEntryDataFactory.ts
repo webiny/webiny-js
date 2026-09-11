@@ -3,87 +3,27 @@ import {
     type ICreateEntryDataFactory,
     type ICreateEntryDataResponse
 } from "./abstractions.js";
-import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
+import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type {
     CmsEntry,
     CmsEntryValues,
     CmsModel,
-    CmsModelField,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { getDate } from "~/utils/date.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import WebinyError from "@webiny/error";
-import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation.js";
-import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { createIdentifier, mdbid } from "@webiny/utils";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../statuses.js";
 import { getIdentity } from "~/utils/identity.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "../system.js";
 import { getExpiresAt } from "../expiresAt.js";
-
-type DefaultValue = boolean | number | string | null;
-
-const convertDefaultValue = (field: CmsModelField, value: DefaultValue): DefaultValue => {
-    switch (field.type) {
-        case "boolean":
-            return Boolean(value);
-        case "number":
-            return Number(value);
-        default:
-            return value;
-    }
-};
-
-const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) | undefined => {
-    const { settings, list } = field;
-    if (settings && settings.defaultValue !== undefined) {
-        return convertDefaultValue(field, settings.defaultValue);
-    }
-    const { predefinedValues } = field;
-    if (
-        !predefinedValues ||
-        !predefinedValues.enabled ||
-        Array.isArray(predefinedValues.values) === false
-    ) {
-        return undefined;
-    }
-    if (!list) {
-        const selectedValue = predefinedValues.values.find(value => {
-            return !!value.selected;
-        });
-        if (selectedValue) {
-            return convertDefaultValue(field, selectedValue.value);
-        }
-        return undefined;
-    }
-    return predefinedValues.values
-        .filter(({ selected }) => !!selected)
-        .map(({ value }) => {
-            return convertDefaultValue(field, value);
-        });
-};
-
-const cleanInputValues = <TValues extends CmsEntryValues = CmsEntryValues>(
-    model: CmsModel,
-    input: TValues
-) => {
-    return model.fields.reduce<TValues>((acc, field) => {
-        if (!field.fieldId) {
-            throw new WebinyError("Field does not have an fieldId.", "MISSING_FIELD_ID", {
-                field
-            });
-        }
-        const key = field.fieldId as keyof TValues;
-        const value = input[key] as TValues[keyof TValues];
-        acc[key] = value === undefined ? (getDefaultValue(field) as TValues[keyof TValues]) : value;
-        return acc;
-    }, {} as TValues);
-};
+import { cleanInputValues } from "../cleanInputValues.js";
+import { EntryDataProcessor } from "~/features/contentEntry/entryDataProcessor/index.js";
 
 const createEntryId = (input: CreateCmsEntryInput) => {
     let entryId = mdbid();
@@ -112,7 +52,7 @@ const createEntryId = (input: CreateCmsEntryInput) => {
 
 class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
     public constructor(
-        private readonly cmsContext: CmsContext.Interface,
+        private readonly entryDataProcessor: EntryDataProcessor.Interface,
         private readonly identityContext: IdentityContext.Interface,
         private readonly tenantContext: TenantContext.Interface,
         private readonly accessControl: AccessControl.Interface
@@ -125,15 +65,13 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
     ): Promise<ICreateEntryDataResponse<TValues>> {
         const initialValues = cleanInputValues<TValues>(model, rawInput.values || ({} as TValues));
 
-        await validateModelEntryDataOrThrow({
-            context: this.cmsContext,
+        await this.entryDataProcessor.validateOrThrow<TValues>({
             model,
             values: initialValues,
             skipValidation: options?.skipValidation
         });
 
-        const values = await referenceFieldsMapping<TValues>({
-            context: this.cmsContext,
+        const values = await this.entryDataProcessor.mapReferenceFields<TValues>({
             model,
             values: initialValues,
             validateEntries: true
@@ -295,5 +233,5 @@ class CreateEntryDataFactoryImpl implements ICreateEntryDataFactory {
 
 export const CreateEntryDataFactory = FactoryAbstraction.createImplementation({
     implementation: CreateEntryDataFactoryImpl,
-    dependencies: [CmsContext, IdentityContext, TenantContext, AccessControl]
+    dependencies: [EntryDataProcessor, IdentityContext, TenantContext, AccessControl]
 });

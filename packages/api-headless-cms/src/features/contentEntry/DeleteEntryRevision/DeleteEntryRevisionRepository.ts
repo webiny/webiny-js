@@ -5,6 +5,7 @@ import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { DeleteEntryRevisionStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryRevisionStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * DeleteEntryRevisionRepository - Handles storage operations for deleting entry revisions.
@@ -21,6 +22,8 @@ class DeleteEntryRevisionRepositoryImpl implements RepositoryAbstraction.Interfa
         latestEntry: CmsEntry | null;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
         const { model, entry, latestEntry } = params;
+
+        assertRegularModel(model);
 
         try {
             const storageEntry = await this.entryToStorageTransform(model, entry);

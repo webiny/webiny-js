@@ -4,6 +4,7 @@ import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { CreateEntryStorageOperation } from "~/features/shared/storageOperations/entry/CreateEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * CreateEntryRepository - Handles persistence of new entries.
@@ -19,6 +20,8 @@ class CreateEntryRepositoryImpl implements RepositoryAbstraction.Interface {
         model: CmsModel,
         entry: CmsEntry
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        assertRegularModel(model);
+
         try {
             // Transform domain entry to storage format
             const storageEntry = await this.entryToStorageTransform(model, entry);
