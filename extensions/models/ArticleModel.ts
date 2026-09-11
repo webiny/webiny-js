@@ -4,7 +4,6 @@ export const ARTICLE_MODEL_ID = "code-article";
 
 class ArticleModelImpl implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
-        console.log("Build", ARTICLE_MODEL_ID);
         return [
             builder
                 .public({
