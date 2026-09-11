@@ -9,6 +9,7 @@ import type {
 } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
 import { EntriesBulkAction, EntriesBulkActionConfig } from "./abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
 import { ChildTasksCleanup } from "./internals/ChildTasksCleanup.js";
 import { ProcessTask } from "./internals/ProcessTask.js";
@@ -45,7 +46,8 @@ class BulkActionListTask implements TaskDefinition.Interface<
         private readonly listTasks: ListTasksUseCase.Interface,
         private readonly triggerTask: TriggerTaskUseCase.Interface,
         private readonly tasksCrud: TasksCrud.Interface,
-        private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface
+        private readonly bulkActionsConfig: EntriesBulkActionConfig.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async run({
@@ -82,7 +84,8 @@ class BulkActionListTask implements TaskDefinition.Interface<
                         this.triggerTask,
                         bulkAction,
                         BULK_ACTION_PROCESS_TASK_ID,
-                        batchSize
+                        batchSize,
+                        this.logger
                     );
                     return await createTasks.execute({ input, controller });
                 }
@@ -122,7 +125,7 @@ class BulkActionListTask implements TaskDefinition.Interface<
         try {
             await childTasksCleanup.execute({ tasksCrud: this.tasksCrud, task });
         } catch (ex) {
-            console.error(`Error while cleaning bulk action list child tasks.`, ex);
+            this.logger.error({ error: ex, task: task.id }, "Failed to clean up child tasks.");
         }
     }
 }
@@ -173,7 +176,8 @@ export const BulkActionListTaskDefinition = TaskDefinition.createImplementation(
         ListTasksUseCase,
         TriggerTaskUseCase,
         TasksCrud,
-        EntriesBulkActionConfig
+        EntriesBulkActionConfig,
+        Logger
     ]
 });
 
