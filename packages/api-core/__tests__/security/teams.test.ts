@@ -1,6 +1,7 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
 import mocks from "../mocks/securityTeam";
+import roleMocks from "../mocks/securityRole";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
@@ -56,13 +57,102 @@ const testTeamFactory = TeamFactory.createImplementation({
 });
 
 describe("Security Team CRUD Test", () => {
-    const { install, securityTeam } = useGqlHandler({
+    const { install, securityTeam, securityRole } = useGqlHandler({
         wcpLicense: createTestWcpLicense(),
         registrations: [testRoleFactory, testTeamFactory]
     });
 
     beforeEach(async () => {
         await install.install();
+    });
+
+    /*
+     * A team stores role IDs, and only IDs: GetPermissionsFromIdentity resolves them with `id_in`.
+     * A slug stored there matches nothing, so the team is created, reads correctly, and grants no
+     * permissions. These use a DATABASE role on purpose, because a plugin role gets `id: slug`
+     * (RoleProvider) and so cannot tell the two apart.
+     */
+    describe("role identifiers", () => {
+        const createDatabaseRole = async () => {
+            const [response] = await securityRole.create({ data: roleMocks.roleA });
+            const role = response.data.security.createRole.data;
+
+            // The premise of all of this: for a database role the two differ.
+            expect(role.id).not.toEqual(role.slug);
+
+            return role;
+        };
+
+        test("should accept a role slug and store the role id", async () => {
+            const role = await createDatabaseRole();
+
+            const [response] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: [role.slug] }
+            });
+
+            expect(response.data.security.createTeam.error).toBeNull();
+            expect(response.data.security.createTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
+
+        test("should accept a role id unchanged", async () => {
+            const role = await createDatabaseRole();
+
+            const [response] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: [role.id] }
+            });
+
+            expect(response.data.security.createTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
+
+        test("should reject an identifier that is neither an id nor a slug", async () => {
+            const [response] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: ["not-a-role"] }
+            });
+
+            expect(response.data.security.createTeam.data).toBeNull();
+            expect(response.data.security.createTeam.error.message).toMatch(
+                /Not a known role id or slug: "not-a-role"/
+            );
+        });
+
+        test("should resolve a slug on update too", async () => {
+            const role = await createDatabaseRole();
+
+            const [createResponse] = await securityTeam.create({ data: mocks.teamA });
+            const team = createResponse.data.security.createTeam.data;
+
+            const [response] = await securityTeam.update({
+                id: team.id,
+                data: { roles: [role.slug] }
+            });
+
+            expect(response.data.security.updateTeam.error).toBeNull();
+            expect(response.data.security.updateTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
+
+        test("should leave stored roles alone when an update omits them", async () => {
+            const role = await createDatabaseRole();
+
+            const [createResponse] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: [role.slug] }
+            });
+            const team = createResponse.data.security.createTeam.data;
+
+            const [response] = await securityTeam.update({
+                id: team.id,
+                data: { name: "Renamed" }
+            });
+
+            expect(response.data.security.updateTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
     });
 
     test("should able to create, read, update and delete `Security Teams`", async () => {
