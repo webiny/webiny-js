@@ -60,7 +60,7 @@ class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
                     slug,
                     extensions,
                     parentId: parentId === ROOT_FOLDER ? null : parentId,
-                    permissions: permissions.filter(p => !p.inheritedFrom)
+                    permissions: permissions.filter(p => !p.inheritedFrom && !p.plugin)
                 }
             }
         });
