@@ -50,6 +50,7 @@ export interface ListEntriesParams {
     sort?: Record<string, "asc" | "desc">;
     limit?: number;
     after?: string;
+    search?: string;
 }
 
 export interface IEnvironment {

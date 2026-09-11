@@ -71,6 +71,7 @@ export class LiveSdk implements IContentSdk {
             sort: params.sort,
             limit: params.limit,
             after: params.after,
+            search: params.search,
             fields: [...SYSTEM_FIELDS, "values.*"],
             preview: this.preview
         });
