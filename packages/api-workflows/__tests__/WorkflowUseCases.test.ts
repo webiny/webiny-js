@@ -53,18 +53,23 @@ describe("Workflows Use Cases", () => {
         expect(workflowResult.isOk()).toBe(true);
         const workflow = workflowResult.value!;
 
-        const expected: IWorkflow = {
+        /**
+         * Object values stored via Headless CMS carry a generated `_id`, so every
+         * step, team and notification is expected to have one.
+         */
+        const expected = {
             id,
             app: "test",
             name: "Test Workflow",
             steps: [
                 {
+                    _id: expect.any(String),
                     id: "step-1",
                     title: "Step 1",
                     description: "This is step 1",
                     color: "blue",
-                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
-                    notifications: [{ id: "notif-1" }]
+                    teams: [{ _id: expect.any(String), id: FULL_ACCESS_TEAM_ID }],
+                    notifications: [{ _id: expect.any(String), id: "notif-1" }]
                 }
             ]
         };
