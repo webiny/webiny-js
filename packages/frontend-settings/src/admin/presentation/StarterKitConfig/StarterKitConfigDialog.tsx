@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
 import { compiler } from "markdown-to-jsx/react";
-import { Button, Dialog, Input, OverlayLoader, Tabs } from "@webiny/admin-ui";
+import { Button, Dialog, Input, OverlayLoader, Tabs, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { StarterKitConfigFeature } from "./feature.js";
 import { markdownComponents } from "./markdownComponents.js";
@@ -17,6 +17,7 @@ const TabContent = createReactiveComponent(({ config }: { config: string }) => {
 
 export const StarterKitConfigDialog = createReactiveComponent(({ open, onClose }: Props) => {
     const { presenter } = useFeature(StarterKitConfigFeature);
+    const toast = useToast();
 
     useEffect(() => {
         if (open) {
@@ -49,7 +50,13 @@ export const StarterKitConfigDialog = createReactiveComponent(({ open, onClose }
                         text={saving ? "Saving..." : "Save"}
                         variant={"primary"}
                         disabled={saving}
-                        onClick={() => presenter.save()}
+                        onClick={() =>
+                            presenter.save().then(() => {
+                                toast.showSuccessToast({
+                                    title: "Frontend settings saved."
+                                });
+                            })
+                        }
                     />
                 </>
             }
@@ -65,13 +72,15 @@ export const StarterKitConfigDialog = createReactiveComponent(({ open, onClose }
                         onChange={value => presenter.setDomain(value ?? "")}
                     />
                 </div>
-                <Tabs
-                    tabs={tabs}
-                    defaultValue={starterKits[0]?.id}
-                    size={"md"}
-                    spacing={"lg"}
-                    separator={true}
-                />
+                {starterKits.length > 0 ? (
+                    <Tabs
+                        tabs={tabs}
+                        defaultValue={starterKits[0].id}
+                        size={"md"}
+                        spacing={"lg"}
+                        separator={true}
+                    />
+                ) : null}
                 {loading ? <OverlayLoader text={"Loading config..."} /> : null}
                 {saving ? <OverlayLoader text={"Saving..."} /> : null}
             </div>

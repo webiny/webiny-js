@@ -29,6 +29,7 @@
     "@webiny/di": "^1.0.2",
     "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
+    "@webiny/frontend-settings": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/languages": "0.0.0",
     "@webiny/lexical-converter": "0.0.0",

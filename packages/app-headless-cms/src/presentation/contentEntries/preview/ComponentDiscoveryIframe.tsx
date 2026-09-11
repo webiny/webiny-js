@@ -4,16 +4,16 @@ import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 import { buildEditorUrl } from "./resolvePreviewUrl.js";
 
 interface ComponentDiscoveryIframeProps {
-    previewPrefix: string;
+    domain: string;
 }
 
-export const ComponentDiscoveryIframe = ({ previewPrefix }: ComponentDiscoveryIframeProps) => {
+export const ComponentDiscoveryIframe = ({ domain }: ComponentDiscoveryIframeProps) => {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const messengerRef = useRef<Messenger | null>(null);
     const presenter = useLivePreviewPresenter();
 
     const iframeSrc = (() => {
-        const editorPath = buildEditorUrl(previewPrefix);
+        const editorPath = buildEditorUrl(domain);
         const url = new URL(editorPath);
         url.searchParams.set("wb.editing", "true");
         url.searchParams.set("wb.type", "entry");
