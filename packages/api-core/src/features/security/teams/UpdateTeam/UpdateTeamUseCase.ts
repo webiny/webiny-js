@@ -2,12 +2,14 @@ import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { UpdateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
+import { RolesRepository } from "../../roles/shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateTeamValidation } from "./schema.js";
 import { TeamBeforeUpdateEvent, TeamAfterUpdateEvent } from "./events.js";
 import type { Team, UpdateTeamInput } from "../shared/types.js";
 import { descriptionOnUpdate } from "../../shared/description.js";
+import { resolveRoleIdentifiers } from "../shared/resolveRoleIdentifiers.js";
 import {
     NotAuthorizedError,
     CannotUpdatePluginTeamsError,
@@ -19,15 +21,18 @@ export class UpdateTeamUseCase {
     private repository: TeamsRepository.Interface;
     private identityContext: IdentityContext.Interface;
     private eventPublisher: EventPublisher.Interface;
+    private rolesRepository: RolesRepository.Interface;
 
     constructor(
         repository: TeamsRepository.Interface,
         identityContext: IdentityContext.Interface,
-        eventPublisher: EventPublisher.Interface
+        eventPublisher: EventPublisher.Interface,
+        rolesRepository: RolesRepository.Interface
     ) {
         this.repository = repository;
         this.identityContext = identityContext;
         this.eventPublisher = eventPublisher;
+        this.rolesRepository = rolesRepository;
     }
 
     async execute(id: string, input: UpdateTeamInput): Promise<Result<Team, UpdateTeam.Error>> {
@@ -68,6 +73,20 @@ export class UpdateTeamUseCase {
             ...descriptionOnUpdate(description)
         };
 
+        /*
+         * Only when the update mentions roles. An update that omits them must leave the stored ones
+         * alone, and resolving an absent list would cost a read and write an empty array.
+         */
+        if (changes.roles) {
+            const roleIdsResult = await resolveRoleIdentifiers(this.rolesRepository, changes.roles);
+
+            if (roleIdsResult.isFail()) {
+                return Result.fail(roleIdsResult.error);
+            }
+
+            changes.roles = roleIdsResult.value;
+        }
+
         const updatedTeam: Team = {
             ...existingTeam,
             ...changes
@@ -102,5 +121,5 @@ export class UpdateTeamUseCase {
 export const UpdateTeamUseCaseImpl = createImplementation({
     abstraction: UpdateTeam,
     implementation: UpdateTeamUseCase,
-    dependencies: [TeamsRepository, IdentityContext, EventPublisher]
+    dependencies: [TeamsRepository, IdentityContext, EventPublisher, RolesRepository]
 });
