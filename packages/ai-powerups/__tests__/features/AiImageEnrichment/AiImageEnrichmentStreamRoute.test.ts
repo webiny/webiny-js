@@ -24,6 +24,7 @@ const prepared: IPreparedImageEnrichment = {
     imageBase64: "aGVsbG8=",
     imageMediaType: "image/png",
     model: "anthropic/claude-sonnet-4-5",
+    prompt: "Describe this image.",
     connection: { sdkName: "anthropic", apiKey: "key" }
 };
 

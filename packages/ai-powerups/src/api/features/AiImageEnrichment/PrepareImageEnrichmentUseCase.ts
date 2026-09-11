@@ -1,12 +1,15 @@
 import { Result } from "@webiny/feature/api";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/abstractions.js";
 import {
     PrepareImageEnrichmentUseCase as UseCaseAbstraction,
     type IPreparedImageEnrichment
 } from "./abstractions.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "~/api/features/Capabilities/index.js";
+import { FM_IMAGE_ENRICHMENT_CAPABILITY } from "./capability.js";
 import {
     EnrichmentFileContentsError,
     EnrichmentFileNotFoundError,
@@ -19,8 +22,7 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
     constructor(
         private getFile: GetFileUseCase.Interface,
         private getFileContents: GetFileContentsByIdUseCase.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface
+        private resolveCapability: ResolveAiCapabilityUseCase.Interface
     ) {}
 
     async execute(fileId: string): Promise<Result<IPreparedImageEnrichment, ImageEnrichmentError>> {
@@ -44,30 +46,25 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
             return Result.fail(new EnrichmentFileContentsError(contentsResult.error.message));
         }
 
-        const aiSettingsResult = await this.getSettings.execute();
-        if (aiSettingsResult.isFail()) {
-            return Result.fail(new EnrichmentNoProviderError());
+        const resolved = await this.resolveCapability.execute(FM_IMAGE_ENRICHMENT_CAPABILITY);
+        if (resolved.isFail()) {
+            return Result.fail(new EnrichmentNoProviderError(resolved.error.message));
         }
 
-        const firstProvider = aiSettingsResult.value.providers.presets[0];
-        if (!firstProvider) {
-            return Result.fail(new EnrichmentNoProviderError());
-        }
+        const capability = resolved.value;
 
         return Result.ok({
             fileId: file.id,
             imageBase64: contentsResult.value.buffer.toString("base64"),
             imageMediaType: contentsResult.value.contentType,
-            model: firstProvider.model,
-            connection: {
-                sdkName: firstProvider.model.split("/")[0],
-                apiKey: await this.encryption.decrypt(firstProvider.apiKeyEncrypted)
-            }
+            model: capability.model,
+            prompt: withAdditionalInstructions(capability.guidance, capability),
+            connection: capability.connection
         });
     }
 }
 
 export const PrepareImageEnrichmentUseCase = UseCaseAbstraction.createImplementation({
     implementation: PrepareImageEnrichmentUseCaseImpl,
-    dependencies: [GetFileUseCase, GetFileContentsByIdUseCase, GetSettingsUseCase, Encryption]
+    dependencies: [GetFileUseCase, GetFileContentsByIdUseCase, ResolveAiCapabilityUseCase]
 });

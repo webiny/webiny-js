@@ -6,6 +6,9 @@ import { GetSettingsFeature } from "./features/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "./features/UpdateSettings/feature.js";
 import { WbGeneratePageContentFeature } from "./features/WbGeneratePageContent/feature.js";
 import { ProvidersFeature } from "./features/Providers/feature.js";
+import { ConnectionsFeature } from "./features/Connections/feature.js";
+import { ModelRolesFeature } from "./features/ModelRoles/feature.js";
+import { CapabilitiesFeature } from "./features/Capabilities/feature.js";
 import { ReaderPersonasFeature } from "./features/ReaderPersonas/feature.js";
 import { WriterPersonasFeature } from "./features/WriterPersonas/feature.js";
 import { ProjectsFeature } from "./features/Projects/feature.js";
@@ -25,7 +28,15 @@ export const Extension = createFeature({
 
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
+        /*
+         * `ProvidersFeature` is still registered so the legacy `providers` section keeps round-
+         * tripping through storage. `Connections` and `ModelRoles` read it once to seed
+         * themselves; nothing else does. It goes away with the next breaking release.
+         */
         ProvidersFeature.register(container);
+        ConnectionsFeature.register(container);
+        ModelRolesFeature.register(container);
+        CapabilitiesFeature.register(container);
         ReaderPersonasFeature.register(container);
         WriterPersonasFeature.register(container);
         ProjectsFeature.register(container);

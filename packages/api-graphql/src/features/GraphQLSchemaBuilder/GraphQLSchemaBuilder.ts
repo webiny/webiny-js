@@ -20,8 +20,17 @@ export class GraphQLSchemaBuilder implements Abstraction.Interface {
 
         const graphqlResolver = (parent: any, args: TArgs, context: any, info: any) => {
             const resolvedDeps = dependencies.map((dep: Dependency) => {
-                const [abstraction] = Array.isArray(dep) ? dep : [dep];
-                return context.container.resolve(abstraction);
+                /*
+                 * `Dependency` allows `[abstraction, { multiple: true }]`, same as anywhere else in
+                 * the container. This used to destructure the tuple, throw the options away and
+                 * always single-resolve, so a resolver asking for every implementation of an
+                 * abstraction received one object and failed on `.map`.
+                 */
+                const [abstraction, options] = Array.isArray(dep) ? dep : [dep, undefined];
+
+                return options?.multiple
+                    ? context.container.resolveAll(abstraction)
+                    : context.container.resolve(abstraction);
             });
 
             const actualResolver = resolver(...resolvedDeps);
