@@ -50,9 +50,15 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
         return this.decoratee.createInputValidation;
     }
 
+    // A definition that delegates to a `handler` class has no `run` of its own — the handler
+    // supplies it, and GetTaskDefinitionUseCase merges the two halves after this decorator runs.
+    get handler() {
+        return this.decoratee.handler;
+    }
+
     // Delegate lifecycle methods (bind to preserve context)
     get run() {
-        return this.decoratee.run.bind(this.decoratee);
+        return this.decoratee.run?.bind(this.decoratee);
     }
 
     get onBeforeTrigger() {
@@ -78,9 +84,9 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
     // Validation logic
     private validate(): void {
         if (camelCase(this.decoratee.id) !== this.decoratee.id) {
-            const message = `Task ID "${this.decoratee.id}" is invalid. It must be in camelCase format, for example: "myCustomTask".`;
-            console.log(message);
-            throw new WebinyError(message);
+            throw new WebinyError(
+                `Task ID "${this.decoratee.id}" is invalid. It must be in camelCase format, for example: "myCustomTask".`
+            );
         }
     }
 
