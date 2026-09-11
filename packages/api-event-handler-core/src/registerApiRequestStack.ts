@@ -13,6 +13,7 @@ import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
 import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
+import { ActivityLogAppFeature } from "@webiny/api-activity-log";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
@@ -126,6 +127,16 @@ export async function registerApiRequestStack(
     // ── Workflows ──────────────────────────────────────────────
     WorkflowsFeature.register(container);
     CmsWorkflowsFeature.register(container);
+
+    // ── Activity log ───────────────────────────────────────────
+    // After CMS and Workflows, because it records activity from both.
+    //
+    // `enabled` is hard-coded rather than read from a feature flag, and this is the tier gate's
+    // API-side site — the admin entry point in `app-serverless-cms` is the other one. See
+    // `ActivityLogAppFeature` for why the parameter is required with no default: an unregistered
+    // flag name resolves to *enabled* for anyone holding any licence, so a lookup here would gate
+    // nothing while reading exactly like a gate that works.
+    ActivityLogAppFeature.register(container, { enabled: true });
 
     // ── Scheduler + scheduler transport ────────────────────────
     SchedulerFeature.register(container);
