@@ -1,1 +1,1 @@
-export { usePreviewDomain } from "../admin/usePreviewDomain.js";
+export { usePreviewDomain } from "~/admin/usePreviewDomain.js";
