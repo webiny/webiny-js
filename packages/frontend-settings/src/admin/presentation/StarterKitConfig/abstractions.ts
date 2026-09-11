@@ -4,6 +4,7 @@ import type { IStarterKit } from "~/shared/types.js";
 export interface IStarterKitConfigVm {
     loading: boolean;
     saving: boolean;
+    canSave: boolean;
     domain: string;
     starterKits: IStarterKit[];
 }

@@ -1,6 +1,6 @@
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const ARTICLE_MODEL_ID = "article";
+export const ARTICLE_MODEL_ID = "code-article";
 
 class ArticleModelImpl implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
@@ -119,8 +119,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                 .pluralApiName("Articles")
                 .settings({
                     aiEntryWizard: true,
-                    previewSlug: "{values.slug}",
-                    previewPrefix: "https://learn-webiny-nextjs-app.localhost/articles"
+                    previewPath: "/articles/{values.slug}"
                 })
         ];
     }

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { ContentModelEditor } from "~/admin/components/ContentModelEditor/ContentModelEditor.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
+import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 import { ComponentDiscoveryIframe } from "./ComponentDiscoveryIframe.js";
 import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 
@@ -8,13 +9,14 @@ export const ModelEditorComponentDiscovery = ContentModelEditor.createDecorator(
     return function ModelEditorWithDiscovery() {
         const { data } = useModelEditor();
         const presenter = useLivePreviewPresenter();
-        const previewPrefix = data?.settings?.previewPrefix as string | undefined;
+        const previewPath = data?.settings?.previewPath as string | undefined;
+        const { previewDomain } = usePreviewDomain();
 
         useEffect(() => {
-            if (!previewPrefix) {
+            if (!previewPath) {
                 presenter.clearComponents();
             }
-        }, [previewPrefix, presenter]);
+        }, [previewPath, presenter]);
 
         useEffect(() => {
             return () => {
@@ -24,7 +26,7 @@ export const ModelEditorComponentDiscovery = ContentModelEditor.createDecorator(
 
         return (
             <>
-                {previewPrefix ? <ComponentDiscoveryIframe previewPrefix={previewPrefix} /> : null}
+                {previewPath ? <ComponentDiscoveryIframe domain={previewDomain} /> : null}
                 <Original />
             </>
         );
