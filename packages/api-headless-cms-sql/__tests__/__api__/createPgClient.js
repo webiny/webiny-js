@@ -1,4 +1,5 @@
 import knexLib from "knex";
+import { withKnexDefaults } from "@webiny/api-core-sql";
 
 const host = process.env.WEBINY_PG_HOST || "localhost";
 const port = Number(process.env.WEBINY_PG_PORT || 5432);
@@ -24,11 +25,13 @@ async function ensureDatabase() {
 export async function createKnex() {
     await ensureDatabase();
 
-    return knexLib({
-        client: "pg",
-        connection: { host, port, database, user, password },
-        pool: { min: 1, max: 1 }
-    });
+    return knexLib(
+        withKnexDefaults({
+            client: "pg",
+            connection: { host, port, database, user, password },
+            pool: { min: 1, max: 1 }
+        })
+    );
 }
 
 export async function dropAllTables(knex) {

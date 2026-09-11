@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import knex, { type Knex } from "knex";
+import { withKnexDefaults } from "@webiny/api-core-sql";
 
 export interface CreateSqliteConnectionOptions {
     /**
@@ -31,9 +32,11 @@ export function createSqliteConnection(options: CreateSqliteConnectionOptions = 
     // better-sqlite3 won't create missing parent dirs — ensure the target directory exists.
     fs.mkdirSync(path.dirname(filename), { recursive: true });
 
-    return knex({
-        client: "better-sqlite3",
-        connection: { filename },
-        useNullAsDefault: true
-    });
+    return knex(
+        withKnexDefaults({
+            client: "better-sqlite3",
+            connection: { filename },
+            useNullAsDefault: true
+        })
+    );
 }
