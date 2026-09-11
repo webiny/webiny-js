@@ -23,15 +23,24 @@ const MARKDOWN_CLASSES = [
 ].join(" ");
 
 /**
- * Done only once the tool has actually returned. A call awaiting approval still arrives as a
+ * Settled only once the tool actually returned or threw. A call awaiting approval still arrives as a
  * `tool-call`, so keying off position would show a write as completed when it has only been proposed.
+ *
+ * Outcomes are counted together, because a tool called twice can succeed once and fail once and the
+ * chips are told apart only by their order.
  */
-const toolState = (turn: AiTurnModel, index: number): "running" | "done" => {
+const toolState = (turn: AiTurnModel, index: number): "running" | "done" | "failed" => {
     const name = turn.tools[index];
     const callsSoFar = turn.tools.slice(0, index + 1).filter(tool => tool === name).length;
     const resultsSoFar = turn.completed.filter(tool => tool === name).length;
+    const failuresSoFar = turn.failed.filter(tool => tool === name).length;
 
-    return resultsSoFar >= callsSoFar ? "done" : "running";
+    if (resultsSoFar + failuresSoFar < callsSoFar) {
+        return "running";
+    }
+
+    // The failures land last, so a call beyond the successful ones is one of them.
+    return callsSoFar > resultsSoFar ? "failed" : "done";
 };
 
 export interface AiTurnProps {

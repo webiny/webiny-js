@@ -52,6 +52,8 @@ export type AiChatStreamEvent =
     | { type: "text"; text: string }
     | { type: "tool-call"; name: string }
     | { type: "tool-result"; name: string }
+    // A tool threw. Pairs with `tool-call` by name, and does not end the run.
+    | { type: "tool-error"; name: string; message: string }
     | { type: "approval"; approvals: AiChatPendingApproval[] }
     | { type: "done"; messages: AiChatMessage[]; steps: number }
     | { type: "error"; message: string };

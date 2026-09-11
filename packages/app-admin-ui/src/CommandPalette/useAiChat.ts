@@ -16,6 +16,11 @@ export interface AiTurn {
      * only way to tell a completed tool from one merely proposed.
      */
     completed: string[];
+    /**
+     * Tools that threw. Settles the chip just as `completed` does, but shown as a failure. The run
+     * continues: the model reads the error and usually retries with corrected arguments.
+     */
+    failed: string[];
     /** Set while a tool is running and no answer text has arrived yet. */
     running: boolean;
     pendingApprovals: AiChatPendingApproval[];
@@ -38,6 +43,7 @@ const emptyTurn = (question: string): AiTurn => ({
     text: "",
     tools: [],
     completed: [],
+    failed: [],
     running: false,
     pendingApprovals: [],
     messages: [],
@@ -110,6 +116,7 @@ export const useAiChat = (): UseAiChat => {
                 let text = existing?.text ?? "";
                 const tools: string[] = existing ? [...existing.tools] : [];
                 const completed: string[] = existing ? [...existing.completed] : [];
+                const failed: string[] = existing ? [...existing.failed] : [];
                 const priorMessages: AiChatMessage[] = existing ? [...existing.messages] : [];
 
                 for await (const event of container
@@ -130,6 +137,12 @@ export const useAiChat = (): UseAiChat => {
                     if (event.type === "tool-result") {
                         completed.push(event.name);
                         patch(index, { completed: [...completed] });
+                        continue;
+                    }
+
+                    if (event.type === "tool-error") {
+                        failed.push(event.name);
+                        patch(index, { failed: [...failed] });
                         continue;
                     }
 

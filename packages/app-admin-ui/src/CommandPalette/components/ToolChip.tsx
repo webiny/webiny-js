@@ -4,23 +4,39 @@ import { Icon } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { ReactComponent as CheckIcon } from "@webiny/icons/check.svg";
 import { ReactComponent as SpinnerIcon } from "@webiny/icons/autorenew.svg";
+import { ReactComponent as ErrorIcon } from "@webiny/icons/error.svg";
 
 export interface ToolChipProps {
     name: string;
-    /** Done chips read as confirmed work; the running one keeps spinning. */
-    state: "running" | "done";
+    /** Done chips read as confirmed work, failed ones as a call the model has to recover from. */
+    state: "running" | "done" | "failed";
 }
 
 /**
  * One tool the assistant called. Icon colour comes from the parent because `Icon` only offers
  * neutral/accent variants — `inherit` lets the chip's own text colour drive it.
  */
+const toolIcon = (state: ToolChipProps["state"]) => {
+    if (state === "done") {
+        return <CheckIcon />;
+    }
+
+    if (state === "failed") {
+        return <ErrorIcon />;
+    }
+
+    return <SpinnerIcon />;
+};
+
 export const ToolChip = ({ name, state }: ToolChipProps) => {
     const done = state === "done";
+    const failed = state === "failed";
 
     let tone = "border-neutral-dimmed bg-neutral-subtle text-neutral-strong";
     if (done) {
         tone = "border-success-subtle bg-success-subtle text-success";
+    } else if (failed) {
+        tone = "border-destructive-subtle bg-destructive-subtle text-destructive-primary";
     }
 
     return (
@@ -28,11 +44,11 @@ export const ToolChip = ({ name, state }: ToolChipProps) => {
             className={cn("inline-flex items-center gap-xs rounded-xl border px-sm py-xxs", tone)}
         >
             <Icon
-                icon={done ? <CheckIcon /> : <SpinnerIcon />}
+                icon={toolIcon(state)}
                 size="xs"
                 label=""
                 color="inherit"
-                className={done ? undefined : "animate-spin"}
+                className={state === "running" ? "animate-spin" : undefined}
             />
             <Text size="sm" className="font-mono">
                 {name}

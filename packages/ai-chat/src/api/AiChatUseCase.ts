@@ -139,6 +139,22 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
                     continue;
                 }
 
+                /*
+                 * A tool threw. Deliberately not terminal, unlike the stream-level `error` below:
+                 * the SDK hands the message to the model, which typically fixes its arguments and
+                 * tries again, so ending the run here would abort a recoverable turn. Every tool
+                 * reports failure this way, so an unhandled `tool-error` leaves the call with no
+                 * outcome at all.
+                 */
+                if (part.type === "tool-error" && part.toolName) {
+                    yield {
+                        type: "tool-error",
+                        name: part.toolName,
+                        message: toMessage(part.error)
+                    };
+                    continue;
+                }
+
                 if (part.type === "tool-approval-request" && part.approvalId && part.toolCall) {
                     pending.push(
                         toPendingApproval(

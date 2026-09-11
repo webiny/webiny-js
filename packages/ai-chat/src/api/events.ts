@@ -18,6 +18,12 @@ export type AiChatEvent =
     | { type: "tool-call"; name: string }
     /** A tool finished. Pairs with `tool-call` by name. */
     | { type: "tool-result"; name: string }
+    /**
+     * A tool threw. Also pairs with `tool-call` by name, and is NOT terminal: the model reads the
+     * message and usually corrects itself on the next step, which is why tools report failure by
+     * throwing. Without this the call would have no outcome and its chip would spin forever.
+     */
+    | { type: "tool-error"; name: string; message: string }
     /** The loop paused: these calls change something and need a human decision. */
     | { type: "approval"; approvals: PendingApproval[] }
     /** Terminal success. Carries what the client must replay to resume after an approval. */
