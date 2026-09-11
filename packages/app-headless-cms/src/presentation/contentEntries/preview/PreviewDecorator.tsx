@@ -5,7 +5,7 @@ import {
     LeftPanel,
     RightPanel
 } from "@webiny/app-admin/components/SplitView/SplitView.js";
-import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin";
+import { usePreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 import { ContentEntryFormContent } from "~/presentation/contentEntries/views/layout/ContentEntryFormContent.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { PreviewPane } from "./PreviewPane.js";

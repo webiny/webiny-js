@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useLocalStorage } from "@webiny/app";
-import { usePreviewDomain as useSharedPreviewDomain } from "@webiny/frontend-settings/exports/admin";
+import { usePreviewDomain as useSharedPreviewDomain } from "@webiny/frontend-settings/exports/admin.js";
 
 const CUSTOM_PREVIEW_DOMAIN = "custom_preview_domain";
 
