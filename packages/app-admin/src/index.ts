@@ -210,3 +210,13 @@ export type {
     LayoutRenderers,
     TabsNodeRendererProps
 } from "./features/formModel/FormView.js";
+
+export { useTheme, THEME_KEY } from "./base/Base/ThemeMode/useTheme.js";
+export type { UseTheme } from "./base/Base/ThemeMode/useTheme.js";
+export { useColorScheme } from "./base/Base/ThemeMode/useColorScheme.js";
+export type { ColorScheme } from "./base/Base/ThemeMode/useColorScheme.js";
+export { createTheme } from "./config/AdminConfig/Theme/createTheme.js";
+export { lightTheme } from "./config/AdminConfig/Theme/lightTheme.js";
+export type { Theme } from "./config/AdminConfig/Theme/types.js";
+// Re-exported from @webiny/admin-ui so extension theme files can import everything from here.
+export { darkThemeBase, type ThemeVariables } from "@webiny/admin-ui";
