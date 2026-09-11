@@ -23,6 +23,14 @@ const argv = yargs(hideBin(process.argv)).parse();
 
 const projectFolder = path.basename(process.cwd());
 
+// Listr wraps every task title to `process.stdout.columns`, and only falls back to 80 columns
+// when that is nullish. A pty that reports no size (0 columns, e.g. when the build runs inside
+// an embedded terminal) therefore gets a negative width, and each title is hard-wrapped to one
+// character per line. Give it a usable width instead.
+if (process.stdout.isTTY && !process.stdout.columns) {
+    process.stdout.columns = 80;
+}
+
 const sendNotification = (title: string, message: string) => {
     try {
         notifier.notify({ title, message });
@@ -222,12 +230,38 @@ export const buildPackages = async () => {
 
                     return true;
                 },
-                task: async (ctx, task) => {
+                task: (ctx, task) => {
                     const batchStart = Date.now();
                     let succeeded = 0;
                     let failed = 0;
+                    let settled = 0;
 
                     reporter.batchStart(batchInfo);
+
+                    const reportBatchEnd = () => {
+                        reporter.batchEnd({
+                            ...batchInfo,
+                            succeeded,
+                            failed,
+                            duration: Date.now() - batchStart
+                        });
+                    };
+
+                    // Nothing will settle, so the batch has to close itself out. Every
+                    // `batch:start` is paired with a `batch:end` in the JSON event stream.
+                    if (!packages.length) {
+                        reportBatchEnd();
+                        return;
+                    }
+
+                    // Reported by the last package to settle rather than after the subtask list
+                    // has run, because the list has to be returned to Listr (see below) and
+                    // there is no point after that where this task still has control.
+                    const reportBatchEndOnLastSettled = () => {
+                        if (++settled === packages.length) {
+                            reportBatchEnd();
+                        }
+                    };
 
                     const subtasks = packages.map(pkg => {
                         return {
@@ -274,31 +308,26 @@ export const buildPackages = async () => {
 
                                     ctx.skip = true;
                                     throw new PackageBuildError(pkg, err as Error);
+                                } finally {
+                                    reportBatchEndOnLastSettled();
                                 }
                             }
                         };
                     });
 
-                    const subtaskList = task.newListr(subtasks, {
+                    // The list has to be returned, not run here. Listr only takes a subtask
+                    // list over when it is returned from a task: it then swaps the nested
+                    // list onto the silent renderer and hands its tasks to the renderer that
+                    // is already drawing. Calling `.run()` on it instead leaves it with a
+                    // renderer of its own, and the two then draw over each other. Neither can
+                    // erase the other's frame, so every redraw appends another copy of the
+                    // package list.
+                    return task.newListr(subtasks, {
                         concurrent: buildInParallel,
                         exitOnError: false,
                         collectErrors: true,
                         rendererOptions: { showErrorMessage: false }
                     });
-
-                    // Run the subtasks here rather than returning the list, so the batch's
-                    // own totals are known by the time `batchEnd` is reported. `exitOnError`
-                    // is off, so this never throws — errors surface on `tasks.errors`.
-                    try {
-                        await subtaskList.run();
-                    } finally {
-                        reporter.batchEnd({
-                            ...batchInfo,
-                            succeeded,
-                            failed,
-                            duration: Date.now() - batchStart
-                        });
-                    }
                 }
             };
         }),
