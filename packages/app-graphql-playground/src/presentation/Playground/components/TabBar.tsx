@@ -74,22 +74,24 @@ export const TabBar = observer((props: TabBarProps) => {
     }, []);
 
     return (
-        <div className="flex items-center bg-gray-50 border-b border-gray-200 overflow-x-auto">
+        <div className="flex items-center bg-neutral-subtle border-b border-neutral-dimmed overflow-x-auto">
             {vm.tabs.map(tab => {
                 const isActive = tab.id === vm.activeTabId;
 
                 return (
                     <div
                         key={tab.id}
-                        className={`flex items-center gap-1 px-3 py-2 cursor-pointer border-r border-gray-200 min-w-0 shrink-0 ${
-                            isActive ? "bg-white border-b-2 border-b-blue-500" : "hover:bg-gray-100"
+                        className={`flex items-center gap-1 px-3 py-2 cursor-pointer border-r border-neutral-dimmed min-w-0 shrink-0 ${
+                            isActive
+                                ? "bg-neutral-base border-b-2 border-b-accent-default"
+                                : "hover:bg-neutral-light"
                         }`}
                         onClick={() => handleTabClick(tab.id)}
                         onContextMenu={ev => handleContextMenu(ev, tab.id, tab.isRegistered)}
                     >
                         <div className="flex flex-col min-w-0">
                             <span className="text-sm font-medium truncate">{tab.name}</span>
-                            <span className="text-[10px] text-gray-400 truncate max-w-32">
+                            <span className="text-[10px] text-neutral-dimmed truncate max-w-32">
                                 {tab.endpoint}
                             </span>
                         </div>
@@ -102,11 +104,11 @@ export const TabBar = observer((props: TabBarProps) => {
                 );
             })}
             <button
-                className="flex items-center justify-center px-2 py-2 hover:bg-gray-100 shrink-0"
+                className="flex items-center justify-center px-2 py-2 hover:bg-neutral-light shrink-0"
                 onClick={handleAddClick}
                 title="New tab"
             >
-                <AddIcon className="w-4 h-4 text-gray-500" />
+                <AddIcon className="w-4 h-4 text-neutral-muted" />
             </button>
             <ContextMenuOverlay
                 contextMenu={contextMenu}
@@ -136,11 +138,11 @@ const TabCloseButton = (props: TabCloseButtonProps) => {
 
     return (
         <button
-            className="ml-1 p-0.5 rounded hover:bg-gray-200"
+            className="ml-1 p-0.5 rounded hover:bg-neutral-dimmed"
             onClick={ev => props.onClose(ev, props.tabId)}
             title="Close tab"
         >
-            <CloseIcon className="w-3 h-3 text-gray-400" />
+            <CloseIcon className="w-3 h-3 text-neutral-dimmed" />
         </button>
     );
 };

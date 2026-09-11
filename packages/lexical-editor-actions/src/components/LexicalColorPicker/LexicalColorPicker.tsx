@@ -6,10 +6,15 @@ import { Tooltip } from "@webiny/admin-ui";
 
 // Icons
 import { ReactComponent as IconPalette } from "./round-color_lens-24px.svg";
-import { useRichTextEditor } from "@webiny/lexical-editor";
+import { useRichTextEditor, INHERITED_FONT_COLOR } from "@webiny/lexical-editor";
 
 // Applied to reset the font color back to the theme/inherited default.
-const RESET_COLOR = "inherit";
+const RESET_COLOR = INHERITED_FONT_COLOR;
+
+// `inherit` is a sentinel, not a colour: ChromePicker cannot parse it and it would make the
+// custom swatch transparent. Fall back to a real colour wherever a parseable one is required.
+const PICKER_FALLBACK_COLOR = "#fff";
+const isInheritedColor = (color: string) => !color || color.trim() === RESET_COLOR;
 
 // Some theme colors are bare CSS vars (e.g. `var(--wa-theme-color3)`) that may be undefined,
 // which renders black. Inject a fallback so an undefined color renders as a white swatch with
@@ -70,11 +75,13 @@ export const LexicalColorPicker = ({
 }: LexicalColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
     // Either a custom color or a color coming from the theme object.
-    const [actualSelectedColor, setActualSelectedColor] = useState(value || "#fff");
+    const [actualSelectedColor, setActualSelectedColor] = useState(
+        isInheritedColor(value) ? PICKER_FALLBACK_COLOR : value
+    );
     const [isThemeColor, setIsThemeColor] = useState(false);
 
     useEffect(() => {
-        if (value) {
+        if (value && !isInheritedColor(value)) {
             setActualSelectedColor(value);
         }
     }, [value]);
@@ -154,7 +161,10 @@ export const LexicalColorPicker = ({
                         <button
                             className={swatchClass}
                             style={{
-                                backgroundColor: isThemeColor ? "#fff" : value,
+                                backgroundColor:
+                                    isThemeColor || isInheritedColor(value)
+                                        ? PICKER_FALLBACK_COLOR
+                                        : value,
                                 borderColor: "var(--border-color-neutral-dimmed-darker)"
                             }}
                             onClick={togglePicker}

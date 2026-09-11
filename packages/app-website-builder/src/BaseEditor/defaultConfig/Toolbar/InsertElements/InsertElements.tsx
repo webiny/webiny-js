@@ -36,7 +36,9 @@ export const InsertElements = () => {
                     onChange={value => setSearch(value ?? "")}
                     onEscape={() => setSearch("")}
                     placeholder={"Search..."}
-                    startIcon={<Icon icon={<SearchIcon />} label={"Search"} />}
+                    startIcon={
+                        <Icon icon={<SearchIcon />} label={"Search"} color={"neutral-strong"} />
+                    }
                     variant={"secondary"}
                     size={"md"}
                 />

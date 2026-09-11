@@ -10,7 +10,10 @@ export { DropDown } from "~/ui/DropDown.js";
 export { BoldAction } from "~/components/ToolbarActions/BoldAction.js";
 export { BulletListAction } from "~/components/ToolbarActions/BulletListAction.js";
 export { CodeHighlightAction } from "~/components/ToolbarActions/CodeHighlightAction.js";
-export { FontColorAction } from "~/components/ToolbarActions/FontColorAction.js";
+export {
+    FontColorAction,
+    INHERITED_FONT_COLOR
+} from "~/components/ToolbarActions/FontColorAction.js";
 export { FontSizeAction } from "~/components/ToolbarActions/FontSizeAction.js";
 export { ItalicAction } from "~/components/ToolbarActions/ItalicAction.js";
 export { LinkAction } from "~/components/ToolbarActions/LinkAction.js";

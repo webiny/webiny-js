@@ -119,7 +119,7 @@ const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProp
         <Popover.Portal>
             <Popover.Content
                 className={cn(
-                    "relative z-popover shadow-lg py-sm overflow-y-auto rounded-sm border-sm border-neutral-muted bg-neutral-base text-neutral-strong",
+                    "relative z-popover shadow-lg py-sm overflow-y-auto rounded-sm border-sm border-neutral-muted bg-neutral-elevated text-neutral-strong",
                     "data-[state=open]:animate-in data-[state=closed]:animate-out",
                     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                     "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",

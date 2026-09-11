@@ -5,7 +5,7 @@ export const previewVariants = cva("w-full", {
         variant: {
             light: ["bg-neutral-light", "hover:bg-neutral-dimmed"],
             base: ["bg-neutral-base", "hover:bg-neutral-subtle"],
-            transparent: ["bg-transparent", "hover:bg-neutral-dark/5"]
+            transparent: ["bg-transparent", "hover:bg-neutral-overlay/5"]
         },
         disabled: {
             true: "pointer-events-none"

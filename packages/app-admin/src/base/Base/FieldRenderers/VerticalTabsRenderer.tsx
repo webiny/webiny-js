@@ -16,8 +16,7 @@ export const VerticalTabsRenderer = observer(function VerticalTabsRenderer({
                     {node.tabs.map(tab => (
                         <List.Item
                             key={tab.id}
-                            className={"fill-neutral-strong"}
-                            icon={renderTabIcon(tab.icon)}
+                            icon={renderTabIcon(tab.icon, tab.label)}
                             title={tab.label}
                             description={tab.description}
                             activated={tab.id === node.activeTabId}

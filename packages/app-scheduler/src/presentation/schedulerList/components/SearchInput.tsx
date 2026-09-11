@@ -29,7 +29,9 @@ export const SearchInput = observer(({ presenter }: SearchInputProps) => {
                     forwardEventOnChange={true}
                     placeholder={"Search all items"}
                     data-testid={"scheduler.search-input"}
-                    startIcon={<Icon icon={<SearchIcon />} label="Search" />}
+                    startIcon={
+                        <Icon icon={<SearchIcon />} label="Search" color={"neutral-strong"} />
+                    }
                     size={"md"}
                     variant={"ghost"}
                 />

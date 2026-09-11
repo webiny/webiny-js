@@ -10,15 +10,15 @@ const tagIconVariants = cva("mr-xxs", {
             "neutral-base-outline": "fill-neutral-primary",
             "neutral-light": "fill-neutral-primary",
             "neutral-muted": "fill-neutral-primary",
-            "neutral-strong": "fill-neutral-light",
-            "neutral-xstrong": "fill-neutral-light",
-            "neutral-dark": "fill-neutral-light",
-            accent: "fill-neutral-light",
+            "neutral-strong": "fill-neutral-base",
+            "neutral-xstrong": "fill-neutral-base",
+            "neutral-dark": "fill-neutral-base",
+            accent: "fill-neutral-base",
             "accent-light": "fill-neutral-primary",
-            success: "fill-neutral-light",
+            success: "fill-neutral-base",
             "success-light": "fill-neutral-primary",
-            warning: "fill-neutral-primary",
-            destructive: "fill-neutral-light"
+            warning: "fill-neutral-900",
+            destructive: "fill-neutral-base"
         },
         disabled: {
             true: ""

@@ -12,10 +12,10 @@ const variants = cva(
         "text-md text-neutral-primary no-underline!",
         "rounded-md p-xs-plus pr-sm outline-none",
         "whitespace-nowrap overflow-hidden",
-        "hover:bg-neutral-dark/5",
-        "group-hover/menu-sub-button:bg-neutral-dark/5",
-        "focus:bg-neutral-dark/5 focus:ring-none focus:ring-transparent",
-        "data-[active=true]:bg-neutral-dark/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
+        "hover:bg-neutral-overlay/5",
+        "group-hover/menu-sub-button:bg-neutral-overlay/5",
+        "focus:bg-neutral-overlay/5 focus:ring-none focus:ring-transparent",
+        "data-[active=true]:bg-neutral-overlay/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
         "group-data-[state=collapsed]:hidden"
     ],
     {

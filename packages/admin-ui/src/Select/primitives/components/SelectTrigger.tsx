@@ -29,9 +29,9 @@ const selectTriggerVariants = cva(
                 ],
                 ghost: [
                     "bg-neutral-base border-transparent text-neutral-strong placeholder:text-neutral-dimmed",
-                    "hover:bg-neutral-dark/5",
-                    "focus:bg-neutral-dark/5",
-                    "data-[state=open]:bg-neutral-dark/5",
+                    "hover:bg-neutral-overlay/5",
+                    "focus:bg-neutral-overlay/5",
+                    "data-[state=open]:bg-neutral-overlay/5",
                     "disabled:bg-neutral-disabled disabled:border-neutral-dimmed disabled:text-neutral-disabled disabled:placeholder:text-neutral-disabled disabled:fill-neutral-disabled"
                 ],
                 "ghost-negative": [

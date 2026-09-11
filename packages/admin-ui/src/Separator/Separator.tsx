@@ -18,7 +18,7 @@ const separatorVariants = cva("shrink-0", {
         },
         variant: {
             transparent: "transparent",
-            base: "bg-white",
+            base: "bg-neutral-base",
             dimmed: "bg-neutral-dimmed",
             muted: "bg-neutral-muted",
             strong: "bg-neutral-strong",

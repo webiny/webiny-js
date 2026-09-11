@@ -26,7 +26,13 @@ export function FieldArray({
             <legend>{node.input.label || node.name}</legend>
             {[...items].map(index => {
                 return (
-                    <div key={index} style={{ border: "1px solid #ccc", padding: "0.5em" }}>
+                    <div
+                        key={index}
+                        style={{
+                            border: "1px solid var(--color-neutral-dimmed)",
+                            padding: "0.5em"
+                        }}
+                    >
                         {node.children.map(child => {
                             const cloned = {
                                 ...child,

@@ -11,7 +11,7 @@
   /* No fixed font-size: it inherits, or is set by the paragraph typography class
      applied by RichTextEditor so the placeholder matches the real text. */
   margin-top: -20px;
-  color: #999;
+  color: var(--text-color-neutral-muted);
   overflow: hidden;
   position: relative;
   text-overflow: ellipsis;

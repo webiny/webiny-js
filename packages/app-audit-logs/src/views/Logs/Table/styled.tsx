@@ -5,10 +5,10 @@ const RED_ACTIONS: string[] = [ActionType.DELETE, ActionType.UNPUBLISH, ActionTy
 
 export function getActionColorClasses(value: string): string {
     if (YELLOW_ACTIONS.includes(value)) {
-        return "bg-warning-100 border-warning-500 text-warning-700";
+        return "bg-warning-subtle border-warning-500 text-warning-strong";
     }
     if (RED_ACTIONS.includes(value)) {
-        return "bg-destructive-100 border-destructive-500 text-destructive-700";
+        return "bg-destructive-subtle border-destructive-500 text-destructive-strong";
     }
-    return "bg-success-100 border-success-500 text-success-700";
+    return "bg-success-subtle border-success-500 text-success-strong";
 }
