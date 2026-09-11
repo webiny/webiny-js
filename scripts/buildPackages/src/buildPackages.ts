@@ -22,6 +22,14 @@ const argv = yargs(hideBin(process.argv)).parse();
 
 const projectFolder = path.basename(process.cwd());
 
+// Listr wraps every task title to `process.stdout.columns`, and only falls back to 80 columns
+// when that is nullish. A pty that reports no size (0 columns, e.g. when the build runs inside
+// an embedded terminal) therefore gets a negative width, and each title is hard-wrapped to one
+// character per line. Give it a usable width instead.
+if (process.stdout.isTTY && !process.stdout.columns) {
+    process.stdout.columns = 80;
+}
+
 const sendNotification = (title: string, message: string) => {
     try {
         notifier.notify({ title, message });
