@@ -4,18 +4,21 @@ import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
+import { RolesRepository } from "../../roles/shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createTeamValidation } from "./schema.js";
 import { TeamBeforeCreateEvent, TeamAfterCreateEvent } from "./events.js";
 import type { Team, CreateTeamInput } from "../shared/types.js";
 import { NotAuthorizedError, TeamExistsError, TeamValidationError } from "../shared/errors.js";
 import { descriptionOnCreate } from "../../shared/description.js";
+import { resolveRoleIdentifiers } from "../shared/resolveRoleIdentifiers.js";
 
 export class CreateTeamUseCase implements CreateTeam.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
-        private repository: TeamsRepository.Interface
+        private repository: TeamsRepository.Interface,
+        private rolesRepository: RolesRepository.Interface
     ) {}
 
     async execute(input: CreateTeamInput): Promise<Result<Team, CreateTeam.Error>> {
@@ -39,10 +42,19 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             return Result.fail(new TeamExistsError(data.slug));
         }
 
+        // A slug here would be stored verbatim and then match no role, leaving a team that grants
+        // nothing. Resolved before the entity is built so the events carry the stored IDs.
+        const roleIdsResult = await resolveRoleIdentifiers(this.rolesRepository, data.roles);
+
+        if (roleIdsResult.isFail()) {
+            return Result.fail(roleIdsResult.error);
+        }
+
         // Normalised up front so that null reaches neither the entity nor the published events.
         const createInput: CreateTeamInput = {
             ...data,
-            description: descriptionOnCreate(data.description)
+            description: descriptionOnCreate(data.description),
+            roles: roleIdsResult.value
         };
 
         const team: Team = {
@@ -78,5 +90,5 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
 export const CreateTeamUseCaseImpl = createImplementation({
     abstraction: CreateTeam,
     implementation: CreateTeamUseCase,
-    dependencies: [IdentityContext, EventPublisher, TeamsRepository]
+    dependencies: [IdentityContext, EventPublisher, TeamsRepository, RolesRepository]
 });
