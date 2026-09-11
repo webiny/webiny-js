@@ -17,6 +17,7 @@ import { queueMetaWrite } from "./writeMetaQueue";
 import { createReporter } from "./reporter";
 import { previewBuild } from "./previewBuild";
 import { getPackagesWhitelist } from "./getPackagesWhitelist";
+import { warnIfNoCodeGraph } from "./warnIfNoCodeGraph";
 
 const argv = yargs(hideBin(process.argv)).parse();
 
@@ -61,6 +62,8 @@ export const buildPackages = async () => {
     const options = argv as BuildOptions;
 
     const reporter = createReporter(options.json === true);
+
+    warnIfNoCodeGraph();
 
     if (options.preview === true) {
         // Nothing below this point runs: a preview reports the plan and stops. Notably,
