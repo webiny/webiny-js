@@ -14,8 +14,9 @@
     "./*": "./*"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^4.0.18",
-    "@ai-sdk/openai": "^4.0.17",
+    "@ai-sdk/anthropic": "^4.0.49",
+    "@ai-sdk/google": "^4.0.64",
+    "@ai-sdk/openai": "^4.0.60",
     "@webiny/api": "0.0.0",
     "@webiny/di": "^1.0.2",
     "@webiny/error": "0.0.0",
