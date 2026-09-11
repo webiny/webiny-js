@@ -235,20 +235,29 @@ export const buildPackages = async () => {
 
                     reporter.batchStart(batchInfo);
 
-                    // Reported from the last package to settle rather than after the subtask
-                    // list has run, because the list has to be returned to Listr (see below)
-                    // and there is no point after that where this task still has control.
                     const reportBatchEnd = () => {
-                        if (++settled < packages.length) {
-                            return;
-                        }
-
                         reporter.batchEnd({
                             ...batchInfo,
                             succeeded,
                             failed,
                             duration: Date.now() - batchStart
                         });
+                    };
+
+                    // Nothing will settle, so the batch has to close itself out. Every
+                    // `batch:start` is paired with a `batch:end` in the JSON event stream.
+                    if (!packages.length) {
+                        reportBatchEnd();
+                        return;
+                    }
+
+                    // Reported by the last package to settle rather than after the subtask list
+                    // has run, because the list has to be returned to Listr (see below) and
+                    // there is no point after that where this task still has control.
+                    const reportBatchEndOnLastSettled = () => {
+                        if (++settled === packages.length) {
+                            reportBatchEnd();
+                        }
                     };
 
                     const subtasks = packages.map(pkg => {
@@ -284,8 +293,6 @@ export const buildPackages = async () => {
                                         batch: batchNumber,
                                         duration: Date.now() - packageStart
                                     });
-
-                                    reportBatchEnd();
                                 } catch (err) {
                                     failed++;
                                     failedPackages.add(pkg.packageJson.name);
@@ -296,10 +303,10 @@ export const buildPackages = async () => {
                                         error: (err as Error).message
                                     });
 
-                                    reportBatchEnd();
-
                                     ctx.skip = true;
                                     throw new PackageBuildError(pkg, err as Error);
+                                } finally {
+                                    reportBatchEndOnLastSettled();
                                 }
                             }
                         };
@@ -309,7 +316,7 @@ export const buildPackages = async () => {
                     // list over when it is returned from a task: it then swaps the nested
                     // list onto the silent renderer and hands its tasks to the renderer that
                     // is already drawing. Calling `.run()` on it instead leaves it with a
-                    // renderer of its own, and the two draw over each other — neither can
+                    // renderer of its own, and the two then draw over each other. Neither can
                     // erase the other's frame, so every redraw appends another copy of the
                     // package list.
                     return task.newListr(subtasks, {
