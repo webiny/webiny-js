@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { StarterKitConfigPresenter as PresenterAbstraction } from "./abstractions.js";
 import { GetFrontendSettingsUseCase } from "~/admin/features/getSettings/abstractions.js";
 import { UpdateFrontendSettingsUseCase } from "~/admin/features/updateSettings/abstractions.js";
+import { CACHE_KEY, settingsCache } from "~/admin/features/settingsCache.js";
 
 class StarterKitConfigPresenterImpl implements PresenterAbstraction.Interface {
     private loading = false;
@@ -21,6 +22,7 @@ class StarterKitConfigPresenterImpl implements PresenterAbstraction.Interface {
         return {
             loading: this.loading,
             saving: this.saving,
+            canSave: !this.loading && !this.saving,
             domain: this.domain,
             starterKits: this.starterKits
         };
@@ -57,6 +59,10 @@ class StarterKitConfigPresenterImpl implements PresenterAbstraction.Interface {
         this.saving = true;
         try {
             await this.updateSettings.execute({ domain: this.domain });
+            settingsCache.set(CACHE_KEY, {
+                domain: this.domain,
+                starterKits: this.starterKits
+            });
         } finally {
             runInAction(() => {
                 this.saving = false;

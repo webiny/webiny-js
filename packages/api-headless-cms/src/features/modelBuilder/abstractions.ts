@@ -9,8 +9,7 @@ import type { IModelBuilderPrivateInput, IModelBuilderPublicInput } from "./mode
  */
 export interface IModelSettings {
     aiEntryWizard?: boolean;
-    previewPrefix?: string;
-    previewSlug?: string;
+    previewPath?: string;
     [key: string]: any;
 }
 

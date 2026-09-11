@@ -1,14 +1,14 @@
 import { createPermissionSchema } from "@webiny/app-admin";
 
 export const FRONTEND_PERMISSIONS_SCHEMA = createPermissionSchema({
-    prefix: "frontend",
+    prefix: "dev-tools",
     fullAccess: true,
     entities: [
         {
-            id: "settings",
-            title: "Settings",
+            id: "frontend-settings",
+            title: "Frontend Settings",
             scopes: ["full"],
-            permission: "frontend.settings"
+            permission: "dev-tools.frontend-settings.*"
         }
     ]
 });

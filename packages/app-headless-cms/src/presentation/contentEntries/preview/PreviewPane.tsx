@@ -11,20 +11,15 @@ import { useLivePreviewPresenter } from "./useLivePreviewPresenter.js";
 import { buildEditorUrl, buildDisplayUrl } from "./resolvePreviewUrl.js";
 
 interface PreviewPaneProps {
-    previewPrefix: string;
-    previewSlug: string;
+    domain: string;
+    previewPath: string;
     entryId: string;
     entryData: Record<string, unknown> | null;
 }
 
 type ViewportMode = "desktop" | "mobile";
 
-export const PreviewPane = ({
-    previewPrefix,
-    previewSlug,
-    entryId,
-    entryData
-}: PreviewPaneProps) => {
+export const PreviewPane = ({ domain, previewPath, entryId, entryData }: PreviewPaneProps) => {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const messengerRef = useRef<Messenger | null>(null);
     const entryDataRef = useRef(entryData);
@@ -38,8 +33,8 @@ export const PreviewPane = ({
     entryDataRef.current = entryData;
 
     const displayUrl = buildDisplayUrl(
-        previewPrefix,
-        previewSlug,
+        domain,
+        previewPath,
         (entryData as Record<string, unknown>) || {}
     );
 
@@ -50,7 +45,7 @@ export const PreviewPane = ({
     }, [displayUrl]);
 
     const iframeSrc = (() => {
-        const editorPath = buildEditorUrl(previewPrefix);
+        const editorPath = buildEditorUrl(domain);
         const url = new URL(editorPath);
         url.searchParams.set("wb.editing", "true");
         url.searchParams.set("wb.type", "entry");
