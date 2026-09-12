@@ -2,9 +2,12 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { ListTagsUseCase } from "@webiny/api-file-manager/features/file/ListTags/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "~/api/features/Capabilities/index.js";
+import { WB_GENERATE_PAGE_CAPABILITY } from "./capability.js";
 import {
     AiPromptContextBuilder,
     formatAdditionalFilesContext
@@ -23,31 +26,21 @@ import { ComponentFilter } from "./ComponentFilter.js";
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {
     constructor(
         private promptContextBuilder: AiPromptContextBuilder.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        private resolveCapability: ResolveAiCapabilityUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private encryption: Encryption.Interface,
         private listTags: ListTagsUseCase.Interface
     ) {}
 
     async execute(
         params: WbGeneratePageContentParams
     ): Promise<Result<GeneratePageContentResult, Error>> {
-        const settingsResult = await this.getSettings.execute();
-        if (settingsResult.isFail()) {
-            return Result.fail(new Error("Failed to load AI PowerUps settings."));
+        const resolved = await this.resolveCapability.execute(WB_GENERATE_PAGE_CAPABILITY);
+        if (resolved.isFail()) {
+            return Result.fail(resolved.error);
         }
 
-        const settings = settingsResult.value;
-        const firstProvider = settings.providers.presets[0];
-
-        if (!firstProvider) {
-            return Result.fail(
-                new Error("No AI provider configured. Add a provider in AI Power Ups settings.")
-            );
-        }
-
-        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
+        const capability = resolved.value;
 
         const sdkTools = this.aiSdkTools.getToolSet();
 
@@ -76,8 +69,10 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         const imageTags = tagsResult.isOk() ? tagsResult.value.map(t => t.tag) : [];
 
         const components = params.components as Array<{ name: string }>;
-        const systemText =
-            buildDomainPrompt(components, params.tools, imageTags) + context.toString();
+        const systemText = withAdditionalInstructions(
+            capability,
+            buildDomainPrompt(components, params.tools, imageTags) + context.toString()
+        );
 
         const system = {
             role: "system" as const,
@@ -91,11 +86,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 
         try {
             const aiResult = await this.ai.generateText({
-                model: firstProvider.model,
-                connection: {
-                    sdkName: firstProvider.model.split("/")[0],
-                    apiKey
-                },
+                model: capability.model,
+                connection: capability.connection,
                 system,
                 toolChoice: "auto",
                 prompt: params.prompt + formatAdditionalFilesContext(context.additionalFiles),
@@ -151,10 +143,9 @@ export const WbGeneratePageContentUseCaseImplementation =
         implementation: WbGeneratePageContentUseCaseImpl,
         dependencies: [
             AiPromptContextBuilder,
-            GetSettingsUseCase,
+            ResolveAiCapabilityUseCase,
             Ai,
             AiSdkTools,
-            Encryption,
             ListTagsUseCase
         ]
     });
