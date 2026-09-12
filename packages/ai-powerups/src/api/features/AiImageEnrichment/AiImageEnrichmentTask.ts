@@ -110,7 +110,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
                             },
                             {
                                 type: "text",
-                                text: withAdditionalInstructions(capability.guidance, capability)
+                                text: withAdditionalInstructions(capability)
                             }
                         ]
                     }

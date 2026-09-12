@@ -115,7 +115,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         const result = await this.ai.generateText({
             model: capability.model,
             connection: capability.connection,
-            system: withAdditionalInstructions(capability.guidance, capability),
+            system: withAdditionalInstructions(capability),
             prompt: `Translate given key-value pairs from "${sourceLanguage}" to language code "${targetLanguage}". Do not modify the keys. "properties" is a simple key-value pair. "bindings" values are located in the "value" key. ${input}`,
             temperature: 0.3
         });
