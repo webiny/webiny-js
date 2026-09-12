@@ -1,6 +1,7 @@
 import set from "lodash/set";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languages.js";
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
@@ -34,6 +35,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
     constructor(
         private getDefaultLanguage: GetDefaultLanguageUseCase.Interface,
         private resolveCapability: ResolveAiCapabilityUseCase.Interface,
+        private logger: Logger.Interface,
         private ai: Ai.Interface,
         private lexicalParser: LexicalParser.Interface,
         private updatePageRepository: UpdatePageRepository.Interface,
@@ -89,12 +91,7 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
              * now, because a silently skipped translation was indistinguishable from a
              * misconfigured one.
              */
-            console.error(
-                JSON.stringify({
-                    message: "Skipping AI page translation.",
-                    reason: resolved.error.message
-                })
-            );
+            this.logger.warn({ reason: resolved.error.message }, "Skipping AI page translation.");
             return null;
         }
 
@@ -204,6 +201,7 @@ export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
     dependencies: [
         GetDefaultLanguageUseCase,
         ResolveAiCapabilityUseCase,
+        Logger,
         Ai,
         LexicalParser,
         UpdatePageRepository
