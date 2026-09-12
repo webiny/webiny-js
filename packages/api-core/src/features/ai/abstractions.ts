@@ -102,10 +102,29 @@ export namespace Ai {
 
 // AiSdkTool
 
+/**
+ * Behavioural hints about a tool. Purely advisory — they never replace a permission check.
+ * Names mirror the MCP tool annotations so they can be forwarded verbatim to MCP clients,
+ * which use them to decide what to auto-approve and what to confirm with the user.
+ */
+export interface IAiSdkToolAnnotations {
+    /** Tool does not modify state. */
+    readOnlyHint?: boolean;
+    /** Tool may perform destructive updates (only meaningful when not read-only). */
+    destructiveHint?: boolean;
+    /** Repeated calls with the same arguments have no additional effect. */
+    idempotentHint?: boolean;
+    /** Tool interacts with entities outside its own closed world. */
+    openWorldHint?: boolean;
+}
+
 export interface IAiSdkTool<TInput = any> {
     readonly name: string;
     readonly description: string;
     readonly inputSchema: FlexibleSchema<TInput>;
+    /** Human-friendly display name. Falls back to `name` when omitted. */
+    readonly title?: string;
+    readonly annotations?: IAiSdkToolAnnotations;
     execute(input: TInput): Promise<unknown>;
 }
 
@@ -114,6 +133,7 @@ export const AiSdkTool = createAbstraction<IAiSdkTool>("AiSdkTool");
 
 export namespace AiSdkTool {
     export type Interface = IAiSdkTool;
+    export type Annotations = IAiSdkToolAnnotations;
 }
 
 // AiSdkTools

@@ -17,9 +17,11 @@ interface ImageItem {
 
 class ListImagesByTagToolImpl implements IAiSdkTool<Input> {
     readonly name = "listImagesByTag";
+    readonly title = "List images by tag";
     readonly description =
         "Lists images from the file manager filtered by a given tag. Returns name, type, and tags for each image.";
     readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
 
     constructor(private listFiles: ListFilesUseCase.Interface) {}
 

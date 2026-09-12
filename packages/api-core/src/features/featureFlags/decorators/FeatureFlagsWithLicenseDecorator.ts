@@ -5,15 +5,23 @@ import type { ILicense } from "@webiny/wcp/types.js";
 import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 
 /*
- * Feature flag resolution (license decorator):
+ * Feature flag resolution (license decorator).
  *
- * 1. No license at all            → false (everything off, config ignored)
- * 2. License blocks the flag      → false (config ignored)
- * 3. License allows + config=false → false (config can disable what license allows)
- * 4. License allows + config=true  → true
- * 5. License allows + config unset → true  (license is the authority for unset flags)
- * 6. Not in LICENSE_CHECKS + license exists + config unset → true
- * 7. Not in LICENSE_CHECKS + license exists + config=false → false
+ * Two kinds of flag, and only one of them is Webiny's to sell:
+ *
+ * LICENSE-GOVERNED (listed in LICENSE_CHECKS) — the license is the authority:
+ * 1. No license, or license blocks the flag → false, config ignored
+ * 2. License allows + config unset          → true (the license grants it)
+ * 3. License allows + config=false          → false (config may disable, never re-enable)
+ *
+ * EVERYTHING ELSE — Webiny features that ship on, plus a project's own custom flags:
+ * 4. License present + config unset   → true  (on by default, e.g. `aiPowerups.*`)
+ * 5. License present + config=false   → false (config disables)
+ * 6. No license + config=true         → true  (a project may enable its OWN flags)
+ * 7. No license + config unset        → false (nothing on by default)
+ *
+ * Rule 6 is the one to keep in mind: without it an unlicensed install cannot turn on a flag it
+ * declared itself, which is not something the license should govern.
  */
 
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
@@ -48,10 +56,20 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
             // License allows — config can only disable, not re-enable blocked features.
             return !this.base.isExplicitlyDisabled(name);
         }
-        // Not license-governed: requires a license to exist.
+        /*
+         * Not license-governed. With a license present these are on unless the config disables them —
+         * that is how features like `aiPowerups.*` and `remoteComponents` ship enabled without every
+         * project having to list them.
+         *
+         * Without a license nothing is on by default, but a project can still enable its OWN flags:
+         * `isEnabled` on the base is true only for an explicitly configured `true`. Previously this
+         * returned false outright, so an unlicensed install could not turn on a flag it had declared
+         * itself — which is not the license's business to prevent.
+         */
         if (!this.license.getRawLicense()) {
-            return false;
+            return this.base.isEnabled(name);
         }
+
         return !this.base.isExplicitlyDisabled(name);
     }
 }

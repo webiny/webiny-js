@@ -10,13 +10,13 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../error" },
-    { "path": "../event-handler-core" },
     { "path": "../feature" },
     { "path": "../handler" },
     { "path": "../plugins" },
     { "path": "../sdk" },
     { "path": "../utils" },
     { "path": "../api-core-testing" },
+    { "path": "../event-handler-core" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -42,8 +42,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -56,6 +54,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
       "@webiny/api-core-testing": ["../api-core-testing/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     }

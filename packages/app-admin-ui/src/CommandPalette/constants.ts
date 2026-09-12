@@ -7,3 +7,6 @@
 export const PALETTE_HOTKEY_ZINDEX = 90;
 
 export const NAVIGATION_GROUP = "Navigation";
+
+/** DI name of the "Ask AI" command, activated by pressing space on an empty query. */
+export const AI_COMMAND_NAME = "admin.ai.ask";
