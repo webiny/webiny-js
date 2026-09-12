@@ -16,6 +16,23 @@ export class TaskDefinitionNotFoundError extends BaseError<{ id: string }> {
     }
 }
 
+/**
+ * A definition was found by id but supplies no behaviour: neither a `handler` class nor its own
+ * `run()`. Only reachable while definitions are migrating from one shape to the other.
+ */
+export class TaskDefinitionNotRunnableError extends BaseError<{ id: string }> {
+    override readonly code = "BackgroundTasks/TaskDefinition/NotRunnableError" as const;
+
+    constructor(id: string) {
+        super({
+            message: `Task definition "${id}" defines neither a "handler" nor a "run" method.`,
+            data: {
+                id
+            }
+        });
+    }
+}
+
 export class TaskNotFoundError extends BaseError {
     override readonly code = "BackgroundTasks/Task/NotFoundError" as const;
 

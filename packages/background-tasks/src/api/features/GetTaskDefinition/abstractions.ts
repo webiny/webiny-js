@@ -1,7 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
+import type {
+    TaskDefinitionNotFoundError,
+    TaskDefinitionNotRunnableError
+} from "~/api/domain/errors.js";
 
 export interface IGetTaskDefinitionUseCase {
     execute<
@@ -14,6 +17,7 @@ export interface IGetTaskDefinitionUseCase {
 
 export interface IGetTaskDefinitionUseCaseErrors {
     notFound: TaskDefinitionNotFoundError;
+    notRunnable: TaskDefinitionNotRunnableError;
 }
 
 type UseCaseError = IGetTaskDefinitionUseCaseErrors[keyof IGetTaskDefinitionUseCaseErrors];

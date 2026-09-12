@@ -10,6 +10,7 @@ import { createDefinitionCrud } from "./crud/definition.tasks.js";
 import { createServiceCrud } from "./crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
 import { TaskExecutionContextFeature } from "./features/TaskExecutionContext/feature.js";
+import { TaskHandlerResolverFeature } from "./features/TaskHandlerResolver/feature.js";
 import { GetTaskDefinitionFeature } from "./features/GetTaskDefinition/feature.js";
 import { ListTaskDefinitionsFeature } from "./features/ListTaskDefinitions/feature.js";
 import {
@@ -41,6 +42,7 @@ export const BackgroundTasksFeature = createFeature({
         container.registerDecorator(SelfCleaningTaskDecorator);
 
         // Task definition use cases.
+        TaskHandlerResolverFeature.register(container);
         GetTaskDefinitionFeature.register(container);
         ListTaskDefinitionsFeature.register(container);
 
