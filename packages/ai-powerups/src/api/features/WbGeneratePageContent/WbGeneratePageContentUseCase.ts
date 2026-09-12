@@ -70,8 +70,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 
         const components = params.components as Array<{ name: string }>;
         const systemText = withAdditionalInstructions(
-            buildDomainPrompt(components, params.tools, imageTags) + context.toString(),
-            capability
+            capability,
+            buildDomainPrompt(components, params.tools, imageTags) + context.toString()
         );
 
         const system = {

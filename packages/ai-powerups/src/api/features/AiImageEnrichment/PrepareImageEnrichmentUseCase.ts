@@ -58,7 +58,7 @@ class PrepareImageEnrichmentUseCaseImpl implements UseCaseAbstraction.Interface 
             imageBase64: contentsResult.value.buffer.toString("base64"),
             imageMediaType: contentsResult.value.contentType,
             model: capability.model,
-            prompt: withAdditionalInstructions(capability.guidance, capability),
+            prompt: withAdditionalInstructions(capability),
             connection: capability.connection
         });
     }

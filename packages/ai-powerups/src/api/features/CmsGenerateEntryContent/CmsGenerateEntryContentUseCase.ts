@@ -87,8 +87,8 @@ class CmsGenerateEntryContentUseCaseImpl implements CmsGenerateEntryContentUseCa
         const imageTags = tagsResult.isOk() ? tagsResult.value.map(t => t.tag) : [];
 
         const systemText = withAdditionalInstructions(
-            buildEntryPrompt(model.name, entrySchema, imageTags) + context.toString(),
-            capability
+            capability,
+            buildEntryPrompt(model.name, entrySchema, imageTags) + context.toString()
         );
 
         const system = {

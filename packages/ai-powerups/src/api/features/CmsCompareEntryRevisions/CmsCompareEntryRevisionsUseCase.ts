@@ -77,7 +77,7 @@ ${JSON.stringify(revision2.values, null, 2)}`;
         const result = await this.ai.generateText({
             model: capability.model,
             connection: capability.connection,
-            system: withAdditionalInstructions(capability.guidance, capability),
+            system: withAdditionalInstructions(capability),
             prompt: userPrompt,
             temperature: 0.3
         });
