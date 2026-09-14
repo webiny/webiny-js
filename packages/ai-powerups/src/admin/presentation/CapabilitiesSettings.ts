@@ -40,6 +40,19 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         await Promise.all([this.listCapabilities.execute(), this.listModels.execute()]);
     }
 
+    /**
+     * Alphabetical by the label people actually read, not by id or registration order.
+     *
+     * Registration order is whatever the container happened to do, which puts "Page generation"
+     * above "CMS entry generation" for no reason a reader could infer. `localeCompare` rather than
+     * `<` so accented labels from an extension sort where a person would expect.
+     */
+    private sortedCapabilities(): AiCapability[] {
+        return [...this.capabilitiesRepository.getCapabilities()].sort((a, b) =>
+            a.label.localeCompare(b.label)
+        );
+    }
+
     buildForm(form: AiPowerUpsSettingsGroup.FormBuilder): void {
         form.fields(fields => ({
             overrides: fields
@@ -48,12 +61,10 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                 .renderer("passthrough")
                 .fields(f =>
                     Object.fromEntries(
-                        this.capabilitiesRepository
-                            .getCapabilities()
-                            .map(capability => [
-                                capability.id,
-                                this.buildCapabilityField(f, capability)
-                            ])
+                        this.sortedCapabilities().map(capability => [
+                            capability.id,
+                            this.buildCapabilityField(f, capability)
+                        ])
                     )
                 )
         }));
