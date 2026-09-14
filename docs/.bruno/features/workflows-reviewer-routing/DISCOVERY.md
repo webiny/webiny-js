@@ -61,8 +61,13 @@ triggers `UPDATE_FLP_TASK_ID` when `TaskService` is present; it only runs inline
 one, which is why tests are deterministic), and its errors are swallowed. So `path` is
 eventually consistent, and a failed cascade leaves it stale silently.
 
-`parentId` is always correct and folder depth is small, so walking it is the safer option
-for rule evaluation. Not a big difference either way.
+**Decided:** a rule stores the folder **id**, never its path. At evaluation, read the
+folder for its current path and prefix-compare with the content folder's path. Storing the
+path on the rule would break permanently the first time that folder moves.
+
+Deleting a rule's folder is safe: ACO only deletes empty folders (no subfolders, no
+content, checked with and without authorization), so a deleted rule folder matched nothing.
+The rule then just fails to resolve and is skipped.
 
 ### Pending-review pool query
 
@@ -119,6 +124,7 @@ a second flag on this schema.
 | `start()` stays open to the team | assignment is advisory, not a lock |
 | Requester excluded at assignment time | `enrichStep` only blocks them acting, not being picked |
 | `updateStep` stops auto-stamping `savedBy` | callers pass it explicitly; otherwise step 1's approver silently gains approve rights on step 2 |
+| Rules store `folderId`; descendant test is a `path` prefix compare | path on the rule breaks when the folder moves |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
@@ -127,7 +133,6 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 ## Still open
 
 - Round-robin cursor placement.
-- Folder matching by `path` prefix (eventually consistent) vs walking `parentId` (always correct).
 
 ## Rough order
 
