@@ -1,26 +1,10 @@
 import React from "react";
-import { cn } from "@webiny/admin-ui";
+import { Markdown } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import { useAdminUi } from "@webiny/admin-ui";
 import type { AiTurn as AiTurnModel } from "../useAiChat.js";
 import { ToolChip } from "./ToolChip.js";
 import { AnswerSkeleton } from "./AnswerSkeleton.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
-
-/**
- * Tailwind's preflight strips list markers and paragraph margins, so markdown blocks need explicit
- * styling. Scoped to the answer rather than added globally.
- */
-const MARKDOWN_CLASSES = [
-    "[&_p]:mb-xs [&_p:last-child]:mb-0",
-    "[&_ul]:mb-xs [&_ul]:list-disc [&_ul]:pl-lg",
-    "[&_ol]:mb-xs [&_ol]:list-decimal [&_ol]:pl-lg",
-    "[&_li]:mt-xxs",
-    "[&_strong]:font-semibold",
-    "[&_a]:underline",
-    "[&_code]:rounded [&_code]:bg-neutral-subtle [&_code]:px-xs [&_code]:font-mono",
-    "[&_pre]:mb-xs [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-neutral-subtle [&_pre]:p-sm"
-].join(" ");
 
 /**
  * Settled only once the tool actually returned or threw. A call awaiting approval still arrives as a
@@ -53,8 +37,6 @@ export interface AiTurnProps {
 }
 
 export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProps) => {
-    const { compileMarkdown } = useAdminUi();
-
     /*
      * Show the skeleton only until the first token lands. Once text is arriving, the text itself is
      * the progress indicator — swapping a skeleton in and out under it would flicker.
@@ -94,14 +76,9 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
                 ) : showSkeleton ? (
                     <AnswerSkeleton />
                 ) : turn.text ? (
-                    // `as="div"` so block-level markdown (p, ul, pre) nests legally — Text is a span.
-                    <Text
-                        as="div"
-                        size="sm"
-                        className={cn("text-neutral-strong", MARKDOWN_CLASSES)}
-                    >
-                        {compileMarkdown(turn.text)}
-                    </Text>
+                    <Markdown size="sm" className="text-neutral-strong">
+                        {turn.text}
+                    </Markdown>
                 ) : turn.pendingApprovals.length === 0 ? (
                     <Text as="div" size="sm" className="text-neutral-muted">
                         No answer returned.
