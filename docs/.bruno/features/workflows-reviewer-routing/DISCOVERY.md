@@ -146,6 +146,8 @@ a second flag on this schema.
 | On activation, validate an existing assignee before keeping it | if the user left the team or is now excluded, clear it and run rules then strategy |
 | Rule target: reject on rule save, warn on team change | blocking a team change would trap admins, and evaluation already skips bad rules |
 | Editor validates targets with `listStepReviewers(stepId)` | same annotated query the manual picker uses; no new endpoint |
+| Resolution is its own use case returning a decision, not logic inside the write path | `ResolveStepAssigneeUseCase` returns `{assignee, matchedRule, source, reason}` |
+| Rule inspector is a server dry-run, `simulateAssignment(...)` | runs the real resolver and discards the result, so the explanation cannot drift from behaviour |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
