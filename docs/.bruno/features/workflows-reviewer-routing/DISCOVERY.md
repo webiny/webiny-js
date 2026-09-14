@@ -110,7 +110,10 @@ a second flag on this schema.
   assignee.
 - **Target context is missing locale.** `CmsWorkflowStateContextProvider` returns
   `{folderId, modelId}`. Locale and requester teams aren't captured.
-- **No tenant settings surface** for the exclusion list.
+- **No tenant settings surface** for the exclusion list. Precedent to copy:
+  `webhooks/src/api/models/WebhookSettingsModel.ts` — a `.private()` model, auto-created on
+  first read. CMS entry keys are `T#<tenant>#CMS#CME#M#<modelId>#<type>` — tenant and model,
+  no locale — so a private model is tenant-level for free.
 
 ## Decisions so far
 
@@ -125,6 +128,9 @@ a second flag on this schema.
 | Requester excluded at assignment time | `enrichStep` only blocks them acting, not being picked |
 | `updateStep` stops auto-stamping `savedBy` | callers pass it explicitly; otherwise step 1's approver silently gains approve rights on step 2 |
 | Rules store `folderId`; descendant test is a `path` prefix compare | path on the rule breaks when the folder moves |
+| Exclusions: one entry per exclusion in `wbyWorkflowExclusion` (`userId`, `reason`, `until`) | queryable and paginated |
+| Lapsed exclusions are filtered by `until` at read, not cleaned up | brief says they lapse on their own |
+| `listStepReviewers(stepId)` returns candidates annotated `{user, excluded, reason}` | one place owns eligibility, so picker and strategies can't drift |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
