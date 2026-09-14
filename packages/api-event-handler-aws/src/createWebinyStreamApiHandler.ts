@@ -8,14 +8,20 @@
  * stream at all.
  *
  * Root/request registration is shared with `createWebinyApiHandler` via `composition/`; only
- * the transport differs. Notably NOT registered here: the background-task and WebSocket event types
- * plus their Lambda handlers. Those are inbound invocation paths that only ever target the buffered
- * function, so registering them would add cold-start cost for events this function never receives.
- * The websockets *outbound* transport IS present — it comes from the shared per-request stack, and
- * streaming routes rely on it to push completion messages.
+ * the transport differs. Notably NOT registered here: the background-task and WebSocket **event
+ * types**. Those match inbound invocations that only ever target the buffered function, so
+ * registering them would add cold-start cost for events this function never receives.
+ *
+ * Outbound transports are a different matter, and both ARE present: websockets push completion
+ * messages from the shared per-request stack, and `BackgroundTasksAwsFeature` supplies the Step
+ * Functions dispatcher that `TaskService.trigger()` needs. Omitting the latter does not disable
+ * task triggering — it breaks it silently, because the shared root registers `TaskService` either
+ * way and its callers treat a failed trigger as a no-op (ACO's FLP handlers, for one, swallow it),
+ * so writes land while their projections never update.
  */
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createStreamLambdaHandler, FunctionUrlStreamFeature } from "@webiny/event-handler-aws";
+import { BackgroundTasksAwsFeature } from "@webiny/background-tasks-aws";
 import { FunctionUrlStreamIdentityLoaderDecorator } from "~/handlers/FunctionUrlStreamIdentityLoaderDecorator.js";
 import { FunctionUrlStreamTenantLoaderDecorator } from "~/handlers/FunctionUrlStreamTenantLoaderDecorator.js";
 import { registerWebinyApiChild, registerWebinyApiRoot } from "~/composition/index.js";
@@ -41,6 +47,14 @@ export function createWebinyStreamApiHandler(config: CreateWebinyStreamApiHandle
             // the buffered handler.
             container.registerDecorator(FunctionUrlStreamIdentityLoaderDecorator);
             container.registerDecorator(FunctionUrlStreamTenantLoaderDecorator);
+
+            // ── Background tasks: outbound dispatch only ───────────────
+            // Registers StepFunctionService, which is what a `TaskService.trigger()` resolves to
+            // actually start an execution. Without it the trigger throws deep inside the container
+            // and every caller that ignores the failure just carries on. `BackgroundTaskEventType`
+            // is deliberately left out, so the handler this also registers stays unreachable here:
+            // Step Functions invokes the buffered function, never this one.
+            BackgroundTasksAwsFeature.register(container);
 
             // Resolved here rather than at factory time: one bundle exports BOTH this handler and the
             // buffered one, so building the client eagerly would open a second DynamoDB client on every
