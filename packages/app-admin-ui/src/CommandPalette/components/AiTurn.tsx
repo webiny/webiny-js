@@ -27,6 +27,48 @@ const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "
     return callsSoFar > resultsSoFar ? "failed" : "done";
 };
 
+/**
+ * One of four things fills the answer slot, in priority order: the failure, the skeleton, the answer,
+ * or a note that nothing came back.
+ *
+ * The skeleton shows only until the first token lands. Once text is arriving, the text itself is the
+ * progress indicator, and swapping a skeleton in and out under it would flicker.
+ *
+ * A turn waiting on approval has produced no text yet and has not failed, which is not the same as
+ * returning nothing, so it gets neither the note nor the skeleton.
+ */
+const renderAnswer = (turn: AiTurnViewModel) => {
+    if (turn.error) {
+        return (
+            <Text as="div" size="sm" className="text-destructive-primary">
+                {turn.error}
+            </Text>
+        );
+    }
+
+    if (!turn.text && !turn.settled) {
+        return <AnswerSkeleton />;
+    }
+
+    if (turn.text) {
+        return (
+            <Markdown size="sm" className="text-neutral-strong">
+                {turn.text}
+            </Markdown>
+        );
+    }
+
+    if (turn.pendingApprovals.length > 0) {
+        return null;
+    }
+
+    return (
+        <Text as="div" size="sm" className="text-neutral-muted">
+            No answer returned.
+        </Text>
+    );
+};
+
 export interface AiTurnProps {
     turn: AiTurnViewModel;
     /** Initials of the signed-in user, shown against their question. */
@@ -37,12 +79,6 @@ export interface AiTurnProps {
 }
 
 export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProps) => {
-    /*
-     * Show the skeleton only until the first token lands. Once text is arriving, the text itself is
-     * the progress indicator — swapping a skeleton in and out under it would flicker.
-     */
-    const showSkeleton = !turn.text && !turn.error && !turn.settled;
-
     return (
         <div className="mb-md">
             <div className="flex items-start gap-sm px-sm pb-sm">
@@ -69,21 +105,7 @@ export const AiTurn = ({ turn, initials, busy, onApprove, onReject }: AiTurnProp
                     </div>
                 ) : null}
 
-                {turn.error ? (
-                    <Text as="div" size="sm" className="text-destructive-primary">
-                        {turn.error}
-                    </Text>
-                ) : showSkeleton ? (
-                    <AnswerSkeleton />
-                ) : turn.text ? (
-                    <Markdown size="sm" className="text-neutral-strong">
-                        {turn.text}
-                    </Markdown>
-                ) : turn.pendingApprovals.length === 0 ? (
-                    <Text as="div" size="sm" className="text-neutral-muted">
-                        No answer returned.
-                    </Text>
-                ) : null}
+                {renderAnswer(turn)}
 
                 {turn.pendingApprovals.length > 0 ? (
                     <ApprovalPlan

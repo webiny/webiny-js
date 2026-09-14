@@ -133,6 +133,7 @@ const CommandPaletteBase = () => {
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
     const appearance = vm.aiModeActive ? aiMode.appearance : null;
+    const placeholder = appearance ? appearance.placeholder : "Search for pages and actions…";
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -210,11 +211,7 @@ const CommandPaletteBase = () => {
                                 value={vm.query}
                                 onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
-                                placeholder={
-                                    appearance
-                                        ? appearance.placeholder
-                                        : "Search for pages and actions…"
-                                }
+                                placeholder={placeholder}
                                 className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
                             />
                             <Kbd>esc</Kbd>
