@@ -68,8 +68,6 @@ const CommandPaletteBase = () => {
         aiMode.reset();
     }, [presenter, aiMode]);
 
-    const enterAiMode = useCallback(() => presenter.enterAiMode(), [presenter]);
-
     const exitAiMode = useCallback(() => {
         presenter.exitAiMode();
         aiMode.reset();
@@ -83,14 +81,7 @@ const CommandPaletteBase = () => {
         [container, close]
     );
 
-    const runCommand = useCallback(
-        (name: string) => {
-            presenter.useCommand(name);
-        },
-        [presenter]
-    );
-
-    usePaletteHotkeys({ presenter, enterAiMode, close });
+    usePaletteHotkeys({ presenter, close });
 
     const groups = useMemo<CommandGroup[]>(() => {
         const result: CommandGroup[] = [];
@@ -98,9 +89,10 @@ const CommandPaletteBase = () => {
         if (navigationRows.length > 0) {
             result.push({ title: NAVIGATION_GROUP, rows: navigationRows });
         }
-        result.push(...commandVmsToGroups(vm.commands, runCommand));
+        const commandGroups = commandVmsToGroups(vm.commands, name => presenter.useCommand(name));
+        result.push(...commandGroups);
         return result;
-    }, [menus, vm.commands, navigateTo, runCommand]);
+    }, [menus, vm.commands, navigateTo, presenter]);
 
     /*
      * The input is shared across modes, so focus has to be restored after the surrounding tree swaps.
@@ -169,7 +161,7 @@ const CommandPaletteBase = () => {
         // character the moment there is anything to search — "new entry" must keep working.
         if (e.key === " " && vm.query === "") {
             e.preventDefault();
-            enterAiMode();
+            presenter.enterAiMode();
         }
     };
 
