@@ -33,6 +33,28 @@ export interface IAiPowerUpsModelRoleAssignment {
     model: string;
 }
 
+/** A file attached to a project, as the picker returns it. */
+export interface IAiPowerUpsProjectFile {
+    id: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    src: string;
+    width?: number;
+    height?: number;
+}
+
+export interface IAiPowerUpsProjectPreset {
+    id: string;
+    name: string;
+    description?: string;
+    instructions?: string;
+    defaultReaderPersonaId?: string;
+    defaultWriterPersonaId?: string;
+    files?: IAiPowerUpsProjectFile[];
+    version: number;
+}
+
 export interface IAiPowerUpsCapabilityOverride {
     roleId?: string;
     connectionId?: string;
@@ -63,23 +85,6 @@ export interface IAiPowerUpsSettings {
         presets: IAiPowerUpsPersonaPreset[];
     };
     projects: {
-        presets: {
-            id: string;
-            name: string;
-            description?: string;
-            instructions?: string;
-            defaultReaderPersonaId?: string;
-            defaultWriterPersonaId?: string;
-            files?: {
-                id: string;
-                name: string;
-                size: number;
-                mimeType: string;
-                src: string;
-                width?: number;
-                height?: number;
-            }[];
-            version: number;
-        }[];
+        presets: IAiPowerUpsProjectPreset[];
     };
 }
