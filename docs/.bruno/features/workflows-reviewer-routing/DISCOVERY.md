@@ -117,8 +117,10 @@ a second flag on this schema.
 - **Target context is missing locale.** `CmsWorkflowStateContextProvider` returns
   `{folderId, modelId}`. Locale and requester teams aren't captured.
 - **No notification handlers.** `NotificationTransport` and `MailNotificationTransport` are
-  registered, and every state transition publishes an event, but no handler subscribes to any
-  of them. Nothing sends notifications today, and `step.notifications` is dead config.
+  registered. Handlers *do* exist for create, update, delete and cancel — eight in
+  `api-headless-cms-workflows`, siblings in `api-website-builder-workflows`. Missing is
+  narrower: nothing subscribes to start, approve, reject or takeOver, and nothing sends
+  notifications at all. `step.notifications` is dead config.
 - **No tenant settings surface** for the exclusion list. Precedent to copy:
   `webhooks/src/api/models/WebhookSettingsModel.ts` — a `.private()` model, auto-created on
   first read. CMS entry keys are `T#<tenant>#CMS#CME#M#<modelId>#<type>` — tenant and model,
@@ -154,7 +156,16 @@ a second flag on this schema.
 | Candidates are never stored. Computed per resolution from `step.teams`, minus requester, minus excluded | snapshot already carries the teams |
 | `wbyWorkflowAssignmentStat` per user: `openCount`, `lastAssignedOn` | one read serves both strategies, and idle reviewers are visible — they are invisible to any query over open states |
 | Store `openCount` rather than derive it | only option flat against open work and history; deriving costs ~1MB at 300 open states and ~9MB at 3000 |
-| Round-robin needs no cursor | order by `openCount`, then `lastAssignedOn`, then user id |
+| Round-robin needs no cursor | `lastAssignedOn` asc only; `leastLoaded` is the one that sorts on `openCount` |
+| `openCount` counts the current step only | identical to `currentAssignee`, so rebuild reproduces it exactly |
+| `currentAssignee` written on every resolution, `null` included | "never cleared" was wrong — a fall-through left a decremented holder in place |
+| Stat entry id derived from `userId`; drift repaired by a scheduled task | no atomic increment exists; the same pass clears assignees that went invalid after activation |
+| Reassign targets the current step, and moves `savedBy` when the step is `inReview` | `approve`/`reject` gate on `isStepOwner`, so without it the old holder keeps the only right to approve |
+| `start()`/`takeOver()` by a non-assignee moves `step.assignee` too, source `takeover` | one holder, one answer everywhere |
+| `listReviewers(teamIds)`, not `stepId` | step ids are generated in the browser, so an unsaved step cannot be looked up |
+| Rule conditions include `language`; apps declare which keys they supply | language is a CMS model (`wbyLanguage`); there is no locale in the API |
+| `step.teams` stays the authority on who may review | rules route within it; sign-off, `canReview` and the pool query untouched |
+| One reviewer per step | `currentAssignee` is one identity and a step needs one approval |
 | Team-to-members lookup stays private to `api-workflows`, wrapped in `withoutAuthorization` | no `api-core` change; an editor picking a reviewer must not need the `security.team` permission |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
