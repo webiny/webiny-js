@@ -22,9 +22,12 @@ export function resolveSlugPattern(pattern: string, entry: EntryData): string {
     });
 }
 
-export function buildEditorUrl(domain: string): string {
+export function buildEditorUrl(domain: string, previewPath: string): string {
     const base = domain.endsWith("/") ? domain.slice(0, -1) : domain;
-    return `${base}/preview`;
+    const bracketIndex = previewPath.indexOf("{");
+    const staticPrefix = bracketIndex >= 0 ? previewPath.substring(0, bracketIndex) : previewPath;
+    const trimmed = staticPrefix.endsWith("/") ? staticPrefix.slice(0, -1) : staticPrefix;
+    return `${base}${trimmed}/preview`;
 }
 
 export function buildDisplayUrl(domain: string, path: string, entry: EntryData): string {
