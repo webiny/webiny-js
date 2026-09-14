@@ -10,3 +10,5 @@ export type {
 } from "./abstractions.js";
 export { AiChatGateway as AiChatGatewayImplementation } from "./AiChatGateway.js";
 export { AiChatFeature } from "./feature.js";
+export { AiChatPresenter } from "./abstractions.js";
+export type { AiTurnViewModel, IAiChatPresenter, IAiChatViewModel } from "./abstractions.js";

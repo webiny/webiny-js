@@ -1,7 +1,7 @@
 import React from "react";
 import { Markdown } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import type { AiTurn as AiTurnModel } from "../useAiChat.js";
+import type { AiTurnViewModel } from "@webiny/app-admin";
 import { ToolChip } from "./ToolChip.js";
 import { AnswerSkeleton } from "./AnswerSkeleton.js";
 import { ApprovalPlan } from "./ApprovalPlan.js";
@@ -13,7 +13,7 @@ import { ApprovalPlan } from "./ApprovalPlan.js";
  * Outcomes are counted together, because a tool called twice can succeed once and fail once and the
  * chips are told apart only by their order.
  */
-const toolState = (turn: AiTurnModel, index: number): "running" | "done" | "failed" => {
+const toolState = (turn: AiTurnViewModel, index: number): "running" | "done" | "failed" => {
     const name = turn.tools[index];
     const callsSoFar = turn.tools.slice(0, index + 1).filter(tool => tool === name).length;
     const resultsSoFar = turn.completed.filter(tool => tool === name).length;
@@ -28,7 +28,7 @@ const toolState = (turn: AiTurnModel, index: number): "running" | "done" | "fail
 };
 
 export interface AiTurnProps {
-    turn: AiTurnModel;
+    turn: AiTurnViewModel;
     /** Initials of the signed-in user, shown against their question. */
     initials: string;
     busy: boolean;

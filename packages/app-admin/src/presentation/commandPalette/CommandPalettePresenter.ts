@@ -8,6 +8,7 @@ import {
 export class CommandPalettePresenter implements Abstraction.Interface {
     private isOpen = false;
     private activeCommandName: string | null = null;
+    private modeActive = false;
     private resolvedCommands: Command.Interface[] = [];
 
     constructor(private getCommands: () => Command.Interface[]) {
@@ -39,6 +40,7 @@ export class CommandPalettePresenter implements Abstraction.Interface {
 
         return {
             isOpen: this.isOpen,
+            modeActive: this.modeActive,
             commands: this.resolvedCommands.map(cmd => ({
                 name: cmd.name,
                 label: cmd.label,
@@ -62,12 +64,22 @@ export class CommandPalettePresenter implements Abstraction.Interface {
     open(): void {
         this.resolvedCommands = this.getCommands();
         this.activeCommandName = null;
+        this.modeActive = false;
         this.isOpen = true;
     }
 
     close(): void {
         this.isOpen = false;
         this.activeCommandName = null;
+        this.modeActive = false;
+    }
+
+    enterMode(): void {
+        this.modeActive = true;
+    }
+
+    exitMode(): void {
+        this.modeActive = false;
     }
 
     toggle(): void {

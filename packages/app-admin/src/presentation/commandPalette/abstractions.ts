@@ -52,6 +52,11 @@ export interface ActiveCommandVm {
 
 export interface CommandPaletteViewModel {
     isOpen: boolean;
+    /**
+     * A mode is showing instead of the command list. The palette keeps ONE input row across every
+     * mode, so this is the palette's state rather than the mode's.
+     */
+    modeActive: boolean;
     commands: CommandItemVm[];
     activeCommand: ActiveCommandVm | null;
 }
@@ -65,6 +70,8 @@ export interface ICommandPalettePresenter {
     toggle(): void;
     useCommand(name: string): void;
     cancelCommand(): void;
+    enterMode(): void;
+    exitMode(): void;
 }
 
 export const CommandPalettePresenter = new Abstraction<ICommandPalettePresenter>(

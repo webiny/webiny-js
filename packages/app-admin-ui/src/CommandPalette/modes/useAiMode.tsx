@@ -3,7 +3,8 @@ import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
 import { AiModeBadge, AiSuggestions, AiTurn, HintIcon, type Hint } from "../components/index.js";
-import { useAiChat } from "../useAiChat.js";
+import { useFeature } from "@webiny/app";
+import { AiChatFeature } from "@webiny/app-admin";
 import type { PaletteMode, PaletteModeKeyContext } from "./PaletteMode.js";
 
 const HINTS: Hint[] = [
@@ -22,27 +23,28 @@ const HINTS: Hint[] = [
  * does not own that element, it only needs to scroll it.
  */
 export const useAiMode = (scrollRef: React.RefObject<HTMLDivElement | null>): PaletteMode => {
-    const ai = useAiChat();
+    const { presenter } = useFeature(AiChatFeature);
+    const { vm } = presenter;
 
     // Keep the newest turn in view; answers are long enough to push earlier ones off-screen.
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-    }, [scrollRef, ai.turns, ai.busy]);
+    }, [scrollRef, vm.turns, vm.busy]);
 
     const enter = useCallback(
         (seed?: string) => {
             if (seed?.trim()) {
-                ai.ask(seed);
+                presenter.ask(seed);
             }
         },
-        [ai]
+        [presenter]
     );
 
     const handleKey = useCallback(
         (event: React.KeyboardEvent, context: PaletteModeKeyContext) => {
             if (event.key === "Enter") {
                 event.preventDefault();
-                ai.ask(context.query);
+                presenter.ask(context.query);
                 context.setQuery("");
                 return true;
             }
@@ -56,25 +58,29 @@ export const useAiMode = (scrollRef: React.RefObject<HTMLDivElement | null>): Pa
 
             return false;
         },
-        [ai]
+        [presenter]
     );
 
+    /*
+     * Arrow wrappers rather than bare `presenter.ask`: `makeAutoObservable` turns methods into
+     * actions but does not bind them, so a detached reference loses `this`.
+     */
     const body = useMemo(() => {
-        if (ai.turns.length === 0) {
-            return <AiSuggestions onAsk={ai.ask} />;
+        if (vm.turns.length === 0) {
+            return <AiSuggestions onAsk={question => presenter.ask(question)} />;
         }
 
-        return ai.turns.map((turn, index) => (
+        return vm.turns.map((turn, index) => (
             <AiTurn
                 key={index}
                 turn={turn}
                 initials="You"
-                busy={ai.busy}
-                onApprove={() => ai.decide(index, true)}
-                onReject={() => ai.decide(index, false)}
+                busy={vm.busy}
+                onApprove={() => presenter.decide(index, true)}
+                onReject={() => presenter.decide(index, false)}
             />
         ));
-    }, [ai]);
+    }, [presenter, vm.turns, vm.busy]);
 
     return useMemo(
         () => ({
@@ -83,16 +89,16 @@ export const useAiMode = (scrollRef: React.RefObject<HTMLDivElement | null>): Pa
                 iconColor: "accent" as const,
                 iconLabel: "Ask AI",
                 badge: <AiModeBadge />,
-                placeholder: ai.turns.length > 0 ? "Ask a follow-up…" : "Ask about your content…",
+                placeholder: vm.turns.length > 0 ? "Ask a follow-up…" : "Ask about your content…",
                 footerLabel: "Webiny AI",
                 hints: HINTS,
                 tall: true
             },
             body,
             enter,
-            reset: ai.reset,
+            reset: () => presenter.reset(),
             handleKey
         }),
-        [ai.turns.length, ai.reset, body, enter, handleKey]
+        [vm.turns.length, presenter, body, enter, handleKey]
     );
 };

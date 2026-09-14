@@ -69,3 +69,53 @@ export namespace AiChatGateway {
     export type Request = AiChatRequest;
     export type StreamEvent = AiChatStreamEvent;
 }
+
+/**
+ * One question and the answer to it, as the view needs it.
+ *
+ * The server messages that make a follow-up or a resumed approval work are deliberately absent: they
+ * are conversation state, not something rendered, so they stay inside the presenter.
+ */
+export interface AiTurnViewModel {
+    question: string;
+    /** Answer text so far. Grows as the stream arrives. */
+    text: string;
+    /** Tools called this turn, in call order. */
+    tools: string[];
+    /**
+     * Tools that returned. A call pending approval still emits `tool-call`, so this is the only way
+     * to tell a completed tool from one merely proposed.
+     */
+    completed: string[];
+    /** Tools that threw. Settles the chip as a failure; the run continues. */
+    failed: string[];
+    /** Set while a tool is running and no answer text has arrived yet. */
+    running: boolean;
+    pendingApprovals: AiChatPendingApproval[];
+    settled: boolean;
+    error?: string;
+}
+
+export interface IAiChatViewModel {
+    turns: AiTurnViewModel[];
+    /** A run is in flight. Asking again or deciding again is refused while true. */
+    busy: boolean;
+}
+
+export interface IAiChatPresenter {
+    readonly vm: IAiChatViewModel;
+    /** Ask a question, carrying the settled turns before it as context. */
+    ask(question: string): void;
+    /** Approve or reject the calls a turn paused on, then resume it. */
+    decide(turnIndex: number, approved: boolean): void;
+    /** Drop the conversation and stop anything in flight. */
+    reset(): void;
+}
+
+export const AiChatPresenter = createAbstraction<IAiChatPresenter>("AiChatPresenter");
+
+export namespace AiChatPresenter {
+    export type Interface = IAiChatPresenter;
+    export type ViewModel = IAiChatViewModel;
+    export type Turn = AiTurnViewModel;
+}

@@ -44,7 +44,6 @@ const COMMAND_HINTS: Hint[] = [
 
 const CommandPaletteBase = () => {
     const [query, setQuery] = useState("");
-    const [modeActive, setModeActive] = useState(false);
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
     const container = useContainer();
@@ -66,27 +65,26 @@ const CommandPaletteBase = () => {
     const close = useCallback(() => {
         presenter.close();
         setQuery("");
-        setModeActive(false);
         mode.reset();
     }, [presenter, mode]);
 
     const enterMode = useCallback(
         (seed?: string) => {
-            setModeActive(true);
+            presenter.enterMode();
             setQuery("");
             mode.enter(seed);
             // The input is shared across modes, so focus has to be restored explicitly after the
             // surrounding tree swaps.
             requestAnimationFrame(() => inputRef.current?.focus());
         },
-        [mode]
+        [presenter, mode]
     );
 
     const exitMode = useCallback(() => {
-        setModeActive(false);
+        presenter.exitMode();
         setQuery("");
         mode.reset();
-    }, [mode]);
+    }, [presenter, mode]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -123,7 +121,6 @@ const CommandPaletteBase = () => {
                 if (!vm.isOpen) {
                     presenter.open();
                     setQuery("");
-                    setModeActive(false);
                     return;
                 }
 
@@ -136,7 +133,7 @@ const CommandPaletteBase = () => {
                     return;
                 }
 
-                if (!modeActive) {
+                if (!vm.modeActive) {
                     enterMode();
                     return;
                 }
@@ -157,7 +154,7 @@ const CommandPaletteBase = () => {
             presenter.shortcutKeys,
             vm.isOpen,
             vm.activeCommand,
-            modeActive,
+            vm.modeActive,
             enterMode,
             close
         ]
@@ -184,14 +181,14 @@ const CommandPaletteBase = () => {
     const askAiFromQuery = () => enterMode(query);
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
-    const appearance = modeActive ? mode.appearance : null;
+    const appearance = vm.modeActive ? mode.appearance : null;
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
             e.preventDefault();
             if (active) {
                 presenter.cancelCommand();
-            } else if (modeActive) {
+            } else if (vm.modeActive) {
                 exitMode();
             } else {
                 close();
@@ -199,7 +196,7 @@ const CommandPaletteBase = () => {
             return;
         }
 
-        if (modeActive) {
+        if (vm.modeActive) {
             // The mode decides what its keys mean; anything it declines is simply ignored here.
             mode.handleKey(e, { query, setQuery, exit: exitMode });
             return;
