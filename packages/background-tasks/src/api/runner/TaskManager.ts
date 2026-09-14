@@ -10,15 +10,32 @@ import {
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
+/**
+ * What TaskManager needs from the container. Same reasoning as ITaskControlDependencies: the class
+ * is built by hand, so it states what it uses and the caller supplies it.
+ */
+export interface ITaskManagerDependencies {
+    taskController: TaskController.Interface;
+    identityContext: IdentityContext.Interface;
+}
+
 export class TaskManager implements ITaskManager {
     private readonly context: Context;
     private readonly response: IResponse;
     private readonly store: ITaskManagerStorePrivate;
 
-    public constructor(context: Context, response: IResponse, store: ITaskManagerStorePrivate) {
+    private readonly deps: ITaskManagerDependencies;
+
+    public constructor(
+        context: Context,
+        response: IResponse,
+        store: ITaskManagerStorePrivate,
+        deps: ITaskManagerDependencies
+    ) {
         this.context = context;
         this.response = response;
         this.store = store;
+        this.deps = deps;
     }
 
     public async run(definition: TaskDefinition.Runnable): Promise<IResponseResult> {
@@ -96,19 +113,17 @@ export class TaskManager implements ITaskManager {
 
         try {
             const input = structuredClone(this.store.getInput());
-            const controller = this.context.container.resolve(TaskController);
+            const controller = this.deps.taskController;
             /**
              * We always run the task without authorization because we are running a task without a user - nothing to authorize against.
              */
-            result = await this.context.container
-                .resolve(IdentityContext)
-                .withoutAuthorization(async () => {
-                    return await definition.run({
-                        input,
-                        controller,
-                        definition
-                    });
+            result = await this.deps.identityContext.withoutAuthorization(async () => {
+                return await definition.run({
+                    input,
+                    controller,
+                    definition
                 });
+            });
         } catch (ex) {
             return this.response.error({
                 error: getErrorProperties(ex)
