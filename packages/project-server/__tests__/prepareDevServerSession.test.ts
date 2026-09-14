@@ -1,13 +1,9 @@
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     prepareDevServerSession,
     type IPrepareDevServerSessionParams
 } from "~/serve/devServer/prepareDevServerSession.js";
 import { startDevProxy } from "~/serve/devServer/startDevProxy.js";
-import { isPortFree } from "~/serve/findFreePort.js";
 
 const MANAGED_VARS = [
     "PORT",
@@ -21,11 +17,9 @@ const MANAGED_VARS = [
 ];
 
 describe("prepareDevServerSession", () => {
-    let rootFolder: string;
     let originalEnv: Record<string, string | undefined>;
 
     beforeEach(() => {
-        rootFolder = fs.mkdtempSync(path.join(os.tmpdir(), "webiny-dev-server-"));
         originalEnv = Object.fromEntries(MANAGED_VARS.map(name => [name, process.env[name]]));
         for (const name of MANAGED_VARS) {
             delete process.env[name];
@@ -40,14 +34,12 @@ describe("prepareDevServerSession", () => {
                 process.env[name] = value;
             }
         }
-        fs.rmSync(rootFolder, { recursive: true, force: true });
     });
 
     const prepare = (params: Partial<IPrepareDevServerSessionParams> = {}) =>
         prepareDevServerSession({
             apps: ["api", "admin"],
             pointAppsAtProxy: true,
-            rootFolder,
             ...params
         });
 
@@ -110,22 +102,10 @@ describe("prepareDevServerSession", () => {
             expect(Number(process.env.WEBINY_API_PORT)).toBe(pinned);
         });
 
-        it("comes back on the same port next time, so the URL keeps working", async () => {
-            const first = await prepare();
-
-            delete process.env.PORT;
-            const second = await prepare();
-
-            expect(second!.port).toBe(first!.port);
-        });
-
-        it("moves off a remembered port that something else has taken", async () => {
-            const first = await prepare();
-
-            const squatter = await occupy(first!.port);
+        it("steps over a proxy port another project already holds", async () => {
+            const squatter = await occupy(3001);
             try {
-                const second = await prepare();
-                expect(second!.port).not.toBe(first!.port);
+                expect((await prepare())!.port).not.toBe(3001);
             } finally {
                 await squatter();
             }
@@ -229,6 +209,5 @@ async function occupy(port: number) {
     const net = await import("node:net");
     const server = net.createServer();
     await new Promise<void>(resolve => server.listen(port, () => resolve()));
-    expect(await isPortFree(port)).toBe(false);
     return () => new Promise<void>(resolve => server.close(() => resolve()));
 }

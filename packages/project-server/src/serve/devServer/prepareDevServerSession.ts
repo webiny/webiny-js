@@ -1,5 +1,4 @@
-import { findFreePort, isPortFree } from "../findFreePort.js";
-import { readRememberedPort, rememberPort } from "./portMemory.js";
+import { findFreePort } from "../findFreePort.js";
 import { API_PREFIX, APP_PORT_BASE, DEFAULT_PROXY_PORT } from "./constants.js";
 
 export interface IDevServerSession {
@@ -25,8 +24,6 @@ export interface IPrepareDevServerSessionParams {
      * fixed then, and nothing set now can change it.
      */
     pointAppsAtProxy?: boolean;
-    /** Project root, used to remember the port. Defaults to the working directory. */
-    rootFolder?: string;
 }
 
 /**
@@ -53,13 +50,13 @@ export interface IPrepareDevServerSessionParams {
 export async function prepareDevServerSession(
     params: IPrepareDevServerSessionParams
 ): Promise<IDevServerSession | null> {
-    const { apps, enabled, pointAppsAtProxy = false, rootFolder = process.cwd() } = params;
+    const { apps, enabled, pointAppsAtProxy = false } = params;
 
     if (enabled === false || process.env.WEBINY_PROXY === "off" || apps.length < 2) {
         return null;
     }
 
-    const port = await resolveProxyPort(rootFolder);
+    const port = await resolveProxyPort();
 
     // The proxy has taken over `PORT`, so remove it: both app runners fall back to it, and two
     // servers honouring the same injected port is how you get one of them silently failing to bind.
@@ -97,8 +94,6 @@ export async function prepareDevServerSession(
         process.env.WEBINY_API_URL = apiUrl;
     }
 
-    rememberPort(rootFolder, port);
-
     return {
         port,
         url,
@@ -109,18 +104,13 @@ export async function prepareDevServerSession(
 
 /**
  * An explicitly requested port is used as-is: a developer who set it, or a tool like portless that
- * injected it, has something else pointed at that exact number already. Otherwise prefer the port
- * this project used last time, and only scan when that's taken.
+ * injected it, has something else pointed at that exact number already. Otherwise take the first free
+ * port from 3001, which gives a project the same port every time unless another one is already on it.
  */
-async function resolveProxyPort(rootFolder: string): Promise<number> {
+async function resolveProxyPort(): Promise<number> {
     const explicit = process.env.WEBINY_PORT || process.env.PORT;
     if (explicit) {
         return Number(explicit);
-    }
-
-    const remembered = readRememberedPort(rootFolder);
-    if (remembered && (await isPortFree(remembered))) {
-        return remembered;
     }
 
     return findFreePort(DEFAULT_PROXY_PORT);

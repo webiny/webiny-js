@@ -19,6 +19,3 @@ export const DEFAULT_PROXY_PORT = 3001;
  * port another project's proxy wants. That squatting is the actual bug this whole thing fixes.
  */
 export const APP_PORT_BASE = 41000;
-
-/** Where the proxy port is remembered between runs, relative to the project root. */
-export const PORT_MEMORY_FILE = ".webiny/dev-server.json";

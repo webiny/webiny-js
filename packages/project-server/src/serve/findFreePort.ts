@@ -26,24 +26,3 @@ export function findFreePort(start: number): Promise<number> {
         server.listen(start, "0.0.0.0");
     });
 }
-
-/**
- * Whether `port` can be bound right now. Used to decide if a remembered port is still available
- * before falling back to scanning for a new one.
- */
-export function isPortFree(port: number): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-        const server = net.createServer();
-
-        server.once("error", () => {
-            server.close();
-            resolve(false);
-        });
-
-        server.once("listening", () => {
-            server.close(() => resolve(true));
-        });
-
-        server.listen(port, "0.0.0.0");
-    });
-}
