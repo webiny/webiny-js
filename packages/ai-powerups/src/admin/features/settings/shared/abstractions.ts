@@ -41,7 +41,12 @@ export interface IAiPowerUpsSettings {
         roles: Record<AiModelRoleId, { connectionId: string; model: string }>;
     };
     capabilities: {
-        overrides: Record<string, IAiPowerUpsCapabilityOverride>;
+        /**
+         * Keyed by capability id, and open-ended: extensions register their own, so there is no
+         * union to enumerate. `Partial` because most capabilities have no override, and a bare
+         * `Record` would type a miss as present.
+         */
+        overrides: Partial<Record<string, IAiPowerUpsCapabilityOverride>>;
     };
     readerPersonas: {
         presets: IAiPowerUpsPersonaPreset[];

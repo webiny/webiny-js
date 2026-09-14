@@ -51,7 +51,9 @@ class CapabilitiesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interfac
         // Normalise before testing for emptiness, so a row of untouched fields disappears rather
         // than persisting as an override of nothing.
         const entries = Object.entries(input.overrides ?? {})
-            .filter(([, override]) => Boolean(override))
+            // A type guard, not a plain predicate: a bare `Boolean(...)` filter reads the same but
+            // narrows nothing, so the `undefined` this exists to drop would flow straight on.
+            .filter((entry): entry is [string, AiCapabilityOverride] => Boolean(entry[1]))
             .map(([id, override]) => [id, dropEmptyValues(override)] as const)
             .filter(([, override]) => !isEmptyOverride(override));
 

@@ -28,11 +28,22 @@ export interface AiCapabilityOverride {
     additionalInstructions?: string;
 }
 
+/**
+ * Keyed by capability id.
+ *
+ * Unlike model roles this cannot be a union of known keys: features register capabilities at
+ * runtime and an extension can add its own, so there is no compile-time set to enumerate.
+ *
+ * `Partial` is doing real work though. A bare `Record<string, T>` claims every string key is
+ * present, so a lookup types as `T` and the `?? {}` every caller writes looks redundant to the
+ * compiler. Most capabilities have no override at all, so a miss is the common case.
+ */
+export type AiCapabilityOverrides = Partial<Record<string, AiCapabilityOverride>>;
+
 declare module "~/api/types.js" {
     interface IAiPowerUpsSettings {
         capabilities: {
-            /** Keyed by capability id. */
-            overrides: Record<string, AiCapabilityOverride>;
+            overrides: AiCapabilityOverrides;
         };
     }
 }
@@ -40,5 +51,5 @@ declare module "~/api/types.js" {
 export type CapabilitiesSettings = IAiPowerUpsSettings["capabilities"];
 
 export interface PersistedCapabilities {
-    overrides?: Record<string, AiCapabilityOverride>;
+    overrides?: AiCapabilityOverrides;
 }
