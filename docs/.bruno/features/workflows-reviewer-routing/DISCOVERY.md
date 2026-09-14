@@ -105,7 +105,10 @@ a second flag on this schema.
 - **Reviewers are teams, never users.** So "target must sit within the step's reviewers"
   means *member of one of the step's teams*.
 - **No team → members lookup.** Membership lives on the user (`AdminUser.teams: string[]`)
-  and `ListUsersInput.where` only has `id_in`. Note both backends already list every
+  and `ListUsersInput.where` only has `id_in`. Built inside `api-workflows`, wrapped in
+  `withoutAuthorization` — the pattern `ListUserTeamsUseCase`, `UpdateFlpUseCase` and
+  `EnsureFolderIsEmpty` already use. Because that bypasses authorization, the result must be
+  scoped to the teams on the step being resolved. Never expose a general team-member listing. Note both backends already list every
   tenant user on any `listUsers` call, and filter in memory — so a `teams` filter costs the
   same as what ships today. `ListFolderLevelPermissionsTargets` already does exactly this
   on a user-facing picker. Cost is fine; the capability is just missing.
@@ -151,6 +154,7 @@ a second flag on this schema.
 | Candidates are never stored. Computed per resolution from `step.teams`, minus requester, minus excluded | snapshot already carries the teams |
 | `wbyWorkflowAssignmentStat` per user: `openCount`, `lastAssignedOn` | one read serves both strategies, and idle reviewers are visible — they are invisible to any query over open states |
 | Round-robin needs no cursor | order by `openCount`, then `lastAssignedOn`, then user id |
+| Team-to-members lookup stays private to `api-workflows`, wrapped in `withoutAuthorization` | no `api-core` change; an editor picking a reviewer must not need the `security.team` permission |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
@@ -158,11 +162,6 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 ## Still open
 
-- Where the team-to-members lookup lives: a `teams` filter on `ListUsersInput.where` in
-  `api-core`, a dedicated use case there, or kept private to `api-workflows`. Note
-  `ListTeamsUseCase` requires the `security.team` permission while `ListUserTeamsUseCase`
-  deliberately runs `withoutAuthorization` — an editor picking a reviewer should not need
-  that permission.
 - Keeping `wbyWorkflowAssignmentStat` correct: `openCount` must be decremented on approve,
   reject, cancel and reassign, and moved when `start()` or `takeOver()` changes the holder.
   A missed decrement leaves a reviewer permanently "busy", so a rebuild path is needed.
@@ -170,7 +169,7 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 ## Rough order
 
-1. Team → members lookup in `api-core`.
+1. Team → members lookup inside `api-workflows`.
 2. `currentAssignee` + reassignment, defined against the existing takeover path.
 3. Notification handler for the existing state events.
 4. Strategies (round-robin, then least-loaded).
