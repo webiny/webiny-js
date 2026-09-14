@@ -1,2 +1,2 @@
-export { useAiMode } from "./useAiMode.js";
+export { createAiMode } from "./createAiMode.js";
 export type { PaletteMode, PaletteModeAppearance, PaletteModeKeyContext } from "./PaletteMode.js";

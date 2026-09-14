@@ -36,13 +36,13 @@ export interface PaletteModeAppearance {
 /**
  * One way the palette can behave.
  *
- * A mode owns its state, its body and its keys; the palette owns the shell, the query and the input.
- * The point of the split is that adding a mode does not mean editing the palette: everything AI
- * lives in `useAiMode`, and the palette only knows this interface.
+ * A mode supplies its body, its keys and how the palette should look while it is active; the palette
+ * owns the shell, the query and the input. The point of the split is that adding a mode does not
+ * mean editing the palette: everything AI lives in `createAiMode`, and the palette only knows this
+ * interface.
  *
- * Modes are hooks rather than components because their state has to reach the APPEARANCE as well as
- * the body. The AI placeholder changes once a conversation has started, and a component rendered
- * into the body slot cannot tell the input row above it anything.
+ * `appearance` and `body` are read during render, so an implementation can serve them from getters
+ * over observable state and let a reactive palette re-render on its own.
  */
 export interface PaletteMode {
     appearance: PaletteModeAppearance;
@@ -62,4 +62,10 @@ export interface PaletteMode {
      * leaves it alone.
      */
     handleKey(event: React.KeyboardEvent, context: PaletteModeKeyContext): boolean;
+    /**
+     * Called after the palette renders this mode's body, with the scroll container it was rendered
+     * into. For a mode whose body grows, such as a conversation, this is where it keeps the newest
+     * content in view. The element belongs to the palette; a mode only reads or scrolls it.
+     */
+    afterRender?(scrollContainer: HTMLElement): void;
 }

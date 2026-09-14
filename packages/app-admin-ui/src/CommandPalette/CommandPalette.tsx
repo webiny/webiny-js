@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Command } from "cmdk";
 import {
+    AiChatFeature,
     CommandPaletteFeature,
     createReactiveComponent,
     useAdminConfig,
@@ -26,7 +27,7 @@ import {
     PaletteFooter,
     type Hint
 } from "./components/index.js";
-import { useAiMode } from "./modes/index.js";
+import { createAiMode } from "./modes/index.js";
 
 const COMMAND_HINTS: Hint[] = [
     {
@@ -53,10 +54,11 @@ const CommandPaletteBase = () => {
 
     /*
      * One mode today. The palette talks to it only through `PaletteMode`, so everything the
-     * assistant needs lives in `useAiMode` rather than here. A second mode turns this into a
+     * assistant needs lives in `createAiMode` rather than here. A second mode turns this into a
      * registry; nothing above this line has to change for that.
      */
-    const mode = useAiMode(scrollRef);
+    const { presenter: aiChat } = useFeature(AiChatFeature);
+    const mode = useMemo(() => createAiMode(aiChat), [aiChat]);
 
     useEffect(() => {
         presenter.init();
@@ -171,6 +173,17 @@ const CommandPaletteBase = () => {
         result.push(...commandVmsToGroups(vm.commands, runCommand));
         return result;
     }, [menus, vm.commands, navigateTo, runCommand]);
+
+    /*
+     * Let the active mode keep its own content in view. Runs on every render while a mode is showing,
+     * because the body is what changes and the palette cannot tell what inside it moved.
+     */
+    useEffect(() => {
+        if (!vm.modeActive || !scrollRef.current) {
+            return;
+        }
+        mode.afterRender?.(scrollRef.current);
+    });
 
     if (!vm.isOpen) {
         return null;
