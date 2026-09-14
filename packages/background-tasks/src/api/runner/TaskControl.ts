@@ -18,6 +18,7 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TasksCrud } from "~/api/TasksCrud.js";
 import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 
 interface IGetTaskLogParams {
     task: ITask;
@@ -189,17 +190,25 @@ export class TaskControl implements ITaskControl {
     ): Promise<void> {
         if (result.status === TaskResultStatus.ERROR && definition.onError) {
             try {
-                await definition.onError({ task });
+                await definition.onError({ task, definition });
             } catch (ex) {
-                console.error(`Error executing onError hook for task "${task.id}".`);
-                console.log(getErrorProperties(ex));
+                this.context.container
+                    .resolve(Logger)
+                    .error(
+                        { error: getErrorProperties(ex), taskId: task.id, hook: "onError" },
+                        "Error executing task lifecycle hook."
+                    );
             }
         } else if (result.status === TaskResultStatus.DONE && definition.onDone) {
             try {
-                await definition.onDone({ task });
+                await definition.onDone({ task, definition });
             } catch (ex) {
-                console.error(`Error executing onDone hook for task "${task.id}".`);
-                console.log(getErrorProperties(ex));
+                this.context.container
+                    .resolve(Logger)
+                    .error(
+                        { error: getErrorProperties(ex), taskId: task.id, hook: "onDone" },
+                        "Error executing task lifecycle hook."
+                    );
             }
         }
     }
