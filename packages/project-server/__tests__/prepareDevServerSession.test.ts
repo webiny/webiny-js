@@ -5,7 +5,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     prepareDevServerSession,
     readDevServerTargets,
-    wantsDevProxy
+    wantsDevProxy,
+    type IDevServerArgv
 } from "~/serve/devServer/prepareDevServerSession.js";
 import { startDevProxy } from "~/serve/devServer/startDevProxy.js";
 import { isPortFree } from "~/serve/findFreePort.js";
@@ -44,36 +45,39 @@ describe("prepareDevServerSession", () => {
         fs.rmSync(rootFolder, { recursive: true, force: true });
     });
 
-    const prepare = (argv: string[] = ["watch"]) => prepareDevServerSession({ argv, rootFolder });
+    const prepare = (argv: IDevServerArgv = { _: ["watch"] }) =>
+        prepareDevServerSession({ argv, rootFolder });
 
     describe("deciding whether a proxy belongs in front", () => {
         it("wants one for a bare watch or serve", () => {
-            expect(wantsDevProxy(["watch"])).toBe(true);
-            expect(wantsDevProxy(["serve"])).toBe(true);
-            expect(wantsDevProxy(["watch", "--verbose"])).toBe(true);
-            expect(wantsDevProxy(["watch", "--env", "dev"])).toBe(true);
+            expect(wantsDevProxy({ _: ["watch"] })).toBe(true);
+            expect(wantsDevProxy({ _: ["serve"] })).toBe(true);
+            // Options are already parsed out of the positionals by the time this sees them.
+            expect(wantsDevProxy({ _: ["watch"], verbose: true } as IDevServerArgv)).toBe(true);
         });
 
         it("does not for a single app, which already has a single URL", () => {
-            expect(wantsDevProxy(["watch", "api"])).toBe(false);
-            expect(wantsDevProxy(["serve", "admin"])).toBe(false);
+            expect(wantsDevProxy({ _: ["watch", "api"] })).toBe(false);
+            expect(wantsDevProxy({ _: ["serve", "admin"] })).toBe(false);
         });
 
         it("does not when asked not to, by flag or by env", () => {
-            expect(wantsDevProxy(["watch", "--no-proxy"])).toBe(false);
+            // yargs turns `--no-proxy` into `proxy: false`.
+            expect(wantsDevProxy({ _: ["watch"], proxy: false })).toBe(false);
 
             process.env.WEBINY_PROXY = "off";
-            expect(wantsDevProxy(["watch"])).toBe(false);
+            expect(wantsDevProxy({ _: ["watch"] })).toBe(false);
         });
 
         it("does not for any other command", () => {
-            expect(wantsDevProxy(["build"])).toBe(false);
-            expect(wantsDevProxy(["deploy", "api"])).toBe(false);
-            expect(wantsDevProxy([])).toBe(false);
+            expect(wantsDevProxy({ _: ["build"] })).toBe(false);
+            expect(wantsDevProxy({ _: ["deploy", "api"] })).toBe(false);
+            expect(wantsDevProxy({ _: [] })).toBe(false);
+            expect(wantsDevProxy({})).toBe(false);
         });
 
         it("changes nothing at all when it decides against", async () => {
-            expect(await prepare(["watch", "api"])).toBeNull();
+            expect(await prepare({ _: ["watch", "api"] })).toBeNull();
 
             expect(process.env.WEBINY_API_PORT).toBeUndefined();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();

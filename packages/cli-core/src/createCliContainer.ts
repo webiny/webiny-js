@@ -54,7 +54,7 @@ const { bgYellow, bold } = chalk;
 
 export const createCliContainer = async (
     params: CliParamsService.Params,
-    register?: (container: Container) => void
+    register?: (container: Container) => void | Promise<void>
 ) => {
     const container = new Container();
 
@@ -100,8 +100,11 @@ export const createCliContainer = async (
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
 
-    // Allow hosting-specific registrations (e.g. cli-aws, cli-server).
-    register?.(container);
+    // Allow hosting-specific registrations (e.g. cli-aws, cli-server). Awaited, and deliberately
+    // placed before the project SDK is resolved below: that resolve evaluates webiny.config and
+    // applies its env vars, so this is the last point at which a hosting type can influence what the
+    // config sees. The server hosting type reserves its dev-proxy ports here for exactly that reason.
+    await register?.(container);
 
     // Extensions.
     const ui = container.resolve(UiService);

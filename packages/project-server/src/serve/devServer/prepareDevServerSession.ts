@@ -11,9 +11,15 @@ export interface IDevServerSession {
     apiUrl: string;
 }
 
+/** The parts of the CLI's parsed argv this needs: yargs puts positionals in `_` and `--no-proxy` in `proxy`. */
+export interface IDevServerArgv {
+    _?: (string | number)[];
+    proxy?: boolean;
+}
+
 export interface IPrepareDevServerSessionParams {
-    /** Raw process arguments, used to work out whether this command wants a proxy at all. */
-    argv: string[];
+    /** The CLI's parsed arguments, used to work out whether this command wants a proxy at all. */
+    argv: IDevServerArgv;
     /** Project root, used to remember the port. Defaults to the working directory. */
     rootFolder?: string;
 }
@@ -24,12 +30,11 @@ let currentSession: IDevServerSession | null | undefined;
  * Reserves the ports for a watch/serve session and points the apps at each other, so the developer
  * ends up with a single URL instead of one per app.
  *
- * MUST run before the CLI container is built, which is why the CLI bin calls it rather than the watch
- * or serve command. The container resolves the project SDK while it is being constructed (to pick up
- * `<Cli.Command>` extensions), and that evaluates webiny.config and applies its env vars. By the time
- * a command handler runs, `<Admin.ApiUrl>` and `<Infra.ApiUrl>` have already been read and baked, so
- * anything set there is too late to be seen. Same constraint as WEBINY_HOSTING_TYPE, set alongside
- * this in the bin.
+ * MUST run before webiny.config is evaluated, which is why `registerServerFeatures` calls it rather
+ * than the watch or serve command. The CLI container resolves the project SDK while it is still being
+ * constructed (to pick up `<Cli.Command>` extensions), and that evaluates the config and applies its
+ * env vars. By the time a command handler runs, `<Admin.ApiUrl>` and `<Infra.ApiUrl>` have already
+ * been read and baked, so anything set there is too late to be seen.
  *
  * Setting rather than overriding is deliberate: `applyEnvVars` only fills env vars that are still
  * blank, so writing them first is what gives the proxy priority over the config without having to
@@ -96,9 +101,9 @@ export async function prepareDevServerSession(
 /**
  * The session prepared for this process, or null when no proxy is running.
  *
- * Module state because of the timing above: the decision and the port reservation happen in the bin,
- * before the container that holds the command handlers exists, so there is nothing to hand the result
- * to. The handlers read it back here when they're ready to start the proxy.
+ * Module state because of the timing above: the reservation happens while the container holding the
+ * command handlers is still being built, so there is nothing to hand the result to. The handlers read
+ * it back here when they're ready to start the proxy.
  */
 export function getDevServerSession(): IDevServerSession | null {
     return currentSession ?? null;
@@ -108,23 +113,15 @@ export function getDevServerSession(): IDevServerSession | null {
  * Whether this invocation is one the proxy belongs in front of: `watch` or `serve` with no single app
  * named, since one app already has one URL.
  *
- * Read straight off argv because this runs before anything has parsed it. Deliberately conservative,
- * so an argument shape not accounted for here falls through to the existing separate-ports behaviour
- * rather than to a half-configured proxy.
+ * Works off the CLI's own parsed argv, so `--no-proxy` and the command's positionals are whatever
+ * yargs says they are rather than something re-derived here.
  */
-export function wantsDevProxy(argv: string[]): boolean {
-    if (process.env.WEBINY_PROXY === "off" || argv.includes("--no-proxy")) {
+export function wantsDevProxy(argv: IDevServerArgv): boolean {
+    if (process.env.WEBINY_PROXY === "off" || argv.proxy === false) {
         return false;
     }
 
-    // Everything before the first flag. yargs puts the command first, then its positional arguments.
-    const positional: string[] = [];
-    for (const arg of argv) {
-        if (arg.startsWith("-")) {
-            break;
-        }
-        positional.push(arg);
-    }
+    const positional = (argv._ ?? []).map(String);
 
     if (positional[0] !== "watch" && positional[0] !== "serve") {
         return false;

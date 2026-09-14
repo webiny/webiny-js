@@ -4,6 +4,7 @@ export {
     getDevServerSession,
     wantsDevProxy,
     readDevServerTargets,
+    type IDevServerArgv,
     type IDevServerSession,
     type IPrepareDevServerSessionParams
 } from "./prepareDevServerSession.js";

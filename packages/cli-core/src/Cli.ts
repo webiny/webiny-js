@@ -15,7 +15,7 @@ export class Cli {
 
     static async init(
         params: CliParamsService.Params = {},
-        register?: (container: Container) => void
+        register?: (container: Container) => void | Promise<void>
     ) {
         const container = await createCliContainer(params, register);
         return new Cli(container);
