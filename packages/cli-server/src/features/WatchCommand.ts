@@ -77,7 +77,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 {
                     name: "verbose",
                     description:
-                        "Show all output as it happens, instead of holding the startup burst back until the apps are up",
+                        "Show all output as it happens, instead of holding the startup burst back until the apps are up. Also lists the individual app URLs behind the proxy.",
                     type: "boolean"
                 },
                 {
@@ -165,7 +165,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         : undefined;
 
                 if (proxy) {
-                    summary?.setPublicUrl(proxy.url);
+                    summary?.setPublicUrl(proxy.url, { showAppUrls: params.verbose });
                 }
 
                 const startup = new WatchStartup(gate, summary);

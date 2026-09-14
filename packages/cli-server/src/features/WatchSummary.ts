@@ -23,8 +23,10 @@ const literal = (text: string) => text.replace(/%/g, "%%");
  * and, without the proxy, neither port is settled up front either: the api auto-advances from 3002 if
  * it's taken, and the admin dev server does the same from 3001.
  *
- * When the proxy is running there is one URL that matters and the per-app ones are incidental, so it
- * gets the headline and they get indented underneath.
+ * When the proxy is running there is exactly one URL to open, so that's all the summary says. The
+ * per-app URLs are still collected (they're how the summary knows the apps came up) but printing them
+ * only invites someone to use one, which is the confusion the proxy exists to remove. `--verbose`
+ * shows them for when something needs debugging.
  *
  * This is a collector, not a scheduler. It reports state changes through `onChange` and leaves the
  * caller to decide when to act on them.
@@ -34,6 +36,7 @@ export class WatchSummary {
     private readonly urls = new Map<string, string>();
     private readonly ready = new Set<string>();
     private publicUrl: string | undefined;
+    private showAppUrls = true;
     private printed = false;
 
     constructor(
@@ -50,10 +53,12 @@ export class WatchSummary {
 
     /**
      * The single URL the proxy serves everything on. Known up front rather than sniffed, because the
-     * proxy binds its port before any app starts.
+     * proxy binds its port before any app starts. Takes over the summary: from here on the per-app
+     * URLs are printed only when asked for.
      */
-    setPublicUrl(url: string) {
+    setPublicUrl(url: string, options: { showAppUrls?: boolean } = {}) {
         this.publicUrl = url;
+        this.showAppUrls = options.showAppUrls ?? false;
     }
 
     /**
@@ -98,12 +103,6 @@ export class WatchSummary {
 
         this.printed = true;
 
-        const names = this.expected.map(displayName);
-        const width = Math.max(...names.map(name => name.length));
-        // Behind the proxy the per-app URLs are an implementation detail, so they're indented under
-        // the URL that's actually worth opening rather than presented as equals to it.
-        const indent = this.publicUrl ? "  " : "";
-
         this.ui.emptyLine();
         this.ui.success(`Ready in %s`, this.elapsed());
 
@@ -111,11 +110,19 @@ export class WatchSummary {
             this.ui.success(`Webiny is available at %s`, this.publicUrl);
         }
 
-        this.expected.forEach((app, index) => {
-            this.ui.success(
-                literal(`${indent}${names[index].padEnd(width)}   ${this.urls.get(app)}`)
-            );
-        });
+        if (this.showAppUrls) {
+            const names = this.expected.map(displayName);
+            const width = Math.max(...names.map(name => name.length));
+            // Indented when there's a public URL above them, so it stays clear which one to open.
+            const indent = this.publicUrl ? "  " : "";
+
+            this.expected.forEach((app, index) => {
+                this.ui.success(
+                    literal(`${indent}${names[index].padEnd(width)}   ${this.urls.get(app)}`)
+                );
+            });
+        }
+
         this.ui.emptyLine();
     }
 

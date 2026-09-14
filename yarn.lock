@@ -12549,6 +12549,7 @@ __metadata:
     chalk: "npm:^6.0.0"
     tsx: "npm:4.23.12"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
   bin:
     webiny: ./bin.js
   languageName: unknown
