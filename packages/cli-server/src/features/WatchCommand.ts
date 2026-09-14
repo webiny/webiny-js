@@ -35,26 +35,21 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
         return {
             name: "watch",
             description: [
-                "Watches code changes for a specific app or package. Watches all default apps if none specified.",
+                "Watches your Webiny project for code changes and serves it on a single URL.",
                 "",
-                "Watching several apps at once puts a proxy in front of them, so there is one URL to open:",
-                "it serves admin, and forwards /api to the api. The proxy takes WEBINY_PORT, else PORT",
-                "(so portless and friends work as-is), else the first free port from 3001; api and admin",
-                "get ports of their own that nobody has to type. Pass --no-proxy (or set WEBINY_PROXY=off)",
-                "to run the apps on separate ports instead.",
+                "Set PORT to choose which port that URL uses. That is also what lets a tool like",
+                "portless put the project on a domain instead:",
                 "",
-                "Ports, when running without the proxy:",
-                " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
-                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
-                "PORT applies only when watching a single app (watch api / watch admin)."
+                "  portless --force myadmin yarn webiny-server watch",
+                "",
+                "serves it on https://myadmin.localhost."
             ].join("\n"),
             examples: [
                 "watch",
                 "watch api",
                 "watch admin",
                 "watch -p my-package",
-                "WEBINY_PORT=4000 watch",
-                "watch --no-proxy"
+                "PORT=4000 watch"
             ],
             params: [
                 {
@@ -73,13 +68,13 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 {
                     name: "verbose",
                     description:
-                        "Show all output as it happens, instead of holding the startup burst back until the apps are up. Also lists the individual app URLs behind the proxy.",
+                        "Show all output as it happens, instead of holding it back until the project is up",
                     type: "boolean"
                 },
                 {
                     name: "proxy",
                     description:
-                        "Put a single-port proxy in front of the watched apps (default: on when watching several)",
+                        "Serve the project on a single URL (default). Turn off to run each app on its own port",
                     type: "boolean",
                     default: true
                 }

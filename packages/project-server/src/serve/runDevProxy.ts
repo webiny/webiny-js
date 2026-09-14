@@ -7,13 +7,14 @@ import { type IDevServerSession } from "./devServer/index.js";
  * api and admin servers and the caller renders all three the same way.
  *
  * Unlike `runApiServer` / `runAdminServer`, the runner isn't copied into an app workspace: the proxy
- * belongs to no app, and running it from project-server's own build lets it import the implementation
- * instead of inlining it.
+ * belongs to no app. That is also why it's a normal `.ts` file rather than a hand-written `.mjs` like
+ * theirs, which have to be self-contained because nothing compiles them where they end up. This one
+ * runs from our own build, so it imports the implementation and compiles with everything else.
  *
  * Returns the spawned child (stdio piped); the caller owns rendering + lifecycle.
  */
 export async function runDevProxy(session: IDevServerSession): Promise<ChildProcess> {
-    const runnerPath = path.join(import.meta.dirname, "runners", "devProxyRunner.mjs");
+    const runnerPath = path.join(import.meta.dirname, "runners", "devProxyRunner.js");
 
     const child = spawn(process.execPath, [runnerPath], {
         // Piped so the caller can prefix + render the output.

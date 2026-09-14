@@ -26,28 +26,11 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
         return {
             name: "serve",
             description: [
-                "Serves built apps as long-running servers (production). Serves both api and admin if no app is specified.",
+                "Serves your built Webiny project on a single URL.",
                 "",
-                "Serving both puts a proxy in front of them, so there is one URL to publish: it serves",
-                "admin, and forwards /api to the api. The proxy takes WEBINY_PORT, else PORT (so portless",
-                "and friends work as-is), else the first free port from 3001; api and admin get ports of",
-                "their own. Pass --no-proxy (or set WEBINY_PROXY=off) to serve the apps on separate ports",
-                "instead.",
-                "",
-                "Ports, when running without the proxy:",
-                " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
-                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
-                "PORT applies only when serving a single app (serve api / serve admin).",
-                "Explicit ports are strict; the defaults auto-advance to the next free port."
+                "Set PORT to choose which port that URL uses. Run `webiny-server build` first."
             ].join("\n"),
-            examples: [
-                "serve",
-                "serve api",
-                "serve admin",
-                "WEBINY_PORT=8000 serve",
-                "WEBINY_API_PORT=8000 serve api",
-                "serve --no-proxy"
-            ],
+            examples: ["serve", "serve api", "serve admin", "PORT=8000 serve"],
             params: [
                 {
                     name: "app",
@@ -59,7 +42,7 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 {
                     name: "proxy",
                     description:
-                        "Put a single-port proxy in front of the served apps (default: on when serving both)",
+                        "Serve the project on a single URL (default). Turn off to run each app on its own port",
                     type: "boolean",
                     default: true
                 }
