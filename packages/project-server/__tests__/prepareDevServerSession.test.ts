@@ -4,7 +4,8 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     prepareDevServerSession,
-    readDevServerTargets
+    readDevServerTargets,
+    wantsDevProxy
 } from "~/serve/devServer/prepareDevServerSession.js";
 import { startDevProxy } from "~/serve/devServer/startDevProxy.js";
 import { isPortFree } from "~/serve/findFreePort.js";
@@ -16,10 +17,9 @@ const MANAGED_VARS = [
     "WEBINY_API_PORT",
     "WEBINY_ADMIN_PORT",
     "WEBINY_API_URL",
-    "WEBINY_ADMIN_API_URL"
+    "WEBINY_ADMIN_API_URL",
+    "WEBINY_ADMIN_WS_API_URL"
 ];
-
-const BOTH_APPS = ["api", "admin"];
 
 describe("prepareDevServerSession", () => {
     let rootFolder: string;
@@ -44,22 +44,38 @@ describe("prepareDevServerSession", () => {
         fs.rmSync(rootFolder, { recursive: true, force: true });
     });
 
-    const prepare = (params: Parameters<typeof prepareDevServerSession>[0] = { apps: BOTH_APPS }) =>
-        prepareDevServerSession({ apps: BOTH_APPS, rootFolder, ...params });
+    const prepare = (argv: string[] = ["watch"]) => prepareDevServerSession({ argv, rootFolder });
 
-    describe("when it should stay out of the way", () => {
-        it("does nothing for a single app, which already has a single URL", async () => {
-            expect(await prepare({ apps: ["api"] })).toBeNull();
-            expect(process.env.WEBINY_API_PORT).toBeUndefined();
-            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+    describe("deciding whether a proxy belongs in front", () => {
+        it("wants one for a bare watch or serve", () => {
+            expect(wantsDevProxy(["watch"])).toBe(true);
+            expect(wantsDevProxy(["serve"])).toBe(true);
+            expect(wantsDevProxy(["watch", "--verbose"])).toBe(true);
+            expect(wantsDevProxy(["watch", "--env", "dev"])).toBe(true);
         });
 
-        it("does nothing when asked not to, by flag or by env", async () => {
-            expect(await prepare({ apps: BOTH_APPS, enabled: false })).toBeNull();
+        it("does not for a single app, which already has a single URL", () => {
+            expect(wantsDevProxy(["watch", "api"])).toBe(false);
+            expect(wantsDevProxy(["serve", "admin"])).toBe(false);
+        });
+
+        it("does not when asked not to, by flag or by env", () => {
+            expect(wantsDevProxy(["watch", "--no-proxy"])).toBe(false);
 
             process.env.WEBINY_PROXY = "off";
-            expect(await prepare()).toBeNull();
+            expect(wantsDevProxy(["watch"])).toBe(false);
+        });
 
+        it("does not for any other command", () => {
+            expect(wantsDevProxy(["build"])).toBe(false);
+            expect(wantsDevProxy(["deploy", "api"])).toBe(false);
+            expect(wantsDevProxy([])).toBe(false);
+        });
+
+        it("changes nothing at all when it decides against", async () => {
+            expect(await prepare(["watch", "api"])).toBeNull();
+
+            expect(process.env.WEBINY_API_PORT).toBeUndefined();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
         });
     });
@@ -166,6 +182,14 @@ describe("prepareDevServerSession", () => {
             // Not `http://localhost:<port>/api`: resolved in the browser instead, which is what lets
             // the same build run behind a portless domain or a real reverse proxy.
             expect(process.env.WEBINY_ADMIN_API_URL).toBe("/api");
+        });
+
+        it("points the admin websocket at itself too", async () => {
+            await prepare();
+
+            // `<Admin.WebsocketsUrl>` beats the API URL when a project sets it, and pinning it to a
+            // port is the obvious thing to write, so leaving this unset sends the socket elsewhere.
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
         });
 
         it("gives the api an absolute one, since it hands out URLs to clients", async () => {

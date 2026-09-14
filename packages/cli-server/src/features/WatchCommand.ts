@@ -14,7 +14,7 @@ import { WatchOutputGate } from "./WatchOutputGate.js";
 import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 import {
-    prepareDevServerSession,
+    getDevServerSession,
     readDevServerTargets,
     startDevProxy
 } from "@webiny/project-server/serve/devServer/index.js";
@@ -110,13 +110,10 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     }
                 }
 
-                // Reserve the ports and point the apps at each other BEFORE the SDK is initialized:
-                // that's when webiny.config is evaluated and its env vars are applied, and the values
-                // set here have to be in place first to take precedence. See prepareDevServerSession.
-                const session = await prepareDevServerSession({
-                    apps,
-                    enabled: params.proxy
-                });
+                // Reserved by the CLI bin, long before this handler: the ports and URLs have to be in
+                // place before webiny.config is evaluated, which happens while the container holding
+                // this command is still being built. See prepareDevServerSession.
+                const session = getDevServerSession();
 
                 const projectSdk = await this.getProjectSdkService.execute();
 

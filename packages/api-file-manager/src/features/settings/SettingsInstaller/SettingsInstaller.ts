@@ -32,9 +32,11 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
         // Infra.ApiUrl), not a process.env read. Failing that, the origin this install request came
         // through, which covers a proxy whose address wasn't knowable when the api was built.
         //
-        // Note this value is PERSISTED into settings. Install runs on every boot (`alwaysRun`), so it
-        // follows a changed origin, but existing file records keep whatever prefix was current when
-        // they were written.
+        // Note this value is PERSISTED into editable settings, and `alwaysRun` only means "include
+        // this installer whenever an install is requested" — not "run on every boot". So this is the
+        // initial value, not a value that tracks the origin: a project whose API origin changes later
+        // (e.g. moving behind the dev proxy) keeps the old prefix until someone updates the setting.
+        // Deliberately not self-healing, since the setting is also where a CDN origin would be set.
         const domain =
             manifest?.api?.cloudfront?.domain ??
             this.buildParams.get<string>("WEBINY_API_URL") ??

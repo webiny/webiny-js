@@ -46,15 +46,28 @@ export const resolveWebsocketUrl = (): string => {
 
     const serverExplicit = process.env.WEBINY_ADMIN_WS_API_URL;
     if (serverExplicit && serverExplicit !== "undefined") {
-        return serverExplicit;
+        return toWebsocketUrl(serverExplicit);
     }
 
     const apiUrl = process.env.WEBINY_ADMIN_API_URL;
     if (apiUrl && apiUrl !== "undefined") {
-        // Resolved first, so a relative value becomes ws(s) on the page's own origin rather than the
-        // unchanged string a plain prefix swap would leave behind.
-        return toAbsoluteUrl(apiUrl).replace(/^http/, "ws");
+        return toWebsocketUrl(apiUrl);
     }
 
     return "";
+};
+
+/**
+ * Turns a configured value into a WebSocket URL the browser can dial.
+ *
+ * Resolved against the page origin before the scheme is swapped, because a relative value like
+ * `/api` has no scheme to swap: the prefix replacement alone would hand back `/api` unchanged, which
+ * connects to nothing. A value that already names a ws(s) origin passes straight through.
+ */
+const toWebsocketUrl = (url: string): string => {
+    if (/^wss?:\/\//.test(url)) {
+        return url;
+    }
+
+    return toAbsoluteUrl(url).replace(/^http/, "ws");
 };

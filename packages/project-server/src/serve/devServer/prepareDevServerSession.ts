@@ -12,26 +12,32 @@ export interface IDevServerSession {
 }
 
 export interface IPrepareDevServerSessionParams {
-    /** Apps in this session. One app already has one URL, so a proxy only earns its keep from two. */
-    apps: string[];
-    /** Explicit opt-out, e.g. the CLI's `--no-proxy`. */
-    enabled?: boolean;
+    /** Raw process arguments, used to work out whether this command wants a proxy at all. */
+    argv: string[];
     /** Project root, used to remember the port. Defaults to the working directory. */
     rootFolder?: string;
 }
+
+let currentSession: IDevServerSession | null | undefined;
 
 /**
  * Reserves the ports for a watch/serve session and points the apps at each other, so the developer
  * ends up with a single URL instead of one per app.
  *
- * MUST be called before the project SDK is initialized. Two things depend on that ordering:
- * `applyEnvVars` only fills env vars that are still blank, so the values written here take precedence
- * over `<Admin.ApiUrl>` / `<Infra.ApiUrl>` in webiny.config; and the project config is evaluated
- * during SDK init, which is when a config reading `process.env.WEBINY_API_URL` reads it.
+ * MUST run before the CLI container is built, which is why the CLI bin calls it rather than the watch
+ * or serve command. The container resolves the project SDK while it is being constructed (to pick up
+ * `<Cli.Command>` extensions), and that evaluates webiny.config and applies its env vars. By the time
+ * a command handler runs, `<Admin.ApiUrl>` and `<Infra.ApiUrl>` have already been read and baked, so
+ * anything set there is too late to be seen. Same constraint as WEBINY_HOSTING_TYPE, set alongside
+ * this in the bin.
+ *
+ * Setting rather than overriding is deliberate: `applyEnvVars` only fills env vars that are still
+ * blank, so writing them first is what gives the proxy priority over the config without having to
+ * overrule a URL somebody set on purpose.
  *
  * The ports are reserved here rather than left to each app because the proxy has to know where to
- * forward before anything starts, and because both apps auto-advance off a busy port on their own —
- * fine in isolation, silently wrong once something is pointed at them.
+ * forward before anything starts, and because both apps auto-advance off a busy port on their own,
+ * which is fine in isolation and silently wrong once something is pointed at them.
  *
  * Returns null when no proxy should run, in which case nothing is changed and both apps keep their
  * existing standalone behaviour.
@@ -39,9 +45,10 @@ export interface IPrepareDevServerSessionParams {
 export async function prepareDevServerSession(
     params: IPrepareDevServerSessionParams
 ): Promise<IDevServerSession | null> {
-    const { apps, enabled, rootFolder = process.cwd() } = params;
+    const { argv, rootFolder = process.cwd() } = params;
 
-    if (enabled === false || process.env.WEBINY_PROXY === "off" || apps.length < 2) {
+    if (!wantsDevProxy(argv)) {
+        currentSession = null;
         return null;
     }
 
@@ -68,6 +75,12 @@ export async function prepareDevServerSession(
     // real reverse proxy in production — without knowing any of them at build time.
     setIfUnset("WEBINY_ADMIN_API_URL", API_PREFIX);
 
+    // The websocket URL too, for the same reason and by the same rule. The admin would otherwise
+    // derive it from the API URL and land in the right place anyway, but only when nothing else sets
+    // it: `<Admin.WebsocketsUrl>` takes priority when present, and a project that pins it to a port
+    // (which is the obvious thing to write) would point the socket somewhere the proxy isn't.
+    setIfUnset("WEBINY_ADMIN_WS_API_URL", API_PREFIX);
+
     // The api can't do the same: it hands out absolute URLs (file srcPrefix, the upload endpoint) to
     // clients that have no page origin to resolve against. This covers plain localhost; behind a
     // portless domain the origin is only knowable per request, which is what the api's
@@ -76,12 +89,54 @@ export async function prepareDevServerSession(
 
     rememberPort(rootFolder, port);
 
-    return { port, url, apiUrl };
+    currentSession = { port, url, apiUrl };
+    return currentSession;
 }
 
 /**
- * Reads back where the apps actually ended up. Called after SDK init rather than reusing the values
- * above, because `.env.<env>` is loaded during init with `override: true` and can move them.
+ * The session prepared for this process, or null when no proxy is running.
+ *
+ * Module state because of the timing above: the decision and the port reservation happen in the bin,
+ * before the container that holds the command handlers exists, so there is nothing to hand the result
+ * to. The handlers read it back here when they're ready to start the proxy.
+ */
+export function getDevServerSession(): IDevServerSession | null {
+    return currentSession ?? null;
+}
+
+/**
+ * Whether this invocation is one the proxy belongs in front of: `watch` or `serve` with no single app
+ * named, since one app already has one URL.
+ *
+ * Read straight off argv because this runs before anything has parsed it. Deliberately conservative,
+ * so an argument shape not accounted for here falls through to the existing separate-ports behaviour
+ * rather than to a half-configured proxy.
+ */
+export function wantsDevProxy(argv: string[]): boolean {
+    if (process.env.WEBINY_PROXY === "off" || argv.includes("--no-proxy")) {
+        return false;
+    }
+
+    // Everything before the first flag. yargs puts the command first, then its positional arguments.
+    const positional: string[] = [];
+    for (const arg of argv) {
+        if (arg.startsWith("-")) {
+            break;
+        }
+        positional.push(arg);
+    }
+
+    if (positional[0] !== "watch" && positional[0] !== "serve") {
+        return false;
+    }
+
+    // `watch api` / `serve admin`: one app, one URL already.
+    return positional.length === 1;
+}
+
+/**
+ * Reads back where the apps actually ended up. Called when the proxy starts rather than reusing the
+ * values above, because `.env.<env>` is loaded during SDK init with `override: true` and can move them.
  */
 export function readDevServerTargets(): { apiPort: number; adminPort: number } {
     return {

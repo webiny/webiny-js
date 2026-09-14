@@ -74,6 +74,14 @@ describe("resolveApiUrl", () => {
             expect(resolveWebsocketUrl()).toBe("wss://aws.example.com");
         });
 
+        it("resolves an explicit websocket URL that is relative", () => {
+            // `<Admin.WebsocketsUrl>` wins over the API URL, so the dev proxy has to set it too. It
+            // sets the same relative value, which is no use unless this branch resolves it as well.
+            process.env.WEBINY_ADMIN_WS_API_URL = "/api";
+
+            expect(resolveWebsocketUrl()).toBe("ws://localhost:3000/api");
+        });
+
         it("is empty when there is nothing to derive from", () => {
             expect(resolveWebsocketUrl()).toBe("");
         });

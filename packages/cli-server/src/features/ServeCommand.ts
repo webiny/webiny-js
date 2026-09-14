@@ -8,7 +8,7 @@ import {
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
 import {
-    prepareDevServerSession,
+    getDevServerSession,
     readDevServerTargets,
     startDevProxy
 } from "@webiny/project-server/serve/devServer/index.js";
@@ -71,12 +71,9 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
             handler: async (params: IServeCommandParams) => {
                 const stdio = this.stdioService;
 
-                // Before the SDK is initialized, so the env it writes wins over webiny.config. See
+                // Reserved by the CLI bin, before webiny.config was evaluated. See
                 // prepareDevServerSession.
-                const session = await prepareDevServerSession({
-                    apps: params.app ? [params.app] : ["api", "admin"],
-                    enabled: params.proxy
-                });
+                const session = getDevServerSession();
 
                 const projectSdk = await this.getProjectSdkService.execute();
 
