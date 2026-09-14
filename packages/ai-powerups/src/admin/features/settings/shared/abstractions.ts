@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { AiModelRoleId } from "~/admin/domain/modelRoles.js";
 
 export interface IAiPowerUpsSettingsCache {
     get(): IAiPowerUpsSettings | null;
@@ -36,7 +37,8 @@ export interface IAiPowerUpsSettings {
         }[];
     };
     modelRoles: {
-        roles: Record<string, { connectionId: string; model: string }>;
+        /** Keyed by role id, and every role always present — the set is closed. */
+        roles: Record<AiModelRoleId, { connectionId: string; model: string }>;
     };
     capabilities: {
         overrides: Record<string, IAiPowerUpsCapabilityOverride>;

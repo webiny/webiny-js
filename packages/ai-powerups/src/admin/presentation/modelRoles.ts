@@ -1,19 +1,12 @@
+import { AI_MODEL_ROLE_IDS } from "~/admin/domain/modelRoles.js";
+import type { AiModelRoleId } from "~/admin/domain/modelRoles.js";
+
 /**
- * The model roles, as the settings screen presents them.
+ * The model roles, as the settings screen presents them. The ids live in
+ * `~/admin/domain/modelRoles.js`; this owns the words.
  *
- * The api owns the ids and the resolution rules (`~/api/features/ModelRoles/roles.ts`); this owns
- * the words. The ids are repeated rather than imported because admin and api are separate bundles
- * and nothing else in `src/admin` reaches across that line. Settings section names are already
- * duplicated the same way.
- *
- * The set is closed by design, so a constant is safe: an extension can add a capability, never a
- * role.
+ * Typed as a full record, so adding a role id without a label is a compile error.
  */
-export const AI_MODEL_ROLE_IDS = ["fast", "standard", "vision"] as const;
-
-export type AiModelRoleId = (typeof AI_MODEL_ROLE_IDS)[number];
-
-/** Typed as a full record, so adding a role id without a label is a compile error. */
 const ROLE_TEXT: Record<AiModelRoleId, { label: string; description: string }> = {
     fast: {
         label: "Fast",
@@ -31,6 +24,9 @@ const ROLE_TEXT: Record<AiModelRoleId, { label: string; description: string }> =
             "Work that reads images. Pick a model that accepts image input. Left empty, image features fall back to Standard and only work there if Standard is multimodal too."
     }
 };
+
+export { AI_MODEL_ROLE_IDS };
+export type { AiModelRoleId };
 
 export const AI_MODEL_ROLE_DISPLAY = AI_MODEL_ROLE_IDS.map(id => ({ id, ...ROLE_TEXT[id] }));
 
