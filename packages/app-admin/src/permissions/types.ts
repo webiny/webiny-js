@@ -34,6 +34,8 @@ export interface EntityDefinition {
     id: string;
     /** Display title for the UI renderer (e.g. "Files", "Settings") */
     title?: string;
+    /** What this permission does and does not cover, shown while configuring a role. */
+    description?: string;
     /** Permission name emitted for this entity (e.g. "fm.file") */
     permission: string;
     /** Available access scopes */

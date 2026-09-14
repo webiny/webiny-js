@@ -155,7 +155,7 @@ function EntitySection({ entity, data, cannotUseAAcl, Bind, setValue }: EntitySe
     }
 
     return (
-        <PermissionsGroup title={entity.title || entity.id}>
+        <PermissionsGroup title={entity.title || entity.id} description={entity.description}>
             <Grid>{columns}</Grid>
         </PermissionsGroup>
     );

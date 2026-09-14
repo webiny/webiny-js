@@ -1,0 +1,51 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-core" },
+    { "path": "../api-graphql" },
+    { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-workflows" },
+    { "path": "../api-workflows" },
+    { "path": "../background-tasks" },
+    { "path": "../feature" },
+    { "path": "../utils" },
+    { "path": "../api-core-testing" },
+    { "path": "../event-handler-core" },
+    { "path": "../handler" },
+    { "path": "../wcp" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-headless-cms-workflows/*": ["../api-headless-cms-workflows/src/*"],
+      "@webiny/api-headless-cms-workflows": ["../api-headless-cms-workflows/src"],
+      "@webiny/api-workflows/*": ["../api-workflows/src/*"],
+      "@webiny/api-workflows": ["../api-workflows/src"],
+      "@webiny/background-tasks/*": ["../background-tasks/src/*"],
+      "@webiny/background-tasks": ["../background-tasks/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/api-core-testing/*": ["../api-core-testing/src/*"],
+      "@webiny/api-core-testing": ["../api-core-testing/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
+    }
+  }
+}
