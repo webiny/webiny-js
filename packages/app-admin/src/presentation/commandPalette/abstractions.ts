@@ -22,9 +22,18 @@ export interface ICommand {
     keywords?: string[];
     /* Global hotkey (is-hotkey syntax, e.g. "cmd+shift+m") that runs this command. */
     shortcut?: string;
-    execute(params?: unknown): void | Promise<void>;
+    /* Omitted by a command that only selects a mode; there is no action to run. */
+    execute?(params?: unknown): void | Promise<void>;
     /* Optional React view rendered inside the palette when the command is selected. */
     detailView?: React.ComponentType<CommandDetailProps>;
+    /*
+     * Selecting this command switches the palette into AI mode rather than doing something. A mode
+     * needs the shared input row, so the palette stays open and `execute` is never called.
+     *
+     * Named after the one mode that exists. If a second one ever arrives, this becomes
+     * `entersMode: "aiChat"` and the palette looks the mode up by name instead of hardcoding it.
+     */
+    entersAiMode?: boolean;
 }
 
 export const Command = createAbstraction<ICommand>("Command");
@@ -52,6 +61,16 @@ export interface ActiveCommandVm {
 
 export interface CommandPaletteViewModel {
     isOpen: boolean;
+    /**
+     * A mode is showing instead of the command list. The palette keeps ONE input row across every
+     * mode, so this is the palette's state rather than the mode's.
+     */
+    aiModeActive: boolean;
+    /**
+     * What the user has typed. Owned here rather than by the component because it is cleared
+     * whenever the palette opens, closes, or enters or leaves a mode.
+     */
+    query: string;
     commands: CommandItemVm[];
     activeCommand: ActiveCommandVm | null;
 }
@@ -65,6 +84,9 @@ export interface ICommandPalettePresenter {
     toggle(): void;
     useCommand(name: string): void;
     cancelCommand(): void;
+    enterAiMode(): void;
+    exitAiMode(): void;
+    setQuery(query: string): void;
 }
 
 export const CommandPalettePresenter = new Abstraction<ICommandPalettePresenter>(
