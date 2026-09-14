@@ -6,6 +6,8 @@ import {
 } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
 import { runApiServer } from "./runApiServer.js";
 import { runAdminServer } from "./runAdminServer.js";
+import { runDevProxy } from "./runDevProxy.js";
+import { getDevServerSession } from "./devServer/index.js";
 
 /**
  * Server hosting-type Serve implementation: describes the server process(es) for the requested app(s) as
@@ -54,6 +56,13 @@ export class ServerServe implements Serve.Interface {
                 name: "admin",
                 spawn: () => runAdminServer(app, { ignoreGenericPort: both })
             });
+        }
+
+        // The single-port proxy in front of the two, when the CLI asked for one. Last, so it's the
+        // last line of the startup output and the URL worth opening is the one left on screen.
+        const session = getDevServerSession();
+        if (session) {
+            specs.push({ name: "proxy", spawn: () => runDevProxy(session) });
         }
 
         return { serversWatcher: new ServersWatcher(specs) };

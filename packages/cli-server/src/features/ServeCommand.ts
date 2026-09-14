@@ -7,10 +7,7 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
-import {
-    prepareDevServerSession,
-    startDevProxy
-} from "@webiny/project-server/serve/devServer/index.js";
+import { prepareDevServerSession } from "@webiny/project-server/serve/devServer/index.js";
 
 interface IServeCommandParams {
     _: string[];
@@ -104,19 +101,11 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                     });
                 }
 
-                const proxy = session
-                    ? await startDevProxy({ port: session.port, ...session.targets })
-                    : undefined;
-
-                if (proxy) {
-                    this.uiService.info(`Webiny is available at %s`, proxy.url);
+                if (session) {
+                    this.uiService.info(`Webiny is available at %s`, session.url);
                 }
 
-                try {
-                    await Promise.all(processes.map(p => p.run()));
-                } finally {
-                    await proxy?.close();
-                }
+                await Promise.all(processes.map(p => p.run()));
             }
         };
     }

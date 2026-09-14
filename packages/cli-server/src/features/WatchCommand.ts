@@ -13,10 +13,7 @@ import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
 import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
-import {
-    prepareDevServerSession,
-    startDevProxy
-} from "@webiny/project-server/serve/devServer/index.js";
+import { prepareDevServerSession } from "@webiny/project-server/serve/devServer/index.js";
 
 interface IServerWatchCommandParams {
     _: string[];
@@ -135,13 +132,6 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     delete process.env.PORT;
                 }
 
-                // Bind the public port now, before the workspaces are prepared below. That stretch is
-                // slow and silent, and a developer who opens the URL during it should get a page that
-                // waits for the apps rather than a connection error.
-                const proxy = session
-                    ? await startDevProxy({ port: session.port, ...session.targets })
-                    : undefined;
-
                 // With a single app the app's own startup line is easy enough to spot; with several, the
                 // "where is each app running" answer would otherwise be buried in interleaved build output.
                 const gated = apps.length > 1 && !params.verbose;
@@ -164,8 +154,8 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         ? new WatchSummary(ui, Date.now(), () => startup.noteProgress())
                         : undefined;
 
-                if (proxy) {
-                    summary?.setPublicUrl(proxy.url, { showAppUrls: params.verbose });
+                if (session) {
+                    summary?.setPublicUrl(session.url, { showAppUrls: params.verbose });
                 }
 
                 const startup = new WatchStartup(gate, summary);
@@ -217,7 +207,6 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     ui.warning(
                         `No watch processes were started. Please ensure you have specified a valid "app" or "package" parameter.`
                     );
-                    await proxy?.close();
                     return;
                 }
 
@@ -303,7 +292,6 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     ]);
                 } finally {
                     startup.dispose();
-                    await proxy?.close();
                 }
             }
         };

@@ -26,6 +26,8 @@ export interface IPrepareDevServerSessionParams {
     pointAppsAtProxy?: boolean;
 }
 
+let currentSession: IDevServerSession | null = null;
+
 /**
  * Reserves the ports for a watch/serve session and points the apps at each other, so the developer
  * ends up with a single URL instead of one per app.
@@ -53,6 +55,7 @@ export async function prepareDevServerSession(
     const { apps, enabled, pointAppsAtProxy = false } = params;
 
     if (enabled === false || process.env.WEBINY_PROXY === "off" || apps.length < 2) {
+        currentSession = null;
         return null;
     }
 
@@ -94,12 +97,26 @@ export async function prepareDevServerSession(
         process.env.WEBINY_API_URL = apiUrl;
     }
 
-    return {
+    currentSession = {
         port,
         url,
         apiUrl,
         targets: { apiPort: Number(apiPort), adminPort: Number(adminPort) }
     };
+
+    return currentSession;
+}
+
+/**
+ * The session prepared for this process, or null when no proxy should run.
+ *
+ * The CLI decides (it is the only thing that knows whether this invocation is a one-app or a
+ * two-app session) and the project layer, which owns the server processes, reads the decision back
+ * here when it assembles them. A module-level value rather than a parameter because the two sides
+ * meet through `Watch` / `Serve`, whose params are hosting-agnostic.
+ */
+export function getDevServerSession(): IDevServerSession | null {
+    return currentSession;
 }
 
 /**

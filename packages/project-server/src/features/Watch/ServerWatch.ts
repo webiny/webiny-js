@@ -1,6 +1,11 @@
 import { GetApp, Watch } from "@webiny/project/abstractions/index.js";
-import { ServersWatcher } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
+import {
+    ServersWatcher,
+    type IServerProcessSpec
+} from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
 import { runApiServer } from "../../serve/runApiServer.js";
+import { runDevProxy } from "../../serve/runDevProxy.js";
+import { getDevServerSession } from "../../serve/devServer/index.js";
 
 /**
  * Server hosting-type counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
@@ -30,15 +35,22 @@ export class ServerWatch implements Watch.Interface {
 
         const app = this.getApp.execute(params.app);
 
-        // Hand the server process upstream as a lazy ServersWatcher (wrapped like the build watchers'
-        // packagesWatcher) rather than spawning/rendering it here — the caller (e.g. the CLI) prepares
-        // + runs it and owns terminal output + lifecycle.
-        return {
-            ...result,
-            serversWatcher: new ServersWatcher([
-                { name: "api", spawn: () => runApiServer(app, { watch: true }) }
-            ])
-        };
+        const specs: IServerProcessSpec[] = [
+            { name: "api", spawn: () => runApiServer(app, { watch: true }) }
+        ];
+
+        // The single-port proxy in front of api + admin, when the CLI asked for one. Attached to the
+        // api watch because that's the one app guaranteed to be in such a session, and attaching it
+        // to both would run two of them.
+        const session = getDevServerSession();
+        if (session) {
+            specs.push({ name: "proxy", spawn: () => runDevProxy(session) });
+        }
+
+        // Hand the server processes upstream as a lazy ServersWatcher (wrapped like the build
+        // watchers' packagesWatcher) rather than spawning/rendering them here — the caller (e.g. the
+        // CLI) prepares + runs them and owns terminal output + lifecycle.
+        return { ...result, serversWatcher: new ServersWatcher(specs) };
     }
 }
 

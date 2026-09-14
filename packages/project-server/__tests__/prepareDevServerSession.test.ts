@@ -204,10 +204,25 @@ async function serve(body: string) {
     };
 }
 
-/** Holds a port open, and returns how to let it go. */
+/**
+ * Holds a port open, and returns how to let it go.
+ *
+ * Tolerates the port already being taken — by another test file, or by a dev server the developer
+ * happens to have running. Either way the port is occupied, which is all the caller is asking for,
+ * and failing to bind would otherwise hang the listen callback that never fires.
+ */
 async function occupy(port: number) {
     const net = await import("node:net");
     const server = net.createServer();
-    await new Promise<void>(resolve => server.listen(port, () => resolve()));
+
+    const bound = await new Promise<boolean>(resolve => {
+        server.once("error", () => resolve(false));
+        server.listen(port, () => resolve(true));
+    });
+
+    if (!bound) {
+        return async () => undefined;
+    }
+
     return () => new Promise<void>(resolve => server.close(() => resolve()));
 }
