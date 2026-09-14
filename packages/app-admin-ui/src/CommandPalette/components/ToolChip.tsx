@@ -16,6 +16,12 @@ export interface ToolChipProps {
  * One tool the assistant called. Icon colour comes from the parent because `Icon` only offers
  * neutral/accent variants — `inherit` lets the chip's own text colour drive it.
  */
+/*
+ * Lower-case on purpose: this picks an element, it is not a component. `Icon` does
+ * `cloneElement(icon, { className })` to apply size, colour and the spin animation, so the SVG
+ * element itself has to be what reaches it. Wrapping this in a component would hand those classes to
+ * the wrapper, which drops them, and the chips would silently lose their styling.
+ */
 const toolIcon = (state: ToolChipProps["state"]) => {
     if (state === "done") {
         return <CheckIcon />;
