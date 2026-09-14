@@ -128,7 +128,7 @@ export type ITaskLifecycleHook<
  *
  * Listing tasks, resolving one by id, and applying defaults all need only this. Keeping it free of
  * dependencies is the whole point — `GetTaskDefinitionUseCase` builds every registered definition
- * to find one by id, so anything expensive here is paid 29 times per lookup.
+ * to find one by id, so anything expensive here is paid 24 times per lookup.
  */
 export interface ITaskMetadata {
     id: string;
