@@ -27,9 +27,9 @@ export interface ITaskOutput {
  * wraps every task; without this it has nothing to branch on but a hardcoded list of ids, which
  * means editing the decorator every time a task is added.
  *
- * The behaviour keys are omitted deliberately. The object passed at runtime is the resolved task,
- * so `run` is physically present; hiding it at the type level stops the obvious mistake of a
- * handler calling `params.definition.run(...)` and recursing forever.
+ * This is {@link ITaskMetadata}: identity and policy, no behaviour. The object passed at runtime is
+ * the resolved task, so `run` is physically present; naming the metadata type here stops the obvious
+ * mistake of a handler calling `params.definition.run(...)` and recursing forever.
  *
  * Only the fields declared here arrive. A field a project adds to its own definition class is
  * currently dropped, because `RunnableTaskDecorator` and `SelfCleaningTaskDecorator` are fixed
@@ -38,19 +38,7 @@ export interface ITaskOutput {
  * that a decorator acts on; `taskDefinitionInParams.test.ts` pins the current behaviour so that
  * change announces itself.
  */
-export type ITaskDefinitionInfo<
-    I extends ITaskInput = ITaskInput,
-    O extends ITaskOutput = ITaskOutput
-> = Omit<
-    ITaskDefinition<I, O>,
-    | "run"
-    | "onBeforeTrigger"
-    | "onDone"
-    | "onError"
-    | "onAbort"
-    | "onMaxIterations"
-    | "createInputValidation"
->;
+export type ITaskDefinitionInfo = ITaskMetadata;
 
 /**
  * Task run params - the input data, plus the definition being run
@@ -62,7 +50,7 @@ export interface ITaskRunParams<
 > {
     input: I;
     controller: TaskController.Interface<I, O>;
-    definition: ITaskDefinitionInfo<I, O>;
+    definition: ITaskDefinitionInfo;
 }
 
 /**
@@ -132,7 +120,7 @@ export type ITaskLifecycleHook<
     O extends ITaskOutput = ITaskOutput
 > = {
     task: ITask<I, O>;
-    definition: ITaskDefinitionInfo<I, O>;
+    definition: ITaskDefinitionInfo;
 };
 
 /**
@@ -312,10 +300,7 @@ export namespace TaskDefinition {
         O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
 
-    export type Info<
-        I extends ITaskInput = ITaskInput,
-        O extends ITaskOutput = ITaskOutput
-    > = ITaskDefinitionInfo<I, O>;
+    export type Info = ITaskDefinitionInfo;
 
     export type SelfCleanupEvent = ISelfCleanupEvent;
     export type SelfCleanup = ISelfCleanup;
