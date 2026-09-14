@@ -153,6 +153,7 @@ a second flag on this schema.
 | Rule inspector is a server dry-run, `simulateAssignment(...)` | runs the real resolver and discards the result, so the explanation cannot drift from behaviour |
 | Candidates are never stored. Computed per resolution from `step.teams`, minus requester, minus excluded | snapshot already carries the teams |
 | `wbyWorkflowAssignmentStat` per user: `openCount`, `lastAssignedOn` | one read serves both strategies, and idle reviewers are visible — they are invisible to any query over open states |
+| Store `openCount` rather than derive it | only option flat against open work and history; deriving costs ~1MB at 300 open states and ~9MB at 3000 |
 | Round-robin needs no cursor | order by `openCount`, then `lastAssignedOn`, then user id |
 | Team-to-members lookup stays private to `api-workflows`, wrapped in `withoutAuthorization` | no `api-core` change; an editor picking a reviewer must not need the `security.team` permission |
 
@@ -162,10 +163,29 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 ## Still open
 
-- Keeping `wbyWorkflowAssignmentStat` correct: `openCount` must be decremented on approve,
-  reject, cancel and reassign, and moved when `start()` or `takeOver()` changes the holder.
-  A missed decrement leaves a reviewer permanently "busy", so a rebuild path is needed.
-  No backfill is required for existing tenants — nothing was ever assigned before this.
+- Nothing. All concerns from the brief are settled.
+
+## Keeping `openCount` correct
+
+This is the price of storing it. Every point that changes who holds a step must move the
+count. Assumed OpenSearch-backed deployments; DynamoDB-only is out of scope.
+
+| Event | Effect |
+| --- | --- |
+| Assignment resolved (creation, or on approve of previous step) | increment new holder, set `lastAssignedOn` |
+| Manual pick applied at creation | same as above |
+| Assignee invalid at activation, cleared | decrement it, then increment whoever resolution picks |
+| `start()` or `takeOver()` by someone other than the assignee | decrement old holder, increment new |
+| Reassign | decrement old holder, increment new |
+| Approve step | decrement holder |
+| Reject | decrement holder |
+| Cancel | decrement holder |
+
+A missed decrement leaves a reviewer permanently "busy", and least-loaded then never picks
+them again. A rebuild task must recompute every count from open states. No backfill is
+needed for existing tenants — nothing was ever assigned before this feature.
+
+The dry-run (`simulateAssignment`) must never write.
 
 ## Rough order
 
