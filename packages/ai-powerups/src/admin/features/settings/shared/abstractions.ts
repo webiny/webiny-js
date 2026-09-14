@@ -20,6 +20,19 @@ export interface IAiPowerUpsPersonaPreset {
     style?: string;
 }
 
+/** One vendor credential. The `apiKey` is only ever the mask; the plaintext never leaves the api. */
+export interface IAiPowerUpsConnectionPreset {
+    id: string;
+    name: string;
+    sdkName: string;
+    apiKey: string;
+}
+
+export interface IAiPowerUpsModelRoleAssignment {
+    connectionId: string;
+    model: string;
+}
+
 export interface IAiPowerUpsCapabilityOverride {
     roleId?: string;
     connectionId?: string;
@@ -29,16 +42,11 @@ export interface IAiPowerUpsCapabilityOverride {
 
 export interface IAiPowerUpsSettings {
     connections: {
-        presets: {
-            id: string;
-            name: string;
-            sdkName: string;
-            apiKey: string;
-        }[];
+        presets: IAiPowerUpsConnectionPreset[];
     };
     modelRoles: {
         /** Keyed by role id, and every role always present — the set is closed. */
-        roles: Record<AiModelRoleId, { connectionId: string; model: string }>;
+        roles: Record<AiModelRoleId, IAiPowerUpsModelRoleAssignment>;
     };
     capabilities: {
         /**

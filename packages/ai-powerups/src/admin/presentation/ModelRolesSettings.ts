@@ -1,3 +1,4 @@
+import type { IAiPowerUpsConnectionPreset } from "~/admin/features/settings/shared/abstractions.js";
 import { AiPowerUpsSettingsGroup } from "./AiPowerUpsSettings/settingsGroup.js";
 import {
     ListModelsUseCase,
@@ -5,12 +6,6 @@ import {
 } from "~/admin/features/listModels/abstractions.js";
 import { AI_MODEL_ROLE_DISPLAY } from "./modelRoles.js";
 import type { FormModel } from "@webiny/app-admin";
-
-interface ConnectionRow {
-    id: string;
-    name: string;
-    sdkName: string;
-}
 
 /**
  * Three selects, and for most projects this is the whole AI configuration: one connection, one
@@ -79,9 +74,9 @@ class ModelRolesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         form.layout(layout => [layout.row("roles")]);
     }
 
-    private getConnections(form: FormModel.Interface): ConnectionRow[] {
+    private getConnections(form: FormModel.Interface): IAiPowerUpsConnectionPreset[] {
         const data = form.getData() as {
-            connections?: { presets?: ConnectionRow[] };
+            connections?: { presets?: IAiPowerUpsConnectionPreset[] };
         };
         return data.connections?.presets ?? [];
     }
@@ -95,7 +90,7 @@ class ModelRolesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
     private getSelectedConnection(
         form: FormModel.Interface,
         roleId: string
-    ): ConnectionRow | undefined {
+    ): IAiPowerUpsConnectionPreset | undefined {
         const data = form.getData() as {
             modelRoles?: { roles?: Record<string, { connectionId?: string }> };
         };
