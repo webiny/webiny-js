@@ -13,12 +13,18 @@ import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
 import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
+import {
+    prepareDevServerSession,
+    readDevServerTargets,
+    startDevProxy
+} from "@webiny/project-server/serve/devServer/index.js";
 
 interface IServerWatchCommandParams {
     _: string[];
     app?: string;
     package?: string | string[];
     verbose?: boolean;
+    proxy?: boolean;
 }
 
 export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWatchCommandParams> {
@@ -35,13 +41,25 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
             description: [
                 "Watches code changes for a specific app or package. Watches all default apps if none specified.",
                 "",
-                "Ports:",
+                "Watching several apps at once puts a proxy in front of them, so there is one URL to open:",
+                "it serves admin, and forwards /api to the api. The proxy takes WEBINY_PORT (else PORT,",
+                "else the port this project used last time, else the first free port from 3001), and gives",
+                "api and admin ports of their own that nobody has to type. Pass --no-proxy (or set",
+                "WEBINY_PROXY=off) to run the apps on separate ports instead.",
+                "",
+                "Ports, when running without the proxy:",
                 " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
                 " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
-                "PORT applies only when watching a single app (watch api / watch admin). When watching",
-                "several at once (no app), PORT is ignored — set WEBINY_API_PORT / WEBINY_ADMIN_PORT instead."
+                "PORT applies only when watching a single app (watch api / watch admin)."
             ].join("\n"),
-            examples: ["watch", "watch api", "watch admin", "watch -p my-package"],
+            examples: [
+                "watch",
+                "watch api",
+                "watch admin",
+                "watch -p my-package",
+                "WEBINY_PORT=4000 watch",
+                "watch --no-proxy"
+            ],
             params: [
                 {
                     name: "app",
@@ -61,10 +79,16 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     description:
                         "Show all output as it happens, instead of holding the startup burst back until the apps are up",
                     type: "boolean"
+                },
+                {
+                    name: "proxy",
+                    description:
+                        "Put a single-port proxy in front of the watched apps (default: on when watching several)",
+                    type: "boolean",
+                    default: true
                 }
             ],
             handler: async (params: IServerWatchCommandParams) => {
-                const projectSdk = await this.getProjectSdkService.execute();
                 const stdio = this.stdioService;
                 const ui = this.uiService;
 
@@ -86,11 +110,22 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     }
                 }
 
-                // Several apps in one process means a generic PORT injected by the environment can only
-                // belong to one of them, so drop it and let each app fall back to its own dedicated port.
-                // Same rule `webiny serve` applies when serving both apps at once. Has to happen before
-                // the watchers are prepared below: that is where each forked process snapshots the env.
-                if (apps.length > 1 && process.env.PORT) {
+                // Reserve the ports and point the apps at each other BEFORE the SDK is initialized:
+                // that's when webiny.config is evaluated and its env vars are applied, and the values
+                // set here have to be in place first to take precedence. See prepareDevServerSession.
+                const session = await prepareDevServerSession({
+                    apps,
+                    enabled: params.proxy
+                });
+
+                const projectSdk = await this.getProjectSdkService.execute();
+
+                // Without the proxy, several apps in one process means a generic PORT injected by the
+                // environment can only belong to one of them, so drop it and let each app fall back to
+                // its own dedicated port. Same rule `webiny serve` applies when serving both apps at
+                // once. Has to happen before the watchers are prepared below: that is where each forked
+                // process snapshots the env.
+                if (!session && apps.length > 1 && process.env.PORT) {
                     ui.warning(
                         `%s is ignored when watching several apps at once. Set %s and %s instead.`,
                         "PORT",
@@ -99,6 +134,13 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     );
                     delete process.env.PORT;
                 }
+
+                // Bind the public port now, before the workspaces are prepared below. That stretch is
+                // slow and silent, and a developer who opens the URL during it should get a page that
+                // waits for the apps rather than a connection error.
+                const proxy = session
+                    ? await startDevProxy({ port: session.port, ...readDevServerTargets() })
+                    : undefined;
 
                 // With a single app the app's own startup line is easy enough to spot; with several, the
                 // "where is each app running" answer would otherwise be buried in interleaved build output.
@@ -121,6 +163,10 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     apps.length > 1
                         ? new WatchSummary(ui, Date.now(), () => startup.noteProgress())
                         : undefined;
+
+                if (proxy) {
+                    summary?.setPublicUrl(proxy.url);
+                }
 
                 const startup = new WatchStartup(gate, summary);
 
@@ -171,6 +217,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     ui.warning(
                         `No watch processes were started. Please ensure you have specified a valid "app" or "package" parameter.`
                     );
+                    await proxy?.close();
                     return;
                 }
 
@@ -256,6 +303,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     ]);
                 } finally {
                     startup.dispose();
+                    await proxy?.close();
                 }
             }
         };

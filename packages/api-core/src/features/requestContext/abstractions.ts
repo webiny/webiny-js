@@ -38,6 +38,31 @@ export namespace RawAuthToken {
 }
 
 /**
+ * Per-request holder for the public origin the client actually reached, EXTRACTED by the transport
+ * from its forwarding headers (e.g. `x-forwarded-proto` / `x-forwarded-host` / `x-forwarded-prefix`
+ * of a Node HTTP request). Already absolute and without a trailing slash, e.g.
+ * `https://wby6.localhost/api`.
+ *
+ * Needed because the api hands out absolute URLs — the file `srcPrefix` and the upload endpoint —
+ * to clients that can't resolve a relative one. Its own socket only knows the address the proxy
+ * dialled, which is not an address anything else can reach.
+ *
+ * Null whenever the transport has no such notion (S3 events, background tasks) or nothing is
+ * forwarding. Callers fall back to the configured origin, so a deployment that sets one explicitly
+ * is never second-guessed.
+ */
+export interface IRequestOrigin {
+    get(): string | null;
+    set(origin: string | null): void;
+}
+
+export const RequestOrigin = createAbstraction<IRequestOrigin>("RequestContext/RequestOrigin");
+
+export namespace RequestOrigin {
+    export type Interface = IRequestOrigin;
+}
+
+/**
  * LOAD step: authenticates the token held by RawAuthToken and sets IdentityContext. Fully
  * transport-agnostic — transports only EXTRACT the token into RawAuthToken.
  */

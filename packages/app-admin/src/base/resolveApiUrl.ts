@@ -1,10 +1,28 @@
+/**
+ * Resolves a configured API URL to an absolute one against the page origin, so the value baked into
+ * the bundle can be relative.
+ *
+ * That's what lets one build run anywhere. `WEBINY_ADMIN_API_URL=/api` works on http://localhost:3001
+ * behind the dev proxy, on a portless domain like https://wby6.localhost, and behind a reverse proxy
+ * in production, because the origin is filled in by the browser rather than at build time. An absolute
+ * value still passes through unchanged.
+ */
+const toAbsoluteUrl = (url: string): string => {
+    if (typeof window === "undefined") {
+        return url;
+    }
+
+    // `new URL` appends a trailing slash to a bare origin; callers append their own path segments.
+    return new URL(url, window.location.origin).toString().replace(/\/+$/, "");
+};
+
 // Prefer the configured API URL (baked by `<Admin.ApiUrl>` into WEBINY_ADMIN_API_URL); else
 // same-origin (a deployed self-hosted admin served behind the same domain as the API needs no
 // baked-in URL). Never return the literal string "undefined".
 export const resolveApiUrl = (): string => {
     const url = process.env.WEBINY_ADMIN_API_URL;
     if (url && url !== "undefined") {
-        return url;
+        return toAbsoluteUrl(url);
     }
     return typeof window !== "undefined" ? window.location.origin : "";
 };
@@ -33,7 +51,9 @@ export const resolveWebsocketUrl = (): string => {
 
     const apiUrl = process.env.WEBINY_ADMIN_API_URL;
     if (apiUrl && apiUrl !== "undefined") {
-        return apiUrl.replace(/^http/, "ws");
+        // Resolved first, so a relative value becomes ws(s) on the page's own origin rather than the
+        // unchanged string a plain prefix swap would leave behind.
+        return toAbsoluteUrl(apiUrl).replace(/^http/, "ws");
     }
 
     return "";

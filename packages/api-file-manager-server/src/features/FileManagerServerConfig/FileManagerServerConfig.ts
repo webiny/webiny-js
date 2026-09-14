@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { RequestOrigin } from "@webiny/api-core/features/requestContext/index.js";
 import { FileManagerServerConfig as FileManagerServerConfigAbstraction } from "./abstractions.js";
 
 class FileManagerServerConfigImpl implements FileManagerServerConfigAbstraction.Interface {
@@ -7,7 +8,7 @@ class FileManagerServerConfigImpl implements FileManagerServerConfigAbstraction.
     public readonly uploadSecret: string;
     public readonly apiUrl: string;
 
-    constructor(buildParams: BuildParams.Interface) {
+    constructor(buildParams: BuildParams.Interface, requestOrigin: RequestOrigin.Interface) {
         const storagePath = buildParams.get<string>("WEBINY_LOCAL_STORAGE_PATH");
         if (!storagePath) {
             throw new Error(
@@ -24,10 +25,15 @@ class FileManagerServerConfigImpl implements FileManagerServerConfigAbstraction.
 
         // The API's own public origin, used to build client-reachable URLs (upload endpoint + file
         // srcPrefix). A build param (baked by Infra.ApiUrl), NOT a process.env read in api runtime code.
-        const apiUrl = buildParams.get<string>("WEBINY_API_URL");
+        //
+        // Falls back to the origin the current request came through, which is what makes this work
+        // behind a proxy whose address isn't knowable at build time — a dev proxy on whatever port
+        // was free, or a portless domain. A configured value still wins: someone who pinned the
+        // origin means it, and forwarded headers are client input.
+        const apiUrl = buildParams.get<string>("WEBINY_API_URL") || requestOrigin.get();
         if (!apiUrl) {
             throw new Error(
-                `"WEBINY_API_URL" build parameter is not defined. Configure it via <Infra.ApiUrl url="..." /> in webiny.config.`
+                `"WEBINY_API_URL" build parameter is not defined, and the request carried no origin to fall back on. Configure it via <Infra.ApiUrl url="..." /> in webiny.config.`
             );
         }
 
@@ -48,5 +54,5 @@ class FileManagerServerConfigImpl implements FileManagerServerConfigAbstraction.
 
 export const FileManagerServerConfig = FileManagerServerConfigAbstraction.createImplementation({
     implementation: FileManagerServerConfigImpl,
-    dependencies: [BuildParams]
+    dependencies: [BuildParams, RequestOrigin]
 });

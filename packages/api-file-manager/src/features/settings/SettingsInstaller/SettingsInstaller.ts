@@ -5,6 +5,7 @@ import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
+import { RequestOrigin } from "@webiny/api-core/features/requestContext/index.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -14,7 +15,8 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     constructor(
         private updateSettings: UpdateSettingsUseCase.Interface,
         private keyValueStore: KeyValueStore.Interface,
-        private buildParams: BuildParams.Interface
+        private buildParams: BuildParams.Interface,
+        private requestOrigin: RequestOrigin.Interface
     ) {}
 
     async install(): Promise<void> {
@@ -27,10 +29,16 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
         // The AWS hosting type serves files from a CloudFront domain (in the manifest). The self-hosted
         // (server) hosting type has no CloudFront — files are served by the api's own `/files/*` route — so
         // fall back to the configured API origin, read from the WEBINY_API_URL build param (baked by
-        // Infra.ApiUrl), not a process.env read.
+        // Infra.ApiUrl), not a process.env read. Failing that, the origin this install request came
+        // through, which covers a proxy whose address wasn't knowable when the api was built.
+        //
+        // Note this value is PERSISTED into settings. Install runs on every boot (`alwaysRun`), so it
+        // follows a changed origin, but existing file records keep whatever prefix was current when
+        // they were written.
         const domain =
             manifest?.api?.cloudfront?.domain ??
             this.buildParams.get<string>("WEBINY_API_URL") ??
+            this.requestOrigin.get() ??
             "";
 
         await this.updateSettings.execute({
@@ -46,5 +54,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettingsUseCase, KeyValueStore, BuildParams]
+    dependencies: [UpdateSettingsUseCase, KeyValueStore, BuildParams, RequestOrigin]
 });
