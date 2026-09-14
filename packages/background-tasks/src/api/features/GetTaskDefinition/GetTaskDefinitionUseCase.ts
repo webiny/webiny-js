@@ -26,7 +26,7 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
             }
 
             // New shape: the definition names a handler class, built only now that we know this is
-            // the task being asked for. Its dependencies are never touched for the other 28.
+            // the task being asked for. Its dependencies are never touched for the other 23.
             if (definition.handler) {
                 // The registered definition is stored under the abstraction's default generics, so
                 // its handler cannot be proven assignable to the caller's narrower <I, O>. Same
@@ -34,12 +34,16 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
                 const handler = this.handlerResolver.resolve(
                     definition.handler as Constructor<TaskDefinition.Handler<I, O>>
                 );
-                return Result.ok(toRunnable<I, O>(definition, handler, this.logger));
+                const runnable = toRunnable<I, O>(definition, handler, this.logger);
+
+                return Result.ok(runnable);
             }
 
             // Old shape: the definition carries `run()` and the hooks itself, so it IS the handler.
             if (typeof definition.run === "function") {
-                return Result.ok(definition as TaskDefinition.Runnable<I, O>);
+                const runnable = definition as TaskDefinition.Runnable<I, O>;
+
+                return Result.ok(runnable);
             }
 
             return Result.fail(new TaskDefinitionNotRunnableError(id));
