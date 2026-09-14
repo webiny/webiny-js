@@ -32,7 +32,6 @@ import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/sched
 import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
-import { NodeHttpRequestOriginDecorator } from "~/handlers/NodeHttpRequestOriginDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
 import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-server";
 
@@ -65,13 +64,6 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // runs, then identity, then the router.
             rootContainer.registerDecorator(NodeHttpIdentityLoaderDecorator);
             rootContainer.registerDecorator(NodeHttpTenantLoaderDecorator);
-
-            // ── Public origin (extract only) ───────────────────────────
-            // Registered last, so it's the outermost wrapper and runs first: it only reads headers
-            // into a holder, and the loaders above may already depend on knowing where the request
-            // came from. Nothing loads from it — consumers read it lazily when they need to build an
-            // absolute URL back to this api.
-            rootContainer.registerDecorator(NodeHttpRequestOriginDecorator);
 
             // ── Storage + identity provider (variant-supplied) ─────────
             await config.registerRootStorage(rootContainer);

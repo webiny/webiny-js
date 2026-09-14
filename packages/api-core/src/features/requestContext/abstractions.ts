@@ -38,31 +38,6 @@ export namespace RawAuthToken {
 }
 
 /**
- * Per-request holder for the address the client actually used to reach the api, EXTRACTED by the
- * transport from its forwarding headers. Absolute, no trailing slash, and includes any path prefix
- * the api is mounted under, e.g. `https://wby6.localhost/api`.
- *
- * Needed because the api hands out absolute URLs it does not serve itself (the file `srcPrefix`, the
- * upload endpoint) to clients that cannot resolve a relative one. Behind a proxy its own socket only
- * knows the private address it was dialled on, which nothing outside can reach.
- * `NodeHttpRequestOriginDecorator` in api-event-handler-server has the full picture, diagram included.
- *
- * Null whenever the transport has no such notion (S3 events, background tasks) or nothing is
- * forwarding. Callers fall back to the configured origin, so a deployment that sets one explicitly
- * is never second-guessed by a header, which is client input.
- */
-export interface IRequestOrigin {
-    get(): string | null;
-    set(origin: string | null): void;
-}
-
-export const RequestOrigin = createAbstraction<IRequestOrigin>("RequestContext/RequestOrigin");
-
-export namespace RequestOrigin {
-    export type Interface = IRequestOrigin;
-}
-
-/**
  * LOAD step: authenticates the token held by RawAuthToken and sets IdentityContext. Fully
  * transport-agnostic — transports only EXTRACT the token into RawAuthToken.
  */
