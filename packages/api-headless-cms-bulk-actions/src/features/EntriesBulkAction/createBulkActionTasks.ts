@@ -50,7 +50,8 @@ class BulkActionListTask implements TaskDefinition.Interface<
 
     async run({
         input,
-        controller
+        controller,
+        definition
     }: TaskDefinition.RunParams<
         IBulkActionOperationByModelInput,
         IBulkActionOperationByModelOutput
@@ -73,7 +74,7 @@ class BulkActionListTask implements TaskDefinition.Interface<
                         this.listTasks,
                         BULK_ACTION_PROCESS_TASK_ID
                     );
-                    return await processTasks.execute({ input, controller });
+                    return await processTasks.execute({ input, controller, definition });
                 }
                 case BulkActionOperationByModelAction.CREATE_SUBTASKS:
                 case BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS: {
@@ -84,7 +85,7 @@ class BulkActionListTask implements TaskDefinition.Interface<
                         BULK_ACTION_PROCESS_TASK_ID,
                         batchSize
                     );
-                    return await createTasks.execute({ input, controller });
+                    return await createTasks.execute({ input, controller, definition });
                 }
                 case BulkActionOperationByModelAction.END_TASK: {
                     return controller.response.done(
@@ -145,7 +146,8 @@ class BulkActionProcessTask implements TaskDefinition.Interface<
 
     async run({
         input,
-        controller
+        controller,
+        definition
     }: TaskDefinition.RunParams<IBulkActionOperationInput, IBulkActionOperationOutput>) {
         try {
             if (!input.actionName) {
@@ -154,7 +156,7 @@ class BulkActionProcessTask implements TaskDefinition.Interface<
 
             const bulkAction = resolveBulkAction(this.container, input.actionName);
             const processTask = new ProcessTask(bulkAction, this.getModel);
-            return await processTask.execute({ input, controller });
+            return await processTask.execute({ input, controller, definition });
         } catch (ex) {
             return controller.response.error(
                 ex.message ?? "Error while executing bulk action process task"

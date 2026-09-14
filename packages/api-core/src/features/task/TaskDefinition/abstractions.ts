@@ -20,7 +20,40 @@ export interface ITaskOutput {
 }
 
 /**
- * Task run params - ONLY the input data
+ * The task's own definition, minus its behaviour.
+ *
+ * Handed to `run()` and to every lifecycle hook so a decorator can tell which task it is wrapping
+ * and act on the definition's own fields. A decorator is registered against the abstraction, so it
+ * wraps every task; without this it has nothing to branch on but a hardcoded list of ids, which
+ * means editing the decorator every time a task is added.
+ *
+ * The behaviour keys are omitted deliberately. The object passed at runtime is the resolved task,
+ * so `run` is physically present; hiding it at the type level stops the obvious mistake of a
+ * handler calling `params.definition.run(...)` and recursing forever.
+ *
+ * Only the fields declared here arrive. A field a project adds to its own definition class is
+ * currently dropped, because `RunnableTaskDecorator` and `SelfCleaningTaskDecorator` are fixed
+ * pass-throughs that expose a known set of getters and nothing else. Making them forward unknown
+ * properties would turn a definition into a place to declare policy (a rate limit, a set of tags)
+ * that a decorator acts on; `taskDefinitionInParams.test.ts` pins the current behaviour so that
+ * change announces itself.
+ */
+export type ITaskDefinitionInfo<
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
+> = Omit<
+    ITaskDefinition<I, O>,
+    | "run"
+    | "onBeforeTrigger"
+    | "onDone"
+    | "onError"
+    | "onAbort"
+    | "onMaxIterations"
+    | "createInputValidation"
+>;
+
+/**
+ * Task run params - the input data, plus the definition being run
  * All runtime dependencies come from TaskController (injected separately)
  */
 export interface ITaskRunParams<
@@ -29,6 +62,7 @@ export interface ITaskRunParams<
 > {
     input: I;
     controller: TaskController.Interface<I, O>;
+    definition: ITaskDefinitionInfo<I, O>;
 }
 
 /**
@@ -46,6 +80,7 @@ export interface ITaskCreateData<I = ITaskInput> {
  */
 export interface ITaskBeforeTriggerParams<I = ITaskInput> {
     data: ITaskCreateData<I>;
+    definition: ITaskDefinitionInfo;
 }
 
 /**
@@ -97,6 +132,7 @@ export type ITaskLifecycleHook<
     O extends ITaskOutput = ITaskOutput
 > = {
     task: ITask<I, O>;
+    definition: ITaskDefinitionInfo<I, O>;
 };
 
 /**
@@ -275,6 +311,11 @@ export namespace TaskDefinition {
         I extends ITaskInput = ITaskInput,
         O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
+
+    export type Info<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskDefinitionInfo<I, O>;
 
     export type SelfCleanupEvent = ISelfCleanupEvent;
     export type SelfCleanup = ISelfCleanup;
