@@ -12,18 +12,55 @@ function headerValue(headers: IncomingMessage["headers"], name: string): string 
 }
 
 /**
- * EXTRACT (transport-specific): reconstructs the origin the client actually reached from the
- * forwarding headers of a Node `IncomingMessage`, and puts it in RequestOrigin.
+ * EXTRACT (transport-specific): works out the address the browser actually used to reach us, and
+ * puts it in RequestOrigin for anything that needs to hand an absolute URL back.
  *
- * The api builds absolute URLs for clients (the file `srcPrefix`, the upload endpoint), and behind a
- * proxy it can't derive them from its own socket: it is listening on a private port that nobody
- * outside can dial, under a path prefix it never sees. The dev proxy sends `x-forwarded-host`,
- * `x-forwarded-proto` and `x-forwarded-prefix` precisely so this can be put back together; nginx and
- * friends send the first two by convention.
+ * ## The problem
  *
- * `host` is the fallback when nothing is forwarding, which is the right answer for a directly
- * exposed api. A configured `<Infra.ApiUrl>` still wins over all of it — this only fills the gap
- * where none is set, so nothing changes for a deployment that pins its origin.
+ * The api has to give clients absolute URLs it does not serve itself: the file `srcPrefix` and the
+ * upload endpoint both go into responses the browser then fetches. Behind a proxy the api cannot work
+ * those out from its own socket, because the address it was dialled on is not an address anything
+ * outside can reach:
+ *
+ * ```
+ *   browser                      dev proxy                       api
+ *   ───────                      ─────────                       ───
+ *
+ *   GET localhost:3001/api/graphql
+ *        │
+ *        └──────────────────────▶ :3001
+ *                                  strips "/api", adds:
+ *                                    x-forwarded-proto:  http
+ *                                    x-forwarded-host:   localhost:3001
+ *                                    x-forwarded-prefix: /api
+ *                                    │
+ *                                    └────────────────────────▶ :41000
+ *                                                               GET /graphql
+ *
+ *   reachable: localhost:3001/api                       socket says: 127.0.0.1:41000
+ * ```
+ *
+ * Answer with `127.0.0.1:41000` and the browser gets a URL that connects to nothing. It is also the
+ * wrong path: the api serves `/graphql` and has never heard of the `/api` the browser typed.
+ *
+ * ## The reconstruction
+ *
+ * ```
+ *   x-forwarded-proto  ://  x-forwarded-host  +  x-forwarded-prefix
+ *        http                 localhost:3001          /api
+ *
+ *   = "http://localhost:3001/api"  ──▶  RequestOrigin
+ * ```
+ *
+ * The dev proxy sends all three for exactly this. nginx and friends send the first two by convention,
+ * and `host` is the fallback when nothing is forwarding at all, which is the right answer for an api
+ * exposed directly.
+ *
+ * ## Who reads it
+ *
+ * `FileManagerServerConfig` (upload endpoint) and `SettingsInstaller` (file `srcPrefix`), both only
+ * as a fallback. A configured `<Infra.ApiUrl>` wins, so a deployment that pins its origin is never
+ * second-guessed by a header, which is client input.
  */
 class NodeHttpRequestOriginDecoratorImpl implements NodeHttpEventHandler.Interface {
     constructor(
