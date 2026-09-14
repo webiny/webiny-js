@@ -97,8 +97,11 @@ a second flag on this schema.
 ## What the brief assumes, but doesn't exist
 
 - **Step resolution types.** `IWorkflowStep` is `{id, title, color, description, teams,
-  notifications}`. No check step, no AI step. "Hide assignment for check/AI steps" is a
-  no-op until that lands separately.
+  notifications}`. No check step, no AI step, and the step form has no type field. The
+  brief's "hide assignment for check/AI steps" is a no-op today.
+  **Decided:** add `resolutionType` now with the single value `manual`, on both
+  `wbyWorkflow` and `wbyWorkflowState` steps, so the editor already reads it. Existing
+  entries have no value, so reads default to `manual`.
 - **Reviewers are teams, never users.** So "target must sit within the step's reviewers"
   means *member of one of the step's teams*.
 - **No team → members lookup.** Membership lives on the user (`AdminUser.teams: string[]`)
