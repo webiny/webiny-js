@@ -1,6 +1,4 @@
 export { AiChatFeature } from "./AiChatFeature.js";
-export { AiChatRoute } from "./AiChatRoute.js";
-export { AiChatRouteDefinition } from "./AiChatRoute.js";
 export { AiChatStreamRoute } from "./AiChatStreamRoute.js";
 export { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 export { AiChatUseCase } from "./abstractions.js";
@@ -12,7 +10,6 @@ export type { IAiChatProvider } from "./abstractions.js";
 export type { IAiChatProviderResolution } from "./abstractions.js";
 export type { IAiChatUseCase } from "./abstractions.js";
 export type { AiChatParams } from "./abstractions.js";
-export type { AiChatResult } from "./abstractions.js";
 export type { AiChatEvent } from "./events.js";
 export { SYSTEM_PROMPT } from "./systemPrompt.js";
 export { isReadOnly } from "./approvals.js";

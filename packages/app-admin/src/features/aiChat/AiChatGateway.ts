@@ -3,12 +3,10 @@ import { readServerSentEvents } from "@webiny/app/features/apiStreamClient";
 import { EnvConfig } from "@webiny/app/features/envConfig";
 import { AiChatGateway as Abstraction } from "./abstractions.js";
 import type { AiChatRequest } from "./abstractions.js";
-import type { AiChatResult } from "./abstractions.js";
 import type { AiChatStreamEvent } from "./abstractions.js";
 import { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
 import { TenantContext } from "~/features/tenancy/abstractions.js";
 
-const CHAT_PATH = "/ai/chat";
 /*
  * The `/stream/` prefix is required, not cosmetic: it is the CloudFront behavior that targets the
  * Lambda Function URL. Any other path lands on API Gateway and gets buffered.
@@ -43,40 +41,6 @@ class AiChatGatewayImpl implements Abstraction.Interface {
         private tenantContext: TenantContext.Interface,
         private streamClient: ApiStreamClient.Interface
     ) {}
-
-    async execute(request: AiChatRequest): Promise<AiChatResult> {
-        const endpoint = this.envConfig.get("apiUrl").replace(/\/$/, "");
-        const token = (await this.authContext.getIdToken()) ?? "";
-
-        const response = await fetch(`${endpoint}${CHAT_PATH}`, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                authorization: `Bearer ${token}`,
-                "x-tenant": this.tenantContext.getCurrentTenant() || "root"
-            },
-            body: JSON.stringify(toBody(request))
-        });
-
-        const payload = await response.json().catch(() => undefined);
-
-        if (!response.ok) {
-            const reason = payload as { message?: string; error?: string } | undefined;
-            throw new Error(
-                reason?.message ?? reason?.error ?? `Request failed with status ${response.status}.`
-            );
-        }
-
-        const result = payload as Partial<AiChatResult> | undefined;
-
-        return {
-            text: result?.text ?? "",
-            toolCalls: result?.toolCalls ?? [],
-            steps: result?.steps ?? 0,
-            pendingApprovals: result?.pendingApprovals ?? [],
-            messages: result?.messages ?? []
-        };
-    }
 
     async *stream(request: AiChatRequest, signal?: AbortSignal): AsyncIterable<AiChatStreamEvent> {
         const response = await this.streamClient.execute({

@@ -1,7 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ModelMessage } from "ai";
 import type { ApprovalDecision } from "./approvals.js";
-import type { PendingApproval } from "./approvals.js";
 import type { AiChatEvent } from "./events.js";
 
 export interface IAiChatProviderResolution {
@@ -55,25 +54,14 @@ export interface AiChatParams {
     decisions: ApprovalDecision[];
 }
 
-export interface AiChatResult {
-    text: string;
-    toolCalls: { name: string; input: unknown }[];
-    steps: number;
-    pendingApprovals: PendingApproval[];
-    /** Response messages the caller replays when resuming after an approval. */
-    messages: ModelMessage[];
-}
-
 export interface IAiChatUseCase {
     /**
-     * Run to completion and return the whole result. Used by transports that cannot stream, and by
-     * hosts that just want the answer (a CLI, a background task).
-     */
-    execute(params: AiChatParams): Promise<AiChatResult>;
-    /**
-     * Run and emit progress as it happens. Same work as `execute`, reported incrementally — a
-     * multi-tool question takes tens of seconds, and the approval pause is worth showing the moment
-     * it arrives rather than after everything settles.
+     * Run, and emit progress as it happens.
+     *
+     * Streaming only. A buffered `execute()` existed alongside this and nothing ever called it: a
+     * multi-tool question takes tens of seconds, so every caller wants the answer as it arrives, and
+     * the approval pause is worth showing the moment it appears rather than after everything
+     * settles. Anything that genuinely wants the whole result can collect the events.
      */
     stream(params: AiChatParams): AsyncIterable<AiChatEvent>;
 }
@@ -84,5 +72,4 @@ export const AiChatUseCase = createAbstraction<IAiChatUseCase>("AiChatUseCase");
 export namespace AiChatUseCase {
     export type Interface = IAiChatUseCase;
     export type Params = AiChatParams;
-    export type Result = AiChatResult;
 }

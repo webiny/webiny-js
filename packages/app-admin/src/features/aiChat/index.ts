@@ -6,7 +6,6 @@ export type {
     AiChatPendingApproval,
     AiChatDecision,
     AiChatRequest,
-    AiChatResult,
     AiChatStreamEvent
 } from "./abstractions.js";
 export { AiChatGateway as AiChatGatewayImplementation } from "./AiChatGateway.js";

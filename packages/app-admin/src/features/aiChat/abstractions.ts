@@ -29,15 +29,6 @@ export interface AiChatDecision {
     reason?: string;
 }
 
-export interface AiChatResult {
-    text: string;
-    toolCalls: AiChatToolCall[];
-    steps: number;
-    pendingApprovals: AiChatPendingApproval[];
-    /** Server response messages, replayed unchanged when resuming after an approval. */
-    messages: AiChatMessage[];
-}
-
 export interface AiChatRequest {
     messages: AiChatMessage[];
     /** Approve or reject calls the server paused on. */
@@ -59,8 +50,6 @@ export type AiChatStreamEvent =
     | { type: "error"; message: string };
 
 export interface IAiChatGateway {
-    /** Run to completion and return the whole result. */
-    execute(request: AiChatRequest): Promise<AiChatResult>;
     /**
      * Run and yield progress as it arrives. Preferred in the UI: a multi-tool question takes tens of
      * seconds, and an approval request is worth showing the moment it appears.
@@ -78,6 +67,5 @@ export namespace AiChatGateway {
     export type PendingApproval = AiChatPendingApproval;
     export type Decision = AiChatDecision;
     export type Request = AiChatRequest;
-    export type Result = AiChatResult;
     export type StreamEvent = AiChatStreamEvent;
 }

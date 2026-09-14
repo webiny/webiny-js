@@ -2,7 +2,6 @@ import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
 import { EnvAiChatProvider } from "./EnvAiChatProvider.js";
-import { AiChatRouteDefinition } from "./AiChatRoute.js";
 import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 
 /**
@@ -12,7 +11,7 @@ import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 const DEFAULT_MAX_STEPS = 12;
 
 /**
- * The AI chat feature: the use case, its configuration, and the two HTTP routes that reach it.
+ * The AI chat feature: the use case, its configuration, and the HTTP route that reaches it.
  *
  * Routes live beside the use case rather than in a separate package, matching `AiImageEnrichment`.
  * The assistant is only ever reached over HTTP, so a second package bought an indirection nobody
@@ -32,11 +31,9 @@ export const AiChatFeature = createFeature({
         container.register(AiChatUseCase);
 
         /*
-         * Buffered and streamed. A client picks by URL; see AiChatStreamRoute for why both exist.
-         * Only the definitions are registered: the router matches on those and builds the handler
-         * they name only once a request actually hits the path.
+         * Only the definition is registered: the router matches on it and builds the handler it
+         * names once a request actually hits the path.
          */
-        container.register(AiChatRouteDefinition);
         container.register(AiChatStreamRouteDefinition);
     }
 });

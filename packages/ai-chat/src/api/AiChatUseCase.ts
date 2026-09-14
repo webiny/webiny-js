@@ -10,7 +10,6 @@ import { AiChatConfig } from "./abstractions.js";
 import { AiChatProvider } from "./abstractions.js";
 import { AiChatUseCase as Abstraction } from "./abstractions.js";
 import type { AiChatParams } from "./abstractions.js";
-import type { AiChatResult } from "./abstractions.js";
 import { SYSTEM_PROMPT } from "./systemPrompt.js";
 import { isReadOnly } from "./approvals.js";
 import { toPendingApproval } from "./approvals.js";
@@ -87,20 +86,6 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         private readonly config: AiChatConfig.Interface,
         private readonly provider: AiChatProvider.Interface
     ) {}
-
-    async execute(params: AiChatParams): Promise<AiChatResult> {
-        const { request, appended } = await this.prepare(params);
-
-        const result = await this.ai.generateText(request);
-
-        return {
-            text: this.extractText(result),
-            toolCalls: this.extractToolCalls(result),
-            steps: result.steps.length,
-            pendingApprovals: this.extractPendingApprovals(result),
-            messages: [...appended, ...result.responseMessages]
-        };
-    }
 
     async *stream(params: AiChatParams): AsyncIterable<AiChatEvent> {
         let prepared;

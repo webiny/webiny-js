@@ -40,7 +40,10 @@ class AiChatStreamRouteImpl implements HttpRouteHandler.Interface {
             return response.status(400).json({ error: BAD_REQUEST_MESSAGE });
         }
 
-        return response.sse(toSseFrames(this.aiChat.stream(parsed)));
+        const events = this.aiChat.stream(parsed);
+        const frames = toSseFrames(events);
+
+        return response.sse(frames);
     }
 }
 

@@ -106,8 +106,7 @@ export type {
     AiChatToolCall,
     AiChatPendingApproval,
     AiChatDecision,
-    AiChatRequest,
-    AiChatResult
+    AiChatRequest
 } from "./features/aiChat/index.js";
 
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
