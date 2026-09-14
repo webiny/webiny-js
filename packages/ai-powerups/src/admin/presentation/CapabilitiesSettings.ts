@@ -1,3 +1,4 @@
+import type { IAiPowerUpsConnectionPreset } from "~/admin/features/settings/shared/abstractions.js";
 import { AiPowerUpsSettingsGroup } from "./AiPowerUpsSettings/settingsGroup.js";
 import {
     ListCapabilitiesUseCase,
@@ -10,12 +11,6 @@ import {
 import { AI_MODEL_ROLE_DISPLAY, roleLabel } from "./modelRoles.js";
 import type { AiCapability } from "~/admin/features/listCapabilities/abstractions.js";
 import type { FormModel, FormModelFactory } from "@webiny/app-admin";
-
-interface ConnectionRow {
-    id: string;
-    name: string;
-    sdkName: string;
-}
 
 /**
  * One row per AI feature, all of them empty by default.
@@ -150,8 +145,10 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         );
     }
 
-    private getConnections(form: FormModel.Interface): ConnectionRow[] {
-        const data = form.getData() as { connections?: { presets?: ConnectionRow[] } };
+    private getConnections(form: FormModel.Interface): IAiPowerUpsConnectionPreset[] {
+        const data = form.getData() as {
+            connections?: { presets?: IAiPowerUpsConnectionPreset[] };
+        };
         return (data.connections?.presets ?? []).filter(c => c.id && c.name);
     }
 
@@ -168,7 +165,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
     private getPinnedConnection(
         form: FormModel.Interface,
         capabilityId: string
-    ): ConnectionRow | undefined {
+    ): IAiPowerUpsConnectionPreset | undefined {
         const connectionId = this.getOverride(form, capabilityId).connectionId;
 
         if (!connectionId) {
