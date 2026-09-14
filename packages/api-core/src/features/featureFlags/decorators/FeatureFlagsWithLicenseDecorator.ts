@@ -14,14 +14,15 @@ import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
  * 2. License allows + config unset          → true (the license grants it)
  * 3. License allows + config=false          → false (config may disable, never re-enable)
  *
- * EVERYTHING ELSE — Webiny features that ship on, plus a project's own custom flags:
- * 4. License present + config unset   → true  (on by default, e.g. `aiPowerups.*`)
- * 5. License present + config=false   → false (config disables)
- * 6. No license + config=true         → true  (a project may enable its OWN flags)
- * 7. No license + config unset        → false (nothing on by default)
+ * EVERYTHING ELSE — the project's own flags. The config decides, and nothing is assumed:
+ * 4. config=true           → true
+ * 5. config=false or unset → false
  *
- * Rule 6 is the one to keep in mind: without it an unlicensed install cannot turn on a flag it
- * declared itself, which is not something the license should govern.
+ * There is deliberately no third kind. A set of flags used to be enabled by default here, which was
+ * a workaround for capabilities the license could not express: rather than gate them properly they
+ * were left on for anyone holding any license at all. It also meant EVERY unrecognised name resolved
+ * to true, so an undeclared flag and a typo both read as enabled. A feature that should be sold
+ * belongs in LICENSE_CHECKS and on the license; anything else is the project's own to switch on.
  */
 
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
@@ -57,20 +58,15 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
             return !this.base.isExplicitlyDisabled(name);
         }
         /*
-         * Not license-governed. With a license present these are on unless the config disables them —
-         * that is how features like `aiPowerups.*` and `remoteComponents` ship enabled without every
-         * project having to list them.
+         * Everything else is the project's own, and the config is the only thing that decides. No
+         * default: `isEnabled` on the base is true only for an explicitly configured `true`.
          *
-         * Without a license nothing is on by default, but a project can still enable its OWN flags:
-         * `isEnabled` on the base is true only for an explicitly configured `true`. Previously this
-         * returned false outright, so an unlicensed install could not turn on a flag it had declared
-         * itself — which is not the license's business to prevent.
+         * This branch used to return `!isExplicitlyDisabled(name)` whenever a license existed, which
+         * made EVERY unrecognised name true — an undeclared flag, or a typo like `aiPowerupz`. It also
+         * returned false outright without a license, so an unlicensed install could not turn on a flag
+         * it had declared itself. Neither is the license's business.
          */
-        if (!this.license.getRawLicense()) {
-            return this.base.isEnabled(name);
-        }
-
-        return !this.base.isExplicitlyDisabled(name);
+        return this.base.isEnabled(name);
     }
 }
 

@@ -56,7 +56,8 @@ export class TaskManager implements ITaskManager {
             try {
                 if (definition.onMaxIterations) {
                     await definition.onMaxIterations({
-                        task: this.store.getTask()
+                        task: this.store.getTask(),
+                        definition
                     });
                 }
                 return this.response.error({
@@ -104,7 +105,8 @@ export class TaskManager implements ITaskManager {
                 .withoutAuthorization(async () => {
                     return await definition.run({
                         input,
-                        controller
+                        controller,
+                        definition
                     });
                 });
         } catch (ex) {

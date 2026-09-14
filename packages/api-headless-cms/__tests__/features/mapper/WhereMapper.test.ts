@@ -251,4 +251,73 @@ describe("Where mapper for custom GraphQL where input", async () => {
             ]
         });
     });
+    /*
+     * Field IDs containing an underscore. The mapper used to read the segment before the first `_`
+     * as the field name, so `on_sale` was looked up as `on`, which does not exist: the filter stayed
+     * at the top level instead of nesting, and the CMS rejected it.
+     *
+     * Synthetic fields rather than the category model, because the point is the shape of the ID.
+     */
+    describe("field IDs containing an underscore", () => {
+        const fields = [
+            { fieldId: "price" },
+            { fieldId: "price_range" },
+            { fieldId: "on_sale" }
+        ] as CmsModel["fields"];
+
+        it("should nest an underscored field", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: { on_sale: true }, fields })).toEqual({
+                values: { on_sale: true }
+            });
+        });
+
+        it("should nest an underscored field carrying an operator", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: { on_sale_not: true }, fields })).toEqual({
+                values: { on_sale_not: true }
+            });
+        });
+
+        it("should prefer the longest matching field ID", async () => {
+            const mapper = await resolveMapper();
+
+            // `price_range` must win over `price` plus a `_range` that is not an operator.
+            expect(mapper.map({ input: { price_range: "high" }, fields })).toEqual({
+                values: { price_range: "high" }
+            });
+        });
+
+        it("should leave a key matching no field at the top level", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: { on_hold: true }, fields })).toEqual({ on_hold: true });
+        });
+    });
+
+    /*
+     * An explicit `values` object alongside flat field keys. Assigning rather than merging dropped
+     * whichever of the two arrived first, so the result depended on key order.
+     */
+    describe("an explicit `values` object", () => {
+        const fields = [{ fieldId: "title" }] as CmsModel["fields"];
+
+        it("should merge flat fields into it when it comes first", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: { values: { a: 1 }, title: "x" }, fields })).toEqual({
+                values: { a: 1, title: "x" }
+            });
+        });
+
+        it("should merge into it when the flat field comes first", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: { title: "x", values: { a: 1 } }, fields })).toEqual({
+                values: { a: 1, title: "x" }
+            });
+        });
+    });
 });

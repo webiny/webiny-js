@@ -69,18 +69,29 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
         });
     });
 
-    describe("non-license-governed flags", () => {
+    describe("flags the license does not govern", () => {
         /*
-         * With a license these ship ON unless disabled — `aiPowerups.*` and `remoteComponents` rely on
-         * this, and none of them are listed in a project's config.
+         * These used to be enabled by default for anyone holding a license, which was a workaround
+         * for capabilities the license could not express. A feature that should be sold belongs in
+         * LICENSE_CHECKS and on the license itself, so there is no third category any more: a flag
+         * the license does not govern is the project's to switch on.
          */
-        it("is on by default when a license is present", () => {
+        it("is off when a license is present but nothing enabled it", () => {
             const flags = flagsFor({}, { present: true });
+
+            expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
+        });
+
+        it("is on when the config enables it", () => {
+            const flags = flagsFor(
+                { aiPowerups: { cms: { entryGeneration: true } } },
+                { present: true }
+            );
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(true);
         });
 
-        it("lets config disable it", () => {
+        it("is off when the config disables it", () => {
             const flags = flagsFor(
                 { aiPowerups: { cms: { entryGeneration: false } } },
                 { present: true }
@@ -88,7 +99,9 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
         });
+    });
 
+    describe("a project's own flags", () => {
         /*
          * The reason this decorator changed: an unlicensed install could not enable a flag it had
          * declared itself, which the license has no business preventing.
@@ -110,6 +123,31 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
             expect(flags.isEnabled("myApp.newThing")).toBe(true);
             expect(flags.isEnabled("myApp.otherThing")).toBe(false);
+        });
+
+        it("is enabled by config with a license present too", () => {
+            const flags = flagsFor({ myCustomFlag: true }, { present: true });
+
+            expect(flags.isEnabled("myCustomFlag")).toBe(true);
+        });
+
+        /*
+         * The bug this closes. A license used to make EVERY unrecognised name true, because the
+         * branch was "on unless explicitly disabled". An undeclared flag was on, and so was a typo,
+         * which is the part that made it dangerous: `isEnabled("aiPowerupz")` guarded nothing and
+         * read as if it did.
+         */
+        it("is off when nothing declared it, even with a license", () => {
+            const flags = flagsFor({}, { present: true });
+
+            expect(flags.isEnabled("experimentalSuperFeat")).toBe(false);
+            expect(flags.isEnabled("aiPowerupz")).toBe(false);
+        });
+
+        it("is off when config disables it", () => {
+            const flags = flagsFor({ myCustomFlag: false }, { present: true });
+
+            expect(flags.isEnabled("myCustomFlag")).toBe(false);
         });
     });
 });
