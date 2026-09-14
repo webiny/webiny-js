@@ -144,6 +144,8 @@ a second flag on this schema.
 | Manual picks are written as the step assignee at creation, `assignmentSource: "manual"` | nothing to re-evaluate, so resolution order falls out: an assignee already present wins |
 | `createWorkflowState` takes one input object | argument list is already long; `assignees: [{stepId, userId}]` is added there |
 | On activation, validate an existing assignee before keeping it | if the user left the team or is now excluded, clear it and run rules then strategy |
+| Rule target: reject on rule save, warn on team change | blocking a team change would trap admins, and evaluation already skips bad rules |
+| Editor validates targets with `listStepReviewers(stepId)` | same annotated query the manual picker uses; no new endpoint |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
