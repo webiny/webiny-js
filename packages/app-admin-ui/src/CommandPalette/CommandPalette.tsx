@@ -4,8 +4,7 @@ import {
     AiChatFeature,
     CommandPaletteFeature,
     createReactiveComponent,
-    useAdminConfig,
-    useHotkeys
+    useAdminConfig
 } from "@webiny/app-admin";
 import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -14,7 +13,7 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
+import { NAVIGATION_GROUP } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -28,6 +27,7 @@ import {
     type Hint
 } from "./components/index.js";
 import { createAiMode } from "./modes/index.js";
+import { usePaletteHotkeys } from "./usePaletteHotkeys.js";
 
 const COMMAND_HINTS: Hint[] = [
     {
@@ -90,59 +90,7 @@ const CommandPaletteBase = () => {
         [presenter]
     );
 
-    /*
-     * mod+k cycles closed -> commands -> AI -> closed, so the same key that opens the palette also
-     * reaches the assistant without the user having to know about the space shortcut. Closing from AI
-     * mode keeps mod+k a way OUT of the palette, which is what it does everywhere else.
-     * Backspace backs out of a detail view; command shortcuts run directly.
-     */
-    const keys = useMemo(
-        () => ({
-            "mod+k": (e: KeyboardEvent) => {
-                e.preventDefault();
-
-                if (!vm.isOpen) {
-                    presenter.open();
-                    return;
-                }
-
-                /*
-                 * A detail view renders in place of the command list, so switching to AI mode from
-                 * there would put the user in a mode they cannot see. Back out to the list instead.
-                 */
-                if (vm.activeCommand) {
-                    presenter.cancelCommand();
-                    return;
-                }
-
-                if (!vm.aiModeActive) {
-                    enterAiMode();
-                    return;
-                }
-
-                close();
-            },
-            backspace: (e: KeyboardEvent) => {
-                if (e.target instanceof HTMLInputElement) {
-                    return;
-                }
-                e.preventDefault();
-                presenter.cancelCommand();
-            },
-            ...presenter.shortcutKeys
-        }),
-        [
-            presenter,
-            presenter.shortcutKeys,
-            vm.isOpen,
-            vm.activeCommand,
-            vm.aiModeActive,
-            enterAiMode,
-            close
-        ]
-    );
-
-    useHotkeys({ zIndex: PALETTE_HOTKEY_ZINDEX, keys });
+    usePaletteHotkeys({ presenter, enterAiMode, close });
 
     const groups = useMemo<CommandGroup[]>(() => {
         const result: CommandGroup[] = [];
