@@ -9,6 +9,7 @@ export class CommandPalettePresenter implements Abstraction.Interface {
     private isOpen = false;
     private activeCommandName: string | null = null;
     private modeActive = false;
+    private query = "";
     private resolvedCommands: Command.Interface[] = [];
 
     constructor(private getCommands: () => Command.Interface[]) {
@@ -41,6 +42,7 @@ export class CommandPalettePresenter implements Abstraction.Interface {
         return {
             isOpen: this.isOpen,
             modeActive: this.modeActive,
+            query: this.query,
             commands: this.resolvedCommands.map(cmd => ({
                 name: cmd.name,
                 label: cmd.label,
@@ -65,6 +67,7 @@ export class CommandPalettePresenter implements Abstraction.Interface {
         this.resolvedCommands = this.getCommands();
         this.activeCommandName = null;
         this.modeActive = false;
+        this.query = "";
         this.isOpen = true;
     }
 
@@ -72,14 +75,21 @@ export class CommandPalettePresenter implements Abstraction.Interface {
         this.isOpen = false;
         this.activeCommandName = null;
         this.modeActive = false;
+        this.query = "";
     }
 
     enterMode(): void {
         this.modeActive = true;
+        this.query = "";
     }
 
     exitMode(): void {
         this.modeActive = false;
+        this.query = "";
+    }
+
+    setQuery(query: string): void {
+        this.query = query;
     }
 
     toggle(): void {

@@ -57,6 +57,11 @@ export interface CommandPaletteViewModel {
      * mode, so this is the palette's state rather than the mode's.
      */
     modeActive: boolean;
+    /**
+     * What the user has typed. Owned here rather than by the component because it is cleared
+     * whenever the palette opens, closes, or enters or leaves a mode.
+     */
+    query: string;
     commands: CommandItemVm[];
     activeCommand: ActiveCommandVm | null;
 }
@@ -72,6 +77,7 @@ export interface ICommandPalettePresenter {
     cancelCommand(): void;
     enterMode(): void;
     exitMode(): void;
+    setQuery(query: string): void;
 }
 
 export const CommandPalettePresenter = new Abstraction<ICommandPalettePresenter>(

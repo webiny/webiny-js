@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Command } from "cmdk";
 import {
     AiChatFeature,
@@ -44,7 +44,6 @@ const COMMAND_HINTS: Hint[] = [
 ];
 
 const CommandPaletteBase = () => {
-    const [query, setQuery] = useState("");
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
     const container = useContainer();
@@ -58,7 +57,7 @@ const CommandPaletteBase = () => {
      * registry; nothing above this line has to change for that.
      */
     const { presenter: aiChat } = useFeature(AiChatFeature);
-    const mode = useMemo(() => createAiMode(aiChat), [aiChat]);
+    const aiMode = useMemo(() => createAiMode(aiChat), [aiChat]);
 
     useEffect(() => {
         presenter.init();
@@ -66,27 +65,24 @@ const CommandPaletteBase = () => {
 
     const close = useCallback(() => {
         presenter.close();
-        setQuery("");
-        mode.reset();
-    }, [presenter, mode]);
+        aiMode.reset();
+    }, [presenter, aiMode]);
 
     const enterMode = useCallback(
         (seed?: string) => {
             presenter.enterMode();
-            setQuery("");
-            mode.enter(seed);
+            aiMode.enter(seed);
             // The input is shared across modes, so focus has to be restored explicitly after the
             // surrounding tree swaps.
             requestAnimationFrame(() => inputRef.current?.focus());
         },
-        [presenter, mode]
+        [presenter, aiMode]
     );
 
     const exitMode = useCallback(() => {
         presenter.exitMode();
-        setQuery("");
-        mode.reset();
-    }, [presenter, mode]);
+        aiMode.reset();
+    }, [presenter, aiMode]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -122,7 +118,6 @@ const CommandPaletteBase = () => {
 
                 if (!vm.isOpen) {
                     presenter.open();
-                    setQuery("");
                     return;
                 }
 
@@ -182,7 +177,7 @@ const CommandPaletteBase = () => {
         if (!vm.modeActive || !scrollRef.current) {
             return;
         }
-        mode.afterRender?.(scrollRef.current);
+        aiMode.afterRender?.(scrollRef.current);
     });
 
     if (!vm.isOpen) {
@@ -191,10 +186,10 @@ const CommandPaletteBase = () => {
 
     const active = vm.activeCommand;
 
-    const askAiFromQuery = () => enterMode(query);
+    const askAiFromQuery = () => enterMode(vm.query);
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
-    const appearance = vm.modeActive ? mode.appearance : null;
+    const appearance = vm.modeActive ? aiMode.appearance : null;
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -211,13 +206,17 @@ const CommandPaletteBase = () => {
 
         if (vm.modeActive) {
             // The mode decides what its keys mean; anything it declines is simply ignored here.
-            mode.handleKey(e, { query, setQuery, exit: exitMode });
+            aiMode.handleKey(e, {
+                query: vm.query,
+                setQuery: q => presenter.setQuery(q),
+                exit: exitMode
+            });
             return;
         }
 
-        // Space on an EMPTY query enters the mode. Gated on `query === ""` so space stays an ordinary
+        // Space on an EMPTY query enters the aiMode. Gated on `query === ""` so space stays an ordinary
         // character the moment there is anything to search — "new entry" must keep working.
-        if (e.key === " " && query === "") {
+        if (e.key === " " && vm.query === "") {
             e.preventDefault();
             enterMode();
         }
@@ -265,8 +264,8 @@ const CommandPaletteBase = () => {
                             <Command.Input
                                 ref={inputRef}
                                 autoFocus
-                                value={query}
-                                onValueChange={setQuery}
+                                value={vm.query}
+                                onValueChange={q => presenter.setQuery(q)}
                                 spellCheck={false}
                                 placeholder={
                                     appearance
@@ -284,11 +283,11 @@ const CommandPaletteBase = () => {
                             style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
                         >
                             {appearance ? (
-                                mode.body
+                                aiMode.body
                             ) : (
                                 <Command.List>
                                     <Command.Empty>
-                                        <NoResults query={query} onAskAi={askAiFromQuery} />
+                                        <NoResults query={vm.query} onAskAi={askAiFromQuery} />
                                     </Command.Empty>
 
                                     {groups.map(group => (
