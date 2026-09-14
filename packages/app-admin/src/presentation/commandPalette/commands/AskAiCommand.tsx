@@ -6,7 +6,7 @@ import { Command } from "../abstractions.js";
 /**
  * Discoverable entry point for the palette's AI mode.
  *
- * `entersMode` rather than `execute`: the design keeps one input row across every mode, so selecting
+ * `entersAiMode` rather than `execute`: the design keeps one input row across every mode, so selecting
  * this switches the palette instead of running an action, and the palette stays open. A command
  * without a `detailView` is otherwise executed and then closed, which a mode cannot survive.
  *
@@ -20,7 +20,7 @@ class AskAiCommandImpl implements Command.Interface {
     category = "Assistant";
     keywords = ["ai", "ask", "assistant", "chat", "search"];
     icon = <Icon icon={<AiIcon />} size="sm" color="neutral-strong" label="" />;
-    entersMode = true;
+    entersAiMode = true;
 }
 
 export const AskAiCommand = Command.createImplementation({

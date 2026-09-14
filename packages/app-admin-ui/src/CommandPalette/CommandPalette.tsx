@@ -68,10 +68,10 @@ const CommandPaletteBase = () => {
         aiMode.reset();
     }, [presenter, aiMode]);
 
-    const enterMode = useCallback(() => presenter.enterMode(), [presenter]);
+    const enterAiMode = useCallback(() => presenter.enterAiMode(), [presenter]);
 
-    const exitMode = useCallback(() => {
-        presenter.exitMode();
+    const exitAiMode = useCallback(() => {
+        presenter.exitAiMode();
         aiMode.reset();
     }, [presenter, aiMode]);
 
@@ -115,8 +115,8 @@ const CommandPaletteBase = () => {
                     return;
                 }
 
-                if (!vm.modeActive) {
-                    enterMode();
+                if (!vm.aiModeActive) {
+                    enterAiMode();
                     return;
                 }
 
@@ -136,8 +136,8 @@ const CommandPaletteBase = () => {
             presenter.shortcutKeys,
             vm.isOpen,
             vm.activeCommand,
-            vm.modeActive,
-            enterMode,
+            vm.aiModeActive,
+            enterAiMode,
             close
         ]
     );
@@ -160,18 +160,18 @@ const CommandPaletteBase = () => {
      * entered by selecting the command, which never reaches this component.
      */
     useEffect(() => {
-        if (!vm.modeActive) {
+        if (!vm.aiModeActive) {
             return;
         }
         requestAnimationFrame(() => inputRef.current?.focus());
-    }, [vm.modeActive]);
+    }, [vm.aiModeActive]);
 
     /*
      * Let the active mode keep its own content in view. Runs on every render while a mode is showing,
      * because the body is what changes and the palette cannot tell what inside it moved.
      */
     useEffect(() => {
-        if (!vm.modeActive || !scrollRef.current) {
+        if (!vm.aiModeActive || !scrollRef.current) {
             return;
         }
         aiMode.afterRender?.(scrollRef.current);
@@ -183,35 +183,36 @@ const CommandPaletteBase = () => {
 
     const active = vm.activeCommand;
 
-    /* Carries what was already typed, so a search that found nothing becomes the question as-is. */
+    /* The one seeded entry: a search that found nothing becomes the question as-is. */
     const askAiFromQuery = () => {
+        // Read before entering, because entering clears the query.
         const seed = vm.query;
-        presenter.enterMode();
+        presenter.enterAiMode();
         aiMode.enter(seed);
     };
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
-    const appearance = vm.modeActive ? aiMode.appearance : null;
+    const appearance = vm.aiModeActive ? aiMode.appearance : null;
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
             e.preventDefault();
             if (active) {
                 presenter.cancelCommand();
-            } else if (vm.modeActive) {
-                exitMode();
+            } else if (vm.aiModeActive) {
+                exitAiMode();
             } else {
                 close();
             }
             return;
         }
 
-        if (vm.modeActive) {
+        if (vm.aiModeActive) {
             // The mode decides what its keys mean; anything it declines is simply ignored here.
             aiMode.handleKey(e, {
                 query: vm.query,
                 setQuery: q => presenter.setQuery(q),
-                exit: exitMode
+                exit: exitAiMode
             });
             return;
         }
@@ -220,7 +221,7 @@ const CommandPaletteBase = () => {
         // character the moment there is anything to search — "new entry" must keep working.
         if (e.key === " " && vm.query === "") {
             e.preventDefault();
-            enterMode();
+            enterAiMode();
         }
     };
 

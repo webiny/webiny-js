@@ -57,6 +57,7 @@ export const createAiMode = (presenter: AiChatPresenter.Interface): PaletteMode 
         ));
     },
 
+    // A seed only arrives from the no-results "Ask AI" button; see `PaletteMode.enter`.
     enter(seed?: string) {
         if (seed?.trim()) {
             presenter.ask(seed);

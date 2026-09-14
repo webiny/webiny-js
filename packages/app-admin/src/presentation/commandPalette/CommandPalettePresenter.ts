@@ -8,7 +8,7 @@ import {
 export class CommandPalettePresenter implements Abstraction.Interface {
     private isOpen = false;
     private activeCommandName: string | null = null;
-    private modeActive = false;
+    private aiModeActive = false;
     private query = "";
     private resolvedCommands: Command.Interface[] = [];
 
@@ -41,7 +41,7 @@ export class CommandPalettePresenter implements Abstraction.Interface {
 
         return {
             isOpen: this.isOpen,
-            modeActive: this.modeActive,
+            aiModeActive: this.aiModeActive,
             query: this.query,
             commands: this.resolvedCommands.map(cmd => ({
                 name: cmd.name,
@@ -66,7 +66,7 @@ export class CommandPalettePresenter implements Abstraction.Interface {
     open(): void {
         this.resolvedCommands = this.getCommands();
         this.activeCommandName = null;
-        this.modeActive = false;
+        this.aiModeActive = false;
         this.query = "";
         this.isOpen = true;
     }
@@ -74,17 +74,17 @@ export class CommandPalettePresenter implements Abstraction.Interface {
     close(): void {
         this.isOpen = false;
         this.activeCommandName = null;
-        this.modeActive = false;
+        this.aiModeActive = false;
         this.query = "";
     }
 
-    enterMode(): void {
-        this.modeActive = true;
+    enterAiMode(): void {
+        this.aiModeActive = true;
         this.query = "";
     }
 
-    exitMode(): void {
-        this.modeActive = false;
+    exitAiMode(): void {
+        this.aiModeActive = false;
         this.query = "";
     }
 
@@ -106,9 +106,9 @@ export class CommandPalettePresenter implements Abstraction.Interface {
             return;
         }
 
-        if (cmd.entersMode) {
+        if (cmd.entersAiMode) {
             // A mode replaces the command list and keeps the input row, so the palette stays open.
-            this.enterMode();
+            this.enterAiMode();
             return;
         }
 
