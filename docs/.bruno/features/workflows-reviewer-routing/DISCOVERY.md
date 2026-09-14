@@ -138,6 +138,9 @@ a second flag on this schema.
 | New permission entity `workflows.reassign` | grantable without workflow editing |
 | No assignment history — step keeps `assignee`, `assignedBy`, `assignedOn`, `assignmentSource` only | accepted trade-off; brief asked for an audit entry |
 | One generic notification handler for all workflow state events | `step.notifications` is configured today and consumed by nothing |
+| Manual picks are written as the step assignee at creation, `assignmentSource: "manual"` | nothing to re-evaluate, so resolution order falls out: an assignee already present wins |
+| `createWorkflowState` takes one input object | argument list is already long; `assignees: [{stepId, userId}]` is added there |
+| On activation, validate an existing assignee before keeping it | if the user left the team or is now excluded, clear it and run rules then strategy |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
