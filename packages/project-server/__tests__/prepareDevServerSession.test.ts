@@ -4,9 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     prepareDevServerSession,
-    readDevServerTargets,
-    wantsDevProxy,
-    type IDevServerArgv
+    type IPrepareDevServerSessionParams
 } from "~/serve/devServer/prepareDevServerSession.js";
 import { startDevProxy } from "~/serve/devServer/startDevProxy.js";
 import { isPortFree } from "~/serve/findFreePort.js";
@@ -45,41 +43,28 @@ describe("prepareDevServerSession", () => {
         fs.rmSync(rootFolder, { recursive: true, force: true });
     });
 
-    const prepare = (argv: IDevServerArgv = { _: ["watch"] }) =>
-        prepareDevServerSession({ argv, rootFolder });
+    const prepare = (params: Partial<IPrepareDevServerSessionParams> = {}) =>
+        prepareDevServerSession({
+            apps: ["api", "admin"],
+            pointAppsAtProxy: true,
+            rootFolder,
+            ...params
+        });
 
     describe("deciding whether a proxy belongs in front", () => {
-        it("wants one for a bare watch or serve", () => {
-            expect(wantsDevProxy({ _: ["watch"] })).toBe(true);
-            expect(wantsDevProxy({ _: ["serve"] })).toBe(true);
-            // Options are already parsed out of the positionals by the time this sees them.
-            expect(wantsDevProxy({ _: ["watch"], verbose: true } as IDevServerArgv)).toBe(true);
-        });
-
-        it("does not for a single app, which already has a single URL", () => {
-            expect(wantsDevProxy({ _: ["watch", "api"] })).toBe(false);
-            expect(wantsDevProxy({ _: ["serve", "admin"] })).toBe(false);
-        });
-
-        it("does not when asked not to, by flag or by env", () => {
-            // yargs turns `--no-proxy` into `proxy: false`.
-            expect(wantsDevProxy({ _: ["watch"], proxy: false })).toBe(false);
-
-            process.env.WEBINY_PROXY = "off";
-            expect(wantsDevProxy({ _: ["watch"] })).toBe(false);
-        });
-
-        it("does not for any other command", () => {
-            expect(wantsDevProxy({ _: ["build"] })).toBe(false);
-            expect(wantsDevProxy({ _: ["deploy", "api"] })).toBe(false);
-            expect(wantsDevProxy({ _: [] })).toBe(false);
-            expect(wantsDevProxy({})).toBe(false);
-        });
-
-        it("changes nothing at all when it decides against", async () => {
-            expect(await prepare({ _: ["watch", "api"] })).toBeNull();
+        it("does nothing for a single app, which already has a single URL", async () => {
+            expect(await prepare({ apps: ["api"] })).toBeNull();
 
             expect(process.env.WEBINY_API_PORT).toBeUndefined();
+            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+        });
+
+        it("does nothing when asked not to, by flag or by env", async () => {
+            expect(await prepare({ enabled: false })).toBeNull();
+
+            process.env.WEBINY_PROXY = "off";
+            expect(await prepare()).toBeNull();
+
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
         });
     });
@@ -149,26 +134,15 @@ describe("prepareDevServerSession", () => {
 
     it("hands the proxy the ports it reserved, end to end", async () => {
         const session = await prepare();
-
-        // The CLI reads the targets back from env rather than reusing the values above, because
-        // `.env.<env>` is loaded in between and can move them.
-        const targets = readDevServerTargets();
-        expect(targets).toEqual({
-            apiPort: Number(process.env.WEBINY_API_PORT),
-            adminPort: Number(process.env.WEBINY_ADMIN_PORT)
-        });
+        const { apiPort, adminPort } = session!.targets;
 
         const api = await serve("api answered");
         const admin = await serve("admin answered");
-        const proxy = await startDevProxy({
-            port: session!.port,
-            apiPort: targets.apiPort,
-            adminPort: targets.adminPort
-        });
+        const proxy = await startDevProxy({ port: session!.port, apiPort, adminPort });
 
         try {
-            await api.listenOn(targets.apiPort);
-            await admin.listenOn(targets.adminPort);
+            await api.listenOn(apiPort);
+            await admin.listenOn(adminPort);
 
             expect(await (await fetch(session!.apiUrl + "/graphql")).text()).toBe("api answered");
             expect(await (await fetch(session!.url + "/")).text()).toBe("admin answered");
@@ -203,14 +177,29 @@ describe("prepareDevServerSession", () => {
             expect(session!.apiUrl).toBe(`http://localhost:${session!.port}/api`);
         });
 
-        it("does not overrule a URL that was set explicitly", async () => {
-            process.env.WEBINY_ADMIN_API_URL = "https://api.example.com";
-            process.env.WEBINY_API_URL = "https://api.example.com";
+        it("takes over the admin URLs, because by now the config has already set them", async () => {
+            // `<Admin.ApiUrl>` emits an env var, and webiny.config was evaluated before the command
+            // handler ran, so filling in blanks would never win. Pointing admin anywhere other than
+            // the proxy is broken while the proxy is in front, so the proxy owns these; `--no-proxy`
+            // is the way out. AWS does the same in SetAdminEnvVarsBeforeWatch.
+            process.env.WEBINY_ADMIN_API_URL = "http://localhost:3002";
+            process.env.WEBINY_ADMIN_WS_API_URL = "ws://localhost:3002";
 
             await prepare();
 
-            expect(process.env.WEBINY_ADMIN_API_URL).toBe("https://api.example.com");
-            expect(process.env.WEBINY_API_URL).toBe("https://api.example.com");
+            expect(process.env.WEBINY_ADMIN_API_URL).toBe("/api");
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
+        });
+
+        it("leaves every URL alone when only reserving ports", async () => {
+            // `serve` runs what `webiny build` produced, so the admin bundle's URL is already fixed
+            // and setting anything now would only be misleading.
+            const session = await prepare({ pointAppsAtProxy: false });
+
+            expect(session).not.toBeNull();
+            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+            expect(process.env.WEBINY_API_URL).toBeUndefined();
+            expect(Number(process.env.WEBINY_API_PORT)).toBe(session!.targets.apiPort);
         });
     });
 });

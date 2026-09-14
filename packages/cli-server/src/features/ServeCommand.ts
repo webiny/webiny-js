@@ -8,8 +8,7 @@ import {
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
 import {
-    getDevServerSession,
-    readDevServerTargets,
+    prepareDevServerSession,
     startDevProxy
 } from "@webiny/project-server/serve/devServer/index.js";
 
@@ -71,9 +70,13 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
             handler: async (params: IServeCommandParams) => {
                 const stdio = this.stdioService;
 
-                // Reserved by the CLI bin, before webiny.config was evaluated. See
-                // prepareDevServerSession.
-                const session = getDevServerSession();
+                // Ports only. Unlike watch, serve runs what `webiny build` already produced, so the
+                // admin bundle's API URL was fixed at build time and can't be pointed anywhere now —
+                // it has to have been built with a URL that works behind the proxy.
+                const session = await prepareDevServerSession({
+                    apps: params.app ? [params.app] : ["api", "admin"],
+                    enabled: params.proxy
+                });
 
                 const projectSdk = await this.getProjectSdkService.execute();
 
@@ -102,7 +105,7 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 }
 
                 const proxy = session
-                    ? await startDevProxy({ port: session.port, ...readDevServerTargets() })
+                    ? await startDevProxy({ port: session.port, ...session.targets })
                     : undefined;
 
                 if (proxy) {

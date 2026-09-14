@@ -9,36 +9,39 @@ export interface IDevServerSession {
     url: string;
     /** Where the api answers through the proxy, e.g. `http://localhost:3001/api`. */
     apiUrl: string;
-}
-
-/** The parts of the CLI's parsed argv this needs: yargs puts positionals in `_` and `--no-proxy` in `proxy`. */
-export interface IDevServerArgv {
-    _?: (string | number)[];
-    proxy?: boolean;
+    /** Where the proxy forwards to. */
+    targets: { apiPort: number; adminPort: number };
 }
 
 export interface IPrepareDevServerSessionParams {
-    /** The CLI's parsed arguments, used to work out whether this command wants a proxy at all. */
-    argv: IDevServerArgv;
+    /** Apps in this session. One app already has one URL, so a proxy only earns its keep from two. */
+    apps: string[];
+    /** Explicit opt-out, e.g. the CLI's `--no-proxy`. */
+    enabled?: boolean;
+    /**
+     * Whether to point the apps at the proxy, not just reserve its ports. True for `watch`, which
+     * rebuilds both apps in this process and so can still influence what they're built with. False
+     * for `serve`, which runs what `webiny build` already produced: the admin bundle's API URL was
+     * fixed then, and nothing set now can change it.
+     */
+    pointAppsAtProxy?: boolean;
     /** Project root, used to remember the port. Defaults to the working directory. */
     rootFolder?: string;
 }
-
-let currentSession: IDevServerSession | null | undefined;
 
 /**
  * Reserves the ports for a watch/serve session and points the apps at each other, so the developer
  * ends up with a single URL instead of one per app.
  *
- * MUST run before webiny.config is evaluated, which is why `registerServerFeatures` calls it rather
- * than the watch or serve command. The CLI container resolves the project SDK while it is still being
- * constructed (to pick up `<Cli.Command>` extensions), and that evaluates the config and applies its
- * env vars. By the time a command handler runs, `<Admin.ApiUrl>` and `<Infra.ApiUrl>` have already
- * been read and baked, so anything set there is too late to be seen.
+ * Called from the command handler, which is early enough despite webiny.config having been evaluated
+ * before the handler ran. The config is rendered once per distinct render args, and the app-scoped
+ * renders (`{ app: "api" }`, `{ app: "admin" }`) happen inside `projectSdk.watch()` — after this. So
+ * `<Infra.ApiUrl>`'s build param still picks up `WEBINY_API_URL` from here.
  *
- * Setting rather than overriding is deliberate: `applyEnvVars` only fills env vars that are still
- * blank, so writing them first is what gives the proxy priority over the config without having to
- * overrule a URL somebody set on purpose.
+ * `<Admin.ApiUrl>` is different: it emits an env var, and `applyEnvVars` already wrote it during the
+ * bootstrap render. So the admin URLs are OVERWRITTEN rather than filled in. That's the same thing
+ * AWS does in `SetAdminEnvVarsBeforeWatch`, where the real URL only becomes knowable at watch time
+ * from stack output. When the proxy is on, it owns these URLs; `--no-proxy` is the way out.
  *
  * The ports are reserved here rather than left to each app because the proxy has to know where to
  * forward before anything starts, and because both apps auto-advance off a busy port on their own,
@@ -50,10 +53,9 @@ let currentSession: IDevServerSession | null | undefined;
 export async function prepareDevServerSession(
     params: IPrepareDevServerSessionParams
 ): Promise<IDevServerSession | null> {
-    const { argv, rootFolder = process.cwd() } = params;
+    const { apps, enabled, pointAppsAtProxy = false, rootFolder = process.cwd() } = params;
 
-    if (!wantsDevProxy(argv)) {
-        currentSession = null;
+    if (enabled === false || process.env.WEBINY_PROXY === "off" || apps.length < 2) {
         return null;
     }
 
@@ -75,70 +77,33 @@ export async function prepareDevServerSession(
     const url = `http://localhost:${port}`;
     const apiUrl = `${url}${API_PREFIX}`;
 
-    // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so the
-    // same build works on localhost, on a portless domain like https://wby6.localhost, and behind a
-    // real reverse proxy in production — without knowing any of them at build time.
-    setIfUnset("WEBINY_ADMIN_API_URL", API_PREFIX);
+    if (pointAppsAtProxy) {
+        // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so
+        // the same build works on localhost, on a portless domain like https://wby6.localhost, and
+        // behind a real reverse proxy — without knowing any of them at build time.
+        process.env.WEBINY_ADMIN_API_URL = API_PREFIX;
 
-    // The websocket URL too, for the same reason and by the same rule. The admin would otherwise
-    // derive it from the API URL and land in the right place anyway, but only when nothing else sets
-    // it: `<Admin.WebsocketsUrl>` takes priority when present, and a project that pins it to a port
-    // (which is the obvious thing to write) would point the socket somewhere the proxy isn't.
-    setIfUnset("WEBINY_ADMIN_WS_API_URL", API_PREFIX);
+        // The websocket URL too. The admin would otherwise derive it from the API URL and land in the
+        // right place anyway, but only when nothing else sets it: `<Admin.WebsocketsUrl>` takes
+        // priority when present, and a project that pins it to a port (the obvious thing to write)
+        // would point the socket somewhere the proxy isn't.
+        process.env.WEBINY_ADMIN_WS_API_URL = API_PREFIX;
 
-    // The api can't do the same: it hands out absolute URLs (file srcPrefix, the upload endpoint) to
-    // clients that have no page origin to resolve against. This covers plain localhost; behind a
-    // portless domain the origin is only knowable per request, which is what the api's
-    // `x-forwarded-*` fallback handles.
-    setIfUnset("WEBINY_API_URL", apiUrl);
+        // The api can't be relative: it hands out absolute URLs (file srcPrefix, the upload endpoint)
+        // to clients that have no page origin to resolve against. Unlike the two above this one is
+        // still unset at this point — `<Infra.ApiUrl>` emits a build param, not an env var — and the
+        // api-scoped config render that turns it into that build param happens later, inside
+        // `projectSdk.watch()`.
+        process.env.WEBINY_API_URL = apiUrl;
+    }
 
     rememberPort(rootFolder, port);
 
-    currentSession = { port, url, apiUrl };
-    return currentSession;
-}
-
-/**
- * The session prepared for this process, or null when no proxy is running.
- *
- * Module state because of the timing above: the reservation happens while the container holding the
- * command handlers is still being built, so there is nothing to hand the result to. The handlers read
- * it back here when they're ready to start the proxy.
- */
-export function getDevServerSession(): IDevServerSession | null {
-    return currentSession ?? null;
-}
-
-/**
- * Whether this invocation is one the proxy belongs in front of: `watch` or `serve` with no single app
- * named, since one app already has one URL.
- *
- * Works off the CLI's own parsed argv, so `--no-proxy` and the command's positionals are whatever
- * yargs says they are rather than something re-derived here.
- */
-export function wantsDevProxy(argv: IDevServerArgv): boolean {
-    if (process.env.WEBINY_PROXY === "off" || argv.proxy === false) {
-        return false;
-    }
-
-    const positional = (argv._ ?? []).map(String);
-
-    if (positional[0] !== "watch" && positional[0] !== "serve") {
-        return false;
-    }
-
-    // `watch api` / `serve admin`: one app, one URL already.
-    return positional.length === 1;
-}
-
-/**
- * Reads back where the apps actually ended up. Called when the proxy starts rather than reusing the
- * values above, because `.env.<env>` is loaded during SDK init with `override: true` and can move them.
- */
-export function readDevServerTargets(): { apiPort: number; adminPort: number } {
     return {
-        apiPort: Number(process.env.WEBINY_API_PORT),
-        adminPort: Number(process.env.WEBINY_ADMIN_PORT)
+        port,
+        url,
+        apiUrl,
+        targets: { apiPort: Number(apiPort), adminPort: Number(adminPort) }
     };
 }
 
@@ -159,10 +124,4 @@ async function resolveProxyPort(rootFolder: string): Promise<number> {
     }
 
     return findFreePort(DEFAULT_PROXY_PORT);
-}
-
-function setIfUnset(name: string, value: string) {
-    if (!process.env[name]) {
-        process.env[name] = value;
-    }
 }

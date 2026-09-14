@@ -14,8 +14,7 @@ import { WatchOutputGate } from "./WatchOutputGate.js";
 import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
 import {
-    getDevServerSession,
-    readDevServerTargets,
+    prepareDevServerSession,
     startDevProxy
 } from "@webiny/project-server/serve/devServer/index.js";
 
@@ -110,10 +109,14 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     }
                 }
 
-                // Reserved by the CLI bin, long before this handler: the ports and URLs have to be in
-                // place before webiny.config is evaluated, which happens while the container holding
-                // this command is still being built. See prepareDevServerSession.
-                const session = getDevServerSession();
+                // Before the `projectSdk.watch()` calls below, which is what matters: those are where
+                // each app's workspace is prepared and its config re-rendered, so that's where the
+                // URLs set here are picked up. See prepareDevServerSession.
+                const session = await prepareDevServerSession({
+                    apps,
+                    enabled: params.proxy,
+                    pointAppsAtProxy: true
+                });
 
                 const projectSdk = await this.getProjectSdkService.execute();
 
@@ -136,7 +139,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // slow and silent, and a developer who opens the URL during it should get a page that
                 // waits for the apps rather than a connection error.
                 const proxy = session
-                    ? await startDevProxy({ port: session.port, ...readDevServerTargets() })
+                    ? await startDevProxy({ port: session.port, ...session.targets })
                     : undefined;
 
                 // With a single app the app's own startup line is easy enough to spot; with several, the
