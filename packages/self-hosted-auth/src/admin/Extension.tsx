@@ -1,23 +1,13 @@
 import React from "react";
+import { resolveGraphqlUrl } from "@webiny/app-admin/base/resolveApiUrl.js";
 import { SelfHostedLogin } from "./SelfHostedLogin.js";
 
 /*
- * Resolve the GraphQL endpoint the login mutation is sent to. Mirrors the admin app's own URL
- * resolution: the configured API URL wins (baked by `<Admin.ApiUrl>` into WEBINY_ADMIN_API_URL),
- * otherwise same-origin `/graphql` (deployed self-hosted admin served behind the same domain as
- * the API).
+ * The login screen renders before the user is authenticated, so it can't read the endpoint off
+ * EnvConfig the way the rest of the app does: it sends its mutation itself rather than through the
+ * container's GraphQL client. It uses the admin's own resolver rather than a second copy of the
+ * rules, so a relative API URL (what the dev proxy bakes in) resolves the same way in both.
  */
-const resolveGraphqlUrl = (): string => {
-    const configuredApiUrl = process.env.WEBINY_ADMIN_API_URL;
-    if (configuredApiUrl && configuredApiUrl !== "undefined") {
-        return `${configuredApiUrl}/graphql`;
-    }
-    if (typeof window !== "undefined") {
-        return `${window.location.origin}/graphql`;
-    }
-    return "/graphql";
-};
-
 export const Extension = () => {
     return <SelfHostedLogin graphqlUrl={resolveGraphqlUrl()} />;
 };

@@ -1,4 +1,15 @@
 /**
+ * Composition-root bootstrap: works out the API, GraphQL and WebSocket URLs that
+ * `createRootContainer` seeds `EnvConfig` with.
+ *
+ * Plain functions rather than a feature on purpose. `EnvConfig` IS the abstraction here, and
+ * everything downstream injects it (`WebinySdk`, `MainGraphQLClient`, `WcpService`, ...). These run
+ * one step earlier, to produce the values that configure it, so a container is not yet available to
+ * resolve them from. That's also why this is one of the few places allowed to read `process.env`
+ * directly, alongside the other env reads sitting inline in `createRootContainer`.
+ */
+
+/**
  * Resolves a configured API URL to an absolute one against the page origin, so the value baked into
  * the bundle can be relative.
  *
