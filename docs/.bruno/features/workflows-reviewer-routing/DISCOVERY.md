@@ -148,6 +148,9 @@ a second flag on this schema.
 | Editor validates targets with `listStepReviewers(stepId)` | same annotated query the manual picker uses; no new endpoint |
 | Resolution is its own use case returning a decision, not logic inside the write path | `ResolveStepAssigneeUseCase` returns `{assignee, matchedRule, source, reason}` |
 | Rule inspector is a server dry-run, `simulateAssignment(...)` | runs the real resolver and discards the result, so the explanation cannot drift from behaviour |
+| Candidates are never stored. Computed per resolution from `step.teams`, minus requester, minus excluded | snapshot already carries the teams |
+| `wbyWorkflowAssignmentStat` per user: `openCount`, `lastAssignedOn` | one read serves both strategies, and idle reviewers are visible — they are invisible to any query over open states |
+| Round-robin needs no cursor | order by `openCount`, then `lastAssignedOn`, then user id |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
@@ -155,7 +158,15 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 ## Still open
 
-- Round-robin cursor placement.
+- Where the team-to-members lookup lives: a `teams` filter on `ListUsersInput.where` in
+  `api-core`, a dedicated use case there, or kept private to `api-workflows`. Note
+  `ListTeamsUseCase` requires the `security.team` permission while `ListUserTeamsUseCase`
+  deliberately runs `withoutAuthorization` — an editor picking a reviewer should not need
+  that permission.
+- Keeping `wbyWorkflowAssignmentStat` correct: `openCount` must be decremented on approve,
+  reject, cancel and reassign, and moved when `start()` or `takeOver()` changes the holder.
+  A missed decrement leaves a reviewer permanently "busy", so a rebuild path is needed.
+  No backfill is required for existing tenants — nothing was ever assigned before this.
 
 ## Rough order
 
