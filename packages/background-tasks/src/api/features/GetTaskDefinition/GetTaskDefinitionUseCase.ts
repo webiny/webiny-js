@@ -62,6 +62,14 @@ type HookName = "onBeforeTrigger" | "onDone" | "onError" | "onAbort" | "onMaxIte
  *
  * The handler's hook is guarded so a throwing user hook still lets the decorator's half run, which is
  * what the old single-object implementation did via its own `safeCall`.
+ *
+ * TRANSITIONAL. The chaining exists only because a definition can still carry hooks. It should not:
+ * a hook needs dependencies, and dependencies on a definition are what make looking one up by id
+ * expensive, which is the thing this whole split is removing. The final PR moves hooks onto handlers
+ * only, at which point this function takes them from the handler and the definition contributes
+ * metadata alone. `SelfCleaningTaskDecorator` splits to follow: its `databaseLogs` override stays a
+ * definition decorator, and its cleanup hooks become a `TaskHandler` decorator reading
+ * `params.definition.selfCleanup`.
  */
 const toRunnable = <I extends TaskDefinition.TaskInput, O extends TaskDefinition.TaskOutput>(
     definition: TaskDefinition.Interface,
