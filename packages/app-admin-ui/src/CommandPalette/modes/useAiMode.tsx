@@ -78,7 +78,7 @@ export const useAiMode = (scrollRef: React.RefObject<HTMLDivElement | null>): Pa
 
     return useMemo(
         () => ({
-            chrome: {
+            appearance: {
                 icon: <AiIcon />,
                 iconColor: "accent" as const,
                 iconLabel: "Ask AI",

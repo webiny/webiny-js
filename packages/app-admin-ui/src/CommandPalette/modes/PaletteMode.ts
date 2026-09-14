@@ -16,7 +16,7 @@ export interface PaletteModeKeyContext {
 }
 
 /** How the palette should present itself while this mode is active. */
-export interface PaletteModeChrome {
+export interface PaletteModeAppearance {
     /** Rendered in the input row, ahead of the input itself. */
     icon: React.ReactNode;
     iconColor: "accent" | "neutral-light";
@@ -40,12 +40,12 @@ export interface PaletteModeChrome {
  * The point of the split is that adding a mode does not mean editing the palette: everything AI
  * lives in `useAiMode`, and the palette only knows this interface.
  *
- * Modes are hooks rather than components because their state has to reach the CHROME as well as the
- * body. The AI placeholder changes once a conversation has started, and a component rendered into
- * the body slot cannot tell the input row above it anything.
+ * Modes are hooks rather than components because their state has to reach the APPEARANCE as well as
+ * the body. The AI placeholder changes once a conversation has started, and a component rendered
+ * into the body slot cannot tell the input row above it anything.
  */
 export interface PaletteMode {
-    chrome: PaletteModeChrome;
+    appearance: PaletteModeAppearance;
     /** Rendered in the palette's scroll area, in place of the command list. */
     body: React.ReactNode;
     /**

@@ -183,8 +183,8 @@ const CommandPaletteBase = () => {
 
     const askAiFromQuery = () => enterMode(query);
 
-    /* Null while the command list is showing, which is what every `chrome ?` below tests for. */
-    const chrome = modeActive ? mode.chrome : null;
+    /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
+    const appearance = modeActive ? mode.appearance : null;
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
@@ -224,7 +224,11 @@ const CommandPaletteBase = () => {
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
                 className="flex w-full animate-in flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
-                style={{ maxWidth: 680, maxHeight: "70vh", height: chrome?.tall ? "70vh" : "45vh" }}
+                style={{
+                    maxWidth: 680,
+                    maxHeight: "70vh",
+                    height: appearance?.tall ? "70vh" : "45vh"
+                }}
             >
                 {active ? (
                     <CommandDetail
@@ -236,18 +240,18 @@ const CommandPaletteBase = () => {
                     <Command
                         label="Command palette"
                         // cmdk filtering is for the command list; a mode renders its own body.
-                        shouldFilter={!chrome}
+                        shouldFilter={!appearance}
                         style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
                         {/* Input row — the same slot in every mode, so switching never moves it. */}
                         <div className="flex flex-none items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
                             <Icon
-                                icon={chrome ? chrome.icon : <SearchIcon />}
-                                color={chrome ? chrome.iconColor : "neutral-light"}
+                                icon={appearance ? appearance.icon : <SearchIcon />}
+                                color={appearance ? appearance.iconColor : "neutral-light"}
                                 size={"md"}
-                                label={chrome ? chrome.iconLabel : "Search"}
+                                label={appearance ? appearance.iconLabel : "Search"}
                             />
-                            {chrome?.badge ?? null}
+                            {appearance?.badge ?? null}
                             <Command.Input
                                 ref={inputRef}
                                 autoFocus
@@ -255,7 +259,9 @@ const CommandPaletteBase = () => {
                                 onValueChange={setQuery}
                                 spellCheck={false}
                                 placeholder={
-                                    chrome ? chrome.placeholder : "Search for pages and actions…"
+                                    appearance
+                                        ? appearance.placeholder
+                                        : "Search for pages and actions…"
                                 }
                                 className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
                             />
@@ -267,7 +273,7 @@ const CommandPaletteBase = () => {
                             className="p-xs-plus"
                             style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
                         >
-                            {chrome ? (
+                            {appearance ? (
                                 mode.body
                             ) : (
                                 <Command.List>
@@ -290,8 +296,8 @@ const CommandPaletteBase = () => {
                         </div>
 
                         <PaletteFooter
-                            label={chrome ? chrome.footerLabel : "Webiny command palette"}
-                            hints={chrome ? chrome.hints : COMMAND_HINTS}
+                            label={appearance ? appearance.footerLabel : "Webiny command palette"}
+                            hints={appearance ? appearance.hints : COMMAND_HINTS}
                         />
                     </Command>
                 )}
