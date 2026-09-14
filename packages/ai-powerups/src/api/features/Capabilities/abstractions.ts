@@ -33,6 +33,33 @@ export namespace AiCapability {
     export type Interface = IAiCapability;
 }
 
+/**
+ * What a capability looks like to a caller outside the api.
+ *
+ * `guidance` is deliberately absent: a prompt is implementation, and there is no reason to ship ours
+ * over the wire to anyone who can read settings.
+ */
+export interface IAiCapabilitySummary {
+    id: string;
+    label: string;
+    description: string;
+    defaultRole: AiModelRoleId;
+}
+
+export interface IListAiCapabilitiesUseCase {
+    execute(): Promise<IAiCapabilitySummary[]>;
+}
+
+/** Everything registered, for the settings screen to render a row per feature. */
+export const ListAiCapabilitiesUseCase = createAbstraction<IListAiCapabilitiesUseCase>(
+    "AiPowerUpsListAiCapabilitiesUseCase"
+);
+
+export namespace ListAiCapabilitiesUseCase {
+    export type Interface = IListAiCapabilitiesUseCase;
+    export type Summary = IAiCapabilitySummary;
+}
+
 export interface IResolvedAiCapability {
     capabilityId: string;
     /** Fully qualified, e.g. `"anthropic/claude-sonnet-4-5"`. */
