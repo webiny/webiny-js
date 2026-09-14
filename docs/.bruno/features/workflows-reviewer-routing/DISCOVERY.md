@@ -110,6 +110,9 @@ a second flag on this schema.
   assignee.
 - **Target context is missing locale.** `CmsWorkflowStateContextProvider` returns
   `{folderId, modelId}`. Locale and requester teams aren't captured.
+- **No notification handlers.** `NotificationTransport` and `MailNotificationTransport` are
+  registered, and every state transition publishes an event, but no handler subscribes to any
+  of them. Nothing sends notifications today, and `step.notifications` is dead config.
 - **No tenant settings surface** for the exclusion list. Precedent to copy:
   `webhooks/src/api/models/WebhookSettingsModel.ts` — a `.private()` model, auto-created on
   first read. CMS entry keys are `T#<tenant>#CMS#CME#M#<modelId>#<type>` — tenant and model,
@@ -131,6 +134,10 @@ a second flag on this schema.
 | Exclusions: one entry per exclusion in `wbyWorkflowExclusion` (`userId`, `reason`, `until`) | queryable and paginated |
 | Lapsed exclusions are filtered by `until` at read, not cleaned up | brief says they lapse on their own |
 | `listStepReviewers(stepId)` returns candidates annotated `{user, excluded, reason}` | one place owns eligibility, so picker and strategies can't drift |
+| Reassign is a new use case, not an extension of `takeOver` | different target, permission and allowed step state |
+| New permission entity `workflows.reassign` | grantable without workflow editing |
+| No assignment history — step keeps `assignee`, `assignedBy`, `assignedOn`, `assignmentSource` only | accepted trade-off; brief asked for an audit entry |
+| One generic notification handler for all workflow state events | `step.notifications` is configured today and consumed by nothing |
 
 Safe to do: two of four `updateStep` callers already pass `savedBy` explicitly, and the
 other two run only when the actor is already the owner. Also note record-level `savedBy`
@@ -144,7 +151,8 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 1. Team → members lookup in `api-core`.
 2. `currentAssignee` + reassignment, defined against the existing takeover path.
-3. Strategies (round-robin, then least-loaded).
-4. Routing rules.
-5. Exclusion list + its settings surface.
-6. Manual selection at submit.
+3. Notification handler for the existing state events.
+4. Strategies (round-robin, then least-loaded).
+5. Routing rules.
+6. Exclusion list + its settings surface.
+7. Manual selection at submit.
