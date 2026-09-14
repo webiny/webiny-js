@@ -106,13 +106,20 @@ export class CommandPalettePresenter implements Abstraction.Interface {
             return;
         }
 
+        if (cmd.entersMode) {
+            // A mode replaces the command list and keeps the input row, so the palette stays open.
+            this.enterMode();
+            return;
+        }
+
         if (cmd.detailView) {
             this.activeCommandName = name;
             this.isOpen = true;
-        } else {
-            cmd.execute();
-            this.close();
+            return;
         }
+
+        cmd.execute?.();
+        this.close();
     }
 
     cancelCommand(): void {

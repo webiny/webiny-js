@@ -22,9 +22,15 @@ export interface ICommand {
     keywords?: string[];
     /* Global hotkey (is-hotkey syntax, e.g. "cmd+shift+m") that runs this command. */
     shortcut?: string;
-    execute(params?: unknown): void | Promise<void>;
+    /* Omitted by a command that only selects a mode; there is no action to run. */
+    execute?(params?: unknown): void | Promise<void>;
     /* Optional React view rendered inside the palette when the command is selected. */
     detailView?: React.ComponentType<CommandDetailProps>;
+    /*
+     * Selecting this command switches the palette into a mode rather than doing something. A mode
+     * needs the shared input row, so the palette stays open and `execute` is never called.
+     */
+    entersMode?: boolean;
 }
 
 export const Command = createAbstraction<ICommand>("Command");

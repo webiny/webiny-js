@@ -14,7 +14,7 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { AI_COMMAND_NAME, NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
+import { NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
@@ -68,16 +68,7 @@ const CommandPaletteBase = () => {
         aiMode.reset();
     }, [presenter, aiMode]);
 
-    const enterMode = useCallback(
-        (seed?: string) => {
-            presenter.enterMode();
-            aiMode.enter(seed);
-            // The input is shared across modes, so focus has to be restored explicitly after the
-            // surrounding tree swaps.
-            requestAnimationFrame(() => inputRef.current?.focus());
-        },
-        [presenter, aiMode]
-    );
+    const enterMode = useCallback(() => presenter.enterMode(), [presenter]);
 
     const exitMode = useCallback(() => {
         presenter.exitMode();
@@ -94,15 +85,9 @@ const CommandPaletteBase = () => {
 
     const runCommand = useCallback(
         (name: string) => {
-            // This command selects a palette MODE, not an action. A mode needs the shared input row,
-            // so the palette switches into it rather than letting the presenter open a detail view.
-            if (name === AI_COMMAND_NAME) {
-                enterMode();
-                return;
-            }
             presenter.useCommand(name);
         },
-        [presenter, enterMode]
+        [presenter]
     );
 
     /*
@@ -170,6 +155,18 @@ const CommandPaletteBase = () => {
     }, [menus, vm.commands, navigateTo, runCommand]);
 
     /*
+     * The input is shared across modes, so focus has to be restored after the surrounding tree swaps.
+     * Driven by the presenter's state rather than by each entry point, since a mode can now also be
+     * entered by selecting the command, which never reaches this component.
+     */
+    useEffect(() => {
+        if (!vm.modeActive) {
+            return;
+        }
+        requestAnimationFrame(() => inputRef.current?.focus());
+    }, [vm.modeActive]);
+
+    /*
      * Let the active mode keep its own content in view. Runs on every render while a mode is showing,
      * because the body is what changes and the palette cannot tell what inside it moved.
      */
@@ -186,7 +183,12 @@ const CommandPaletteBase = () => {
 
     const active = vm.activeCommand;
 
-    const askAiFromQuery = () => enterMode(vm.query);
+    /* Carries what was already typed, so a search that found nothing becomes the question as-is. */
+    const askAiFromQuery = () => {
+        const seed = vm.query;
+        presenter.enterMode();
+        aiMode.enter(seed);
+    };
 
     /* Null while the command list is showing, which is what every `appearance ?` below tests for. */
     const appearance = vm.modeActive ? aiMode.appearance : null;
