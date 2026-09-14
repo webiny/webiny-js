@@ -238,4 +238,36 @@ describe("Sort mapper for custom GraphQL sort input", async () => {
 
         expect(result).toEqual(["values_field123_ASC", "field456_DESC"]);
     });
+    /*
+     * Field IDs containing an underscore. The pattern excluded `_` from the field name, so
+     * `on_sale_DESC` matched nothing — and an unmatched directive is DROPPED, which means the query
+     * ran unsorted while the caller believed it was sorted.
+     */
+    describe("field IDs containing an underscore", () => {
+        const fields = [{ fieldId: "on_sale" }, { fieldId: "price" }] as CmsModel["fields"];
+
+        it("should prefix an underscored field", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: ["on_sale_DESC"] as CmsEntryListSort, fields })).toEqual([
+                "values_on_sale_DESC"
+            ]);
+        });
+
+        it("should not double-prefix an underscored field", async () => {
+            const mapper = await resolveMapper();
+
+            expect(
+                mapper.map({ input: ["values_on_sale_ASC"] as CmsEntryListSort, fields })
+            ).toEqual(["values_on_sale_ASC"]);
+        });
+
+        it("should leave an underscored name matching no field alone", async () => {
+            const mapper = await resolveMapper();
+
+            expect(mapper.map({ input: ["on_hold_DESC"] as CmsEntryListSort, fields })).toEqual([
+                "on_hold_DESC"
+            ]);
+        });
+    });
 });
