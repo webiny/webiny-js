@@ -7,27 +7,22 @@ import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 /*
  * Feature flag resolution (license decorator).
  *
- * Three kinds of flag, and only one of them is Webiny's to sell:
+ * Two kinds of flag, and only one of them is Webiny's to sell:
  *
  * LICENSE-GOVERNED (listed in LICENSE_CHECKS) — the license is the authority:
  * 1. No license, or license blocks the flag → false, config ignored
  * 2. License allows + config unset          → true (the license grants it)
  * 3. License allows + config=false          → false (config may disable, never re-enable)
  *
- * ON BY DEFAULT (listed in DEFAULT_ON) — Webiny features that are enabled without a project
- * configuring anything:
- * 4. License present + config unset  → true
- * 5. License present + config=false  → false (config disables)
- * 6. No license                      → falls through to the rules below
- *
  * EVERYTHING ELSE — the project's own flags. The config decides, and nothing is assumed:
- * 7. config=true  → true
- * 8. config=false or unset → false
+ * 4. config=true           → true
+ * 5. config=false or unset → false
  *
- * Rule 8 is the one that changed. This branch used to be "on unless explicitly disabled" whenever a
- * license existed, which made every unrecognised name true — an undeclared flag, or a typo such as
- * `aiPowerupz`. The features that genuinely ship on are now named in DEFAULT_ON instead, so a flag
- * nobody declared is off, and declaring one in the config works with or without a license.
+ * There is deliberately no third kind. A set of flags used to be enabled by default here, which was
+ * a workaround for capabilities the license could not express: rather than gate them properly they
+ * were left on for anyone holding any license at all. It also meant EVERY unrecognised name resolved
+ * to true, so an undeclared flag and a typo both read as enabled. A feature that should be sold
+ * belongs in LICENSE_CHECKS and on the license; anything else is the project's own to switch on.
  */
 
 const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
@@ -44,28 +39,6 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     "aiPowerups.fileManager.imageEnrichment": l => l.canUseAiImageEnrichment(),
     abTesting: l => l.canUseAbTesting()
 };
-
-/**
- * Enabled unless a project turns them off. The license does not sell these; they are simply on.
- *
- * These eight were ALREADY on by default before this list existed, as a side effect of the branch
- * below returning true for anything not explicitly disabled. That is also why an undeclared flag or
- * a typo came back true. Naming them here is what lets the default flip to off for everything else
- * without any of them going dark.
- *
- * `aiPowerups.fileManager.imageEnrichment` is absent on purpose: it is in LICENSE_CHECKS above, so
- * the license governs it.
- */
-const DEFAULT_ON = new Set<string>([
-    "aiPowerups",
-    "aiPowerups.websiteBuilder.pageGeneration",
-    "aiPowerups.websiteBuilder.pageTranslation",
-    "aiPowerups.lexicalGeneration",
-    "aiPowerups.cms.entryGeneration",
-    "aiPowerups.cms.entryComparison",
-    "aiPowerups.cms.entryTranslation",
-    "remoteComponents"
-]);
 
 class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
     constructor(
@@ -84,14 +57,6 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
             // License allows — config can only disable, not re-enable blocked features.
             return !this.base.isExplicitlyDisabled(name);
         }
-        /*
-         * On by default, so a project does not have to list them to get them. Still gated on a
-         * license existing at all, which is the behaviour these have always had.
-         */
-        if (DEFAULT_ON.has(name) && this.license.getRawLicense()) {
-            return !this.base.isExplicitlyDisabled(name);
-        }
-
         /*
          * Everything else is the project's own, and the config is the only thing that decides. No
          * default: `isEnabled` on the base is true only for an explicitly configured `true`.
