@@ -14,7 +14,8 @@ import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
  * 2. License allows + config unset          → true (the license grants it)
  * 3. License allows + config=false          → false (config may disable, never re-enable)
  *
- * SHIPPED ON (listed in DEFAULT_ON) — Webiny features a project gets without asking:
+ * ON BY DEFAULT (listed in DEFAULT_ON) — Webiny features that are enabled without a project
+ * configuring anything:
  * 4. License present + config unset  → true
  * 5. License present + config=false  → false (config disables)
  * 6. No license                      → falls through to the rules below
@@ -45,11 +46,15 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
 };
 
 /**
- * Not sold, but on unless a project turns them off.
+ * Enabled unless a project turns them off. The license does not sell these; they are simply on.
  *
- * Listed explicitly rather than inferred from "everything unrecognised", so that adding a flag is a
- * decision someone makes here. `aiPowerups.fileManager.imageEnrichment` is absent on purpose: it is
- * in LICENSE_CHECKS above, so the license governs it.
+ * These eight were ALREADY on by default before this list existed, as a side effect of the branch
+ * below returning true for anything not explicitly disabled. That is also why an undeclared flag or
+ * a typo came back true. Naming them here is what lets the default flip to off for everything else
+ * without any of them going dark.
+ *
+ * `aiPowerups.fileManager.imageEnrichment` is absent on purpose: it is in LICENSE_CHECKS above, so
+ * the license governs it.
  */
 const DEFAULT_ON = new Set<string>([
     "aiPowerups",
@@ -80,8 +85,8 @@ class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {
             return !this.base.isExplicitlyDisabled(name);
         }
         /*
-         * Webiny features that ship enabled, so a project does not have to list them to get them.
-         * Still gated on a license existing at all, which is the behaviour these have always had.
+         * On by default, so a project does not have to list them to get them. Still gated on a
+         * license existing at all, which is the behaviour these have always had.
          */
         if (DEFAULT_ON.has(name) && this.license.getRawLicense()) {
             return !this.base.isExplicitlyDisabled(name);
