@@ -61,6 +61,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "ThreeGridBox",
                             icon: { type: "icon", name: "fas/3" },
                             description: "Section with three boxes",
+                            componentName: "Article/ThreeGridBox",
                             fields: f => ({
                                 boxes: f
                                     .object()
@@ -93,6 +94,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Banner",
                             icon: { type: "icon", name: "fas/rectangle-ad" },
                             description: "Call out banner",
+                            componentName: "Article/Banner",
                             fields: f => ({
                                 title: f.text().renderer("textInput").label("Title"),
                                 actionLabel: f.text().renderer("textInput").label("Action - Label"),
@@ -106,6 +108,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Richtextfield",
                             icon: { type: "icon", name: "fas/font" },
                             description: "Rich text field",
+                            componentName: "Article/RichText",
                             fields: f => ({
                                 content: f.richText().renderer("lexicalEditor").label("Content")
                             }),

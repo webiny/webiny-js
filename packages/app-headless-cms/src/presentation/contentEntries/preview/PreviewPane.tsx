@@ -45,7 +45,7 @@ export const PreviewPane = ({ domain, previewPath, entryId, entryData }: Preview
     }, [displayUrl]);
 
     const iframeSrc = (() => {
-        const editorPath = buildEditorUrl(domain);
+        const editorPath = buildEditorUrl(domain, previewPath);
         const url = new URL(editorPath);
         url.searchParams.set("wb.editing", "true");
         url.searchParams.set("wb.type", "entry");

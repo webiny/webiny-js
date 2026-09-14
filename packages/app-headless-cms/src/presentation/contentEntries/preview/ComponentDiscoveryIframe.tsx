@@ -5,15 +5,19 @@ import { buildEditorUrl } from "./resolvePreviewUrl.js";
 
 interface ComponentDiscoveryIframeProps {
     domain: string;
+    previewPath: string;
 }
 
-export const ComponentDiscoveryIframe = ({ domain }: ComponentDiscoveryIframeProps) => {
+export const ComponentDiscoveryIframe = ({
+    domain,
+    previewPath
+}: ComponentDiscoveryIframeProps) => {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const messengerRef = useRef<Messenger | null>(null);
     const presenter = useLivePreviewPresenter();
 
     const iframeSrc = (() => {
-        const editorPath = buildEditorUrl(domain);
+        const editorPath = buildEditorUrl(domain, previewPath);
         const url = new URL(editorPath);
         url.searchParams.set("wb.editing", "true");
         url.searchParams.set("wb.type", "entry");
