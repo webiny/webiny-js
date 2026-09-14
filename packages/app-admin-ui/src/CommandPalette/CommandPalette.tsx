@@ -10,18 +10,13 @@ import { useContainer, useFeature } from "@webiny/app";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
 import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
-import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/keyboard_arrow_up.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
 import { AI_COMMAND_NAME, NAVIGATION_GROUP, PALETTE_HOTKEY_ZINDEX } from "./constants.js";
 import type { CommandGroup } from "./types.js";
 import { commandVmsToGroups, deriveNavigationRows } from "./deriveRows.js";
 import {
-    AiModeBadge,
-    AiSuggestions,
-    AiTurn,
     CommandDetail,
     CommandItemRow,
     GroupHeading,
@@ -31,7 +26,7 @@ import {
     PaletteFooter,
     type Hint
 } from "./components/index.js";
-import { useAiChat } from "./useAiChat.js";
+import { useAiMode } from "./modes/index.js";
 
 const COMMAND_HINTS: Hint[] = [
     {
@@ -47,22 +42,22 @@ const COMMAND_HINTS: Hint[] = [
     { keys: "space", label: "Ask AI" }
 ];
 
-const AI_HINTS: Hint[] = [
-    { keys: <HintIcon element={<ReturnIcon />} />, label: "Ask" },
-    { keys: <HintIcon element={<BackspaceIcon />} />, label: "Commands" },
-    { keys: "esc", label: "Close" }
-];
-
 const CommandPaletteBase = () => {
     const [query, setQuery] = useState("");
-    const [aiMode, setAiMode] = useState(false);
+    const [modeActive, setModeActive] = useState(false);
     const { presenter } = useFeature(CommandPaletteFeature);
     const { menus } = useAdminConfig();
     const container = useContainer();
     const inputRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const { vm } = presenter;
-    const ai = useAiChat();
+
+    /*
+     * One mode today. The palette talks to it only through `PaletteMode`, so everything the
+     * assistant needs lives in `useAiMode` rather than here. A second mode turns this into a
+     * registry; nothing above this line has to change for that.
+     */
+    const mode = useAiMode(scrollRef);
 
     useEffect(() => {
         presenter.init();
@@ -71,29 +66,27 @@ const CommandPaletteBase = () => {
     const close = useCallback(() => {
         presenter.close();
         setQuery("");
-        setAiMode(false);
-        ai.reset();
-    }, [presenter, ai]);
+        setModeActive(false);
+        mode.reset();
+    }, [presenter, mode]);
 
-    const enterAiMode = useCallback(
+    const enterMode = useCallback(
         (seed?: string) => {
-            setAiMode(true);
+            setModeActive(true);
             setQuery("");
-            if (seed?.trim()) {
-                ai.ask(seed);
-            }
+            mode.enter(seed);
             // The input is shared across modes, so focus has to be restored explicitly after the
             // surrounding tree swaps.
             requestAnimationFrame(() => inputRef.current?.focus());
         },
-        [ai]
+        [mode]
     );
 
-    const exitAiMode = useCallback(() => {
-        setAiMode(false);
+    const exitMode = useCallback(() => {
+        setModeActive(false);
         setQuery("");
-        ai.reset();
-    }, [ai]);
+        mode.reset();
+    }, [mode]);
 
     const navigateTo = useCallback(
         (to: string) => {
@@ -105,15 +98,15 @@ const CommandPaletteBase = () => {
 
     const runCommand = useCallback(
         (name: string) => {
-            // The AI command is a palette MODE, not an action — it needs the shared input row, so the
-            // palette handles it here instead of letting the presenter open a detail view.
+            // This command selects a palette MODE, not an action. A mode needs the shared input row,
+            // so the palette switches into it rather than letting the presenter open a detail view.
             if (name === AI_COMMAND_NAME) {
-                enterAiMode();
+                enterMode();
                 return;
             }
             presenter.useCommand(name);
         },
-        [presenter, enterAiMode]
+        [presenter, enterMode]
     );
 
     /*
@@ -130,7 +123,7 @@ const CommandPaletteBase = () => {
                 if (!vm.isOpen) {
                     presenter.open();
                     setQuery("");
-                    setAiMode(false);
+                    setModeActive(false);
                     return;
                 }
 
@@ -143,8 +136,8 @@ const CommandPaletteBase = () => {
                     return;
                 }
 
-                if (!aiMode) {
-                    enterAiMode();
+                if (!modeActive) {
+                    enterMode();
                     return;
                 }
 
@@ -159,7 +152,15 @@ const CommandPaletteBase = () => {
             },
             ...presenter.shortcutKeys
         }),
-        [presenter, presenter.shortcutKeys, vm.isOpen, vm.activeCommand, aiMode, enterAiMode, close]
+        [
+            presenter,
+            presenter.shortcutKeys,
+            vm.isOpen,
+            vm.activeCommand,
+            modeActive,
+            enterMode,
+            close
+        ]
     );
 
     useHotkeys({ zIndex: PALETTE_HOTKEY_ZINDEX, keys });
@@ -174,69 +175,41 @@ const CommandPaletteBase = () => {
         return result;
     }, [menus, vm.commands, navigateTo, runCommand]);
 
-    // Keep the newest turn in view; answers are long enough to push earlier ones off-screen.
-    useEffect(() => {
-        if (aiMode) {
-            scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-        }
-    }, [aiMode, ai.turns, ai.busy]);
-
     if (!vm.isOpen) {
         return null;
     }
 
     const active = vm.activeCommand;
 
-    let placeholder = "Search for pages and actions…";
-    if (aiMode && ai.turns.length > 0) {
-        placeholder = "Ask a follow-up…";
-    } else if (aiMode) {
-        placeholder = "Ask about your content…";
-    }
+    const askAiFromQuery = () => enterMode(query);
 
-    const askAiFromQuery = () => enterAiMode(query);
-
-    let footerLabel = "Webiny command palette";
-    let hints = COMMAND_HINTS;
-
-    if (aiMode) {
-        footerLabel = "Webiny AI";
-        hints = AI_HINTS;
-    }
+    /* Null while the command list is showing, which is what every `chrome ?` below tests for. */
+    const chrome = modeActive ? mode.chrome : null;
 
     const onKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Escape") {
             e.preventDefault();
             if (active) {
                 presenter.cancelCommand();
-            } else if (aiMode) {
-                exitAiMode();
+            } else if (modeActive) {
+                exitMode();
             } else {
                 close();
             }
             return;
         }
 
-        if (aiMode) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                ai.ask(query);
-                setQuery("");
-                return;
-            }
-            // Backspace on an empty input leaves AI mode, mirroring how space entered it.
-            if (e.key === "Backspace" && query === "") {
-                e.preventDefault();
-                exitAiMode();
-            }
+        if (modeActive) {
+            // The mode decides what its keys mean; anything it declines is simply ignored here.
+            mode.handleKey(e, { query, setQuery, exit: exitMode });
             return;
         }
 
-        // Space on an EMPTY query enters AI mode. Gated on `query === ""` so space stays an ordinary
+        // Space on an EMPTY query enters the mode. Gated on `query === ""` so space stays an ordinary
         // character the moment there is anything to search — "new entry" must keep working.
         if (e.key === " " && query === "") {
             e.preventDefault();
-            enterAiMode();
+            enterMode();
         }
     };
 
@@ -251,7 +224,7 @@ const CommandPaletteBase = () => {
                 onClick={e => e.stopPropagation()}
                 onKeyDown={onKeyDown}
                 className="flex w-full animate-in flex-col overflow-hidden rounded-lg border border-neutral-dimmed bg-neutral-base shadow-xxl duration-150 zoom-in-95 slide-in-from-top-2"
-                style={{ maxWidth: 680, maxHeight: "70vh", height: aiMode ? "70vh" : "45vh" }}
+                style={{ maxWidth: 680, maxHeight: "70vh", height: chrome?.tall ? "70vh" : "45vh" }}
             >
                 {active ? (
                     <CommandDetail
@@ -262,25 +235,28 @@ const CommandPaletteBase = () => {
                 ) : (
                     <Command
                         label="Command palette"
-                        shouldFilter={!aiMode}
+                        // cmdk filtering is for the command list; a mode renders its own body.
+                        shouldFilter={!chrome}
                         style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}
                     >
                         {/* Input row — the same slot in every mode, so switching never moves it. */}
                         <div className="flex flex-none items-center gap-sm border-b border-neutral-subtle px-md py-sm-plus">
                             <Icon
-                                icon={aiMode ? <AiIcon /> : <SearchIcon />}
-                                color={aiMode ? "accent" : "neutral-light"}
+                                icon={chrome ? chrome.icon : <SearchIcon />}
+                                color={chrome ? chrome.iconColor : "neutral-light"}
                                 size={"md"}
-                                label={aiMode ? "Ask AI" : "Search"}
+                                label={chrome ? chrome.iconLabel : "Search"}
                             />
-                            {aiMode ? <AiModeBadge /> : null}
+                            {chrome?.badge ?? null}
                             <Command.Input
                                 ref={inputRef}
                                 autoFocus
                                 value={query}
                                 onValueChange={setQuery}
                                 spellCheck={false}
-                                placeholder={placeholder}
+                                placeholder={
+                                    chrome ? chrome.placeholder : "Search for pages and actions…"
+                                }
                                 className="min-w-0 flex-1 border-0 bg-transparent text-lg text-neutral-primary outline-none"
                             />
                             <Kbd>esc</Kbd>
@@ -291,21 +267,8 @@ const CommandPaletteBase = () => {
                             className="p-xs-plus"
                             style={{ flex: 1, minHeight: 0, overflowY: "auto" }}
                         >
-                            {aiMode ? (
-                                ai.turns.length === 0 ? (
-                                    <AiSuggestions onAsk={ai.ask} />
-                                ) : (
-                                    ai.turns.map((turn, index) => (
-                                        <AiTurn
-                                            key={index}
-                                            turn={turn}
-                                            initials="You"
-                                            busy={ai.busy}
-                                            onApprove={() => ai.decide(index, true)}
-                                            onReject={() => ai.decide(index, false)}
-                                        />
-                                    ))
-                                )
+                            {chrome ? (
+                                mode.body
                             ) : (
                                 <Command.List>
                                     <Command.Empty>
@@ -326,7 +289,10 @@ const CommandPaletteBase = () => {
                             )}
                         </div>
 
-                        <PaletteFooter label={footerLabel} hints={hints} />
+                        <PaletteFooter
+                            label={chrome ? chrome.footerLabel : "Webiny command palette"}
+                            hints={chrome ? chrome.hints : COMMAND_HINTS}
+                        />
                     </Command>
                 )}
             </div>
