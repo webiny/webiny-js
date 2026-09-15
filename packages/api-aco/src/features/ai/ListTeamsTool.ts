@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 
 const inputSchema = z.object({});
@@ -14,7 +13,7 @@ interface TeamSummary {
     description?: string;
 }
 
-class ListTeamsToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class ListTeamsToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listTeams: ListTeamsUseCase.Interface) {}
 
     async execute(): Promise<TeamSummary[]> {
@@ -51,7 +50,7 @@ const ListTeamsToolHandler = AiSdkToolHandler.createImplementation({
  * Kept separate from setFolderPermissions rather than accepting a team name there: the user approves
  * the arguments of a write, so the id has to be looked up and shown, not guessed inside the write.
  */
-class ListTeamsToolImpl implements IAiSdkTool<Input> {
+class ListTeamsToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "listTeams";
     readonly title = "List teams";
     readonly description =

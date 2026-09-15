@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
@@ -43,7 +42,7 @@ interface GrantResult {
     replacedExistingLevel?: string;
 }
 
-class GrantFolderAccessToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class GrantFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         private updateFolder: UpdateFolderUseCase.Interface,
@@ -101,7 +100,7 @@ const GrantFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
  * the model omitted disappeared silently. One target per call keeps the approval honest: what the user
  * sees in the plan is the whole change.
  */
-class GrantFolderAccessToolImpl implements IAiSdkTool<Input> {
+class GrantFolderAccessToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "grantFolderAccess";
     readonly title = "Grant folder access";
     readonly description =

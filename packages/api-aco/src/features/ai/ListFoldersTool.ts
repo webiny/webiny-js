@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 
 const inputSchema = z.object({
@@ -22,7 +21,7 @@ interface FolderSummary {
     permissions: { target: string; level: string; inherited: boolean }[];
 }
 
-class ListFoldersToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class ListFoldersToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listFolders: ListFoldersUseCase.Interface) {}
 
     async execute(input: Input): Promise<FolderSummary[]> {
@@ -57,7 +56,7 @@ const ListFoldersToolHandler = AiSdkToolHandler.createImplementation({
  * Lists folders with their current access rules, so a permission change is proposed against a real
  * folder id and the user can see what the access already is before approving a change to it.
  */
-class ListFoldersToolImpl implements IAiSdkTool<Input> {
+class ListFoldersToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "listFolders";
     readonly title = "List folders";
     readonly description =

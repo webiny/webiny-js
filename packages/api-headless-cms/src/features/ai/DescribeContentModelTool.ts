@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import type { CmsModelField } from "~/types/index.js";
 
@@ -72,7 +71,7 @@ const describeField = (field: CmsModelField): FieldDescription => {
     return described;
 };
 
-class DescribeContentModelToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class DescribeContentModelToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private getModel: GetModelUseCase.Interface) {}
 
     async execute(input: Input): Promise<ModelDescription> {
@@ -108,7 +107,7 @@ const DescribeContentModelToolHandler = AiSdkToolHandler.createImplementation({
  * call from `listContentModels`: returning full field sets for every model would be large and mostly
  * unread, so the model pays for detail only on the model it actually cares about.
  */
-class DescribeContentModelToolImpl implements IAiSdkTool<Input> {
+class DescribeContentModelToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "describeContentModel";
     readonly title = "Describe content model";
     readonly description =

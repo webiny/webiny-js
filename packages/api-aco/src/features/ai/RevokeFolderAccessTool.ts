@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { loadFolderPermissions } from "./loadFolderPermissions.js";
@@ -32,7 +31,7 @@ interface RevokeResult {
     permissions: { target: string; level: string }[];
 }
 
-class RevokeFolderAccessToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class RevokeFolderAccessToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         private updateFolder: UpdateFolderUseCase.Interface
@@ -93,7 +92,7 @@ const RevokeFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
  * rather than reporting a removal that changed nothing — an inherited grant cannot be revoked here,
  * only where it is defined, and saying otherwise would leave the user believing access was withdrawn.
  */
-class RevokeFolderAccessToolImpl implements IAiSdkTool<Input> {
+class RevokeFolderAccessToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "revokeFolderAccess";
     readonly title = "Revoke folder access";
     readonly description =

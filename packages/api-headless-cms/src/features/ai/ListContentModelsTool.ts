@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import type { CmsModel } from "~/types/index.js";
 
@@ -37,7 +36,7 @@ interface ModelSummary {
 const isSystemModel = (model: CmsModel): boolean =>
     Boolean(model.isPrivate) || model.group === HIDDEN_MODEL_GROUP;
 
-class ListContentModelsToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class ListContentModelsToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listModels: ListModelsUseCase.Interface) {}
 
     async execute(input: Input): Promise<ModelSummary[]> {
@@ -72,7 +71,7 @@ const ListContentModelsToolHandler = AiSdkToolHandler.createImplementation({
  * model list cannot be baked into a system prompt — it has to be discovered at call time. Returns a
  * summary only; `describeContentModel` supplies the field detail needed to actually build a query.
  */
-class ListContentModelsToolImpl implements IAiSdkTool<Input> {
+class ListContentModelsToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "listContentModels";
     readonly title = "List content models";
     readonly description =

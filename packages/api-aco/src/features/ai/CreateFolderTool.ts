@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 
 const inputSchema = z.object({
@@ -29,7 +28,7 @@ interface CreatedFolder {
     type: string;
 }
 
-class CreateFolderToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class CreateFolderToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private createFolder: CreateFolderUseCase.Interface) {}
 
     async execute(input: Input): Promise<CreatedFolder> {
@@ -78,7 +77,7 @@ const CreateFolderToolHandler = AiSdkToolHandler.createImplementation({
  * Additive and reversible, so it is not flagged destructive — but it still changes the project, so it
  * is not read-only either and therefore needs the user to approve the exact arguments.
  */
-class CreateFolderToolImpl implements IAiSdkTool<Input> {
+class CreateFolderToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "createFolder";
     readonly title = "Create folder";
     readonly description =

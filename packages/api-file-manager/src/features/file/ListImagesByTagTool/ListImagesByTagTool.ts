@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-    AiSdkTool,
-    AiSdkToolHandler,
-    type IAiSdkTool,
-    type IAiSdkToolHandler
-} from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListFilesUseCase } from "~/features/file/ListFiles/index.js";
 
 const inputSchema = z.object({
@@ -20,7 +15,7 @@ interface ImageItem {
     tags: string[];
 }
 
-class ListImagesByTagToolHandlerImpl implements IAiSdkToolHandler<Input> {
+class ListImagesByTagToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listFiles: ListFilesUseCase.Interface) {}
 
     async execute(input: Input): Promise<ImageItem[]> {
@@ -51,7 +46,7 @@ const ListImagesByTagToolHandler = AiSdkToolHandler.createImplementation({
     dependencies: [ListFilesUseCase]
 });
 
-class ListImagesByTagToolImpl implements IAiSdkTool<Input> {
+class ListImagesByTagToolImpl implements AiSdkTool.Interface<Input> {
     readonly name = "listImagesByTag";
     readonly title = "List images by tag";
     readonly description =

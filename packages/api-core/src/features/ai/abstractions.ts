@@ -155,6 +155,12 @@ export interface IAiSdkToolHandler<TInput = any> {
  * `execute` is optional ONLY to let both shapes coexist while packages migrate. Exactly one of
  * `execute` or `handler` must be present; a tool with neither fails with
  * {@link AiSdkToolNotExecutableError} when called.
+ *
+ * NOT called `AiSdkToolDefinition`, unlike `HttpRouteDefinition`. Two reasons: while `execute` is
+ * still allowed here this is a tool that MAY carry its own behaviour, not a pure definition; and
+ * `AiSdkTool` is the registered abstraction every extension declares against and `resolveAll` reads,
+ * so renaming it would break that for nothing. Routes could take the new name because their handler
+ * kept the original `IHttpRoute` interface, leaving the definition as the genuinely new thing.
  */
 export interface IAiSdkTool<TInput = any>
     extends IAiSdkToolMetadata<TInput>, Partial<IAiSdkToolHandler<TInput>> {
@@ -173,8 +179,8 @@ export const AiSdkTool = createAbstraction<IAiSdkTool>("AiSdkTool");
 export const AiSdkToolHandler = createAbstraction<IAiSdkToolHandler>("AiSdkToolHandler");
 
 export namespace AiSdkTool {
-    export type Interface = IAiSdkTool;
-    export type Metadata = IAiSdkToolMetadata;
+    export type Interface<TInput = any> = IAiSdkTool<TInput>;
+    export type Metadata<TInput = any> = IAiSdkToolMetadata<TInput>;
     export type Annotations = IAiSdkToolAnnotations;
 }
 
