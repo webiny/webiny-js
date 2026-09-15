@@ -1,23 +1,27 @@
-const path = require("path");
-const execa = require("execa");
-const { writeJsonFileSync } = require("write-json-file");
-const { green, blue } = require("chalk");
-const regions = require("./regions");
+import { execFileSync } from "node:child_process";
+import { writeFileSync, readFileSync, existsSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import regions from "./regions.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const LAYER_NAME = "sharp";
 
-(async () => {
-    process.env.AWS_PROFILE = "webiny";
-    console.log(`Using profile ${green(process.env.AWS_PROFILE)}`);
-    const layersPath = path.join(__dirname, "layers.json");
-    const layers = require(layersPath);
-    try {
-        for (let i = 0; i < regions.length; i++) {
-            const region = regions[i];
-            try {
-                console.log(`Creating layer ${green(LAYER_NAME)} in ${green(region)}...`);
-                // Create layer
-                const { stdout } = await execa("aws", [
+process.env.AWS_PROFILE = "webiny";
+console.log(`Using profile: ${process.env.AWS_PROFILE}`);
+
+const layersPath = join(__dirname, "layers.json");
+const layers = existsSync(layersPath) ? JSON.parse(readFileSync(layersPath, "utf8")) : {};
+
+try {
+    for (const region of regions) {
+        try {
+            console.log(`Publishing ${LAYER_NAME} in ${region}...`);
+
+            const stdout = execFileSync(
+                "aws",
+                [
                     "lambda",
                     "publish-layer-version",
                     "--layer-name",
@@ -25,9 +29,10 @@ const LAYER_NAME = "sharp";
                     "--description",
                     "Sharp dependency for image transformation",
                     "--zip-file",
-                    "fileb://" + path.join(__dirname, "sharp-x64.zip"),
+                    "fileb://" + join(__dirname, "sharp-x64.zip"),
                     "--compatible-runtimes",
                     "nodejs22.x",
+                    "nodejs24.x",
                     "--region",
                     region,
                     "--cli-read-timeout",
@@ -36,13 +41,16 @@ const LAYER_NAME = "sharp";
                     "0",
                     "--output",
                     "json"
-                ]);
+                ],
+                { encoding: "utf8", timeout: 120_000 }
+            );
 
-                const layer = JSON.parse(stdout);
+            const layer = JSON.parse(stdout);
+            console.log(`  → ${layer.LayerVersionArn}`);
 
-                console.log(`Created`, blue(layer.LayerVersionArn));
-
-                await execa("aws", [
+            execFileSync(
+                "aws",
+                [
                     "lambda",
                     "add-layer-version-permission",
                     "--layer-name",
@@ -54,23 +62,23 @@ const LAYER_NAME = "sharp";
                     "--principal",
                     "*",
                     "--version-number",
-                    layer.Version,
+                    String(layer.Version),
                     "--region",
                     region
-                ]);
+                ],
+                { encoding: "utf8", timeout: 30_000 }
+            );
 
-                layers[LAYER_NAME] = layers[LAYER_NAME] || {};
-                layers[LAYER_NAME][region] = layer.LayerVersionArn;
+            layers[LAYER_NAME] = layers[LAYER_NAME] || {};
+            layers[LAYER_NAME][region] = layer.LayerVersionArn;
 
-                console.log("");
-            } catch (err) {
-                console.log(`Error in region: ${region}`);
-                console.log(err.message);
-                console.log("");
-            }
+            console.log(`  Done.\n`);
+        } catch (err) {
+            console.error(`Error in region ${region}: ${err.message}\n`);
         }
-    } finally {
-        console.log("Layers", JSON.stringify(layers, null, 2));
-        writeJsonFileSync(layersPath, layers);
     }
-})();
+} finally {
+    console.log("Layers:", JSON.stringify(layers, null, 2));
+    writeFileSync(layersPath, JSON.stringify(layers, null, 2));
+    console.log(`Written to ${layersPath}`);
+}

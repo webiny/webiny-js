@@ -11,6 +11,7 @@ import { FileManagerPermissions } from "../../features/permissions/abstractions.
 import { GetSettingsRepository } from "../../features/settings/abstractions.js";
 import { FileDetailsPresenter as Abstraction, type IFileDetailsPresenter } from "./abstractions.js";
 import { FileDetailsPresenter } from "./FileDetailsPresenter.js";
+import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
 import type { FmFile } from "../../features/shared/types.js";
 
 // ---------------------------------------------------------------------------
@@ -34,7 +35,7 @@ function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
     const data: Record<string, unknown> = {};
 
     return {
-        field: vi.fn() as any,
+        field: vi.fn().mockReturnValue({ setDisabled: vi.fn() }) as any,
         fields: vi.fn() as any,
         layout: vi.fn() as any,
         getData: vi.fn(() => ({ ...data })),
@@ -111,6 +112,17 @@ function createMockSettingsRepository(): GetSettingsRepository.Interface {
     };
 }
 
+function createMockWcpService(canUsePrivateFiles = true): WcpService.Interface {
+    return {
+        getProject: vi.fn().mockReturnValue({
+            canUsePrivateFiles: vi.fn().mockReturnValue(canUsePrivateFiles)
+        }),
+        isLoaded: vi.fn().mockReturnValue(true),
+        canUseFeature: vi.fn().mockReturnValue(false),
+        loadProject: vi.fn().mockResolvedValue(undefined)
+    } as unknown as WcpService.Interface;
+}
+
 function createTestFile(overrides?: Partial<FmFile>): FmFile {
     return {
         id: "file-1",
@@ -142,16 +154,18 @@ interface Mocks {
     formModelFactory: FormModelFactory.Interface;
     permissions: FileManagerPermissions.Interface;
     settingsRepository: GetSettingsRepository.Interface;
+    wcpService: WcpService.Interface;
 }
 
-function createMocks(): Mocks {
+function createMocks(canUsePrivateFiles = true): Mocks {
     return {
         getFileUseCase: createMockGetFileUseCase(),
         updateFileUseCase: createMockUpdateFileUseCase(),
         deleteFileUseCase: createMockDeleteFileUseCase(),
         formModelFactory: createMockFormModelFactory(),
         permissions: createMockPermissions(),
-        settingsRepository: createMockSettingsRepository()
+        settingsRepository: createMockSettingsRepository(),
+        wcpService: createMockWcpService(canUsePrivateFiles)
     };
 }
 
@@ -164,6 +178,7 @@ function createContainer(mocks: Mocks) {
     container.registerInstance(FormModelFactory, mocks.formModelFactory);
     container.registerInstance(FileManagerPermissions, mocks.permissions);
     container.registerInstance(GetSettingsRepository, mocks.settingsRepository);
+    container.registerInstance(WcpService, mocks.wcpService);
 
     // Register the real FileDetailsPresenter implementation.
     container.register(FileDetailsPresenter).inSingletonScope();
@@ -344,5 +359,60 @@ describe("FileDetailsPresenter", () => {
 
         expect(loadingDuringExecution).toBe("Loading file...");
         expect(presenter.vm.loading).toBeNull();
+    });
+
+    // -------------------------------------------------------------------
+    // When Private Files is NOT licensed.
+    // -------------------------------------------------------------------
+
+    describe("when Private Files is NOT licensed", () => {
+        let unlicensedMocks: Mocks;
+        let unlicensedPresenter: IFileDetailsPresenter;
+
+        beforeEach(() => {
+            unlicensedMocks = createMocks(false);
+            const container = createContainer(unlicensedMocks);
+            unlicensedPresenter = container.resolve(Abstraction);
+        });
+
+        it("should NOT include accessControl in the save payload", async () => {
+            await unlicensedPresenter.loadFile("file-1");
+
+            const mockForm = (unlicensedMocks.formModelFactory.create as ReturnType<typeof vi.fn>)
+                .mock.results[1].value as IFormModel;
+            (mockForm.submit as ReturnType<typeof vi.fn>).mockResolvedValue({
+                name: "updated.jpg",
+                description: "",
+                tags: ["updated"]
+            });
+
+            await unlicensedPresenter.saveFile();
+
+            const callArgs = (unlicensedMocks.updateFileUseCase.execute as ReturnType<typeof vi.fn>)
+                .mock.calls[0][0];
+            expect(callArgs.data).not.toHaveProperty("accessControl");
+        });
+
+        it("should NOT set accessControl in form data during loadFile", async () => {
+            await unlicensedPresenter.loadFile("file-1");
+
+            const mockForm = (unlicensedMocks.formModelFactory.create as ReturnType<typeof vi.fn>)
+                .mock.results[1].value as IFormModel;
+            const setDataCall = (mockForm.setData as ReturnType<typeof vi.fn>).mock.calls[0][0];
+            expect(setDataCall).not.toHaveProperty("accessControl");
+        });
+
+        it("should NOT disable accessControl field when user lacks edit permission", async () => {
+            (unlicensedMocks.permissions.canEdit as ReturnType<typeof vi.fn>).mockReturnValue(
+                false
+            );
+
+            await unlicensedPresenter.loadFile("file-1");
+
+            const mockForm = (unlicensedMocks.formModelFactory.create as ReturnType<typeof vi.fn>)
+                .mock.results[1].value as IFormModel;
+            expect(mockForm.field).toHaveBeenCalledTimes(3);
+            expect(mockForm.field).not.toHaveBeenCalledWith("accessControl");
+        });
     });
 });

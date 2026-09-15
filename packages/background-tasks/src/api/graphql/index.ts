@@ -42,11 +42,13 @@ const createGraphQL = () => {
         const listModels = ctx.container.resolve(ListModelsUseCase);
         const fieldRegistry = ctx.container.resolve(CmsModelFieldToGraphQLRegistry);
 
-        const models = await ctx.security.withoutAuthorization(async () => {
-            const modelsResult = await listModels.execute({ includePrivate: false });
-
-            return modelsResult.value.filter(model => model.fields.length > 0);
+        const modelsResult = await ctx.security.withoutAuthorization(async () => {
+            return await listModels.execute({ includePrivate: false });
         });
+        if (modelsResult.isFail()) {
+            throw modelsResult.error;
+        }
+        const models = modelsResult.value.filter(model => model.fields.length > 0);
         const taskFields = renderFields({
             models,
             model: taskModel,

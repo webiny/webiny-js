@@ -58,6 +58,7 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered
                 by the <ApplyDiscountExtension /> / <AiContentExtension /> components above) */}
+            <Api.Extension src={"/extensions/models/ArticleModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
             <Api.Extension src={"/extensions/models/ProductModel.ts"} />
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}

@@ -5,7 +5,7 @@ import { SchedulePrivateModel } from "~/domain/SchedulePrivateModel.js";
 import { SchedulerFeature } from "~/features/SchedulerFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
+import { SchedulerPermissionsResolver } from "~/features/permissions/SchedulerPermissionsResolver.js";
 import { ContextPlugin } from "@webiny/api";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { NamespaceHandlerExecutionerFeature } from "~/features/NamespaceHandler/feature.js";
@@ -14,7 +14,7 @@ import { SchedulerGraphQLFactoryFeature } from "~/graphql/feature.js";
 export const registerSchedulerExtension = () => {
     const extensionPlugin = createRegisterExtensionPlugin(async context => {
         context.container.register(SchedulePrivateModel);
-        SchedulerPermissionsFeature.register(context.container);
+        context.container.register(SchedulerPermissionsResolver);
         SchedulerGraphQLFactoryFeature.register(context.container);
         NamespaceHandlerExecutionerFeature.register(context.container);
         SchedulerFeature.register(context.container);

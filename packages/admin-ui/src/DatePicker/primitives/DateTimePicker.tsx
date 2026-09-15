@@ -10,9 +10,9 @@ import {
     formatDateForDisplay,
     formatTimeValue,
     getLocalTimezone,
-    parseTimeValue,
-    toIsoWithTz
+    parseTimeValue
 } from "../utils/dateHelpers.js";
+import { naiveDateToUtcIso, parseToDate, utcToTimezoneDate } from "../utils/timezoneHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 import { TimePicker } from "./components/TimePicker.js";
 
@@ -21,17 +21,6 @@ type DateTimePickerInternalProps = (DateTimeLocalPickerProps | DateTimeTzPickerP
 };
 
 const timezoneOptions = UTC_TIMEZONES.map(tz => ({ value: tz.value, label: tz.label }));
-
-function parseToDate(value: string | undefined): Date | undefined {
-    if (!value) {
-        return undefined;
-    }
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) {
-        return undefined;
-    }
-    return d;
-}
 
 const DateTimePicker = ({
     value,
@@ -51,7 +40,7 @@ const DateTimePicker = ({
 }: DateTimePickerInternalProps) => {
     const [open, setOpen] = useState(false);
 
-    const existingTz = withTimezone && value ? extractTimezone(value as string) : undefined;
+    const existingTz = withTimezone && value ? extractTimezone(value) : undefined;
     const [timezone, setTimezone] = useState(existingTz || getLocalTimezone());
 
     const handleOpenChange = (isOpen: boolean) => {
@@ -63,18 +52,27 @@ const DateTimePicker = ({
 
     const currentDate = parseToDate(value);
 
+    const displayDate =
+        withTimezone && currentDate ? utcToTimezoneDate(currentDate, timezone) : currentDate;
+
     const displayValue = withTimezone
-        ? formatDateForDisplay(value, "dateTimeTz", displayFormat)
+        ? displayDate
+            ? formatDateForDisplay(
+                  format(displayDate, "yyyy-MM-dd'T'HH:mm:ss") + timezone,
+                  "dateTimeTz",
+                  displayFormat
+              )
+            : undefined
         : formatDateForDisplay(value, "dateTimeLocal", displayFormat);
 
-    const timeValue = currentDate ? formatTimeValue(currentDate) : "";
+    const timeValue = displayDate ? formatTimeValue(displayDate) : "";
 
     const emitChange = (date: Date, tz?: string) => {
         if (!onChange) {
             return;
         }
         if (withTimezone) {
-            onChange(toIsoWithTz(date, tz || timezone));
+            onChange(naiveDateToUtcIso(date, tz || timezone));
         } else {
             onChange(format(date, "yyyy-MM-dd'T'HH:mm:ss") + ".000Z");
         }
@@ -84,8 +82,8 @@ const DateTimePicker = ({
         if (!date) {
             return;
         }
-        if (currentDate) {
-            date.setHours(currentDate.getHours(), currentDate.getMinutes());
+        if (displayDate) {
+            date.setHours(displayDate.getHours(), displayDate.getMinutes());
         }
         emitChange(date);
     };
@@ -98,16 +96,13 @@ const DateTimePicker = ({
         if (!parsed) {
             return;
         }
-        const base = currentDate ? new Date(currentDate) : new Date();
+        const base = displayDate ? new Date(displayDate) : new Date();
         base.setHours(parsed.hours, parsed.minutes, 0, 0);
         emitChange(base);
     };
 
     const handleTimezoneChange = (tz: string) => {
         setTimezone(tz);
-        if (currentDate) {
-            emitChange(currentDate, tz);
-        }
     };
 
     return (
@@ -125,7 +120,7 @@ const DateTimePicker = ({
                     <div className="flex flex-col gap-sm">
                         <Calendar
                             mode="single"
-                            selected={currentDate}
+                            selected={displayDate}
                             onSelect={handleDateSelect}
                             weekStartsOn={weekStartsOn}
                             disabled={[

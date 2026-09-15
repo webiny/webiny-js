@@ -32,11 +32,13 @@ export const CellLive = observer(() => {
             ? rawScheduled
             : undefined;
 
+    const lastPublishedOn = entry.lastPublishedOn;
+
     // Live now AND a change scheduled — show both, wrapping to a second line if the column is narrow.
     if (liveVersion && scheduled) {
         return (
             <div className={"flex flex-wrap items-center gap-xs"}>
-                <LiveTag version={liveVersion} />
+                <LiveTag version={liveVersion} lastPublishedOn={lastPublishedOn} />
                 <ScheduledTag scheduled={scheduled} />
             </div>
         );
@@ -50,5 +52,5 @@ export const CellLive = observer(() => {
         return <>No</>;
     }
 
-    return <LiveTag version={liveVersion} />;
+    return <LiveTag version={liveVersion} lastPublishedOn={lastPublishedOn} />;
 });

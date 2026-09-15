@@ -33,7 +33,7 @@ class PatternValidatorImpl implements CmsModelFieldValidator.Interface {
             return true;
         }
 
-        return new RegExp(pattern.regex, pattern.flags).test(value);
+        return new RegExp(pattern.regex, pattern.flags || undefined).test(value);
     }
 }
 

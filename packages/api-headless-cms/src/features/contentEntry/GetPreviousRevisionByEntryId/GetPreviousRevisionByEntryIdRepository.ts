@@ -10,6 +10,7 @@ import type {
 } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * GetPreviousRevisionByEntryIdRepository - Fetches previous revision by entry ID and version from storage.
@@ -18,13 +19,16 @@ import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private entryFromStorageTransform: EntryFromStorageTransform.Interface,
-        private storageOperations: StorageOperations.Interface
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
     async execute<T extends CmsEntryValues>(
-        model: CmsModel,
+        initialModel: CmsModel,
         params: CmsEntryStorageOperationsGetPreviousRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+
         try {
             const entry = await this.storageOperations.entries.getPreviousRevision<T>(
                 model,
@@ -48,5 +52,5 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
 export const GetPreviousRevisionByEntryIdRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetPreviousRevisionByEntryIdRepositoryImpl,
-    dependencies: [EntryFromStorageTransform, StorageOperations]
+    dependencies: [EntryFromStorageTransform, StorageOperations, RuntimeTenant]
 });

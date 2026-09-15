@@ -1,0 +1,39 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": ["**/__tests__/**", "**/*.test.ts", "**/*.test.tsx"],
+  "references": [
+    { "path": "../admin-ui/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../app/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../project-aws/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/project-aws/*": ["../project-aws/src/*"],
+      "@webiny/project-aws": ["../project-aws/src"]
+    }
+  }
+}

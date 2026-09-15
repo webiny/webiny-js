@@ -625,7 +625,7 @@ describe("FolderTreePresenter", () => {
             expect(presenter.vm.operation.mode).toBeNull();
         });
 
-        it("should navigate to parent folder after deletion", async () => {
+        it("should navigate to parent folder after deleting the currently open folder", async () => {
             const { presenter } = createTestPresenter(createFlatFolders());
 
             await vi.waitFor(() => {
@@ -633,12 +633,13 @@ describe("FolderTreePresenter", () => {
             });
 
             // child-1 has parentId "root-1".
+            presenter.selectFolder("child-1");
             await presenter.deleteFolder("child-1");
 
             expect(presenter.vm.currentFolderId).toBe("root-1");
         });
 
-        it("should navigate to root (null) when deleting a root folder", async () => {
+        it("should navigate to root (null) when deleting the currently open root folder", async () => {
             const { presenter } = createTestPresenter(createFlatFolders());
 
             await vi.waitFor(() => {
@@ -646,12 +647,26 @@ describe("FolderTreePresenter", () => {
             });
 
             // root-1 has parentId null.
+            presenter.selectFolder("root-1");
             await presenter.deleteFolder("root-1");
 
             expect(presenter.vm.currentFolderId).toBeNull();
         });
 
-        it("should refresh the folder list after deletion", async () => {
+        it("should not change currentFolderId when deleting a folder that isn't open", async () => {
+            const { presenter } = createTestPresenter(createFlatFolders());
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            presenter.selectFolder("root-2");
+            await presenter.deleteFolder("child-1");
+
+            expect(presenter.vm.currentFolderId).toBe("root-2");
+        });
+
+        it("should remove the deleted folder from the cache without refetching from the API", async () => {
             const { presenter, listFolders } = createTestPresenter(createFlatFolders());
 
             await vi.waitFor(() => {
@@ -660,16 +675,20 @@ describe("FolderTreePresenter", () => {
 
             await presenter.deleteFolder("child-1");
 
-            // Initial load + refresh after delete.
-            expect(listFolders.execute).toHaveBeenCalledTimes(2);
+            // Only the initial load — deletion updates the cache directly, since
+            // refetching would be unreliable while storage is eventually consistent.
+            expect(listFolders.execute).toHaveBeenCalledTimes(1);
+            expect(presenter.vm.folders.find(f => f.id === "child-1")).toBeUndefined();
         });
 
-        it("should fire onFolderChange callback when navigating to parent after delete", async () => {
+        it("should fire onFolderChange callback when navigating to parent after deleting the open folder", async () => {
             const { presenter } = createTestPresenter(createFlatFolders());
 
             await vi.waitFor(() => {
                 expect(presenter.vm.loading).toBe(false);
             });
+
+            presenter.selectFolder("child-1");
 
             const callback = vi.fn();
             presenter.onFolderChange(callback);
@@ -678,6 +697,137 @@ describe("FolderTreePresenter", () => {
             await presenter.deleteFolder("child-1");
 
             expect(callback).toHaveBeenCalledWith("root-1");
+        });
+
+        it("should resolve the label for the parent folder after deleting the currently open folder", async () => {
+            const { presenter } = createTestPresenter(createFlatFolders());
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            // grandchild-1's parent is child-1, which must resolve (not fall back to "All Files").
+            presenter.selectFolder("grandchild-1");
+            await presenter.deleteFolder("grandchild-1");
+
+            expect(presenter.vm.currentFolderId).toBe("child-1");
+            expect(presenter.vm.currentFolderTitle).toBe("Invoices");
+        });
+    });
+
+    describe("stale currentFolderId validation", () => {
+        it("should fall back to root when the initial currentFolderId no longer exists", async () => {
+            const { presenter } = createTestPresenter(createFlatFolders());
+
+            // Simulate a consumer selecting a stale (already-deleted) folder before the
+            // initial load resolves, e.g. from a URL param or localStorage value.
+            presenter.selectFolder("does-not-exist");
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            expect(presenter.vm.currentFolderId).toBeNull();
+        });
+
+        it("should fall back to the nearest existing ancestor when a deeply nested folder was deleted in another session", async () => {
+            const { presenter, foldersCache, listFolders, updateFolderUseCase } =
+                createTestPresenter(createFlatFolders());
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            // Simulate having navigated into grandchild-1 in a previous session.
+            presenter.selectFolder("grandchild-1");
+            expect(presenter.vm.currentFolderId).toBe("grandchild-1");
+
+            // Simulate grandchild-1 and child-1 both having been deleted server-side
+            // (e.g. from another tab), and a reload only bringing back the surviving folders.
+            listFolders.execute.mockImplementationOnce(async () => {
+                foldersCache.removeItems(f => f.id === "grandchild-1" || f.id === "child-1");
+            });
+
+            // Trigger a reload via an unrelated action (moveFolder), simulating any
+            // action that causes the presenter to refresh its folder list.
+            await presenter.moveFolder("root-2", "root-1");
+            expect(updateFolderUseCase.execute).toHaveBeenCalledTimes(1);
+
+            // Falls back past the also-deleted immediate parent (child-1) to root-1.
+            expect(presenter.vm.currentFolderId).toBe("root-1");
+        });
+    });
+
+    describe("external cache deletion (e.g. useDeleteFolder bypassing presenter)", () => {
+        it("should redirect to parent when the current folder is removed from cache externally", async () => {
+            const { presenter, foldersCache } = createTestPresenter(createFlatFolders());
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            presenter.selectFolder("child-1");
+            expect(presenter.vm.currentFolderId).toBe("child-1");
+
+            foldersCache.removeItems(f => f.id === "child-1");
+
+            expect(presenter.vm.currentFolderId).toBe("root-1");
+        });
+
+        it("should fire onFolderChange callback on external cache deletion", async () => {
+            const { presenter, foldersCache } = createTestPresenter(createFlatFolders());
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            presenter.selectFolder("child-1");
+
+            const callback = vi.fn();
+            presenter.onFolderChange(callback);
+
+            foldersCache.removeItems(f => f.id === "child-1");
+
+            expect(callback).toHaveBeenCalledWith("root-1");
+        });
+
+        it("should redirect to root when a root-level folder is removed externally", async () => {
+            const { presenter, foldersCache } = createTestPresenter(createFlatFolders());
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            presenter.selectFolder("root-1");
+
+            foldersCache.removeItems(f => f.id === "root-1");
+
+            expect(presenter.vm.currentFolderId).toBeNull();
+        });
+
+        it("should redirect to root when the last remaining folder is removed externally", async () => {
+            const singleFolder = [
+                createFolder({
+                    id: "root-1",
+                    title: "Documents",
+                    slug: "documents",
+                    parentId: null
+                })
+            ];
+            const { presenter, foldersCache } = createTestPresenter(singleFolder);
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.loading).toBe(false);
+            });
+
+            presenter.selectFolder("root-1");
+            expect(presenter.vm.currentFolderId).toBe("root-1");
+
+            // Cache goes from 1 item to 0 — must still redirect, not get stuck on a
+            // stale currentFolderId just because the cache is now empty.
+            foldersCache.removeItems(f => f.id === "root-1");
+
+            expect(presenter.vm.currentFolderId).toBeNull();
         });
     });
 

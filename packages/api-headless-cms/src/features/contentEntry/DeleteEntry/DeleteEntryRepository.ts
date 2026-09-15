@@ -4,17 +4,24 @@ import { DeleteEntryRepository as RepositoryAbstraction } from "./abstractions.j
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteEntryRepository - Handles storage operations for permanently deleting entries.
  */
 class DeleteEntryRepositoryImpl implements RepositoryAbstraction.Interface {
-    public constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
+    ) {}
 
     async execute(
-        model: CmsModel,
-        entry: CmsEntry
+        initialModel: CmsModel,
+        initialEntry: CmsEntry
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
+        const entry = this.runtimeTenant.assign(initialEntry);
+
         try {
             await this.storageOperations.entries.delete(model, { entry });
             return Result.ok();
@@ -27,5 +34,5 @@ class DeleteEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 export const DeleteEntryRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: DeleteEntryRepositoryImpl,
-    dependencies: [StorageOperations]
+    dependencies: [StorageOperations, RuntimeTenant]
 });

@@ -19,6 +19,7 @@ import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
 import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
+import { isVpcEnabled } from "~/pulumi/apps/extensions/isVpcEnabled.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
 import { configureS3BucketMalwareProtection } from "./configureS3BucketMalwareProtection.js";
 import * as pulumi from "@pulumi/pulumi";
@@ -236,12 +237,9 @@ export function createCorePulumiApp() {
             const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, { protect });
 
             // Setup VPC
-            const vpcEnabled =
-                vpcExtensionsConfig === true ||
-                typeof vpcExtensionsConfig === "object" ||
-                isProduction;
-
-            const vpc = vpcEnabled ? app.addModule(CoreVpc) : null;
+            const vpc = isVpcEnabled(vpcExtensionsConfig, isProduction)
+                ? app.addModule(CoreVpc)
+                : null;
 
             // Setup Cognito
             const cognito = app.addModule(CoreCognito, {

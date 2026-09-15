@@ -10,10 +10,10 @@ interface SidebarRowProps {
 
 export const SidebarRow = ({ label, tooltip, children }: SidebarRowProps) => {
     return (
-        <div className={"flex items-center gap-xxs"}>
+        <div className={"flex items-start gap-xxs"}>
             <div
                 className={
-                    "w-[80px] flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong"
+                    "w-[80px] pt-sm flex flex-row items-center gap-xxs shrink-0 text-sm text-neutral-strong"
                 }
             >
                 {label}

@@ -488,6 +488,25 @@ export const createEntriesStorageOperations = (
             return entry;
         },
 
+        updateRevision: async (model, { entry, storageEntry }) => {
+            await entryTableManager.ensureTable();
+
+            const existing = await query().where("id", storageEntry.id).first();
+            const se = storageEntry as CmsStorageEntry;
+            se.isLatest = existing?.isLatest ?? se.isLatest;
+            se.isPublished = existing?.isPublished ?? se.isPublished;
+
+            const row = entryToRow(se);
+            const { isLatest: _il, isPublished: _ip, ...rowWithoutFlags } = row;
+
+            await query()
+                .where("tenant", model.tenant)
+                .andWhere("id", storageEntry.id)
+                .update(rowWithoutFlags);
+
+            return entry;
+        },
+
         publish: async (model, { entry, storageEntry }) => {
             await entryTableManager.ensureTable();
 

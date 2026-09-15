@@ -18,20 +18,21 @@ export function resolveSlugPattern(pattern: string, entry: EntryData): string {
         if (value !== null && value !== undefined && value !== "") {
             return String(value);
         }
-        return "";
+        return "new";
     });
 }
 
-export function buildEditorUrl(prefix: string): string {
-    const base = prefix.endsWith("/") ? prefix.slice(0, -1) : prefix;
-    return `${base}/preview`;
+export function buildEditorUrl(domain: string, previewPath: string): string {
+    const base = domain.endsWith("/") ? domain.slice(0, -1) : domain;
+    const bracketIndex = previewPath.indexOf("{");
+    const staticPrefix = bracketIndex >= 0 ? previewPath.substring(0, bracketIndex) : previewPath;
+    const trimmed = staticPrefix.endsWith("/") ? staticPrefix.slice(0, -1) : staticPrefix;
+    return `${base}${trimmed}/preview`;
 }
 
-export function buildDisplayUrl(prefix: string, slugPattern: string, entry: EntryData): string {
-    const base = prefix.endsWith("/") ? prefix.slice(0, -1) : prefix;
-    const slug = resolveSlugPattern(slugPattern, entry);
-    if (!slug) {
-        return base;
-    }
-    return `${base}/${slug}`;
+export function buildDisplayUrl(domain: string, path: string, entry: EntryData): string {
+    const base = domain.endsWith("/") ? domain.slice(0, -1) : domain;
+    const resolvedPath = resolveSlugPattern(path, entry);
+    const normalizedPath = resolvedPath.startsWith("/") ? resolvedPath : `/${resolvedPath}`;
+    return `${base}${normalizedPath}`;
 }

@@ -27,6 +27,12 @@ export const RevisionDrawer = observer(() => {
                     revisionsPresenter.hide();
                 }
             }}
+            onInteractOutside={e => {
+                const target = e.target as HTMLElement;
+                if (target.closest("[data-role='dialog']")) {
+                    e.preventDefault();
+                }
+            }}
             modal
             bodyPadding={false}
             headerSeparator={true}

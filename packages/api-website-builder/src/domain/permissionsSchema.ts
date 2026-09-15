@@ -17,11 +17,6 @@ export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
             actions: [{ name: "rwd" }]
         },
         {
-            id: "settings",
-            permission: "wb.settings",
-            scopes: ["full"]
-        },
-        {
             id: "integrations",
             permission: "wb.integrations",
             scopes: ["full"]

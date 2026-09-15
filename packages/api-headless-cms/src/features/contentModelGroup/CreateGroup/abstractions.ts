@@ -39,7 +39,7 @@ export namespace CreateGroupUseCase {
  * CreateGroupRepository - Persists a new group to storage.
  */
 export interface ICreateGroupRepository {
-    execute(group: CmsGroup): Promise<Result<void, RepositoryError>>;
+    execute(group: CmsGroup): Promise<Result<CmsGroup, RepositoryError>>;
 }
 
 export interface ICreateGroupRepositoryErrors {

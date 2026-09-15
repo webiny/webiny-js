@@ -18,6 +18,7 @@ import { RevisionsListFeature } from "../revisionsList/feature.js";
 import { useContentEntriesPresenter } from "~/presentation/contentEntries/list/useContentEntriesPresenter.js";
 import { useContentEntryFormPresenter } from "~/presentation/contentEntries/form/useContentEntryFormPresenter.js";
 import { RevisionDrawer } from "./RevisionDrawer.js";
+import { OlderRevisionAlert } from "./OlderRevisionAlert.js";
 
 export const ContentEntryFormView = observer(() => {
     const listPresenter = useContentEntriesPresenter();
@@ -93,6 +94,7 @@ export const ContentEntryFormView = observer(() => {
             />
             <ScrollArea>
                 {vm.loading ? <OverlayLoader text={vm.loading} /> : null}
+                <OlderRevisionAlert />
                 {showWizard ? (
                     newEntryWizard
                 ) : (

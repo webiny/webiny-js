@@ -6,14 +6,14 @@ interface Options {
     permission: string;
 }
 
-export const ensureAuthentication = (context: ApiCoreContext, options?: Options) => {
+export const ensureAuthentication = async (context: ApiCoreContext, options?: Options) => {
     const identityContext = context.container.resolve(IdentityContext);
     const identity = identityContext.getIdentity();
     if (identity.isAnonymous()) {
         throw new NotAuthorizedError();
     }
 
-    if (options?.permission && !identityContext.getPermission(options.permission)) {
+    if (options?.permission && !(await identityContext.getPermission(options.permission))) {
         throw new NotAuthorizedError();
     }
 };

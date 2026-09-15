@@ -600,6 +600,52 @@ export const createEntriesStorageOperations = (
         return initialStorageEntry;
     };
 
+    const updateRevision: CmsEntryStorageOperations["updateRevision"] = async (
+        initialModel,
+        params
+    ) => {
+        const { entry: initialEntry, storageEntry: initialStorageEntry } = params;
+        const model = getStorageOperationsModel(initialModel);
+
+        const transformer = createTransformer({
+            valuesModifiers,
+            model,
+            entry: initialEntry,
+            storageEntry: initialStorageEntry,
+            fieldIndexRegistry,
+            compressionHandler
+        });
+
+        const { storageEntry } = transformer.transformEntryKeys();
+        const revisionKeys = createEntryRevisionKeys(storageEntry);
+
+        const entityBatch = entity.createEntityWriter({
+            put: [
+                {
+                    ...revisionKeys,
+                    data: storageEntry
+                }
+            ]
+        });
+
+        try {
+            await entityBatch.execute();
+            dataLoaders.clearAll({
+                tenant: initialEntry.tenant
+            });
+            return initialStorageEntry;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not update revision.",
+                ex.code || "UPDATE_REVISION_ERROR",
+                {
+                    error: ex,
+                    entry: initialEntry
+                }
+            );
+        }
+    };
+
     const move: CmsEntryStorageOperations["move"] = async (
         initialModel: CmsModel,
         id: string,
@@ -2169,6 +2215,7 @@ export const createEntriesStorageOperations = (
         create,
         createRevisionFrom,
         update,
+        updateRevision,
         move,
         delete: deleteEntry,
         moveToBin,

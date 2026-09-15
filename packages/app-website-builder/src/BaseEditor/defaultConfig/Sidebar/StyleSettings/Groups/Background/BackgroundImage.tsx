@@ -116,7 +116,6 @@ export const BackgroundImage = observer(({ elementId }: { elementId: string }) =
                         value={url ? fileInfo : undefined}
                         onSelectItem={() => showFileManager()}
                         onRemoveItem={onRemove}
-                        onEditItem={() => showFileManager()}
                     />
                 )}
             />

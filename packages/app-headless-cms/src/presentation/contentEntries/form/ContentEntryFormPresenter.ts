@@ -314,6 +314,16 @@ class ContentEntryFormPresenterImpl implements Abstraction.Interface {
         }
     }
 
+    patchEntryMeta(meta: Partial<CmsContentEntry["meta"]>): void {
+        if (!this.entry) {
+            return;
+        }
+        this.entry = {
+            ...this.entry,
+            meta: { ...this.entry.meta, ...meta }
+        };
+    }
+
     reset(): void {
         this.form = null;
         this.entry = null;

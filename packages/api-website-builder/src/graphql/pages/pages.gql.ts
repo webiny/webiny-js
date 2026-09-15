@@ -7,7 +7,7 @@ import {
 } from "@webiny/handler-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
 import { resolve } from "~/utils/resolve.js";
-import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
+import { WEBSITE_BUILDER_INTEGRATIONS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { PageModel, type WbPageRevision } from "~/domain/page/abstractions.js";
@@ -25,6 +25,7 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { GetSettingsUseCase } from "~/features/pages/GetSettings/index.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
@@ -39,13 +40,13 @@ export const createPagesSchema = () => {
             WbQuery: {
                 getPageModel: async (_, __, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         return context.container.resolve(PageModel);
                     });
                 },
                 getPageByPath: async (_, { path }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
 
                         const getPageByPath = context.container.resolve(GetPageByPathUseCase);
                         const result = await getPageByPath.execute(path);
@@ -66,7 +67,7 @@ export const createPagesSchema = () => {
                 },
                 getPageById: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const getPageById = context.container.resolve(GetPageByIdUseCase);
                         const result = await getPageById.execute(id);
 
@@ -79,7 +80,7 @@ export const createPagesSchema = () => {
                 },
                 getPageRevisions: async (_, { entryId }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const getPageRevisions = context.container.resolve(GetPageRevisionsUseCase);
                         const result = await getPageRevisions.execute(entryId);
 
@@ -106,7 +107,7 @@ export const createPagesSchema = () => {
                 },
                 listPages: async (_, args: any, context) => {
                     try {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const listPages = context.container.resolve(ListPagesUseCase);
                         const result = await listPages.execute(args);
 
@@ -122,7 +123,7 @@ export const createPagesSchema = () => {
                 },
                 listDeletedPages: async (_, args: any, context) => {
                     try {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const listPages = context.container.resolve(ListDeletedPagesUseCase);
                         const result = await listPages.execute(args);
 
@@ -137,29 +138,23 @@ export const createPagesSchema = () => {
                     }
                 },
                 getSettings: async (_, __, context) => {
-                    ensureAuthentication(context);
+                    return resolve(async () => {
+                        await ensureAuthentication(context);
 
-                    const keyValueStore = context.container.resolve(KeyValueStore);
-                    const result = await keyValueStore.get<{ previewDomain: string | undefined }>(
-                        WEBSITE_BUILDER_SETTINGS
-                    );
+                        const getSettings = context.container.resolve(GetSettingsUseCase);
+                        const result = await getSettings.execute();
 
-                    if (result.isFail()) {
-                        return new Response({
-                            // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                            previewDomain: "http://localhost:3000"
-                        });
-                    }
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
 
-                    const settings = result.value;
-
-                    return new Response({
-                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
-                        previewDomain: settings.previewDomain ?? "http://localhost:3000"
+                        return {
+                            domain: result.value.domain
+                        };
                     });
                 },
                 getIntegrations: async (_, __, context) => {
-                    ensureAuthentication(context);
+                    await ensureAuthentication(context);
                     const keyValueStore = context.container.resolve(KeyValueStore);
                     const settings = await keyValueStore.get(WEBSITE_BUILDER_INTEGRATIONS);
                     if (settings.isFail()) {
@@ -172,7 +167,7 @@ export const createPagesSchema = () => {
             WbMutation: {
                 createPage: async (_, { data }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const createPage = context.container.resolve(CreatePageUseCase);
                         const result = await createPage.execute(data);
 
@@ -185,7 +180,7 @@ export const createPagesSchema = () => {
                 },
                 updatePage: async (_, { id, data }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const updatePage = context.container.resolve(UpdatePageUseCase);
                         const result = await updatePage.execute(id, data);
 
@@ -198,7 +193,7 @@ export const createPagesSchema = () => {
                 },
                 updatePageRevisionDescription: async (_, { id, revisionDescription }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const updatePageRevisionDescription = context.container.resolve(
                             UpdatePageRevisionDescriptionUseCase
                         );
@@ -216,7 +211,7 @@ export const createPagesSchema = () => {
                 },
                 duplicatePage: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const duplicatePage = context.container.resolve(DuplicatePageUseCase);
                         const result = await duplicatePage.execute({ id });
 
@@ -229,7 +224,7 @@ export const createPagesSchema = () => {
                 },
                 translatePage: async (_, { pageId, languageCode, folderId }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
 
                         // Gated at resolver-time, NOT at registration time: the WCP license is
                         // loaded per request, so a register-time check reads the placeholder
@@ -257,7 +252,7 @@ export const createPagesSchema = () => {
                 },
                 publishPage: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const publishPage = context.container.resolve(PublishPageUseCase);
                         const result = await publishPage.execute({ id });
 
@@ -270,7 +265,7 @@ export const createPagesSchema = () => {
                 },
                 unpublishPage: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const unpublishPage = context.container.resolve(UnpublishPageUseCase);
                         const result = await unpublishPage.execute({ id });
 
@@ -283,7 +278,7 @@ export const createPagesSchema = () => {
                 },
                 movePage: async (_, { id, folderId }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const movePage = context.container.resolve(MovePageUseCase);
                         const result = await movePage.execute({ id, folderId });
 
@@ -296,7 +291,7 @@ export const createPagesSchema = () => {
                 },
                 createPageRevisionFrom: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const createRevision = context.container.resolve(
                             CreatePageRevisionFromUseCase
                         );
@@ -311,7 +306,7 @@ export const createPagesSchema = () => {
                 },
                 deletePage: async (_, { id, permanently }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const deletePage = context.container.resolve(
                             /**
                              * If "permanent" flag is set, we want to permanently delete the page. Otherwise, we just want to trash it.
@@ -332,7 +327,7 @@ export const createPagesSchema = () => {
                 },
                 restorePage: async (_, { id }, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context);
+                        await ensureAuthentication(context);
                         const restorePage = context.container.resolve(RestorePageUseCase);
                         const result = await restorePage.execute({
                             id
@@ -345,19 +340,9 @@ export const createPagesSchema = () => {
                         return result.value;
                     });
                 },
-                // TODO: move these settings updates into dedicated use cases
-                updateSettings: async (_, args, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context, { permission: "wb.settings" });
-                        const keyValueStore = context.container.resolve(KeyValueStore);
-                        await keyValueStore.set(WEBSITE_BUILDER_SETTINGS, args.data);
-
-                        return true;
-                    });
-                },
                 updateIntegrations: async (_, args, context) => {
                     return resolve(async () => {
-                        ensureAuthentication(context, { permission: "wb.settings" });
+                        await ensureAuthentication(context, { permission: "wb.integrations" });
                         const keyValueStore = context.container.resolve(KeyValueStore);
                         await keyValueStore.set(WEBSITE_BUILDER_INTEGRATIONS, args.data);
 

@@ -520,6 +520,10 @@ class FmGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
             return this.listModelsUseCase.execute();
         });
 
+        if (modelsResult.isFail()) {
+            throw modelsResult.error;
+        }
+
         return modelsResult.value;
     }
 }

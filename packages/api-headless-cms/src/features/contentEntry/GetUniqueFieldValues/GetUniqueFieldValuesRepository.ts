@@ -7,14 +7,19 @@ import {
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interface {
-    public constructor(private storageOperations: StorageOperations.Interface) {}
+    public constructor(
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
+    ) {}
 
     async execute(
-        model: CmsModel,
+        initialModel: CmsModel,
         params: GetUniqueFieldValuesParams
     ): Promise<Result<CmsEntryUniqueValue[], RepositoryAbstraction.Error>> {
+        const model = this.runtimeTenant.assign(initialModel);
         const { where, fieldId } = params;
 
         try {
@@ -33,5 +38,5 @@ class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interf
 export const GetUniqueFieldValuesRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: GetUniqueFieldValuesRepositoryImpl,
-    dependencies: [StorageOperations]
+    dependencies: [StorageOperations, RuntimeTenant]
 });

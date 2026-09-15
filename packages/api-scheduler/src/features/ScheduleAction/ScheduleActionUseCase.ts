@@ -160,7 +160,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 id: scheduleId,
                 values: {
                     scheduledFor: scheduleFor.toISOString(),
-                    scheduledBy,
+                    /**
+                     * Headless CMS stamps a generated `_id` onto object values in place,
+                     * so it gets a copy and `scheduledBy` stays a clean identity.
+                     */
+                    scheduledBy: { ...scheduledBy },
                     namespace,
                     title,
                     actionType,

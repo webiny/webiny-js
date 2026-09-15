@@ -8,6 +8,7 @@ import { GroupHasModelsError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import type { CmsGroup } from "~/types/index.js";
+import { RuntimeTenant } from "~/features/runtimeTenant/abstractions.js";
 
 /**
  * DeleteGroupRepository - Validates and performs group deletion.
@@ -22,10 +23,12 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
-        private storageOperations: StorageOperations.Interface
+        private storageOperations: StorageOperations.Interface,
+        private runtimeTenant: RuntimeTenant.Interface
     ) {}
 
-    async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+    async execute(initialGroup: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const group = this.runtimeTenant.assign(initialGroup);
         try {
             // Check if this is a plugin-based group (cannot be deleted)
             const pluginGroups = await this.pluginGroupsProvider.getGroups();
@@ -63,5 +66,5 @@ class DeleteGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 export const DeleteGroupRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: DeleteGroupRepositoryImpl,
-    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations]
+    dependencies: [GroupCache, PluginGroupsProvider, StorageOperations, RuntimeTenant]
 });
