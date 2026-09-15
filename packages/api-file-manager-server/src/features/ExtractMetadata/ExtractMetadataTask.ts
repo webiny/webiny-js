@@ -1,20 +1,15 @@
 import { promises as fs } from "node:fs";
 import type { ExifTags } from "exifreader";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { MetadataReader } from "@webiny/api-file-manager/features/upload/ReadFileMetadata/abstractions.js";
 import type { ExtractMetadataInput } from "@webiny/api-file-manager/features/extractMetadata/ExtractMetadataInput.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
-class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadataInput> {
-    public readonly id = "fileManagerExtractMetadata";
-    public readonly title = "Extract image metadata (dimensions, EXIF, IPTC)";
-    public readonly description = "A task to extract metadata from uploaded image files";
-    public readonly maxIterations = 1;
-    public readonly isPrivate = true;
-    public readonly databaseLogs = false;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
+class ExtractMetadataTaskHandlerImpl implements TaskHandler.Interface<ExtractMetadataInput> {
     public constructor(
         private readonly metadataReader: MetadataReader.Interface,
         private readonly updateFileUseCase: UpdateFileUseCase.Interface,
@@ -24,7 +19,7 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
     public async run({
         input,
         controller
-    }: TaskDefinition.RunParams<ExtractMetadataInput>): Promise<
+    }: TaskHandler.RunParams<ExtractMetadataInput>): Promise<
         TaskDefinition.Result<ExtractMetadataInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -131,7 +126,24 @@ class ExtractMetadataTaskImpl implements TaskDefinition.Interface<ExtractMetadat
     }
 }
 
+const ExtractMetadataTaskHandler = TaskHandler.createImplementation({
+    implementation: ExtractMetadataTaskHandlerImpl,
+    dependencies: [MetadataReader, UpdateFileUseCase, FileManagerServerConfig]
+});
+
+class ExtractMetadataTaskImpl implements TaskDefinition.Interface {
+    public readonly id = "fileManagerExtractMetadata";
+    public readonly title = "Extract image metadata (dimensions, EXIF, IPTC)";
+    public readonly description = "A task to extract metadata from uploaded image files";
+    public readonly maxIterations = 1;
+    public readonly isPrivate = true;
+    public readonly databaseLogs = false;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = ExtractMetadataTaskHandler;
+}
+
 export const ExtractMetadataTaskDefinition = TaskDefinition.createImplementation({
     implementation: ExtractMetadataTaskImpl,
-    dependencies: [MetadataReader, UpdateFileUseCase, FileManagerServerConfig]
+    dependencies: []
 });
