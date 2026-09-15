@@ -17,42 +17,26 @@ export interface IPrepareDevServerSessionParams {
     apps: string[];
     /** Explicit opt-out, e.g. the CLI's `--no-proxy`. */
     enabled?: boolean;
-    /**
-     * Whether to point the apps at the proxy, not just reserve its ports. True for `watch`, which
-     * rebuilds both apps in this process and so can still influence what they're built with. False
-     * for `serve`, which runs what `webiny build` already produced: the admin bundle's API URL was
-     * fixed then, and nothing set now can change it.
-     */
-    pointAppsAtProxy?: boolean;
 }
 
 let currentSession: IDevServerSession | null = null;
 
 /**
- * Reserves the ports for a watch/serve session and points the apps at each other, so the developer
- * ends up with a single URL instead of one per app.
+ * Picks the three ports a single-URL session runs on, and pins the two app ones so the proxy knows
+ * where to forward.
  *
- * Called from the command handler, which is early enough despite webiny.config having been evaluated
- * before the handler ran. The config is rendered once per distinct render args, and the app-scoped
- * renders (`{ app: "api" }`, `{ app: "admin" }`) happen inside `projectSdk.watch()` — after this. So
- * `<Infra.ApiUrl>`'s build param still picks up `WEBINY_API_URL` from here.
+ * Pinning is the whole job. `runApiServer`, `runAdminServer` and the admin rsbuild config each
+ * resolve their own port already, and each auto-advances off a busy one. That is fine when nothing
+ * is pointed at them and silently wrong the moment something is, so this decides once, up front, and
+ * writes the answer into the `WEBINY_API_PORT` / `WEBINY_ADMIN_PORT` those three already read.
  *
- * `<Admin.ApiUrl>` is different: it emits an env var, and `applyEnvVars` already wrote it during the
- * bootstrap render. So the admin URLs are OVERWRITTEN rather than filled in. That's the same thing
- * AWS does in `SetAdminEnvVarsBeforeWatch`, where the real URL only becomes knowable at watch time
- * from stack output. When the proxy is on, it owns these URLs; `--no-proxy` is the way out.
- *
- * The ports are reserved here rather than left to each app because the proxy has to know where to
- * forward before anything starts, and because both apps auto-advance off a busy port on their own,
- * which is fine in isolation and silently wrong once something is pointed at them.
- *
- * Returns null when no proxy should run, in which case nothing is changed and both apps keep their
- * existing standalone behaviour.
+ * Returns null when no proxy should run, in which case nothing is changed at all and both apps keep
+ * their existing standalone behaviour.
  */
 export async function prepareDevServerSession(
     params: IPrepareDevServerSessionParams
 ): Promise<IDevServerSession | null> {
-    const { apps, enabled, pointAppsAtProxy = false } = params;
+    const { apps, enabled } = params;
 
     if (enabled === false || process.env.WEBINY_PROXY === "off" || apps.length < 2) {
         currentSession = null;
@@ -77,26 +61,6 @@ export async function prepareDevServerSession(
     const url = `http://localhost:${port}`;
     const apiUrl = `${url}${API_PREFIX}`;
 
-    if (pointAppsAtProxy) {
-        // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so
-        // the same build works on localhost, on a portless domain like https://wby6.localhost, and
-        // behind a real reverse proxy — without knowing any of them at build time.
-        process.env.WEBINY_ADMIN_API_URL = API_PREFIX;
-
-        // The websocket URL too. The admin would otherwise derive it from the API URL and land in the
-        // right place anyway, but only when nothing else sets it: `<Admin.WebsocketsUrl>` takes
-        // priority when present, and a project that pins it to a port (the obvious thing to write)
-        // would point the socket somewhere the proxy isn't.
-        process.env.WEBINY_ADMIN_WS_API_URL = API_PREFIX;
-
-        // The api can't be relative: it hands out absolute URLs (file srcPrefix, the upload endpoint)
-        // to clients that have no page origin to resolve against. Unlike the two above this one is
-        // still unset at this point — `<Infra.ApiUrl>` emits a build param, not an env var — and the
-        // api-scoped config render that turns it into that build param happens later, inside
-        // `projectSdk.watch()`.
-        process.env.WEBINY_API_URL = apiUrl;
-    }
-
     currentSession = {
         port,
         url,
@@ -105,6 +69,40 @@ export async function prepareDevServerSession(
     };
 
     return currentSession;
+}
+
+/**
+ * Tells the apps to talk to each other through the proxy rather than directly.
+ *
+ * Only `watch` calls this. `serve` runs what `webiny build` already produced, so the admin bundle's
+ * API URL was fixed back then and nothing set now can move it.
+ *
+ * Call before `projectSdk.watch()`. webiny.config has already been evaluated by the time a command
+ * handler runs, but it is rendered once per distinct render args, and the app-scoped renders
+ * (`{ app: "api" }`, `{ app: "admin" }`) happen inside that call — after this. So `<Infra.ApiUrl>`'s
+ * build param still picks up `WEBINY_API_URL` from here.
+ */
+export function pointAppsAtDevProxy(session: IDevServerSession): void {
+    // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so the
+    // same build works on localhost, on a portless domain like https://wby6.localhost, and behind a
+    // real reverse proxy — without knowing any of them at build time.
+    //
+    // Overwritten rather than filled in: `<Admin.ApiUrl>` emits an env var, and `applyEnvVars` wrote
+    // it during the bootstrap config render, so filling blanks would never win. Same thing AWS does
+    // in `SetAdminEnvVarsBeforeWatch`, where the real URL is only knowable at watch time from stack
+    // output. While the proxy is on it owns these URLs; `--no-proxy` is the way out.
+    process.env.WEBINY_ADMIN_API_URL = API_PREFIX;
+
+    // The websocket URL too. The admin would otherwise derive it from the API URL and land in the
+    // right place anyway, but only when nothing else sets it: `<Admin.WebsocketsUrl>` takes priority
+    // when present, and a project that pins it to a port (the obvious thing to write) would point the
+    // socket somewhere the proxy isn't.
+    process.env.WEBINY_ADMIN_WS_API_URL = API_PREFIX;
+
+    // The api can't be relative: it hands out absolute URLs (file srcPrefix, the upload endpoint) to
+    // clients that have no page origin to resolve against. Unlike the two above, this one is still
+    // unset here, because `<Infra.ApiUrl>` emits a build param rather than an env var.
+    process.env.WEBINY_API_URL = session.apiUrl;
 }
 
 /**

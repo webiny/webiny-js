@@ -13,7 +13,10 @@ import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
 import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
-import { prepareDevServerSession } from "@webiny/project-server/serve/devServer/index.js";
+import {
+    pointAppsAtDevProxy,
+    prepareDevServerSession
+} from "@webiny/project-server/serve/devServer/index.js";
 
 interface IServerWatchCommandParams {
     _: string[];
@@ -101,14 +104,17 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     }
                 }
 
-                // Before the `projectSdk.watch()` calls below, which is what matters: those are where
-                // each app's workspace is prepared and its config re-rendered, so that's where the
-                // URLs set here are picked up. See prepareDevServerSession.
                 const devServerSession = await prepareDevServerSession({
                     apps,
-                    enabled: params.proxy,
-                    pointAppsAtProxy: true
+                    enabled: params.proxy
                 });
+
+                // Before the `projectSdk.watch()` calls below, which is what matters: those are where
+                // each app's workspace is prepared and its config re-rendered, so that is where these
+                // URLs get picked up.
+                if (devServerSession) {
+                    pointAppsAtDevProxy(devServerSession);
+                }
 
                 const projectSdk = await this.getProjectSdkService.execute();
 

@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+    pointAppsAtDevProxy,
     prepareDevServerSession,
     type IPrepareDevServerSessionParams
 } from "~/serve/devServer/prepareDevServerSession.js";
@@ -37,11 +38,16 @@ describe("prepareDevServerSession", () => {
     });
 
     const prepare = (params: Partial<IPrepareDevServerSessionParams> = {}) =>
-        prepareDevServerSession({
-            apps: ["api", "admin"],
-            pointAppsAtProxy: true,
-            ...params
-        });
+        prepareDevServerSession({ apps: ["api", "admin"], ...params });
+
+    /** What `watch` does: reserve the ports, then point the apps at the proxy. */
+    const prepareAndPoint = async (params: Partial<IPrepareDevServerSessionParams> = {}) => {
+        const session = await prepare(params);
+        if (session) {
+            pointAppsAtDevProxy(session);
+        }
+        return session;
+    };
 
     describe("deciding whether a proxy belongs in front", () => {
         it("does nothing for a single app, which already has a single URL", async () => {
@@ -135,7 +141,7 @@ describe("prepareDevServerSession", () => {
 
     describe("the URLs it points the apps at", () => {
         it("gives admin a relative API URL, so the bundle works on any origin", async () => {
-            await prepare();
+            await prepareAndPoint();
 
             // Not `http://localhost:<port>/api`: resolved in the browser instead, which is what lets
             // the same build run behind a portless domain or a real reverse proxy.
@@ -143,7 +149,7 @@ describe("prepareDevServerSession", () => {
         });
 
         it("points the admin websocket at itself too", async () => {
-            await prepare();
+            await prepareAndPoint();
 
             // `<Admin.WebsocketsUrl>` beats the API URL when a project sets it, and pinning it to a
             // port is the obvious thing to write, so leaving this unset sends the socket elsewhere.
@@ -151,7 +157,7 @@ describe("prepareDevServerSession", () => {
         });
 
         it("gives the api an absolute one, since it hands out URLs to clients", async () => {
-            const session = await prepare();
+            const session = await prepareAndPoint();
 
             expect(process.env.WEBINY_API_URL).toBe(`${session!.url}/api`);
             expect(session!.apiUrl).toBe(`http://localhost:${session!.port}/api`);
@@ -165,16 +171,16 @@ describe("prepareDevServerSession", () => {
             process.env.WEBINY_ADMIN_API_URL = "http://localhost:3002";
             process.env.WEBINY_ADMIN_WS_API_URL = "ws://localhost:3002";
 
-            await prepare();
+            await prepareAndPoint();
 
             expect(process.env.WEBINY_ADMIN_API_URL).toBe("/api");
             expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
         });
 
-        it("leaves every URL alone when only reserving ports", async () => {
-            // `serve` runs what `webiny build` produced, so the admin bundle's URL is already fixed
-            // and setting anything now would only be misleading.
-            const session = await prepare({ pointAppsAtProxy: false });
+        it("leaves every URL alone when only the ports are reserved", async () => {
+            // What `serve` does: it runs what `webiny build` produced, so the admin bundle's URL is
+            // already fixed and setting anything now would only be misleading.
+            const session = await prepare();
 
             expect(session).not.toBeNull();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();

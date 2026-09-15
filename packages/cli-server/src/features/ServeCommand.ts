@@ -50,9 +50,9 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
             handler: async (params: IServeCommandParams) => {
                 const stdio = this.stdioService;
 
-                // Ports only. Unlike watch, serve runs what `webiny build` already produced, so the
-                // admin bundle's API URL was fixed at build time and can't be pointed anywhere now —
-                // it has to have been built with a URL that works behind the proxy.
+                // Ports only, no `pointAppsAtDevProxy`: serve runs what `webiny build` already
+                // produced, so the admin bundle's API URL was fixed back then and has to have been
+                // built with one that works behind the proxy.
                 const devServerSession = await prepareDevServerSession({
                     apps: params.app ? [params.app] : ["api", "admin"],
                     enabled: params.proxy
