@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { compressJson } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { CmsGenerateEntryContentUseCase } from "~/api/features/CmsGenerateEntryContent/index.js";
@@ -17,14 +20,7 @@ export interface ICmsGenerateEntryContentTaskInput {
     additionalFileIds?: string[] | null;
 }
 
-class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGenerateEntryContentTaskInput> {
-    id = CMS_GENERATE_ENTRY_CONTENT_TASK_ID;
-    title = "AI Power-Ups - Generate Entry Content";
-    description = "Generates CMS entry content using AI based on a user prompt.";
-    maxIterations = 1;
-    isPrivate = true;
-    databaseLogs = false;
-
+class CmsGenerateEntryContentTaskHandlerImpl implements TaskHandler.Interface<ICmsGenerateEntryContentTaskInput> {
     constructor(
         private identityContext: IdentityContext.Interface,
         private generateEntryContent: CmsGenerateEntryContentUseCase.Interface,
@@ -34,7 +30,7 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<ICmsGenerateEntryContentTaskInput>): Promise<
+    }: TaskHandler.RunParams<ICmsGenerateEntryContentTaskInput>): Promise<
         TaskDefinition.Result<ICmsGenerateEntryContentTaskInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -109,7 +105,23 @@ class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface<ICmsGe
     }
 }
 
+const CmsGenerateEntryContentTaskHandler = TaskHandler.createImplementation({
+    implementation: CmsGenerateEntryContentTaskHandlerImpl,
+    dependencies: [IdentityContext, CmsGenerateEntryContentUseCase, WebsocketsSendToIdentityUseCase]
+});
+
+class CmsGenerateEntryContentTaskImpl implements TaskDefinition.Interface {
+    id = CMS_GENERATE_ENTRY_CONTENT_TASK_ID;
+    title = "AI Power-Ups - Generate Entry Content";
+    description = "Generates CMS entry content using AI based on a user prompt.";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+
+    handler = CmsGenerateEntryContentTaskHandler;
+}
+
 export const CmsGenerateEntryContentTask = TaskDefinition.createImplementation({
     implementation: CmsGenerateEntryContentTaskImpl,
-    dependencies: [IdentityContext, CmsGenerateEntryContentUseCase, WebsocketsSendToIdentityUseCase]
+    dependencies: []
 });

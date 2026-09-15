@@ -1,5 +1,8 @@
 import type { IEmptyTrashBinsInput, IEmptyTrashBinsOutput } from "~/types.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
@@ -23,20 +26,10 @@ const calculateDateTimeString = () => {
     return currentDate.toISOString();
 };
 
-class EmptyTrashBinTask implements TaskDefinition.Interface<
+class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface<
     IEmptyTrashBinsInput,
     IEmptyTrashBinsOutput
 > {
-    public readonly isPrivate = true;
-    public readonly id = "hcmsEntriesEmptyTrashBins";
-    public readonly title = "Headless CMS - Empty all trash bins";
-    public readonly description =
-        "Delete all entries in the trash bin for each model in the system.";
-    public readonly maxIterations = 120;
-    public readonly databaseLogs = false;
-
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
     constructor(
         private tenantContext: TenantContext.Interface,
         private listTenants: ListTenantsUseCase.Interface,
@@ -46,7 +39,7 @@ class EmptyTrashBinTask implements TaskDefinition.Interface<
     ) {}
 
     async run(
-        params: TaskDefinition.RunParams<IEmptyTrashBinsInput, IEmptyTrashBinsOutput>
+        params: TaskHandler.RunParams<IEmptyTrashBinsInput, IEmptyTrashBinsOutput>
     ): Promise<TaskDefinition.Result<IEmptyTrashBinsInput, IEmptyTrashBinsOutput>> {
         const { input, controller } = params;
 
@@ -131,8 +124,8 @@ class EmptyTrashBinTask implements TaskDefinition.Interface<
     }
 }
 
-export const EmptyTrashBinTaskDefinition = TaskDefinition.createImplementation({
-    implementation: EmptyTrashBinTask,
+const EmptyTrashBinTaskHandler = TaskHandler.createImplementation({
+    implementation: EmptyTrashBinTaskHandlerImpl,
     dependencies: [
         TenantContext,
         ListTenantsUseCase,
@@ -140,4 +133,23 @@ export const EmptyTrashBinTaskDefinition = TaskDefinition.createImplementation({
         ListDeletedEntriesUseCase,
         DeleteEntryUseCase
     ]
+});
+
+class EmptyTrashBinTask implements TaskDefinition.Interface {
+    public readonly isPrivate = true;
+    public readonly id = "hcmsEntriesEmptyTrashBins";
+    public readonly title = "Headless CMS - Empty all trash bins";
+    public readonly description =
+        "Delete all entries in the trash bin for each model in the system.";
+    public readonly maxIterations = 120;
+    public readonly databaseLogs = false;
+
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = EmptyTrashBinTaskHandler;
+}
+
+export const EmptyTrashBinTaskDefinition = TaskDefinition.createImplementation({
+    implementation: EmptyTrashBinTask,
+    dependencies: []
 });

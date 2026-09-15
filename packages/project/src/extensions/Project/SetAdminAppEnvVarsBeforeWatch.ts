@@ -47,6 +47,12 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
             process.env.REACT_APP_WEBINY_TELEMETRY_NEW_USER = newUser;
         }
 
+        // Mirror the hosting-type marker set by the CLI bin into the admin bundle, so admin events
+        // can be segmented by hosting type the same way CLI events are.
+        if (!("REACT_APP_WEBINY_HOSTING_TYPE" in process.env) && process.env.WEBINY_HOSTING_TYPE) {
+            process.env.REACT_APP_WEBINY_HOSTING_TYPE = process.env.WEBINY_HOSTING_TYPE;
+        }
+
         if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
             process.env.INLINE_RUNTIME_CHUNK = "true";
         }

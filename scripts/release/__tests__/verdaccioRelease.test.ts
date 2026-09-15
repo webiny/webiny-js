@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { VerdaccioRelease } from "../src/VerdaccioRelease";
 
 vi.mock("execa", () => ({
-    default: vi.fn().mockResolvedValue({ stdout: "def5678" })
+    execa: vi.fn().mockResolvedValue({ stdout: "def5678" })
 }));
 
 const logger = {
