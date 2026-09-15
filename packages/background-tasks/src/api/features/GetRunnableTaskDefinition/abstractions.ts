@@ -1,12 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type {
-    TaskDefinitionNotFoundError,
-    TaskDefinitionNotRunnableError
-} from "~/api/domain/errors.js";
+import type { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
 
-export interface IGetTaskDefinitionUseCase {
+export interface IGetRunnableTaskDefinitionUseCase {
     execute<
         I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
@@ -15,19 +12,18 @@ export interface IGetTaskDefinitionUseCase {
     ): Result<TaskDefinition.Runnable<I, O>, UseCaseError>;
 }
 
-export interface IGetTaskDefinitionUseCaseErrors {
+export interface IGetRunnableTaskDefinitionUseCaseErrors {
     notFound: TaskDefinitionNotFoundError;
-    notRunnable: TaskDefinitionNotRunnableError;
 }
 
-type UseCaseError = IGetTaskDefinitionUseCaseErrors[keyof IGetTaskDefinitionUseCaseErrors];
+type UseCaseError =
+    IGetRunnableTaskDefinitionUseCaseErrors[keyof IGetRunnableTaskDefinitionUseCaseErrors];
 
-export const GetTaskDefinitionUseCase = createAbstraction<IGetTaskDefinitionUseCase>(
-    "Tasks/GetTaskDefinitionUseCase"
-);
+export const GetRunnableTaskDefinitionUseCase =
+    createAbstraction<IGetRunnableTaskDefinitionUseCase>("Tasks/GetRunnableTaskDefinitionUseCase");
 
-export namespace GetTaskDefinitionUseCase {
-    export type Interface = IGetTaskDefinitionUseCase;
+export namespace GetRunnableTaskDefinitionUseCase {
+    export type Interface = IGetRunnableTaskDefinitionUseCase;
 
     export type Error = UseCaseError;
     export type Return<
