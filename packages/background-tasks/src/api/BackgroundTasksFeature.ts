@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { RunnableTaskDecorator } from "./decorators/RunnableTaskDecorator.js";
+import { TaskDefinitionDefaultsDecorator } from "./decorators/TaskDefinitionDefaultsDecorator.js";
 import { SelfCleaningTaskDefinitionDecorator } from "./decorators/SelfCleaningTaskDefinitionDecorator.js";
 import { SelfCleaningTaskHandlerDecorator } from "./decorators/SelfCleaningTaskHandlerDecorator.js";
 import { TaskController } from "./features/TaskController/index.js";
@@ -39,7 +39,7 @@ export const BackgroundTasksFeature = createFeature({
         container.register(BackgroundTaskSettingsModel);
 
         // Decorators wrapping all TaskDefinition instances (metadata only).
-        container.registerDecorator(RunnableTaskDecorator);
+        container.registerDecorator(TaskDefinitionDefaultsDecorator);
         container.registerDecorator(SelfCleaningTaskDefinitionDecorator);
 
         // Self-cleanup runs in the lifecycle hooks, which belong to the handler. Applied when the

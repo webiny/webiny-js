@@ -12,7 +12,7 @@ const DEFAULT_MAX_ITERATIONS = 50;
  * `GetTaskDefinitionUseCase` takes `run` and the hooks from the handler that `handler` names, after
  * this decorator has run.
  */
-class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
+class TaskDefinitionDefaultsDecoratorImpl implements TaskDefinition.Interface {
     constructor(private decoratee: TaskDefinition.Interface) {
         this.validate();
     }
@@ -59,7 +59,7 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
     }
 }
 
-export const RunnableTaskDecorator = TaskDefinition.createDecorator({
-    decorator: RunnableTaskDecoratorImpl,
+export const TaskDefinitionDefaultsDecorator = TaskDefinition.createDecorator({
+    decorator: TaskDefinitionDefaultsDecoratorImpl,
     dependencies: []
 });
