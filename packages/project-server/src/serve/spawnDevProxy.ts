@@ -6,13 +6,13 @@ import { type IDevProxySession } from "./devProxy/index.js";
  * Run the single-port dev proxy as a child process, so it slots into a `ServersWatcher` next to the
  * api and admin servers and the caller renders all three the same way.
  *
- * Unlike `runApiServer` / `runAdminServer`, the runner isn't copied into an app workspace: the proxy
+ * Unlike `spawnApiServer` / `spawnAdminServer`, the runner isn't copied into an app workspace: the proxy
  * belongs to no app, so it runs from project-server's own build and imports `DevProxy` instead of
  * inlining a server the way theirs have to.
  *
  * Returns the spawned child (stdio piped); the caller owns rendering + lifecycle.
  */
-export async function runDevProxy(session: IDevProxySession): Promise<ChildProcess> {
+export async function spawnDevProxy(session: IDevProxySession): Promise<ChildProcess> {
     const runnerPath = path.join(import.meta.dirname, "runners", "devProxyRunner.mjs");
 
     const child = spawn(process.execPath, [runnerPath], {

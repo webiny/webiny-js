@@ -25,7 +25,7 @@ let currentSession: IDevProxySession | null = null;
  * Picks the three ports a single-URL session runs on, and pins the two app ones so the proxy knows
  * where to forward.
  *
- * Pinning is the whole job. `runApiServer`, `runAdminServer` and the admin rsbuild config each
+ * Pinning is the whole job. `spawnApiServer`, `spawnAdminServer` and the admin rsbuild config each
  * resolve their own port already, and each auto-advances off a busy one. That is fine when nothing
  * is pointed at them and silently wrong the moment something is, so this decides once, up front, and
  * writes the answer into the `WEBINY_API_PORT` / `WEBINY_ADMIN_PORT` those three already read.

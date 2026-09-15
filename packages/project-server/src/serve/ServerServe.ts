@@ -4,9 +4,9 @@ import {
     ServersWatcher,
     type IServerProcessSpec
 } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
-import { runApiServer } from "./runApiServer.js";
-import { runAdminServer } from "./runAdminServer.js";
-import { runDevProxy } from "./runDevProxy.js";
+import { spawnApiServer } from "./spawnApiServer.js";
+import { spawnAdminServer } from "./spawnAdminServer.js";
+import { spawnDevProxy } from "./spawnDevProxy.js";
 import { getDevProxySession } from "./devProxy/index.js";
 
 /**
@@ -46,7 +46,7 @@ export class ServerServe implements Serve.Interface {
             const app = this.getApp.execute("api");
             specs.push({
                 name: "api",
-                spawn: () => runApiServer(app, { watch: false, ignoreGenericPort: both })
+                spawn: () => spawnApiServer(app, { watch: false, ignoreGenericPort: both })
             });
         }
 
@@ -54,7 +54,7 @@ export class ServerServe implements Serve.Interface {
             const app = this.getApp.execute("admin");
             specs.push({
                 name: "admin",
-                spawn: () => runAdminServer(app, { ignoreGenericPort: both })
+                spawn: () => spawnAdminServer(app, { ignoreGenericPort: both })
             });
         }
 
@@ -62,7 +62,7 @@ export class ServerServe implements Serve.Interface {
         // last line of the startup output and the URL worth opening is the one left on screen.
         const devProxySession = getDevProxySession();
         if (devProxySession) {
-            specs.push({ name: "proxy", spawn: () => runDevProxy(devProxySession) });
+            specs.push({ name: "proxy", spawn: () => spawnDevProxy(devProxySession) });
         }
 
         return { serversWatcher: new ServersWatcher(specs) };

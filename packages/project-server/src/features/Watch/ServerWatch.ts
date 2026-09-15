@@ -3,8 +3,8 @@ import {
     ServersWatcher,
     type IServerProcessSpec
 } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
-import { runApiServer } from "../../serve/runApiServer.js";
-import { runDevProxy } from "../../serve/runDevProxy.js";
+import { spawnApiServer } from "../../serve/spawnApiServer.js";
+import { spawnDevProxy } from "../../serve/spawnDevProxy.js";
 import { getDevProxySession } from "../../serve/devProxy/index.js";
 
 /**
@@ -52,12 +52,12 @@ import { getDevProxySession } from "../../serve/devProxy/index.js";
  * A spec is a name and a `spawn` function nobody has called. The chain from here to a real process:
  *
  * ```
- *   ServerWatch                  builds the specs                   (this file)
- *   WatchCommand                 serversWatcher.prepare()           ──▶ RunnableServerProcess[]
- *   WatchCommand                 pipeStdout / pipeStderr            attaches its own prefixing
- *   WatchCommand                 Promise.all(processes.map(run))
- *   RunnableServerProcess.run()  calls the spec's spawn()
- *   runApiServer / runDevProxy   child_process.spawn(node, runner)  ──▶ an actual process
+ *   ServerWatch                     builds the specs                  (this file)
+ *   WatchCommand                    serversWatcher.prepare()          ──▶ RunnableServerProcess[]
+ *   WatchCommand                    pipeStdout / pipeStderr           attaches its own prefixing
+ *   WatchCommand                    Promise.all(processes.map(run))
+ *   RunnableServerProcess.run()     calls the spec's spawn()
+ *   spawnApiServer / spawnDevProxy  child_process.spawn(node, runner) ──▶ an actual process
  * ```
  *
  * Same split `packagesWatcher` already uses for builds. Describing rather than starting is what lets
@@ -107,7 +107,7 @@ export class ServerWatch implements Watch.Interface {
 
         const app = this.getApp.execute(appName);
 
-        return [{ name: "api", spawn: () => runApiServer(app, { watch: true }) }];
+        return [{ name: "api", spawn: () => spawnApiServer(app, { watch: true }) }];
     }
 
     /**
@@ -124,7 +124,7 @@ export class ServerWatch implements Watch.Interface {
             return [];
         }
 
-        return [{ name: "proxy", spawn: () => runDevProxy(devProxySession) }];
+        return [{ name: "proxy", spawn: () => spawnDevProxy(devProxySession) }];
     }
 }
 

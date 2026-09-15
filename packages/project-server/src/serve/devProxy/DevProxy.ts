@@ -56,7 +56,7 @@ interface ITarget {
  * fail in the worst possible way: an api path the proxy hadn't heard of would fall through to admin
  * and come back as `index.html` with a 200.
  *
- * Started by `devProxyRunner`, which `runDevProxy` spawns as a child so the proxy is a
+ * Started by `devProxyRunner`, which `spawnDevProxy` spawns as a child so the proxy is a
  * `ServersWatcher` process like the api and admin servers.
  */
 export class DevProxy {
