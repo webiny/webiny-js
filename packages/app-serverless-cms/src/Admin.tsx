@@ -21,8 +21,6 @@ import { SchedulerModule } from "@webiny/app-scheduler";
 import { CmsScheduler } from "@webiny/app-headless-cms-scheduler";
 import { WorkflowsAdminApp } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
-import { CollaborationAdminApp } from "@webiny/app-collaboration";
-import { NotificationsAdminApp } from "@webiny/app-notifications";
 import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 import { Container } from "@webiny/di";
 import type { PluginCollection } from "@webiny/plugins/types.js";
@@ -65,8 +63,6 @@ const App = (props: AdminProps) => {
             <WebsiteBuilder />
             <WorkflowsAdminApp />
             <CmsWorkflows />
-            <CollaborationAdminApp />
-            <NotificationsAdminApp />
             <WebsiteBuilderWorkflows />
             <WbScheduler />
             <Webhooks />

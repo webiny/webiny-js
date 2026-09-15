@@ -4,6 +4,9 @@ import { Infra } from "@webiny/project-aws";
 import { TenantManager } from "@webiny/tenant-manager";
 import { Languages } from "@webiny/languages";
 import { AiPowerups } from "@webiny/ai-powerups";
+import { Collaboration } from "@webiny/collaboration";
+import { Notifications } from "@webiny/notifications";
+import { NotificationsIntegrations } from "@webiny/notifications-integrations";
 import { Extensions as WebinyConfigTsx } from "../../webiny.config.js";
 
 export const Extensions = () => {
@@ -14,6 +17,9 @@ export const Extensions = () => {
             <Languages />
             <TenantManager />
             <AiPowerups />
+            <Collaboration />
+            <Notifications />
+            <NotificationsIntegrations />
             <WebinyConfigTsx />
         </>
     );

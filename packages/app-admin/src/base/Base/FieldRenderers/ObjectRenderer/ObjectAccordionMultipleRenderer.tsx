@@ -27,6 +27,10 @@ declare module "../../../../features/formModel/abstractions.js" {
 
 export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"objectAccordionMultiple">(
     ({ field }) => {
+        if (!field.isList) {
+            return null;
+        }
+
         // Force the list container open when a focus request lands anywhere in
         // its subtree, so "jump to field" can cascade through collapsed levels.
         const focusInside = hasSubtreeFocusRequest(field.items.flatMap(i => i.fields));
@@ -36,10 +40,6 @@ export const ObjectAccordionMultipleRenderer = createObjectFieldRenderer<"object
                 setOpen(true);
             }
         }, [focusInside]);
-
-        if (!field.isList) {
-            return null;
-        }
 
         const settings = field.rendererSettings;
         const showContainer = settings?.container !== false;

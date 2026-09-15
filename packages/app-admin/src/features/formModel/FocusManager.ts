@@ -124,10 +124,10 @@ export class FocusManager {
                 const idField = candidate.children.get("_id");
                 return idField ? idField.getValue() === nextSegment : false;
             });
-            if (!item) {
-                return null;
+            if (item) {
+                return { segments: segments.slice(2), children: item.children };
             }
-            return { segments: segments.slice(2), children: item.children };
+            // No item matched — treat the segment as a child field name (legacy locators).
         }
         return { segments: segments.slice(1), children: field.children };
     }
