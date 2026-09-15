@@ -4,7 +4,7 @@ import {
     prepareDevProxySession,
     type IPrepareDevProxySessionParams
 } from "~/serve/devProxy/prepareDevProxySession.js";
-import { startDevProxy } from "~/serve/devProxy/startDevProxy.js";
+import { DevProxy } from "~/serve/devProxy/DevProxy.js";
 
 const MANAGED_VARS = [
     "PORT",
@@ -124,7 +124,7 @@ describe("prepareDevProxySession", () => {
 
         const api = await serve("api answered");
         const admin = await serve("admin answered");
-        const proxy = await startDevProxy({ port: session!.port, apiPort, adminPort });
+        const proxy = await DevProxy.start({ port: session!.port, apiPort, adminPort });
 
         try {
             await api.listenOn(apiPort);

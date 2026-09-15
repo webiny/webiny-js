@@ -1,4 +1,4 @@
-import http, { type IncomingMessage } from "node:http";
+import http, { type IncomingMessage, type ServerResponse } from "node:http";
 import { type Socket } from "node:net";
 import { type Duplex } from "node:stream";
 import { API_PREFIX } from "./constants.js";
@@ -31,7 +31,7 @@ const HOP_BY_HOP = [
 const TARGET_WAIT = 20 * 1000;
 const RETRY_INTERVAL = 200;
 
-export interface IStartDevProxyParams {
+export interface IDevProxyConfig {
     port: number;
     apiPort: number;
     adminPort: number;
@@ -39,9 +39,12 @@ export interface IStartDevProxyParams {
     targetWait?: number;
 }
 
-export interface IDevProxy {
-    url: string;
-    close(): Promise<void>;
+/** Which server a request belongs to, and what it looks like once it gets there. */
+interface ITarget {
+    port: number;
+    path: string;
+    name: string;
+    prefix: string | undefined;
 }
 
 /**
@@ -53,32 +56,98 @@ export interface IDevProxy {
  * fail in the worst possible way: an api path the proxy hadn't heard of would fall through to admin
  * and come back as `index.html` with a 200.
  *
- * Runs in the CLI process rather than as a spawned child. It has no build step to isolate and no
- * output worth prefixing, and keeping it here means it binds the public port immediately, so the
- * developer's URL works from the first second instead of once the apps are up.
+ * Started by `devProxyRunner`, which `runDevProxy` spawns as a child so the proxy is a
+ * `ServersWatcher` process like the api and admin servers.
  */
-export async function startDevProxy(params: IStartDevProxyParams): Promise<IDevProxy> {
-    const { port, apiPort, adminPort, targetWait = TARGET_WAIT } = params;
+export class DevProxy {
+    private readonly server: http.Server;
 
-    const targetFor = (url = "/") => {
+    /**
+     * Upgraded sockets are detached from the server once the handshake completes, so `close()`
+     * neither waits for them nor tears them down. Tracked here so shutdown can, otherwise a single
+     * open admin websocket is enough to keep the whole command from exiting.
+     */
+    private readonly upgraded = new Set<Duplex>();
+
+    private readonly port: number;
+    private readonly apiPort: number;
+    private readonly adminPort: number;
+    private readonly targetWait: number;
+
+    private constructor(config: IDevProxyConfig) {
+        this.port = config.port;
+        this.apiPort = config.apiPort;
+        this.adminPort = config.adminPort;
+        this.targetWait = config.targetWait ?? TARGET_WAIT;
+
+        this.server = http.createServer((req, res) => this.forward(req, res));
+
+        // Both directions need to stay open indefinitely: server-sent events on the way out, large
+        // file uploads on the way in. The defaults would cut either one off mid-flight.
+        this.server.requestTimeout = 0;
+        this.server.timeout = 0;
+
+        // Websockets: the api's own socket under `/api`, and rsbuild's HMR socket everywhere else.
+        // rsbuild's client derives its URL from `location`, so pointing the browser at the proxy is
+        // all it takes for HMR to keep working.
+        this.server.on("upgrade", (req, socket, head) => this.forwardUpgrade(req, socket, head));
+
+        // A client that disappears mid-request is normal in a browser; it shouldn't take us down.
+        this.server.on("clientError", (_error, socket) => socket.destroy());
+    }
+
+    static async start(config: IDevProxyConfig): Promise<DevProxy> {
+        const proxy = new DevProxy(config);
+        await proxy.listen();
+        return proxy;
+    }
+
+    get url(): string {
+        return `http://localhost:${this.port}`;
+    }
+
+    close(): Promise<void> {
+        return new Promise<void>(resolve => {
+            for (const socket of this.upgraded) {
+                socket.destroy();
+            }
+            this.upgraded.clear();
+            this.server.closeAllConnections?.();
+            this.server.close(() => resolve());
+        });
+    }
+
+    private listen(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.server.once("error", reject);
+            this.server.listen(this.port, () => {
+                this.server.removeListener("error", reject);
+                resolve();
+            });
+        });
+    }
+
+    private targetFor(url = "/"): ITarget {
         const isApi = url === API_PREFIX || url.startsWith(`${API_PREFIX}/`);
+
         if (!isApi) {
-            return { port: adminPort, path: url, name: "admin", prefix: undefined };
+            return { port: this.adminPort, path: url, name: "admin", prefix: undefined };
         }
+
         // The api is written to serve `/graphql`, not `/api/graphql`, and is completely unaware it's
         // behind anything. `x-forwarded-prefix` is how it learns what to put back when it builds an
         // absolute URL for a client.
         return {
-            port: apiPort,
+            port: this.apiPort,
             path: url.slice(API_PREFIX.length) || "/",
             name: "api",
             prefix: API_PREFIX
         };
-    };
+    }
 
-    const server = http.createServer((req, res) => {
-        const target = targetFor(req.url);
-        const deadline = Date.now() + targetWait;
+    private forward(req: IncomingMessage, res: ServerResponse): void {
+        const target = this.targetFor(req.url);
+        const deadline = Date.now() + this.targetWait;
 
         const attempt = () => {
             const proxyReq = http.request({
@@ -86,7 +155,7 @@ export async function startDevProxy(params: IStartDevProxyParams): Promise<IDevP
                 port: target.port,
                 path: target.path,
                 method: req.method,
-                headers: forwardedHeaders(req, target.prefix)
+                headers: { ...stripHopByHop(req.headers), ...forwardedHeaders(req, target.prefix) }
             });
 
             // Piping only once the socket is connected keeps the incoming request untouched until we
@@ -134,29 +203,15 @@ export async function startDevProxy(params: IStartDevProxyParams): Promise<IDevP
         };
 
         attempt();
-    });
+    }
 
-    // Both directions need to stay open indefinitely: server-sent events on the way out, large file
-    // uploads on the way in. The defaults would cut either one off mid-flight.
-    server.requestTimeout = 0;
-    server.timeout = 0;
-
-    // Websockets: the api's own socket under `/api`, and rsbuild's HMR socket everywhere else.
-    // rsbuild's client derives its URL from `location`, so pointing the browser at the proxy is all
-    // it takes for HMR to keep working.
-    // Node types the upgrade socket as a bare Duplex; on a TCP server it is always a net.Socket, and
-    // the websocket hops below want its Nagle control.
-    // Upgraded sockets are detached from the server once the handshake completes, so `close()` neither
-    // waits for them nor tears them down. Tracked here so shutdown can, otherwise a single open admin
-    // websocket is enough to keep the whole command from exiting.
-    const upgraded = new Set<Duplex>();
-
-    server.on("upgrade", (req: IncomingMessage, socket: Duplex, head: Buffer) => {
+    private forwardUpgrade(req: IncomingMessage, socket: Duplex, head: Buffer): void {
+        // Node types the upgrade socket as a bare Duplex; on a TCP server it is always a net.Socket,
+        // and the hops below want its Nagle control.
         const clientSocket = socket as Socket;
-        const target = targetFor(req.url);
+        const target = this.targetFor(req.url);
 
-        upgraded.add(clientSocket);
-        clientSocket.once("close", () => upgraded.delete(clientSocket));
+        this.track(clientSocket);
 
         const proxyReq = http.request({
             host: "127.0.0.1",
@@ -165,12 +220,11 @@ export async function startDevProxy(params: IStartDevProxyParams): Promise<IDevP
             method: req.method,
             // An upgrade *is* the `connection`/`upgrade` header pair, so unlike a normal request
             // those have to survive the hop.
-            headers: { ...req.headers, ...forwardedOnly(req, target.prefix) }
+            headers: { ...req.headers, ...forwardedHeaders(req, target.prefix) }
         });
 
         proxyReq.on("upgrade", (proxyRes, proxySocket, proxyHead) => {
-            upgraded.add(proxySocket);
-            proxySocket.once("close", () => upgraded.delete(proxySocket));
+            this.track(proxySocket);
 
             clientSocket.write(handshake(proxyRes));
 
@@ -192,42 +246,19 @@ export async function startDevProxy(params: IStartDevProxyParams): Promise<IDevP
         // Both sides reconnect on their own, so a failed upgrade is better dropped than answered.
         proxyReq.on("error", () => clientSocket.destroy());
         proxyReq.end();
-    });
+    }
 
-    // A client that disappears mid-request is normal in a browser; it shouldn't take the proxy down.
-    server.on("clientError", (_error, socket) => socket.destroy());
-
-    await new Promise<void>((resolve, reject) => {
-        server.once("error", reject);
-        server.listen(port, () => {
-            server.removeListener("error", reject);
-            resolve();
-        });
-    });
-
-    return {
-        url: `http://localhost:${port}`,
-        close: () =>
-            new Promise<void>(resolve => {
-                for (const socket of upgraded) {
-                    socket.destroy();
-                }
-                upgraded.clear();
-                server.closeAllConnections?.();
-                server.close(() => resolve());
-            })
-    };
-}
-
-function forwardedHeaders(req: IncomingMessage, prefix: string | undefined) {
-    return { ...stripHopByHop(req.headers), ...forwardedOnly(req, prefix) };
+    private track(socket: Duplex): void {
+        this.upgraded.add(socket);
+        socket.once("close", () => this.upgraded.delete(socket));
+    }
 }
 
 /**
  * What the api needs to reconstruct the URL the browser actually used. Existing values win, so a
  * chain like portless → this proxy still reports the outermost origin rather than ours.
  */
-function forwardedOnly(req: IncomingMessage, prefix: string | undefined) {
+function forwardedHeaders(req: IncomingMessage, prefix: string | undefined) {
     const headers: Record<string, string> = {
         "x-forwarded-host": header(req, "x-forwarded-host") ?? req.headers.host ?? "",
         "x-forwarded-proto": header(req, "x-forwarded-proto") ?? "http",

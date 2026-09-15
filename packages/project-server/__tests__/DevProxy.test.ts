@@ -1,7 +1,7 @@
 import http from "node:http";
 import { type AddressInfo } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
-import { startDevProxy, type IDevProxy } from "~/serve/devProxy/startDevProxy.js";
+import { DevProxy } from "~/serve/devProxy/DevProxy.js";
 import { findFreePort } from "~/serve/findFreePort.js";
 
 interface IRecordedRequest {
@@ -54,7 +54,7 @@ const echo: http.RequestListener = (req, res) => {
     res.end(`served ${req.url}`);
 };
 
-describe("startDevProxy", () => {
+describe("DevProxy", () => {
     const cleanups: Array<() => Promise<void>> = [];
 
     afterEach(async () => {
@@ -73,14 +73,14 @@ describe("startDevProxy", () => {
         const adminPort = await admin.listen();
         const port = await findFreePort(45000);
 
-        const proxy = await startDevProxy({ port, apiPort, adminPort });
+        const proxy = await DevProxy.start({ port, apiPort, adminPort });
 
         cleanups.push(() => proxy.close(), api.close, admin.close);
 
         return { proxy, api, admin, port };
     }
 
-    const get = (proxy: IDevProxy, path: string, init: RequestInit = {}) =>
+    const get = (proxy: DevProxy, path: string, init: RequestInit = {}) =>
         fetch(`${proxy.url}${path}`, init);
 
     it("routes everything without the /api prefix to admin", async () => {
@@ -210,7 +210,7 @@ describe("startDevProxy", () => {
         const apiPort = await findFreePort(46000);
         const port = await findFreePort(45500);
 
-        const proxy = await startDevProxy({ port, apiPort, adminPort });
+        const proxy = await DevProxy.start({ port, apiPort, adminPort });
         cleanups.push(() => proxy.close(), api.close, admin.close);
 
         const pending = get(proxy, "/api/graphql");
@@ -230,7 +230,7 @@ describe("startDevProxy", () => {
         const port = await findFreePort(45800);
 
         // Nothing will ever listen on apiPort, so shorten the wait rather than sit here for 20s.
-        const proxy = await startDevProxy({ port, apiPort, adminPort, targetWait: 300 });
+        const proxy = await DevProxy.start({ port, apiPort, adminPort, targetWait: 300 });
         cleanups.push(() => proxy.close(), admin.close);
 
         const response = await get(proxy, "/api/graphql");
@@ -254,7 +254,7 @@ describe("startDevProxy", () => {
         });
 
         const upstreamPort = await upstream.listen();
-        const wsProxy = await startDevProxy({
+        const wsProxy = await DevProxy.start({
             port: await findFreePort(47000),
             apiPort: upstreamPort,
             adminPort: upstreamPort

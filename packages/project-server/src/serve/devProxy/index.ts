@@ -6,4 +6,4 @@ export {
     type IDevProxySession,
     type IPrepareDevProxySessionParams
 } from "./prepareDevProxySession.js";
-export { startDevProxy, type IDevProxy, type IStartDevProxyParams } from "./startDevProxy.js";
+export { DevProxy, type IDevProxyConfig } from "./DevProxy.js";
