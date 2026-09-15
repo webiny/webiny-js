@@ -1,12 +1,13 @@
 import type { Container, Constructor } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core/features/events/RequestContainer.js";
-import { AiSdkToolHandlerResolver as Abstraction } from "./abstractions.js";
-import type { IAiSdkToolHandler } from "./abstractions.js";
+import { AiSdkToolHandler, AiSdkToolHandlerResolver as Abstraction } from "./abstractions.js";
 
 class ContainerAiSdkToolHandlerResolver implements Abstraction.Interface {
     constructor(private readonly container: Container) {}
 
-    resolve<TInput>(handler: Constructor<IAiSdkToolHandler<TInput>>): IAiSdkToolHandler<TInput> {
+    resolve<TInput>(
+        handler: Constructor<AiSdkToolHandler.Interface<TInput>>
+    ): AiSdkToolHandler.Interface<TInput> {
         /*
          * `resolveImplementation` builds the class from its own dependency metadata and runs it
          * through the normal resolution path, so decorators registered against the handler still

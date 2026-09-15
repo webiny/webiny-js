@@ -3,7 +3,6 @@ import type { ModelMessage } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { AiChatConfig } from "./abstractions.js";
@@ -81,7 +80,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     constructor(
         private readonly ai: Ai.Interface,
         private readonly aiSdkTools: AiSdkTools.Interface,
-        private readonly declarations: IAiSdkToolDefinition[],
+        private readonly declarations: AiSdkToolDefinition.Interface[],
         private readonly identityContext: IdentityContext.Interface,
         private readonly config: AiChatConfig.Interface,
         private readonly provider: AiChatProvider.Interface

@@ -1,4 +1,4 @@
-import type { IAiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 
 /**
  * A tool call the assistant wants to make but has not made, because it mutates something.
@@ -27,14 +27,14 @@ export interface ApprovalDecision {
  * registered by extensions as well as by Webiny, so an author who forgets to annotate gets a confirm
  * prompt rather than silent write access.
  */
-export const isReadOnly = (tool: IAiSdkToolDefinition): boolean =>
+export const isReadOnly = (tool: AiSdkToolDefinition.Interface): boolean =>
     tool.annotations?.readOnlyHint === true;
 
 export const toPendingApproval = (
     approvalId: string,
     toolName: string,
     input: unknown,
-    tools: IAiSdkToolDefinition[]
+    tools: AiSdkToolDefinition.Interface[]
 ): PendingApproval => {
     const tool = tools.find(candidate => candidate.name === toolName);
 

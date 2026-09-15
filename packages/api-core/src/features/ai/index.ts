@@ -8,17 +8,7 @@ export {
     AiSdkToolHandlerResolver,
     AiSdkTools
 } from "./abstractions.js";
-export type {
-    IAiConnection,
-    IAiConnectionInline,
-    AiModel,
-    IAiSdkModel,
-    IAiSdkToolDefinition,
-    IAiSdkToolAnnotations,
-    IAiSdkToolHandler,
-    IAiSdkToolHandlerResolver,
-    IAiSdkTools
-} from "./abstractions.js";
+export type { IAiConnection, IAiConnectionInline, AiModel, IAiSdkModel } from "./abstractions.js";
 export { AiOutputTool, AiOutputToolRegistry, AiToolPipelineRunner } from "./toolPipeline/index.js";
 export type {
     IAiOutputTool,
