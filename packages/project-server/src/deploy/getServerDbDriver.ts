@@ -3,7 +3,7 @@ import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 export type ServerDbDriver = "sqlite" | "postgres";
 
 /**
- * Resolve the self-hosted database driver from the DB infra extension declared in webiny.config.tsx
+ * Resolve the standalone database driver from the DB infra extension declared in webiny.config.tsx
  * (`<Infra.Sqlite>` / `<Infra.Postgres>`). Exactly one must be configured — fail loud otherwise.
  *
  * Queried without tags: the Infra.* extensions are project-level, not tagged to a specific app, so an

@@ -15,7 +15,7 @@ const STORAGE_OPTIONS: Record<StorageOps, { value: StorageOps; name: string }> =
 
 export const runInteractivePrompt = async () => {
     console.log(
-        "In order to create your new self-hosted Webiny project, please answer the following questions."
+        "In order to create your new standalone Webiny project, please answer the following questions."
     );
     console.log();
 

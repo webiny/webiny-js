@@ -8,7 +8,7 @@
     "./*": "./*"
   },
   "types": "index.d.ts",
-  "description": "EXPERIMENTAL: Webiny API handler for the self-hosted Node HTTP server transport.",
+  "description": "EXPERIMENTAL: Webiny API handler for the standalone Node HTTP server transport.",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

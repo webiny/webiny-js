@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "File storage local server plugin for the @webiny/api-file-manager.",
+  "description": "File storage plugin for the @webiny/api-file-manager, for standalone Webiny projects.",
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {

@@ -109,7 +109,7 @@ const TYPE_DEFS = /* GraphQL */ `
 `;
 
 /**
- * Upload GraphQL for the self-hosted (server) hosting type. Mirrors the SDL that `api-file-manager-s3`'s
+ * Upload GraphQL for the standalone hosting type. Mirrors the SDL that `api-file-manager-s3`'s
  * `S3GraphQLSchema` contributes (same query/mutation names + `PreSignedPostPayloadInput`), so the
  * transport-agnostic SDK works unchanged. Only the resolvers differ from S3 — they resolve the server
  * upload use cases (local disk + the `/webiny-file-upload` HTTP routes) instead of an S3 client.

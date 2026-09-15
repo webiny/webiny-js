@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Production build for a self-hosted (server) Webiny project. Multi-stage: build the self-contained
+# Production build for a standalone Webiny project. Multi-stage: build the self-contained
 # artifacts once, then ship a slim API runtime and a static Admin bundle. Build a single stage with
 # `--target api` or `--target admin`. Copy this file to your project root.
 

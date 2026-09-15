@@ -4,7 +4,7 @@ import { z } from "zod";
 import { defineExtension, EnvVar } from "@webiny/project/extensions/index.js";
 
 /**
- * Configure the self-hosted (server) hosting type's SQLite database file.
+ * Configure the standalone hosting type's SQLite database file.
  *
  * Baked into the api runtime as `WEBINY_SQL_FILENAME`, which the api handler reads for its Knex
  * connection. A relative path is resolved against the project root (not the disposable app

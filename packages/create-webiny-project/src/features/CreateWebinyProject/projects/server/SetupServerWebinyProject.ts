@@ -24,7 +24,7 @@ export class SetupServerWebinyProject {
         // `.env.example` (all vars commented; the project runs on config defaults with no `.env`).
         fs.copySync(storageTemplatePath, projectRootFolderPath);
 
-        // Server (self-hosted) hosting-type dependencies. The `webiny` CLI (server bin) sets
+        // Standalone hosting-type dependencies. The `webiny` CLI (server bin) sets
         // WEBINY_HOSTING_TYPE=server; `@webiny/project-server` provides the server `Infra.*` extensions
         // and resolves `@webiny/project-server-template` (the workspace base config) at build time;
         // `@webiny/self-hosted-auth` is the built-in JWT identity provider (replaces Cognito).
@@ -35,8 +35,8 @@ export class SetupServerWebinyProject {
             "@webiny/self-hosted-auth": "latest"
         });
 
-        // Self-hosted watches every default app in a single process, so `yarn dev` is all a developer
-        // needs to get the whole project running locally. Server-only — on AWS the apps are watched
+        // Standalone watches every default app in a single process, so `yarn dev` is all a developer
+        // needs to get the whole project running locally. Standalone-only — on AWS the apps are watched
         // separately, so there's no single command to alias.
         addProjectScripts(projectRootFolderPath, {
             dev: "webiny watch"

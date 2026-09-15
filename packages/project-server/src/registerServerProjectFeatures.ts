@@ -20,7 +20,7 @@ export const registerServerProjectFeatures = (container: Container): void => {
     // postgres build, and vice versa.
     container.registerDecorator(GenerateApiDbConnection);
     // Copy the server `webiny.config.base.tsx` (renders <Project />, not <ProjectAws />) into the
-    // workspace, so none of the AWS deploy/Pulumi hooks are composed in the self-hosted hosting type.
+    // workspace, so none of the AWS deploy/Pulumi hooks are composed in the standalone hosting type.
     container.registerDecorator(BuildServerProjectWorkspace);
     // The admin API URL is configured via `<Admin.ApiUrl>` in webiny.config.tsx (baked into the
     // bundle as WEBINY_ADMIN_API_URL), so no env-mutating watch hook is needed here.

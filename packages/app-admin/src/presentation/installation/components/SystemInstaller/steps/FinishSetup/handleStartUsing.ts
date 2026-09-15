@@ -11,7 +11,7 @@ const INSTALL_FINISH_URL =
  * local `finishInstallation` flow otherwise.
  *
  * This used to run only when the admin was served from a `.cloudfront.net`
- * host, which meant self-hosted installs were never aliased and the whole
+ * host, which meant standalone installs were never aliased and the whole
  * install-to-marketing-visit link was AWS-only. The website side of the
  * handoff drops its matching CloudFront restriction, so both halves of the
  * path now work for any host.

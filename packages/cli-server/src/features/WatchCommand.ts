@@ -85,7 +85,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 const ui = this.uiService;
 
                 // Decide which apps to watch. Unlike cli-aws (where each app watch attaches to its own
-                // cloud environment and must be run separately), self-hosted watches every default app
+                // cloud environment and must be run separately), standalone watches every default app
                 // in a single process, so a bare `webiny watch` is all a developer needs.
                 let apps: string[] = [];
                 if (params.app) {

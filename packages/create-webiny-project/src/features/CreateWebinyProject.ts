@@ -234,15 +234,15 @@ export class CreateWebinyProject {
 
         console.log();
 
-        // Self-hosted (server) hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
+        // Standalone hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
         if (hostingType === "server") {
             console.log(
-                `🎉 Your new self-hosted Webiny project ${green(projectName)} has been created!`
+                `🎉 Your new standalone Webiny project ${green(projectName)} has been created!`
             );
             console.log();
             console.log(
                 yellow(
-                    "⚠ The self-hosted (server) hosting type is in ALPHA. It's for local\n" +
+                    "⚠ The standalone hosting type is in ALPHA. It's for local\n" +
                         "  development and testing with `webiny watch`.\n" +
                         "  It's still maturing, so expect some rough edges."
                 )

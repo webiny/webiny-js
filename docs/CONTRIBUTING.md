@@ -206,7 +206,7 @@ Pass "--localhost" to run Cypress tests against locally run apps. Ideal for deve
 ```
 
 Note that `yarn setup-cypress` is the AWS hosting type (it reads the values back from your deployment
-state files). For a self-hosted ("server" hosting type) project there is nothing deployed to read
+state files). For a standalone ("server" hosting type) project there is nothing deployed to read
 from, so use `yarn setup-cypress:server` and pass the URLs directly:
 
 ```

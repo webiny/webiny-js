@@ -1,4 +1,4 @@
-name: Pull Requests (self-hosted)
+name: Pull Requests (standalone)
 
 on:
   pull_request:
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: docker/setup-buildx-action@v3
       # Build both images without pushing — a smoke check that the deploy artifacts still build.
-      # (Self-hosted PRs create no infrastructure, so there is no ephemeral environment to deploy or
+      # (Standalone PRs create no infrastructure, so there is no ephemeral environment to deploy or
       # to tear down afterwards — hence no "pull request closed" workflow.)
       - name: Build API image
         uses: docker/build-push-action@v6

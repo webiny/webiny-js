@@ -1,12 +1,12 @@
 /**
- * Webiny API handler for the self-hosted Node server transport with SQL storage.
+ * Webiny API handler for the standalone Node server transport with SQL storage.
  *
  * Thin variant over the transport base (@webiny/api-event-handler-server): supplies the SQL storage
  * wiring AND the self-hosted identity provider (JWT IdP + SQL credential storage). CMS, core, and
  * websockets storage are DI Features registered directly on the container. ACO and audit-logs
  * remain legacy RegisterExtensionPlugins applied via `registerExtensions`.
  *
- * The caller supplies the Knex client (there is no single canonical connection for a self-hosted DB).
+ * The caller supplies the Knex client (there is no single canonical connection for a standalone DB).
  * The JWT signing secret is configured via `<SelfHostedAuth signingSecret>` (BuildParams).
  */
 import type { Knex } from "knex";
@@ -26,7 +26,7 @@ import { SelfHostedAuthSqlFeature } from "@webiny/self-hosted-auth-sql";
 export type CreateSqlApiHandlerConfig = Pick<BaseConfig, "extensions"> & {
     /**
      * Knex client for the SQL database. Required — the caller owns the connection (there is no single
-     * canonical self-hosted DB connection to default to).
+     * canonical standalone DB connection to default to).
      */
     knex: Knex;
     /**

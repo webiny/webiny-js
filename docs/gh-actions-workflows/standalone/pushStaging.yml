@@ -1,11 +1,11 @@
-name: Prod Branch - Push (self-hosted)
+name: Staging Branch - Push (standalone)
 
 on:
   push:
-    branches: [prod]
+    branches: [staging]
 
-# Ensures only one build+push for the "prod" environment runs at a time.
-concurrency: prod
+# Ensures only one build+push for the "staging" environment runs at a time.
+concurrency: staging
 
 jobs:
   build-and-push:
@@ -54,7 +54,7 @@ jobs:
           target: api
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}/api:prod
+          tags: ghcr.io/${{ github.repository }}/api:staging
 
       - name: Build & push Admin image # Admin bakes the public API URL at build time.
         uses: docker/build-push-action@v6
@@ -63,13 +63,13 @@ jobs:
           target: admin
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ github.repository }}/admin:prod
+          tags: ghcr.io/${{ github.repository }}/admin:staging
           build-args: |
-            WEBINY_API_URL=${{ secrets.PROD_WEBINY_API_URL }}
+            WEBINY_API_URL=${{ secrets.STAGING_WEBINY_API_URL }}
 
       # Deploy: tell your container platform to pull the new images. This step is platform-specific;
       # uncomment/adapt one of the following (or add your own):
       #   - AWS ECS/Fargate: aws ecs update-service --cluster <c> --service <s> --force-new-deployment
-      #   - Google Cloud Run: gcloud run deploy webiny-api --image ghcr.io/${{ github.repository }}/api:prod
-      #   - Fly.io: flyctl deploy --image ghcr.io/${{ github.repository }}/api:prod
-      #   - Kubernetes: kubectl set image deployment/webiny-api api=ghcr.io/${{ github.repository }}/api:prod
+      #   - Google Cloud Run: gcloud run deploy webiny-api --image ghcr.io/${{ github.repository }}/api:staging
+      #   - Fly.io: flyctl deploy --image ghcr.io/${{ github.repository }}/api:staging
+      #   - Kubernetes: kubectl set image deployment/webiny-api api=ghcr.io/${{ github.repository }}/api:staging

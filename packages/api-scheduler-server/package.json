@@ -15,7 +15,7 @@
     "scheduler:server"
   ],
   "author": "Webiny Ltd",
-  "description": "Server-side cron-based implementation for the Webiny action scheduler.",
+  "description": "Standalone cron-based implementation for the Webiny action scheduler.",
   "license": "MIT",
   "dependencies": {
     "@webiny/api-core": "0.0.0",

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { defineExtension, BuildParam } from "@webiny/project/extensions/index.js";
 
 /**
- * Configure the self-hosted (server) hosting type's local file storage (uploaded files) + upload secret.
+ * Configure the standalone hosting type's local file storage (uploaded files) + upload secret.
  *
  * Emitted as the API build parameters `WEBINY_LOCAL_STORAGE_PATH` (the on-disk directory uploaded
  * files are written to and served from) and `WEBINY_UPLOAD_SECRET` (used to sign upload tokens),

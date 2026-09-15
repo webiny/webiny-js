@@ -18,7 +18,7 @@ import { ApiUrl } from "./extensions/ApiUrl.js";
 /**
  * Server hosting-type counterpart to project-aws's `Infra`, limited to what applies off-AWS. Omits the
  * AWS-only surface (Pulumi, deploy, Lambda, stack outputs, custom domains, Vpc, OpenSearch,
- * blue/green) and the environments surface (`Env.*`, `ProductionEnvironments`) — the self-hosted
+ * blue/green) and the environments surface (`Env.*`, `ProductionEnvironments`) — the standalone
  * hosting type has no notion of deploy environments. Only build/watch hooks for the api + admin apps,
  * crypto config, env vars, and CI detection remain.
  */

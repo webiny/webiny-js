@@ -9,7 +9,7 @@ const HOSTING_TYPE_OPTIONS: { value: HostingType; name: string }[] = [
     },
     {
         value: "server",
-        name: "Self-hosted / server (Node HTTP server + SQL storage) — ALPHA"
+        name: "Standalone (Node HTTP server + SQL storage) — ALPHA"
     }
 ];
 

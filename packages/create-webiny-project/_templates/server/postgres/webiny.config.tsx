@@ -6,7 +6,7 @@ import { Infra } from "@webiny/project-server";
 import { SelfHostedAuth } from "@webiny/self-hosted-auth";
 
 /**
- * Self-hosted (server) hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
+ * Standalone hosting-type project extensions. No AWS, no Pulumi, no `deploy` — a single
  * long-running Node HTTP server backed by SQL storage. Run it with `yarn webiny watch`.
  */
 export const Extensions = () => {

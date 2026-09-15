@@ -1,6 +1,6 @@
-# Self-hosted (server) GitHub Actions workflows
+# Standalone GitHub Actions workflows
 
-Example CI/CD for the **self-hosted (server) hosting type** — the counterpart to the AWS workflows in
+Example CI/CD for the **standalone hosting type** — the counterpart to the AWS workflows in
 the parent folder. Instead of `webiny deploy` (which provisions AWS via Pulumi), these **build Docker
 images and push them to a registry**; your container platform then pulls and runs them.
 
@@ -11,7 +11,7 @@ images and push them to a registry**; your container platform then pulls and run
 | `Dockerfile` | project root | Multi-stage build → `api` (Node, `node start.mjs`) and `admin` (nginx, static) images |
 | `nginx-spa.conf` | project root | nginx config for the Admin image — SPA fallback so deep-links/refresh don't 404 |
 | `pushDev.yml` / `pushStaging.yml` / `pushProd.yml` | `.github/workflows/` | On push to `dev` / `staging` / `prod`: build + push `api` and `admin` images tagged per environment |
-| `pullRequest.yml` | `.github/workflows/` | On PRs: static analysis + a build-only smoke check (self-hosted PRs create no infrastructure, so there is no per-PR environment to deploy or destroy — hence no "pull request closed" workflow) |
+| `pullRequest.yml` | `.github/workflows/` | On PRs: static analysis + a build-only smoke check (standalone PRs create no infrastructure, so there is no per-PR environment to deploy or destroy — hence no "pull request closed" workflow) |
 
 ## The model
 
