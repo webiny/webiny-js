@@ -8,7 +8,7 @@ import { normalizeSelfCleanup } from "~/api/utils/normalizeSelfCleanup.js";
  * The cleanup itself lives in {@link SelfCleaningTaskHandlerDecorator}, because it runs in the
  * lifecycle hooks and those belong to the handler.
  */
-export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
+export class SelfCleaningTaskDefinitionDecoratorImpl implements TaskDefinition.Interface {
     private readonly cleansUp: boolean;
 
     public constructor(private decoratee: TaskDefinition.Interface) {
@@ -51,7 +51,7 @@ export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
     }
 }
 
-export const SelfCleaningTaskDecorator = TaskDefinition.createDecorator({
-    decorator: SelfCleaningTaskDecoratorImpl,
+export const SelfCleaningTaskDefinitionDecorator = TaskDefinition.createDecorator({
+    decorator: SelfCleaningTaskDefinitionDecoratorImpl,
     dependencies: []
 });

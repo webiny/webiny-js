@@ -77,7 +77,7 @@ describe("the definition in run params", () => {
         expect(seen!.title).toBe("Definition In Params");
         expect(seen!.maxIterations).toBe(7);
 
-        // KNOWN GAP, pinned deliberately. RunnableTaskDecorator and SelfCleaningTaskDecorator
+        // KNOWN GAP, pinned deliberately. RunnableTaskDecorator and SelfCleaningTaskDefinitionDecorator
         // expose a fixed set of getters, so a field the framework does not know about is dropped
         // during decoration. If someone makes the decorators forward unknown properties, this
         // assertion fails and should become `toBe(10)` — that is the intended end state, because a

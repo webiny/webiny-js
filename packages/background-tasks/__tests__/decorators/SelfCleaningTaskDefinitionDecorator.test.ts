@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { SelfCleaningTaskDecoratorImpl } from "~/api/decorators/SelfCleaningTaskDecorator.js";
+import { SelfCleaningTaskDefinitionDecoratorImpl } from "~/api/decorators/SelfCleaningTaskDefinitionDecorator.js";
 import { SelfCleaningTaskHandlerDecoratorImpl } from "~/api/decorators/SelfCleaningTaskHandlerDecorator.js";
 import { TaskDataStatus } from "~/api/types.js";
 import type {
@@ -77,36 +77,38 @@ const noopCleanup: CleanupTaskSubtreeUseCase.Interface = {
     execute: async () => {}
 };
 
-describe("SelfCleaningTaskDecorator", () => {
+describe("SelfCleaningTaskDefinitionDecorator", () => {
     describe("normalization", () => {
         it("keeps databaseLogs when selfCleanup is undefined", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(makeDefinition({ databaseLogs: true }));
+            const dec = new SelfCleaningTaskDefinitionDecoratorImpl(
+                makeDefinition({ databaseLogs: true })
+            );
             expect(dec.databaseLogs).toBe(true);
         });
 
         it("keeps databaseLogs when selfCleanup is 'never'", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(
+            const dec = new SelfCleaningTaskDefinitionDecoratorImpl(
                 makeDefinition({ databaseLogs: true, selfCleanup: "never" })
             );
             expect(dec.databaseLogs).toBe(true);
         });
 
         it("forces databaseLogs=false when selfCleanup is a single event", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(
+            const dec = new SelfCleaningTaskDefinitionDecoratorImpl(
                 makeDefinition({ databaseLogs: true, selfCleanup: "onSuccess" })
             );
             expect(dec.databaseLogs).toBe(false);
         });
 
         it("forces databaseLogs=false when selfCleanup is an array", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(
+            const dec = new SelfCleaningTaskDefinitionDecoratorImpl(
                 makeDefinition({ databaseLogs: true, selfCleanup: ["onSuccess", "onAbort"] })
             );
             expect(dec.databaseLogs).toBe(false);
         });
 
         it("forces databaseLogs=false when selfCleanup is 'always'", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(
+            const dec = new SelfCleaningTaskDefinitionDecoratorImpl(
                 makeDefinition({ databaseLogs: true, selfCleanup: "always" })
             );
             expect(dec.databaseLogs).toBe(false);

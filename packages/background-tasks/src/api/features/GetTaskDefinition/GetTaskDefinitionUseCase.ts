@@ -27,7 +27,28 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
             // handler cannot be proven assignable to the caller's narrower <I, O>.
             const handlerClass = definition.handler as Constructor<TaskDefinition.Handler<I, O>>;
             const handler = this.handlerResolver.resolve(handlerClass);
-            const runnable = toRunnable<I, O>(definition, handler);
+
+            // Present the two halves as the single object the runner and
+            // `context.tasks.getDefinition()` expect. Metadata from the definition, behaviour from
+            // the handler, bound so `this` inside a hook is still the instance that owns the
+            // injected dependencies.
+            const runnable: TaskDefinition.Runnable<I, O> = {
+                id: definition.id,
+                title: definition.title,
+                description: definition.description,
+                isPrivate: definition.isPrivate as boolean,
+                databaseLogs: definition.databaseLogs as boolean,
+                maxIterations: definition.maxIterations as number,
+                selfCleanup: definition.selfCleanup,
+
+                run: handler.run.bind(handler),
+                onBeforeTrigger: handler.onBeforeTrigger?.bind(handler),
+                onDone: handler.onDone?.bind(handler),
+                onError: handler.onError?.bind(handler),
+                onAbort: handler.onAbort?.bind(handler),
+                onMaxIterations: handler.onMaxIterations?.bind(handler),
+                createInputValidation: handler.createInputValidation?.bind(handler)
+            };
 
             return Result.ok(runnable);
         }
@@ -35,34 +56,6 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
         return Result.fail(new TaskDefinitionNotFoundError(id));
     }
 }
-
-/**
- * Present the two halves as the single object the runner and `context.tasks.getDefinition()` expect.
- * Metadata reads come from the definition, behaviour from the handler, bound so `this` inside a hook
- * is still the handler instance that owns the injected dependencies.
- */
-const toRunnable = <I extends TaskDefinition.TaskInput, O extends TaskDefinition.TaskOutput>(
-    definition: TaskDefinition.Interface,
-    handler: TaskDefinition.Handler<I, O>
-): TaskDefinition.Runnable<I, O> => {
-    return {
-        id: definition.id,
-        title: definition.title,
-        description: definition.description,
-        isPrivate: definition.isPrivate as boolean,
-        databaseLogs: definition.databaseLogs as boolean,
-        maxIterations: definition.maxIterations as number,
-        selfCleanup: definition.selfCleanup,
-
-        run: handler.run.bind(handler),
-        onBeforeTrigger: handler.onBeforeTrigger?.bind(handler),
-        onDone: handler.onDone?.bind(handler),
-        onError: handler.onError?.bind(handler),
-        onAbort: handler.onAbort?.bind(handler),
-        onMaxIterations: handler.onMaxIterations?.bind(handler),
-        createInputValidation: handler.createInputValidation?.bind(handler)
-    };
-};
 
 export const GetTaskDefinitionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetTaskDefinitionUseCaseImpl,
