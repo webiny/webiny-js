@@ -107,8 +107,9 @@ describe("SendWebhookTask", () => {
         });
 
         const tasks = container.resolveAll(TaskDefinition);
-        const task = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;
-        expect(task).toBeDefined();
+        const definition = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;
+        const task = container.resolveImplementation(definition.handler!);
+        expect(definition).toBeDefined();
 
         const params = makeRunParams({
             webhookId: "wh-1",
@@ -148,7 +149,8 @@ describe("SendWebhookTask", () => {
         });
 
         const tasks = container.resolveAll(TaskDefinition);
-        const task = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;
+        const definition = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;
+        const task = container.resolveImplementation(definition.handler!);
 
         const params = makeRunParams({
             webhookId: "wh-1",
@@ -174,7 +176,8 @@ describe("SendWebhookTask", () => {
         });
 
         const tasks = container.resolveAll(TaskDefinition);
-        const task = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;
+        const definition = tasks.find(t => t.id === SEND_WEBHOOK_TASK)!;
+        const task = container.resolveImplementation(definition.handler!);
 
         const params = makeRunParams({
             webhookId: "wh-1",

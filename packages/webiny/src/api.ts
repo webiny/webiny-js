@@ -1,7 +1,8 @@
 export {
     AiSdk,
     AiSdkFactory,
-    AiSdkTool,
+    AiSdkToolDefinition,
+    AiSdkToolHandler,
     AiConnectionFactory,
     Ai
 } from "@webiny/api-core/features/ai/index.js";

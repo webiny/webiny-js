@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool, type IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListFilesUseCase } from "~/features/file/ListFiles/index.js";
 
 const inputSchema = z.object({
@@ -15,14 +15,7 @@ interface ImageItem {
     tags: string[];
 }
 
-class ListImagesByTagToolImpl implements IAiSdkTool<Input> {
-    readonly name = "listImagesByTag";
-    readonly title = "List images by tag";
-    readonly description =
-        "Lists images from the file manager filtered by a given tag. Returns name, type, and tags for each image.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true, idempotentHint: true };
-
+class ListImagesByTagToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listFiles: ListFilesUseCase.Interface) {}
 
     async execute(input: Input): Promise<ImageItem[]> {
@@ -48,7 +41,22 @@ class ListImagesByTagToolImpl implements IAiSdkTool<Input> {
     }
 }
 
-export const ListImagesByTagTool = AiSdkTool.createImplementation({
-    implementation: ListImagesByTagToolImpl,
+const ListImagesByTagToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: ListImagesByTagToolHandlerImpl,
     dependencies: [ListFilesUseCase]
+});
+
+class ListImagesByTagToolImpl implements AiSdkToolDefinition.Interface<Input> {
+    readonly name = "listImagesByTag";
+    readonly title = "List images by tag";
+    readonly description =
+        "Lists images from the file manager filtered by a given tag. Returns name, type, and tags for each image.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
+    readonly handler = ListImagesByTagToolHandler;
+}
+
+export const ListImagesByTagTool = AiSdkToolDefinition.createImplementation({
+    implementation: ListImagesByTagToolImpl,
+    dependencies: []
 });

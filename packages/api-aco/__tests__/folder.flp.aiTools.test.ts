@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Container } from "@webiny/di";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { useHandler } from "~tests/utils/useHandler";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
@@ -27,14 +27,20 @@ const readFlpPermissions = async (container: Container, folderId: string) => {
     return flp?.permissions ?? [];
 };
 
+/**
+ * The runnable half of a tool, built the way `AiSdkTools` builds it at call time. A registered tool
+ * carries metadata only, so resolving one and calling `execute` on it would find nothing there.
+ */
 const getTool = (container: Container, name: string) => {
-    const tool = container.resolveAll(AiSdkTool).find(candidate => candidate.name === name);
+    const tool = container
+        .resolveAll(AiSdkToolDefinition)
+        .find(candidate => candidate.name === name);
 
     if (!tool) {
         throw new Error(`Tool "${name}" is not registered.`);
     }
 
-    return tool;
+    return container.resolveImplementation(tool.handler);
 };
 
 describe("Folder access AI tools", () => {

@@ -1,6 +1,9 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { FileManagerServerConfig } from "~/features/FileManagerServerConfig/abstractions.js";
 
 export interface CleanupStaleMultipartUploadsInput {
@@ -22,20 +25,12 @@ async function readdirSafe(dirPath: string): Promise<string[]> {
     }
 }
 
-class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface<CleanupStaleMultipartUploadsInput> {
+class CleanupStaleMultipartUploadsTaskHandlerImpl implements TaskHandler.Interface<CleanupStaleMultipartUploadsInput> {
     public constructor(private readonly config: FileManagerServerConfig.Interface) {}
-    public readonly id = "fileManagerCleanupStaleMultipartUploads";
-    public readonly title = "Clean up stale multipart upload directories";
-    public readonly description =
-        "Removes multipart upload directories that are older than 24 hours.";
-    public readonly maxIterations = 1;
-    public readonly isPrivate = true;
-    public readonly databaseLogs = false;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
     public async run({
         controller
-    }: TaskDefinition.RunParams<CleanupStaleMultipartUploadsInput>): Promise<
+    }: TaskHandler.RunParams<CleanupStaleMultipartUploadsInput>): Promise<
         TaskDefinition.Result<CleanupStaleMultipartUploadsInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -75,7 +70,25 @@ class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface<C
     }
 }
 
+const CleanupStaleMultipartUploadsTaskHandler = TaskHandler.createImplementation({
+    implementation: CleanupStaleMultipartUploadsTaskHandlerImpl,
+    dependencies: [FileManagerServerConfig]
+});
+
+class CleanupStaleMultipartUploadsTaskImpl implements TaskDefinition.Interface {
+    public readonly id = "fileManagerCleanupStaleMultipartUploads";
+    public readonly title = "Clean up stale multipart upload directories";
+    public readonly description =
+        "Removes multipart upload directories that are older than 24 hours.";
+    public readonly maxIterations = 1;
+    public readonly isPrivate = true;
+    public readonly databaseLogs = false;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = CleanupStaleMultipartUploadsTaskHandler;
+}
+
 export const CleanupStaleMultipartUploadsTaskDefinition = TaskDefinition.createImplementation({
     implementation: CleanupStaleMultipartUploadsTaskImpl,
-    dependencies: [FileManagerServerConfig]
+    dependencies: []
 });

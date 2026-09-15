@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreateTeam } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
 import { descriptionOnCreate } from "@webiny/api-core/features/security/shared/index.js";
 
@@ -34,20 +33,7 @@ interface CreatedTeam {
     roles: string[];
 }
 
-/**
- * Creates a team.
- *
- * Not read-only, so it needs approval: a team is an access-control object, and the roles it carries
- * decide what its members can do. The user should see which roles are being granted before it exists.
- */
-class CreateTeamToolImpl implements IAiSdkTool<Input> {
-    readonly name = "createTeam";
-    readonly title = "Create team";
-    readonly description =
-        "Creates a team with a set of roles. Call listRoles first and pass what it returns; do not guess role identifiers. Requires user approval.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: false };
-
+class CreateTeamToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private createTeam: CreateTeam.Interface) {}
 
     async execute(input: Input): Promise<CreatedTeam> {
@@ -80,7 +66,28 @@ class CreateTeamToolImpl implements IAiSdkTool<Input> {
     }
 }
 
-export const CreateTeamTool = AiSdkTool.createImplementation({
-    implementation: CreateTeamToolImpl,
+const CreateTeamToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: CreateTeamToolHandlerImpl,
     dependencies: [CreateTeam]
+});
+
+/**
+ * Creates a team.
+ *
+ * Not read-only, so it needs approval: a team is an access-control object, and the roles it carries
+ * decide what its members can do. The user should see which roles are being granted before it exists.
+ */
+class CreateTeamToolImpl implements AiSdkToolDefinition.Interface<Input> {
+    readonly name = "createTeam";
+    readonly title = "Create team";
+    readonly description =
+        "Creates a team with a set of roles. Call listRoles first and pass what it returns; do not guess role identifiers. Requires user approval.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: false };
+    readonly handler = CreateTeamToolHandler;
+}
+
+export const CreateTeamTool = AiSdkToolDefinition.createImplementation({
+    implementation: CreateTeamToolImpl,
+    dependencies: []
 });
