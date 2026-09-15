@@ -118,13 +118,13 @@ export class ServerWatch implements Watch.Interface {
      * whenever a proxy was asked for, since a proxy only happens for an api + admin session.
      */
     private devProxySpecs(appName: GetApp.AppName): IServerProcessSpec[] {
-        const session = getDevServerSession();
+        const devServerSession = getDevServerSession();
 
-        if (!session || appName !== "api") {
+        if (!devServerSession || appName !== "api") {
             return [];
         }
 
-        return [{ name: "proxy", spawn: () => runDevProxy(session) }];
+        return [{ name: "proxy", spawn: () => runDevProxy(devServerSession) }];
     }
 }
 

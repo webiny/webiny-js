@@ -60,9 +60,9 @@ export class ServerServe implements Serve.Interface {
 
         // The single-port proxy in front of the two, when the CLI asked for one. Last, so it's the
         // last line of the startup output and the URL worth opening is the one left on screen.
-        const session = getDevServerSession();
-        if (session) {
-            specs.push({ name: "proxy", spawn: () => runDevProxy(session) });
+        const devServerSession = getDevServerSession();
+        if (devServerSession) {
+            specs.push({ name: "proxy", spawn: () => runDevProxy(devServerSession) });
         }
 
         return { serversWatcher: new ServersWatcher(specs) };

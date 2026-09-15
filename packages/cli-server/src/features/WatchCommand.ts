@@ -104,7 +104,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // Before the `projectSdk.watch()` calls below, which is what matters: those are where
                 // each app's workspace is prepared and its config re-rendered, so that's where the
                 // URLs set here are picked up. See prepareDevServerSession.
-                const session = await prepareDevServerSession({
+                const devServerSession = await prepareDevServerSession({
                     apps,
                     enabled: params.proxy,
                     pointAppsAtProxy: true
@@ -117,7 +117,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // its own dedicated port. Same rule `webiny serve` applies when serving both apps at
                 // once. Has to happen before the watchers are prepared below: that is where each forked
                 // process snapshots the env.
-                if (!session && apps.length > 1 && process.env.PORT) {
+                if (!devServerSession && apps.length > 1 && process.env.PORT) {
                     ui.warning(
                         `%s is ignored when watching several apps at once. Set %s and %s instead.`,
                         "PORT",
@@ -149,8 +149,8 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         ? new WatchSummary(ui, Date.now(), () => startup.noteProgress())
                         : undefined;
 
-                if (session) {
-                    summary?.setPublicUrl(session.url, { showAppUrls: params.verbose });
+                if (devServerSession) {
+                    summary?.setPublicUrl(devServerSession.url, { showAppUrls: params.verbose });
                 }
 
                 const startup = new WatchStartup(gate, summary);

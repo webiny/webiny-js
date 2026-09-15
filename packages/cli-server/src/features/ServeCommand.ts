@@ -53,7 +53,7 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 // Ports only. Unlike watch, serve runs what `webiny build` already produced, so the
                 // admin bundle's API URL was fixed at build time and can't be pointed anywhere now —
                 // it has to have been built with a URL that works behind the proxy.
-                const session = await prepareDevServerSession({
+                const devServerSession = await prepareDevServerSession({
                     apps: params.app ? [params.app] : ["api", "admin"],
                     enabled: params.proxy
                 });
@@ -84,8 +84,8 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                     });
                 }
 
-                if (session) {
-                    this.uiService.info(`Webiny is available at %s`, session.url);
+                if (devServerSession) {
+                    this.uiService.info(`Webiny is available at %s`, devServerSession.url);
                 }
 
                 await Promise.all(processes.map(p => p.run()));
