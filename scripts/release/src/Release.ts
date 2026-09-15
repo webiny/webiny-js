@@ -97,6 +97,7 @@ export class Release {
         // Publish all packages.
         const results = await publishPackages({
             distTag: this.distTag!,
+            version,
             logger: this.logger
         });
 
