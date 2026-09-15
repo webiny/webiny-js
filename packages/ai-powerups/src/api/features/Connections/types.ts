@@ -39,28 +39,3 @@ export interface PersistedAiConnectionPreset {
 export interface PersistedConnections {
     presets: PersistedAiConnectionPreset[];
 }
-
-/** Shape of a preset in the legacy `providers` section, read once for migration. */
-export interface LegacyProviderPreset {
-    id: string;
-    name: string;
-    model?: string;
-    apiKeyEncrypted?: string;
-    apiKeyMasked?: string;
-}
-
-export const readLegacyProviderPresets = (
-    all: Record<string, unknown> | undefined
-): LegacyProviderPreset[] => {
-    const providers = all?.["providers"];
-    if (!providers || typeof providers !== "object") {
-        return [];
-    }
-
-    const presets = (providers as { presets?: unknown }).presets;
-    return Array.isArray(presets) ? (presets as LegacyProviderPreset[]) : [];
-};
-
-/** `"anthropic/claude-sonnet-4-5"` -> `"anthropic"`. */
-export const sdkNameFromModel = (model: string | undefined): string =>
-    (model ?? "").split("/")[0] ?? "";
