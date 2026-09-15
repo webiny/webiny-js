@@ -31,9 +31,10 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
                 // The registered definition is stored under the abstraction's default generics, so
                 // its handler cannot be proven assignable to the caller's narrower <I, O>. Same
                 // reason the legacy branch below casts.
-                const handler = this.handlerResolver.resolve(
-                    definition.handler as Constructor<TaskDefinition.Handler<I, O>>
-                );
+                const handlerClass = definition.handler as Constructor<
+                    TaskDefinition.Handler<I, O>
+                >;
+                const handler = this.handlerResolver.resolve(handlerClass);
                 const runnable = toRunnable<I, O>(definition, handler, this.logger);
 
                 return Result.ok(runnable);
