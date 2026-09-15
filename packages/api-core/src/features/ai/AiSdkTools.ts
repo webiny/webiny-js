@@ -18,8 +18,8 @@ class AiSdkToolsImpl implements AiSdkToolsAbstraction.Interface {
                 description: definition.description,
                 inputSchema: definition.inputSchema,
                 /*
-                 * Deliberately resolved inside the call, not here. The model is offered every tool
-                 * and calls at most a few, so this is what keeps the other tools' use cases unbuilt.
+                 * Deliberately resolved inside the call, not here. The model is offered every
+                 * tool and calls a few, which is what keeps the rest of their use cases unbuilt.
                  */
                 execute: (input: unknown) =>
                     this.resolver.resolve(definition.handler).execute(input)

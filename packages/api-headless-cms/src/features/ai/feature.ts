@@ -4,8 +4,8 @@ import { DescribeContentModelTool } from "./DescribeContentModelTool.js";
 import { QueryEntriesTool } from "./QueryEntriesTool.js";
 
 /**
- * Read-only CMS tools for AI callers. Registered as `AiSdkToolDefinition` implementations, so any caller that
- * builds a tool set from that abstraction picks them up without naming them.
+ * Read-only CMS tools for AI callers. Registered as `AiSdkToolDefinition` implementations, so any
+ * caller that builds a tool set from that abstraction picks them up without naming them.
  */
 export const CmsAiToolsFeature = createFeature({
     name: "HeadlessCms/AiTools",
