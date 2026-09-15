@@ -5,7 +5,7 @@ import {
 } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
 import { runApiServer } from "../../serve/runApiServer.js";
 import { runDevProxy } from "../../serve/runDevProxy.js";
-import { getDevServerSession } from "../../serve/devServer/index.js";
+import { getDevProxySession } from "../../serve/devProxy/index.js";
 
 /**
  * Server hosting-type counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
@@ -118,13 +118,13 @@ export class ServerWatch implements Watch.Interface {
      * whenever a proxy was asked for, since a proxy only happens for an api + admin session.
      */
     private devProxySpecs(appName: GetApp.AppName): IServerProcessSpec[] {
-        const devServerSession = getDevServerSession();
+        const devProxySession = getDevProxySession();
 
-        if (!devServerSession || appName !== "api") {
+        if (!devProxySession || appName !== "api") {
             return [];
         }
 
-        return [{ name: "proxy", spawn: () => runDevProxy(devServerSession) }];
+        return [{ name: "proxy", spawn: () => runDevProxy(devProxySession) }];
     }
 }
 

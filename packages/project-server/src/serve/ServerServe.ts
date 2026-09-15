@@ -7,7 +7,7 @@ import {
 import { runApiServer } from "./runApiServer.js";
 import { runAdminServer } from "./runAdminServer.js";
 import { runDevProxy } from "./runDevProxy.js";
-import { getDevServerSession } from "./devServer/index.js";
+import { getDevProxySession } from "./devProxy/index.js";
 
 /**
  * Server hosting-type Serve implementation: describes the server process(es) for the requested app(s) as
@@ -60,9 +60,9 @@ export class ServerServe implements Serve.Interface {
 
         // The single-port proxy in front of the two, when the CLI asked for one. Last, so it's the
         // last line of the startup output and the URL worth opening is the one left on screen.
-        const devServerSession = getDevServerSession();
-        if (devServerSession) {
-            specs.push({ name: "proxy", spawn: () => runDevProxy(devServerSession) });
+        const devProxySession = getDevProxySession();
+        if (devProxySession) {
+            specs.push({ name: "proxy", spawn: () => runDevProxy(devProxySession) });
         }
 
         return { serversWatcher: new ServersWatcher(specs) };

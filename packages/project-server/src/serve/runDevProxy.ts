@@ -1,6 +1,6 @@
 import { type ChildProcess, spawn } from "node:child_process";
 import path from "node:path";
-import { type IDevServerSession } from "./devServer/index.js";
+import { type IDevProxySession } from "./devProxy/index.js";
 
 /**
  * Run the single-port dev proxy as a child process, so it slots into a `ServersWatcher` next to the
@@ -13,7 +13,7 @@ import { type IDevServerSession } from "./devServer/index.js";
  *
  * Returns the spawned child (stdio piped); the caller owns rendering + lifecycle.
  */
-export async function runDevProxy(session: IDevServerSession): Promise<ChildProcess> {
+export async function runDevProxy(session: IDevProxySession): Promise<ChildProcess> {
     const runnerPath = path.join(import.meta.dirname, "runners", "devProxyRunner.js");
 
     const child = spawn(process.execPath, [runnerPath], {

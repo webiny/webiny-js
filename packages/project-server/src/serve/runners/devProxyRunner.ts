@@ -2,7 +2,7 @@
 // into an app workspace (the proxy belongs to no app), so it runs from project-server's own build
 // and is plain TypeScript like everything else. It imports the implementation rather than inlining
 // it, which is the whole reason it can stay this small.
-import { startDevProxy } from "../devServer/startDevProxy.js";
+import { startDevProxy } from "../devProxy/startDevProxy.js";
 
 const proxy = await startDevProxy({
     port: Number(process.env.PORT),

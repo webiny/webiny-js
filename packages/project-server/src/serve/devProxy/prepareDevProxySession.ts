@@ -1,7 +1,7 @@
 import { findFreePort } from "../findFreePort.js";
 import { API_PREFIX, APP_PORT_BASE, DEFAULT_PROXY_PORT } from "./constants.js";
 
-export interface IDevServerSession {
+export interface IDevProxySession {
     /** The one port a developer types. api and admin sit behind it on ports nobody sees. */
     port: number;
     /** The proxy's origin, e.g. `http://localhost:3001`. */
@@ -12,14 +12,14 @@ export interface IDevServerSession {
     targets: { apiPort: number; adminPort: number };
 }
 
-export interface IPrepareDevServerSessionParams {
+export interface IPrepareDevProxySessionParams {
     /** Apps in this session. One app already has one URL, so a proxy only earns its keep from two. */
     apps: string[];
     /** Explicit opt-out, e.g. the CLI's `--no-proxy`. */
     enabled?: boolean;
 }
 
-let currentSession: IDevServerSession | null = null;
+let currentSession: IDevProxySession | null = null;
 
 /**
  * Picks the three ports a single-URL session runs on, and pins the two app ones so the proxy knows
@@ -33,9 +33,9 @@ let currentSession: IDevServerSession | null = null;
  * Returns null when no proxy should run, in which case nothing is changed at all and both apps keep
  * their existing standalone behaviour.
  */
-export async function prepareDevServerSession(
-    params: IPrepareDevServerSessionParams
-): Promise<IDevServerSession | null> {
+export async function prepareDevProxySession(
+    params: IPrepareDevProxySessionParams
+): Promise<IDevProxySession | null> {
     const { apps, enabled } = params;
 
     if (enabled === false || process.env.WEBINY_PROXY === "off" || apps.length < 2) {
@@ -82,7 +82,7 @@ export async function prepareDevServerSession(
  * (`{ app: "api" }`, `{ app: "admin" }`) happen inside that call — after this. So `<Infra.ApiUrl>`'s
  * build param still picks up `WEBINY_API_URL` from here.
  */
-export function pointAppsAtDevProxy(session: IDevServerSession): void {
+export function pointAppsAtDevProxy(session: IDevProxySession): void {
     // Relative on purpose. The admin bundle resolves it against the page origin at runtime, so the
     // same build works on localhost, on a portless domain like https://wby6.localhost, and behind a
     // real reverse proxy — without knowing any of them at build time.
@@ -113,7 +113,7 @@ export function pointAppsAtDevProxy(session: IDevServerSession): void {
  * here when it assembles them. A module-level value rather than a parameter because the two sides
  * meet through `Watch` / `Serve`, whose params are hosting-agnostic.
  */
-export function getDevServerSession(): IDevServerSession | null {
+export function getDevProxySession(): IDevProxySession | null {
     return currentSession;
 }
 

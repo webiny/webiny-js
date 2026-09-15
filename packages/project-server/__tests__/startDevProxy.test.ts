@@ -1,7 +1,7 @@
 import http from "node:http";
 import { type AddressInfo } from "node:net";
 import { afterEach, describe, expect, it } from "vitest";
-import { startDevProxy, type IDevProxy } from "~/serve/devServer/startDevProxy.js";
+import { startDevProxy, type IDevProxy } from "~/serve/devProxy/startDevProxy.js";
 import { findFreePort } from "~/serve/findFreePort.js";
 
 interface IRecordedRequest {

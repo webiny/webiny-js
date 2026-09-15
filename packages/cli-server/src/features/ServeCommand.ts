@@ -7,7 +7,7 @@ import {
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
-import { prepareDevServerSession } from "@webiny/project-server/serve/devServer/index.js";
+import { prepareDevProxySession } from "@webiny/project-server/serve/devProxy/index.js";
 
 interface IServeCommandParams {
     _: string[];
@@ -53,7 +53,7 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                 // Ports only, no `pointAppsAtDevProxy`: serve runs what `webiny build` already
                 // produced, so the admin bundle's API URL was fixed back then and has to have been
                 // built with one that works behind the proxy.
-                const devServerSession = await prepareDevServerSession({
+                const devProxySession = await prepareDevProxySession({
                     apps: params.app ? [params.app] : ["api", "admin"],
                     enabled: params.proxy
                 });
@@ -84,8 +84,8 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                     });
                 }
 
-                if (devServerSession) {
-                    this.uiService.info(`Webiny is available at %s`, devServerSession.url);
+                if (devProxySession) {
+                    this.uiService.info(`Webiny is available at %s`, devProxySession.url);
                 }
 
                 await Promise.all(processes.map(p => p.run()));

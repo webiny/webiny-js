@@ -1,9 +1,9 @@
 export { API_PREFIX } from "./constants.js";
 export {
-    prepareDevServerSession,
+    prepareDevProxySession,
     pointAppsAtDevProxy,
-    getDevServerSession,
-    type IDevServerSession,
-    type IPrepareDevServerSessionParams
-} from "./prepareDevServerSession.js";
+    getDevProxySession,
+    type IDevProxySession,
+    type IPrepareDevProxySessionParams
+} from "./prepareDevProxySession.js";
 export { startDevProxy, type IDevProxy, type IStartDevProxyParams } from "./startDevProxy.js";

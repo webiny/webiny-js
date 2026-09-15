@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     pointAppsAtDevProxy,
-    prepareDevServerSession,
-    type IPrepareDevServerSessionParams
-} from "~/serve/devServer/prepareDevServerSession.js";
-import { startDevProxy } from "~/serve/devServer/startDevProxy.js";
+    prepareDevProxySession,
+    type IPrepareDevProxySessionParams
+} from "~/serve/devProxy/prepareDevProxySession.js";
+import { startDevProxy } from "~/serve/devProxy/startDevProxy.js";
 
 const MANAGED_VARS = [
     "PORT",
@@ -17,7 +17,7 @@ const MANAGED_VARS = [
     "WEBINY_ADMIN_WS_API_URL"
 ];
 
-describe("prepareDevServerSession", () => {
+describe("prepareDevProxySession", () => {
     let originalEnv: Record<string, string | undefined>;
 
     beforeEach(() => {
@@ -37,11 +37,11 @@ describe("prepareDevServerSession", () => {
         }
     });
 
-    const prepare = (params: Partial<IPrepareDevServerSessionParams> = {}) =>
-        prepareDevServerSession({ apps: ["api", "admin"], ...params });
+    const prepare = (params: Partial<IPrepareDevProxySessionParams> = {}) =>
+        prepareDevProxySession({ apps: ["api", "admin"], ...params });
 
     /** What `watch` does: reserve the ports, then point the apps at the proxy. */
-    const prepareAndPoint = async (params: Partial<IPrepareDevServerSessionParams> = {}) => {
+    const prepareAndPoint = async (params: Partial<IPrepareDevProxySessionParams> = {}) => {
         const session = await prepare(params);
         if (session) {
             pointAppsAtDevProxy(session);
