@@ -34,13 +34,18 @@ export class ServerWatch implements Watch.Interface {
             return result;
         }
 
-        const specs = [...this.apiServerSpecs(params.app), ...this.devProxySpecs(params.app)];
+        const specs = this.serverProcessSpecs(params.app);
 
         if (specs.length === 0) {
             return result;
         }
 
         return { ...result, serversWatcher: new ServersWatcher(specs) };
+    }
+
+    /** Everything this hosting type runs alongside the given app's build watchers. */
+    private serverProcessSpecs(appName: GetApp.AppName): IServerProcessSpec[] {
+        return [...this.apiServerSpecs(appName), ...this.devProxySpecs(appName)];
     }
 
     /**
