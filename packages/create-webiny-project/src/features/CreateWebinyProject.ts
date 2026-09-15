@@ -258,10 +258,7 @@ export class CreateWebinyProject {
                 [
                     `First, enter the project directory: ${green(`cd ${projectName}`)}`,
                     "",
-                    `Then start development mode: ${green("yarn dev")}`,
-                    "",
-                    "It watches the API and Admin apps and serves them on a single URL, which it",
-                    "prints once everything is up.",
+                    `Then start Webiny locally: ${green("yarn dev")}`,
                     "",
                     `To see all of the available CLI commands, run ${green(
                         "yarn webiny --help"
