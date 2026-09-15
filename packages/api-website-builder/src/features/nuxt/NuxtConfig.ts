@@ -12,7 +12,7 @@ class NuxtConfigImpl implements Abstraction.Interface {
 
     async execute(): Abstraction.Return {
         const tenant = this.tenantContext.getTenant();
-        const apiKeyResult = await this.apiKeyRepo.getBySlug("website-builder");
+        const apiKeyResult = await this.apiKeyRepo.getBySlug("frontend-integration");
         const apiKey = apiKeyResult.isOk() ? apiKeyResult.value : null;
         const domains = await this.getDomains();
 

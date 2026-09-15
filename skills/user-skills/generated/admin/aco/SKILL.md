@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-aco-catalog
-context: webiny-api
 description: >
   admin/aco — 2 abstractions.
 ---

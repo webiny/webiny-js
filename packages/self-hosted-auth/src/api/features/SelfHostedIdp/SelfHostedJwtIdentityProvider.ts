@@ -1,4 +1,4 @@
-import { JwtIdentityProvider } from "@webiny/api-core/idp";
+import { JwtIdentityProvider } from "@webiny/api-core/idp/index.js";
 import { TokenIssuer, SELF_HOSTED_ISSUER } from "~/api/domain/crypto/TokenIssuer.js";
 
 /**

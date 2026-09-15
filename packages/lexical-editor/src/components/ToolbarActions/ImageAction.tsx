@@ -6,6 +6,7 @@ import { fileToImagePayload } from "~/utils/files.js";
 import type { ImagePayload } from "~/commands/index.js";
 import { INSERT_IMAGE_COMMAND } from "~/commands/index.js";
 import type { ToolbarActionPlugin } from "~/types.js";
+import { ReactComponent as ImageIcon } from "@webiny/icons/image.svg";
 
 export const ImageAction = () => {
     const { editor, toolbarActionPlugins } = useRichTextEditor();
@@ -37,7 +38,7 @@ export const ImageAction = () => {
 
     return (
         <button onClick={() => handleClick()} className={"popup-item"} aria-label="Insert image">
-            <i className="icon insert-image" />
+            <ImageIcon className="icon" />
         </button>
     );
 };

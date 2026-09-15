@@ -1,6 +1,5 @@
 import fs from "fs-extra";
 import path from "path";
-import chalk from "chalk";
 import { getPackages } from "../../utils/getPackages";
 import { WorkspaceGraph } from "../../utils/WorkspaceGraph.js";
 import { Package } from "./types";
@@ -9,14 +8,18 @@ import { getBuildOutputFolder } from "./getBuildOutputFolder";
 import { getBuildMeta } from "./getBuildMeta";
 import { getPackageCacheFolderPath } from "./getPackageCacheFolderPath";
 import { distMatchesCache, recordCacheHash } from "./distContentHash";
-import { getEffectiveHashes, getOwnHashes, isDepAwareKeyEnabled } from "./getEffectiveHashes";
-
-const { green } = chalk;
+import { getEffectiveHashes } from "./getEffectiveHashes";
 
 interface GetBatchesOptions {
     cache?: boolean;
     packagesWhitelist?: string[];
-    rebuildDependents?: boolean;
+    /**
+     * Leaves `dist` alone: no cache→dist restore, and no hashing of `dist` to decide
+     * whether a restore is needed. Used by `--preview`, which only reports what a build
+     * would do — nothing is written, and the expensive dist hashing is skipped, so it
+     * stays cheap enough to poll. `restoredFromCache` is then always empty.
+     */
+    skipCacheRestore?: boolean;
 }
 
 export async function getBatches(options: GetBatchesOptions = {}) {
@@ -38,21 +41,17 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         });
     }
 
-    console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
-
     const useCache = options.cache ?? false;
 
     const workspaceGraph = new WorkspaceGraph({
-        ignore: ["@webiny/project-utils"]
+        ignore: []
     });
 
-    // Build key per package. Default: own-source hash (original behavior).
-    // Experimental (WEBINY_EXPERIMENTAL_DEP_AWARE_CACHE): a dependency-aware key
-    // that also changes when any transitive dependency changes, so dependents of
-    // a changed package are detected as misses without `--rebuild-dependents`.
-    const buildKeys = isDepAwareKeyEnabled()
-        ? await getEffectiveHashes(allWorkspacePackages)
-        : await getOwnHashes(allWorkspacePackages);
+    // Dependency-aware build key per package: changes when the package's own
+    // source, any transitive workspace dependency, or any resolved third-party
+    // dependency changes — so dependents of a changed package are detected as
+    // misses on a plain build.
+    const buildKeys = await getEffectiveHashes(allWorkspacePackages);
 
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
     if (!useCache) {
@@ -77,59 +76,19 @@ export async function getBatches(options: GetBatchesOptions = {}) {
         }
     }
 
-    // 1.5 When using cache and --rebuild-dependents, also rebuild any package that depends on a changed package.
-    if (options.rebuildDependents && packagesNoCache.length > 0 && useCache) {
-        const dependents = workspaceGraph.getDependents();
-
-        const tainted = new Set(packagesNoCache.map(p => p.packageJson.name));
-        const queue = [...tainted];
-        while (queue.length > 0) {
-            const name = queue.pop()!;
-            for (const dependent of dependents.get(name) || []) {
-                if (!tainted.has(dependent)) {
-                    tainted.add(dependent);
-                    queue.push(dependent);
-                }
-            }
-        }
-
-        for (const name of tainted) {
-            if (packagesNoCache.some(p => p.packageJson.name === name)) continue;
-            const pkg = workspacesPackages.find(p => p.packageJson.name === name);
-            if (pkg) {
-                packagesNoCache.push(pkg);
-            }
-        }
-
-        for (let i = packagesUseCache.length - 1; i >= 0; i--) {
-            if (tainted.has(packagesUseCache[i].packageJson.name)) {
-                packagesUseCache.splice(i, 1);
-            }
-        }
-    }
+    // Dependents of a changed package no longer need explicit tainting: the
+    // dependency-aware key folds in dependency keys, so any dependent of a
+    // changed package is already a cache miss above.
 
     // 2. Let's use cached built code where possible.
-    if (packagesUseCache.length) {
-        if (packagesUseCache.length > 10) {
-            console.log(`Using cache for ${green(packagesUseCache.length)} packages.`);
-            console.log(
-                `To build all packages regardless of cache, use the ${green("--no-cache")} flag.`
-            );
-        } else {
-            console.log("Using cache for following packages:");
-            for (let i = 0; i < packagesUseCache.length; i++) {
-                const item = packagesUseCache[i];
-                console.log(green(item.packageJson.name));
-            }
-        }
-
+    const restoredFromCache: Package[] = [];
+    if (packagesUseCache.length && !options.skipCacheRestore) {
         // Skip the cache→dist copy for packages whose dist already matches the
         // cache byte-for-byte (content hash). Reads actual bytes in parallel, so
         // it can't go stale from out-of-band dist writes (`webiny watch`, manual
         // edits) — those change the hash and force a copy.
         const fresh = await Promise.all(packagesUseCache.map(pkg => distMatchesCache(pkg)));
 
-        const restored: Package[] = [];
         for (let i = 0; i < packagesUseCache.length; i++) {
             const workspacePackage = packagesUseCache[i];
 
@@ -139,26 +98,27 @@ export async function getBatches(options: GetBatchesOptions = {}) {
 
             const cacheFolderPath = path.join(CACHE_FOLDER_PATH, workspacePackage.packageJson.name);
             fs.copySync(cacheFolderPath, getBuildOutputFolder(workspacePackage));
-            restored.push(workspacePackage);
+            restoredFromCache.push(workspacePackage);
         }
 
-        if (restored.length) {
+        if (restoredFromCache.length) {
             // dist now equals the cache — record the hash so the next build can
             // verify freshness by hashing dist alone.
-            await Promise.all(restored.map(pkg => recordCacheHash(pkg)));
-            console.log(`Restored ${green(restored.length)} package(s) from cache into dist.`);
-        }
-    } else {
-        if (useCache) {
-            console.log("Cache is empty, all packages need to be built.");
-        } else {
-            console.log("Skipping cache.");
+            await Promise.all(restoredFromCache.map(pkg => recordCacheHash(pkg)));
         }
     }
 
     // 3. Where needed, let's build and update the cache.
     if (packagesNoCache.length === 0) {
-        return { batches: [], packagesNoCache, allPackages: workspacesPackages, buildKeys };
+        return {
+            batches: [],
+            packagesNoCache,
+            packagesUseCache,
+            restoredFromCache,
+            cacheEnabled: useCache,
+            allPackages: workspacesPackages,
+            buildKeys
+        };
     }
 
     const rawPackagesList = workspaceGraph.toposort();
@@ -194,6 +154,9 @@ export async function getBatches(options: GetBatchesOptions = {}) {
     return {
         batches,
         packagesNoCache,
+        packagesUseCache,
+        restoredFromCache,
+        cacheEnabled: useCache,
         allPackages: workspacesPackages,
         buildKeys
     };

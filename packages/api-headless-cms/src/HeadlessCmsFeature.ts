@@ -14,6 +14,7 @@ import { StorageFeature } from "~/features/storage/index.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
 import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
+import { CmsAiToolsFeature } from "~/features/ai/index.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
@@ -30,6 +31,7 @@ import {
 import {
     QueryCmsResolverImpl,
     MutationCmsResolverImpl,
+    GetModelResolverImpl,
     GetEntryResolverImpl,
     ListEntriesResolverImpl,
     CreateEntryResolverImpl,
@@ -79,6 +81,7 @@ import {
 } from "~/legacy/abstractions.js";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
+
 export interface HeadlessCmsConfig {
     type: ApiEndpoint;
     /** Extra plugins (e.g. CmsGraphQLSchemaPlugin) to register in ctx.plugins at runtime. */
@@ -99,6 +102,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         container.register(CmsMutationTypeDefsImpl);
         container.register(QueryCmsResolverImpl);
         container.register(MutationCmsResolverImpl);
+        container.register(GetModelResolverImpl);
         container.register(GetEntryResolverImpl);
         container.register(ListEntriesResolverImpl);
         container.register(CreateEntryResolverImpl);
@@ -121,6 +125,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         CmsInstallerFeature.register(container);
         ContentEntriesFeature.register(container);
         ContentModelFeature.register(container);
+        CmsAiToolsFeature.register(container);
         ContentModelGroupFeature.register(container);
         ModelBuilderFeature.register(container);
         CmsWhereMapperFeature.register(container);

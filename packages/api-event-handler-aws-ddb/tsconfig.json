@@ -7,7 +7,8 @@
     { "path": "../api-core-ddb" },
     { "path": "../api-event-handler-aws" },
     { "path": "../api-headless-cms-ddb" },
-    { "path": "../api-websockets-ddb" }
+    { "path": "../api-websockets-aws" },
+    { "path": "../db-dynamodb" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -26,8 +27,10 @@
       "@webiny/api-event-handler-aws": ["../api-event-handler-aws/src"],
       "@webiny/api-headless-cms-ddb/*": ["../api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../api-headless-cms-ddb/src"],
-      "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
-      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"]
+      "@webiny/api-websockets-aws/*": ["../api-websockets-aws/src/*"],
+      "@webiny/api-websockets-aws": ["../api-websockets-aws/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
     }
   }
 }

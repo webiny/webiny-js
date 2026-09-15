@@ -200,10 +200,15 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             config?.scope
         );
 
+        const initialFilters: Record<string, unknown> = { folderId: initialFolderId };
+        if (config?.accept && config.accept.length > 0) {
+            initialFilters["accept"] = config.accept;
+        }
+
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            initialFilters: { folderId: initialFolderId },
+            initialFilters,
             limit: 50
         });
 
@@ -288,7 +293,9 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         }
 
         // `folderId` is always present as a default filter; ignore it.
-        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(k => k !== "folderId");
+        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(
+            k => k !== "folderId" && k !== "accept"
+        );
         if (filterKeys.length > 0) {
             return false;
         }

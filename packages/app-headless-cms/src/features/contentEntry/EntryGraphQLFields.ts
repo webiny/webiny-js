@@ -69,7 +69,7 @@ class EntryGraphQLFieldsImpl implements Abstraction.Interface {
     }
 
     getValuesBlock(model: CmsModel): string {
-        const selection = model.valuesSelection;
+        const selection = model.metadata.valuesSelection;
 
         if (!selection || selection === "_empty") {
             return "";

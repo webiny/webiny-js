@@ -1,4 +1,4 @@
-import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
+import type { CmsModelField, CmsModelLayoutCell, FieldRule } from "~/types/index.js";
 
 export interface DataFieldBuildResult {
     type: "data";
@@ -19,6 +19,7 @@ export interface BaseFieldBuilderConfig {
     description?: string | null;
     note?: string | null;
     _fieldId?: string;
+    rules?: FieldRule[];
 }
 
 /**
@@ -65,6 +66,11 @@ export abstract class BaseFieldBuilder<TType extends string = string> {
 
     public fieldId(id: string): this {
         this.config._fieldId = id;
+        return this;
+    }
+
+    public rules(rules: FieldRule[]): this {
+        this.config.rules = rules;
         return this;
     }
 

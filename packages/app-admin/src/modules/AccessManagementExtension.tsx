@@ -4,7 +4,7 @@ import { RegisterFeature } from "~/components/RegisterFeature.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { AdminLayout } from "~/components/AdminLayout.js";
 import { HasPermission } from "~/presentation/security/components/HasPermission.js";
-import { Wcp } from "~/components/Wcp.js";
+import { useFeatureFlags } from "~/presentation/featureFlags/useFeatureFlags.js";
 import { Permission } from "~/features/accessManagement/constants.js";
 import { SecurityPermissionsFeature } from "~/features/accessManagement/permissions/feature.js";
 import { ListRolesFeature } from "~/features/accessManagement/roles/listRoles/feature.js";
@@ -35,6 +35,55 @@ import { RolesAutocompletePresenterFeature } from "~/presentation/accessManageme
 import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
 const { Menu, Route } = AdminConfig;
+
+// Shared leading breadcrumb for all access-management routes.
+const AccessManagementBreadcrumbsRoot = () => (
+    <AdminConfig.Breadcrumb name={"access-management"} label={"Access Management"} />
+);
+
+const TeamsRoute = () => {
+    const featureFlags = useFeatureFlags();
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.teams")) {
+        return null;
+    }
+    return (
+        <HasPermission name={Permission.Teams}>
+            <Route
+                route={Routes.Teams.List}
+                element={
+                    <AdminLayout title={"Access Management - Teams"}>
+                        <AccessManagementBreadcrumbsRoot />
+                        <AdminConfig.Breadcrumb name={"teams"} label={"Teams"} />
+                        <TeamsView />
+                    </AdminLayout>
+                }
+            />
+        </HasPermission>
+    );
+};
+
+const TeamsMenuItem = () => {
+    const featureFlags = useFeatureFlags();
+    const router = useRouter();
+    if (!featureFlags.isEnabled("advancedAccessControlLayer.teams")) {
+        return null;
+    }
+    return (
+        <HasPermission name={Permission.Teams}>
+            <Menu
+                name={"security.teams"}
+                parent={"settings.security"}
+                element={
+                    <Menu.Link
+                        text={"Teams"}
+                        to={router.getLink(Routes.Teams.List)}
+                        pinnable={true}
+                    />
+                }
+            />
+        </HasPermission>
+    );
+};
 
 export const AccessManagementExtension = () => {
     const router = useRouter();
@@ -70,28 +119,21 @@ export const AccessManagementExtension = () => {
                         route={Routes.Roles.List}
                         element={
                             <AdminLayout title={"Access Management - Roles"}>
+                                <AccessManagementBreadcrumbsRoot />
+                                <AdminConfig.Breadcrumb name={"roles"} label={"Roles"} />
                                 <RolesView />
                             </AdminLayout>
                         }
                     />
                 </HasPermission>
-                <Wcp.CanUseTeams>
-                    <HasPermission name={Permission.Teams}>
-                        <Route
-                            route={Routes.Teams.List}
-                            element={
-                                <AdminLayout title={"Access Management - Teams"}>
-                                    <TeamsView />
-                                </AdminLayout>
-                            }
-                        />
-                    </HasPermission>
-                </Wcp.CanUseTeams>
+                <TeamsRoute />
                 <HasPermission name={Permission.ApiKeys}>
                     <Route
                         route={Routes.ApiKeys.List}
                         element={
                             <AdminLayout title={"Access Management - API Keys"}>
+                                <AccessManagementBreadcrumbsRoot />
+                                <AdminConfig.Breadcrumb name={"api-keys"} label={"API Keys"} />
                                 <ApiKeysView />
                             </AdminLayout>
                         }
@@ -118,21 +160,7 @@ export const AccessManagementExtension = () => {
                         }
                     />
                 </HasPermission>
-                <Wcp.CanUseTeams>
-                    <HasPermission name={Permission.Teams}>
-                        <Menu
-                            name={"security.teams"}
-                            parent={"settings.security"}
-                            element={
-                                <Menu.Link
-                                    text={"Teams"}
-                                    to={router.getLink(Routes.Teams.List)}
-                                    pinnable={true}
-                                />
-                            }
-                        />
-                    </HasPermission>
-                </Wcp.CanUseTeams>
+                <TeamsMenuItem />
                 <HasPermission name={Permission.ApiKeys}>
                     <Menu
                         name={"security.apiKeys"}

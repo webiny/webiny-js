@@ -24,22 +24,31 @@ export class Theme {
     private readonly _fontSizes: FontSizes;
     private readonly _typography: Record<string, TypographyValue[]>;
     private readonly _typographyMap: TypographyMap;
+    private readonly _allowCustomColors: boolean;
 
     constructor(params: {
         colors: EditorTheme["colors"];
         typography: EditorTheme["typography"];
         fontSizes: EditorTheme["fontSizes"];
         tokens: EditorThemeClasses;
+        allowCustomColors?: boolean;
     }) {
         this._colors = params.colors;
         this._typography = params.typography;
         this._fontSizes = params.fontSizes;
         this._typographyMap = this.toTypographyMap(params.typography);
         this.tokens = params.tokens;
+        this._allowCustomColors = params.allowCustomColors ?? false;
     }
 
     static empty() {
-        return new Theme({ colors: [], typography: {}, fontSizes: [], tokens: {} });
+        return new Theme({
+            colors: [],
+            typography: {},
+            fontSizes: [],
+            tokens: {},
+            allowCustomColors: false
+        });
     }
 
     static from(lexicalTheme: EditorThemeClasses) {
@@ -74,6 +83,10 @@ export class Theme {
 
     get fontSizes() {
         return this._fontSizes;
+    }
+
+    get allowCustomColors() {
+        return this._allowCustomColors;
     }
 
     getTypographyById(id: string) {

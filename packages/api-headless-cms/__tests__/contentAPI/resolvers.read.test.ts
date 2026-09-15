@@ -1071,14 +1071,48 @@ describe.sequential("READ - Resolvers", () => {
     });
 
     it("list entries that are not created between given dates", async () => {
-        const { fruits, vegetables, animals } = await categoryManagerHelper(categoryManager);
+        const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const [fruitsResponse] = await categoryManager.createCategory({
+            variables: {
+                data: {
+                    values: { title: "Fruits", slug: "fruits" },
+                    status: "published"
+                }
+            }
+        });
+        const fruits = fruitsResponse.data.createCategory.data!;
+
+        await delay(50);
+
+        const [vegetablesResponse] = await categoryManager.createCategory({
+            variables: {
+                data: {
+                    values: { title: "Vegetables", slug: "vegetables" },
+                    status: "published"
+                }
+            }
+        });
+        const vegetables = vegetablesResponse.data.createCategory.data!;
+
+        await delay(50);
+
+        const [animalsResponse] = await categoryManager.createCategory({
+            variables: {
+                data: {
+                    values: { title: "Animals", slug: "animals" },
+                    status: "published"
+                }
+            }
+        });
+        const animals = animalsResponse.data.createCategory.data!;
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const from = new Date(vegetables.savedOn);
-        from.setTime(from.getTime() - 5);
+        from.setTime(from.getTime() - 25);
         const to = new Date(vegetables.savedOn);
-        to.setTime(to.getTime() + 5);
+        to.setTime(to.getTime() + 25);
 
         const [result] = await listCategories({
             where: {

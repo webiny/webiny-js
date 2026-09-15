@@ -13,7 +13,7 @@ import { allNodes } from "@webiny/lexical-nodes";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext.js";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin.js";
 import type { LexicalValue, ToolbarActionPlugin } from "~/types.js";
-import { Placeholder } from "~/ui/Placeholder.js";
+import { EditorPlaceholder } from "~/components/Editor/EditorPlaceholder.js";
 import { SharedHistoryContext, useSharedHistoryContext } from "~/context/SharedHistoryContext.js";
 import {
     LexicalEditorWithConfig,
@@ -68,9 +68,9 @@ const BaseRichTextEditor = ({
     const editorTheme = useRef(props.theme);
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
-    const placeholderElem = (
-        <Placeholder styles={placeholderStyles}>{placeholder || "Enter text..."}</Placeholder>
-    );
+    // Apply the default paragraph's typography class so the placeholder matches the real
+    // text's size/line-height/font (the muted color is kept via placeholderStyles).
+    const defaultParagraphClassName = props.theme?.typography?.paragraphs?.[0]?.className;
     const scrollRef = useRef(null);
 
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
@@ -166,8 +166,13 @@ const BaseRichTextEditor = ({
                                     </div>
                                 </div>
                             }
-                            placeholder={placeholderElem}
+                            placeholder={null}
                             ErrorBoundary={LexicalErrorBoundary}
+                        />
+                        <EditorPlaceholder
+                            text={placeholder || "Enter text..."}
+                            styles={placeholderStyles}
+                            fallbackClassName={defaultParagraphClassName}
                         />
                         {/* Toolbar. */}
                         {disabled ? null : floatingAnchorElem && toolbar}

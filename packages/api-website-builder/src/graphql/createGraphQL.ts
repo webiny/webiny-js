@@ -3,6 +3,7 @@ import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractio
 import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchemaBuilder/abstractions.js";
 import { addPagesSchema } from "~/graphql/pages/pages.gql.js";
 import { addRedirectsSchema } from "./redirects/redirects.gql.js";
+import { addExperimentsSchema } from "./experiments/experiments.gql.js";
 
 const BASE_TYPE_DEFS = /* GraphQL */ `
     type WbQuery {
@@ -113,6 +114,7 @@ class WebsiteBuilderSchemaFactoryImpl implements CoreGraphQLSchemaFactory.Interf
         addBaseSchema(builder);
         addPagesSchema(builder);
         addRedirectsSchema(builder);
+        addExperimentsSchema(builder);
         return builder;
     }
 }

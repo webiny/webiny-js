@@ -26,6 +26,11 @@ class CmsResponseTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                 data: Boolean
                 error: CmsError
             }
+
+            type CmsModelResponse {
+                data: JSON
+                error: CmsError
+            }
         `);
 
         return builder;

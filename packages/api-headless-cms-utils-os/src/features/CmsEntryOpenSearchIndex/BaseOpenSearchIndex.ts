@@ -8,7 +8,7 @@ class BaseOpenSearchIndexImpl implements CmsEntryOpenSearchIndex.Interface {
     public constructor() {
         this.body = getBaseConfiguration();
     }
-    public canUse(_: CmsEntryOpenSearchIndex.CanUseParams): boolean {
+    public canUse(): boolean {
         return true;
     }
 }

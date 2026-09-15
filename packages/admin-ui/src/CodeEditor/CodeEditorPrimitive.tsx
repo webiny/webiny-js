@@ -13,7 +13,9 @@ const monacoOptions: editor.IEditorConstructionOptions = {
     readOnly: true,
     minimap: {
         enabled: false
-    }
+    },
+    scrollBeyondLastLine: false,
+    wordWrap: "on"
 };
 
 const DecoratableCodeEditorPrimitive = ({

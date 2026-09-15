@@ -18,21 +18,48 @@ import {
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TasksCrud } from "~/api/TasksCrud.js";
 import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
 
 interface IGetTaskLogParams {
     task: ITask;
     databaseLogs: boolean;
 }
 
+/**
+ * What TaskControl needs from the container, declared in one place.
+ *
+ * TaskControl is built by hand (TaskRunner does it), so it cannot take these through DI the way a
+ * registered class would. Naming them here is the next best thing: the class states what it uses,
+ * TaskRunner resolves them once where it assembles the object, and a test can pass fakes. Reaching
+ * into `context.container` from inside a method instead would leave the class with dependencies
+ * nothing can see or substitute.
+ */
+export interface ITaskControlDependencies {
+    logger: Logger.Interface;
+    identityContext: IdentityContext.Interface;
+    taskExecutionContext: TaskExecutionContext.Interface;
+    tasksCrud: TasksCrud.Interface;
+    taskController: TaskController.Interface;
+    getTaskDefinition: GetTaskDefinitionUseCase.Interface;
+}
+
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
     public readonly response: IResponse;
     public readonly context: Context;
+    private readonly deps: ITaskControlDependencies;
 
-    public constructor(runner: ITaskRunner, response: IResponse, context: Context) {
+    public constructor(
+        runner: ITaskRunner,
+        response: IResponse,
+        context: Context,
+        deps: ITaskControlDependencies
+    ) {
         this.runner = runner;
         this.context = context;
         this.response = response;
+        this.deps = deps;
     }
 
     public async run(event: Pick<ITaskEvent, "webinyTaskId">): Promise<IResponseResult> {
@@ -46,7 +73,7 @@ export class TaskControl implements ITaskControl {
         let task: ITask<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
-            this.context.container.resolve(IdentityContext).setIdentity(
+            this.deps.identityContext.setIdentity(
                 new AuthenticatedIdentity({
                     id: task.createdBy.id,
                     type: task.createdBy.type,
@@ -68,9 +95,7 @@ export class TaskControl implements ITaskControl {
         /**
          * Let's get the task definition.
          */
-        const definitionResult = this.context.container
-            .resolve(GetTaskDefinitionUseCase)
-            .execute(task.definitionId);
+        const definitionResult = this.deps.getTaskDefinition.execute(task.definitionId);
         if (definitionResult.isFail()) {
             return this.response.error({
                 error: {
@@ -134,19 +159,23 @@ export class TaskControl implements ITaskControl {
 
         const store = new TaskManagerStore({
             context: this.context,
+            tasksCrud: this.deps.tasksCrud,
             task,
             log: taskLog,
             databaseLogs
         });
 
         // Populate TaskExecutionContext BEFORE executing task
-        const executionContext = this.context.container.resolve(TaskExecutionContext);
+        const executionContext = this.deps.taskExecutionContext;
         executionContext.setStore(store);
         executionContext.setRunner(this.runner);
         executionContext.setTimer(this.runner.timer);
         executionContext.setResponse(new TaskResponse(this.response));
 
-        const manager = new TaskManager(this.context, this.response, store);
+        const manager = new TaskManager(this.context, this.response, store, {
+            taskController: this.deps.taskController,
+            identityContext: this.deps.identityContext
+        });
 
         const databaseResponse = new DatabaseResponse(this.response, store);
 
@@ -189,24 +218,28 @@ export class TaskControl implements ITaskControl {
     ): Promise<void> {
         if (result.status === TaskResultStatus.ERROR && definition.onError) {
             try {
-                await definition.onError({ task });
+                await definition.onError({ task, definition });
             } catch (ex) {
-                console.error(`Error executing onError hook for task "${task.id}".`);
-                console.log(getErrorProperties(ex));
+                this.deps.logger.error(
+                    { error: getErrorProperties(ex), taskId: task.id, hook: "onError" },
+                    "Error executing task lifecycle hook."
+                );
             }
         } else if (result.status === TaskResultStatus.DONE && definition.onDone) {
             try {
-                await definition.onDone({ task });
+                await definition.onDone({ task, definition });
             } catch (ex) {
-                console.error(`Error executing onDone hook for task "${task.id}".`);
-                console.log(getErrorProperties(ex));
+                this.deps.logger.error(
+                    { error: getErrorProperties(ex), taskId: task.id, hook: "onDone" },
+                    "Error executing task lifecycle hook."
+                );
             }
         }
     }
 
     private async getTask<T extends TaskDefinition.TaskInput>(id: string): Promise<ITask<T>> {
         try {
-            const task = await this.context.container.resolve(TasksCrud).getTask<T>(id);
+            const task = await this.deps.tasksCrud.getTask<T>(id);
             if (task) {
                 return task;
             }
@@ -249,7 +282,7 @@ export class TaskControl implements ITaskControl {
          * First we are trying to get existing latest log.
          */
         try {
-            taskLog = await this.context.container.resolve(TasksCrud).getLatestLog(task.id);
+            taskLog = await this.deps.tasksCrud.getLatestLog(task.id);
         } catch (error) {
             /**
              * If error is not the NotFoundError, we need to throw it.
@@ -267,7 +300,7 @@ export class TaskControl implements ITaskControl {
         const currentIteration = taskLog?.iteration || 0;
 
         try {
-            return await this.context.container.resolve(TasksCrud).createLog(task, {
+            return await this.deps.tasksCrud.createLog(task, {
                 executionName: this.response.event.executionName,
                 iteration: currentIteration + 1
             });

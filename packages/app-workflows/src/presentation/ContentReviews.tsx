@@ -19,6 +19,10 @@ export const ContentReviews = () => {
                         <Helmet>
                             <title>{`Content Reviews`}</title>
                         </Helmet>
+                        <AdminConfig.Breadcrumb
+                            name={"content-reviews"}
+                            label={"Content Reviews"}
+                        />
                         <WorkflowStateListView />
                     </AdminLayout>
                 }

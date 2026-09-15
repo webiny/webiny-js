@@ -19,5 +19,5 @@ export type { IUseScheduleDialogProps } from "./presentation/scheduleDialog/useS
 export { Scheduler } from "./presentation/schedulerList/Scheduler.js";
 export type { SchedulerProps } from "./presentation/schedulerList/Scheduler.js";
 export { SchedulerConfigs } from "./presentation/SchedulerConfigs/SchedulerConfigs.js";
-export { SchedulerDialogFormComponentDateTimeInput } from "./presentation/scheduleDialog/useScheduleDialog.js";
+export { SchedulerDialogFormComponentDateTimeInput } from "./presentation/scheduleDialog/components/SchedulerDialogFormComponentDateTimeInput.js";
 export { CellScheduledOn } from "./presentation/components/Cells/CellScheduledOn/index.js";

@@ -8,6 +8,8 @@ import { Download as FileDetailsDownload } from "./FileDetails/Download.js";
 import { MoveToFolder as FileDetailsMoveToFolder } from "./FileDetails/MoveToFolder.js";
 import { CopyUrl as FileDetailsCopyUrl } from "./FileDetails/CopyUrl.js";
 import { DeleteImage as FileDetailsDeleteImage } from "./FileDetails/DeleteImage.js";
+import { EditImage as FileDetailsEditImage } from "./FileDetails/EditImage.js";
+import { ReenrichWithAi } from "~/modules/AiEnrichment/ReenrichWithAi.js";
 
 const { Browser, FileDetails } = FileManagerViewConfig;
 
@@ -20,10 +22,12 @@ export const FileActions = () => {
             <Browser.Grid.Item.Action name={"move"} element={<GridMoveToFolder />} />
             <Browser.Grid.Item.Action name={"delete"} element={<GridDelete />} />
             {/* File details actions. */}
+            <FileDetails.Action name={"editImage"} element={<FileDetailsEditImage />} />
             <FileDetails.Action name={"download"} element={<FileDetailsDownload />} />
             <FileDetails.Action name={"moveToFolder"} element={<FileDetailsMoveToFolder />} />
             <FileDetails.Action name={"copyUrl"} element={<FileDetailsCopyUrl />} />
             <FileDetails.Action name={"delete"} element={<FileDetailsDeleteImage />} />
+            <FileDetails.Action name={"reenrichWithAi"} element={<ReenrichWithAi />} />
         </>
     );
 };

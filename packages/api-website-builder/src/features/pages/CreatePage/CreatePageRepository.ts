@@ -4,19 +4,20 @@ import {
     CreatePageRepository as RepositoryAbstraction,
     type ICreatePageRepository
 } from "./abstractions.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PagePersistenceError, PageValidationError } from "~/domain/page/errors.js";
 
 class CreatePageRepositoryImpl implements ICreatePageRepository {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
-        private pageModel: PageModel.Interface
+        private pageModelProvider: PageModelProvider.Interface
     ) {}
 
     async execute(data: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
+        const pageModel = await this.pageModelProvider.get();
         // Create the entry using CMS CreateEntry use case
-        const result = await this.createEntry.execute(this.pageModel, {
+        const result = await this.createEntry.execute(pageModel, {
             location: data.location,
             values: data
         });
@@ -37,5 +38,5 @@ class CreatePageRepositoryImpl implements ICreatePageRepository {
 
 export const CreatePageRepository = RepositoryAbstraction.createImplementation({
     implementation: CreatePageRepositoryImpl,
-    dependencies: [CreateEntryUseCase, PageModel]
+    dependencies: [CreateEntryUseCase, PageModelProvider]
 });

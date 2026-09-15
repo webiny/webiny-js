@@ -1,35 +1,30 @@
 import React, { forwardRef, useMemo } from "react";
 import { addMinutes, format } from "date-fns";
-
-import { ReactComponent as PreviewIcon } from "@webiny/icons/info.svg";
-import type {
-    DataTableColumns,
-    DataTableSorting,
-    OnDataTableSortingChange
+import { ReactComponent as PreviewIcon } from "@webiny/icons/search.svg";
+import {
+    Button,
+    type DataTableColumns,
+    type DataTableSorting,
+    type OnDataTableSortingChange
 } from "@webiny/admin-ui";
-import { DataTable, IconButton, Tooltip } from "@webiny/admin-ui";
+import { DataTable, Tooltip } from "@webiny/admin-ui";
 
 import { Text } from "~/components/Text.js";
-import {
-    ActionWrapper,
-    appColumn,
-    previewColumn,
-    TextGray,
-    TimezoneText,
-    wideColumn
-} from "./styled.js";
-import type { ActionType, IAuditLog } from "~/types.js";
+import { getActionColorClasses } from "./styled.js";
+import type { IAuditLog } from "~/types.js";
 
 interface ActionProps {
     label: string;
-    value: ActionType;
+    value: string;
 }
 
 export const Action = ({ label, value }: ActionProps) => {
     return (
-        <ActionWrapper value={value}>
+        <div
+            className={`px-sm w-fit border border-solid rounded-[5px] ${getActionColorClasses(value)}`}
+        >
             <Text use={"subtitle1"}>{label}</Text>
-        </ActionWrapper>
+        </div>
     );
 };
 
@@ -43,9 +38,6 @@ export interface TableProps {
 }
 
 export interface EntryWithPreview extends IAuditLog {
-    /**
-     * We need the preview property because data table is expecting it in columns.
-     */
     preview?: string;
 }
 
@@ -69,7 +61,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
                         trigger={
                             <>
                                 <Text use={"subtitle1"}>{format(date, "yyyy-MM-dd HH:mm:ss")}</Text>
-                                <TimezoneText use={"body2"}>{format(date, "(O)")}</TimezoneText>
+                                <span className={"px-xs text-neutral-dimmed"}>
+                                    <Text use={"body2"}>{format(date, "(O)")}</Text>
+                                </span>
                             </>
                         }
                     />
@@ -81,22 +75,31 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             header: "App/Entity",
             cell: (row: EntryWithPreview) => (
                 <>
-                    <Text use={"subtitle1"}>{row.app}</Text>
+                    <Text use={"subtitle1"} className={"text-neutral-strong"}>
+                        {row.app}
+                    </Text>
                     {row.entity && (
-                        <TextGray use={"body2"}>{` [Entity: ${row.entity.label}]`}</TextGray>
+                        <>
+                            &nbsp;/&nbsp;
+                            <span className={"text-neutral-strong"}>
+                                <Text use={"body2"}>{row.entity.label}</Text>
+                            </span>
+                        </>
                     )}
                     <br />
-                    <TextGray use={"body2"}>{`ID: `}</TextGray>
-                    {row.entity.link ? (
-                        <a href={row.entity.link} target={"blank"}>
+                    <span className={"text-neutral-dimmed"}>
+                        <Text use={"body2"}>{`ID: `}</Text>
+                        {row.entity.link ? (
+                            <a href={row.entity.link} target={"blank"}>
+                                <Text use={"body2"}>{row.entityId}</Text>
+                            </a>
+                        ) : (
                             <Text use={"body2"}>{row.entityId}</Text>
-                        </a>
-                    ) : (
-                        <Text use={"body2"}>{row.entityId}</Text>
-                    )}
+                        )}
+                    </span>
                 </>
             ),
-            className: appColumn
+            className: "!w-[280px]"
         },
         action: {
             header: "Action",
@@ -107,7 +110,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         message: {
             header: "Message",
             cell: (row: EntryWithPreview) => <Text use={"subtitle1"}>{row.message}</Text>,
-            className: wideColumn
+            className: "!w-auto"
         },
         ...(hasAccessToUsers && {
             createdBy: {
@@ -122,9 +125,14 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         preview: {
             header: "",
             cell: (auditLog: EntryWithPreview) => (
-                <IconButton onClick={() => handleRecordSelect(auditLog)} icon={<PreviewIcon />} />
+                <Button
+                    variant={"secondary"}
+                    onClick={() => handleRecordSelect(auditLog)}
+                    icon={<PreviewIcon />}
+                    text={"Details"}
+                />
             ),
-            className: previewColumn
+            className: "!w-[100px]"
         }
     };
 

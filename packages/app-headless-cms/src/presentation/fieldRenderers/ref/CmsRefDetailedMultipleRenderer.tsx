@@ -13,6 +13,7 @@ import { EntryList } from "./components/EntryList.js";
 import { RefFieldOptions } from "./components/RefFieldOptions.js";
 import { ReferencesDialog } from "./components/ReferencesDialog.js";
 import { NewEntryDrawer } from "./components/NewEntryDrawer.js";
+import { EditEntryDrawer } from "./components/EditEntryDrawer.js";
 import { parseIdentifier } from "@webiny/utils";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
@@ -48,6 +49,7 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
 
     const [selectDialogModel, setSelectDialogModel] = useState<CmsModel | null>(null);
     const [newEntryModelId, setNewEntryModelId] = useState<string | null>(null);
+    const [editEntry, setEditEntry] = useState<CmsReferenceEntry | null>(null);
 
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
@@ -174,6 +176,7 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
                                 index={index}
                                 entry={entry}
                                 onRemove={onRemove}
+                                onEdit={setEditEntry}
                                 onMoveUp={!isFirst ? onMoveUp : undefined}
                                 onMoveDown={!isLast ? onMoveDown : undefined}
                             />
@@ -213,6 +216,14 @@ const RefDetailedMultipleInner = observer(({ field }: InnerFieldProps) => {
                         );
                         setNewEntryModelId(null);
                     }}
+                />
+            )}
+            {editEntry && (
+                <EditEntryDrawer
+                    modelId={editEntry.model.modelId}
+                    entryId={editEntry.id}
+                    onClose={() => setEditEntry(null)}
+                    onSaved={patch => presenter.patchEntry(patch)}
                 />
             )}
         </div>

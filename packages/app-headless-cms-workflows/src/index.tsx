@@ -1,5 +1,5 @@
 import React from "react";
-import { RegisterFeature, Wcp } from "@webiny/app-admin";
+import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { CmsWorkflowsEditor } from "~/Routes/index.js";
 import {
     CmsEntryFormScheduleMenuItemAction,
@@ -14,8 +14,14 @@ import { CmsWorkflowsCacheFeature } from "~/features/feature.js";
 import { CmsWorkflowsEditorPresenterFeature } from "~/presentation/cmsWorkflowsEditor/feature.js";
 
 export const CmsWorkflows = () => {
+    const featureFlags = useFeatureFlags();
+
+    if (!featureFlags.isEnabled("advancedPublishingWorkflow")) {
+        return null;
+    }
+
     return (
-        <Wcp.CanUseWorkflows>
+        <>
             <RegisterFeature feature={CmsWorkflowsFeature} />
             <RegisterFeature feature={CmsWorkflowsCacheFeature} />
             <RegisterFeature feature={CmsWorkflowsEditorPresenterFeature} />
@@ -26,6 +32,6 @@ export const CmsWorkflows = () => {
             <CmsEntryFormTooltipButton />
             <CmsEntryFormScheduleMenuItemAction />
             <CmsEntryFormCreateNewRevisionButton />
-        </Wcp.CanUseWorkflows>
+        </>
     );
 };

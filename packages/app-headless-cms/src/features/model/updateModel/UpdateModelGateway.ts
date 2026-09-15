@@ -40,6 +40,7 @@ const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                     type
                 }
                 isBeingDeleted
+                settings
             }
             error {
                 message

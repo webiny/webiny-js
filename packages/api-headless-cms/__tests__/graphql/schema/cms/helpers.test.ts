@@ -116,5 +116,130 @@ describe("CMS Schema Helpers", () => {
                 AND: [{ values: { name: "Keyboard" } }, { values: { price: 150 } }]
             });
         });
+
+        /**
+         * CVE proof: second-order prototype pollution via inherited builtins.
+         *
+         * A fresh `{}` inherits Object.prototype methods (toString, hasOwnProperty, valueOf).
+         * When the dot-notation key head matches one of these inherited names, the
+         * `result[head] === undefined` guard sees a function (not undefined) and skips
+         * creating a fresh own object. `nested` then becomes the real shared builtin,
+         * and `Object.assign(nested, ...)` overwrites its properties process-wide.
+         *
+         * This is a second-order prototype pollution: no `__proto__`, `constructor`, or
+         * `prototype` key is used, so classic 3-key blocklists do not catch it.
+         *
+         * IMPORTANT: each test must restore the corrupted builtin BEFORE calling expect(),
+         * because vitest internals use Object.prototype.toString.call() and will hang/crash
+         * if it's corrupted when expect() runs.
+         */
+        describe("second-order prototype pollution via inherited builtins", () => {
+            it("should not corrupt Object.prototype.toString via 'toString.call' key", () => {
+                const originalCall = Object.prototype.toString.call;
+
+                transformWhereToNested({ "toString.call": "pwned" });
+
+                // Capture corruption state BEFORE restoring.
+                const callType = typeof Object.prototype.toString.call;
+
+                // Restore IMMEDIATELY — before expect() triggers vitest internals.
+                Object.prototype.toString.call = originalCall;
+
+                // Now safe to assert.
+                expect(callType).toBe("function");
+            });
+
+            it("should not corrupt Object.prototype.hasOwnProperty via 'hasOwnProperty.call' key", () => {
+                const originalCall = Object.prototype.hasOwnProperty.call;
+
+                transformWhereToNested({ "hasOwnProperty.call": "pwned" });
+
+                const callType = typeof Object.prototype.hasOwnProperty.call;
+                Object.prototype.hasOwnProperty.call = originalCall;
+
+                expect(callType).toBe("function");
+            });
+
+            it("should not corrupt Object.prototype.valueOf via 'valueOf.bind' key", () => {
+                const originalBind = Object.prototype.valueOf.bind;
+
+                transformWhereToNested({ "valueOf.bind": "pwned" });
+
+                const bindType = typeof Object.prototype.valueOf.bind;
+                Object.prototype.valueOf.bind = originalBind;
+
+                expect(bindType).toBe("function");
+            });
+
+            it("should produce correct nested output for builtin-named head keys", () => {
+                const originalCall = Object.prototype.toString.call;
+
+                const result = transformWhereToNested({ "toString.call": "x" });
+
+                // Capture what we need before restoring.
+                const hasOwnToString = Object.prototype.hasOwnProperty.call(result, "toString");
+                const toStringType = typeof result!.toString;
+
+                Object.prototype.toString.call = originalCall;
+
+                // Result must have its own 'toString' property (a plain object, not inherited fn).
+                expect(hasOwnToString).toBe(true);
+                expect(toStringType).toBe("object");
+            });
+
+            it("should merge multiple dotted keys under a builtin-named head", () => {
+                const result = transformWhereToNested({
+                    "toString.a": 1,
+                    "toString.b": 2
+                });
+
+                expect(result).toEqual({ toString: { a: 1, b: 2 } });
+            });
+        });
+
+        describe("forbidden keys", () => {
+            it("should throw on __proto__ as top-level key", () => {
+                const input = Object.fromEntries([["__proto__", "x"]]);
+                expect(() => transformWhereToNested(input)).toThrow(
+                    'Invalid where key: "__proto__".'
+                );
+            });
+
+            it("should throw on constructor as top-level key", () => {
+                expect(() => transformWhereToNested({ constructor: "x" })).toThrow(
+                    'Invalid where key: "constructor".'
+                );
+            });
+
+            it("should throw on prototype as top-level key", () => {
+                expect(() => transformWhereToNested({ prototype: "x" })).toThrow(
+                    'Invalid where key: "prototype".'
+                );
+            });
+
+            it("should throw on __proto__ as dotted head segment", () => {
+                expect(() => transformWhereToNested({ "__proto__.polluted": "x" })).toThrow(
+                    'Invalid where key: "__proto__".'
+                );
+            });
+
+            it("should throw on constructor as dotted head segment", () => {
+                expect(() => transformWhereToNested({ "constructor.polluted": "x" })).toThrow(
+                    'Invalid where key: "constructor".'
+                );
+            });
+
+            it("should throw on __proto__ in nested tail segment", () => {
+                expect(() => transformWhereToNested({ "a.__proto__": "x" })).toThrow(
+                    'Invalid where key: "__proto__".'
+                );
+            });
+
+            it("should throw on constructor in deep tail segment", () => {
+                expect(() => transformWhereToNested({ "a.constructor.b": "x" })).toThrow(
+                    'Invalid where key: "constructor".'
+                );
+            });
+        });
     });
 });

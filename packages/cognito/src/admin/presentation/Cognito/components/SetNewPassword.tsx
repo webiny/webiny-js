@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Grid, Input, Alert } from "@webiny/admin-ui";
+import { makeDecoratable } from "@webiny/app-admin";
 import { Form, Bind, useForm } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { View } from "./View.js";
@@ -13,72 +14,78 @@ export interface SetNewPasswordProps {
     onCancel: () => void;
 }
 
-export const SetNewPassword = (props: SetNewPasswordProps) => {
-    const { vm, onSetNewPassword, onCancel } = props;
-    const passwordValidator = usePasswordValidator();
+export const SetNewPassword = makeDecoratable(
+    "CognitoSetNewPassword",
+    (props: SetNewPasswordProps) => {
+        const { vm, onSetNewPassword, onCancel } = props;
+        const passwordValidator = usePasswordValidator();
 
-    return (
-        <View.Container>
-            <Form
-                onSubmit={(data: any) => onSetNewPassword(data.code, data.password)}
-                submitOnEnter
-            >
-                {({ submit }) => (
-                    <View.Content>
-                        <View.Title title={"Set new password"} />
+        return (
+            <View.Container>
+                <Form
+                    onSubmit={(data: any) => onSetNewPassword(data.code, data.password)}
+                    submitOnEnter
+                >
+                    {({ submit }) => (
+                        <View.Content>
+                            <View.Title title={"Set new password"} />
 
-                        {vm.message && (
-                            <div className={"mb-lg"}>
-                                <Alert title={vm.message.title} type={vm.message.type}>
-                                    {vm.message.text}
-                                </Alert>
-                            </div>
-                        )}
-
-                        <Grid>
-                            <Grid.Column span={12}>
-                                <Bind name="code" validators={validation.create("required")}>
-                                    <Input
-                                        label={"Verification Code"}
-                                        description={"Enter the code we sent to your email."}
-                                        autoComplete={"new-password"}
-                                    />
-                                </Bind>
-                            </Grid.Column>
-                            <Grid.Column span={12}>
-                                <Bind
-                                    name="password"
-                                    validators={[validation.create("required"), passwordValidator]}
-                                >
-                                    <Input
-                                        type={"password"}
-                                        label={"New Password"}
-                                        description={"Enter your new password."}
-                                        autoComplete={"new-password"}
-                                    />
-                                </Bind>
-                            </Grid.Column>
-                            <Grid.Column span={12}>
-                                <RetypePassword />
-                            </Grid.Column>
-                            <Grid.Column span={12}>
-                                <div className={"flex items-center justify-between"}>
-                                    <FooterSignIn onSignIn={onCancel} />
-                                    <Button
-                                        text={"Reset Password"}
-                                        onClick={submit}
-                                        containerClassName={"ml-auto"}
-                                        disabled={vm.isLoading}
-                                    />
+                            {vm.message && (
+                                <div className={"mb-lg"}>
+                                    <Alert title={vm.message.title} type={vm.message.type}>
+                                        {vm.message.text}
+                                    </Alert>
                                 </div>
-                            </Grid.Column>
-                        </Grid>
-                    </View.Content>
-                )}
-            </Form>
-        </View.Container>
-    );
-};
+                            )}
+
+                            <Grid>
+                                <Grid.Column span={12}>
+                                    <Bind name="code" validators={validation.create("required")}>
+                                        <Input
+                                            label={"Verification Code"}
+                                            description={"Enter the code we sent to your email."}
+                                            autoComplete={"new-password"}
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <Bind
+                                        name="password"
+                                        validators={[
+                                            validation.create("required"),
+                                            passwordValidator
+                                        ]}
+                                    >
+                                        <Input
+                                            type={"password"}
+                                            label={"New Password"}
+                                            description={"Enter your new password."}
+                                            autoComplete={"new-password"}
+                                        />
+                                    </Bind>
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <RetypePassword />
+                                </Grid.Column>
+                                <Grid.Column span={12}>
+                                    <div className={"flex items-center justify-between"}>
+                                        <FooterSignIn onSignIn={onCancel} />
+                                        <Button
+                                            text={"Reset Password"}
+                                            onClick={submit}
+                                            containerClassName={"ml-auto"}
+                                            disabled={vm.isLoading}
+                                        />
+                                    </div>
+                                </Grid.Column>
+                            </Grid>
+                        </View.Content>
+                    )}
+                </Form>
+            </View.Container>
+        );
+    }
+);
 
 const RetypePassword = () => {
     const form = useForm();

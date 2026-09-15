@@ -1,3 +1,4 @@
+import { ACTION } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 import {
     createGlobalBuildCacheSteps,
@@ -38,7 +39,7 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
                     ? [
                           {
                               name: "Upload build cache artifact",
-                              uses: "actions/upload-artifact@v6",
+                              uses: ACTION.uploadArtifactV6,
                               with: {
                                   name: "build-cache",
                                   "retention-days": 1,
@@ -48,7 +49,7 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
                           },
                           {
                               name: "Upload yarn cache artifact",
-                              uses: "actions/upload-artifact@v6",
+                              uses: ACTION.uploadArtifactV6,
                               with: {
                                   name: "yarn-cache",
                                   "retention-days": 1,
@@ -58,7 +59,7 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
                           },
                           {
                               name: "Upload packages artifact",
-                              uses: "actions/upload-artifact@v6",
+                              uses: ACTION.uploadArtifactV6,
                               with: {
                                   name: "packages",
                                   "retention-days": 1,

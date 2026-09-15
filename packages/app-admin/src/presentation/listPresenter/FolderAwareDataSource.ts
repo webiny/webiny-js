@@ -34,7 +34,10 @@ export abstract class FolderAwareDataSource<TRow> implements IDataSource<TRow> {
 
     constructor(config: FolderAwareDataSourceConfig<TRow>) {
         this._locationField = config.locationField ?? "location";
-        this._registeredFilterNames = new Set(config.registeredFilterNames ?? []);
+        this._registeredFilterNames = new Set([
+            ...(config.registeredFilterNames ?? []),
+            ...Object.keys(config.localFilters ?? {})
+        ]);
         this._getDescendantFolders = config.getDescendantFolders;
         this._keyField = config.keyField;
 

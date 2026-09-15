@@ -23,7 +23,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                     slug: fields.text().renderer("textInput").label("Slug").help("Page slug."),
                     content: fields
                         .dynamicZone()
-                        .renderer("dynamicZone")
+                        .renderer("dynamicZone", {})
                         .label("Content")
                         .list()
                         .listMinLength(1, "You must create at least 1 entries.")
@@ -32,6 +32,7 @@ class ArticleModelImpl implements ModelFactory.Interface {
                             gqlTypeName: "Hero",
                             icon: { type: "icon", name: "fas/grin-alt" },
                             description: "Hero banner",
+                            componentName: "Article/Hero",
                             fields: f => ({
                                 title: f.text().renderer("textInput").label("Title"),
                                 subtitle: f.text().renderer("textInput").label("Subtitle"),
@@ -116,6 +117,11 @@ class ArticleModelImpl implements ModelFactory.Interface {
                 .descriptionFieldId("description")
                 .singularApiName("Article")
                 .pluralApiName("Articles")
+                .settings({
+                    aiEntryWizard: true,
+                    previewSlug: "{values.slug}",
+                    previewPrefix: "https://learn-webiny-nextjs-app.localhost/articles"
+                })
         ];
     }
 }

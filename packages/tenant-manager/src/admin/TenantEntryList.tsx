@@ -62,6 +62,7 @@ export const TenantEntryList = () => {
         <>
             <DeleteActionDecorator />
             <ContentEntryListConfig>
+                <Browser.BreadcrumbRoot label={"Tenant Manager"} modelIds={[TENANT_MODEL_ID]} />
                 <Browser.Table.Column
                     hideable={false}
                     name={"name"}

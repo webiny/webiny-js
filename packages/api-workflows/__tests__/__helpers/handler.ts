@@ -1,7 +1,6 @@
 import { createCmsTestHandler } from "@webiny/api-headless-cms-testing";
 import type { CmsTestHandlerParams } from "@webiny/api-headless-cms-testing";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/api-core-testing";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
 import { WorkflowsFeature } from "~/WorkflowsFeature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
@@ -87,15 +86,10 @@ export const createContextHandler = async (params: CmsTestHandlerParams = {}) =>
         ...params,
         setup: container => {
             WorkflowsFeature.register(container);
-            // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
-            // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
-            // registered after WorkflowsFeature, so it runs after WorkflowsInitializer and can wrap
-            // the (now-registered) GetUserTeamsUseCase with the test mock.
-            container.registerInstance(RequestContextInitializer, {
-                async init(ctx: Record<string, any>) {
-                    ctx.container.registerDecorator(GetUserTeamsTestMock);
-                }
-            });
+            // GetUserTeamsUseCase is registered synchronously by WorkflowsFeature, so the mock
+            // decorator can simply be registered after it — no per-request hook needed to wait for
+            // the use case to appear.
+            container.registerDecorator(GetUserTeamsTestMock);
         },
         permissions: [
             {
@@ -125,15 +119,10 @@ export const createGraphQLHandler = (params: CmsTestHandlerParams = {}) => {
         ...params,
         setup: container => {
             WorkflowsFeature.register(container);
-            // GetUserTeamsUseCase is registered inside WorkflowsInitializer.init() (post-auth), so
-            // the mock decorator must be applied AFTER that runs. This RequestContextInitializer is
-            // registered after WorkflowsFeature, so it runs after WorkflowsInitializer and can wrap
-            // the (now-registered) GetUserTeamsUseCase with the test mock.
-            container.registerInstance(RequestContextInitializer, {
-                async init(ctx: Record<string, any>) {
-                    ctx.container.registerDecorator(GetUserTeamsTestMock);
-                }
-            });
+            // GetUserTeamsUseCase is registered synchronously by WorkflowsFeature, so the mock
+            // decorator can simply be registered after it — no per-request hook needed to wait for
+            // the use case to appear.
+            container.registerDecorator(GetUserTeamsTestMock);
         },
         permissions: [
             {

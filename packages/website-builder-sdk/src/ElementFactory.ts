@@ -117,15 +117,19 @@ export class ElementFactory {
             defaultOperations.addToParent(element, index)
         ];
 
+        const baseStyles = bindings?.styles ?? componentManifest.defaults?.styles ?? {};
+        const resolvedStyles =
+            componentManifest.applyDefaultStyles === false
+                ? baseStyles
+                : withDefaultStyles(baseStyles);
+
         documentOps.push(
             ...this.generateOperations({
                 element,
                 inputsAst,
                 bindings: {
                     inputs: bindings?.inputs ?? componentManifest.defaults?.inputs ?? {},
-                    styles: withDefaultStyles(
-                        bindings?.styles ?? componentManifest.defaults?.styles ?? {}
-                    ),
+                    styles: resolvedStyles,
                     overrides: bindings?.overrides ?? {}
                 },
                 operations: defaultOperations

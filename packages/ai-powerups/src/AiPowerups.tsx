@@ -1,15 +1,15 @@
 import React from "react";
 import { Api, Admin } from "@webiny/project-aws";
-import { Wcp } from "@webiny/project";
+import { FeatureFlag } from "@webiny/project";
 
 export const AiPowerups = () => {
     return (
-        <Wcp.CanUseMultiTenancy>
+        <FeatureFlag.CanUseAiPowerups>
             {/* Api extensions */}
             <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
 
             {/* Admin extensions */}
             <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
-        </Wcp.CanUseMultiTenancy>
+        </FeatureFlag.CanUseAiPowerups>
     );
 };

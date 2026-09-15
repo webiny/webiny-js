@@ -49,6 +49,11 @@ export interface ITaskManagerStoreParams {
     task: ITask;
     log: ITaskLog;
     databaseLogs: boolean;
+    /**
+     * Supplied by the caller rather than pulled from `context.container`, so the store's one real
+     * collaborator is visible in its signature and a test can substitute it.
+     */
+    tasksCrud: TasksCrud.Interface;
 }
 
 export class TaskManagerStore<
@@ -56,6 +61,7 @@ export class TaskManagerStore<
     O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > implements ITaskManagerStorePrivate<T, O> {
     private readonly context: TaskManagerStoreContext;
+    private readonly tasksCrud: TasksCrud.Interface;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
     private readonly databaseLogs: boolean;
@@ -65,6 +71,7 @@ export class TaskManagerStore<
 
     public constructor(params: ITaskManagerStoreParams) {
         this.context = params.context;
+        this.tasksCrud = params.tasksCrud;
         this.task = params.task as ITask<T, O>;
         this.taskLog = params.log;
         this.databaseLogs = params.databaseLogs === true;
@@ -88,7 +95,7 @@ export class TaskManagerStore<
         if (definitionId) {
             where.definitionId = definitionId;
         }
-        const result = await this.context.container.resolve(TasksCrud).listTasks<I, O>({
+        const result = await this.tasksCrud.listTasks<I, O>({
             where,
             sort: ["createdOn_ASC"],
             limit: 1000000
@@ -223,7 +230,7 @@ export class TaskManagerStore<
         /**
          * Update both task and the log, if anything to update.
          */
-        const tasksCrud = this.context.container.resolve(TasksCrud);
+        const tasksCrud = this.tasksCrud;
         if (this.taskUpdater.isDirty()) {
             this.task = await tasksCrud.updateTask<T, O>(this.task.id, this.taskUpdater.fetch());
         }

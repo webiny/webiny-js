@@ -2,10 +2,19 @@ import { afterAll, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/graphql/handler";
 import type { CmsContext } from "~/types";
 import type { CmsGroup, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
-import { configurations } from "@webiny/api-headless-cms-utils-os/configurations";
+import { getOpenSearchIndexPrefix, isSharedOpenSearchIndex } from "@webiny/api-opensearch";
 import { createMappingsSnapshot } from "./mocks/mappingsSnapshot";
 import { CreateGroupUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/index.js";
 import { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
+
+const getEsIndex = (model: { tenant: string; modelId: string }) => {
+    const shared = isSharedOpenSearchIndex();
+    const index = [shared ? "root" : model.tenant, "headless-cms", model.modelId]
+        .join("-")
+        .toLowerCase();
+    const prefix = getOpenSearchIndexPrefix();
+    return { index: prefix ? prefix + index : index };
+};
 
 const setupGroup = async (context: CmsContext) => {
     const result = await context.container.resolve(CreateGroupUseCase).execute({
@@ -44,11 +53,9 @@ const createModelData = (group: CmsGroup): CmsModelCreateInput => {
 describe("create index", () => {
     afterAll(async () => {
         const { elasticsearch } = useHandler();
-        const { index } = configurations.es({
-            model: {
-                modelId: modelData.modelId,
-                tenant: "root"
-            }
+        const { index } = getEsIndex({
+            modelId: modelData.modelId,
+            tenant: "root"
         });
         try {
             await elasticsearch.indices.delete({
@@ -71,7 +78,7 @@ describe("create index", () => {
         }
         const model = modelResult.value;
 
-        const { index } = configurations.es({ model });
+        const { index } = getEsIndex(model);
 
         const mapping = await elasticsearch.indices.getMapping({
             index

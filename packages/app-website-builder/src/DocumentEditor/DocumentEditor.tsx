@@ -19,25 +19,45 @@ export function useDocumentEditor<TDocument extends EditorDocument>() {
     return context as Editor<TDocument>;
 }
 
-interface DocumentEditorProps<TDocument> {
-    document: TDocument;
+interface DocumentEditorBaseProps {
     name: string;
     children?: React.ReactNode;
-    // Required for now. When use case with possibly not read-only arises, put it to optional.
-    readOnly: boolean;
 }
 
+interface DocumentEditorWithDocument<TDocument> extends DocumentEditorBaseProps {
+    document: TDocument;
+    readOnly: boolean;
+    editor?: never;
+}
+
+interface DocumentEditorWithEditor extends DocumentEditorBaseProps {
+    editor: Editor<any>;
+    document?: never;
+    readOnly?: never;
+}
+
+type DocumentEditorProps<TDocument = any> =
+    | DocumentEditorWithDocument<TDocument>
+    | DocumentEditorWithEditor;
+
 function BaseDocumentEditor<TDocument extends EditorDocument>({
-    document,
     name,
     children,
-    readOnly
+    ...props
 }: DocumentEditorProps<TDocument>) {
-    const editor = useMemo(() => {
-        return new Editor<TDocument>(document, {
-            isReadOnly: readOnly
+    const internalEditor = useMemo(() => {
+        if ("editor" in props && props.editor) {
+            return null;
+        }
+        return new Editor<TDocument>(props.document!, {
+            isReadOnly: props.readOnly!
         });
-    }, [document, readOnly]);
+    }, [
+        "editor" in props ? props.editor : props.document,
+        "editor" in props ? null : props.readOnly
+    ]);
+
+    const editor = "editor" in props && props.editor ? props.editor : internalEditor!;
 
     return (
         <DndProvider backend={HTML5Backend}>

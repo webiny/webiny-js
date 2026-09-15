@@ -4,7 +4,8 @@
   "references": [
     { "path": "../api-audit-logs" },
     { "path": "../api-core-sql" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../api-core" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -18,7 +19,9 @@
       "@webiny/api-core-sql/*": ["../api-core-sql/src/*"],
       "@webiny/api-core-sql": ["../api-core-sql/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
     }
   }
 }

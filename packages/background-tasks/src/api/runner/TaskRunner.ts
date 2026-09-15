@@ -6,6 +6,13 @@ import { TaskControl } from "./TaskControl.js";
 import type { IResponseResult } from "~/api/response/abstractions/index.js";
 import { getErrorProperties } from "~/api/utils/getErrorProperties.js";
 import type { Timer } from "~/api/abstractions/Timer.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TaskExecutionContext } from "~/api/features/TaskExecutionContext/index.js";
+import { TasksCrud } from "~/api/TasksCrud.js";
+import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
+import type { ITaskControlDependencies } from "./TaskControl.js";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
@@ -64,18 +71,34 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             });
         }
 
-        const control = new TaskControl(this, response, this.context);
+        // Resolved here, where the control's collaborators are assembled. TaskControl is built
+        // by hand rather than by DI, so this is the one place that knows how to satisfy it; doing
+        // it inside TaskControl's methods instead would leave the class with dependencies nothing
+        // reading its signature can see, and nothing in a test can substitute.
+        const container = this.context.container;
+        const deps: ITaskControlDependencies = {
+            logger: container.resolve(Logger),
+            identityContext: container.resolve(IdentityContext),
+            taskExecutionContext: container.resolve(TaskExecutionContext),
+            tasksCrud: container.resolve(TasksCrud),
+            taskController: container.resolve(TaskController),
+            getTaskDefinition: container.resolve(GetTaskDefinitionUseCase)
+        };
+        const logger = deps.logger;
+        const control = new TaskControl(this, response, this.context, deps);
 
         try {
             const result = await control.run(event);
             if (result instanceof ResponseErrorResult === false) {
                 return result;
             }
-            console.error(result);
+            logger.error({ taskId: event.webinyTaskId, result }, "Task returned an error result.");
             return result;
         } catch (ex) {
-            console.error(`Failed to execute task "${event.webinyTaskId}".`);
-            console.error(ex);
+            logger.error(
+                { error: getErrorProperties(ex), taskId: event.webinyTaskId },
+                "Failed to execute task."
+            );
             return response.error({
                 error: getErrorProperties(ex)
             });

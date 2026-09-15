@@ -4,7 +4,8 @@
   "references": [
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -18,7 +19,9 @@
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
     }
   }
 }

@@ -8,7 +8,7 @@ import { AuthorizationContext } from "../authorization/AuthorizationContext/inde
 import { filterOutCustomWbyAppsPermissions } from "../utils/filterOutCustomWbyAppsPermissions.js";
 import type { SecurityPermission } from "~/types/security.js";
 import type { AaclPermission } from "../../wcp/WcpContext/types.js";
-import { WcpContext } from "../../wcp/WcpContext/index.js";
+import { FeatureFlags } from "../../featureFlags/abstractions.js";
 
 const identityStorage = new AsyncLocalStorage<Identity | undefined>();
 
@@ -17,7 +17,7 @@ class IdentityContextImpl implements Abstraction.Interface {
 
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
-        private wcpContext: WcpContext.Interface
+        private featureFlags: FeatureFlags.Interface
     ) {}
 
     // ========================================================================
@@ -118,8 +118,8 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     private applyAaclLogic(permissions: SecurityPermission[]): SecurityPermission[] {
-        const aaclEnabled = this.wcpContext.canUseAacl();
-        const teamsEnabled = this.wcpContext.canUseTeams();
+        const aaclEnabled = this.featureFlags.get().isEnabled("advancedAccessControlLayer");
+        const teamsEnabled = this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams");
 
         if (aaclEnabled) {
             // Add AACL metadata permission
@@ -140,5 +140,5 @@ class IdentityContextImpl implements Abstraction.Interface {
 export const IdentityContext = createImplementation({
     abstraction: Abstraction,
     implementation: IdentityContextImpl,
-    dependencies: [AuthorizationContext, WcpContext]
+    dependencies: [AuthorizationContext, FeatureFlags]
 });

@@ -32,7 +32,8 @@ const AccordionTrigger = () => {
         icon,
         interactive = true,
         locked,
-        draggable
+        draggable,
+        dragHandleRef
     } = useAccordionItemProps();
 
     const accordionProps = useAccordionProps();
@@ -68,7 +69,7 @@ const AccordionTrigger = () => {
                     interactive ? "cursor-pointer" : "cursor-default"
                 )}
             >
-                {draggable ? <AccordionItemDragHandle /> : null}
+                {draggable ? <AccordionItemDragHandle dragHandleRef={dragHandleRef} /> : null}
                 {colorMark && (
                     <div
                         style={{ backgroundColor: colorMark }}

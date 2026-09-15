@@ -73,6 +73,32 @@ Resources:
               - cloudfront:UpdateCloudFrontOriginAccessIdentity
               - cloudfront:DeleteCloudFrontOriginAccessIdentity
 
+          # Origin access control (OAC) is what lets CloudFront sign its requests to the streaming
+          # GraphQL Lambda Function URL, so that URL can stay on AWS_IAM authorization instead of
+          # being reachable from the internet. Note that this is a separate, newer concept from the
+          # origin access identity above, which is S3-only.
+          # Like origin access identities, OACs cannot be tagged, so there's no tag condition here.
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:origin-access-control/*
+            Action:
+              - cloudfront:CreateOriginAccessControl
+              - cloudfront:GetOriginAccessControl
+              - cloudfront:GetOriginAccessControlConfig
+              - cloudfront:UpdateOriginAccessControl
+              - cloudfront:DeleteOriginAccessControl
+
+          # The streaming cache behavior forwards headers and cookies via an origin request policy
+          # instead of the legacy (and deprecated) `forwardedValues` the other behaviors use.
+          # Origin request policies cannot be tagged either.
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:origin-request-policy/*
+            Action:
+              - cloudfront:CreateOriginRequestPolicy
+              - cloudfront:GetOriginRequestPolicy
+              - cloudfront:GetOriginRequestPolicyConfig
+              - cloudfront:UpdateOriginRequestPolicy
+              - cloudfront:DeleteOriginRequestPolicy
+
           # Amazon API Gateway
           - Effect: Allow
             Action:
@@ -317,6 +343,12 @@ Resources:
               - lambda:ListAliases
               # For deploying Lambda@Edge.
               - lambda:EnableReplication
+              # The streaming GraphQL function is reached through a Lambda Function URL, because
+              # Amazon API Gateway buffers the whole response and so cannot stream at all.
+              - lambda:CreateFunctionUrlConfig
+              - lambda:GetFunctionUrlConfig
+              - lambda:UpdateFunctionUrlConfig
+              - lambda:DeleteFunctionUrlConfig
             Resource:
               - arn:aws:lambda:*:*:function:wby-*
 
@@ -460,6 +492,11 @@ Resources:
               # arn:aws:ec2:*:*:route-table/*
               - ec2:CreateRouteTable
 
+              # arn:aws:ec2:*:*:vpc-endpoint/*
+              # Only used with the `useVpcEndpoints` VPC option, which keeps traffic to S3,
+              # DynamoDB, Amazon SQS, and Amazon EventBridge inside the VPC.
+              - ec2:CreateVpcEndpoint
+
           # Besides the above ec2 permissions, we also need this:
           - Effect: Allow
 
@@ -468,6 +505,7 @@ Resources:
             Resource: "*"
             Action:
               - ec2:DescribeAddressesAttribute
+              - ec2:DescribeVpcEndpoints
 
           - Effect: Allow
             # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.
@@ -483,6 +521,10 @@ Resources:
               - ec2:DeleteVpc
               - ec2:DescribeVpcAttribute
               - ec2:AttachInternetGateway
+
+              # Interface endpoints resolve via private DNS, which requires both DNS support and
+              # DNS hostnames on the VPC. Enabling them is a modify on the VPC itself.
+              - ec2:ModifyVpcAttribute
 
               # arn:aws:ec2:*:*:subnet/*
               - ec2:CreateNatGateway
@@ -505,6 +547,10 @@ Resources:
               # arn:aws:ec2:*:*:route-table/*
               - ec2:CreateRoute
               - ec2:DeleteRouteTable
+
+              # arn:aws:ec2:*:*:vpc-endpoint/*
+              - ec2:ModifyVpcEndpoint
+              - ec2:DeleteVpcEndpoints
 
           - Effect: Allow
             # Could not use tags.
@@ -543,6 +589,26 @@ Resources:
               - guardduty:GetMalwareProtectionPlan
               - guardduty:DeleteMalwareProtectionPlan
               - guardduty:UpdateMalwareProtectionPlan
+
+          # GuardDuty Malware Protection creates an AWS-managed EventBridge rule
+          # (named "DO-NOT-DELETE-AmazonGuardDutyMalwareProtection*") to route S3
+          # events to GuardDuty. Without these permissions, creating/deleting a
+          # Malware Protection Plan fails with:
+          # > BadRequestException: The request was rejected because the pass role
+          # > does not have the required EventBridge permissions.
+          # The events:ManagedBy condition scopes this to GuardDuty-managed rules only.
+          - Effect: Allow
+            Resource: "arn:aws:events:*:*:rule/DO-NOT-DELETE-AmazonGuardDutyMalwareProtection*"
+            Action:
+              - events:PutRule
+              - events:DeleteRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:DescribeRule
+              - events:ListTargetsByRule
+            Condition:
+              StringEquals:
+                "events:ManagedBy": "malware-protection-plan.guardduty.amazonaws.com"
 
           # IoT
           - Effect: Allow

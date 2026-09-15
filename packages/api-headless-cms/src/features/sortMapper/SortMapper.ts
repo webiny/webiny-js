@@ -20,9 +20,13 @@ class SortImpl implements CmsSortMapper.Interface {
             return field.fieldId;
         });
 
+        /*
+         * `mapSort` has already stripped the direction, so what arrives here is a bare fieldId and
+         * is compared whole. Taking the segment before the first `_` would fail every fieldId that
+         * contains one: `on_sale` would be looked up as `on`.
+         */
         const isField = (key: string): boolean => {
-            const field = key.split("_")[0];
-            return fields.includes(field);
+            return fields.includes(key);
         };
 
         return this.mapSort({
@@ -36,7 +40,9 @@ class SortImpl implements CmsSortMapper.Interface {
 
         return input
             .map(sort => {
-                const match = sort.match(/^(values_)?([a-zA-Z][a-zA-Z0-9]*)_(ASC|DESC)$/);
+                // `_` is allowed inside the fieldId: excluding it made `on_sale_DESC` unmatchable,
+                // and an unmatched directive is dropped from the sort entirely.
+                const match = sort.match(/^(values_)?([a-zA-Z][a-zA-Z0-9_]*)_(ASC|DESC)$/);
                 if (!match) {
                     return null;
                 }

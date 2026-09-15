@@ -1,37 +1,14 @@
-import { describe, it, expect, vi } from "vitest";
-import { GenericRecord } from "@webiny/api/types";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { mockClient } from "aws-sdk-client-mock";
+import {
+    ApiGatewayManagementApiClient,
+    PostToConnectionCommand,
+    DeleteConnectionCommand
+} from "@webiny/aws-sdk/client-apigatewaymanagementapi/index.js";
+import type { GenericRecord } from "@webiny/api/types";
+import { AwsWebsocketsTransport } from "~/transport/AwsWebsocketsTransport.js";
 
-vi.mock("@webiny/aws-sdk/client-apigatewaymanagementapi", () => {
-    return {
-        ApiGatewayManagementApiClient: class ApiGatewayManagementApiClient {
-            async send(cmd: any) {
-                const name = cmd.constructor.name;
-
-                if (name === "PostToConnectionCommand") {
-                    throw new Error("Some error occurred while sending message.");
-                } else if (name === "DeleteConnectionCommand") {
-                    throw new Error("Some error occurred while disconnecting.");
-                }
-
-                throw new Error("This error should not happen.");
-            }
-        },
-        PostToConnectionCommand: class PostToConnectionCommand {
-            public readonly input: any;
-
-            constructor(input: any) {
-                this.input = input;
-            }
-        },
-        DeleteConnectionCommand: class DeleteConnectionCommand {
-            public readonly input: any;
-
-            constructor(input: any) {
-                this.input = input;
-            }
-        }
-    };
-});
+const apiGwMock = mockClient(ApiGatewayManagementApiClient);
 
 interface ConsoleLogs {
     error: string[];
@@ -39,13 +16,20 @@ interface ConsoleLogs {
 }
 
 describe("AwsWebsocketsTransport", () => {
+    beforeEach(() => {
+        apiGwMock.reset();
+    });
+
     it("should log an error when trying to send a message", async () => {
+        apiGwMock
+            .on(PostToConnectionCommand)
+            .rejects(new Error("Some error occurred while sending message."));
+
         const consoleLogs: ConsoleLogs = {
             error: [],
             log: []
         };
 
-        const { AwsWebsocketsTransport } = await import("~/transport/AwsWebsocketsTransport.js");
         const transport = new AwsWebsocketsTransport();
 
         vi.spyOn(console, "error").mockImplementation((error: string) => {
@@ -75,12 +59,15 @@ describe("AwsWebsocketsTransport", () => {
     });
 
     it("should log an error when trying to disconnect a connection", async () => {
+        apiGwMock
+            .on(DeleteConnectionCommand)
+            .rejects(new Error("Some error occurred while disconnecting."));
+
         const consoleLogs: ConsoleLogs = {
             error: [],
             log: []
         };
 
-        const { AwsWebsocketsTransport } = await import("~/transport/AwsWebsocketsTransport.js");
         const transport = new AwsWebsocketsTransport();
 
         vi.spyOn(console, "error").mockImplementation((error: string) => {

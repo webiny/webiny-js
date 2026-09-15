@@ -1,6 +1,7 @@
 import type { CmsIdentity } from "./identity.js";
 import type { CmsModelField, CmsModelFieldInput, FieldRule } from "./modelField.js";
 import type { CmsIcon } from "~/types/types.js";
+import type { IModelSettings } from "~/features/modelBuilder/abstractions.js";
 
 export interface CmsTabLayoutTab {
     id: string;
@@ -153,6 +154,11 @@ export interface CmsModel {
      * Is this model created via plugin?
      */
     isPlugin?: boolean;
+
+    /**
+     * Arbitrary model-level settings (e.g., feature flags).
+     */
+    settings?: IModelSettings | null;
 }
 
 export interface StorageCmsModelFields {
@@ -227,6 +233,7 @@ export interface CmsModelCreateInput {
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
     icon?: CmsIcon | null;
+    settings?: IModelSettings | null;
 }
 
 /**

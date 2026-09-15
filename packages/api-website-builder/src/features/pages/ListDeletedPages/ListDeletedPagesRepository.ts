@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { ListDeletedPagesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { ListDeletedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PagePersistenceError } from "~/domain/page/errors.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
@@ -9,20 +9,21 @@ import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abst
 
 class ListDeletedPagesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private pageModel: PageModel.Interface,
+        private pageModelProvider: PageModelProvider.Interface,
         private listDeletedEntries: ListDeletedEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface,
         private sortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.listDeletedEntries.execute(this.pageModel, {
+        const pageModel = await this.pageModelProvider.get();
+        const result = await this.listDeletedEntries.execute(pageModel, {
             where: this.whereMapper.map({
-                fields: this.pageModel.fields,
+                fields: pageModel.fields,
                 input: params.where
             }),
             sort: this.sortMapper.map({
-                fields: this.pageModel.fields,
+                fields: pageModel.fields,
                 input: params.sort
             }),
             limit: params.limit,
@@ -43,5 +44,5 @@ class ListDeletedPagesRepositoryImpl implements RepositoryAbstraction.Interface 
 
 export const ListDeletedPagesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListDeletedPagesRepositoryImpl,
-    dependencies: [PageModel, ListDeletedEntriesUseCase, CmsWhereMapper, CmsSortMapper]
+    dependencies: [PageModelProvider, ListDeletedEntriesUseCase, CmsWhereMapper, CmsSortMapper]
 });

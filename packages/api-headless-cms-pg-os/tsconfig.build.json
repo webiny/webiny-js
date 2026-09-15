@@ -16,6 +16,7 @@
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-sync-pg-to-opensearch/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -53,6 +54,8 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-sync-pg-to-opensearch/*": ["../api-sync-pg-to-opensearch/src/*"],
       "@webiny/api-sync-pg-to-opensearch": ["../api-sync-pg-to-opensearch/src"]
     }

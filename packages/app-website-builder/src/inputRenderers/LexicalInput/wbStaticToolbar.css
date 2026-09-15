@@ -1,11 +1,19 @@
+/*
+ * Mirrors @webiny/lexical-editor's StaticToolbar.css, scoped to `.wb-static-toolbar`.
+ * The dropdown menu (`.lexical-dropdown`) is styled by the shared file (always imported),
+ * so only the toolbar rules + website-builder-only bits live here.
+ */
 .wb-static-toolbar {
   display: flex;
   position: relative;
   padding: 4px;
   vertical-align: middle;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color-neutral-muted);
+  /* No divider between toolbar and body: the body carries the bottom border. */
+  border-bottom: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   will-change: transform;
-  background: #fff;
+  background: var(--color-neutral-base);
   flex-wrap: wrap;
   z-index: 1;
 }
@@ -13,8 +21,10 @@
 .wb-static-toolbar button.popup-item {
   border: 0;
   display: flex;
-  background: #fff;
-  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: var(--radius-md);
   padding: 8px;
   cursor: pointer;
   vertical-align: middle;
@@ -28,43 +38,33 @@
   margin-right: 2px;
 }
 
-.wb-static-toolbar button.popup-item i.format {
-  background-size: contain;
-  display: inline-block;
-  height: 18px;
-  width: 18px;
-  margin-top: 2px;
-  vertical-align: -0.25em;
+.wb-static-toolbar button.popup-item .format {
   display: flex;
-}
-
-.wb-static-toolbar button.popup-item:disabled i.format {
-  opacity: 0.2;
+  height: 16px;
+  width: 16px;
+  flex-shrink: 0;
 }
 
 .wb-static-toolbar button.popup-item.active {
-  background-color: rgba(223, 232, 250, 0.3);
-}
-
-.wb-static-toolbar button.popup-item.active i {
-  opacity: 1;
+  background-color: var(--color-primary-subtle);
 }
 
 .wb-static-toolbar .popup-item:hover:not([disabled]) {
-  background-color: #eee;
+  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
+  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
 }
 
 .wb-static-toolbar select.popup-item {
   border: 0;
   display: flex;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px;
   vertical-align: middle;
   -webkit-appearance: none;
   -moz-appearance: none;
   width: 70px;
   font-size: 14px;
-  color: #777;
+  color: var(--text-color-neutral-strong);
   text-overflow: ellipsis;
 }
 
@@ -76,12 +76,11 @@
 .wb-static-toolbar .popup-item .text {
   display: flex;
   line-height: 20px;
-  width: 200px;
+  width: 70px;
   vertical-align: middle;
   font-size: 14px;
-  color: #777;
+  color: var(--text-color-neutral-strong);
   text-overflow: ellipsis;
-  width: 70px;
   overflow: hidden;
   height: 20px;
   text-align: left;
@@ -89,25 +88,20 @@
 
 .wb-static-toolbar .popup-item .icon {
   display: flex;
-  width: 20px;
-  height: 20px;
-  user-select: none;
-  line-height: 16px;
-  background-size: contain;
-}
-
-.wb-static-toolbar i.chevron-down {
-  margin-top: 3px;
   width: 16px;
   height: 16px;
-  display: flex;
   user-select: none;
 }
 
-.wb-static-toolbar i.chevron-down.inside {
+.wb-static-toolbar .chevron-down {
   width: 16px;
   height: 16px;
   display: flex;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.wb-static-toolbar .chevron-down.inside {
   margin-left: -25px;
   margin-top: 11px;
   margin-right: 10px;
@@ -116,30 +110,20 @@
 
 .wb-static-toolbar .divider {
   width: 1px;
-  background-color: #eee;
+  background-color: var(--border-color-neutral-dimmed);
   margin: 0 4px;
-}
-
-.wb-static-toolbar .icon.bullet-list,
-.wb-static-toolbar .icon.bullet {
-  background-image: url("./icons/list-ul.svg");
-}
-
-.wb-static-toolbar .icon.numbered-list,
-.wb-static-toolbar .icon.number {
-  background-image: url("./icons/list-ol.svg");
 }
 
 .wb-static-toolbar .link-editor .button.active,
 .wb-static-toolbar .button.active {
-  background-color: rgb(223, 232, 250);
+  background-color: var(--color-primary-subtle);
 }
 
 .wb-static-toolbar button.toolbar-item {
   border: 0;
   display: flex;
   background: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px;
   cursor: pointer;
   vertical-align: middle;
@@ -156,33 +140,26 @@
   margin-right: 2px;
 }
 
-.wb-static-toolbar button.toolbar-item i.format {
-  background-size: contain;
-  display: inline-block;
-  height: 18px;
-  width: 18px;
-  vertical-align: -0.25em;
+.wb-static-toolbar button.toolbar-item .format {
   display: flex;
-  opacity: 0.6;
+  height: 16px;
+  width: 16px;
+  flex-shrink: 0;
 }
 
 .wb-static-toolbar button.toolbar-item:disabled .icon,
 .wb-static-toolbar button.toolbar-item:disabled .text,
-.wb-static-toolbar button.toolbar-item:disabled i.format,
 .wb-static-toolbar button.toolbar-item:disabled .chevron-down {
   opacity: 0.2;
 }
 
 .wb-static-toolbar button.toolbar-item.active {
-  background-color: rgba(223, 232, 250, 0.3);
-}
-
-.wb-static-toolbar button.toolbar-item.active i {
-  opacity: 1;
+  background-color: var(--color-primary-subtle);
 }
 
 .wb-static-toolbar .toolbar-item:hover:not([disabled]) {
-  background-color: #eee;
+  /* Matches admin-ui ghost IconButton hover (bg-neutral-dark/5). */
+  background-color: color-mix(in oklab, var(--color-neutral-dark) 5%, transparent);
 }
 
 .wb-static-toolbar .toolbar-item.font-family .text {
@@ -194,12 +171,20 @@
   width: 150px;
 }
 
+/* Fixed-width label so the trigger doesn't resize as the selected heading changes. */
+.wb-static-toolbar .block-type-dropdown .dropdown-button-text {
+  width: 92px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .wb-static-toolbar .toolbar-item .text {
   display: flex;
   line-height: 20px;
   vertical-align: middle;
   font-size: 14px;
-  color: #777;
+  color: var(--text-color-neutral-strong);
   text-overflow: ellipsis;
   overflow: hidden;
   height: 20px;
@@ -209,56 +194,40 @@
 
 .wb-static-toolbar .toolbar-item .icon {
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   user-select: none;
-  margin-right: 8px;
-  line-height: 16px;
+}
+
+/*
+ * Toolbar icons are inline SVGs from @webiny/icons (shared action components);
+ * color via `fill`.
+ */
+.wb-static-toolbar .format,
+.wb-static-toolbar .icon {
+  fill: var(--fill-neutral-xstrong);
+}
+
+.wb-static-toolbar .chevron-down {
+  fill: var(--fill-neutral-strong);
+}
+
+.wb-static-toolbar button:disabled .format,
+.wb-static-toolbar button:disabled .icon,
+.wb-static-toolbar button:disabled .chevron-down {
+  fill: var(--fill-neutral-disabled);
+}
+
+/* Website-builder-only: fullscreen/expand toggle (still a background-image glyph). */
+.wb-static-toolbar i.expand {
   background-size: contain;
-}
-
-.wb-static-toolbar i.chevron-down {
-  margin-top: 3px;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  user-select: none;
-}
-
-.wb-static-toolbar i.chevron-down.inside {
-  width: 16px;
-  height: 16px;
-  display: flex;
-  margin-left: -25px;
-  margin-top: 11px;
-  margin-right: 10px;
-  pointer-events: none;
-}
-
-.wb-static-toolbar .divider {
-  width: 1px;
-  background-color: #eee;
-  margin: 0 4px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("./icons/fullscreen.svg");
 }
 
 .lexical-dropdown-container {
   position: absolute;
   bottom: -5px;
   left: 0;
-}
-
-.wb-static-toolbar button.item i {
-  opacity: 0.6;
-}
-
-.wb-static-toolbar button.item.dropdown-item-active {
-  background-color: rgba(223, 232, 250, 0.3);
-}
-
-.wb-static-toolbar button.item.dropdown-item-active i {
-  opacity: 1;
-}
-
-.wb-static-toolbar i.expand {
-  background-image: url("./icons/fullscreen.svg");
 }

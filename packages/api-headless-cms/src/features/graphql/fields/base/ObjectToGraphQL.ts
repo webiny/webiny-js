@@ -144,13 +144,15 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
 
         const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
 
-        const typeResolvers = createFieldResolvers({
-            graphQLType: fieldType,
-            fields: field.settings.fields
-        });
+        const typeResolvers =
+            createFieldResolvers({
+                graphQLType: fieldType,
+                fields: field.settings.fields
+            }) || {};
+
         return {
             resolver: null,
-            typeResolvers: typeResolvers || {}
+            typeResolvers
         };
     }
 

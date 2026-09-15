@@ -25,6 +25,8 @@ export interface IFileDetailsPresenter {
     vm: IFileDetailsViewModel;
     loadFile(id: string): Promise<void>;
     saveFile(): Promise<boolean>;
+    /** Replace the currently displayed file (e.g. after an out-of-band update). */
+    setFile(file: FmFile): void;
 }
 
 export const FileDetailsPresenter =

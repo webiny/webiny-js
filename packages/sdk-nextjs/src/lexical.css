@@ -1,0 +1,379 @@
+.wb-lx-ltr {
+  text-align: inherit;
+}
+.wb-lx-rtl {
+  text-align: inherit;
+}
+.wb-lx-paragraph {
+}
+
+.wb-lx-quote {
+}
+
+.wb-lx-h1,
+.wb-lx-h2,
+.wb-lx-h3,
+.wb-lx-h4,
+.wb-lx-h5,
+.wb-lx-h6 {
+}
+
+.wb-lx-textBold {
+  font-weight: bold;
+}
+
+.wb-lx-textItalic {
+  font-style: italic;
+}
+.wb-lx-textUnderline {
+  text-decoration: underline;
+}
+.wb-lx-textStrikethrough {
+  text-decoration: line-through;
+}
+.wb-lx-textUnderlineStrikethrough {
+  text-decoration: underline line-through;
+}
+
+.wb-lx-textSubscript {
+  font-size: 0.8em;
+  vertical-align: sub !important;
+}
+
+.wb-lx-textSuperscript {
+  font-size: 0.8em;
+  vertical-align: super;
+}
+
+.wb-lx-textCode {
+  background-color: rgb(240, 242, 245);
+  padding: 1px 0.25rem;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 94%;
+}
+.wb-lx-hashtag {
+  background-color: rgba(88, 144, 255, 0.15);
+  border-bottom: 1px solid rgba(88, 144, 255, 0.3);
+}
+.wb-lx-link {
+  color: var(--wb-theme-color1);
+  text-decoration: none;
+  > * {
+    color: inherit !important;
+  }
+}
+.wb-lx-link:hover {
+  text-decoration: underline;
+}
+.wb-lx-code {
+  background-color: rgb(240, 242, 245);
+  font-family: Menlo, Consolas, Monaco, monospace;
+  display: block;
+  padding: 8px 8px 8px 52px;
+  line-height: 1.53;
+  font-size: 13px;
+  margin: 8px 0;
+  tab-size: 2;
+  /* white-space: pre; */
+  overflow-x: auto;
+  position: relative;
+}
+.wb-lx-code:before {
+  content: attr(data-gutter);
+  position: absolute;
+  background-color: #eee;
+  left: 0;
+  top: 0;
+  border-right: 1px solid #ccc;
+  padding: 8px;
+  color: #777;
+  white-space: pre-wrap;
+  text-align: right;
+  min-width: 25px;
+}
+.wb-lx-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  max-width: 100%;
+  overflow-y: scroll;
+  table-layout: fixed;
+  width: calc(100% - 25px);
+  margin: 30px 0;
+}
+.wb-lx-tableSelected {
+  outline: 2px solid rgb(60, 132, 244);
+}
+.wb-lx-tableCell {
+  border: 1px solid #bbb;
+  min-width: 75px;
+  vertical-align: top;
+  text-align: start;
+  padding: 6px 8px;
+  position: relative;
+  cursor: default;
+  outline: none;
+}
+.wb-lx-tableCellSortedIndicator {
+  display: block;
+  opacity: 0.5;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #999;
+}
+.wb-lx-tableCellResizer {
+  position: absolute;
+  right: -4px;
+  height: 100%;
+  width: 8px;
+  cursor: ew-resize;
+  z-index: 10;
+  top: 0;
+}
+.wb-lx-tableCellHeader {
+  background-color: #f2f3f5;
+  text-align: start;
+}
+.wb-lx-tableCellSelected {
+  background-color: #c9dbf0;
+}
+.wb-lx-tableCellPrimarySelected {
+  border: 2px solid rgb(60, 132, 244);
+  display: block;
+  height: calc(100% - 2px);
+  position: absolute;
+  width: calc(100% - 2px);
+  left: -1px;
+  top: -1px;
+  z-index: 2;
+}
+.wb-lx-tableCellEditing {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+}
+.wb-lx-tableAddColumns {
+  position: absolute;
+  top: 0;
+  width: 20px;
+  background-color: #eee;
+  height: 100%;
+  right: 0;
+  animation: table-controls 0.2s ease;
+  border: 0;
+  cursor: pointer;
+}
+
+.wb-lx-tableAddColumns:hover {
+  background-color: #c9dbf0;
+}
+.wb-lx-tableAddRows {
+  position: absolute;
+  bottom: -25px;
+  width: calc(100% - 25px);
+  background-color: #eee;
+  height: 20px;
+  left: 0;
+  animation: table-controls 0.2s ease;
+  border: 0;
+  cursor: pointer;
+}
+.wb-lx-tableAddRows:hover {
+  background-color: #c9dbf0;
+}
+@keyframes table-controls {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.wb-lx-tableCellResizeRuler {
+  display: block;
+  position: absolute;
+  width: 1px;
+  background-color: rgb(60, 132, 244);
+  height: 100%;
+  top: 0;
+}
+.wb-lx-tableCellActionButtonContainer {
+  display: block;
+  right: 5px;
+  top: 6px;
+  position: absolute;
+  z-index: 4;
+  width: 20px;
+  height: 20px;
+}
+.wb-lx-tableCellActionButton {
+  background-color: #eee;
+  display: block;
+  border: 0;
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
+  color: #222;
+  cursor: pointer;
+}
+.wb-lx-tableCellActionButton:hover {
+  background-color: #ddd;
+}
+.wb-lx-characterLimit {
+  display: inline;
+  background-color: #ffbbbb !important;
+}
+.wb-lx-ol1 {
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style: inside;
+}
+.wb-lx-ol2 {
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style: upper-alpha inside;
+}
+.wb-lx-ol3 {
+  list-style: initial;
+  list-style: auto;
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style-type: lower-alpha;
+  list-style-position: inside;
+}
+.wb-lx-ol4 {
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style: upper-roman inside;
+}
+.wb-lx-ol5 {
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style: lower-roman inside;
+}
+.wb-lx-ul {
+  padding: 0;
+  margin: 0 0 0 16px;
+  list-style: inside;
+}
+.wb-lx-listItem {
+  margin: 0 32px;
+}
+.wb-lx-listItemChecked,
+.wb-lx-listItemUnchecked {
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding-left: 24px;
+  padding-right: 24px;
+  list-style-type: none;
+  outline: none;
+}
+.wb-lx-listItemChecked {
+  text-decoration: line-through;
+}
+.wb-lx-listItemUnchecked:before,
+.wb-lx-listItemChecked:before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 0;
+  cursor: pointer;
+  display: block;
+  background-size: cover;
+  position: absolute;
+}
+.wb-lx-listItemUnchecked[dir="rtl"]:before,
+.wb-lx-listItemChecked[dir="rtl"]:before {
+  left: auto;
+  right: 0;
+}
+.wb-lx-listItemUnchecked:focus:before,
+.wb-lx-listItemChecked:focus:before {
+  box-shadow: 0 0 0 2px #a6cdfe;
+  border-radius: 2px;
+}
+.wb-lx-listItemUnchecked:before {
+  border: 1px solid #999;
+  border-radius: 2px;
+}
+.wb-lx-listItemChecked:before {
+  border: 1px solid rgb(61, 135, 245);
+  border-radius: 2px;
+  background-color: #3d87f5;
+  background-repeat: no-repeat;
+}
+.wb-lx-listItemChecked:after {
+  content: "";
+  cursor: pointer;
+  border-color: #fff;
+  border-style: solid;
+  position: absolute;
+  display: block;
+  top: 6px;
+  width: 3px;
+  left: 7px;
+  height: 6px;
+  transform: rotate(45deg);
+  border-width: 0 2px 2px 0;
+}
+.wb-lx-nestedListItem {
+  list-style-type: none;
+}
+.wb-lx-nestedListItem:before,
+.wb-lx-nestedListItem:after {
+  display: none;
+}
+.wb-lx-tokenComment {
+  color: slategray;
+}
+.wb-lx-tokenPunctuation {
+  color: #999;
+}
+.wb-lx-tokenProperty {
+  color: #905;
+}
+.wb-lx-tokenSelector {
+  color: #690;
+}
+.wb-lx-tokenOperator {
+  color: #9a6e3a;
+}
+.wb-lx-tokenAttr {
+  color: #07a;
+}
+.wb-lx-tokenVariable {
+  color: #e90;
+}
+.wb-lx-tokenFunction {
+  color: #dd4a68;
+}
+.wb-lx-mark {
+  background: rgba(255, 212, 0, 0.14);
+  border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+  padding-bottom: 2px;
+}
+.wb-lx-markOverlap {
+  background: rgba(255, 212, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 212, 0, 0.7);
+}
+.wb-lx-mark.selected {
+  background: rgba(255, 212, 0, 0.5);
+  border-bottom: 2px solid rgba(255, 212, 0, 1);
+}
+.wb-lx-markOverlap.selected {
+  background: rgba(255, 212, 0, 0.7);
+  border-bottom: 2px solid rgba(255, 212, 0, 0.7);
+}
+.wb-lx-embedBlock {
+  user-select: none;
+}
+.wb-lx-embedBlockFocus {
+  outline: 2px solid rgb(60, 132, 244);
+}
+
+.wb-lx-placeholder {
+  text-align: left;
+}

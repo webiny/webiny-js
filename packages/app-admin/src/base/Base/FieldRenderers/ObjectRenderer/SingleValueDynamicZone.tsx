@@ -12,14 +12,16 @@ import { ClipboardFeature } from "~/features/clipboard/feature.js";
 import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
+import { Separator } from "@webiny/admin-ui";
 
 interface SingleValueDynamicZoneProps {
     field: IObjectFieldVM;
+    addItemLabel: string;
     showContainer?: boolean;
 }
 
 export const SingleValueDynamicZone = observer(
-    ({ field, showContainer = true }: SingleValueDynamicZoneProps) => {
+    ({ field, addItemLabel, showContainer = true }: SingleValueDynamicZoneProps) => {
         const toast = useToast();
         const { clipboard } = useFeature(ClipboardFeature);
         const activeTemplate =
@@ -93,6 +95,7 @@ export const SingleValueDynamicZone = observer(
                 {!activeTemplate && !field.disabled && (
                     <div className={"flex gap-sm items-center"}>
                         <AddTemplateButton
+                            label={addItemLabel}
                             templates={field.availableTemplates}
                             onSelect={template => field.setTemplate(template.id)}
                         />
@@ -119,7 +122,16 @@ export const SingleValueDynamicZone = observer(
         );
 
         if (!showContainer) {
-            return <div className={"flex flex-col gap-lg"}>{content}</div>;
+            return (
+                <>
+                    <Separator labelPosition={"start"} variant={"accent"}>
+                        <span className={"text-accent-primary text-lg font-semibold"}>
+                            {field.label ?? ""}
+                        </span>
+                    </Separator>
+                    <div className={"mt-md"}>{content}</div>
+                </>
+            );
         }
 
         return (

@@ -24,7 +24,7 @@ export interface AddTemplateButtonProps {
 export const AddTemplateButton = ({
     templates,
     onSelect,
-    label = "Add a template",
+    label,
     size = "sm",
     variant = "tertiary"
 }: AddTemplateButtonProps) => {

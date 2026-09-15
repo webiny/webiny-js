@@ -9,7 +9,7 @@
   "dependencies": {
     "@octokit/rest": "^22.0.1",
     "chalk": "^6.0.0",
-    "execa": "^10.0.0",
+    "execa": "^10.0.1",
     "load-json-file": "^7.0.1",
     "p-retry": "^8.0.0",
     "semver": "^7.8.5",
@@ -19,6 +19,6 @@
   "devDependencies": {
     "@types/yargs": "^17.0.35",
     "type-fest": "^5.8.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }

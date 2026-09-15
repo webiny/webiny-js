@@ -4,6 +4,8 @@ import type { LayoutProps } from "@webiny/app-admin";
 import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/app-admin";
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { CommandPalette } from "./CommandPalette/CommandPalette.js";
+import { Breadcrumbs } from "./Breadcrumbs/Breadcrumbs.js";
 
 const SIDEBAR_STATE_KEY = "navigation/state";
 
@@ -43,6 +45,7 @@ const LayoutContent = ({
     return (
         <>
             {title ? <Helmet title={title} /> : null}
+            <CommandPalette />
             {hideNavigation ? null : <Navigation />}
             <div
                 className={cn(
@@ -51,7 +54,12 @@ const LayoutContent = ({
                 )}
             >
                 <HeaderBar
-                    start={startElement}
+                    start={
+                        <div className="flex items-center gap-sm">
+                            <Breadcrumbs />
+                            {startElement}
+                        </div>
+                    }
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />

@@ -1,18 +1,19 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { CreateRedirectRepository as RepositoryAbstraction } from "./abstractions.js";
-import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { RedirectModelProvider } from "~/domain/redirect/abstractions.js";
 import { RedirectPersistenceError, RedirectValidationError } from "~/domain/redirect/errors.js";
 import { EntryToRedirectMapper } from "~/domain/redirect/EntryToRedirectMapper.js";
 
 class CreateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private redirectModel: RedirectModel.Interface,
+        private redirectModelProvider: RedirectModelProvider.Interface,
         private createEntry: CreateEntryUseCase.Interface
     ) {}
 
     async execute(data: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.createEntry.execute(this.redirectModel, {
+        const redirectModel = await this.redirectModelProvider.get();
+        const result = await this.createEntry.execute(redirectModel, {
             location: data.location,
             values: data
         });
@@ -31,5 +32,5 @@ class CreateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const CreateRedirectRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateRedirectRepositoryImpl,
-    dependencies: [RedirectModel, CreateEntryUseCase]
+    dependencies: [RedirectModelProvider, CreateEntryUseCase]
 });

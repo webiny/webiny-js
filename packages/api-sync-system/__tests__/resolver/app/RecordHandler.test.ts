@@ -7,7 +7,7 @@ import {
     createMockTargetDeployment
 } from "~tests/mocks/deployments.js";
 import { createMockStorer } from "~tests/mocks/storer.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { createMockFetcher } from "~tests/mocks/fetcher.js";
 import { createDeployments } from "~/resolver/deployment/Deployments.js";
 import { createIngestorResult } from "~/resolver/app/ingestor/IngestorResult.js";

@@ -12,6 +12,7 @@ import { EntryCard } from "./components/EntryCard.js";
 import { RefFieldOptions } from "./components/RefFieldOptions.js";
 import { ReferencesDialog } from "./components/ReferencesDialog.js";
 import { NewEntryDrawer } from "./components/NewEntryDrawer.js";
+import { EditEntryDrawer } from "./components/EditEntryDrawer.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -46,6 +47,7 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
 
     const [selectDialogModel, setSelectDialogModel] = useState<CmsModel | null>(null);
     const [newEntryModelId, setNewEntryModelId] = useState<string | null>(null);
+    const [editEntry, setEditEntry] = useState<CmsReferenceEntry | null>(null);
 
     const settings = field.rendererSettings;
     const modelIds = (settings.models || []).map(m => m.modelId);
@@ -123,6 +125,7 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
                         index={0}
                         entry={entry}
                         onRemove={onRemove}
+                        onEdit={setEditEntry}
                         disabled={disabled}
                     />
                 )}
@@ -157,6 +160,14 @@ const RefDetailedSingleInner = observer(({ field }: InnerFieldProps) => {
                         field.onChange(ref);
                         setNewEntryModelId(null);
                     }}
+                />
+            )}
+            {editEntry && (
+                <EditEntryDrawer
+                    modelId={editEntry.model.modelId}
+                    entryId={editEntry.id}
+                    onClose={() => setEditEntry(null)}
+                    onSaved={patch => presenter.patchEntry(patch)}
                 />
             )}
         </div>

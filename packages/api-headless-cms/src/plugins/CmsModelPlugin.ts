@@ -129,7 +129,8 @@ export class CmsModelPlugin extends Plugin {
             name: input.name,
             pluralApiName,
             singularApiName,
-            titleFieldId: "id"
+            titleFieldId: "id",
+            settings: {}
         };
 
         if (input.noValidate) {

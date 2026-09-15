@@ -32,7 +32,7 @@ describe("Combined Use Cases", () => {
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
-    it("should resolve ScheduledActionModel from container", async () => {
+    it("should resolve ScheduleActionUseCase (and its model provider) from container", async () => {
         const resolved = context.container.resolve(ScheduleActionUseCase);
 
         expect(resolved.execute).toBeFunction();

@@ -2,7 +2,11 @@ import { computed, makeAutoObservable, runInAction } from "mobx";
 import { GetContentEntriesUseCase } from "~/features/contentEntry/getContentEntries/abstractions.js";
 import { ListModelsUseCase } from "~/features/model/listModels/abstractions.js";
 import type { CmsModel } from "~/types.js";
-import type { CmsReferenceEntry, CmsReferenceValue } from "~/features/contentEntry/refTypes.js";
+import type {
+    CmsReferenceEntry,
+    CmsReferenceEntryPatch,
+    CmsReferenceValue
+} from "~/features/contentEntry/refTypes.js";
 import {
     RefDetailedPresenter as Abstraction,
     type IRefDetailedPresenterInitConfig,
@@ -67,6 +71,12 @@ class RefDetailedPresenterImpl implements Abstraction.Interface {
         const existingIds = new Set(this.entries.map(e => e.entryId));
         const newEntries = entries.filter(e => !existingIds.has(e.entryId));
         this.entries = [...this.entries, ...newEntries];
+    }
+
+    patchEntry(patch: CmsReferenceEntryPatch): void {
+        this.entries = this.entries.map(e =>
+            e.entryId === patch.entryId ? { ...e, ...patch } : e
+        );
     }
 
     removeEntry(entryId: string): void {

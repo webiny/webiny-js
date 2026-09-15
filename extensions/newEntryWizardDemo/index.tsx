@@ -10,6 +10,7 @@ const NewEntryWizardDemo = () => {
             <RegisterFeature feature={WizardFormPresenterFeature} />
             <ContentEntryEditorConfig>
                 <ContentEntryEditorConfig.NewEntryWizard
+                    name={"newEntryWizardDemo"}
                     element={<WizardForm />}
                     modelIds={["article"]}
                 />

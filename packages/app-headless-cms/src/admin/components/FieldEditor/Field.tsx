@@ -151,7 +151,7 @@ const Field = (props: FieldProps) => {
         showSnackbar(t`Image field set successfully.`);
     }, [field.fieldId, setModel]);
 
-    const fieldType = getFieldType(field.type);
+    const fieldType = getFieldType(field);
     const editorFieldOptionPlugins =
         plugins.byType<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
 

@@ -4,6 +4,8 @@ import { FileManager } from "@webiny/app-admin/base/ui/FileManager.js";
 import type { FileManagerFileItem } from "@webiny/app-admin/base/ui/FileManager.js";
 import { MultiFilePicker } from "@webiny/admin-ui";
 import type { FileFieldSettings } from "@webiny/app-admin/features/formModel/fieldTypes/FileFieldType.js";
+import { isEditableImageUrl, useCmsImageEditor } from "~/presentation/hooks/useCmsImageEditor.js";
+import { CmsImageEditorDialog } from "./CmsImageEditorDialog.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -15,6 +17,7 @@ export const CmsMultiFilePickerRenderer = createFieldRenderer<"cmsMultiFilePicke
     const value = field.value as string[] | undefined;
     const settings = field.rendererSettings as FileFieldSettings | undefined;
     const currentValues = Array.isArray(value) ? value : [];
+    const editor = useCmsImageEditor();
 
     return (
         <FileManager
@@ -40,22 +43,31 @@ export const CmsMultiFilePickerRenderer = createFieldRenderer<"cmsMultiFilePicke
                 };
 
                 return (
-                    <MultiFilePicker
-                        label={field.label}
-                        description={field.description}
-                        note={field.note}
-                        hint={field.help}
-                        values={currentValues}
-                        type="compact"
-                        onSelectItem={() => selectFiles()}
-                        onReplaceItem={(_, index) => selectFiles(index)}
-                        onRemoveItem={(_, index) => {
-                            field.onChange([
-                                ...currentValues.slice(0, index),
-                                ...currentValues.slice(index + 1)
-                            ]);
-                        }}
-                    />
+                    <>
+                        <MultiFilePicker
+                            label={field.label}
+                            description={field.description}
+                            note={field.note}
+                            hint={field.help}
+                            values={currentValues}
+                            type="compact"
+                            onSelectItem={() => selectFiles()}
+                            onReplaceItem={(_, index) => selectFiles(index)}
+                            onEditItem={(_, index) => {
+                                const url = currentValues[index];
+                                if (isEditableImageUrl(url)) {
+                                    editor.openFor(url);
+                                }
+                            }}
+                            onRemoveItem={(_, index) => {
+                                field.onChange([
+                                    ...currentValues.slice(0, index),
+                                    ...currentValues.slice(index + 1)
+                                ]);
+                            }}
+                        />
+                        <CmsImageEditorDialog editor={editor} />
+                    </>
                 );
             }}
         />

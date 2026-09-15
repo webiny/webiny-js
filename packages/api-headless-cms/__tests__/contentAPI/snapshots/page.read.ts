@@ -146,6 +146,10 @@ export default /* GraphQL */ `
         authors(populate: Boolean = true): [AuthorApiModel!]
     }
 
+    extend type PageModelApiName_Content_Objecting_DynamicZone_SuperNestedObject {
+        _templateId: ID!
+    }
+
     type PageModelApiName_Content_Objecting {
         nestedObject: PageModelApiName_Content_Objecting_NestedObject
         dynamicZone: PageModelApiName_Content_Objecting_DynamicZone
@@ -154,6 +158,22 @@ export default /* GraphQL */ `
     type PageModelApiName_Content_Author {
         author(populate: Boolean = true): AuthorApiModel
         authors(populate: Boolean = true): [AuthorApiModel!]
+    }
+
+    extend type PageModelApiName_Content_Hero {
+        _templateId: ID!
+    }
+
+    extend type PageModelApiName_Content_SimpleText {
+        _templateId: ID!
+    }
+
+    extend type PageModelApiName_Content_Objecting {
+        _templateId: ID!
+    }
+
+    extend type PageModelApiName_Content_Author {
+        _templateId: ID!
     }
 
     union PageModelApiName_Header =
@@ -167,6 +187,14 @@ export default /* GraphQL */ `
     type PageModelApiName_Header_ImageHeader {
         title: String
         image: String
+    }
+
+    extend type PageModelApiName_Header_TextHeader {
+        _templateId: ID!
+    }
+
+    extend type PageModelApiName_Header_ImageHeader {
+        _templateId: ID!
     }
 
     union PageModelApiName_Objective = PageModelApiName_Objective_Objecting
@@ -249,10 +277,18 @@ export default /* GraphQL */ `
         nestedObject: PageModelApiName_Objective_Objecting_NestedObject
     }
 
+    extend type PageModelApiName_Objective_Objecting {
+        _templateId: ID!
+    }
+
     union PageModelApiName_Reference = PageModelApiName_Reference_Author
 
     type PageModelApiName_Reference_Author {
         author(populate: Boolean = true): AuthorApiModel
+    }
+
+    extend type PageModelApiName_Reference_Author {
+        _templateId: ID!
     }
 
     union PageModelApiName_References1 = PageModelApiName_References1_Authors
@@ -261,10 +297,18 @@ export default /* GraphQL */ `
         authors(populate: Boolean = true): [AuthorApiModel!]
     }
 
+    extend type PageModelApiName_References1_Authors {
+        _templateId: ID!
+    }
+
     union PageModelApiName_References2 = PageModelApiName_References2_Author
 
     type PageModelApiName_References2_Author {
         author(populate: Boolean = true): AuthorApiModel
+    }
+
+    extend type PageModelApiName_References2_Author {
+        _templateId: ID!
     }
 
     type PageModelApiName_GhostObject {

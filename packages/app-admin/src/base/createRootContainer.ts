@@ -7,10 +7,11 @@ import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterG
 import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
 import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature.js";
 import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
+import { ApiStreamClientFeature } from "@webiny/app/features/apiStreamClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { NotificationsFeature } from "~/features/notifications/feature.js";
-import { WcpFeature } from "~/features/wcp/feature.js";
+import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { TelemetryFeature } from "~/features/telemetry/feature.js";
@@ -58,11 +59,15 @@ export function createRootContainer() {
 
     MainGraphQLClientFeature.register(container);
 
+    // Registered before TenancyFeature / AuthenticationContextFeature, which decorate it to add the
+    // tenant and auth headers.
+    ApiStreamClientFeature.register(container);
+
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
 
     TenancyFeature.register(container);
 
-    WcpFeature.register(container);
+    FeatureFlagsFeature.register(container);
 
     SystemInstallerFeature.register(container);
 

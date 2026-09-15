@@ -22,7 +22,8 @@ export class PrivateModelBuilder extends BaseModelBuilder {
             fields,
             authorization: false,
             noValidate: true,
-            tags: this.getTags()
+            tags: this.getTags(),
+            settings: this.config.settings || {}
         });
     }
 }

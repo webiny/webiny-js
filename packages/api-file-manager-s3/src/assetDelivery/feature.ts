@@ -4,7 +4,7 @@ import { S3Client, S3Bucket, S3AssetDeliveryConfig } from "./abstractions.js";
 import type { AssetDeliveryParams } from "./types.js";
 import { S3AssetResolverImpl } from "./s3/S3AssetResolver.js";
 import { S3OutputStrategyImpl } from "./s3/S3OutputStrategy.js";
-import { SharpTransformImpl } from "./s3/SharpTransform.js";
+import { LazySharpTransformImpl } from "./s3/LazySharpTransform.js";
 
 export const createS3AssetDeliveryFeature = (params: AssetDeliveryParams = {}) => {
     return createFeature({
@@ -20,12 +20,17 @@ export const createS3AssetDeliveryFeature = (params: AssetDeliveryParams = {}) =
                 imageResizeWidths: params.imageResizeWidths ?? [
                     128, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840
                 ],
+                imageQuality: params.imageQuality ?? {},
                 assetStreamingMaxSize: params.assetStreamingMaxSize ?? 4718592
             });
 
             container.register(S3AssetResolverImpl);
             container.register(S3OutputStrategyImpl);
-            container.register(SharpTransformImpl);
+
+            if (process.env.WEBINY_FUNCTION_TYPE === "asset-delivery") {
+                // Registered eagerly; `sharp` is still loaded lazily, inside the handler.
+                container.register(LazySharpTransformImpl).inSingletonScope();
+            }
         }
     });
 };

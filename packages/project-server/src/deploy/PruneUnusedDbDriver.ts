@@ -17,19 +17,15 @@ import { getServerDbDriver } from "./getServerDbDriver.js";
  *
  * Runs after CopyExternalDependencies (which does the nft copy). The package sets below are each
  * driver's own dependency closure; the two never overlap, so removing the unused one is safe.
+ *
+ * Note: `pg-connection-string` is deliberately NOT listed under postgres — despite the name it's a
+ * dependency of knex itself (its `parse-connection` loads it for EVERY client), so removing it would
+ * break a SQLite build (knex crashes with MODULE_NOT_FOUND at boot). Only genuinely driver-exclusive
+ * packages belong here.
  */
 const DRIVER_PACKAGES: Record<string, string[]> = {
     sqlite: ["better-sqlite3", "bindings", "file-uri-to-path"],
-    postgres: [
-        "pg",
-        "pg-cloudflare",
-        "pg-connection-string",
-        "pg-int8",
-        "pg-pool",
-        "pg-protocol",
-        "pg-types",
-        "pgpass"
-    ]
+    postgres: ["pg", "pg-cloudflare", "pg-int8", "pg-pool", "pg-protocol", "pg-types", "pgpass"]
 };
 
 class PruneUnusedDbDriverImpl implements ApiAfterBuild.Interface {

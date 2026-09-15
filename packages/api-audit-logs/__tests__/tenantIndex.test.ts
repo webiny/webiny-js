@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import { AUDIT } from "~/config.js";
 import { useHandler } from "~tests/helpers/useHandler.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import { getDocumentClient } from "@webiny/db-dynamodb/testing/getDocumentClient.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 const createApiKeyCreateAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.CREATE);

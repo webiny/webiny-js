@@ -1,6 +1,5 @@
 ---
 name: webiny-api-scheduler-catalog
-context: webiny-api
 description: >
   API — Scheduler — 15 abstractions.
   Scheduled action use cases.

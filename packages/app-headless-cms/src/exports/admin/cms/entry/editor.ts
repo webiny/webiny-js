@@ -1,3 +1,4 @@
+export { RevisionsListPresenter } from "~/presentation/contentEntries/revisionsList/abstractions.js";
 export { ContentEntryFormContent } from "~/presentation/contentEntries/views/layout/index.js";
 export { ContentEntryForm } from "~/presentation/contentEntries/views/layout/index.js";
 export { useModel } from "~/admin/components/ModelProvider/index.js";

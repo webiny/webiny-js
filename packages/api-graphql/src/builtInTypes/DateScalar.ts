@@ -1,10 +1,18 @@
 import { DateResolver } from "graphql-scalars";
 import { GraphQLScalarType } from "graphql";
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 export const DateScalar = new GraphQLScalarType<Date | string, string>({
     ...DateResolver,
-    /**
-     * We can set value as any because we are handling it.
-     */
+    parseValue: (value: unknown) => {
+        if (typeof value !== "string" || !DATE_RE.test(value)) {
+            throw new TypeError(
+                `Date cannot represent an invalid date-string ${String(value)}. Expected format: YYYY-MM-DD.`
+            );
+        }
+        return DateResolver.parseValue(value);
+    },
     serialize: (value: any) => {
         if (!value) {
             return null;

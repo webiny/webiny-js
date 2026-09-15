@@ -73,7 +73,7 @@ export function writeHintFile({
     ui,
     hintPath,
     content,
-    marker = "list_webiny_skills"
+    marker = "webiny` MCP server"
 }: WriteHintFileParams): boolean {
     ensureDir(hintPath);
 
@@ -110,9 +110,7 @@ export function webinyHintBlock({
         "",
         `${prefix}This project uses the Webiny framework.`,
         `${prefix}A \`webiny\` MCP server is available.`,
-        `${prefix}When helping with Webiny-related tasks:`,
-        `${prefix}1. Call \`list_webiny_skills\` to see available skills.`,
-        `${prefix}2. Call \`get_webiny_skill\` with the relevant topic before writing code.`,
+        `${prefix}When helping with Webiny-related tasks, call \`get_started()\` first.`,
         ""
     ].join("\n");
 }

@@ -3,7 +3,7 @@ import type { Context } from "~/types.js";
 import { createGroupData } from "./group.js";
 import { createCarsModel } from "./model.js";
 import { createIndex } from "~/utils/index.js";
-import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
+import { CmsModelOpenSearchIndexProvider } from "@webiny/api-headless-cms-utils-os/exports/api/cms/opensearch.js";
 import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { ListGroupsUseCase } from "@webiny/api-headless-cms/features/contentModelGroup/ListGroups/index.js";
@@ -67,7 +67,7 @@ export const createModelAndGroup = async (
     await createIndex({
         model,
         client: context.container.resolve(OpenSearchClient).use(),
-        indexConfigs: context.container.resolveAll(CmsEntryOpenSearchIndex)
+        indexProvider: context.container.resolve(CmsModelOpenSearchIndexProvider)
     });
 
     return {

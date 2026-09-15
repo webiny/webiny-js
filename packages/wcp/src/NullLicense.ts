@@ -67,7 +67,31 @@ export class NullLicense implements ILicense {
         return false;
     }
 
+    canUseAiPageTranslation(): boolean {
+        return false;
+    }
+
     canUseAiLexicalGeneration(): boolean {
+        return false;
+    }
+
+    canUseAiEntryGeneration(): boolean {
+        return false;
+    }
+
+    canUseAiEntryComparison(): boolean {
+        return false;
+    }
+
+    canUseAiEntryTranslation(): boolean {
+        return false;
+    }
+
+    canUseAbTesting(): boolean {
+        return false;
+    }
+
+    canUseRemoteComponents(): boolean {
         return false;
     }
 }

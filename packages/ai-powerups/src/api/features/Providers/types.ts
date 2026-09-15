@@ -1,4 +1,4 @@
-import type { IAiPowerUpsSettings } from "~/api/types.js";
+import type { IAiPowerUpsSettings } from "../../types.js";
 
 export interface ProviderPreset {
     id: string;
@@ -10,7 +10,7 @@ export interface ProviderPreset {
     apiKeyEncrypted: string;
 }
 
-declare module "~/api/types.js" {
+declare module "../../types.js" {
     interface IAiPowerUpsSettings {
         providers: {
             presets: ProviderPreset[];

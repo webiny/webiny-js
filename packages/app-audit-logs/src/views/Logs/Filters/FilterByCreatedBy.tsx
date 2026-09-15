@@ -46,5 +46,13 @@ export const FilterByCreatedBy = () => {
         ];
     }, [users]);
 
-    return <Select {...bind} size={"md"} placeholder={"Filter by Initiator"} options={options} />;
+    return (
+        <Select
+            {...bind}
+            label={"Initiator"}
+            size={"md"}
+            placeholder={"Anyone"}
+            options={options}
+        />
+    );
 };

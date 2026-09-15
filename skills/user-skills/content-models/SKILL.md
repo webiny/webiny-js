@@ -1,6 +1,5 @@
 ---
 name: webiny-api-cms-content-models
-context: webiny-extensions
 description: >
   Creating Headless CMS content models via code using the ModelFactory pattern.
   Use this skill when the developer wants to create, modify, or understand content model
@@ -9,10 +8,11 @@ description: >
   pick the correct Admin UI renderer for a field type (textInput/textInputs,
   lexicalEditor/lexicalEditors, file/files, objectAccordionSingle/objectAccordionMultiple, etc.),
   or work with the ModelFactory builder API. Also covers field types
-  (text, longText, number, boolean, datetime, file, ref, object, richText, dynamicZone),
+  (text, longText, number, boolean, datetime, asset, file, ref, object, richText, dynamicZone),
   list (array) fields via .list() and the singular-vs-plural renderer rule,
   validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
-  single-entry (singleton) models via .singleEntry(), and model/field tags via .tags().
+  single-entry (singleton) models via .singleEntry(), model/field tags via .tags(),
+  and field rules via .rules() for access-control and conditional visibility/editability.
   Includes the correct `fields` projection syntax when querying entries via the SDK:
   `ref` fields use double-`values.` nesting (e.g. `values.author.values.name`) because
   they resolve to another entry, while `object` and `dynamicZone` sub-fields are inline
@@ -68,18 +68,19 @@ Register in `webiny.config.tsx`:
 
 ## Model Configuration Methods
 
-| Method                                        | Purpose                                                                                                                               |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar. |
-| `.description("...")`                         | Model description shown in Admin UI                                                                                                   |
-| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                      |
-| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                              |
-| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                       |
-| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                         |
-| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                |
-| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                |
-| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                   |
-| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                        |
+| Method                                        | Purpose                                                                                                                                                                                                                       |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar.                                                                                         |
+| `.description("...")`                         | Model description shown in Admin UI                                                                                                                                                                                           |
+| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                                                                                                              |
+| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                                                                                                                      |
+| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                                                                                                               |
+| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                                                                                                                 |
+| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                                                                                                        |
+| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                                                                                                        |
+| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                                                                                                           |
+| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                                                                                                                |
+| `.settings({ ... })`                          | Model settings. Supported properties: `aiEntryWizard` (boolean), `previewPrefix` (string — base URL for live preview, e.g. `"https://example.com/articles"`), `previewSlug` (string — slug template, e.g. `"{values.slug}"`). |
 
 ## Layout
 
@@ -132,6 +133,10 @@ whole; its internal arrangement is owned by the object itself.
 Every template declares its own fields **and** its own layout, scoped to that template.
 The outer model layout simply references the dynamicZone field by its ID.
 
+Each template config accepts an optional `componentName` property that maps the template
+to a frontend UI component (e.g. `"Custom/Hero"`). This is used by the CMS live preview
+and Website Builder to resolve which React component renders the template's data.
+
 ```typescript
 .fields((fields) => ({
   blocks: fields
@@ -140,9 +145,10 @@ The outer model layout simply references the dynamicZone field by its ID.
     .template("hero", {
       name: "Hero",
       gqlTypeName: "HeroBlock",
+      componentName: "Custom/Hero",
       fields: (t) => ({
         heading: t.text().renderer("textInput").label("Heading"),
-        image:   t.file().renderer("file").label("Image")
+        image:   t.asset().label("Image")
       }),
       layout: [
         ["heading"],          // layout inside the "hero" template only
@@ -152,6 +158,7 @@ The outer model layout simply references the dynamicZone field by its ID.
     .template("quote", {
       name: "Quote",
       gqlTypeName: "QuoteBlock",
+      componentName: "Custom/Quote",
       fields: (t) => ({
         text:   t.longText().renderer("textarea").label("Quote text"),
         author: t.text().renderer("textInput").label("Author")
@@ -184,22 +191,49 @@ Admin UI and the field may fail to save values. Invented names (e.g. `"fileInput
 Exception: `fields.boolean()` has no multi-value variant — do not call `.list()` on
 boolean fields.
 
-The authoritative source for this list is
-`@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.d.ts` (in the
-project's `node_modules`) — if you're unsure, grep there first.
+The authoritative source for these field types is the `webiny/api/cms/model` barrel export — if you're unsure, check the catalog skill `webiny-api-cms-catalog`.
 
-| Builder Method         | Description                              | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
-| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `fields.text()`        | Single-line text                         | `"textInput"`                                                       | `"textInputs"`                                                        |
-| `fields.longText()`    | Multi-line text                          | `"textarea"`                                                        | `"textareas"`                                                         |
-| `fields.richText()`    | Rich text (Lexical)                      | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
-| `fields.number()`      | Numeric value                            | `"numberInput"`                                                     | `"numberInputs"`                                                      |
-| `fields.boolean()`     | True/false toggle                        | `"switch"`                                                          | — (not supported)                                                     |
-| `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
-| `fields.file()`        | File/image attachment                    | `"file"`                                                            | `"files"`                                                             |
-| `fields.ref()`         | Reference to another model               | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
-| `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
-| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
+| Builder Method         | Description                                                    | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
+| ---------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `fields.text()`        | Single-line text                                               | `"textInput"`                                                       | `"textInputs"`                                                        |
+| `fields.longText()`    | Multi-line text                                                | `"textarea"`                                                        | `"textareas"`                                                         |
+| `fields.richText()`    | Rich text (Lexical)                                            | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
+| `fields.number()`      | Numeric value                                                  | `"numberInput"`                                                     | `"numberInputs"`                                                      |
+| `fields.boolean()`     | True/false toggle                                              | `"switch"`                                                          | — (not supported)                                                     |
+| `fields.datetime()`    | Date/time picker                                               | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.asset()`       | Asset (image/video/document with per-usage crop & focal point) | `"asset-input"`                                                     | `"asset-inputs"`                                                      |
+| `fields.file()`        | File/image attachment (deprecated, use `asset`)                | `"file"`                                                            | `"files"`                                                             |
+| `fields.ref()`         | Reference to another model                                     | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
+| `fields.object()`      | Nested object with sub-fields                                  | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
+| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates)                       | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
+
+### Renderer Settings
+
+Some renderers accept a `settings` object as the second argument to `.renderer()`:
+
+```typescript
+.renderer("dynamicZone", { container: false, addItemLabel: "Add block" })
+.renderer("objectAccordionSingle", { open: false, container: true, itemTitle: "name" })
+.renderer("objectAccordionMultiple", { itemTitle: "title", addItemLabel: "Add section" })
+```
+
+| Renderer                     | Setting           | Type                | Default         | Description                                                   |
+| ---------------------------- | ----------------- | ------------------- | --------------- | ------------------------------------------------------------- |
+| `dynamicZone`                | `open`            | `boolean`           | `true`          | Whether the accordion is expanded by default                  |
+| `dynamicZone`                | `container`       | `boolean`           | `true`          | Wrap in a container panel; `false` for flat inline layout     |
+| `dynamicZone`                | `addItemLabel`    | `string`            | `"Add Item"`    | Label for the add-item button                                 |
+| `objectAccordionSingle`      | `open`            | `boolean`           | `true`          | Whether the accordion is expanded by default                  |
+| `objectAccordionSingle`      | `container`       | `boolean`           | `true`          | Wrap in a container panel; `false` for flat inline layout     |
+| `objectAccordionSingle`      | `itemTitle`       | `string`            | field label     | Field ID whose value is used as the accordion title           |
+| `objectAccordionSingle`      | `itemDescription` | `string`            | —               | Field ID whose value is used as the accordion description     |
+| `objectAccordionMultiple`    | `open`            | `boolean`           | `true`          | Whether each accordion item is expanded by default            |
+| `objectAccordionMultiple`    | `container`       | `boolean`           | `true`          | Wrap in a container panel; `false` for flat inline layout     |
+| `objectAccordionMultiple`    | `itemTitle`       | `string`            | field label     | Field ID whose value is used as each item's title             |
+| `objectAccordionMultiple`    | `itemDescription` | `string`            | —               | Field ID whose value is used as each item's description       |
+| `objectAccordionMultiple`    | `addItemLabel`    | `string`            | `"Add {label}"` | Label for the add-item button                                 |
+| `assetField` / `assetFields` | `imagesOnly`      | `boolean`           | `false`         | Only allow image files                                        |
+| `assetField` / `assetFields` | `accept`          | `string[]`          | all types       | MIME types to allow (e.g. `["image/png", "application/pdf"]`) |
+| `refDialogMultiple`          | `newItemPosition` | `"first" \| "last"` | `"last"`        | Where newly picked references are inserted                    |
 
 ### Ref renderer families
 
@@ -219,7 +253,8 @@ When a `text` or `number` field uses `.predefinedValues([...])`, additional rend
 become available:
 
 - `"radioButtons"` — single-value; requires `list: false` and `predefinedValues`.
-- `"dropdown"` — single-value; requires `list: false` and `predefinedValues`.
+- `"select"` — single-value; requires `list: false` and `predefinedValues`.
+- `"dropdown"` — **deprecated**, alias for `"select"`. Use `"select"` instead.
 - `"checkboxes"` — multi-value; requires `list: true` and `predefinedValues`.
 - `"tags"` — multi-value free-form entry; `text` only, requires `list: true` and NO
   `predefinedValues`.
@@ -259,6 +294,95 @@ The same rule applies to every field type that has both variants:
 For `ref()` fields the pluralization rule is the same but the singular/multiple renderers
 have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the table.
 
+## Layout Fields
+
+Layout fields are UI-only elements that do not store data. They decorate the editor
+form with visual structure. Place them in `.fields()` like data fields, and reference
+them by key in `.layout()`.
+
+All layout fields inherit the base methods: `.label()`, `.help()`, `.description()`,
+`.note()`, `.fieldId()`, `.rules()`.
+
+| Builder Method         | Description                                     | Extra Methods                                              |
+| ---------------------- | ----------------------------------------------- | ---------------------------------------------------------- |
+| `fields.uiSeparator()` | Horizontal divider with an optional label       | —                                                          |
+| `fields.uiAlert()`     | Colored banner (info, success, warning, danger) | `.alertType("info" \| "success" \| "warning" \| "danger")` |
+| `fields.uiTabs()`      | Tabbed container that groups fields into tabs   | `.tab(id, config)` — see below                             |
+
+### uiSeparator
+
+A horizontal line to visually separate field groups. The label appears as section text.
+
+```typescript
+.fields(fields => ({
+  name: fields.text().renderer("textInput").label("Name"),
+  divider: fields.uiSeparator().label("Additional Info"),
+  bio: fields.longText().renderer("textarea").label("Bio")
+}))
+.layout([["name"], ["divider"], ["bio"]])
+```
+
+### uiAlert
+
+A colored callout banner. Use `.alertType()` to set the severity.
+
+```typescript
+.fields(fields => ({
+  warning: fields
+    .uiAlert()
+    .label("Changes to this section require approval.")
+    .alertType("warning"),
+  title: fields.text().renderer("textInput").label("Title")
+}))
+.layout([["warning"], ["title"]])
+```
+
+### uiTabs
+
+Groups fields into tabs. Each tab has its own fields and layout. Fields inside tabs
+are hoisted to the model level (flat field list), but visually grouped under their tab.
+
+`.tab(id, config)` accepts:
+
+| Config Property | Type                                             | Required | Description                   |
+| --------------- | ------------------------------------------------ | -------- | ----------------------------- |
+| `label`         | `string`                                         | yes      | Tab label                     |
+| `icon`          | `CmsIcon`                                        | no       | Tab icon                      |
+| `description`   | `string`                                         | no       | Tab description               |
+| `fields`        | `(registry) => Record<string, BaseFieldBuilder>` | yes      | Fields inside this tab        |
+| `layout`        | `string[][]`                                     | no       | Layout for fields in this tab |
+| `rules`         | `FieldRule[]`                                    | no       | Rules for this individual tab |
+
+```typescript
+.fields(fields => ({
+  tabs: fields
+    .uiTabs()
+    .tab("general", {
+      label: "General",
+      fields: sub => ({
+        title: sub.text().renderer("textInput").label("Title").required(),
+        slug: sub.text().renderer("textInput").label("Slug").required()
+      }),
+      layout: [["title", "slug"]]
+    })
+    .tab("seo", {
+      label: "SEO",
+      fields: sub => ({
+        seoTitle: sub.text().renderer("textInput").label("SEO Title"),
+        seoDescription: sub.longText().renderer("textarea").label("SEO Description")
+      }),
+      layout: [["seoTitle"], ["seoDescription"]],
+      rules: [
+        { type: "accessControl", target: "identity", operator: "matches", value: "team:marketing", action: "hide" }
+      ]
+    })
+}))
+.layout([["tabs"]])
+```
+
+The outer `.layout()` references `"tabs"` as a single cell. Tab-internal layouts only
+reference their own field keys (same scoping rule as object/dynamicZone layouts).
+
 ## Field Validators (Chainable)
 
 | Validator                  | Description                         | Example                                                  |
@@ -282,6 +406,231 @@ have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the
 | `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced                                                               |
 | `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)                                                                    |
+| `.rules([...])`                 | Conditional visibility/editability rules — see [Field Rules](#field-rules) section                               |
+
+## Field Rules
+
+`.rules()` accepts an array of `FieldRule` objects that control field visibility and
+editability in the Admin UI. Rules are evaluated client-side. Available on **all** field
+types (data fields and layout fields — separators, alerts, tabs).
+
+Each rule has the shape:
+
+```typescript
+interface FieldRule {
+  type: "accessControl" | "condition";
+  target: string;
+  operator: string;
+  value: string | number | boolean | null;
+  action: "hide" | "disable";
+}
+```
+
+### Rule types
+
+| `type`            | Purpose                                                                                                | `target`                                     | `value`                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------- |
+| `"accessControl"` | Show/hide or enable/disable a field based on the current user's identity or team membership            | `"identity"`                                 | `"admin:<userId>"` or `"team:<teamSlug>"`               |
+| `"condition"`     | Show/hide or enable/disable a field based on the current entry's field values (reactive, updates live) | Field path, e.g. `"status"` or `"seo.title"` | The value to compare against (type depends on operator) |
+
+### Actions
+
+| `action`    | Effect                                                            |
+| ----------- | ----------------------------------------------------------------- |
+| `"hide"`    | Hides the field entirely from the editor                          |
+| `"disable"` | Shows the field but makes it read-only (greyed out, not editable) |
+
+### Condition operators
+
+Operators available for `type: "condition"` rules, grouped by target field type:
+
+| Operator       | Label            | Applicable to                   | `value`                   |
+| -------------- | ---------------- | ------------------------------- | ------------------------- |
+| `"=="`         | Equals           | text, number, boolean, datetime | The value to match        |
+| `"!="`         | Not equals       | text, number, boolean, datetime | The value to not match    |
+| `">"`          | Greater than     | number, datetime                | Numeric/date threshold    |
+| `"<"`          | Less than        | number, datetime                | Numeric/date threshold    |
+| `">="`         | Greater or equal | number, datetime                | Numeric/date threshold    |
+| `"<="`         | Less or equal    | number, datetime                | Numeric/date threshold    |
+| `"contains"`   | Contains         | text, long-text                 | Substring to search for   |
+| `"startsWith"` | Starts with      | text, long-text                 | Prefix to match           |
+| `"endsWith"`   | Ends with        | text, long-text                 | Suffix to match           |
+| `"isEmpty"`    | Is empty         | all field types                 | `null` (value is ignored) |
+| `"isNotEmpty"` | Is not empty     | all field types                 | `null` (value is ignored) |
+
+### Access control operators
+
+| Operator    | Description                                                   |
+| ----------- | ------------------------------------------------------------- |
+| `"matches"` | Checks if the current user's identity or team matches `value` |
+
+### Target field paths (condition rules)
+
+The `target` for condition rules is a **dot-separated field path** relative to the form
+root. Use the field's `fieldId` (the key in the `.fields()` callback).
+
+- Simple field: `"status"`
+- Nested inside object: `"seo.title"`, `"address.city"`
+- Inside a list item (current index): `"items.$.name"` — the `$` resolves to the
+  current list index at evaluation time
+- Array length: `"items.length"` — evaluates to the number of items in the array
+- **Static relative path**: `"$.fieldId"` — resolves relative to the **parent object or
+  template** that contains the field. Use this inside `object`, `dynamicZone` template,
+  or `uiTabs` scopes to reference a sibling field without hard-coding the full path.
+  For example, inside a dynamicZone template, `"$.enabled"` resolves to the sibling
+  `enabled` field within the same template instance. This is the recommended approach
+  for rules inside nested scopes — it keeps the rule portable and avoids coupling to
+  the parent field's name.
+
+### Examples
+
+**Access control — hide field from non-marketing team:**
+
+```typescript
+title: fields
+  .text()
+  .renderer("textInput")
+  .label("Marketing Title")
+  .rules([
+    {
+      type: "accessControl",
+      target: "identity",
+      operator: "matches",
+      value: "team:marketing",
+      action: "hide"
+    }
+  ]);
+```
+
+**Condition — disable field when another field is empty:**
+
+```typescript
+seoDescription: fields
+  .longText()
+  .renderer("textarea")
+  .label("SEO Description")
+  .rules([
+    { type: "condition", target: "seoTitle", operator: "isEmpty", value: null, action: "disable" }
+  ]);
+```
+
+**Condition — show field only when status equals "published":**
+
+```typescript
+publishDate: fields
+  .datetime()
+  .renderer("dateTimeInput")
+  .label("Publish Date")
+  .rules([
+    { type: "condition", target: "status", operator: "!=", value: "published", action: "hide" }
+  ]);
+```
+
+**Multiple rules on a single field:**
+
+```typescript
+internalNotes: fields
+  .longText()
+  .renderer("textarea")
+  .label("Internal Notes")
+  .rules([
+    {
+      type: "accessControl",
+      target: "identity",
+      operator: "matches",
+      value: "team:editors",
+      action: "hide"
+    },
+    { type: "condition", target: "status", operator: "==", value: "draft", action: "disable" }
+  ]);
+```
+
+**Rules on layout fields (separator, alert, tabs):**
+
+```typescript
+.fields(fields => ({
+  adminAlert: fields
+    .uiAlert()
+    .label("Admin only")
+    .alertType("warning")
+    .rules([
+      { type: "accessControl", target: "identity", operator: "matches", value: "team:admins", action: "hide" }
+    ]),
+}))
+```
+
+**Rules on individual tabs:**
+
+```typescript
+.fields(fields => ({
+  tabs: fields
+    .uiTabs()
+    .tab("general", {
+      label: "General",
+      fields: sub => ({ /* ... */ }),
+      layout: [/* ... */]
+    })
+    .tab("advanced", {
+      label: "Advanced",
+      fields: sub => ({ /* ... */ }),
+      layout: [/* ... */],
+      rules: [
+        { type: "accessControl", target: "identity", operator: "matches", value: "team:developers", action: "hide" }
+      ]
+    })
+    .rules([/* rules on the entire tabs container */])
+}))
+```
+
+**Static `$.` paths — referencing siblings inside a nested scope:**
+
+Use `$.` to target a sibling field within the same parent object or dynamicZone
+template. The `$` resolves to the parent path at runtime, so the rule stays portable
+regardless of the outer structure.
+
+```typescript
+.fields(fields => ({
+  bannerTypes: fields
+    .dynamicZone()
+    .label("Banner Type")
+    .template("siteBanner", {
+      name: "Site Banner",
+      gqlTypeName: "SiteBannerBlock",
+      fields: t => ({
+        enabled: t.boolean().renderer("switch").label("Enabled"),
+        text: t.richText().renderer("lexicalEditor").label("Text"),
+        global: t
+          .boolean()
+          .renderer("switch")
+          .label("Global"),
+        locationTab: t
+          .uiTabs()
+          .tab("Location", {
+            label: "Location",
+            fields: tabFields => ({
+              location: tabFields.text().label("Location")
+            }),
+            layout: [["location"]]
+          })
+          .rules([
+            {
+              type: "condition",
+              target: "$.global",      // resolves to sibling "global" in this template
+              operator: "==",
+              value: true,
+              action: "hide"
+            }
+          ])
+      }),
+      layout: [["enabled"], ["text"], ["global"], ["locationTab"]]
+    })
+}))
+```
+
+In this example, `"$.global"` resolves to the `global` field within the same
+dynamicZone template instance. Without the `$.` prefix, you would need to hard-code the
+full path (e.g. `"bannerTypes.0.global"`), which breaks across list indices. The same
+pattern works inside `object` fields and `uiTabs` scopes.
 
 ## Querying `ref`, `object`, and `dynamicZone` fields
 

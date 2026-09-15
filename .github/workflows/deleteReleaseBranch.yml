@@ -17,7 +17,7 @@ jobs:
       ${{ github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.head.ref, 'release/') }}
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
       - name: Delete branch
@@ -46,3 +46,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+    permissions:
+      contents: read
+      actions: write

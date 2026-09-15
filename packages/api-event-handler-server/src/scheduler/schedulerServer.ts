@@ -1,12 +1,12 @@
 import type { Container } from "@webiny/di";
-import { mdbid } from "@webiny/utils";
+import { uuid } from "@webiny/stdlib";
 import { SchedulerService } from "@webiny/api-scheduler/shared/abstractions.js";
 import { BreeSchedulerService } from "@webiny/api-scheduler-server";
 import type { Logger } from "@webiny/api-core/features/logger/abstractions.js";
 import { SchedulerInternalToken } from "./abstractions/InternalToken.js";
 import { SchedulerSingleton } from "./abstractions/SchedulerSingleton.js";
-import { ScheduledActionRunRoute } from "./ScheduledActionRunRoute.js";
-import { ScheduledActionRecoverRoute } from "./ScheduledActionRecoverRoute.js";
+import { ScheduledActionRunRouteDefinition } from "./ScheduledActionRunRoute.js";
+import { ScheduledActionRecoverRouteDefinition } from "./ScheduledActionRecoverRoute.js";
 
 const SCHEDULER_HEADER = "x-webiny-scheduler-token";
 
@@ -44,7 +44,7 @@ const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
  * rebuilds the request context for the action's tenant and executes it (see the route).
  */
 export function registerSchedulerServer(rootContainer: Container): void {
-    const token = mdbid();
+    const token = uuid();
     rootContainer.registerInstance(SchedulerInternalToken, { value: token });
 
     const service = new BreeSchedulerService({
@@ -93,8 +93,8 @@ export function registerSchedulerServer(rootContainer: Container): void {
     rootContainer.registerInstance(SchedulerSingleton, service);
     rootContainer.registerInstance(SchedulerService, service);
 
-    rootContainer.register(ScheduledActionRunRoute);
-    rootContainer.register(ScheduledActionRecoverRoute);
+    rootContainer.register(ScheduledActionRunRouteDefinition);
+    rootContainer.register(ScheduledActionRecoverRouteDefinition);
 }
 
 /**

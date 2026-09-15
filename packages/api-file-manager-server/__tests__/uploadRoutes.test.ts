@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { invokeHttpRoute } from "@webiny/event-handler-core";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createUploadToken } from "~/utils/uploadToken.js";
@@ -35,7 +36,7 @@ describe("single file upload route", () => {
             filename: "test.txt"
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(204);
 
@@ -54,7 +55,7 @@ describe("single file upload route", () => {
             tokenOverrides: { expiresAt: Date.now() - 1000 }
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);
         expect(JSON.parse(response.body).error).toBe("Token has expired.");
@@ -71,7 +72,7 @@ describe("single file upload route", () => {
             tokenOverrides: { uploadMaxFileSize: 5 }
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);
         expect(JSON.parse(response.body).error).toBe("File exceeds maximum allowed size.");
@@ -99,7 +100,7 @@ describe("single file upload route", () => {
                 `--${boundary}--\r\n`
         );
 
-        const response = await route.handle({
+        const response = await invokeHttpRoute(route, {
             method: "POST",
             path: "/webiny-file-upload",
             headers: { "content-type": `multipart/form-data; boundary=${boundary}` },
@@ -123,7 +124,7 @@ describe("single file upload route", () => {
             tokenOverrides: { key: "tenants/t1/files/OTHER/file.txt" }
         });
 
-        const response = await route.handle(request);
+        const response = await invokeHttpRoute(route, request);
 
         expect(response.statusCode).toBe(400);
         expect(JSON.parse(response.body).error).toBe("Token key mismatch.");
@@ -149,7 +150,7 @@ describe("part upload route", () => {
             SECRET
         );
 
-        const response = await route.handle({
+        const response = await invokeHttpRoute(route, {
             method: "PUT",
             path: "/webiny-file-upload/parts",
             headers: {},
@@ -163,7 +164,7 @@ describe("part upload route", () => {
         });
 
         expect(response.statusCode).toBe(200);
-        expect(response.headers?.ETag).toBeDefined();
+        expect(response.headers?.["etag"]).toBeDefined();
 
         const written = await fs.readFile(path.join(storagePath, expectedKey));
         expect(written.toString()).toBe("part one data");

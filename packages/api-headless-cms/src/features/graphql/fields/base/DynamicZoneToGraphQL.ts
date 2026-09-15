@@ -129,11 +129,18 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             templates
         });
 
+        const templateIds = templateTypes.map(type => {
+            return `extend type ${type} {
+                _templateId: ID!
+            }
+            `;
+        });
+
         typeDefs.unshift(`union ${unionTypeName} = ${templateTypes.join(" | ")}`);
 
         return {
             fields: `${field.fieldId}: ${field.list ? `[${unionTypeName}!]` : unionTypeName}`,
-            typeDefs: typeDefs.join("\n")
+            typeDefs: typeDefs.concat(templateIds).join("\n")
         };
     }
 

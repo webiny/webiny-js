@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-local-storage-catalog
-context: webiny-api
 description: >
   admin/local-storage — 4 abstractions.
 ---

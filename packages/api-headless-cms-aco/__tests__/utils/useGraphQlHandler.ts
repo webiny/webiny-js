@@ -6,10 +6,10 @@ import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { HeadlessCmsContextualSchema } from "@webiny/api-headless-cms/HeadlessCmsContextualSchema.js";
 import { AcoFeature } from "@webiny/api-aco";
 import { AcoHcmsFeature } from "~/AcoHcmsFeature.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import { until } from "@webiny/project-utils/testing/helpers/until.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
+import { until } from "@webiny/api/testing/until.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -80,8 +80,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             container.registerDecorator(AuthTriggerHandler);
             container.registerDecorator(RootTenantInitializer);
         },
-        request: async container => {
-            const wcpLicense = await loadWcpLicense(
+        child: async container => {
+            const wcpLicense = await WcpLicenseLoader.load(
                 params.testProjectLicense ?? createTestWcpLicense()
             );
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);

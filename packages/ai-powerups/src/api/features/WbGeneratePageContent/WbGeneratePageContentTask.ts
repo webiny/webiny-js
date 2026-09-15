@@ -15,6 +15,7 @@ export interface IWbGeneratePageContentTaskInput {
     excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
+    additionalFileIds?: string[] | null;
 }
 
 class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGeneratePageContentTaskInput> {
@@ -41,17 +42,25 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
             return controller.response.aborted();
         }
 
-        const result = await this.generatePageContent.execute({
-            prompt: input.prompt,
-            components: input.components,
-            tools: input.tools,
-            projectId: input.projectId,
-            excludedFileIds: input.excludedFileIds,
-            readerPersonaId: input.readerPersonaId,
-            writerPersonaId: input.writerPersonaId
-        });
-
         const identity = this.identityContext.getIdentity();
+
+        let result;
+        try {
+            result = await this.generatePageContent.execute({
+                prompt: input.prompt,
+                components: input.components,
+                tools: input.tools,
+                projectId: input.projectId,
+                excludedFileIds: input.excludedFileIds,
+                readerPersonaId: input.readerPersonaId,
+                writerPersonaId: input.writerPersonaId,
+                additionalFileIds: input.additionalFileIds
+            });
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            await this.sendErrorToUser(identity.id, message);
+            return controller.response.error({ message });
+        }
 
         if (result.isFail()) {
             await this.sendErrorToUser(identity.id, result.error.message);

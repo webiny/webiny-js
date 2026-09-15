@@ -29,9 +29,11 @@ import {
 import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
 import { FileManagerServerFeature } from "@webiny/api-file-manager-server";
 import { registerSchedulerServer, startSchedulerServer } from "~/scheduler/schedulerServer.js";
+import { startBulkActionsServer } from "~/bulkActions/bulkActionsServer.js";
 import { NodeHttpIdentityLoaderDecorator } from "~/handlers/NodeHttpIdentityLoaderDecorator.js";
 import { NodeHttpTenantLoaderDecorator } from "~/handlers/NodeHttpTenantLoaderDecorator.js";
 import { createWebsocketsAuthenticator } from "~/websockets/createWebsocketsAuthenticator.js";
+import { EmptyTrashBinRouteFeature } from "@webiny/api-headless-cms-bulk-actions-server";
 
 export interface CreateWebinyApiHandlerConfig {
     /**
@@ -94,9 +96,14 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // token. When a timer fires (outside any request) it POSTs `/scheduled-action-run`, which
             // rebuilds the tenant's request context and executes the action.
             registerSchedulerServer(rootContainer);
+
+            // ── Bulk actions (root) ───────────────────────────────────
+            // Registers the `/empty-trash-bins` HTTP route + internal token so the periodic trigger
+            // (startBulkActionsServer, onServer below) can POST to it after the server is listening.
+            EmptyTrashBinRouteFeature.register(rootContainer);
         },
 
-        request: async container => {
+        child: async container => {
             // The transport-agnostic per-request stack. The realtime hook installs the server
             // WebSockets transport (overriding the domain's NullWebsocketsTransport); it resolves the
             // shared connection manager + adapter from the root. Scheduler is NOT a per-request
@@ -148,6 +155,9 @@ export function createWebinyApiHandler(config: CreateWebinyApiHandlerConfig) {
             // Start the in-process scheduler timers, then re-arm persisted schedules (deferred until
             // the server is listening — see startSchedulerServer).
             await startSchedulerServer(rootContainer);
+
+            // Start the periodic empty-trash-bin trigger (deferred until the server is listening).
+            startBulkActionsServer(rootContainer);
         }
     });
 }

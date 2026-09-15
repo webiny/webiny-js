@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { ReactComponent as ChevronDownIcon } from "@webiny/icons/expand_more.svg";
 
 function MenuContainer({
     children,
@@ -84,7 +85,7 @@ export const ToolbarActionDialog = ({
             >
                 {buttonIconClassName && <span className={buttonIconClassName} />}
                 {buttonLabel && <span className="text dropdown-button-text">{buttonLabel}</span>}
-                <i className="chevron-down" />
+                <ChevronDownIcon className="chevron-down" />
             </button>
             {showDropDown && <MenuContainer onClose={handleClose}>{children}</MenuContainer>}
         </div>

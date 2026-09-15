@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-tenancy-catalog
-context: webiny-api
 description: >
   admin/tenancy — 9 abstractions.
 ---

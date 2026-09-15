@@ -23,7 +23,7 @@ export const ContentEntryFormView = observer(() => {
     const listPresenter = useContentEntriesPresenter();
     const formPresenter = useContentEntryFormPresenter();
     const { presenter: revisionsPresenter } = useFeature(RevisionsListFeature);
-    const { width, newEntryWizard } = useContentEntryEditorConfig();
+    const { newEntryWizard, width } = useContentEntryEditorConfig();
     const router = useRouter();
     const dialogs = useDialogs();
     const { route } = useRoute(Routes.ContentEntries.List);
@@ -96,8 +96,8 @@ export const ContentEntryFormView = observer(() => {
                 {showWizard ? (
                     newEntryWizard
                 ) : (
-                    <ContentEntryFormContent>
-                        <div className={"bg-neutral-base rounded-lg p-lg"} style={{ width }}>
+                    <ContentEntryFormContent width={width}>
+                        <div className={"bg-neutral-base rounded-lg p-lg"}>
                             <ContentEntryForm />
                         </div>
                     </ContentEntryFormContent>

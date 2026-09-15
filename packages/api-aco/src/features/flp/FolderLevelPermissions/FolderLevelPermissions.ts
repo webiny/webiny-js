@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import {
@@ -21,7 +21,7 @@ import { GetFlpUseCase } from "~/features/flp/GetFlp/index.js";
 class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private wcpContext: WcpContext.Interface,
+        private featureFlags: FeatureFlags.Interface,
         private listUserTeamsUseCase: ListUserTeamsUseCase.Interface,
         private getFlpUseCase: GetFlpUseCase.Interface,
         private listFlpsUseCase: ListFlpsUseCase.Interface
@@ -46,11 +46,13 @@ class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.In
             return false;
         }
 
-        return this.wcpContext.canUseFolderLevelPermissions();
+        return this.featureFlags
+            .get()
+            .isEnabled("advancedAccessControlLayer.folderLevelPermissions");
     }
 
     public canUseTeams(): boolean {
-        return this.wcpContext.canUseTeams();
+        return this.featureFlags.get().isEnabled("advancedAccessControlLayer.teams");
     }
 
     public canCreateFolderInRoot(): boolean {
@@ -182,7 +184,7 @@ export const FolderLevelPermissions = createImplementation({
     implementation: FolderLevelPermissionsImpl,
     dependencies: [
         IdentityContext,
-        WcpContext,
+        FeatureFlags,
         ListUserTeamsUseCase,
         GetFlpUseCase,
         ListFlpsUseCase

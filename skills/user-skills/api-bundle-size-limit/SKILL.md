@@ -1,6 +1,5 @@
 ---
 name: api-bundle-size-limit
-context: webiny-extensions
 description: >
   Covers how to configure the maximum allowed size of the Webiny API Lambda
   bundle using the Infra.Api.MaxBundleSize extension in webiny.config.tsx.

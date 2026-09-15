@@ -6,7 +6,7 @@ import {
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import type {
     CmsEntryFolder,
     Folder,
@@ -23,18 +23,19 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
     constructor(
         private getEntryById: GetEntryByIdUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private folderModel: FolderModel.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(
         params: GetFolderHierarchyParams
     ): Promise<Result<GetFolderHierarchyResponse, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const parents: Folder[] = [];
         const siblings: Folder[] = [];
 
         // Get root folders (siblings at root level)
         const rootFoldersResult = await this.listLatestEntries.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             {
                 where: {
                     values: {
@@ -63,7 +64,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         // Get the folder by id
         const entryId = EntryId.from(params.id);
         const folderResult = await this.getEntryById.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             entryId.toString()
         );
 
@@ -84,7 +85,7 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         const parentIds = parents.map(f => f.id);
 
         const childFoldersResult = await this.listLatestEntries.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             {
                 where: {
                     entryId_not_in: parentIds,
@@ -114,11 +115,12 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
         folder: Folder,
         parents: Folder[]
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         let currentFolder = folder;
 
         while (currentFolder.parentId) {
             const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
-                this.folderModel,
+                folderModel,
                 EntryId.from(currentFolder.parentId).toString()
             );
 
@@ -137,5 +139,5 @@ class GetFolderHierarchyRepositoryImpl implements IGetFolderHierarchyRepository 
 
 export const GetFolderHierarchyRepository = RepositoryAbstraction.createImplementation({
     implementation: GetFolderHierarchyRepositoryImpl,
-    dependencies: [GetEntryByIdUseCase, ListLatestEntriesUseCase, FolderModel]
+    dependencies: [GetEntryByIdUseCase, ListLatestEntriesUseCase, FolderModelProvider]
 });

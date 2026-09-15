@@ -19,6 +19,12 @@ export interface CmsReferenceValue {
     modelId: string;
 }
 
+/**
+ * A partial update to an already-resolved reference entry, keyed by `entryId`.
+ * Used to patch the in-memory card after editing a referenced entry, avoiding a refetch.
+ */
+export type CmsReferenceEntryPatch = Partial<CmsReferenceEntry> & { entryId: string };
+
 export const REFERENCE_ENTRY_FIELDS = /* GraphQL */ `
     data {
         id

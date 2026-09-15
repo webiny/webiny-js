@@ -9,7 +9,7 @@
     { "path": "../api-headless-cms-ddb-es/tsconfig.build.json" },
     { "path": "../api-opensearch/tsconfig.build.json" },
     { "path": "../api-opensearch-aws/tsconfig.build.json" },
-    { "path": "../api-websockets-ddb/tsconfig.build.json" },
+    { "path": "../api-websockets-aws/tsconfig.build.json" },
     { "path": "../db/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -33,8 +33,8 @@
       "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/api-opensearch-aws/*": ["../api-opensearch-aws/src/*"],
       "@webiny/api-opensearch-aws": ["../api-opensearch-aws/src"],
-      "@webiny/api-websockets-ddb/*": ["../api-websockets-ddb/src/*"],
-      "@webiny/api-websockets-ddb": ["../api-websockets-ddb/src"],
+      "@webiny/api-websockets-aws/*": ["../api-websockets-aws/src/*"],
+      "@webiny/api-websockets-aws": ["../api-websockets-aws/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"]
     }

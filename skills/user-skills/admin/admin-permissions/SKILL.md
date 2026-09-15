@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-permissions
-context: webiny-extensions
 description: >
   Admin-side permission UI registration and DI-backed permission checking.
   Use this skill when adding permission controls to the admin UI — schema-based

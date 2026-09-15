@@ -21,7 +21,7 @@ import {
     isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
-import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch";
+import type { IOpenSearchEntityAttributes as IElasticsearchEntityAttributes } from "@webiny/api-opensearch-aws";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 
 class DdbEsRestoreFromBinImpl implements RestoreFromBinStorageOperation.Interface {

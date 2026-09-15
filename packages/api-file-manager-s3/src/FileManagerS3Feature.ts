@@ -1,6 +1,4 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { S3GraphQLSchema } from "./graphql/S3GraphQLSchema.js";
 import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/feature.js";
 import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.js";
@@ -35,17 +33,9 @@ export const FileManagerS3Feature = createFeature({
         // CoreGraphQLSchemaFactory contributor (declares its resolver dependencies).
         container.register(S3GraphQLSchema);
 
-        // Threat scanning is WCP-gated. The gate MUST run after the per-request WCP license refresh
-        // (a RequestInitializer, pre-auth) — at register() time WcpContext still sees the NullLicense
-        // and the feature would silently never register. So gate + register it in a
-        // RequestContextInitializer (post-auth, post-license).
-        container.registerInstance(RequestContextInitializer, {
-            async init(ctx: Record<string, any>) {
-                const wcp = ctx.container.resolve(WcpContext);
-                if (wcp.canUseFileManagerThreatDetection()) {
-                    ApplyThreatScanningFeature.register(ctx.container);
-                }
-            }
-        });
+        // Threat scanning is WCP-gated, but the license is per-request (loaded post-register). Register
+        // unconditionally; CreateFileWithThreatScanDecorator + the GuardDuty event handler both guard
+        // on canUseFileManagerThreatDetection() at request time and no-op/pass-through when unlicensed.
+        ApplyThreatScanningFeature.register(container);
     }
 });

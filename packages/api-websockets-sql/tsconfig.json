@@ -5,7 +5,8 @@
     { "path": "../api-core-sql" },
     { "path": "../api-websockets" },
     { "path": "../error" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../api-core" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,7 +22,9 @@
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
     }
   }
 }

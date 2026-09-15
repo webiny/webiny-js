@@ -1,8 +1,7 @@
 ---
 name: webiny-admin-website-builder-catalog
-context: webiny-api
 description: >
-  admin/website-builder — 63 abstractions.
+  admin/website-builder — 65 abstractions.
 ---
 
 # admin/website-builder
@@ -124,12 +123,6 @@ which can be mutated in place.
 
 ---
 
-**Name:** `CompactEditorConfig`
-**Import:** `import { CompactEditorConfig } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.tsx`
-
----
-
 **Name:** `createCommand`
 **Import:** `import { createCommand } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/createCommand.ts`
@@ -144,19 +137,19 @@ which can be mutated in place.
 
 **Name:** `Divider`
 **Import:** `import { Divider } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `DropDown`
 **Import:** `import { DropDown } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `DropDownItem`
 **Import:** `import { DropDownItem } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -172,15 +165,9 @@ which can be mutated in place.
 
 ---
 
-**Name:** `ExpandedEditorConfig`
-**Import:** `import { ExpandedEditorConfig } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.tsx`
-
----
-
 **Name:** `getNodeFromSelection`
 **Import:** `import { getNodeFromSelection } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -193,26 +180,45 @@ which can be mutated in place.
 **Name:** `Klass`
 **Kind:** type
 **Import:** `import type { Klass } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
+
+---
+
+**Name:** `LexicalEditor`
+**Import:** `import { LexicalEditor } from "webiny/admin/website-builder/lexical"`
+**Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditor.tsx`
+
+---
+
+**Name:** `LexicalEditorConfig`
+**Import:** `import { LexicalEditorConfig } from "webiny/admin/website-builder/lexical"`
+**Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.tsx`
+
+---
+
+**Name:** `LexicalEditorProps`
+**Kind:** type
+**Import:** `import type { LexicalEditorProps } from "webiny/admin/website-builder/lexical"`
+**Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditor.tsx`
 
 ---
 
 **Name:** `LexicalHtmlRenderer`
 **Import:** `import { LexicalHtmlRenderer } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `LexicalNode`
 **Kind:** type
 **Import:** `import type { LexicalNode } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `PageEditorConfig`
 **Import:** `import { PageEditorConfig } from "webiny/admin/website-builder/page/editor"`
-**Source:** `@webiny/app-website-builder/modules/pages/PageEditor/PageEditorConfig.tsx`
+**Source:** `@webiny/app-website-builder/presentation/pages/PageEditor/PageEditorConfig.tsx`
 
 ---
 
@@ -230,13 +236,13 @@ which can be mutated in place.
 
 **Name:** `PageSettingsGroup`
 **Import:** `import { PageSettingsGroup } from "webiny/admin/website-builder/page/editor"`
-**Source:** `@webiny/app-website-builder/modules/pages/PageEditor/PageSettings/index.ts`
+**Source:** `@webiny/app-website-builder/presentation/pages/PageEditor/PageSettings/index.ts`
 
 ---
 
 **Name:** `PageSettingsGroupModifier`
 **Import:** `import { PageSettingsGroupModifier } from "webiny/admin/website-builder/page/editor"`
-**Source:** `@webiny/app-website-builder/modules/pages/PageEditor/PageSettings/index.ts`
+**Source:** `@webiny/app-website-builder/presentation/pages/PageEditor/PageSettings/index.ts`
 
 ---
 
@@ -249,6 +255,12 @@ which can be mutated in place.
 **Name:** `PageTypeProvider`
 **Import:** `import { PageTypeProvider } from "webiny/admin/website-builder"`
 **Source:** `@webiny/app-website-builder/presentation/pages/CreatePage/abstractions.ts`
+
+---
+
+**Name:** `PreviewUrlModifier`
+**Import:** `import { PreviewUrlModifier } from "webiny/admin/website-builder"`
+**Source:** `@webiny/app-website-builder/features/previewUrl/abstractions.ts`
 
 ---
 
@@ -284,13 +296,13 @@ which can be mutated in place.
 
 **Name:** `useCurrentElement`
 **Import:** `import { useCurrentElement } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useCurrentSelection`
 **Import:** `import { useCurrentSelection } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -302,7 +314,7 @@ which can be mutated in place.
 
 **Name:** `useDeriveValueFromSelection`
 **Import:** `import { useDeriveValueFromSelection } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -333,7 +345,7 @@ which can be mutated in place.
 
 **Name:** `useFontColorPicker`
 **Import:** `import { useFontColorPicker } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -345,19 +357,19 @@ which can be mutated in place.
 
 **Name:** `useIsMounted`
 **Import:** `import { useIsMounted } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useLexicalEditorConfig`
 **Import:** `import { useLexicalEditorConfig } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `usePageEditorConfig`
 **Import:** `import { usePageEditorConfig } from "webiny/admin/website-builder/page/editor"`
-**Source:** `@webiny/app-website-builder/modules/pages/PageEditor/usePageEditorConfig.ts`
+**Source:** `@webiny/app-website-builder/presentation/pages/PageEditor/usePageEditorConfig.ts`
 
 ---
 
@@ -369,7 +381,7 @@ which can be mutated in place.
 
 **Name:** `useRichTextEditor`
 **Import:** `import { useRichTextEditor } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
@@ -389,13 +401,13 @@ which can be mutated in place.
 
 **Name:** `useTextAlignmentAction`
 **Import:** `import { useTextAlignmentAction } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 
 **Name:** `useTypographyAction`
 **Import:** `import { useTypographyAction } from "webiny/admin/website-builder/lexical"`
-**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+**Source:** `@webiny/lexical-editor/exports/admin/ui/lexical.ts`
 
 ---
 

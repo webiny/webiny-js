@@ -7,7 +7,7 @@ import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { ListGroupsStorageOperation } from "~/features/shared/storageOperations/group/ListGroupsStorageOperation.js";
 import { CreateGroupStorageOperation } from "~/features/shared/storageOperations/group/CreateGroupStorageOperation.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { toSlug } from "~/utils/toSlug.js";
+import { StringFormatter } from "@webiny/api-core/features/stringFormatter/index.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import type { CmsGroup } from "~/types/index.js";
 
@@ -27,7 +27,8 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
         private listGroups: ListGroupsStorageOperation.Interface,
         private createGroup: CreateGroupStorageOperation.Interface,
-        private tenantContext: TenantContext.Interface
+        private tenantContext: TenantContext.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {}
 
     async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -87,7 +88,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Generate slug from name
-        const baseSlug = toSlug(group.name);
+        const baseSlug = this.stringFormatter.slugify(group.name);
         const existingBySlug = await this.listGroups.execute({
             where: {
                 tenant,
@@ -114,6 +115,7 @@ export const CreateGroupRepository = RepositoryAbstraction.createImplementation(
         PluginGroupsProvider,
         ListGroupsStorageOperation,
         CreateGroupStorageOperation,
-        TenantContext
+        TenantContext,
+        StringFormatter
     ]
 });

@@ -33,7 +33,8 @@ export class Theme {
             colors: input?.colors ?? [],
             typography: {
                 ...input?.typography
-            }
+            },
+            allowCustomColors: input.allowCustomColors
         };
     }
 }

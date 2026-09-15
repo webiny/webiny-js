@@ -1,5 +1,5 @@
 import type { Container } from "@webiny/di";
-import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
+import { LifecycleEventTracker } from "@webiny/api/testing/lifecycleTracker.js";
 import {
     FileAfterCreateEventHandler,
     FileBeforeCreateEventHandler

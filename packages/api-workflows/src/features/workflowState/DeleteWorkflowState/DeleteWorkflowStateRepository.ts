@@ -1,16 +1,17 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
-import { WorkflowStateModel } from "~/domain/workflowState/abstractions.js";
+import { WorkflowStateModelProvider } from "~/domain/workflowState/abstractions.js";
 import { DeleteWorkflowStateRepository as Repository } from "./abstractions.js";
 
 class DeleteWorkflowStateRepositoryImpl implements Repository.Interface {
     constructor(
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private model: WorkflowStateModel.Interface
+        private modelProvider: WorkflowStateModelProvider.Interface
     ) {}
 
     async execute(id: string): Repository.Return {
-        await this.deleteEntry.execute(this.model, id);
+        const model = await this.modelProvider.get();
+        await this.deleteEntry.execute(model, id);
 
         return Result.ok();
     }
@@ -18,5 +19,5 @@ class DeleteWorkflowStateRepositoryImpl implements Repository.Interface {
 
 export const DeleteWorkflowStateRepository = Repository.createImplementation({
     implementation: DeleteWorkflowStateRepositoryImpl,
-    dependencies: [DeleteEntryUseCase, WorkflowStateModel]
+    dependencies: [DeleteEntryUseCase, WorkflowStateModelProvider]
 });

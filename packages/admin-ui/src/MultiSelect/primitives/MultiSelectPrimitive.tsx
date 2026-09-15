@@ -128,7 +128,7 @@ const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProp
                 )}
                 style={{
                     width: "var(--radix-popover-trigger-width)",
-                    maxHeight: "var(--radix-popover-content-available-height, 24rem)"
+                    maxHeight: "min(250px, var(--radix-popover-content-available-height, 250px))"
                 }}
                 align={"start"}
                 sideOffset={4}

@@ -8,6 +8,8 @@ import { RequireNewPassword } from "./components/RequireNewPassword.js";
 import { RequestPasswordResetCode } from "./components/RequestPasswordResetCode.js";
 import { SetNewPassword } from "./components/SetNewPassword.js";
 import { PasswordResetCodeSent } from "~/admin/presentation/Cognito/components/PasswordResetCodeSent.js";
+import { ConfirmTotpCode } from "./components/ConfirmTotpCode.js";
+import { SetupTotp } from "./components/SetupTotp.js";
 
 export interface CognitoLoginScreenProps {
     region: string;
@@ -74,6 +76,21 @@ export const CognitoLoginScreen = observer((props: CognitoLoginScreenProps) => {
                                 presenter.confirmPasswordReset(code, password)
                             }
                             onCancel={() => presenter.showSignIn()}
+                        />
+                    )}
+
+                    {vm.authState === "confirmTotpCode" && (
+                        <ConfirmTotpCode
+                            vm={vm.confirmTotpCode}
+                            onSubmit={code => presenter.confirmTotpCode(code)}
+                            onCancel={() => presenter.showSignIn()}
+                        />
+                    )}
+
+                    {vm.authState === "setupTotp" && (
+                        <SetupTotp
+                            vm={vm.setupTotp}
+                            onSubmit={code => presenter.verifyTotpSetup(code)}
                         />
                     )}
 

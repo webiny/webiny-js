@@ -2,7 +2,7 @@ import { createFeature, type Container } from "@webiny/feature/api";
 import { GraphQLContextualSchema } from "@webiny/api-graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/abstractions.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AuditLogsContext, AuditLogsStorage } from "./abstractions.js";
 import type { GraphQLSchema } from "graphql";
 import { createAuditLogsContextValue } from "./context/AuditLogsContextValue.js";
@@ -20,6 +20,12 @@ const getDeleteLogsAfterDays = (days?: number): number => {
 export const AuditLogsFeature = createFeature({
     name: "AuditLogs",
     register(container: Container, config: AuditLogsFeatureConfig = {}) {
+        // Audit logs are license-gated — check at register time (license is fresh pre-register) so
+        // nothing wires up without the entitlement.
+        if (!container.resolve(FeatureFlags).get().isEnabled("auditLogs")) {
+            return;
+        }
+
         container.register(AuditLogsGraphQLSchema);
 
         let initialized = false;
@@ -35,11 +41,6 @@ export const AuditLogsFeature = createFeature({
                     return STUB_SCHEMA;
                 }
                 initialized = true;
-
-                const wcpContext = container.resolve(WcpContext);
-                if (!wcpContext.canUseFeature("auditLogs")) {
-                    return STUB_SCHEMA;
-                }
 
                 const storage = container.resolve(AuditLogsStorage);
                 const eventPublisher = container.resolve(EventPublisher);

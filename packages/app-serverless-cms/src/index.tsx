@@ -2,7 +2,6 @@ export { Admin } from "./Admin.js";
 export type { AdminProps } from "./Admin.js";
 export {
     useApp,
-    useWcp,
     useTags,
     Dashboard,
     DashboardRenderer,

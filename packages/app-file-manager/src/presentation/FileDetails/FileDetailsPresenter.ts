@@ -78,6 +78,12 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
         }
     }
 
+    setFile(file: FmFile): void {
+        runInAction(() => {
+            this.file = file;
+        });
+    }
+
     async saveFile(): Promise<boolean> {
         if (!this.file) {
             return false;

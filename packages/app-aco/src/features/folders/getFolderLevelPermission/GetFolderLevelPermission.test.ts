@@ -1,40 +1,32 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { ListCache } from "~/features/folders/cache/index.js";
 import { FoldersContext } from "~/features/folders/abstractions.js";
 import { FoldersCache } from "~/features/folders/abstractions.js";
 import { GetFolderLevelPermissionFeature } from "~/features/folders/getFolderLevelPermission/feature.js";
 import { GetFolderLevelPermissionUseCase } from "~/features/folders/getFolderLevelPermission/abstractions.js";
-import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
+import { FeatureFlagsService } from "@webiny/app-admin/features/featureFlags/abstractions.js";
 import { Folder } from "~/domain/folder/Folder.js";
-import type { ILicense } from "@webiny/wcp/types";
-import { License, WCP_FEATURE_LABEL } from "@webiny/wcp";
+import { FeatureFlags } from "@webiny/feature-flags";
 
-class WcpServiceMock implements WcpService.Interface {
-    private readonly license: ILicense;
+class FeatureFlagsServiceMock implements FeatureFlagsService.Interface {
+    private readonly flags: FeatureFlags;
 
     constructor(flpEnabled: boolean) {
-        this.license = License.fromLicenseDto(
-            createTestWcpLicense({ folderLevelPermissions: flpEnabled })
-        );
+        this.flags = new FeatureFlags({
+            advancedAccessControlLayer: flpEnabled ? { folderLevelPermissions: true } : false
+        });
     }
 
-    canUseFeature(featureName: keyof typeof WCP_FEATURE_LABEL): boolean {
-        return this.license.canUseFeature(featureName);
-    }
-
-    getProject(): ILicense {
-        return this.license;
+    getFlags(): FeatureFlags {
+        return this.flags;
     }
 
     isLoaded(): boolean {
         return true;
     }
 
-    loadProject(): Promise<void> {
-        return Promise.resolve(undefined);
-    }
+    async loadFlags(): Promise<void> {}
 }
 
 describe("GetFolderLevelPermission", () => {
@@ -83,7 +75,7 @@ describe("GetFolderLevelPermission", () => {
             })
         ]);
 
-        container.registerInstance(WcpService, new WcpServiceMock(flpEnabled));
+        container.registerInstance(FeatureFlagsService, new FeatureFlagsServiceMock(flpEnabled));
         container.registerInstance(FoldersContext, { type });
         container.registerInstance(FoldersCache, foldersCache);
 

@@ -54,7 +54,7 @@ const Editor = () => {
     };
 
     const canDropIntoField = (field: CmsModelField, draggable: DragSource) => {
-        const ft = getFieldType(field.type);
+        const ft = getFieldType(field);
         if (ft && typeof ft.canAccept === "function" && !ft.canAccept(field, draggable)) {
             return false;
         }
@@ -72,7 +72,7 @@ const Editor = () => {
                 return cb(item);
             }
 
-            const parentFieldType = getFieldType(parent.type);
+            const parentFieldType = getFieldType(parent);
             if (parentFieldType) {
                 const allowLayout = parentFieldType.allowLayout ?? true;
                 if (!allowLayout) {

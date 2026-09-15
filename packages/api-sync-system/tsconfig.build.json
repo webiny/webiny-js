@@ -12,7 +12,8 @@
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-core-ddb/tsconfig.build.json" }
+    { "path": "../api-core-ddb/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -42,7 +43,9 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
-      "@webiny/api-core-ddb": ["../api-core-ddb/src"]
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
     }
   }
 }

@@ -10,6 +10,7 @@ export interface HcmsBulkActionsContext extends BaseContext, CmsContext, TasksCo
  */
 
 export interface IBulkActionOperationInput {
+    actionName: string;
     modelId: string;
     ids: string[];
     data?: Record<string, any>;
@@ -40,6 +41,7 @@ export enum BulkActionOperationByModelAction {
 }
 
 export interface IBulkActionOperationByModelInput {
+    actionName: string;
     modelId: string;
     identity?: ITaskIdentity;
     where?: Record<string, any>;

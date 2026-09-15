@@ -52,7 +52,9 @@ class FieldEditorPresenterImpl implements IFieldEditorPresenter {
     init(field: CmsModelField, model: CmsModel) {
         this.originalField = cloneDeep(field);
 
-        const fieldType = this.fieldTypes.find(ft => ft.type === field.type);
+        const fieldType =
+            this.fieldTypes.find(ft => ft.matches?.(field)) ??
+            this.fieldTypes.find(ft => ft.type === field.type);
         if (!fieldType) {
             throw new Error(`Unknown field type: ${field.type}`);
         }

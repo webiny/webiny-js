@@ -4,7 +4,7 @@ import { UpdateFlpUseCase } from "./UpdateFlpUseCase.js";
 import { UpdateFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AcoFlpCrud } from "~/features/folder/shared/abstractions.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 
@@ -15,7 +15,7 @@ export const UpdateFlpFeature = createFeature({
             return new UpdateFlpUseCase(
                 container.resolve(AcoFlpCrud),
                 container.resolve(ListFoldersUseCase),
-                container.resolve(FolderModel),
+                container.resolve(FolderModelProvider),
                 container.resolve(UpdateEntryUseCase),
                 container.resolve(IdentityContext)
             );

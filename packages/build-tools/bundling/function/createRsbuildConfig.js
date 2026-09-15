@@ -2,7 +2,7 @@ import path from "path";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
-const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 4_718_592; // 4.5 MB
+const DEFAULT_WEBINY_INFRA_API_MAX_BUNDLE_SIZE = 6_291_456; // 6 MB
 
 export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
     // Must be a dynamic import — see rslibCompile.js for the reason.
@@ -57,6 +57,21 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
         },
         tools: {
             rspack: {
+                output: {
+                    // Declares the entry's exports as the bundle's public API, so ALL of them survive.
+                    //
+                    // Nothing imports an entry's exports, so without this rspack treats any unused one
+                    // as dead: it dropped `streamHandler` AND every module reachable only from it. The
+                    // api bundle then exported just `handler` and contained zero streaming code, so the
+                    // response-streaming Lambda (`handler.streamHandler`) had no handler to load and
+                    // failed at cold start. `handler` survived only by accident of being first.
+                    //
+                    // To verify after changing anything here, grep the built bundle:
+                    //   .webiny/workspace/apps/api/graphql/build/_handler.mjs
+                    // It must export BOTH `handler` and `streamHandler`. Removing this line takes the
+                    // export count back to one — silently, with a green build.
+                    library: { type: "module" }
+                },
                 ...(enforceMaxBundleSize && {
                     performance: {
                         hints: "error",
@@ -74,11 +89,11 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                     ? [/^sharp$/, /^knex(\/|$)/]
                     : [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/, /^knex(\/|$)/],
                 plugins: [
-                    // This is necessary to enable JSDOM usage in Lambda.
+                    // Ignore optional `canvas` native module required by jsdom.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
                     new rspack.IgnorePlugin({
-                        resourceRegExp: /canvas/,
-                        contextRegExp: /jsdom$/
+                        resourceRegExp: /^canvas$/,
+                        contextRegExp: /jsdom/
                     })
                 ],
                 resolve: {
@@ -87,7 +102,19 @@ export const createRsbuildConfig = async ({ cwd, enforceMaxBundleSize }) => {
                         // Not needed in Lambda environment and can cause bundling/deployment issues.
                         bufferutil: false
                     }
-                }
+                },
+                // bree's root-jobs loader does `await import(importUrl)` on a path it builds at runtime,
+                // which rspack can't resolve statically, so it reports a critical dependency. That import
+                // sits behind `if (this.config.root && ...)` (node_modules/bree/src/index.js), and
+                // BreeSchedulerService constructs Bree with `root: false` — the branch never runs, and
+                // nothing is missing from the bundle. Matched narrowly so a genuine expression-based
+                // import anywhere else still gets reported.
+                ignoreWarnings: [
+                    {
+                        module: /node_modules[\\/]bree[\\/]/,
+                        message: /Critical dependency: the request of a dependency is an expression/
+                    }
+                ]
             }
         },
         mode,

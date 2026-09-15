@@ -10,6 +10,8 @@ import { CommandHandlers } from "~/BaseEditor/commandHandlers/index.js";
 import { ElementSettings } from "./Sidebar/ElementSettings/ElementSettings.js";
 import { ElementInputRenderers } from "./ElementInputRenderers.js";
 import { ContentPreviewConfig } from "./Content/ContentPreviewConfig.js";
+import { CloneElementAction } from "./Sidebar/ElementActions/CloneElementAction.js";
+import { DeleteElementAction } from "./Sidebar/ElementActions/DeleteElementAction.js";
 
 const { Ui } = EditorConfig;
 
@@ -73,6 +75,16 @@ export const DefaultEditorConfig = React.memo(() => {
                     group={"element"}
                     element={<DocumentStateEditor />}
                 />*/}
+                {/* Element Actions (dropdown menu items) */}
+                <EditorConfig.ElementAction
+                    name={"cloneElement"}
+                    element={<CloneElementAction />}
+                />
+                <EditorConfig.ElementAction
+                    name={"deleteElement"}
+                    element={<DeleteElementAction />}
+                    after={"cloneElement"}
+                />
             </EditorConfig>
         </>
     );

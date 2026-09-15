@@ -1,6 +1,5 @@
 ---
 name: webiny-admin-env-config-catalog
-context: webiny-api
 description: >
   admin/env-config — 2 abstractions.
 ---

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useDialog, FormView } from "@webiny/app-admin";
+import { BetaBadge } from "@webiny/admin-ui";
 import { Dialog, OverlayLoader, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import type { IncomingGenericData } from "@webiny/app-websockets";
@@ -136,7 +137,11 @@ export const GenerateContentDialog = observer(() => {
         <Dialog
             open={true}
             onClose={closeDialog}
-            title="Generate Content"
+            title={
+                <>
+                    Generate Content <BetaBadge />
+                </>
+            }
             size={"lg"}
             actions={
                 <>

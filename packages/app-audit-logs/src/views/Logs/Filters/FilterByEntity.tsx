@@ -34,9 +34,16 @@ export const FilterByEntity = () => {
         ];
     }, [data.app]);
 
-    if (options.length === 0) {
-        return null;
-    }
+    const disabled = options.length === 0;
 
-    return <Select {...bind} size={"md"} placeholder={"Filter by Entity"} options={options} />;
+    return (
+        <Select
+            {...bind}
+            label={"Entity"}
+            size={"md"}
+            placeholder={"All entities"}
+            options={disabled ? [] : options}
+            disabled={disabled}
+        />
+    );
 };

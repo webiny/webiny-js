@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { runRequestContextInitializers } from "@webiny/event-handler-core";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
@@ -111,9 +110,9 @@ describe("WriteFileMetadata (asset-delivery metadata write)", () => {
     });
 
     // Reproduces the DEPLOYED wiring: FileManagerS3Feature registers WriteFileMetadataFeature, which
-    // contributes a RequestContextInitializer that the HTTP layer runs before the resolver. If this
-    // path fails to register/run the handler, uploads succeed but delivery 404s.
-    it("writes when the handler is wired via WriteFileMetadataFeature's RequestContextInitializer", async () => {
+    // contributes the metadata event handlers. If this path fails to register them, uploads succeed
+    // but delivery 404s.
+    it("writes when the handler is wired via WriteFileMetadataFeature's event handlers", async () => {
         captured.length = 0;
         const container = new Container();
         container.registerInstance(GlobalKeyValueStore, createFakeKeyValueStore());
@@ -122,9 +121,6 @@ describe("WriteFileMetadata (asset-delivery metadata write)", () => {
 
         // Mimic FileManagerS3Feature registering the write feature (DI-native, direct).
         WriteFileMetadataFeature.register(container);
-
-        // The HTTP layer runs post-auth initializers before dispatching to the resolver.
-        await runRequestContextInitializers(container);
 
         const file = makeFile();
         await container.resolve(EventPublisher).publish(new FileAfterCreateEvent({ file }));

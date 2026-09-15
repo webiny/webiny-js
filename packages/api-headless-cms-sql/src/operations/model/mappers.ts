@@ -25,7 +25,8 @@ export const modelToRow = (model: StorageCmsModel): IModelRow => {
         createdBy_type: model.createdBy?.type ?? null,
         createdBy: model.createdBy ? JSON.stringify(model.createdBy) : null,
         createdOn: model.createdOn ?? null,
-        savedOn: model.savedOn ?? null
+        savedOn: model.savedOn ?? null,
+        settings: model.settings ? JSON.stringify(model.settings) : null
     };
 };
 
@@ -50,6 +51,7 @@ export const rowToModel = (row: IModelRow): StorageCmsModel => {
         authorization: row.authorization ? JSON.parse(row.authorization) : undefined,
         createdBy: row.createdBy ? JSON.parse(row.createdBy) : undefined,
         createdOn: row.createdOn ?? undefined,
-        savedOn: row.savedOn ?? undefined
+        savedOn: row.savedOn ?? undefined,
+        settings: row.settings ? JSON.parse(row.settings) : undefined
     };
 };

@@ -35,7 +35,7 @@ export {
 } from "@webiny/website-builder-sdk";
 
 // Vue-specific exports
-export { createComponent } from "./createComponent.js";
+export { createComponent } from "@webiny/website-builder-sdk";
 export * from "./components/index.js";
 export * from "./editorComponents/index.js";
 export * from "./composables/useViewport.js";

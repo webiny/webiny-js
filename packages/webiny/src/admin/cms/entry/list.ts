@@ -5,3 +5,5 @@ export { ListEntriesGraphQLFieldSelection } from "@webiny/app-headless-cms/featu
 export type { IListEntriesGraphQLFieldSelection } from "@webiny/app-headless-cms/features/contentEntry/listEntries/abstractions.js";
 export { GetEntryGraphQLFieldSelection } from "@webiny/app-headless-cms/features/contentEntry/getEntry/abstractions.js";
 export type { IGetEntryGraphQLFieldSelection } from "@webiny/app-headless-cms/features/contentEntry/getEntry/abstractions.js";
+export { BulkActionFeature } from "@webiny/app-headless-cms/features/contentEntry/bulkAction/feature.js";
+export { BulkActionUseCase } from "@webiny/app-headless-cms/features/contentEntry/bulkAction/abstractions.js";

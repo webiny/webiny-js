@@ -1,6 +1,6 @@
 import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils";
-import { createJob } from "./jobs";
+import { createJob, createSlackFailureJob } from "./jobs";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -116,7 +116,8 @@ export const release = createWorkflow({
             checkout: {
                 path: BRANCH_NAME,
                 ref: BRANCH_NAME,
-                "fetch-depth": 0
+                "fetch-depth": 0,
+                token: "${{ secrets.GH_TOKEN }}"
             },
             steps: [
                 ...yarnCacheSteps,
@@ -145,6 +146,10 @@ export const release = createWorkflow({
                     { "working-directory": BRANCH_NAME }
                 )
             ]
+        }),
+        notifySlackOnFailure: createSlackFailureJob({
+            needs: ["constants", "build", "npmReleaseBeta", "npmReleaseLatest"],
+            label: "📦 Release"
         })
     }
 });

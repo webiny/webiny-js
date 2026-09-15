@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -7,7 +7,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/a
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateTenantUseCase } from "@webiny/api-core/exports/api/tenancy.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { RegisterExtensionPlugin } from "@webiny/handler";
 import { BackgroundTasksFeature, TasksCrud } from "@webiny/background-tasks/api";
@@ -17,7 +17,7 @@ import { TimerFeature } from "@webiny/utils/features/Timer/feature.js";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { ProcessEnvFeature } from "@webiny/stdlib/node";
 import { createTestOpenSearchClient } from "@webiny/api-opensearch/testing";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getStorageOps } from "@webiny/api-core/testing/environment.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -26,6 +26,7 @@ import type { CmsContext } from "~/types";
 import { TestIdentity, TestAuthenticator } from "@webiny/api-core-testing";
 import { TestPermissions, TestAuthorizer } from "@webiny/api-core-testing";
 import { processLegacyPlugins } from "~tests/helpers/bridgeLegacyPlugins";
+import type { CreateTenantInput } from "@webiny/api-core/types/tenancy.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -71,7 +72,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const container = rootContainer.createChildContainer();
         container.registerInstance(RequestContainer, container);
 
-        const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+        const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, cmsStorage.plugins);
@@ -88,7 +89,7 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
             { id: "webiny", name: "Webiny", parent: "" },
             { id: "dev", name: "Dev", parent: "" },
             { id: "sales", name: "Sales", parent: "" }
-        ]) {
+        ] as CreateTenantInput[]) {
             try {
                 await createTenantUseCase.execute(tenant);
             } catch {
@@ -130,10 +131,6 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: CreateHand
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
-        }
-        const initializers = container.resolveAll(RequestContextInitializer);
-        for (const initializer of initializers) {
-            await initializer.init(ctx);
         }
         const schemas = container.resolveAll(GraphQLContextualSchema);
         for (const schema of schemas) {

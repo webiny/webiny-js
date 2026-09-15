@@ -75,9 +75,8 @@ const FontSizeDropdown = ({ sizes }: FontSizeDropdownProps) => {
         >
             {fontSizeOptions.map(option => (
                 <DropDownItem
-                    className={`item typography-item ${
-                        selectedFontSize === option.value ? "active dropdown-item-active" : ""
-                    }`}
+                    className="item typography-item"
+                    selected={selectedFontSize === option.value}
                     onClick={() => onFontSizeSelect(option.value)}
                     key={option.value}
                 >

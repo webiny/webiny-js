@@ -31,6 +31,11 @@ export function resolveFieldPath(fieldPath: string, bindParentName?: string): st
         return fieldPath;
     }
 
+    if (fieldPath.startsWith("$.")) {
+        const relative = fieldPath.slice(2);
+        return bindParentName ? `${bindParentName}.${relative}` : relative;
+    }
+
     if (!bindParentName) {
         // No parent context, replace $ with 0 as fallback
         return fieldPath.replace(/\$/g, "0");

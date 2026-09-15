@@ -1,5 +1,9 @@
 import React from "react";
-import { ExtensionDefinitions, Project } from "@webiny/project/extensions/index.js";
+import {
+    AdminAfterBuild,
+    ExtensionDefinitions,
+    Project
+} from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 
 const p = createPathResolver(import.meta.dirname);
@@ -14,6 +18,7 @@ export const ProjectServer = () => {
     return (
         <>
             <Project />
+            <AdminAfterBuild src={p("ProjectServer/TelemetryNoLongerNewUser.js")} />
             <ExtensionDefinitions src={p("definitions.js")} />
         </>
     );

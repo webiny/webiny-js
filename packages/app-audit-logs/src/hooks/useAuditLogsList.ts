@@ -16,9 +16,6 @@ export interface UseAuditLogs {
     after?: string;
     sorting: DataTableSorting;
     setSorting: OnDataTableSortingChange;
-    showingFilters: boolean;
-    showFilters: () => void;
-    hideFilters: () => void;
 }
 
 interface ListVariables {
@@ -45,14 +42,19 @@ export const useAuditLogsList = (): UseAuditLogs => {
         cursor: null
     });
 
+    const resetPagination = useCallback(() => {
+        setAccumulatedRecords([]);
+        setMeta({ hasMoreItems: false, cursor: null });
+    }, []);
+
     const setWhere = useCallback((where: Partial<IListAuditLogsVariablesWhere>) => {
         setVariables(prev => ({ ...prev, where, after: undefined }));
-        setAccumulatedRecords([]);
+        resetPagination();
     }, []);
 
     const setSort = useCallback((sort: "ASC" | "DESC") => {
         setVariables(prev => ({ ...prev, sort, after: undefined }));
-        setAccumulatedRecords([]);
+        resetPagination();
     }, []);
 
     const setAfter = useCallback((after?: string) => {
@@ -63,7 +65,6 @@ export const useAuditLogsList = (): UseAuditLogs => {
         setVariables(prev => ({ ...prev, limit }));
     }, []);
 
-    const [showingFilters, setShowingFilters] = useState(false);
     const [acoSorting, setAcoSorting] = useState<DataTableSorting>([]);
 
     useEffect(() => {
@@ -110,19 +111,14 @@ export const useAuditLogsList = (): UseAuditLogs => {
         records: accumulatedRecords,
         meta,
         listMoreRecords: () => {
-            setAfter(meta.cursor || undefined);
+            if (!loading && meta.cursor) {
+                setAfter(meta.cursor);
+            }
         },
         setWhere,
         sorting,
         setSorting: setAcoSorting,
         setLimit,
-        isListLoadingMore: loading && !!variables.after,
-        showingFilters,
-        showFilters: () => {
-            setShowingFilters(true);
-        },
-        hideFilters: () => {
-            setShowingFilters(false);
-        }
+        isListLoadingMore: loading && !!variables.after
     };
 };

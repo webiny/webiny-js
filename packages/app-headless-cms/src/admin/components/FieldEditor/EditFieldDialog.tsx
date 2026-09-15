@@ -23,8 +23,9 @@ const EditFieldDialog = observer((props: EditFieldDialogProps) => {
     const container = useContainer();
     const presenter = useMemo(() => container.resolve(FieldEditorPresenter), [container]);
     const fieldType = useMemo(() => {
-        return container.resolveAll(CmsFieldType).find(ft => ft.type === field.type);
-    }, [container, field.type]);
+        const all = container.resolveAll(CmsFieldType);
+        return all.find(ft => ft.matches?.(field)) ?? all.find(ft => ft.type === field.type);
+    }, [container, field]);
 
     useEffect(() => {
         presenter.init(field, contentModel);

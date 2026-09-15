@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../ai-chat" },
     { "path": "../api-aco" },
     { "path": "../api-audit-logs" },
     { "path": "../api-core" },
@@ -22,7 +23,6 @@
     { "path": "../api-websockets" },
     { "path": "../api-workflows" },
     { "path": "../background-tasks" },
-    { "path": "../event-handler-core" },
     { "path": "../handler" },
     { "path": "../webhooks" }
   ],
@@ -33,6 +33,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-chat/*": ["../ai-chat/src/*"],
+      "@webiny/ai-chat": ["../ai-chat/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
@@ -73,8 +75,6 @@
       "@webiny/api-workflows": ["../api-workflows/src"],
       "@webiny/background-tasks/*": ["../background-tasks/src/*"],
       "@webiny/background-tasks": ["../background-tasks/src"],
-      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
-      "@webiny/event-handler-core": ["../event-handler-core/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/webhooks/*": ["../webhooks/src/*"],

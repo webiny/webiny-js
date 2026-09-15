@@ -6,7 +6,7 @@ import {
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import type { CmsEntryFolder, CreateFolderParams, Folder } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError, FolderValidationError } from "~/domain/folder/errors.js";
@@ -18,10 +18,11 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         private createEntry: CreateEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private folderModel: FolderModel.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(data: CreateFolderParams): Promise<Result<Folder, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         // Check if folder already exists
         const checkResult = await this.checkExistingFolder({
             type: data.type,
@@ -44,7 +45,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         }
 
         // Create the entry
-        const result = await this.createEntry.execute<CmsEntryFolder>(this.folderModel, {
+        const result = await this.createEntry.execute<CmsEntryFolder>(folderModel, {
             values: {
                 ...data,
                 parentId: data.parentId || null,
@@ -69,9 +70,10 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         parentId?: string | null;
         excludeId?: string;
     }): Promise<Result<void, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const { type, slug, parentId, excludeId } = params;
 
-        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(folderModel, {
             where: {
                 latest: true,
                 values: {
@@ -105,6 +107,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         slug: string;
         parentId?: string | null;
     }): Promise<Result<string, RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const { slug, parentId } = params;
 
         if (!parentId) {
@@ -112,7 +115,7 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
         }
 
         const parentResult = await this.getEntryById.execute<CmsEntryFolder>(
-            this.folderModel,
+            folderModel,
             EntryId.from(parentId).toString()
         );
 
@@ -131,5 +134,10 @@ class CreateFolderRepositoryImpl implements ICreateFolderRepository {
 
 export const CreateFolderRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateFolderRepositoryImpl,
-    dependencies: [CreateEntryUseCase, ListLatestEntriesUseCase, GetEntryByIdUseCase, FolderModel]
+    dependencies: [
+        CreateEntryUseCase,
+        ListLatestEntriesUseCase,
+        GetEntryByIdUseCase,
+        FolderModelProvider
+    ]
 });

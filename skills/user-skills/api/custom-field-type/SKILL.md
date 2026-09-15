@@ -1,6 +1,5 @@
 ---
 name: webiny-api-cms-custom-field-type
-context: webiny-extensions
 description: >
   How to implement a custom CMS field type that integrates with the model builder's
   fluent API. Covers extending DataFieldBuilder, composing validator interfaces,

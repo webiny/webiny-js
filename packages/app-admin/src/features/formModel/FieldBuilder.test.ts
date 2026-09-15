@@ -114,7 +114,7 @@ describe("TextFieldBuilder - options", () => {
         expect(config.label).toBe("Language");
         expect(config.required).toBe(true);
         expect(config.options).toEqual(options);
-        expect(config.renderer).toBe("dropdown");
+        expect(config.renderer).toBe("select");
     });
 
     it("should support reactive options function", () => {
@@ -125,7 +125,7 @@ describe("TextFieldBuilder - options", () => {
 
     it("should auto-switch renderer to dropdown when options are set", () => {
         const config = new TextFieldBuilder().options([{ label: "A", value: "a" }]).build("field");
-        expect(config.renderer).toBe("dropdown");
+        expect(config.renderer).toBe("select");
     });
 
     it("should not override an explicitly set renderer", () => {
@@ -148,7 +148,7 @@ describe("NumberFieldBuilder - options", () => {
 
         expect(config.type).toBe("number");
         expect(config.options).toEqual(options);
-        expect(config.renderer).toBe("dropdown");
+        expect(config.renderer).toBe("select");
     });
 
     it("should not override an explicitly set renderer", () => {
@@ -208,7 +208,7 @@ describe("FieldBuilderRegistry", () => {
             .options([{ label: "A", value: "a" }])
             .build("field");
         expect(config.options).toHaveLength(1);
-        expect(config.renderer).toBe("dropdown");
+        expect(config.renderer).toBe("select");
     });
 });
 

@@ -1,6 +1,5 @@
 ---
 name: webiny-v5-to-v6-migration
-context: webiny-api
 description: >
   Migration patterns for converting v5 Webiny code to v6 architecture. Use this skill when
   migrating existing v5 plugins to v6 features, converting context plugins to DI services,
@@ -349,22 +348,22 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 
 ### Backend: Plugin Classes → v6 Equivalents
 
-| v5 Plugin                                       | v6 Equivalent                                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `ContextPlugin`                                 | DI-registered implementations                                                        |
-| `createContextPlugin`                           | DI-registered implementations                                                        |
-| `CmsModelPlugin`                                | `ModelFactory`                                                                       |
-| `GraphQLSchemaPlugin`                           | `GraphQLSchemaFactory`                                                               |
-| `createGraphQLSchemaPlugin`                     | `GraphQLSchemaFactory`                                                               |
-| `createTaskDefinition`                          | `TaskDefinition`                                                                     |
-| `CmsModelFieldToGraphQLPlugin`                  | `CmsModelFieldToGraphQL`                                                             |
-| `createSecurityRolePlugin`                      | `RoleFactory`                                                                        |
-| `createSecurityTeamPlugin`                      | `TeamFactory`                                                                        |
-| `StorageTransformPlugin`                        | `StorageTransform`                                                                   |
-| `createApiGatewayRoute`                         | `Api.Route` (`webiny.config.tsx`) and `Route.Interface` (imported from `webiny/api`) |
-| `CmsModelFieldValidatorPlugin`                  | `CmsModelFieldValidator`                                                             |
-| `createCmsGraphQLSchemaSorterPlugin`            | `CmsGraphQLSchemaSorter`                                                             |
-| `createCmsEntryElasticsearchBodyModifierPlugin` | `CmsEntryOpenSearchBodyModifier`                                                     |
+| v5 Plugin                                       | v6 Equivalent                                                                                   |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `ContextPlugin`                                 | DI-registered implementations                                                                   |
+| `createContextPlugin`                           | DI-registered implementations                                                                   |
+| `CmsModelPlugin`                                | `ModelFactory`                                                                                  |
+| `GraphQLSchemaPlugin`                           | `GraphQLSchemaFactory`                                                                          |
+| `createGraphQLSchemaPlugin`                     | `GraphQLSchemaFactory`                                                                          |
+| `createTaskDefinition`                          | `TaskDefinition`                                                                                |
+| `CmsModelFieldToGraphQLPlugin`                  | `CmsModelFieldToGraphQL`                                                                        |
+| `createSecurityRolePlugin`                      | `RoleFactory`                                                                                   |
+| `createSecurityTeamPlugin`                      | `TeamFactory`                                                                                   |
+| `StorageTransformPlugin`                        | `StorageTransform`                                                                              |
+| `createApiGatewayRoute`                         | `Api.Route` (`webiny.config.tsx`) and `HttpRouteHandler.Interface` (imported from `webiny/api`) |
+| `CmsModelFieldValidatorPlugin`                  | `CmsModelFieldValidator`                                                                        |
+| `createCmsGraphQLSchemaSorterPlugin`            | `CmsGraphQLSchemaSorter`                                                                        |
+| `createCmsEntryElasticsearchBodyModifierPlugin` | `CmsEntryOpenSearchBodyModifier`                                                                |
 
 ### Admin: React Plugins → AdminConfig API
 

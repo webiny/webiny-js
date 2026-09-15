@@ -53,7 +53,7 @@ class RendererShowcaseModelImpl implements ModelFactory.Interface {
 
                     textDropdown: fields
                         .text()
-                        .renderer("dropdown")
+                        .renderer("select")
                         .label("Dropdown (text)")
                         .description(
                             "A text field with predefined values rendered as a dropdown select."
@@ -170,7 +170,7 @@ class RendererShowcaseModelImpl implements ModelFactory.Interface {
 
                     numberDropdown: fields
                         .number()
-                        .renderer("dropdown")
+                        .renderer("select")
                         .label("Dropdown (number)")
                         .description(
                             "A number field with predefined values rendered as a dropdown select."

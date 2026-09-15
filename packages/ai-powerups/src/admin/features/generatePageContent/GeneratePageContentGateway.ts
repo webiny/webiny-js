@@ -11,6 +11,7 @@ const GENERATE_PAGE_CONTENT = /* GraphQL */ `
         $excludedFileIds: [String!]
         $readerPersonaId: String
         $writerPersonaId: String
+        $additionalFileIds: [String!]
     ) {
         aiPowerUps {
             generatePageContent(
@@ -21,6 +22,7 @@ const GENERATE_PAGE_CONTENT = /* GraphQL */ `
                 excludedFileIds: $excludedFileIds
                 readerPersonaId: $readerPersonaId
                 writerPersonaId: $writerPersonaId
+                additionalFileIds: $additionalFileIds
             )
         }
     }

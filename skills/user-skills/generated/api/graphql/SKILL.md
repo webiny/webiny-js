@@ -1,6 +1,5 @@
 ---
 name: webiny-api-graphql-catalog
-context: webiny-api
 description: >
   api/graphql — 7 abstractions.
 ---

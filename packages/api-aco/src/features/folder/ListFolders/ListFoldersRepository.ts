@@ -4,7 +4,7 @@ import {
     ListFoldersRepository as RepositoryAbstraction
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import type { CmsEntryFolder, ListFoldersParams } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
@@ -15,12 +15,13 @@ import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 class ListFoldersRepositoryImpl implements IListFoldersRepository {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private folderModel: FolderModel.Interface,
+        private folderModelProvider: FolderModelProvider.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface,
         private cmsSortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(params: ListFoldersParams): RepositoryAbstraction.Return {
+        const folderModel = await this.folderModelProvider.get();
         const { sort, where } = params;
 
         const listSort =
@@ -29,15 +30,15 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
                 values_title: "ASC"
             } as unknown as ListSort);
 
-        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(folderModel, {
             ...params,
             sort: this.cmsSortMapper.map({
                 input: createListSort(listSort),
-                fields: this.folderModel.fields
+                fields: folderModel.fields
             }),
             where: this.cmsWhereMapper.map({
                 input: where,
-                fields: this.folderModel.fields
+                fields: folderModel.fields
             })
         });
 
@@ -53,5 +54,5 @@ class ListFoldersRepositoryImpl implements IListFoldersRepository {
 
 export const ListFoldersRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFoldersRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FolderModel, CmsWhereMapper, CmsSortMapper]
+    dependencies: [ListLatestEntriesUseCase, FolderModelProvider, CmsWhereMapper, CmsSortMapper]
 });

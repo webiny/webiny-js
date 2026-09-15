@@ -57,8 +57,9 @@ const BASE_TYPE_DEFS = /* GraphQL */ `
 
 /**
  * The static ACO base schema (root Query.aco / Mutation.aco wrappers + shared types). The dynamic
- * folder schema (field plugins + folders schema) is built per-request by AcoInitializer, which needs
- * the resolved per-tenant folder model. The filter schema is contributed by addFilterSchema.
+ * folder schema (field plugins + folders schema) is built by AcoFolderSchemaFactory, which awaits
+ * the per-tenant folder model when the schema is built. The filter schema comes from
+ * addFilterSchema.
  */
 export const addAcoBaseSchema = (builder: IGraphQLSchemaBuilder): void => {
     builder.addTypeDefs(BASE_TYPE_DEFS);

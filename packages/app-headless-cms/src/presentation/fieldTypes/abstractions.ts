@@ -43,6 +43,20 @@ export interface ICmsFieldType {
     readonly canEditSettings?: boolean;
     readonly allowLayout?: boolean;
 
+    /**
+     * Deprecated field types stay usable but are hidden from the "add field"
+     * palette unless the current model already contains a field of this type.
+     */
+    readonly deprecated?: boolean;
+
+    /**
+     * Optional override for resolving this descriptor for a given field, used when
+     * a field's stored `type` is not enough to pick the right descriptor (e.g. the
+     * Asset field is stored as `object` but must resolve to the Asset descriptor).
+     * Checked before the default `ft.type === field.type` match.
+     */
+    matches?(field: CmsModelField): boolean;
+
     canAccept?(field: CmsModelField, draggable: DragSource): boolean;
 
     renderInfo?(params: { field: CmsModelField; model: CmsModel }): React.ReactNode;

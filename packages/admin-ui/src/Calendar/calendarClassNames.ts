@@ -6,7 +6,7 @@ export const calendarClassNames: Partial<ClassNames> = {
     month: "flex flex-col gap-sm",
     month_caption: "flex items-center justify-center h-8 relative",
     caption_label: "text-md font-semibold text-neutral-strong",
-    nav: "absolute inset-x-0 flex items-center justify-between",
+    nav: "absolute inset-x-0 z-10 flex items-center justify-between",
     button_previous:
         "inline-flex items-center justify-center size-8 rounded-sm cursor-pointer text-neutral-strong hover:bg-neutral-light",
     button_next:

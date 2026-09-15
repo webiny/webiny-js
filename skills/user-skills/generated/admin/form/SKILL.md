@@ -1,8 +1,7 @@
 ---
 name: webiny-admin-form-catalog
-context: webiny-api
 description: >
-  admin/form — 23 abstractions.
+  admin/form — 26 abstractions.
 ---
 
 # admin/form
@@ -62,6 +61,19 @@ Each method mutates `this` and returns `this` for chaining.
 
 ---
 
+**Name:** `FormErrors`
+**Import:** `import { FormErrors } from "webiny/admin/form"`
+**Source:** `@webiny/app-admin/features/formModel/index.ts`
+
+---
+
+**Name:** `FormModel`
+**Kind:** type
+**Import:** `import type { FormModel } from "webiny/admin/form"`
+**Source:** `@webiny/app-admin/features/formModel/index.ts`
+
+---
+
 **Name:** `FormModelFactory`
 **Import:** `import { FormModelFactory } from "webiny/admin/form"`
 **Source:** `@webiny/app-admin/features/formModel/abstractions.ts`
@@ -72,6 +84,14 @@ Each method mutates `this` and returns `this` for chaining.
 **Kind:** type
 **Import:** `import type { FormOnSubmit } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
+
+---
+
+**Name:** `FormView`
+**Import:** `import { FormView } from "webiny/admin/form"`
+**Source:** `@webiny/app-admin/features/formModel/index.ts`
+**Description:** Generic form view that walks layout nodes and renders fields.
+This component is stateless — it reads from the FormVM and delegates to renderers.
 
 ---
 

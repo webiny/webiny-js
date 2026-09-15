@@ -17,6 +17,7 @@ import type { UploadJob } from "../../features/fileUploader/abstractions.js";
 export interface IFileManagerInitConfig {
     initialFolderId?: string;
     scope?: string;
+    accept?: string[];
 }
 
 // ---------------------------------------------------------------------------

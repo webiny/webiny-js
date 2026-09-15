@@ -1,5 +1,4 @@
 export { registerOpenSearchCore } from "./registerOpenSearchCore.js";
-
 export { getCommonMappings, getBaseConfiguration } from "./indexConfiguration/index.js";
 export * from "./sort.js";
 export * from "./where.js";
@@ -16,5 +15,4 @@ export * from "./utils/index.js";
 export * from "./operations/index.js";
 export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
-export * from "./db/index.js";
 export * from "./types.js";

@@ -1,6 +1,5 @@
 ---
 name: webiny-api-tenancy-catalog
-context: webiny-api
 description: >
   API — Tenancy — 17 abstractions.
   Tenant lifecycle and installation event handlers and use cases.

@@ -1,6 +1,5 @@
 ---
 name: wb-preview-url-modifier
-context: webiny-extensions
 description: >
   Covers the PreviewUrlModifier extension point in Website Builder. Use when
   a user wants to inject custom query parameters into live preview URLs —

@@ -1,7 +1,5 @@
-import styled from "@emotion/styled";
+import React from "react";
 
-export const Container = styled("div")`
-    display: flex;
-    justify-content: center;
-    margin-top: 16px;
-`;
+export const Container = ({ children }: { children: React.ReactNode }) => {
+    return <div className={"flex justify-center mt-md"}>{children}</div>;
+};

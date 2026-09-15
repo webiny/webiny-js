@@ -40,7 +40,10 @@ import {
     EDIT_DZ_TEMPLATE_DIALOG
 } from "~/presentation/fieldTypes/types/dynamicZone/EditTemplateDialog.js";
 import { ContentEntriesModule } from "~/ContentEntriesModule.js";
-import { CmsPlaygroundTabsFeature } from "~/admin/features/playgroundTabs/index.js";
+import { CmsPlaygroundTabsFeature } from "~/admin/features/playgroundTabs/feature.js";
+import { PreviewDecorator } from "~/presentation/contentEntries/preview/PreviewDecorator.js";
+import { ModelEditorComponentDiscovery } from "~/presentation/contentEntries/preview/ModelEditorComponentDiscovery.js";
+import { LivePreviewFeature } from "~/presentation/contentEntries/preview/feature.js";
 
 const HeadlessCMSExtension = () => {
     plugins.register(headlessCmsPlugins());
@@ -61,6 +64,7 @@ const HeadlessCMSExtension = () => {
             <RegisterFeature feature={FormModelFeature} />
             <RegisterFeature feature={CmsFormModelFeature} />
             <RegisterFeature feature={ContentEntryFeature} />
+            <RegisterFeature feature={LivePreviewFeature} />
             <RegisterFeature feature={CmsFieldRendererFeature} />
             <RegisterFeature feature={CmsFieldTypeFeature} />
             <RegisterFeature feature={FieldEditorFeature} />
@@ -70,6 +74,8 @@ const HeadlessCMSExtension = () => {
             <LexicalEditorCmsPlugin />
             <CmsSecurityPermission />
             <ContentEntriesModule />
+            <PreviewDecorator />
+            <ModelEditorComponentDiscovery />
             <AdminConfig>
                 <AdminConfig.Dialog
                     name={EDIT_DZ_TEMPLATE_DIALOG}
