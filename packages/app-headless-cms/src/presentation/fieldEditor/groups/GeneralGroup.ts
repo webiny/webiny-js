@@ -3,6 +3,7 @@ import camelCase from "lodash/camelCase.js";
 import { CmsFieldEditorGroup } from "../abstractions.js";
 import type { ICmsFieldEditorFormBuilder, ICmsFieldEditorContext } from "../abstractions.js";
 import type { CmsModelField } from "~/types.js";
+import { READ_ONLY_RULE, isReadOnlyRule } from "~/utils/readOnlyFieldRule.js";
 
 const fieldIdSchema = zod
     .string()
@@ -10,7 +11,7 @@ const fieldIdSchema = zod
     .regex(/^!?[a-zA-Z]/, { message: "Must not start with a number." })
     .regex(/^(^[a-zA-Z0-9]+)$/, { message: "Must be alphanumeric string." });
 
-class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
+export class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
     name = "general";
     label = "General";
 
@@ -43,6 +44,12 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
                     .boolean()
                     .label("Use predefined values")
                     .disabled(!fieldType.allowPredefinedValues),
+                readOnly: fields
+                    .boolean()
+                    .label("Read-only")
+                    .description(
+                        "Editors can see this field but can't change its value. Useful for values set by code, for example an external ID or a generated slug."
+                    ),
                 description: fields
                     .text()
                     .label("Description")
@@ -70,6 +77,7 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
         form.layout(layout => [
             layout.row("label", "fieldId"),
             layout.row("list", "predefinedValuesEnabled"),
+            layout.row("readOnly"),
             layout.row("description"),
             layout.row("note"),
             layout.row("help"),
@@ -83,6 +91,7 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
             fieldId: field.fieldId ?? "",
             list: field.list ?? false,
             predefinedValuesEnabled: field.predefinedValues?.enabled ?? false,
+            readOnly: (field.rules ?? []).some(isReadOnlyRule),
             description: field.description ?? "",
             note: field.note ?? "",
             help: field.help ?? "",
@@ -98,6 +107,14 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
             field.predefinedValues = { enabled: false, values: [] };
         }
         field.predefinedValues.enabled = formData.predefinedValuesEnabled;
+        /**
+         * Read-only is stored as a field rule, so we rewrite only our own rule and leave
+         * the condition and permission rules owned by the other groups untouched.
+         */
+        field.rules = [
+            ...(field.rules ?? []).filter(rule => !isReadOnlyRule(rule)),
+            ...(formData.readOnly ? [{ ...READ_ONLY_RULE }] : [])
+        ];
         field.description = formData.description;
         field.note = formData.note;
         field.help = formData.help;
