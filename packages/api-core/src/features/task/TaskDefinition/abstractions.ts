@@ -1,4 +1,5 @@
 import zod from "zod";
+import type { Constructor } from "@webiny/di";
 import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types";
 import type { ITask } from "~/features/task/TaskService/index.js";
@@ -26,9 +27,9 @@ export interface ITaskOutput {
  * wraps every task; without this it has nothing to branch on but a hardcoded list of ids, which
  * means editing the decorator every time a task is added.
  *
- * The behaviour keys are omitted deliberately. The object passed at runtime is the resolved task,
- * so `run` is physically present; hiding it at the type level stops the obvious mistake of a
- * handler calling `params.definition.run(...)` and recursing forever.
+ * This is {@link ITaskMetadata}: identity and policy, no behaviour. The object passed at runtime is
+ * the resolved task, so `run` is physically present; naming the metadata type here stops the obvious
+ * mistake of a handler calling `params.definition.run(...)` and recursing forever.
  *
  * Only the fields declared here arrive. A field a project adds to its own definition class is
  * currently dropped, because `RunnableTaskDecorator` and `SelfCleaningTaskDecorator` are fixed
@@ -37,19 +38,7 @@ export interface ITaskOutput {
  * that a decorator acts on; `taskDefinitionInParams.test.ts` pins the current behaviour so that
  * change announces itself.
  */
-export type ITaskDefinitionInfo<
-    I extends ITaskInput = ITaskInput,
-    O extends ITaskOutput = ITaskOutput
-> = Omit<
-    ITaskDefinition<I, O>,
-    | "run"
-    | "onBeforeTrigger"
-    | "onDone"
-    | "onError"
-    | "onAbort"
-    | "onMaxIterations"
-    | "createInputValidation"
->;
+export type ITaskDefinitionInfo = ITaskMetadata;
 
 /**
  * Task run params - the input data, plus the definition being run
@@ -61,7 +50,7 @@ export interface ITaskRunParams<
 > {
     input: I;
     controller: TaskController.Interface<I, O>;
-    definition: ITaskDefinitionInfo<I, O>;
+    definition: ITaskDefinitionInfo;
 }
 
 /**
@@ -131,16 +120,17 @@ export type ITaskLifecycleHook<
     O extends ITaskOutput = ITaskOutput
 > = {
     task: ITask<I, O>;
-    definition: ITaskDefinitionInfo<I, O>;
+    definition: ITaskDefinitionInfo;
 };
 
 /**
- * Core TaskDefinition - minimal interface
+ * What a task IS: identity and runtime policy, with no behaviour and no dependencies.
+ *
+ * Listing tasks, resolving one by id, and applying defaults all need only this. Keeping it free of
+ * dependencies is the whole point — `GetTaskDefinitionUseCase` builds every registered definition
+ * to find one by id, so anything expensive here is paid 24 times per lookup.
  */
-export interface ITaskDefinition<
-    I extends ITaskInput = ITaskInput,
-    O extends ITaskOutput = ITaskOutput
-> {
+export interface ITaskMetadata {
     id: string;
     title: string;
     description?: string;
@@ -148,7 +138,20 @@ export interface ITaskDefinition<
     databaseLogs?: boolean;
     isPrivate?: boolean;
     selfCleanup?: ISelfCleanup;
+}
 
+/**
+ * What a task DOES. This is the half that carries dependencies (a CMS context, an OpenSearch
+ * client), so it is built only for the task actually being run.
+ *
+ * The lifecycle hooks live here rather than on {@link ITaskMetadata} because they need the same
+ * dependencies `run()` does — see `MockDataManagerTask`, whose `onError` and `onAbort` both use the
+ * OpenSearch client injected for `run()`.
+ */
+export interface ITaskHandler<
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
+> {
     /**
      * Core run method - receives ONLY input params
      * All runtime dependencies (logging, state management, etc.) come from TaskController
@@ -172,12 +175,43 @@ export interface ITaskDefinition<
     ): GenericRecord<keyof I, zod.Schema> | zod.Schema;
 }
 
+/**
+ * Core TaskDefinition - minimal interface
+ *
+ * TRANSITIONAL SHAPE. A definition supplies its behaviour in one of two ways:
+ *
+ *  - the new way: `handler` names a {@link ITaskHandler} class, which the runner builds only for the
+ *    task it is about to run;
+ *  - the old way: the definition implements `run()` and the hooks itself, which forces every
+ *    definition (and every dependency it injects) to be built just to look one up by id.
+ *
+ * `run` is optional ONLY to let both shapes coexist while packages migrate. Once every definition
+ * carries a `handler`, this interface becomes `ITaskMetadata & { handler }` and the optionality
+ * goes away. Exactly one of `run` or `handler` must be present; `GetTaskDefinitionUseCase` fails
+ * with {@link TaskDefinitionNotRunnableError} if neither is.
+ */
+export interface ITaskDefinition<
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
+>
+    extends ITaskMetadata, Partial<ITaskHandler<I, O>> {
+    handler?: Constructor<ITaskHandler<I, O>>;
+}
+
 export interface ITaskCreateInputValidationParams {
     validator: typeof zod;
 }
 
 /** Define a long-running background task with lifecycle hooks. */
 export const TaskDefinition = createAbstraction<ITaskDefinition>("TaskDefinition");
+
+/**
+ * The behaviour half of a task, resolved on demand by the runner via
+ * `container.resolveImplementation(definition.handler)`. Registered implementations are NOT
+ * registered against this abstraction — the definition points at the class directly, exactly as
+ * `HttpRouteDefinition` points at its `HttpRouteHandler`.
+ */
+export const TaskHandler = createAbstraction<ITaskHandler>("TaskHandler");
 
 /**
  * IRunnableTaskDefinition represents a TaskDefinition after decoration/processing.
@@ -187,11 +221,34 @@ export const TaskDefinition = createAbstraction<ITaskDefinition>("TaskDefinition
 export interface IRunnableTaskDefinition<
     I extends ITaskInput = ITaskInput,
     O extends ITaskOutput = ITaskOutput
-> extends ITaskDefinition<I, O> {
+>
+    extends ITaskMetadata, ITaskHandler<I, O> {
     // Override optional properties to be required with guaranteed values
     isPrivate: boolean;
     databaseLogs: boolean;
     maxIterations: number;
+}
+
+export namespace TaskHandler {
+    export type Interface<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskHandler<I, O>;
+
+    export type RunParams<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskRunParams<I, O>;
+
+    export type Result<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskResult<I, O>;
+
+    export type LifecycleHookParams<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskLifecycleHook<I, O>;
 }
 
 export namespace TaskDefinition {
@@ -199,6 +256,13 @@ export namespace TaskDefinition {
         I extends ITaskInput = ITaskInput,
         O extends ITaskOutput = ITaskOutput
     > = ITaskDefinition<I, O>;
+
+    export type Metadata = ITaskMetadata;
+
+    export type Handler<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskHandler<I, O>;
 
     export type TaskInput = ITaskInput;
 
@@ -236,10 +300,7 @@ export namespace TaskDefinition {
         O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
 
-    export type Info<
-        I extends ITaskInput = ITaskInput,
-        O extends ITaskOutput = ITaskOutput
-    > = ITaskDefinitionInfo<I, O>;
+    export type Info = ITaskDefinitionInfo;
 
     export type SelfCleanupEvent = ISelfCleanupEvent;
     export type SelfCleanup = ISelfCleanup;
