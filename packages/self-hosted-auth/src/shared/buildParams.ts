@@ -26,6 +26,14 @@ export const CLI_PASSWORD_RESET_BUILD_PARAM = "SelfHostedAuthCliPasswordReset";
 export const SIGNING_SECRET_BUILD_PARAM = "SelfHostedAuthSigningSecret";
 
 /**
+ * Build param carrying the login token lifetime in seconds, written by
+ * `<SelfHostedAuth tokenExpiresIn={...} />` and read by `TokenIssuer`. Absent means the default
+ * (12 hours). Named here for the same reason as the two above: a typo on either side is silent,
+ * and the only symptom is sessions that outlive their configured lifetime.
+ */
+export const TOKEN_EXPIRES_IN_BUILD_PARAM = "SelfHostedAuthTokenExpiresIn";
+
+/**
  * Reads the flag the way both the API and the CLI need to read it. Only an explicit `false`
  * (boolean or the string a build param may serialize to) turns the feature off.
  */

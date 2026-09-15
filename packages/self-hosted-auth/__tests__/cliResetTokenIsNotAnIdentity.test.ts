@@ -4,6 +4,7 @@ import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { JwtIdentityProvider } from "@webiny/api-core/idp/index.js";
 import { SelfHostedIdpFeature } from "~/api/features/SelfHostedIdp/index.js";
 import { TokenIssuerFeature, TokenIssuer } from "~/api/domain/crypto/TokenIssuer.js";
+import { SELF_HOSTED_ISSUER } from "~/api/domain/crypto/TokenIssuer.js";
 import { CLI_RESET_ISSUER, signCliResetToken } from "~/shared/cliResetToken.js";
 
 /**
@@ -29,6 +30,16 @@ const createContainer = () => {
 };
 
 describe("a CLI reset token is not an identity", () => {
+    /*
+     * `isApplicable` is a plain equality against `SELF_HOSTED_ISSUER`, so a reset token stays out
+     * for exactly one reason: the two issuers differ. Pinned here because the provider no longer
+     * names the reset issuer at all, and making them equal would be a quiet way to hand out
+     * logins.
+     */
+    it("is issued under a different issuer than a login token", () => {
+        expect(CLI_RESET_ISSUER).not.toBe(SELF_HOSTED_ISSUER);
+    });
+
     it("is not applicable to the self-hosted identity provider", () => {
         const idp = createContainer().resolve(JwtIdentityProvider);
 

@@ -15,7 +15,8 @@ import jwt from "jsonwebtoken";
 /**
  * Issuer stamped on CLI reset tokens. It MUST differ from `SELF_HOSTED_ISSUER`, or the
  * token would also satisfy the identity provider and become a login-as-anyone primitive.
- * `SelfHostedJwtIdentityProvider.isApplicable` rejects this issuer explicitly.
+ * `SelfHostedJwtIdentityProvider.isApplicable` matches `SELF_HOSTED_ISSUER` exactly, so keeping
+ * the two apart is the whole guard. `cliResetTokenIsNotAnIdentity.test.ts` holds them apart.
  */
 export const CLI_RESET_ISSUER = "webiny-self-hosted-cli";
 
