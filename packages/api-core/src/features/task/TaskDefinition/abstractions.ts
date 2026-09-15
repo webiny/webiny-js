@@ -128,7 +128,7 @@ export type ITaskLifecycleHook<
  * What a task IS: identity and runtime policy, with no behaviour and no dependencies.
  *
  * Listing tasks, resolving one by id, and applying defaults all need only this. Keeping it free of
- * dependencies is the whole point — `GetTaskDefinitionUseCase` builds every registered definition
+ * dependencies is the whole point — `GetRunnableTaskDefinitionUseCase` builds every registered definition
  * to find one by id, so anything expensive here is paid 24 times per lookup.
  */
 export interface ITaskMetadata {
@@ -179,7 +179,7 @@ export interface ITaskHandler<
 /**
  * What you register: a task's {@link ITaskMetadata} plus the class that does the work.
  *
- * The definition takes no dependencies of its own, so `GetTaskDefinitionUseCase` can build every
+ * The definition takes no dependencies of its own, so `GetRunnableTaskDefinitionUseCase` can build every
  * registered one to find a task by id without constructing anything expensive. Only the winner's
  * `handler` gets built.
  */

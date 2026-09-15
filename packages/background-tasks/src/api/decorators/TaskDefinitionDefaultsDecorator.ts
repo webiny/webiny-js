@@ -11,7 +11,7 @@ const DEFAULT_MAX_ITERATIONS = 50;
  * not camelCase.
  *
  * Everything here is metadata. A definition carries no behaviour, so there is nothing to forward:
- * `GetTaskDefinitionUseCase` takes `run` and the hooks from the handler that `handler` names, after
+ * `GetRunnableTaskDefinitionUseCase` takes `run` and the hooks from the handler that `handler` names, after
  * this decorator has run.
  */
 export class TaskDefinitionDefaultsDecoratorImpl implements TaskDefinition.Interface {

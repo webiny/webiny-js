@@ -1,11 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import type { Constructor } from "@webiny/di";
-import { GetTaskDefinitionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetRunnableTaskDefinitionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskHandlerResolver } from "~/api/features/TaskHandlerResolver/index.js";
 import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
 
-export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interface {
+export class GetRunnableTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
         private definitions: TaskDefinition.Interface[],
         private handlerResolver: TaskHandlerResolver.Interface
@@ -57,7 +57,7 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
     }
 }
 
-export const GetTaskDefinitionUseCase = UseCaseAbstraction.createImplementation({
-    implementation: GetTaskDefinitionUseCaseImpl,
+export const GetRunnableTaskDefinitionUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetRunnableTaskDefinitionUseCaseImpl,
     dependencies: [[TaskDefinition, { multiple: true }], TaskHandlerResolver]
 });

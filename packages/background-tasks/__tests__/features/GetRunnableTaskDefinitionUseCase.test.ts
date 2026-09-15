@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { Constructor } from "@webiny/di";
-import { GetTaskDefinitionUseCaseImpl } from "~/api/features/GetTaskDefinition/GetTaskDefinitionUseCase.js";
+import { GetRunnableTaskDefinitionUseCaseImpl } from "~/api/features/GetRunnableTaskDefinition/GetRunnableTaskDefinitionUseCase.js";
 import {
     TaskDefinition,
     TaskHandler
@@ -26,7 +26,7 @@ const useCaseOf = (
     definitions: TaskDefinition.Interface[],
     resolver: TaskHandlerResolver.Interface
 ) => {
-    return new GetTaskDefinitionUseCaseImpl(definitions, resolver);
+    return new GetRunnableTaskDefinitionUseCaseImpl(definitions, resolver);
 };
 
 /**
@@ -68,7 +68,7 @@ const other: TaskDefinition.Interface = {
     handler: NeverBuiltHandler
 };
 
-describe("GetTaskDefinitionUseCase", () => {
+describe("GetRunnableTaskDefinitionUseCase", () => {
     it("builds only the handler of the task being looked up", () => {
         const { resolver, resolved } = makeResolver();
 
