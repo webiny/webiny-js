@@ -13,9 +13,10 @@ export class Foo {}
 export class Bar {} // move to Bar.ts
 ```
 
-## Exception: an HTTP route and its definition
+## Exception: a definition and the handler it names
 
-A route is two classes that exist only as a pair, and they belong in one file.
+An HTTP route and a background task are each two classes that exist only as a pair, and each pair
+belongs in one file.
 
 `HttpRouteDefinition` carries the method, the path and a reference to the handler. It takes no
 dependencies, so the router can build every definition and match a request without constructing any
@@ -52,3 +53,35 @@ export const AiChatStreamRouteDefinition = HttpRouteDefinition.createImplementat
 ```
 
 Only the definition is registered with the container. The router resolves the handler it names.
+
+A task definition is the same shape for the same reason, so it follows the same rule:
+
+```ts
+// Good: EmptyTrashBinTask.ts
+class EmptyTrashBinTaskHandlerImpl implements TaskHandler.Interface {
+  constructor(private readonly listTenants: ListTenantsUseCase.Interface) {}
+  async run(params: TaskHandler.RunParams) {
+    /* ... */
+  }
+}
+
+const EmptyTrashBinTaskHandler = TaskHandler.createImplementation({
+  implementation: EmptyTrashBinTaskHandlerImpl,
+  dependencies: [ListTenantsUseCase]
+});
+
+class EmptyTrashBinTask implements TaskDefinition.Interface {
+  readonly id = "hcmsEntriesEmptyTrashBins";
+  readonly title = "Headless CMS - Empty all trash bins";
+  readonly handler = EmptyTrashBinTaskHandler;
+}
+
+export const EmptyTrashBinTaskDefinition = TaskDefinition.createImplementation({
+  implementation: EmptyTrashBinTask,
+  dependencies: []
+});
+```
+
+Name the file after the task, not after the definition half: `EmptyTrashBinTask.ts`, matching
+`MockDataManagerTask.ts` and `CreateIndexesTask.ts`. The file holds both halves, so naming it for one
+of them misleads.
