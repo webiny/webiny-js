@@ -144,17 +144,22 @@ export class FormModel implements IFormModel {
             for (let i = 1; i < parts.length && current; i++) {
                 if (isObjectField(current)) {
                     if (current.isList) {
-                        const index = parseInt(parts[i], 10);
-                        if (!isNaN(index)) {
-                            const item = current.items[index];
-                            if (item && i + 1 < parts.length) {
-                                current = item.children.get(parts[i + 1]);
-                                i++;
-                            } else {
-                                current = undefined;
-                            }
-                            continue;
+                        // A list field is followed by an item selector: a numeric index, or a
+                        // stable alphanumeric `_id` (matched against each item's hidden `_id`).
+                        const selector = parts[i];
+                        const item = /^\d+$/.test(selector)
+                            ? current.items[parseInt(selector, 10)]
+                            : current.items.find(
+                                  candidate =>
+                                      candidate.children.get("_id")?.getValue() === selector
+                              );
+                        if (item && i + 1 < parts.length) {
+                            current = item.children.get(parts[i + 1]);
+                            i++;
+                        } else {
+                            current = undefined;
                         }
+                        continue;
                     }
                     current = current.getChild(parts[i]);
                 } else {
