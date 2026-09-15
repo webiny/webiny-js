@@ -19,12 +19,32 @@ it does today: the content sits in the team pool, unassigned.
 
 ## Data model
 
+### Shared assignment field
+
+`assignment` is identical on the workflow and on the state snapshot, so one builder defines
+it. The `fields()` callback takes `FieldBuilderRegistry.Interface` at every nesting level, so
+a plain function works:
+
+```ts
+// domain/workflow/assignmentField.ts
+export const createAssignmentField = (fields: FieldBuilderRegistry.Interface) =>
+    fields.object().label("Assignment").fields(f => ({
+        strategy: f.text().predefinedValues(strategies),
+        allowManualSelection: f.boolean(),
+        rules: f.object().list().fields(r => ({ /* ... */ }))
+    }));
+```
+
+Every nested key must be declared. `CmsModelObjectFieldConverterPlugin` iterates only
+declared child fields when converting to storage — undeclared keys vanish silently, with no
+error.
+
 ### `wbyWorkflow` — step additions
 
 ```
 resolutionType: "manual"            // single value for now; gates the assignment section
 assignment: {
-  strategy: "none" | "roundRobin" | "leastLoaded"
+  strategy: "none" | "roundRobin"
   allowManualSelection: boolean
   rules: [{
     id: string
@@ -42,10 +62,12 @@ assignment: {
 }
 ```
 
+`resolutionType` must not be `.required()`, or existing entries fail on their next update.
+
 Conditions combine with AND. Absent conditions do not constrain. Rules evaluate in `order`;
 the first whose conditions all match wins and later rules are not evaluated.
 
-Conditions match against keys in `targetContext`, which each app's
+Content conditions match keys in `targetContext`, which each app's
 `WorkflowStateContextProvider` decorator supplies. `api-workflows` defines the full condition
 set and never learns which app supplies what. An app additionally declares the keys it
 provides, so the rule editor offers only conditions that can actually match.
@@ -56,8 +78,14 @@ provides, so the rule editor offers only conditions that can actually match.
 | Website Builder | `folderId`, `language` |
 
 The CMS provider returns `{folderId, modelId}` today; the WB provider returns `{folderId}` and
-gains `language` from `page.properties.language`. Language is a CMS model (`wbyLanguage`),
-not a request-scoped locale — there is no locale concept in the API.
+gains `language` from `page.properties.language` — untyped and written by the admin forms, so
+it must be returned as `null` when absent. Language is a CMS model (`wbyLanguage`), not a
+request-scoped locale; there is no locale concept in the API.
+
+Requester conditions come from neither app nor `targetContext`. `requesterId` is the state's
+`createdBy`; `requesterTeamId` is looked up at resolution time, using the same team lookup
+the candidate pool uses. Both are workflow-state data, present in every app, and team
+membership must be current rather than frozen at submit.
 
 A rule stores `folderId`, never a folder path. Paths are rebuilt on move by the FLP cascade,
 so a path stored on the rule would break the first time that folder moves.
@@ -105,21 +133,20 @@ until:  datetime | null
 One entry per exclusion. `until` is filtered at read; lapsed entries are ignored, not
 deleted. Tenant-scoped for free — CMS entry keys carry tenant and model, no locale.
 
-### `wbyWorkflowAssignmentStat` — new private model
+### `wbyWorkflowLastAssignment` — new private model
 
 ```
 userId:         string
-openCount:      number
-lastAssignedOn: datetime | null
+lastAssignedOn: datetime
 ```
 
-One entry per reviewer, with a deterministic entry id derived from `userId` so lookups are a
-direct `get` and first-time creation cannot race. `createEntryId` honours a supplied id; this
-is how `WebhookSettings` does its singleton.
+One entry per reviewer, feeding `roundRobin`. Written forward on every assignment and never
+decremented, so it cannot drift and needs no repair.
 
-`openCount` counts states where this user holds the **current** step — identical to what
-`currentAssignee` records, so a rebuild reproduces it exactly. Pre-assigned later steps are
-not counted; work that cannot be started is not load.
+Entry id is a hash of `userId`. `createEntryId` enforces
+`^[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]$`, and non-Cognito user ids contain `:`, `|` or `@`.
+`WebhookSettings` uses the same trick with `createCacheKey`. A concurrent first create falls
+back to update.
 
 ## Resolution
 
@@ -168,16 +195,19 @@ A rule with a team target narrows the pool to that team, then the strategy runs 
 
 ### Strategies
 
-Both read `wbyWorkflowAssignmentStat` once. Neither queries workflow states.
-
-| Strategy | Order |
+| Strategy | Behaviour |
 | --- | --- |
 | `none` | no assignee; team pool, as today |
 | `roundRobin` | `lastAssignedOn` asc, absent first, then `userId` |
-| `leastLoaded` | `openCount` asc, then `lastAssignedOn` asc, then `userId` |
 
-`roundRobin` ignores load deliberately — everyone takes a turn. `leastLoaded` is the more
-accurate answer in most cases and is the one to recommend in the UI.
+Whoever waited longest for a turn gets it; anyone never assigned goes first. One read of
+`wbyWorkflowLastAssignment`, one write on assignment.
+
+Load-based assignment is deliberately out. It needs an open-assignment count, and keeping one
+correct means firing exactly one delta across nine transitions — assign, reassign, takeover,
+approve, reject, cancel, delete, trash, invalid-clear. A miss leaves a reviewer busy forever;
+a double leaves the count negative. Defending that needs a scheduled repair pass, and there
+is no recurring scheduler in the repo. It can be added later without changing rotation.
 
 ### Folder condition
 
@@ -193,52 +223,21 @@ mismatch falls through, which is a legitimate outcome.
 A deleted rule folder cannot have held anything — ACO only deletes empty folders — so the
 rule matched nothing. It fails to resolve and is skipped.
 
-## Keeping `openCount` correct
+### Assignee goes invalid after activation
 
-| Event | Effect |
-| --- | --- |
-| First step resolved at creation | increment holder, set `lastAssignedOn` |
-| Next step resolved on approve | decrement previous holder, increment new |
-| Invalid assignee cleared at activation | decrement it, then increment whoever is picked |
-| `start()` / `takeOver()` by someone other than the assignee | decrement old, increment new |
-| Reassign | decrement old, increment new |
-| Reject | decrement holder |
-| Cancel | decrement holder |
-| Target deleted (`DeleteTargetWorkflowStateUseCase`) | decrement holder |
+A step activates with a valid assignee; the person then leaves the team or is excluded while
+the step is still `pending`. Nothing re-checks, and the step names someone whose `canReview`
+is false. The work is not stuck — it is still in the team pool — but the name is misleading.
 
-Manual picks on later steps are stored but not counted until that step activates.
-
-`DeleteTargetWorkflowStateUseCase` fires from `DeleteWorkflowStateOnEntryAfterDelete`,
-`DeleteWorkflowStateOnPageAfterDelete` and `DeleteWorkflowsOnModelAfterDelete`. Without its
-row, deleting an entry mid-review leaves the reviewer permanently busy.
-
-`currentAssignee` follows whoever actually holds the step, so `step.assignee`,
-`currentAssignee` and `assignmentSource` all move together on `start()` and `takeOver()` by
-a non-assignee, with the source becoming `takeover`. One holder, one answer everywhere.
-
-### Drift and repair
-
-Stat writes are read-modify-write; `UpdateEntryUseCase` has no atomic increment or
-conditional write. Two approvals landing on the same reviewer at the same instant lose one
-increment. The consequence is mild — that reviewer looks slightly less loaded and gets one
-extra item.
-
-A scheduled task repairs it. For each open state it checks the holder is still in the step's
-teams and not excluded, clears the invalid ones, and recounts every `openCount` from
-`currentAssignee`. That single pass also catches an assignee who went invalid *after* the
-step activated, which nothing else re-checks.
-
-No backfill is needed for existing tenants; nothing was ever assigned before this feature.
-
-`simulateAssignment` must never write.
+The review view re-checks validity when it loads a state and clears a stale assignee. With
+no count to keep straight, that is the whole of it.
 
 ## Writes
 
 Assignment folds into the write the transition already performs. `EventPublisher` is
 synchronous and in-process, so an after-event handler would run in-request — but the use case
 has already called `repository.execute()` by then, so that would be a second write to the
-same record and a lost-update window. Stat writes are necessarily separate, and are covered
-by the repair task above.
+same record and a lost-update window.
 
 `updateStep` currently stamps `savedBy` with the current identity on every mutation. That
 must stop, and callers must pass it explicitly.
@@ -256,8 +255,23 @@ Record-level `savedBy` is not ours — `WorkflowStateMapper.toCmsEntry` omits it
 it from the acting identity. `updateRecord({ savedBy })` in `start()` and `takeOver()` only
 shapes the in-memory object the GraphQL response serialises; the value is the same either way.
 
-`toCmsEntry` must gain every new field. It silently drops anything not listed, so an omission
-surfaces as "assignment mysteriously does not persist" rather than a type error.
+`toCmsEntry` must gain every new field, and both mappers must default a missing
+`resolutionType` to `manual` for entries written before the field existed.
+
+## Holder changes
+
+`step.assignee`, `currentAssignee` and `assignmentSource` always move together. One holder,
+one answer everywhere.
+
+| Event | Effect |
+| --- | --- |
+| Resolution | holder := decision, source := rule/strategy/manual |
+| `start()` / `takeOver()` by a non-assignee | holder := actor, source := `takeover` |
+| Reassign | holder := target, source := `reassign` |
+| Resolution yields nothing | holder := `null` |
+
+`lastAssignedOn` is written on every assignment, not only the first — `roundRobin` reads it,
+so setting it once at creation would break rotation from the second step onward.
 
 ## Reassignment
 
@@ -272,6 +286,7 @@ null and `canTakeOver` is false.
 
 ```
 reassign(userId):
+  guard: isActive, not rejected, current step is pending or inReview
   step.assignee         = user
   step.assignmentSource = "reassign"
   currentAssignee       = user
@@ -281,7 +296,33 @@ reassign(userId):
 ```
 
 Without the `savedBy` transfer the old holder would remain the only person able to approve,
-since `approve()` and `reject()` gate on `isStepOwner`.
+since `approve()` and `reject()` gate on `isStepOwner`. The guard matters because
+`currentStep` returns the rejected step when one exists, and the last approved step when all
+are done — reassign must not write to a finished review.
+
+Side effect worth stating: after the transfer, the previous holder satisfies `canTakeOver`
+and can pull it back without any permission. That is existing takeover behaviour.
+
+## Deletion and workflow lifecycle
+
+**Trashing an entry deletes its review.** `DeleteWorkflowStateOnEntryAfterDelete` currently
+returns unless `permanent`, so a trashed entry keeps an active review. Drop that guard, and
+the same in `DeleteWorkflowStateOnPageAfterDelete`. `ClearEntryStateOnWorkflowStateAfterDelete`
+already nulls `system.workflow`, so a restore from the bin comes back clean and the review is
+requested afresh.
+
+**Deleting a workflow lets its reviews finish.** `UpdateWorkflowStateUseCase` (cancel's path)
+and `DeleteTargetWorkflowStateUseCase` both fetch the workflow, check it exists, and never
+use the value — the snapshot already carries everything. Remove both checks. Running reviews
+then approve, reject, cancel and delete normally; no new review can start, because
+`CreateWorkflowState` still needs a workflow and correctly fails.
+
+This is the choice snapshotting already implies, and it is what Temporal and Airflow do —
+deleting a definition does not stop executions. Jira refuses the delete instead; Camunda
+requires an explicit cascade. Neither fits a design where the instance is self-contained.
+
+Two additions: warn in the editor when deleting a workflow that has active reviews, and have
+the review view read rules from the snapshot so assignments stay explainable afterwards.
 
 ## Permissions
 
@@ -292,7 +333,8 @@ is out of scope.
 Reassignment gets its own entity, so it can be granted without workflow editing. Both sides
 change: the admin schema in `app-workflows/src/domain/permissionsSchema.ts`, and the API,
 which today knows only `IWorkflowsSecurityPermission { editor: boolean }` and checks
-`permission.name === "*" || permission.editor`.
+`permission.name === "*" || permission.editor`. The API check becomes
+`getPermission("workflows.reassign")`.
 
 ```ts
 createPermissionSchema({
@@ -316,6 +358,10 @@ The server validates, not the UI:
   not excluded, and not the requester.
 - `userId` on reassign: same checks, plus the caller holds `workflows.reassign`.
 - Rule target on save: within the step's teams. Rejected if not.
+- `teamIds` on `listReviewers`: every id must appear on a step of a workflow the caller can
+  list. `ListUsersUseCase` enforces `adminUsers.user`, which this bypasses via
+  `withoutAuthorization`, so the boundary has to be re-established here. It leaks nothing
+  new — anyone who can read the workflow already sees its step teams.
 - Changing a step's teams is **not** blocked. Affected rules are flagged instead —
   evaluation already skips an invalid target, and blocking would trap admins.
 
@@ -353,19 +399,27 @@ input WorkflowStateAssigneeInput {
     userId: ID!
 }
 
-type Reviewer {
-    user: WorkflowStateIdentity!
-    excluded: Boolean!
-    reason: String
+input ListReviewersInput {
+    teamIds: [ID!]!
 }
 
-input SimulateAssignmentInput {
-    workflowId: ID!
-    stepId: ID!
+input AssignmentContextInput {
     requesterId: ID!
     folderId: ID
     modelId: String
     language: String
+}
+
+input SimulateAssignmentInput {
+    assignment: StepAssignmentInput!     # as edited, may be unsaved
+    teamIds: [ID!]!                      # as edited, may be unsaved
+    context: AssignmentContextInput!
+}
+
+type Reviewer {
+    user: WorkflowStateIdentity!
+    excluded: Boolean!
+    reason: String
 }
 
 type SimulateAssignmentResult {
@@ -375,8 +429,18 @@ type SimulateAssignmentResult {
     reason: String!
 }
 
+type ListReviewersResponse {
+    data: [Reviewer!]
+    error: WorkflowsError
+}
+
+type SimulateAssignmentResponse {
+    data: SimulateAssignmentResult
+    error: WorkflowsError
+}
+
 extend type WorkflowsQuery {
-    listReviewers(teamIds: [ID!]!): ListReviewersResponse!
+    listReviewers(data: ListReviewersInput!): ListReviewersResponse!
     simulateAssignment(data: SimulateAssignmentInput!): SimulateAssignmentResponse!
 }
 
@@ -389,14 +453,13 @@ extend type WorkflowsMutation {
 `createWorkflowState` moving to an input object is a breaking change. One in-repo caller:
 `app-workflows/src/features/requestReview/RequestReviewGateway.ts`.
 
-`listReviewers` takes team ids rather than a step id. Step ids are generated in the browser
-(`mdbid()`, `generateAlphaNumericId()`), so a new or just-edited step does not exist
-server-side and could not be looked up; steps are also an object list inside `wbyWorkflow`
-with no index. Both callers hold the team ids: the rule editor from its own form, the submit
-dialog from the workflow it already loads.
-
-Accepted trade-off: `listReviewers` returns identities for any teams named, to any
-authenticated admin user. `simulateAssignment` requires `editor`.
+Neither query keys on a step id. Step ids are generated in the browser (`mdbid()`,
+`generateAlphaNumericId()`), so a new or just-edited step does not exist server-side; steps
+are also an object list inside `wbyWorkflow` with no index. `simulateAssignment` therefore
+takes the assignment config and teams inline, and is a pure function over its input — only
+the folder lookup and the rotation read touch storage. Without that, the inspector would
+explain the saved rules while the admin looks at unsaved ones, which is exactly the drift it
+exists to prevent.
 
 ## Admin UI
 
@@ -405,14 +468,15 @@ strategy selector, reorderable rule list, manual-selection toggle. Rule conditio
 limited to what the workflow's app declares.
 
 **Rule inspector** — takes a requester, folder, model and language, calls
-`simulateAssignment`, shows the resulting assignee and which rule produced it.
+`simulateAssignment` with the rules currently on screen, shows the resulting assignee and
+which rule produced it.
 
 **Request review dialog** — for steps allowing manual selection, an automatic-or-pick choice
 per step, captured in one interaction. Automatic is preselected. Excluded users appear
 disabled with the reason. One reviewer per step.
 
 **Content review view** — current assignee per step, the source that produced it, and the
-reassign action for those holding `workflows.reassign`.
+reassign action for those holding `workflows.reassign`. Re-checks assignee validity on load.
 
 **Tenant settings** — the exclusion list.
 
@@ -420,6 +484,8 @@ reassign action for those holding `workflows.reassign`.
 
 Everything the brief lists, plus:
 
+- Load-based assignment. Rotation only. Needs a correct open-assignment count and a repair
+  pass; no recurring scheduler exists. Can be added later without changing rotation.
 - Check and AI steps. `resolutionType` exists so the assignment section has something to key
   off, but it carries one value.
 - Assignment history. Only the current assignment and its source are kept, so the brief's

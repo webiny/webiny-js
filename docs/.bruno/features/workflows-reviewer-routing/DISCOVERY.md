@@ -141,28 +141,19 @@ a second flag on this schema.
 | Rules store `folderId`; descendant test is a `path` prefix compare | path on the rule breaks when the folder moves |
 | Exclusions: one entry per exclusion in `wbyWorkflowExclusion` (`userId`, `reason`, `until`) | queryable and paginated |
 | Lapsed exclusions are filtered by `until` at read, not cleaned up | brief says they lapse on their own |
-| `listStepReviewers(stepId)` returns candidates annotated `{user, excluded, reason}` | one place owns eligibility, so picker and strategies can't drift |
 | Reassign is a new use case, not an extension of `takeOver` | different target, permission and allowed step state |
 | New permission entity `workflows.reassign` | grantable without workflow editing |
 | No assignment history — step keeps `assignee`, `assignedBy`, `assignedOn`, `assignmentSource` only | accepted trade-off; brief asked for an audit entry |
-| One generic notification handler for all workflow state events | `step.notifications` is configured today and consumed by nothing |
 | Manual picks are written as the step assignee at creation, `assignmentSource: "manual"` | nothing to re-evaluate, so resolution order falls out: an assignee already present wins |
 | `createWorkflowState` takes one input object | argument list is already long; `assignees: [{stepId, userId}]` is added there |
 | On activation, validate an existing assignee before keeping it | if the user left the team or is now excluded, clear it and run rules then strategy |
 | Rule target: reject on rule save, warn on team change | blocking a team change would trap admins, and evaluation already skips bad rules |
-| Editor validates targets with `listStepReviewers(stepId)` | same annotated query the manual picker uses; no new endpoint |
 | Resolution is its own use case returning a decision, not logic inside the write path | `ResolveStepAssigneeUseCase` returns `{assignee, matchedRule, source, reason}` |
 | Rule inspector is a server dry-run, `simulateAssignment(...)` | runs the real resolver and discards the result, so the explanation cannot drift from behaviour |
 | Candidates are never stored. Computed per resolution from `step.teams`, minus requester, minus excluded | snapshot already carries the teams |
-| `wbyWorkflowAssignmentStat` per user: `openCount`, `lastAssignedOn` | one read serves both strategies, and idle reviewers are visible — they are invisible to any query over open states |
-| Store `openCount` rather than derive it | only option flat against open work and history; deriving costs ~1MB at 300 open states and ~9MB at 3000 |
-| Round-robin needs no cursor | `lastAssignedOn` asc only; `leastLoaded` is the one that sorts on `openCount` |
-| `openCount` counts the current step only | identical to `currentAssignee`, so rebuild reproduces it exactly |
 | `currentAssignee` written on every resolution, `null` included | "never cleared" was wrong — a fall-through left a decremented holder in place |
-| Stat entry id derived from `userId`; drift repaired by a scheduled task | no atomic increment exists; the same pass clears assignees that went invalid after activation |
 | Reassign targets the current step, and moves `savedBy` when the step is `inReview` | `approve`/`reject` gate on `isStepOwner`, so without it the old holder keeps the only right to approve |
 | `start()`/`takeOver()` by a non-assignee moves `step.assignee` too, source `takeover` | one holder, one answer everywhere |
-| `listReviewers(teamIds)`, not `stepId` | step ids are generated in the browser, so an unsaved step cannot be looked up |
 | Rule conditions include `language`; apps declare which keys they supply | language is a CMS model (`wbyLanguage`); there is no locale in the API |
 | `step.teams` stays the authority on who may review | rules route within it; sign-off, `canReview` and the pool query untouched |
 | One reviewer per step | `currentAssignee` is one identity and a step needs one approval |
