@@ -56,6 +56,9 @@ export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interfac
 
 type HookName = "onBeforeTrigger" | "onDone" | "onError" | "onAbort" | "onMaxIterations";
 
+/** Hooks a single-object definition already swallows, via SelfCleaningTaskDecorator's safeCall. */
+const SWALLOWED_HOOKS: ReadonlySet<HookName> = new Set(["onDone", "onError", "onAbort"]);
+
 /**
  * Present the two halves as the single object the runner and `context.tasks.getDefinition()` expect.
  * Metadata reads come from the definition, behaviour from the handler.
@@ -65,8 +68,17 @@ type HookName = "onBeforeTrigger" | "onDone" | "onError" | "onAbort" | "onMaxIte
  * supplies an `onDone` that deletes the finished task. Taking only the handler's would silently drop
  * every definition-level decorator, and taking only the definition's would drop the task's own.
  *
- * The handler's hook is guarded so a throwing user hook still lets the decorator's half run, which is
- * what the old single-object implementation did via its own `safeCall`.
+ * A throwing handler hook must not stop the decorator's half from running, so the decorator's half
+ * runs either way. What happens to the error afterwards follows what a single-object definition
+ * already does, which differs per hook:
+ *
+ *  - `onDone`, `onError`, `onAbort` are swallowed and logged, because `SelfCleaningTaskDecorator`
+ *    routes them through its own `safeCall` and does exactly that;
+ *  - `onBeforeTrigger` and `onMaxIterations` are rethrown, because the decorator passes those
+ *    straight through and their callers rely on the throw. A throwing `onBeforeTrigger` aborts the
+ *    trigger, and a throwing `onMaxIterations` is what makes `TaskManager` answer with "Failed to
+ *    execute onMaxIterations handler." Swallowing either would silently change behaviour for a task
+ *    that moved to a handler.
  *
  * TRANSITIONAL. The chaining exists only because a definition can still carry hooks. It should not:
  * a hook needs dependencies, and dependencies on a definition are what make looking one up by id
@@ -90,17 +102,28 @@ const toRunnable = <I extends TaskDefinition.TaskInput, O extends TaskDefinition
         }
 
         return async (params: any) => {
+            let failure: unknown;
+
             if (own) {
                 try {
                     await own(params);
                 } catch (error) {
-                    logger.error(
-                        { error, taskId: definition.id, hook: name },
-                        "Error executing task lifecycle hook."
-                    );
+                    if (SWALLOWED_HOOKS.has(name)) {
+                        logger.error(
+                            { error, taskId: definition.id, hook: name },
+                            "Error executing task lifecycle hook."
+                        );
+                    } else {
+                        failure = error;
+                    }
                 }
             }
+
             await decorated?.(params);
+
+            if (failure) {
+                throw failure;
+            }
         };
     };
 

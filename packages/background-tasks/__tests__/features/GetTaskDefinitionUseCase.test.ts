@@ -204,6 +204,48 @@ describe("GetTaskDefinitionUseCase", () => {
             expect(errors).toHaveLength(1);
         });
 
+        // A single-object definition passes onBeforeTrigger and onMaxIterations straight through,
+        // so a throw reaches the caller: it aborts a trigger, and it makes TaskManager answer with
+        // "Failed to execute onMaxIterations handler." Swallowing them here would quietly change
+        // behaviour for a task that moved to a handler.
+        it.each(["onBeforeTrigger", "onMaxIterations"] as const)(
+            "rethrows a throwing handler %s, after running the decorator's half",
+            async hook => {
+                const calls: string[] = [];
+                const { resolver } = makeResolver();
+                const boom = new Error("boom");
+
+                class ThrowingHandlerImpl implements TaskHandler.Interface {
+                    async run() {
+                        return { status: "done" } as any;
+                    }
+                    async [hook]() {
+                        calls.push("handler");
+                        throw boom;
+                    }
+                }
+
+                const ThrowingHandler = TaskHandler.createImplementation({
+                    implementation: ThrowingHandlerImpl,
+                    dependencies: []
+                });
+
+                const definition = {
+                    id: "throwing",
+                    title: "Throwing",
+                    handler: ThrowingHandler,
+                    [hook]: async () => {
+                        calls.push("decorator");
+                    }
+                } as TaskDefinition.Interface;
+
+                const result = useCaseOf([definition], resolver).execute("throwing");
+
+                await expect(result.value[hook]!({} as any)).rejects.toBe(boom);
+                expect(calls).toEqual(["handler", "decorator"]);
+            }
+        );
+
         it("leaves a hook undefined when neither half defines it", () => {
             const { resolver } = makeResolver();
 
