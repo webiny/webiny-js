@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 
 const inputSchema = z.object({});
@@ -14,20 +13,7 @@ interface TeamSummary {
     description?: string;
 }
 
-/**
- * Resolves human names ("team A") to the ids folder permissions actually take.
- *
- * Kept separate from setFolderPermissions rather than accepting a team name there: the user approves
- * the arguments of a write, so the id has to be looked up and shown, not guessed inside the write.
- */
-class ListTeamsToolImpl implements IAiSdkTool<Input> {
-    readonly name = "listTeams";
-    readonly title = "List teams";
-    readonly description =
-        "Lists the teams in this project with their ids, names and slugs. Folder permission targets use the SLUG (`team:<slug>`), not the id.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true, idempotentHint: true };
-
+class ListTeamsToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listTeams: ListTeamsUseCase.Interface) {}
 
     async execute(): Promise<TeamSummary[]> {
@@ -53,7 +39,28 @@ class ListTeamsToolImpl implements IAiSdkTool<Input> {
     }
 }
 
-export const ListTeamsTool = AiSdkTool.createImplementation({
-    implementation: ListTeamsToolImpl,
+const ListTeamsToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: ListTeamsToolHandlerImpl,
     dependencies: [ListTeamsUseCase]
+});
+
+/**
+ * Resolves human names ("team A") to the ids folder permissions actually take.
+ *
+ * Kept separate from setFolderPermissions rather than accepting a team name there: the user approves
+ * the arguments of a write, so the id has to be looked up and shown, not guessed inside the write.
+ */
+class ListTeamsToolImpl implements AiSdkToolDefinition.Interface<Input> {
+    readonly name = "listTeams";
+    readonly title = "List teams";
+    readonly description =
+        "Lists the teams in this project with their ids, names and slugs. Folder permission targets use the SLUG (`team:<slug>`), not the id.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
+    readonly handler = ListTeamsToolHandler;
+}
+
+export const ListTeamsTool = AiSdkToolDefinition.createImplementation({
+    implementation: ListTeamsToolImpl,
+    dependencies: []
 });
