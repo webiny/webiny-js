@@ -141,7 +141,7 @@ export async function registerApiRequestStack(
     // silently won and the configured provider was ignored.
     //
     // Route construction does not depend on this order — `HttpRouter` resolves routes inside `route()`,
-    // and `resolveAll(AiSdkTool)` collects every tool regardless of when it was registered.
+    // and `resolveAll(AiSdkToolDefinition)` collects every tool regardless of when it was registered.
     AiChatFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────

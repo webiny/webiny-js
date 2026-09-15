@@ -21,6 +21,7 @@ Read every rule in this folder before writing or editing code.
 | [no-container-as-service-locator.md](./no-container-as-service-locator.md)                             | Declare dependencies; don't inject a Container and resolve inside methods.              |
 | [no-stateless-private-methods.md](./no-stateless-private-methods.md)                                   | A private method that never reads `this` becomes a module-level function.               |
 | [presenter-owns-component-state.md](./presenter-owns-component-state.md)                               | Non-trivial component state goes in a presenter, reached via `useFeature`.              |
+| [reach-abstractions-through-the-namespace.md](./reach-abstractions-through-the-namespace.md)           | Use `Foo.Interface`; don't re-export the `IFoo` behind it.                              |
 | [no-multiline-ternaries.md](./no-multiline-ternaries.md)                                               | Ternaries stay on one line; wrapping or nested ones become `if` statements.             |
 | [routes-delegate-to-use-cases.md](./routes-delegate-to-use-cases.md)                                   | Routes parse and map; feature logic lives in a use case.                                |
 | [prefer-provider-over-resolved-value.md](./prefer-provider-over-resolved-value.md)                     | Inject a provider with `get()`; never an abstraction holding another's result.          |

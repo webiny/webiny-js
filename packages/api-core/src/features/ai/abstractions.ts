@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { Constructor } from "@webiny/di";
 import type { generateText } from "ai";
 import type { streamText } from "ai";
 import type { LanguageModel } from "ai";
@@ -100,7 +101,7 @@ export namespace Ai {
     export type StreamTextParams = AiStreamTextParams;
 }
 
-// AiSdkTool
+// AiSdkToolDefinition
 
 /**
  * Behavioural hints about a tool. Purely advisory — they never replace a permission check.
@@ -118,22 +119,70 @@ export interface IAiSdkToolAnnotations {
     openWorldHint?: boolean;
 }
 
-export interface IAiSdkTool<TInput = any> {
+/**
+ * What a tool DOES. This is the half that injects use cases, so it is built only for a tool the
+ * model actually calls, and only at the moment it calls it.
+ */
+export interface IAiSdkToolHandler<TInput = any> {
+    execute(input: TInput): Promise<unknown>;
+}
+
+/**
+ * What a tool IS: everything the model is told about it, plus the class that runs it.
+ *
+ * Carries no behaviour and no dependencies, which is what makes the registry cheap to read.
+ * `AiSdkTools` builds every definition to assemble the tool set, and builds a handler only for a
+ * tool the model actually calls.
+ */
+export interface IAiSdkToolDefinition<TInput = any> {
     readonly name: string;
     readonly description: string;
     readonly inputSchema: FlexibleSchema<TInput>;
     /** Human-friendly display name. Falls back to `name` when omitted. */
     readonly title?: string;
     readonly annotations?: IAiSdkToolAnnotations;
-    execute(input: TInput): Promise<unknown>;
+    readonly handler: Constructor<IAiSdkToolHandler<TInput>>;
 }
 
-/** A single tool that can be provided to AI generateText/streamText calls. */
-export const AiSdkTool = createAbstraction<IAiSdkTool>("AiSdkTool");
+export const AiSdkToolDefinition = createAbstraction<IAiSdkToolDefinition>("AiSdkToolDefinition");
 
-export namespace AiSdkTool {
-    export type Interface = IAiSdkTool;
+/**
+ * The behaviour half of a tool, built on demand through {@link AiSdkToolHandlerResolver}.
+ *
+ * Implementations are NOT registered against this abstraction. The definition points at the class
+ * directly, exactly as `HttpRouteDefinition` points at its `HttpRouteHandler`. Declaring them
+ * through it is what attaches their dependency metadata.
+ */
+export const AiSdkToolHandler = createAbstraction<IAiSdkToolHandler>("AiSdkToolHandler");
+
+export namespace AiSdkToolDefinition {
+    export type Interface<TInput = any> = IAiSdkToolDefinition<TInput>;
     export type Annotations = IAiSdkToolAnnotations;
+}
+
+export namespace AiSdkToolHandler {
+    export type Interface<TInput = any> = IAiSdkToolHandler<TInput>;
+}
+
+// AiSdkToolHandlerResolver
+
+export interface IAiSdkToolHandlerResolver {
+    resolve<TInput>(handler: Constructor<IAiSdkToolHandler<TInput>>): IAiSdkToolHandler<TInput>;
+}
+
+/**
+ * Builds the behaviour half of a tool on demand.
+ *
+ * Something has to turn `tool.handler` (a class) into an instance, and that needs the container.
+ * Rather than injecting the container into the tool registry, it lives behind this one narrow
+ * abstraction, so everything else depends on `resolve(handler)` and stays testable with a stub.
+ */
+export const AiSdkToolHandlerResolver = createAbstraction<IAiSdkToolHandlerResolver>(
+    "AiSdkToolHandlerResolver"
+);
+
+export namespace AiSdkToolHandlerResolver {
+    export type Interface = IAiSdkToolHandlerResolver;
 }
 
 // AiSdkTools

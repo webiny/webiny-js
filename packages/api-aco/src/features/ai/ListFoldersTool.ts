@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 
 const inputSchema = z.object({
@@ -22,18 +21,7 @@ interface FolderSummary {
     permissions: { target: string; level: string; inherited: boolean }[];
 }
 
-/**
- * Lists folders with their current access rules, so a permission change is proposed against a real
- * folder id and the user can see what the access already is before approving a change to it.
- */
-class ListFoldersToolImpl implements IAiSdkTool<Input> {
-    readonly name = "listFolders";
-    readonly title = "List folders";
-    readonly description =
-        "Lists folders of a given type with their ids, paths and current access permissions. Call this before changing folder permissions so the change targets a real folder.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true, idempotentHint: true };
-
+class ListFoldersToolHandlerImpl implements AiSdkToolHandler.Interface<Input> {
     constructor(private listFolders: ListFoldersUseCase.Interface) {}
 
     async execute(input: Input): Promise<FolderSummary[]> {
@@ -59,7 +47,26 @@ class ListFoldersToolImpl implements IAiSdkTool<Input> {
     }
 }
 
-export const ListFoldersTool = AiSdkTool.createImplementation({
-    implementation: ListFoldersToolImpl,
+const ListFoldersToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: ListFoldersToolHandlerImpl,
     dependencies: [ListFoldersUseCase]
+});
+
+/**
+ * Lists folders with their current access rules, so a permission change is proposed against a real
+ * folder id and the user can see what the access already is before approving a change to it.
+ */
+class ListFoldersToolImpl implements AiSdkToolDefinition.Interface<Input> {
+    readonly name = "listFolders";
+    readonly title = "List folders";
+    readonly description =
+        "Lists folders of a given type with their ids, paths and current access permissions. Call this before changing folder permissions so the change targets a real folder.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
+    readonly handler = ListFoldersToolHandler;
+}
+
+export const ListFoldersTool = AiSdkToolDefinition.createImplementation({
+    implementation: ListFoldersToolImpl,
+    dependencies: []
 });
