@@ -10,6 +10,7 @@ const MANAGED_VARS = [
     "WEBINY_PORT",
     "WEBINY_PROXY",
     "WEBINY_PROXY_PORT",
+    "PORTLESS_URL",
     "WEBINY_API_PORT",
     "WEBINY_ADMIN_PORT",
     "WEBINY_API_URL",
@@ -55,6 +56,17 @@ describe("reserveDevProxyPorts", () => {
 
             expect(process.env.WEBINY_API_PORT).toBeUndefined();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+        });
+
+        it("takes the public URL from a tool that owns the domain", async () => {
+            // portless terminates TLS on its own domain and forwards to the port it gave us, so
+            // `http://localhost:<port>` is our side of that hop, not the address anyone opens.
+            process.env.PORTLESS_URL = "https://wby6.localhost";
+
+            const urls = await prepare();
+
+            expect(urls!.url).toBe("https://wby6.localhost");
+            expect(urls!.apiUrl).toBe("https://wby6.localhost/api");
         });
 
         it("records the decision where the project layer can read it back", async () => {
