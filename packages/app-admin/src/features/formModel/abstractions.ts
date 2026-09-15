@@ -107,6 +107,7 @@ export type FieldContextCallback = (params: IFieldCallbackParams) => Record<stri
 export type RuleAction = "hide" | "disable";
 
 export type RuleOperator =
+    | "always"
     | "eq"
     | "neq"
     | "isEmpty"

@@ -1,6 +1,7 @@
 import { CmsFieldEditorGroup } from "../abstractions.js";
 import type { ICmsFieldEditorFormBuilder } from "../abstractions.js";
 import type { CmsModelField, FieldRule } from "~/types.js";
+import { isReadOnlyRule } from "~/utils/readOnlyFieldRule.js";
 
 declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -8,7 +9,7 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     }
 }
 
-class RulesGroupImpl implements CmsFieldEditorGroup.Interface {
+export class RulesGroupImpl implements CmsFieldEditorGroup.Interface {
     name = "rules";
     label = "Rules";
 
@@ -31,16 +32,26 @@ class RulesGroupImpl implements CmsFieldEditorGroup.Interface {
     mapToForm(field: CmsModelField) {
         const allRules: FieldRule[] = field.rules || [];
         return {
-            conditionRules: allRules.filter(r => r.type === "condition")
+            conditionRules: allRules.filter(r => r.type === "condition" && !isReadOnlyRule(r))
         };
     }
 
     mapFromForm(formData: Record<string, unknown>, field: CmsModelField) {
-        const otherRules = (field.rules || []).filter(r => r.type !== "condition");
-        const conditionRules = ((formData.conditionRules || []) as FieldRule[]).map(r => ({
-            ...r,
-            type: "condition" as const
-        }));
+        /**
+         * The read-only switch on the General tab writes a condition rule too, so it has to
+         * survive this rewrite. Without the isReadOnlyRule check, editing any condition here
+         * would quietly clear a field's read-only flag.
+         */
+        const otherRules = (field.rules || []).filter(
+            r => r.type !== "condition" || isReadOnlyRule(r)
+        );
+        const conditionRules = ((formData.conditionRules || []) as FieldRule[])
+            .filter(r => !isReadOnlyRule(r))
+            .map(r => ({
+                ...r,
+                type: "condition" as const
+            }));
+
         field.rules = [...otherRules, ...conditionRules];
     }
 }
