@@ -76,6 +76,17 @@ Available factories:
 - `CreatePublishEntryDataFactory` — transition to published state
 - `CreateUnpublishEntryDataFactory` — transition to unpublished state
 - `CreateRepublishEntryDataFactory` — re-publish with refreshed references
+- `CreateSimpleEntryDataFactory` — new simple entry from raw input
+- `UpdateSimpleEntryDataFactory` — update existing simple entry
+
+Factories reach entry validation and reference-field mapping through the injectable
+`EntryDataProcessor` service (`features/contentEntry/entryDataProcessor/`) rather than importing
+from `~/crud/`. `CreateEntryDataFactory` and both simple entry factories use it; the remaining four
+still import directly.
+
+Simple content entries are a reduced entry shape — always a single unpublished draft, opted into by
+tagging a model with `SIMPLE_MODEL_TAG`. See
+`packages/api-headless-cms/src/features/simpleContentEntries/DEVELOPERS.md`.
 
 ## Webiny
 

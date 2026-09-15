@@ -28,10 +28,12 @@ import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
 import { UpdateRevisionDescriptionFeature } from "./UpdateRevisionDescription/feature.js";
 import { EntryDataFactoriesFeature } from "./entryDataFactories/EntryDataFactoriesFeature.js";
+import { EntryDataProcessorFeature } from "./entryDataProcessor/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
     register(container) {
+        EntryDataProcessorFeature.register(container);
         EntryDataFactoriesFeature.register(container);
         // Query features
         GetRevisionByIdFeature.register(container);

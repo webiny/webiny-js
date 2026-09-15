@@ -3,6 +3,7 @@ import { DeleteEntryRepository as RepositoryAbstraction } from "./abstractions.j
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { DeleteEntryStorageOperation } from "~/features/shared/storageOperations/entry/DeleteEntryStorageOperation.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * DeleteEntryRepository - Handles storage operations for permanently deleting entries.
@@ -14,6 +15,8 @@ class DeleteEntryRepositoryImpl implements RepositoryAbstraction.Interface {
         model: CmsModel,
         entry: CmsEntry
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
+        assertRegularModel(model);
+
         try {
             await this.deleteEntryStorage.execute(model, { entry });
             return Result.ok();

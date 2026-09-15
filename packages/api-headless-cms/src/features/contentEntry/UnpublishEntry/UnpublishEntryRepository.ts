@@ -5,6 +5,7 @@ import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import { UnpublishEntryStorageOperation } from "~/features/shared/storageOperations/entry/UnpublishEntryStorageOperation.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * UnpublishEntryRepository - Handles persistence of entry unpublish.
@@ -20,6 +21,8 @@ class UnpublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
         model: CmsModel,
         entry: CmsEntry<T>
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        assertRegularModel(model);
+
         try {
             // Transform domain entry to storage format
             const storageEntry = await this.entryToStorageTransform<T>(model, entry);

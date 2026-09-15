@@ -6,6 +6,7 @@ import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
+import { assertRegularModel } from "~/features/simpleContentEntries/domain/assertRegularModel.js";
 
 /**
  * RepublishEntryRepository - Handles storage operations for republishing entries.
@@ -29,6 +30,8 @@ class RepublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
         model: CmsModel,
         entry: CmsEntry<T>
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
+        assertRegularModel(model);
+
         try {
             // Transform entry to storage format
             const storageEntry = await this.entryToStorageTransform<T>(model, entry);

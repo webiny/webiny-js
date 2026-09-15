@@ -13,6 +13,7 @@ import { ValidationFeature } from "~/features/validation/index.js";
 import { StorageFeature } from "~/features/storage/index.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
 import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
+import { SimpleContentEntriesFeature } from "~/features/simpleContentEntries/SimpleContentEntriesFeature.js";
 import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature.js";
 import { CmsAiToolsFeature } from "~/features/ai/index.js";
 import { ContentModelGroupFeature } from "~/features/contentModelGroup/ContentModelGroupFeature.js";
@@ -45,6 +46,7 @@ import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
 import { createModelsCrud } from "~/crud/contentModel.crud.js";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
+import { createSimpleContentEntryCrud } from "~/crud/simpleContentEntry.crud.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import {
     CmsGraphQLSchemaPlugin,
@@ -124,6 +126,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
         StorageFeature.register(container);
         CmsInstallerFeature.register(container);
         ContentEntriesFeature.register(container);
+        SimpleContentEntriesFeature.register(container);
         ContentModelFeature.register(container);
         CmsAiToolsFeature.register(container);
         ContentModelGroupFeature.register(container);
@@ -249,6 +252,7 @@ export const HeadlessCmsFeature = createFeature<HeadlessCmsConfig>({
                     ...createModelGroupsCrud({ context: cmsContext }),
                     ...createModelsCrud({ context: cmsContext }),
                     ...createContentEntryCrud({ context: cmsContext }),
+                    ...createSimpleContentEntryCrud({ context: cmsContext }),
                     export: { ...createExportCrud(cmsContext) },
                     importing: { ...createImportCrud(cmsContext) }
                 } as HeadlessCms.Interface;
