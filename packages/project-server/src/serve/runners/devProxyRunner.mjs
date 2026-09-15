@@ -1,17 +1,19 @@
 /*
- * Spawned by `spawnDevProxy`, and a hand-written `.mjs` like `apiServerRunner` and `adminServerRunner`
- * next to it.
+ * Spawned by `spawnDevProxy`, and a hand-written `.mjs` like `apiServerRunner` and
+ * `adminServerRunner` next to it.
  *
  * Unlike those two it is never copied into an app workspace, because the proxy belongs to no app. It
  * runs from project-server's own build instead, which is why it can import `DevProxy` rather than
  * inlining a server the way they have to.
+ *
+ * Every port comes from the environment, put there by `reserveDevProxyPorts`.
  */
 import { DevProxy } from "../devProxy/DevProxy.js";
 
 const proxy = await DevProxy.start({
-  port: Number(process.env.PORT),
-  apiPort: Number(process.env.WEBINY_PROXY_API_PORT),
-  adminPort: Number(process.env.WEBINY_PROXY_ADMIN_PORT)
+  port: Number(process.env.WEBINY_PROXY_PORT),
+  apiPort: Number(process.env.WEBINY_API_PORT),
+  adminPort: Number(process.env.WEBINY_ADMIN_PORT)
 });
 
 console.log(`Webiny dev proxy listening on ${proxy.url}`);

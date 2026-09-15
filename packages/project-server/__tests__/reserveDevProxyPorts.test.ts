@@ -1,15 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-    pointAppsAtDevProxy,
-    prepareDevProxySession,
-    type IPrepareDevProxySessionParams
-} from "~/serve/devProxy/prepareDevProxySession.js";
+import { pointAppsAtDevProxy } from "~/serve/devProxy/pointAppsAtDevProxy.js";
+import { reserveDevProxyPorts } from "~/serve/devProxy/reserveDevProxyPorts.js";
+import { isDevProxyEnabled } from "~/serve/devProxy/isDevProxyEnabled.js";
+import { type IReserveDevProxyPortsParams } from "~/serve/devProxy/types.js";
 import { DevProxy } from "~/serve/devProxy/DevProxy.js";
 
 const MANAGED_VARS = [
     "PORT",
     "WEBINY_PORT",
     "WEBINY_PROXY",
+    "WEBINY_PROXY_PORT",
     "WEBINY_API_PORT",
     "WEBINY_ADMIN_PORT",
     "WEBINY_API_URL",
@@ -17,7 +17,7 @@ const MANAGED_VARS = [
     "WEBINY_ADMIN_WS_API_URL"
 ];
 
-describe("prepareDevProxySession", () => {
+describe("reserveDevProxyPorts", () => {
     let originalEnv: Record<string, string | undefined>;
 
     beforeEach(() => {
@@ -37,16 +37,16 @@ describe("prepareDevProxySession", () => {
         }
     });
 
-    const prepare = (params: Partial<IPrepareDevProxySessionParams> = {}) =>
-        prepareDevProxySession({ apps: ["api", "admin"], ...params });
+    const prepare = (params: Partial<IReserveDevProxyPortsParams> = {}) =>
+        reserveDevProxyPorts({ apps: ["api", "admin"], ...params });
 
     /** What `watch` does: reserve the ports, then point the apps at the proxy. */
-    const prepareAndPoint = async (params: Partial<IPrepareDevProxySessionParams> = {}) => {
-        const session = await prepare(params);
-        if (session) {
-            pointAppsAtDevProxy(session);
+    const prepareAndPoint = async (params: Partial<IReserveDevProxyPortsParams> = {}) => {
+        const urls = await prepare(params);
+        if (urls) {
+            pointAppsAtDevProxy(urls);
         }
-        return session;
+        return urls;
     };
 
     describe("deciding whether a proxy belongs in front", () => {
@@ -55,6 +55,16 @@ describe("prepareDevProxySession", () => {
 
             expect(process.env.WEBINY_API_PORT).toBeUndefined();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+        });
+
+        it("records the decision where the project layer can read it back", async () => {
+            // ServerWatch / ServerServe ask `isDevProxyEnabled()` when assembling their process
+            // specs, rather than the decision travelling through the hosting-agnostic Watch params.
+            expect(isDevProxyEnabled()).toBe(false);
+
+            await prepare();
+
+            expect(isDevProxyEnabled()).toBe(true);
         });
 
         it("does nothing when asked not to, by flag or by env", async () => {
@@ -69,23 +79,24 @@ describe("prepareDevProxySession", () => {
 
     describe("ports", () => {
         it("gives every app a port of its own, and none of them the proxy's", async () => {
-            const session = await prepare();
+            const urls = await prepare();
 
+            const proxyPort = Number(process.env.WEBINY_PROXY_PORT);
             const apiPort = Number(process.env.WEBINY_API_PORT);
             const adminPort = Number(process.env.WEBINY_ADMIN_PORT);
 
-            expect(session).not.toBeNull();
+            expect(urls).not.toBeNull();
             expect(apiPort).not.toBe(adminPort);
-            expect([apiPort, adminPort]).not.toContain(session!.port);
+            expect([apiPort, adminPort]).not.toContain(proxyPort);
         });
 
         it("takes over PORT rather than leaving it for an app to grab as well", async () => {
             const port = await freePort();
             process.env.PORT = String(port);
 
-            const session = await prepare();
+            const urls = await prepare();
 
-            expect(session!.port).toBe(port);
+            expect(urls!.url).toBe(`http://localhost:${port}`);
             // Both app runners fall back to PORT, and two servers honouring one port means one of
             // them quietly fails to bind.
             expect(process.env.PORT).toBeUndefined();
@@ -96,7 +107,7 @@ describe("prepareDevProxySession", () => {
             process.env.WEBINY_PORT = String(preferred);
             process.env.PORT = String(await freePort(preferred + 1));
 
-            expect((await prepare())!.port).toBe(preferred);
+            expect((await prepare())!.url).toBe(`http://localhost:${preferred}`);
         });
 
         it("leaves a pinned app port alone", async () => {
@@ -119,19 +130,21 @@ describe("prepareDevProxySession", () => {
     });
 
     it("hands the proxy the ports it reserved, end to end", async () => {
-        const session = await prepare();
-        const { apiPort, adminPort } = session!.targets;
+        const urls = await prepare();
+        const port = Number(process.env.WEBINY_PROXY_PORT);
+        const apiPort = Number(process.env.WEBINY_API_PORT);
+        const adminPort = Number(process.env.WEBINY_ADMIN_PORT);
 
         const api = await serve("api answered");
         const admin = await serve("admin answered");
-        const proxy = await DevProxy.start({ port: session!.port, apiPort, adminPort });
+        const proxy = await DevProxy.start({ port, apiPort, adminPort });
 
         try {
             await api.listenOn(apiPort);
             await admin.listenOn(adminPort);
 
-            expect(await (await fetch(session!.apiUrl + "/graphql")).text()).toBe("api answered");
-            expect(await (await fetch(session!.url + "/")).text()).toBe("admin answered");
+            expect(await (await fetch(urls!.apiUrl + "/graphql")).text()).toBe("api answered");
+            expect(await (await fetch(urls!.url + "/")).text()).toBe("admin answered");
         } finally {
             await proxy.close();
             await api.close();
@@ -157,10 +170,10 @@ describe("prepareDevProxySession", () => {
         });
 
         it("gives the api an absolute one, since it hands out URLs to clients", async () => {
-            const session = await prepareAndPoint();
+            const urls = await prepareAndPoint();
 
-            expect(process.env.WEBINY_API_URL).toBe(`${session!.url}/api`);
-            expect(session!.apiUrl).toBe(`http://localhost:${session!.port}/api`);
+            expect(process.env.WEBINY_API_URL).toBe(`${urls!.url}/api`);
+            expect(urls!.apiUrl).toBe(`${urls!.url}/api`);
         });
 
         it("takes over the admin URLs, because by now the config has already set them", async () => {
@@ -180,12 +193,12 @@ describe("prepareDevProxySession", () => {
         it("leaves every URL alone when only the ports are reserved", async () => {
             // What `serve` does: it runs what `webiny build` produced, so the admin bundle's URL is
             // already fixed and setting anything now would only be misleading.
-            const session = await prepare();
+            const urls = await prepare();
 
-            expect(session).not.toBeNull();
+            expect(urls).not.toBeNull();
             expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
             expect(process.env.WEBINY_API_URL).toBeUndefined();
-            expect(Number(process.env.WEBINY_API_PORT)).toBe(session!.targets.apiPort);
+            expect(Number(process.env.WEBINY_API_PORT)).toBeGreaterThan(0);
         });
     });
 });

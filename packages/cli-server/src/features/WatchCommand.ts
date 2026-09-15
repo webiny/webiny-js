@@ -13,10 +13,8 @@ import { WatchSummary } from "./WatchSummary.js";
 import { WatchOutputGate } from "./WatchOutputGate.js";
 import { WatchStartup } from "./WatchStartup.js";
 import { type Watch } from "@webiny/project/abstractions/index.js";
-import {
-    pointAppsAtDevProxy,
-    prepareDevProxySession
-} from "@webiny/project-server/serve/devProxy/index.js";
+import { pointAppsAtDevProxy } from "@webiny/project-server/serve/devProxy/index.js";
+import { reserveDevProxyPorts } from "@webiny/project-server/serve/devProxy/index.js";
 
 interface IServerWatchCommandParams {
     _: string[];
@@ -104,7 +102,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                     }
                 }
 
-                const devProxySession = await prepareDevProxySession({
+                const devProxyUrls = await reserveDevProxyPorts({
                     apps,
                     enabled: params.proxy
                 });
@@ -112,8 +110,8 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // Before the `projectSdk.watch()` calls below, which is what matters: those are where
                 // each app's workspace is prepared and its config re-rendered, so that is where these
                 // URLs get picked up.
-                if (devProxySession) {
-                    pointAppsAtDevProxy(devProxySession);
+                if (devProxyUrls) {
+                    pointAppsAtDevProxy(devProxyUrls);
                 }
 
                 const projectSdk = await this.getProjectSdkService.execute();
@@ -123,7 +121,7 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                 // its own dedicated port. Same rule `webiny serve` applies when serving both apps at
                 // once. Has to happen before the watchers are prepared below: that is where each forked
                 // process snapshots the env.
-                if (!devProxySession && apps.length > 1 && process.env.PORT) {
+                if (!devProxyUrls && apps.length > 1 && process.env.PORT) {
                     ui.warning(
                         `%s is ignored when watching several apps at once. Set %s and %s instead.`,
                         "PORT",
@@ -155,8 +153,8 @@ export class ServerWatchCommand implements CliCommandFactory.Interface<IServerWa
                         ? new WatchSummary(ui, Date.now(), () => startup.noteProgress())
                         : undefined;
 
-                if (devProxySession) {
-                    summary?.setPublicUrl(devProxySession.url, { showAppUrls: params.verbose });
+                if (devProxyUrls) {
+                    summary?.setPublicUrl(devProxyUrls.url, { showAppUrls: params.verbose });
                 }
 
                 const startup = new WatchStartup(gate, summary);
