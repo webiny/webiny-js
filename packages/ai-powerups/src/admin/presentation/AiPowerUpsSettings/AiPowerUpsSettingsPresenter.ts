@@ -53,16 +53,32 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
              * Groups that build fields from server data get to load it first, in parallel with the
              * settings themselves.
              *
-             * `allSettled`, not `all`: a group whose init fails must not take the screen down with
-             * it. One broken query used to leave the page with a heading, a Save button and no tabs
-             * at all, which hid the working sections and the personas someone came here to edit.
-             * Now the failure is reported and every other tab still renders.
+             * `allSettled`, not `all`: one group's failed init should not take the whole screen
+             * down. Under `all` a single rejection skipped straight to the catch below and left the
+             * page with a heading, a Save button and no tabs at all, hiding every working section.
+             *
+             * How far that actually goes is worth knowing, because it is less than it looks. These
+             * queries all fire in the same tick, so `BatchingGraphQLClient` sends them as one HTTP
+             * request, and it rejects *every* operation in a batch when any one of them errors (see
+             * `executeBatchGroup`). A group whose query fails against the server therefore takes
+             * `getSettings` with it and we still end up in the catch.
+             *
+             * What this does fix is the rest: a group that throws inside its own `init()`, one
+             * whose query missed the batch window, and the reporting. Instead of one opaque
+             * failure, each bad section is named. Making the parallel case survive too means not
+             * batching `getSettings` alongside the group inits, which costs a serial round trip on
+             * every load of this screen; worth doing only if this turns out to bite in practice.
              */
             const [data, initResults] = await Promise.all([
                 this.getSettings.execute(),
                 Promise.allSettled(this.groups.map(group => group.init?.()))
             ]);
 
+            /*
+             * `flatMap` to filter and map in one pass: a fulfilled group contributes no message.
+             * The index is load-bearing, and safe because `allSettled` resolves in input order, so
+             * `initResults[index]` is the result for `this.groups[index]`.
+             */
             const initErrors = initResults.flatMap((result, index) => {
                 if (result.status !== "rejected") {
                     return [];
