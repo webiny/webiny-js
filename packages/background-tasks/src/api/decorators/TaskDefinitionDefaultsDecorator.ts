@@ -1,20 +1,25 @@
 import camelCase from "lodash/camelCase.js";
 import WebinyError from "@webiny/error";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { normalizeSelfCleanup } from "~/api/utils/normalizeSelfCleanup.js";
 
 const DEFAULT_MAX_ITERATIONS = 50;
 
 /**
- * Fills in the defaults a definition is allowed to leave out, and rejects an id that is not
- * camelCase.
+ * Fills in the defaults a definition is allowed to leave out, applies the one rule that overrides
+ * what a definition asked for (self-cleanup forces `databaseLogs` off), and rejects an id that is
+ * not camelCase.
  *
  * Everything here is metadata. A definition carries no behaviour, so there is nothing to forward:
  * `GetTaskDefinitionUseCase` takes `run` and the hooks from the handler that `handler` names, after
  * this decorator has run.
  */
-class TaskDefinitionDefaultsDecoratorImpl implements TaskDefinition.Interface {
+export class TaskDefinitionDefaultsDecoratorImpl implements TaskDefinition.Interface {
+    private readonly cleansUp: boolean;
+
     constructor(private decoratee: TaskDefinition.Interface) {
         this.validate();
+        this.cleansUp = normalizeSelfCleanup(decoratee.selfCleanup).size > 0;
     }
 
     get id() {
@@ -39,6 +44,11 @@ class TaskDefinitionDefaultsDecoratorImpl implements TaskDefinition.Interface {
     }
 
     get databaseLogs() {
+        // A task that deletes itself on the way out has nowhere to keep logs, so asking for any
+        // cleanup event overrides the task's own choice.
+        if (this.cleansUp) {
+            return false;
+        }
         return this.decoratee.databaseLogs || false;
     }
 

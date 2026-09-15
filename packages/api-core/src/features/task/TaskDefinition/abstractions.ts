@@ -33,8 +33,8 @@ export interface ITaskOutput {
  * recursing forever.
  *
  * Only the fields declared here arrive. A field a project adds to its own definition class is
- * currently dropped, because `TaskDefinitionDefaultsDecorator` and `SelfCleaningTaskDefinitionDecorator` are fixed
- * pass-throughs that expose a known set of getters and nothing else. Making them forward unknown
+ * currently dropped, because `TaskDefinitionDefaultsDecorator` is a fixed pass-through that
+ * exposes a known set of getters and nothing else. Making them forward unknown
  * properties would turn a definition into a place to declare policy (a rate limit, a set of tags)
  * that a decorator acts on; `taskDefinitionInParams.test.ts` pins the current behaviour so that
  * change announces itself.
