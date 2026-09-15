@@ -27,15 +27,25 @@ import { getDevServerSession } from "../../serve/devServer/index.js";
  *
  * ## One call per app, and only api gets anything
  *
- * `webiny watch` calls the SDK once per app, so this runs twice. Admin needs no server process,
- * because its build tool already is one: rsbuild's dev server is one of the admin `packagesWatcher`
- * processes and serves the bundle itself. So the admin call falls through and returns `result`
- * untouched, with no `serversWatcher` key at all.
+ * A bare `webiny watch` never arrives here as "no app". The CLI expands it to the default app list
+ * and calls the SDK once per app, so this runs twice, each time with a concrete name:
  *
  * ```
- *   watch({ app: "api" })    ──▶  { packagesWatcher, serversWatcher: [api, proxy?] }
- *   watch({ app: "admin" })  ──▶  { packagesWatcher }
+ *   webiny watch  ──▶  CLI: apps = ["api", "admin"]
+ *                        │
+ *                        ├─ watch({ app: "api" })    ──▶ { packagesWatcher, serversWatcher: [api, proxy?] }
+ *                        └─ watch({ app: "admin" })  ──▶ { packagesWatcher }
+ *                                                        │
+ *                        CLI flattens every app's specs into one list ──┘
  * ```
+ *
+ * So the api server AND the proxy both come out of that single `api` call. Admin needs no server
+ * process, because its build tool already is one: rsbuild's dev server is one of the admin
+ * `packagesWatcher` processes and serves the bundle itself. That call falls through and returns
+ * `result` untouched, with no `serversWatcher` key at all.
+ *
+ * The no-app branch below is the other shape entirely, `webiny watch -p my-package`, which compiles
+ * packages and serves nothing.
  *
  * ## Nothing is spawned here
  *
@@ -63,7 +73,7 @@ export class ServerWatch implements Watch.Interface {
     async execute(params: Watch.Params): Promise<Watch.Result> {
         const result = await this.decoratee.execute(params);
 
-        // Package-only watch compiles packages and serves nothing.
+        // `watch -p my-package`: compiles packages, serves nothing.
         if (!("app" in params)) {
             return result;
         }
