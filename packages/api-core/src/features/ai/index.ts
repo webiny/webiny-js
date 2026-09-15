@@ -4,6 +4,8 @@ export {
     AiConnectionFactory,
     Ai,
     AiSdkTool,
+    AiSdkToolHandler,
+    AiSdkToolHandlerResolver,
     AiSdkTools
 } from "./abstractions.js";
 export type {
@@ -13,6 +15,9 @@ export type {
     IAiSdkModel,
     IAiSdkTool,
     IAiSdkToolAnnotations,
+    IAiSdkToolMetadata,
+    IAiSdkToolHandler,
+    IAiSdkToolHandlerResolver,
     IAiSdkTools
 } from "./abstractions.js";
 export { AiOutputTool, AiOutputToolRegistry, AiToolPipelineRunner } from "./toolPipeline/index.js";
@@ -39,4 +44,5 @@ export type {
     AiGenerateTextErrorPayload,
     AiBeforeStreamTextPayload
 } from "./events.js";
+export { AiSdkToolNotExecutableError } from "./errors.js";
 export { AiFeature } from "./feature.js";

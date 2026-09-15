@@ -40,7 +40,12 @@ const resolveTool = (createTeamResult?: ReturnType<typeof Result.fail>) => {
 
     container.register(CreateTeamTool);
 
-    return { tool: container.resolveAll(AiSdkTool)[0], captured };
+    const tool = container.resolveAll(AiSdkTool)[0];
+
+    // Metadata and behaviour are separate; the container builds the handler on demand, as at runtime.
+    const handler = container.resolveImplementation(tool.handler!);
+
+    return { tool: handler, captured };
 };
 
 const createWith = async (roles: string[]) => {

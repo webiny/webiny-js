@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import type { CmsModel } from "~/types/index.js";
 
@@ -37,19 +37,7 @@ interface ModelSummary {
 const isSystemModel = (model: CmsModel): boolean =>
     Boolean(model.isPrivate) || model.group === HIDDEN_MODEL_GROUP;
 
-/**
- * Entry point for any content question. The CMS schema is defined per project (and per tenant), so a
- * model list cannot be baked into a system prompt — it has to be discovered at call time. Returns a
- * summary only; `describeContentModel` supplies the field detail needed to actually build a query.
- */
-class ListContentModelsToolImpl implements IAiSdkTool<Input> {
-    readonly name = "listContentModels";
-    readonly title = "List content models";
-    readonly description =
-        "Lists the content models available in this project. Call this first when you need to find content — model IDs are project-specific and cannot be guessed. Returns a summary per model; use describeContentModel for field details.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true, idempotentHint: true };
-
+class ListContentModelsToolHandlerImpl implements IAiSdkToolHandler<Input> {
     constructor(private listModels: ListModelsUseCase.Interface) {}
 
     async execute(input: Input): Promise<ModelSummary[]> {
@@ -74,7 +62,27 @@ class ListContentModelsToolImpl implements IAiSdkTool<Input> {
     }
 }
 
+const ListContentModelsToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: ListContentModelsToolHandlerImpl,
+    dependencies: [ListModelsUseCase]
+});
+
+/**
+ * Entry point for any content question. The CMS schema is defined per project (and per tenant), so a
+ * model list cannot be baked into a system prompt — it has to be discovered at call time. Returns a
+ * summary only; `describeContentModel` supplies the field detail needed to actually build a query.
+ */
+class ListContentModelsToolImpl implements IAiSdkTool<Input> {
+    readonly name = "listContentModels";
+    readonly title = "List content models";
+    readonly description =
+        "Lists the content models available in this project. Call this first when you need to find content — model IDs are project-specific and cannot be guessed. Returns a summary per model; use describeContentModel for field details.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
+    readonly handler = ListContentModelsToolHandler;
+}
+
 export const ListContentModelsTool = AiSdkTool.createImplementation({
     implementation: ListContentModelsToolImpl,
-    dependencies: [ListModelsUseCase]
+    dependencies: []
 });

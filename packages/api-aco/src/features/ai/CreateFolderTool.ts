@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
 
 const inputSchema = z.object({
@@ -29,20 +29,7 @@ interface CreatedFolder {
     type: string;
 }
 
-/**
- * Creates a folder.
- *
- * Additive and reversible, so it is not flagged destructive — but it still changes the project, so it
- * is not read-only either and therefore needs the user to approve the exact arguments.
- */
-class CreateFolderToolImpl implements IAiSdkTool<Input> {
-    readonly name = "createFolder";
-    readonly title = "Create folder";
-    readonly description =
-        "Creates a folder in the File Manager ('FmFile') or under a content model ('cms:<modelId>'). Call listFolders first to pick a parent, or omit parentId for the root. Requires user approval.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: false };
-
+class CreateFolderToolHandlerImpl implements IAiSdkToolHandler<Input> {
     constructor(private createFolder: CreateFolderUseCase.Interface) {}
 
     async execute(input: Input): Promise<CreatedFolder> {
@@ -80,7 +67,28 @@ class CreateFolderToolImpl implements IAiSdkTool<Input> {
     }
 }
 
+const CreateFolderToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: CreateFolderToolHandlerImpl,
+    dependencies: [CreateFolderUseCase]
+});
+
+/**
+ * Creates a folder.
+ *
+ * Additive and reversible, so it is not flagged destructive — but it still changes the project, so it
+ * is not read-only either and therefore needs the user to approve the exact arguments.
+ */
+class CreateFolderToolImpl implements IAiSdkTool<Input> {
+    readonly name = "createFolder";
+    readonly title = "Create folder";
+    readonly description =
+        "Creates a folder in the File Manager ('FmFile') or under a content model ('cms:<modelId>'). Call listFolders first to pick a parent, or omit parentId for the root. Requires user approval.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: false };
+    readonly handler = CreateFolderToolHandler;
+}
+
 export const CreateFolderTool = AiSdkTool.createImplementation({
     implementation: CreateFolderToolImpl,
-    dependencies: [CreateFolderUseCase]
+    dependencies: []
 });

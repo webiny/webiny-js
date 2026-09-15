@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListRolesUseCase } from "@webiny/api-core/features/security/roles/ListRoles/index.js";
 
 const inputSchema = z.object({});
@@ -12,22 +12,7 @@ interface RoleSummary {
     description?: string;
 }
 
-/**
- * Resolves role names to the IDs `createTeam` takes. Separate from the write, so the user approves a
- * team with roles that were looked up rather than guessed.
- *
- * Returns the slug too, because it is what a human recognises and what the admin UI shows, while
- * `id` is what a team actually stores. Nothing at the type level separates the two, so `createTeam`
- * accepts either and resolves it rather than making the caller guess which one that field wants.
- */
-class ListRolesToolImpl implements IAiSdkTool<Record<string, never>> {
-    readonly name = "listRoles";
-    readonly title = "List roles";
-    readonly description =
-        "Lists the security roles in this project. Call this before createTeam and pass the `id` of each role you want. A slug also works, but a value that is neither is rejected.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true, idempotentHint: true };
-
+class ListRolesToolHandlerImpl implements IAiSdkToolHandler<Record<string, never>> {
     constructor(private listRoles: ListRolesUseCase.Interface) {}
 
     async execute(): Promise<RoleSummary[]> {
@@ -53,7 +38,30 @@ class ListRolesToolImpl implements IAiSdkTool<Record<string, never>> {
     }
 }
 
+const ListRolesToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: ListRolesToolHandlerImpl,
+    dependencies: [ListRolesUseCase]
+});
+
+/**
+ * Resolves role names to the IDs `createTeam` takes. Separate from the write, so the user approves a
+ * team with roles that were looked up rather than guessed.
+ *
+ * Returns the slug too, because it is what a human recognises and what the admin UI shows, while
+ * `id` is what a team actually stores. Nothing at the type level separates the two, so `createTeam`
+ * accepts either and resolves it rather than making the caller guess which one that field wants.
+ */
+class ListRolesToolImpl implements IAiSdkTool<Record<string, never>> {
+    readonly name = "listRoles";
+    readonly title = "List roles";
+    readonly description =
+        "Lists the security roles in this project. Call this before createTeam and pass the `id` of each role you want. A slug also works, but a value that is neither is rejected.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
+    readonly handler = ListRolesToolHandler;
+}
+
 export const ListRolesTool = AiSdkTool.createImplementation({
     implementation: ListRolesToolImpl,
-    dependencies: [ListRolesUseCase]
+    dependencies: []
 });

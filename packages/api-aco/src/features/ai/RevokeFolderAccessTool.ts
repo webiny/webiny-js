@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 import { loadFolderPermissions } from "./loadFolderPermissions.js";
@@ -32,21 +32,7 @@ interface RevokeResult {
     permissions: { target: string; level: string }[];
 }
 
-/**
- * Removes one target's direct access to one folder.
- *
- * Destructive: somebody loses access, and there is no undo. Refuses when the target has no DIRECT rule
- * rather than reporting a removal that changed nothing — an inherited grant cannot be revoked here,
- * only where it is defined, and saying otherwise would leave the user believing access was withdrawn.
- */
-class RevokeFolderAccessToolImpl implements IAiSdkTool<Input> {
-    readonly name = "revokeFolderAccess";
-    readonly title = "Revoke folder access";
-    readonly description =
-        "Removes one team's or user's direct access to one folder, leaving all other permissions untouched. Cannot remove inherited access. Requires user approval.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: false, destructiveHint: true };
-
+class RevokeFolderAccessToolHandlerImpl implements IAiSdkToolHandler<Input> {
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         private updateFolder: UpdateFolderUseCase.Interface
@@ -95,7 +81,29 @@ class RevokeFolderAccessToolImpl implements IAiSdkTool<Input> {
     }
 }
 
+const RevokeFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: RevokeFolderAccessToolHandlerImpl,
+    dependencies: [GetFolderUseCase, UpdateFolderUseCase]
+});
+
+/**
+ * Removes one target's direct access to one folder.
+ *
+ * Destructive: somebody loses access, and there is no undo. Refuses when the target has no DIRECT rule
+ * rather than reporting a removal that changed nothing — an inherited grant cannot be revoked here,
+ * only where it is defined, and saying otherwise would leave the user believing access was withdrawn.
+ */
+class RevokeFolderAccessToolImpl implements IAiSdkTool<Input> {
+    readonly name = "revokeFolderAccess";
+    readonly title = "Revoke folder access";
+    readonly description =
+        "Removes one team's or user's direct access to one folder, leaving all other permissions untouched. Cannot remove inherited access. Requires user approval.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: false, destructiveHint: true };
+    readonly handler = RevokeFolderAccessToolHandler;
+}
+
 export const RevokeFolderAccessTool = AiSdkTool.createImplementation({
     implementation: RevokeFolderAccessToolImpl,
-    dependencies: [GetFolderUseCase, UpdateFolderUseCase]
+    dependencies: []
 });

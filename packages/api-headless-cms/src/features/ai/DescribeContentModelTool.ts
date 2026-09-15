@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import type { CmsModelField } from "~/types/index.js";
 
@@ -72,19 +72,7 @@ const describeField = (field: CmsModelField): FieldDescription => {
     return described;
 };
 
-/**
- * Supplies the field detail needed to build a valid `queryEntries` filter. Deliberately a separate
- * call from `listContentModels`: returning full field sets for every model would be large and mostly
- * unread, so the model pays for detail only on the model it actually cares about.
- */
-class DescribeContentModelToolImpl implements IAiSdkTool<Input> {
-    readonly name = "describeContentModel";
-    readonly title = "Describe content model";
-    readonly description =
-        "Returns the fields of one content model — field IDs, types, whether each is a list, required flags, allowed values, and referenced models. Call this before queryEntries so filters use real field IDs.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true, idempotentHint: true };
-
+class DescribeContentModelToolHandlerImpl implements IAiSdkToolHandler<Input> {
     constructor(private getModel: GetModelUseCase.Interface) {}
 
     async execute(input: Input): Promise<ModelDescription> {
@@ -110,7 +98,27 @@ class DescribeContentModelToolImpl implements IAiSdkTool<Input> {
     }
 }
 
+const DescribeContentModelToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: DescribeContentModelToolHandlerImpl,
+    dependencies: [GetModelUseCase]
+});
+
+/**
+ * Supplies the field detail needed to build a valid `queryEntries` filter. Deliberately a separate
+ * call from `listContentModels`: returning full field sets for every model would be large and mostly
+ * unread, so the model pays for detail only on the model it actually cares about.
+ */
+class DescribeContentModelToolImpl implements IAiSdkTool<Input> {
+    readonly name = "describeContentModel";
+    readonly title = "Describe content model";
+    readonly description =
+        "Returns the fields of one content model — field IDs, types, whether each is a list, required flags, allowed values, and referenced models. Call this before queryEntries so filters use real field IDs.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true, idempotentHint: true };
+    readonly handler = DescribeContentModelToolHandler;
+}
+
 export const DescribeContentModelTool = AiSdkTool.createImplementation({
     implementation: DescribeContentModelToolImpl,
-    dependencies: [GetModelUseCase]
+    dependencies: []
 });

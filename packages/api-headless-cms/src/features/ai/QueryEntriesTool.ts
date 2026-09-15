@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 import { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
@@ -71,29 +71,7 @@ interface QueryEntriesResult {
     };
 }
 
-/**
- * Reads entries for one model.
- *
- * Uses the LATEST revisions (the manage-API view), not published ones — an editor asking "which
- * products are discounted" means the content as it currently stands in the admin app, including
- * unpublished edits. Filter on `status` for a published-only view.
- *
- * `where` is passed through to the CMS rather than re-modelled as a Zod schema: the valid keys depend
- * entirely on the model's fields, which are only known at runtime. An invalid filter surfaces as a
- * tool error the model can correct, which is why `describeContentModel` is named in the description.
- *
- * `where` and `sort` arrive FLAT and go through `CmsWhereMapper`/`CmsSortMapper`, which nest the
- * model's own fields under `values` and leave entry meta at the top. The flat form is what a model
- * writes, because `describeContentModel` hands it a flat list of fieldIds.
- */
-class QueryEntriesToolImpl implements IAiSdkTool<Input> {
-    readonly name = "queryEntries";
-    readonly title = "Query content entries";
-    readonly description =
-        "Queries content entries for a model, with filtering, sorting, search and pagination. Returns the latest revision of each entry (including unpublished changes). Call describeContentModel first to learn the field IDs used in `where` and `sort`.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: true };
-
+class QueryEntriesToolHandlerImpl implements IAiSdkToolHandler<Input> {
     constructor(
         private getModel: GetModelUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
@@ -187,7 +165,37 @@ class QueryEntriesToolImpl implements IAiSdkTool<Input> {
     }
 }
 
+const QueryEntriesToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: QueryEntriesToolHandlerImpl,
+    dependencies: [GetModelUseCase, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
+});
+
+/**
+ * Reads entries for one model.
+ *
+ * Uses the LATEST revisions (the manage-API view), not published ones — an editor asking "which
+ * products are discounted" means the content as it currently stands in the admin app, including
+ * unpublished edits. Filter on `status` for a published-only view.
+ *
+ * `where` is passed through to the CMS rather than re-modelled as a Zod schema: the valid keys depend
+ * entirely on the model's fields, which are only known at runtime. An invalid filter surfaces as a
+ * tool error the model can correct, which is why `describeContentModel` is named in the description.
+ *
+ * `where` and `sort` arrive FLAT and go through `CmsWhereMapper`/`CmsSortMapper`, which nest the
+ * model's own fields under `values` and leave entry meta at the top. The flat form is what a model
+ * writes, because `describeContentModel` hands it a flat list of fieldIds.
+ */
+class QueryEntriesToolImpl implements IAiSdkTool<Input> {
+    readonly name = "queryEntries";
+    readonly title = "Query content entries";
+    readonly description =
+        "Queries content entries for a model, with filtering, sorting, search and pagination. Returns the latest revision of each entry (including unpublished changes). Call describeContentModel first to learn the field IDs used in `where` and `sort`.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: true };
+    readonly handler = QueryEntriesToolHandler;
+}
+
 export const QueryEntriesTool = AiSdkTool.createImplementation({
     implementation: QueryEntriesToolImpl,
-    dependencies: [GetModelUseCase, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
+    dependencies: []
 });

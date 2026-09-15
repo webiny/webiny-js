@@ -27,6 +27,10 @@ const readFlpPermissions = async (container: Container, folderId: string) => {
     return flp?.permissions ?? [];
 };
 
+/**
+ * The runnable half of a tool, built the way `AiSdkTools` builds it at call time. A registered tool
+ * carries metadata only, so resolving one and calling `execute` on it would find nothing there.
+ */
 const getTool = (container: Container, name: string) => {
     const tool = container.resolveAll(AiSdkTool).find(candidate => candidate.name === name);
 
@@ -34,7 +38,11 @@ const getTool = (container: Container, name: string) => {
         throw new Error(`Tool "${name}" is not registered.`);
     }
 
-    return tool;
+    if (!tool.handler) {
+        throw new Error(`Tool "${name}" does not name a handler.`);
+    }
+
+    return container.resolveImplementation(tool.handler);
 };
 
 describe("Folder access AI tools", () => {

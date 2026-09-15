@@ -1,4 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { Constructor } from "@webiny/di";
 import type { generateText } from "ai";
 import type { streamText } from "ai";
 import type { LanguageModel } from "ai";
@@ -118,22 +119,88 @@ export interface IAiSdkToolAnnotations {
     openWorldHint?: boolean;
 }
 
-export interface IAiSdkTool<TInput = any> {
+/**
+ * What a tool IS: everything the model is told about it, with no behaviour and no dependencies.
+ *
+ * Building the tool set, listing tools and deciding which ones need approval all read only this.
+ * Keeping it dependency-free is the point — every consumer injects the whole set, so anything
+ * expensive here is paid for all of them by anyone who touches one.
+ */
+export interface IAiSdkToolMetadata<TInput = any> {
     readonly name: string;
     readonly description: string;
     readonly inputSchema: FlexibleSchema<TInput>;
     /** Human-friendly display name. Falls back to `name` when omitted. */
     readonly title?: string;
     readonly annotations?: IAiSdkToolAnnotations;
+}
+
+/**
+ * What a tool DOES. This is the half that injects use cases, so it is built only for a tool the
+ * model actually calls, and only at the moment it calls it.
+ */
+export interface IAiSdkToolHandler<TInput = any> {
     execute(input: TInput): Promise<unknown>;
 }
 
-/** A single tool that can be provided to AI generateText/streamText calls. */
+/**
+ * A single tool that can be provided to AI generateText/streamText calls.
+ *
+ * TRANSITIONAL SHAPE. A tool supplies its behaviour in one of two ways:
+ *
+ *  - the new way: `handler` names an {@link IAiSdkToolHandler} class, built only when the tool runs;
+ *  - the old way: the tool implements `execute` itself, which forces every tool (and every use case
+ *    it injects) to be built merely to read the name and schema of the others.
+ *
+ * `execute` is optional ONLY to let both shapes coexist while packages migrate. Exactly one of
+ * `execute` or `handler` must be present; a tool with neither fails with
+ * {@link AiSdkToolNotExecutableError} when called.
+ */
+export interface IAiSdkTool<TInput = any>
+    extends IAiSdkToolMetadata<TInput>, Partial<IAiSdkToolHandler<TInput>> {
+    readonly handler?: Constructor<IAiSdkToolHandler<TInput>>;
+}
+
 export const AiSdkTool = createAbstraction<IAiSdkTool>("AiSdkTool");
+
+/**
+ * The behaviour half of a tool, built on demand through {@link AiSdkToolHandlerResolver}.
+ *
+ * Implementations are NOT registered against this abstraction. The tool points at the class
+ * directly, exactly as `HttpRouteDefinition` points at its `HttpRouteHandler`. Declaring them
+ * through it is what attaches their dependency metadata.
+ */
+export const AiSdkToolHandler = createAbstraction<IAiSdkToolHandler>("AiSdkToolHandler");
 
 export namespace AiSdkTool {
     export type Interface = IAiSdkTool;
+    export type Metadata = IAiSdkToolMetadata;
     export type Annotations = IAiSdkToolAnnotations;
+}
+
+export namespace AiSdkToolHandler {
+    export type Interface<TInput = any> = IAiSdkToolHandler<TInput>;
+}
+
+// AiSdkToolHandlerResolver
+
+export interface IAiSdkToolHandlerResolver {
+    resolve<TInput>(handler: Constructor<IAiSdkToolHandler<TInput>>): IAiSdkToolHandler<TInput>;
+}
+
+/**
+ * Builds the behaviour half of a tool on demand.
+ *
+ * Something has to turn `tool.handler` (a class) into an instance, and that needs the container.
+ * Rather than injecting the container into the tool registry, it lives behind this one narrow
+ * abstraction, so everything else depends on `resolve(handler)` and stays testable with a stub.
+ */
+export const AiSdkToolHandlerResolver = createAbstraction<IAiSdkToolHandlerResolver>(
+    "AiSdkToolHandlerResolver"
+);
+
+export namespace AiSdkToolHandlerResolver {
+    export type Interface = IAiSdkToolHandlerResolver;
 }
 
 // AiSdkTools

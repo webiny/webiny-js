@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
-import type { IAiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import type { IAiSdkTool, IAiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
@@ -43,22 +43,7 @@ interface GrantResult {
     replacedExistingLevel?: string;
 }
 
-/**
- * Grants one target access to one folder, leaving every other rule alone.
- *
- * Additive by design. The earlier tool took the complete permission set and replaced it, which meant
- * approving a change showed what would be SET and said nothing about what would be removed — a rule
- * the model omitted disappeared silently. One target per call keeps the approval honest: what the user
- * sees in the plan is the whole change.
- */
-class GrantFolderAccessToolImpl implements IAiSdkTool<Input> {
-    readonly name = "grantFolderAccess";
-    readonly title = "Grant folder access";
-    readonly description =
-        "Grants one team or user a level of access on one folder, leaving all other permissions untouched. Use listFolders for the folder id and listTeams for a team slug. Requires user approval.";
-    readonly inputSchema = inputSchema;
-    readonly annotations = { readOnlyHint: false };
-
+class GrantFolderAccessToolHandlerImpl implements IAiSdkToolHandler<Input> {
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         private updateFolder: UpdateFolderUseCase.Interface,
@@ -103,7 +88,30 @@ class GrantFolderAccessToolImpl implements IAiSdkTool<Input> {
     }
 }
 
+const GrantFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
+    implementation: GrantFolderAccessToolHandlerImpl,
+    dependencies: [GetFolderUseCase, UpdateFolderUseCase, ListTeamsUseCase]
+});
+
+/**
+ * Grants one target access to one folder, leaving every other rule alone.
+ *
+ * Additive by design. The earlier tool took the complete permission set and replaced it, which meant
+ * approving a change showed what would be SET and said nothing about what would be removed — a rule
+ * the model omitted disappeared silently. One target per call keeps the approval honest: what the user
+ * sees in the plan is the whole change.
+ */
+class GrantFolderAccessToolImpl implements IAiSdkTool<Input> {
+    readonly name = "grantFolderAccess";
+    readonly title = "Grant folder access";
+    readonly description =
+        "Grants one team or user a level of access on one folder, leaving all other permissions untouched. Use listFolders for the folder id and listTeams for a team slug. Requires user approval.";
+    readonly inputSchema = inputSchema;
+    readonly annotations = { readOnlyHint: false };
+    readonly handler = GrantFolderAccessToolHandler;
+}
+
 export const GrantFolderAccessTool = AiSdkTool.createImplementation({
     implementation: GrantFolderAccessToolImpl,
-    dependencies: [GetFolderUseCase, UpdateFolderUseCase, ListTeamsUseCase]
+    dependencies: []
 });

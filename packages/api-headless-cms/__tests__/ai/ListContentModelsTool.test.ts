@@ -28,7 +28,14 @@ const resolveTool = (models: CmsModel[]) => {
 
     container.register(ListContentModelsTool);
 
-    return container.resolveAll(AiSdkTool)[0];
+    const tool = container.resolveAll(AiSdkTool)[0];
+
+    /*
+     * The tool is metadata only; the container builds its handler the same way `AiSdkTools` does at
+     * call time. Going through `tool.handler` rather than importing the class keeps the wiring under
+     * test: a tool that forgot to name its handler fails here.
+     */
+    return container.resolveImplementation(tool.handler!);
 };
 
 describe("listContentModels", () => {
@@ -67,8 +74,9 @@ describe("listContentModels", () => {
         } as ListModelsUseCase.Interface);
         container.register(ListContentModelsTool);
 
-        await expect(container.resolveAll(AiSdkTool)[0].execute({})).rejects.toThrow(
-            "Not allowed to access content models."
-        );
+        const tool = container.resolveAll(AiSdkTool)[0];
+        const handler = container.resolveImplementation(tool.handler!);
+
+        await expect(handler.execute({})).rejects.toThrow("Not allowed to access content models.");
     });
 });
