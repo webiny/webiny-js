@@ -1,1 +1,1 @@
-export { DeleteThreadUseCase } from "./abstractions.js";
+export { DeleteThreadUseCase, DeleteThreadRepository } from "./abstractions.js";

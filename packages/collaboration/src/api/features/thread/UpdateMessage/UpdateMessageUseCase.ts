@@ -38,7 +38,7 @@ class UpdateMessageUseCaseImpl implements UseCase.Interface {
         }
 
         const identity = this.identityContext.getIdentity();
-        if (!identity.isAdmin() && identity.id !== message.createdBy.id) {
+        if (identity.id !== message.createdBy.id) {
             return Result.fail(
                 new CollabThreadNotAuthorizedError("You can only edit your own messages.")
             );

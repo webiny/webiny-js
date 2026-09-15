@@ -1,15 +1,22 @@
 import { Result } from "@webiny/feature/api";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetThreadRepository, GetThreadUseCase as UseCase } from "./abstractions.js";
 import { ResolveLocatorUseCase } from "~/api/features/locator/ResolveLocator/index.js";
 import { CollabThreadNotAuthorizedError } from "~/api/domain/thread/errors.js";
 
 class GetThreadUseCaseImpl implements UseCase.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private repository: GetThreadRepository.Interface,
         private resolveLocator: ResolveLocatorUseCase.Interface
     ) {}
 
     async execute(id: string): UseCase.Return {
+        const identity = this.identityContext.getIdentity();
+        if (identity.isAnonymous()) {
+            return Result.fail(new CollabThreadNotAuthorizedError());
+        }
+
         const threadResult = await this.repository.execute(id);
         if (threadResult.isFail()) {
             return Result.fail(threadResult.error);
@@ -39,5 +46,5 @@ class GetThreadUseCaseImpl implements UseCase.Interface {
 
 export const GetThreadUseCase = UseCase.createImplementation({
     implementation: GetThreadUseCaseImpl,
-    dependencies: [GetThreadRepository, ResolveLocatorUseCase]
+    dependencies: [IdentityContext, GetThreadRepository, ResolveLocatorUseCase]
 });

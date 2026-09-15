@@ -8,8 +8,10 @@ import { UpdateThreadFeature } from "./features/thread/UpdateThread/feature.js";
 import { CreateThreadFeature } from "./features/thread/CreateThread/feature.js";
 import { ListThreadsFeature } from "./features/thread/ListThreads/feature.js";
 import { ReplyToThreadFeature } from "./features/thread/ReplyToThread/feature.js";
-import { ThreadResolutionFeature } from "./features/thread/ThreadResolution/feature.js";
-import { MessageOperationsFeature } from "./features/thread/MessageOperations/feature.js";
+import { ResolveThreadFeature } from "./features/thread/ResolveThread/feature.js";
+import { ReopenThreadFeature } from "./features/thread/ReopenThread/feature.js";
+import { UpdateMessageFeature } from "./features/thread/UpdateMessage/feature.js";
+import { DeleteMessageFeature } from "./features/thread/DeleteMessage/feature.js";
 import { DeleteThreadFeature } from "./features/thread/DeleteThread/feature.js";
 import { CollaborationSchema } from "./graphql/collaboration.js";
 
@@ -27,8 +29,10 @@ export const Extension = createFeature({
         CreateThreadFeature.register(container);
         ListThreadsFeature.register(container);
         ReplyToThreadFeature.register(container);
-        ThreadResolutionFeature.register(container);
-        MessageOperationsFeature.register(container);
+        ResolveThreadFeature.register(container);
+        ReopenThreadFeature.register(container);
+        UpdateMessageFeature.register(container);
+        DeleteMessageFeature.register(container);
         DeleteThreadFeature.register(container);
 
         // GraphQL

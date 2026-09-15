@@ -7,14 +7,10 @@ import { CreateThreadUseCase } from "~/api/features/thread/CreateThread/index.js
 import { GetThreadUseCase } from "~/api/features/thread/GetThread/index.js";
 import { ListThreadsUseCase } from "~/api/features/thread/ListThreads/index.js";
 import { ReplyToThreadUseCase } from "~/api/features/thread/ReplyToThread/index.js";
-import {
-    ReopenThreadUseCase,
-    ResolveThreadUseCase
-} from "~/api/features/thread/ThreadResolution/index.js";
-import {
-    DeleteMessageUseCase,
-    UpdateMessageUseCase
-} from "~/api/features/thread/MessageOperations/index.js";
+import { ResolveThreadUseCase } from "~/api/features/thread/ResolveThread/index.js";
+import { ReopenThreadUseCase } from "~/api/features/thread/ReopenThread/index.js";
+import { UpdateMessageUseCase } from "~/api/features/thread/UpdateMessage/index.js";
+import { DeleteMessageUseCase } from "~/api/features/thread/DeleteMessage/index.js";
 import { DeleteThreadUseCase } from "~/api/features/thread/DeleteThread/index.js";
 import {
     createCollabThreadValidation,
@@ -104,9 +100,6 @@ class CollaborationSchema_ implements GraphQLSchemaFactory.Interface {
                 mentions: [String!]!
                 createdBy: CollabIdentity!
                 createdOn: String!
-                deleted: Boolean
-                deletedBy: CollabIdentity
-                deletedOn: String
             }
 
             type CollabAnchor {

@@ -7,7 +7,6 @@ import {
     CollabMessageNotFoundError,
     CollabThreadNotAuthorizedError
 } from "~/api/domain/thread/errors.js";
-import { toCollabIdentity } from "~/api/utils/identity.js";
 
 class DeleteMessageUseCaseImpl implements UseCase.Interface {
     constructor(
@@ -23,8 +22,8 @@ class DeleteMessageUseCaseImpl implements UseCase.Interface {
         }
 
         const { thread } = loaded.value;
-        const message = thread.messages.find(item => item.id === input.messageId);
-        if (!message || message.deleted) {
+        const messageIndex = thread.messages.findIndex(item => item.id === input.messageId);
+        if (messageIndex === -1) {
             return Result.fail(
                 new CollabMessageNotFoundError({
                     threadId: input.threadId,
@@ -34,15 +33,15 @@ class DeleteMessageUseCaseImpl implements UseCase.Interface {
         }
 
         const identity = this.identityContext.getIdentity();
-        if (!identity.isAdmin() && identity.id !== message.createdBy.id) {
+        const message = thread.messages[messageIndex];
+
+        if (identity.id !== message.createdBy.id) {
             return Result.fail(
                 new CollabThreadNotAuthorizedError("You can only delete your own messages.")
             );
         }
 
-        message.deleted = true;
-        message.deletedBy = toCollabIdentity(identity);
-        message.deletedOn = new Date().toISOString();
+        thread.messages = thread.messages.filter(item => item.id !== input.messageId);
 
         const updateResult = await this.updateThread.execute(thread);
         if (updateResult.isFail()) {

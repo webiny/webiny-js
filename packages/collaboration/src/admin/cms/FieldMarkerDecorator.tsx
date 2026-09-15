@@ -6,6 +6,8 @@ import type { IFieldVM } from "@webiny/app-admin/features/formModel/abstractions
 import { useCommentMarkersContext } from "./CommentMarkersContext.js";
 import { CommentFieldMarker } from "./CommentFieldMarker.js";
 
+const collabFieldStyle: React.CSSProperties = { position: "relative" };
+
 interface WrapperProps {
     field: IFieldVM;
     children?: React.ReactNode;
@@ -37,7 +39,7 @@ export const FieldMarkerDecorator = FormFieldWrapper.createDecorator(Original =>
         const locator = itemLocators.get(props.field)?.locator ?? props.field.qualifiedName;
 
         return (
-            <div className="wby-collab-field" style={{ position: "relative" }}>
+            <div className="wby-collab-field" style={collabFieldStyle}>
                 <Original {...props} />
                 <CommentFieldMarker field={props.field} locator={locator} />
             </div>

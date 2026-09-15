@@ -9,7 +9,7 @@ import type {
     CollabThreadValidationError
 } from "~/api/domain/thread/errors.js";
 
-export interface IMessageOperationErrors {
+export interface IUpdateMessageUseCaseErrors {
     threadNotFound: CollabThreadNotFoundError;
     messageNotFound: CollabMessageNotFoundError;
     notAuthorized: CollabThreadNotAuthorizedError;
@@ -17,11 +17,8 @@ export interface IMessageOperationErrors {
     persistence: CollabThreadPersistenceError;
 }
 
-type UseCaseError = IMessageOperationErrors[keyof IMessageOperationErrors];
+type UseCaseError = IUpdateMessageUseCaseErrors[keyof IUpdateMessageUseCaseErrors];
 
-/**
- * Edit a message body — author or admin only.
- */
 export interface IUpdateMessageInput {
     threadId: string;
     messageId: string;
@@ -39,27 +36,5 @@ export namespace UpdateMessageUseCase {
     export type Interface = IUpdateMessageUseCase;
     export type Input = IUpdateMessageInput;
     export type Return = Promise<Result<ICollabMessage, UseCaseError>>;
-    export type Error = UseCaseError;
-}
-
-/**
- * Soft-delete a message — author or admin only.
- */
-export interface IDeleteMessageInput {
-    threadId: string;
-    messageId: string;
-}
-
-export interface IDeleteMessageUseCase {
-    execute(input: IDeleteMessageInput): Promise<Result<boolean, UseCaseError>>;
-}
-
-export const DeleteMessageUseCase =
-    createAbstraction<IDeleteMessageUseCase>("DeleteMessageUseCase");
-
-export namespace DeleteMessageUseCase {
-    export type Interface = IDeleteMessageUseCase;
-    export type Input = IDeleteMessageInput;
-    export type Return = Promise<Result<boolean, UseCaseError>>;
     export type Error = UseCaseError;
 }

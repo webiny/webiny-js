@@ -1,1 +1,1 @@
-export { UpdateThreadRepository } from "./abstractions.js";
+export { UpdateThreadUseCase, UpdateThreadRepository } from "./abstractions.js";
