@@ -6,7 +6,7 @@ import { CreateIndexesRunner } from "./abstractions/CreateIndexesRunner.js";
 import { OnBeforeTrigger } from "./abstractions/OnBeforeTrigger.js";
 import { IndexManagerFactory } from "~/abstractions/IndexManagerFactory.js";
 
-class CreateIndexesTaskImplHandlerImpl implements TaskHandler.Interface<CreateIndexesRunner.Input> {
+class CreateIndexesTaskHandlerImpl implements TaskHandler.Interface<CreateIndexesRunner.Input> {
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: CreateIndexesRunner.Interface,
@@ -34,8 +34,8 @@ class CreateIndexesTaskImplHandlerImpl implements TaskHandler.Interface<CreateIn
     }
 }
 
-const CreateIndexesTaskImplHandler = TaskHandler.createImplementation({
-    implementation: CreateIndexesTaskImplHandlerImpl,
+const CreateIndexesTaskHandler = TaskHandler.createImplementation({
+    implementation: CreateIndexesTaskHandlerImpl,
     dependencies: [IndexManagerFactory, CreateIndexesRunner, OnBeforeTrigger]
 });
 
@@ -44,7 +44,7 @@ class CreateIndexesTaskImpl implements TaskDefinition.Interface {
     public readonly title = "Create Missing Search Indexes";
     public readonly maxIterations = 2;
 
-    handler = CreateIndexesTaskImplHandler;
+    handler = CreateIndexesTaskHandler;
 }
 
 export const CreateIndexesTask = TaskDefinition.createImplementation({

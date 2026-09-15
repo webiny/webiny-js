@@ -18,6 +18,7 @@ import { ProcessTask } from "./internals/ProcessTask.js";
 import { CreateTasksByModel } from "./internals/CreateTasksByModel.js";
 import { ProcessTasksByModel } from "./internals/ProcessTasksByModel.js";
 import type { Container } from "@webiny/di";
+import { RequestContainer } from "@webiny/event-handler-core";
 
 export const BULK_ACTION_LIST_TASK_ID = "hcmsBulkListEntries";
 export const BULK_ACTION_PROCESS_TASK_ID = "hcmsBulkProcessEntries";
@@ -189,8 +190,6 @@ class BulkActionProcessTask implements TaskDefinition.Interface {
 
     handler = BulkActionProcessTaskHandler;
 }
-
-import { RequestContainer } from "@webiny/event-handler-core";
 
 export const BulkActionListTaskDefinition = TaskDefinition.createImplementation({
     implementation: BulkActionListTask,

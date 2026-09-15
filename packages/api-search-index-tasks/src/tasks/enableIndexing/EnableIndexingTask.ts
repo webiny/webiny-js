@@ -5,7 +5,7 @@ import {
 import { EnableIndexingRunner } from "./abstractions/EnableIndexingRunner.js";
 import { IndexManagerFactory } from "~/abstractions/IndexManagerFactory.js";
 
-class EnableIndexingTaskImplHandlerImpl implements TaskHandler.Interface<EnableIndexingRunner.Input> {
+class EnableIndexingTaskHandlerImpl implements TaskHandler.Interface<EnableIndexingRunner.Input> {
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: EnableIndexingRunner.Interface
@@ -28,8 +28,8 @@ class EnableIndexingTaskImplHandlerImpl implements TaskHandler.Interface<EnableI
     }
 }
 
-const EnableIndexingTaskImplHandler = TaskHandler.createImplementation({
-    implementation: EnableIndexingTaskImplHandlerImpl,
+const EnableIndexingTaskHandler = TaskHandler.createImplementation({
+    implementation: EnableIndexingTaskHandlerImpl,
     dependencies: [IndexManagerFactory, EnableIndexingRunner]
 });
 
@@ -38,7 +38,7 @@ class EnableIndexingTaskImpl implements TaskDefinition.Interface {
     public readonly title = "Enable Search Indexing";
     public readonly maxIterations = 2;
 
-    handler = EnableIndexingTaskImplHandler;
+    handler = EnableIndexingTaskHandler;
 }
 
 export const EnableIndexingTask = TaskDefinition.createImplementation({

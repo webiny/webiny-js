@@ -5,7 +5,7 @@ import {
 import { ReindexRunner } from "./abstractions/ReindexRunner.js";
 import { IndexManagerFactory } from "~/abstractions/IndexManagerFactory.js";
 
-class ReindexTaskImplHandlerImpl implements TaskHandler.Interface<ReindexRunner.Input> {
+class ReindexTaskHandlerImpl implements TaskHandler.Interface<ReindexRunner.Input> {
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: ReindexRunner.Interface
@@ -25,8 +25,8 @@ class ReindexTaskImplHandlerImpl implements TaskHandler.Interface<ReindexRunner.
     }
 }
 
-const ReindexTaskImplHandler = TaskHandler.createImplementation({
-    implementation: ReindexTaskImplHandlerImpl,
+const ReindexTaskHandler = TaskHandler.createImplementation({
+    implementation: ReindexTaskHandlerImpl,
     dependencies: [IndexManagerFactory, ReindexRunner]
 });
 
@@ -35,7 +35,7 @@ class ReindexTaskImpl implements TaskDefinition.Interface {
     public readonly title = "Reindex Search Index";
     public readonly maxIterations = 500;
 
-    handler = ReindexTaskImplHandler;
+    handler = ReindexTaskHandler;
 }
 
 export const ReindexTask = TaskDefinition.createImplementation({
