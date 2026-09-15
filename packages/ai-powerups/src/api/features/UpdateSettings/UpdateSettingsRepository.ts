@@ -31,7 +31,14 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
 
         const existingInternal: Record<string, unknown> = {};
         for (const handler of this.handlers) {
-            existingInternal[handler.name] = handler.mapFromStorage(raw[handler.name]);
+            /*
+             * `raw` matters here as much as it does on read. `connections` derives itself from the
+             * legacy `providers` section until it has one of its own, and this is what
+             * `mapToStorage` diffs against to carry forward an encrypted key the form only ever saw
+             * as a mask. Without it, the first save after an upgrade compares against an empty list
+             * and silently drops every stored key.
+             */
+            existingInternal[handler.name] = handler.mapFromStorage(raw[handler.name], raw);
         }
 
         const newSettings = input as unknown as Record<string, unknown>;

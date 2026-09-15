@@ -30,7 +30,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
         const result: Record<string, unknown> = {};
 
         for (const handler of this.handlers) {
-            result[handler.name] = handler.mapFromStorage(raw[handler.name]);
+            result[handler.name] = handler.mapFromStorage(raw[handler.name], raw);
         }
 
         for (const key of Object.keys(raw)) {
