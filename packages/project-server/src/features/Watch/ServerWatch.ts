@@ -12,6 +12,13 @@ import { getDevServerSession } from "../../serve/devServer/index.js";
  * local code, the self-hosted hosting type boots the built api handler as a live HTTP server that reloads
  * on rebuild — so `webiny watch api` both compiles AND serves. Kept out of the CLI command (which
  * stays hosting-agnostic, like cli-aws) and composed only when the server hosting type is registered.
+ *
+ * What it returns are process SPECS, not processes: a name and a `spawn` function nobody has called
+ * yet. `Watch` describes a session rather than starting one, so nothing here binds a port or writes
+ * to the terminal. The caller (the CLI) turns each spec into a `RunnableServerProcess`, attaches its
+ * own prefixing to the output, and runs them alongside the build watchers. Same split `packagesWatcher`
+ * already uses for builds, and the reason `webiny watch` can render api, admin and proxy output
+ * identically without any of them knowing about a terminal.
  */
 export class ServerWatch implements Watch.Interface {
     constructor(
@@ -22,35 +29,53 @@ export class ServerWatch implements Watch.Interface {
     async execute(params: Watch.Params): Promise<Watch.Result> {
         const result = await this.decoratee.execute(params);
 
-        // No HTTP server for package-only watch.
+        // Package-only watch compiles packages and serves nothing.
         if (!("app" in params)) {
             return result;
         }
 
-        // Only the api app builds an HTTP server handler. Name-matched here, but isolated in this
-        // one hosting-owned place — swap for a capability check on the app model when available.
-        if (params.app !== "api") {
+        const specs = [...this.apiServerSpecs(params.app), ...this.devProxySpecs(params.app)];
+
+        if (specs.length === 0) {
             return result;
         }
 
-        const app = this.getApp.execute(params.app);
+        return { ...result, serversWatcher: new ServersWatcher(specs) };
+    }
 
-        const specs: IServerProcessSpec[] = [
-            { name: "api", spawn: () => runApiServer(app, { watch: true }) }
-        ];
-
-        // The single-port proxy in front of api + admin, when the CLI asked for one. Attached to the
-        // api watch because that's the one app guaranteed to be in such a session, and attaching it
-        // to both would run two of them.
-        const session = getDevServerSession();
-        if (session) {
-            specs.push({ name: "proxy", spawn: () => runDevProxy(session) });
+    /**
+     * The api's own HTTP server. Still gated on the app name because only the api compiles to a
+     * server handler: admin is a static bundle, served by rsbuild's own dev server during watch.
+     * Without the check, `watch admin` would boot the api runner against the admin workspace.
+     *
+     * A name match rather than a question asked of the app, because `IAppModel` carries no capability
+     * flag to ask. Worth swapping when it does.
+     */
+    private apiServerSpecs(appName: GetApp.AppName): IServerProcessSpec[] {
+        if (appName !== "api") {
+            return [];
         }
 
-        // Hand the server processes upstream as a lazy ServersWatcher (wrapped like the build
-        // watchers' packagesWatcher) rather than spawning/rendering them here — the caller (e.g. the
-        // CLI) prepares + runs them and owns terminal output + lifecycle.
-        return { ...result, serversWatcher: new ServersWatcher(specs) };
+        const app = this.getApp.execute(appName);
+
+        return [{ name: "api", spawn: () => runApiServer(app, { watch: true }) }];
+    }
+
+    /**
+     * The single-port proxy, when the CLI decided this session should have one.
+     *
+     * Nothing to do with the api, but it has to ride along with exactly one app's watch or a session
+     * ends up starting two proxies that fight over the port. api is the one guaranteed to be there
+     * whenever a proxy was asked for, since a proxy only happens for an api + admin session.
+     */
+    private devProxySpecs(appName: GetApp.AppName): IServerProcessSpec[] {
+        const session = getDevServerSession();
+
+        if (!session || appName !== "api") {
+            return [];
+        }
+
+        return [{ name: "proxy", spawn: () => runDevProxy(session) }];
     }
 }
 
