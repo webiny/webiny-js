@@ -6,7 +6,7 @@ import { UpdateFolderRepository } from "./UpdateFolderRepository.js";
 import { UpdateFolderGqlGateway } from "./UpdateFolderGqlGateway.js";
 import { UpdateFolderRepositoryWithPathChange } from "./decorators/RepositoryWithPathChange.js";
 import { UpdateFolderRepositoryWithPermissionsChange } from "./decorators/RepositoryWithPermissionsChange.js";
-import { UpdateFolderUseCaseWithoutInheritedPermissions } from "./decorators/UseCaseWithoutInheritedPermissions.js";
+import { UpdateFolderUseCaseWithoutReadOnlyPermissions } from "./decorators/UseCaseWithoutReadOnlyPermissions.js";
 import { UpdateFolderUseCaseWithLoading } from "./decorators/UseCaseWithLoading.js";
 
 export const UpdateFolderFeature = createFeature({
@@ -26,7 +26,7 @@ export const UpdateFolderFeature = createFeature({
         container.registerDecorator(UpdateFolderRepositoryWithPermissionsChange);
 
         // Register use case decorators (innermost first)
-        container.registerDecorator(UpdateFolderUseCaseWithoutInheritedPermissions);
+        container.registerDecorator(UpdateFolderUseCaseWithoutReadOnlyPermissions);
         container.registerDecorator(UpdateFolderUseCaseWithLoading);
     },
     resolve(container) {
