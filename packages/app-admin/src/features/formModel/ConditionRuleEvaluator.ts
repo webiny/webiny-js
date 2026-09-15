@@ -17,6 +17,15 @@ export class ConditionRuleEvaluatorImpl implements RuleEvaluator.Interface {
     }
 
     evaluate(rule: RuleEvaluator.Rule, form: IFormModel): boolean {
+        /**
+         * The "always" operator doesn't look at any other field, so we resolve it before
+         * touching the target. It's what turns a rule into an unconditional one, which is
+         * how a permanently disabled (read-only) field is expressed.
+         */
+        if (rule.operator === "always") {
+            return true;
+        }
+
         const field = safeGetField(form, rule.target);
         const value = field?.getValue() ?? null;
 

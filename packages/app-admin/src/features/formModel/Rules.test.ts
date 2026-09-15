@@ -389,5 +389,74 @@ describe("Rules system", () => {
             expect(e.evaluate(rule, mkForm("hello"))).toBe(false);
             expect(e.evaluate(rule, mkForm(0))).toBe(false);
         });
+
+        it("always matches without reading a target field", () => {
+            const e = new ConditionRuleEvaluator();
+            const form = {
+                field: () => {
+                    throw new Error("Should not resolve a target field.");
+                }
+            } as unknown as IFormModel;
+
+            const rule: IRule = {
+                type: "condition",
+                target: "",
+                operator: "always",
+                value: null,
+                action: "disable"
+            };
+
+            expect(e.evaluate(rule, form)).toBe(true);
+        });
+    });
+
+    describe("read-only fields", () => {
+        it("disables a field carrying an unconditional disable rule", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    externalId: fields
+                        .text()
+                        .label("External ID")
+                        .rules([
+                            {
+                                type: "condition",
+                                target: "",
+                                operator: "always",
+                                value: null,
+                                action: "disable"
+                            }
+                        ])
+                })
+            });
+
+            expect(form.field("externalId").disabled).toBe(true);
+            expect(form.field("externalId").visible).toBe(true);
+            expect(form.field("title").disabled).toBe(false);
+        });
+
+        it("keeps the field disabled no matter what the rest of the form holds", () => {
+            const form = createForm({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    slug: fields
+                        .text()
+                        .label("Slug")
+                        .rules([
+                            {
+                                type: "condition",
+                                target: "title",
+                                operator: "always",
+                                value: null,
+                                action: "disable"
+                            }
+                        ])
+                })
+            });
+
+            expect(form.field("slug").disabled).toBe(true);
+            form.field("title").setValue("Hello");
+            expect(form.field("slug").disabled).toBe(true);
+        });
     });
 });
