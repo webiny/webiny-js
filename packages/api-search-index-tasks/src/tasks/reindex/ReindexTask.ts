@@ -1,18 +1,17 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ReindexRunner } from "./abstractions/ReindexRunner.js";
 import { IndexManagerFactory } from "~/abstractions/IndexManagerFactory.js";
 
-class ReindexTaskImpl implements TaskDefinition.Interface<ReindexRunner.Input> {
-    public readonly id = "elasticsearchReindexing";
-    public readonly title = "Reindex Search Index";
-    public readonly maxIterations = 500;
-
+class ReindexTaskImplHandlerImpl implements TaskHandler.Interface<ReindexRunner.Input> {
     constructor(
         private readonly indexManagerFactory: IndexManagerFactory.Interface,
         private readonly runner: ReindexRunner.Interface
     ) {}
 
-    async run({ input, controller }: TaskDefinition.RunParams<ReindexRunner.Input>) {
+    async run({ input, controller }: TaskHandler.RunParams<ReindexRunner.Input>) {
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
         }
@@ -26,7 +25,20 @@ class ReindexTaskImpl implements TaskDefinition.Interface<ReindexRunner.Input> {
     }
 }
 
+const ReindexTaskImplHandler = TaskHandler.createImplementation({
+    implementation: ReindexTaskImplHandlerImpl,
+    dependencies: [IndexManagerFactory, ReindexRunner]
+});
+
+class ReindexTaskImpl implements TaskDefinition.Interface {
+    public readonly id = "elasticsearchReindexing";
+    public readonly title = "Reindex Search Index";
+    public readonly maxIterations = 500;
+
+    handler = ReindexTaskImplHandler;
+}
+
 export const ReindexTask = TaskDefinition.createImplementation({
     implementation: ReindexTaskImpl,
-    dependencies: [IndexManagerFactory, ReindexRunner]
+    dependencies: []
 });
