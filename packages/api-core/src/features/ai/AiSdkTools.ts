@@ -20,6 +20,11 @@ class AiSdkToolsImpl implements AiSdkToolsAbstraction.Interface {
                 /*
                  * Deliberately resolved inside the call, not here. The model is offered every
                  * tool and calls a few, which is what keeps the rest of their use cases unbuilt.
+                 *
+                 * `resolve` IS `container.resolveImplementation`, one layer down. It lives behind
+                 * an abstraction so this class does not inject a container. Note it builds the
+                 * class the definition names; resolving the `AiSdkToolHandler` abstraction would
+                 * find nothing, since handlers are declared through it but never registered.
                  */
                 execute: (input: unknown) =>
                     this.resolver.resolve(definition.handler).execute(input)
