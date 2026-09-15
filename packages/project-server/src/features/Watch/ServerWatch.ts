@@ -13,12 +13,46 @@ import { getDevServerSession } from "../../serve/devServer/index.js";
  * on rebuild — so `webiny watch api` both compiles AND serves. Kept out of the CLI command (which
  * stays hosting-agnostic, like cli-aws) and composed only when the server hosting type is registered.
  *
- * What it returns are process SPECS, not processes: a name and a `spawn` function nobody has called
- * yet. `Watch` describes a session rather than starting one, so nothing here binds a port or writes
- * to the terminal. The caller (the CLI) turns each spec into a `RunnableServerProcess`, attaches its
- * own prefixing to the output, and runs them alongside the build watchers. Same split `packagesWatcher`
- * already uses for builds, and the reason `webiny watch` can render api, admin and proxy output
- * identically without any of them knowing about a terminal.
+ * ## Where it sits
+ *
+ * A `Watch` decorator, so it wraps whatever `projectSdk.watch()` already did rather than replacing it:
+ *
+ * ```
+ *   watchWithHooks  ──▶  ServerWatch  ──▶  DefaultWatch
+ *   (runs *BeforeWatch    (this file)      prepares the app workspace,
+ *    hooks)                                returns { packagesWatcher }
+ * ```
+ *
+ * The decoratee runs first and this only appends, which is why the return is a spread.
+ *
+ * ## One call per app, and only api gets anything
+ *
+ * `webiny watch` calls the SDK once per app, so this runs twice. Admin needs no server process,
+ * because its build tool already is one: rsbuild's dev server is one of the admin `packagesWatcher`
+ * processes and serves the bundle itself. So the admin call falls through and returns `result`
+ * untouched, with no `serversWatcher` key at all.
+ *
+ * ```
+ *   watch({ app: "api" })    ──▶  { packagesWatcher, serversWatcher: [api, proxy?] }
+ *   watch({ app: "admin" })  ──▶  { packagesWatcher }
+ * ```
+ *
+ * ## Nothing is spawned here
+ *
+ * A spec is a name and a `spawn` function nobody has called. The chain from here to a real process:
+ *
+ * ```
+ *   ServerWatch                  builds the specs                   (this file)
+ *   WatchCommand                 serversWatcher.prepare()           ──▶ RunnableServerProcess[]
+ *   WatchCommand                 pipeStdout / pipeStderr            attaches its own prefixing
+ *   WatchCommand                 Promise.all(processes.map(run))
+ *   RunnableServerProcess.run()  calls the spec's spawn()
+ *   runApiServer / runDevProxy   child_process.spawn(node, runner)  ──▶ an actual process
+ * ```
+ *
+ * Same split `packagesWatcher` already uses for builds. Describing rather than starting is what lets
+ * the CLI own terminal rendering and lifecycle, and lets api, admin and proxy output be prefixed
+ * identically without any of them knowing a terminal exists.
  */
 export class ServerWatch implements Watch.Interface {
     constructor(
