@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
-import { readLegacyProviderPresets } from "~/api/features/Connections/types.js";
+import { readLegacyProviderPresets } from "~/api/features/Connections/legacyProviders.js";
 import { AI_MODEL_ROLE_IDS } from "./roles.js";
 import { emptyAssignment } from "./types.js";
 import type { AiModelRoleAssignments, ModelRolesSettings, PersistedModelRoles } from "./types.js";

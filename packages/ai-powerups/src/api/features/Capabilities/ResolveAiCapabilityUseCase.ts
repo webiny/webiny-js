@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
-import { sdkNameFromModel } from "~/api/features/Connections/index.js";
+import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
 import type { IResolvedAiCapability } from "./abstractions.js";
 import type { AiCapabilityOverride } from "./types.js";

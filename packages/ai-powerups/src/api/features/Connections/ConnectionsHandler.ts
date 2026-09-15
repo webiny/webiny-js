@@ -2,7 +2,8 @@ import { z } from "zod";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { Masker } from "@webiny/api-core/features/masker/index.js";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
-import { readLegacyProviderPresets, sdkNameFromModel } from "./types.js";
+import { readLegacyProviderPresets } from "./legacyProviders.js";
+import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import type {
     ConnectionsSettings,
     PersistedAiConnectionPreset,
