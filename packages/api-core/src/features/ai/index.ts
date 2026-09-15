@@ -15,7 +15,6 @@ export type {
     IAiSdkModel,
     IAiSdkToolDefinition,
     IAiSdkToolAnnotations,
-    IAiSdkToolMetadata,
     IAiSdkToolHandler,
     IAiSdkToolHandlerResolver,
     IAiSdkTools

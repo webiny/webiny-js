@@ -120,22 +120,6 @@ export interface IAiSdkToolAnnotations {
 }
 
 /**
- * What a tool IS: everything the model is told about it, with no behaviour and no dependencies.
- *
- * Building the tool set, listing tools and deciding which ones need approval all read only this.
- * Keeping it dependency-free is the point — every consumer injects the whole set, so anything
- * expensive here is paid for all of them by anyone who touches one.
- */
-export interface IAiSdkToolMetadata<TInput = any> {
-    readonly name: string;
-    readonly description: string;
-    readonly inputSchema: FlexibleSchema<TInput>;
-    /** Human-friendly display name. Falls back to `name` when omitted. */
-    readonly title?: string;
-    readonly annotations?: IAiSdkToolAnnotations;
-}
-
-/**
  * What a tool DOES. This is the half that injects use cases, so it is built only for a tool the
  * model actually calls, and only at the moment it calls it.
  */
@@ -144,13 +128,19 @@ export interface IAiSdkToolHandler<TInput = any> {
 }
 
 /**
- * A single tool that can be provided to AI generateText/streamText calls.
+ * What a tool IS: everything the model is told about it, plus the class that runs it.
  *
- * Metadata plus the name of the class that runs it. Carrying no behaviour is what makes the whole
- * registry cheap to read: `AiSdkTools` builds every definition to assemble the tool set, and builds
- * a handler only for a tool the model actually calls.
+ * Carries no behaviour and no dependencies, which is what makes the registry cheap to read.
+ * `AiSdkTools` builds every definition to assemble the tool set, and builds a handler only for a
+ * tool the model actually calls.
  */
-export interface IAiSdkToolDefinition<TInput = any> extends IAiSdkToolMetadata<TInput> {
+export interface IAiSdkToolDefinition<TInput = any> {
+    readonly name: string;
+    readonly description: string;
+    readonly inputSchema: FlexibleSchema<TInput>;
+    /** Human-friendly display name. Falls back to `name` when omitted. */
+    readonly title?: string;
+    readonly annotations?: IAiSdkToolAnnotations;
     readonly handler: Constructor<IAiSdkToolHandler<TInput>>;
 }
 
@@ -167,7 +157,6 @@ export const AiSdkToolHandler = createAbstraction<IAiSdkToolHandler>("AiSdkToolH
 
 export namespace AiSdkToolDefinition {
     export type Interface<TInput = any> = IAiSdkToolDefinition<TInput>;
-    export type Metadata<TInput = any> = IAiSdkToolMetadata<TInput>;
     export type Annotations = IAiSdkToolAnnotations;
 }
 
