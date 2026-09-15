@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { CreateTeam } from "@webiny/api-core/features/security/teams/CreateTeam/index.js";
 import { CreateTeamTool } from "~/features/ai/CreateTeamTool.js";
 
@@ -40,10 +40,10 @@ const resolveTool = (createTeamResult?: ReturnType<typeof Result.fail>) => {
 
     container.register(CreateTeamTool);
 
-    const tool = container.resolveAll(AiSdkTool)[0];
+    const tool = container.resolveAll(AiSdkToolDefinition)[0];
 
     // Metadata and behaviour are separate; the container builds the handler on demand, as at runtime.
-    const handler = container.resolveImplementation(tool.handler!);
+    const handler = container.resolveImplementation(tool.handler);
 
     return { tool: handler, captured };
 };

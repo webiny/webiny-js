@@ -3,7 +3,7 @@ export {
     AiSdkFactory,
     AiConnectionFactory,
     Ai,
-    AiSdkTool,
+    AiSdkToolDefinition,
     AiSdkToolHandler,
     AiSdkToolHandlerResolver,
     AiSdkTools
@@ -13,7 +13,7 @@ export type {
     IAiConnectionInline,
     AiModel,
     IAiSdkModel,
-    IAiSdkTool,
+    IAiSdkToolDefinition,
     IAiSdkToolAnnotations,
     IAiSdkToolMetadata,
     IAiSdkToolHandler,
@@ -44,5 +44,4 @@ export type {
     AiGenerateTextErrorPayload,
     AiBeforeStreamTextPayload
 } from "./events.js";
-export { AiSdkToolNotExecutableError } from "./errors.js";
 export { AiFeature } from "./feature.js";

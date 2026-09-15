@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { ListContentModelsTool } from "~/features/ai/ListContentModelsTool.js";
 import type { CmsModel } from "~/types/index.js";
 
@@ -28,14 +28,14 @@ const resolveTool = (models: CmsModel[]) => {
 
     container.register(ListContentModelsTool);
 
-    const tool = container.resolveAll(AiSdkTool)[0];
+    const tool = container.resolveAll(AiSdkToolDefinition)[0];
 
     /*
-     * The tool is metadata only; the container builds its handler the same way `AiSdkTools` does at
-     * call time. Going through `tool.handler` rather than importing the class keeps the wiring under
-     * test: a tool that forgot to name its handler fails here.
+     * The definition is metadata only; the container builds its handler the same way `AiSdkTools`
+     * does at call time. Going through `tool.handler` rather than importing the class keeps the
+     * wiring under test.
      */
-    return container.resolveImplementation(tool.handler!);
+    return container.resolveImplementation(tool.handler);
 };
 
 describe("listContentModels", () => {
@@ -74,8 +74,8 @@ describe("listContentModels", () => {
         } as ListModelsUseCase.Interface);
         container.register(ListContentModelsTool);
 
-        const tool = container.resolveAll(AiSdkTool)[0];
-        const handler = container.resolveImplementation(tool.handler!);
+        const tool = container.resolveAll(AiSdkToolDefinition)[0];
+        const handler = container.resolveImplementation(tool.handler);
 
         await expect(handler.execute({})).rejects.toThrow("Not allowed to access content models.");
     });

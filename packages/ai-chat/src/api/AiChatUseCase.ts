@@ -1,7 +1,7 @@
 import { stepCountIs } from "ai";
 import type { ModelMessage } from "ai";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import type { IAiSdkToolMetadata } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -71,7 +71,7 @@ const toApprovalMessage = (decisions: ApprovalDecision[]): ModelMessage => {
 };
 
 /**
- * Answers a question about the project by running an agent loop over the registered `AiSdkTool`s.
+ * Answers a question about the project by running an agent loop over the registered `AiSdkToolDefinition`s.
  *
  * Writes are gated. A tool that does not declare `readOnlyHint` is never executed on the model's word
  * alone — the loop pauses and the pending call is returned for a human to approve. Everything runs
@@ -294,7 +294,7 @@ export const AiChatUseCase = Abstraction.createImplementation({
     dependencies: [
         Ai,
         AiSdkTools,
-        [AiSdkTool, { multiple: true }],
+        [AiSdkToolDefinition, { multiple: true }],
         IdentityContext,
         AiChatConfig,
         AiChatProvider

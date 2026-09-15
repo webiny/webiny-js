@@ -3,7 +3,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { QueryEntriesTool } from "~/features/ai/QueryEntriesTool.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
@@ -63,14 +63,14 @@ const resolveTool = () => {
 
     container.register(QueryEntriesTool);
 
-    const tool = container.resolveAll(AiSdkTool)[0];
+    const tool = container.resolveAll(AiSdkToolDefinition)[0];
 
     /*
-     * The tool is metadata only; the container builds its handler the same way `AiSdkTools` does at
-     * call time. Going through `tool.handler` rather than importing the class keeps the wiring under
-     * test: a tool that forgot to name its handler fails here.
+     * The definition is metadata only; the container builds its handler the same way `AiSdkTools`
+     * does at call time. Going through `tool.handler` rather than importing the class keeps the
+     * wiring under test.
      */
-    const handler = container.resolveImplementation(tool.handler!);
+    const handler = container.resolveImplementation(tool.handler);
 
     return { tool, handler, captured };
 };

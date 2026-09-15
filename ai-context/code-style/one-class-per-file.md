@@ -57,7 +57,7 @@ export const AiChatStreamRouteDefinition = HttpRouteDefinition.createImplementat
 
 Only the definition is registered with the container. The router resolves the handler it names.
 
-The same split applies to an **AI tool** (`AiSdkTool` names an `AiSdkToolHandler`), and to a
+The same split applies to an **AI tool** (`AiSdkToolDefinition` names an `AiSdkToolHandler`), and to a
 **background task** (`TaskDefinition` names a `TaskHandler`). In every case the reason is the same:
 something has to read the metadata of ALL of them to pick one, and that read should not build the
 dependencies of the ones it did not pick.

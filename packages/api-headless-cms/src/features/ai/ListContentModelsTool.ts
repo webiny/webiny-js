@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import type { CmsModel } from "~/types/index.js";
 
@@ -71,7 +71,7 @@ const ListContentModelsToolHandler = AiSdkToolHandler.createImplementation({
  * model list cannot be baked into a system prompt — it has to be discovered at call time. Returns a
  * summary only; `describeContentModel` supplies the field detail needed to actually build a query.
  */
-class ListContentModelsToolImpl implements AiSdkTool.Interface<Input> {
+class ListContentModelsToolImpl implements AiSdkToolDefinition.Interface<Input> {
     readonly name = "listContentModels";
     readonly title = "List content models";
     readonly description =
@@ -81,7 +81,7 @@ class ListContentModelsToolImpl implements AiSdkTool.Interface<Input> {
     readonly handler = ListContentModelsToolHandler;
 }
 
-export const ListContentModelsTool = AiSdkTool.createImplementation({
+export const ListContentModelsTool = AiSdkToolDefinition.createImplementation({
     implementation: ListContentModelsToolImpl,
     dependencies: []
 });

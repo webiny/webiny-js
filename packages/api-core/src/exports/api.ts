@@ -1,7 +1,7 @@
 export {
     AiSdk,
     AiSdkFactory,
-    AiSdkTool,
+    AiSdkToolDefinition,
     AiSdkToolHandler,
     AiConnectionFactory,
     Ai

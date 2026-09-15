@@ -101,7 +101,7 @@ export namespace Ai {
     export type StreamTextParams = AiStreamTextParams;
 }
 
-// AiSdkTool
+// AiSdkToolDefinition
 
 /**
  * Behavioural hints about a tool. Purely advisory — they never replace a permission check.
@@ -146,40 +146,27 @@ export interface IAiSdkToolHandler<TInput = any> {
 /**
  * A single tool that can be provided to AI generateText/streamText calls.
  *
- * TRANSITIONAL SHAPE. A tool supplies its behaviour in one of two ways:
- *
- *  - the new way: `handler` names an {@link IAiSdkToolHandler} class, built only when the tool runs;
- *  - the old way: the tool implements `execute` itself, which forces every tool (and every use case
- *    it injects) to be built merely to read the name and schema of the others.
- *
- * `execute` is optional ONLY to let both shapes coexist while packages migrate. Exactly one of
- * `execute` or `handler` must be present; a tool with neither fails with
- * {@link AiSdkToolNotExecutableError} when called.
- *
- * NOT called `AiSdkToolDefinition`, unlike `HttpRouteDefinition`. Two reasons: while `execute` is
- * still allowed here this is a tool that MAY carry its own behaviour, not a pure definition; and
- * `AiSdkTool` is the registered abstraction every extension declares against and `resolveAll` reads,
- * so renaming it would break that for nothing. Routes could take the new name because their handler
- * kept the original `IHttpRoute` interface, leaving the definition as the genuinely new thing.
+ * Metadata plus the name of the class that runs it. Carrying no behaviour is what makes the whole
+ * registry cheap to read: `AiSdkTools` builds every definition to assemble the tool set, and builds
+ * a handler only for a tool the model actually calls.
  */
-export interface IAiSdkTool<TInput = any>
-    extends IAiSdkToolMetadata<TInput>, Partial<IAiSdkToolHandler<TInput>> {
-    readonly handler?: Constructor<IAiSdkToolHandler<TInput>>;
+export interface IAiSdkToolDefinition<TInput = any> extends IAiSdkToolMetadata<TInput> {
+    readonly handler: Constructor<IAiSdkToolHandler<TInput>>;
 }
 
-export const AiSdkTool = createAbstraction<IAiSdkTool>("AiSdkTool");
+export const AiSdkToolDefinition = createAbstraction<IAiSdkToolDefinition>("AiSdkToolDefinition");
 
 /**
  * The behaviour half of a tool, built on demand through {@link AiSdkToolHandlerResolver}.
  *
- * Implementations are NOT registered against this abstraction. The tool points at the class
+ * Implementations are NOT registered against this abstraction. The definition points at the class
  * directly, exactly as `HttpRouteDefinition` points at its `HttpRouteHandler`. Declaring them
  * through it is what attaches their dependency metadata.
  */
 export const AiSdkToolHandler = createAbstraction<IAiSdkToolHandler>("AiSdkToolHandler");
 
-export namespace AiSdkTool {
-    export type Interface<TInput = any> = IAiSdkTool<TInput>;
+export namespace AiSdkToolDefinition {
+    export type Interface<TInput = any> = IAiSdkToolDefinition<TInput>;
     export type Metadata<TInput = any> = IAiSdkToolMetadata<TInput>;
     export type Annotations = IAiSdkToolAnnotations;
 }

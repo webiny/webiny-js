@@ -2,135 +2,119 @@ import { describe, it, expect } from "vitest";
 import { z } from "zod";
 import { Container } from "@webiny/di";
 import { RequestContainer } from "@webiny/event-handler-core/features/events/RequestContainer.js";
-import { AiSdkTool, AiSdkToolHandler, AiSdkTools } from "~/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler, AiSdkTools } from "~/features/ai/index.js";
 import { AiSdkToolHandlerResolver } from "~/features/ai/AiSdkToolHandlerResolver.js";
 import { AiSdkTools as AiSdkToolsImpl } from "~/features/ai/AiSdkTools.js";
-import { AiSdkToolNotExecutableError } from "~/features/ai/errors.js";
+
+type ToolSet = ReturnType<AiSdkTools.Interface["getToolSet"]>;
 
 const inputSchema = z.object({ value: z.string().optional() });
 
-/** Counts construction so a test can tell "was it built" apart from "was it called". */
+/** Records construction, so a test can tell "was it built" apart from "was it called". */
 const built: string[] = [];
 
-class CountingHandlerImpl implements AiSdkToolHandler.Interface {
+class FirstHandlerImpl implements AiSdkToolHandler.Interface {
     constructor() {
-        built.push("counting");
+        built.push("first");
     }
 
     async execute(input: { value?: string }) {
-        return `handled:${input.value ?? ""}`;
+        return `first:${input.value ?? ""}`;
     }
 }
 
-const CountingHandler = AiSdkToolHandler.createImplementation({
-    implementation: CountingHandlerImpl,
+const FirstHandler = AiSdkToolHandler.createImplementation({
+    implementation: FirstHandlerImpl,
     dependencies: []
 });
 
-class SplitToolImpl implements AiSdkTool.Interface {
-    readonly name = "split";
-    readonly description = "A tool that names a handler.";
-    readonly inputSchema = inputSchema;
-    readonly handler = CountingHandler;
-}
-
-const SplitTool = AiSdkTool.createImplementation({
-    implementation: SplitToolImpl,
-    dependencies: []
-});
-
-/** The pre-split shape, which has to keep working while packages migrate. */
-class InlineToolImpl implements AiSdkTool.Interface {
-    readonly name = "inline";
-    readonly description = "A tool that still carries its own execute.";
-    readonly inputSchema = inputSchema;
+class SecondHandlerImpl implements AiSdkToolHandler.Interface {
+    constructor() {
+        built.push("second");
+    }
 
     async execute(input: { value?: string }) {
-        return `inline:${input.value ?? ""}`;
+        return `second:${input.value ?? ""}`;
     }
 }
 
-const InlineTool = AiSdkTool.createImplementation({
-    implementation: InlineToolImpl,
+const SecondHandler = AiSdkToolHandler.createImplementation({
+    implementation: SecondHandlerImpl,
     dependencies: []
 });
 
-class BrokenToolImpl implements AiSdkTool.Interface {
-    readonly name = "broken";
-    readonly description = "A tool that declares neither.";
+class FirstToolImpl implements AiSdkToolDefinition.Interface {
+    readonly name = "first";
+    readonly description = "The first tool.";
     readonly inputSchema = inputSchema;
+    readonly handler = FirstHandler;
 }
 
-const BrokenTool = AiSdkTool.createImplementation({
-    implementation: BrokenToolImpl,
+const FirstTool = AiSdkToolDefinition.createImplementation({
+    implementation: FirstToolImpl,
     dependencies: []
 });
 
-const setup = () => {
+class SecondToolImpl implements AiSdkToolDefinition.Interface {
+    readonly name = "second";
+    readonly description = "The second tool.";
+    readonly inputSchema = inputSchema;
+    readonly handler = SecondHandler;
+}
+
+const SecondTool = AiSdkToolDefinition.createImplementation({
+    implementation: SecondToolImpl,
+    dependencies: []
+});
+
+const setup = (): ToolSet => {
     built.length = 0;
 
     const container = new Container();
     container.registerInstance(RequestContainer, container);
     container.register(AiSdkToolHandlerResolver);
-    container.register(SplitTool);
-    container.register(InlineTool);
-    container.register(BrokenTool);
+    container.register(FirstTool);
+    container.register(SecondTool);
     container.register(AiSdkToolsImpl);
 
-    return container;
+    return container.resolve(AiSdkTools).getToolSet();
 };
 
-const callTool = (toolSet: ReturnType<AiSdkTools.Interface["getToolSet"]>, name: string) => {
+const callTool = (toolSet: ToolSet, name: string) => {
     const tool = toolSet[name];
+    const execute = tool?.execute;
 
-    if (!tool?.execute) {
+    if (!execute) {
         throw new Error(`Tool "${name}" is missing from the tool set.`);
     }
 
-    return tool.execute;
+    return (input: unknown) => execute(input, { toolCallId: "1", messages: [] });
 };
 
 describe("AiSdkTools", () => {
     it("builds the tool set without constructing any handler", () => {
-        const container = setup();
+        const toolSet = setup();
 
-        const toolSet = container.resolve(AiSdkTools).getToolSet();
-
-        expect(Object.keys(toolSet).sort()).toEqual(["broken", "inline", "split"]);
+        expect(Object.keys(toolSet).sort()).toEqual(["first", "second"]);
         expect(built).toEqual([]);
     });
 
-    it("constructs the handler only when the tool is called", async () => {
-        const container = setup();
-        const toolSet = container.resolve(AiSdkTools).getToolSet();
+    it("constructs a handler only when its own tool is called", async () => {
+        const toolSet = setup();
 
-        expect(built).toEqual([]);
+        const result = await callTool(toolSet, "first")({ value: "x" });
 
-        const execute = callTool(toolSet, "split");
-        const result = await execute({ value: "x" }, { toolCallId: "1", messages: [] });
-
-        expect(result).toBe("handled:x");
-        expect(built).toEqual(["counting"]);
+        expect(result).toBe("first:x");
+        // Not ["first", "second"]: calling one tool must not drag the other's dependencies in.
+        expect(built).toEqual(["first"]);
     });
 
-    it("still runs a tool that carries its own execute", async () => {
-        const container = setup();
-        const toolSet = container.resolve(AiSdkTools).getToolSet();
+    it("routes each tool to its own handler", async () => {
+        const toolSet = setup();
 
-        const execute = callTool(toolSet, "inline");
-        const result = await execute({ value: "y" }, { toolCallId: "1", messages: [] });
+        const first = await callTool(toolSet, "first")({ value: "a" });
+        const second = await callTool(toolSet, "second")({ value: "b" });
 
-        expect(result).toBe("inline:y");
-    });
-
-    it("reports a tool that declares neither, rather than failing obscurely", () => {
-        const container = setup();
-        const toolSet = container.resolve(AiSdkTools).getToolSet();
-
-        const execute = callTool(toolSet, "broken");
-
-        expect(() => execute({}, { toolCallId: "1", messages: [] })).toThrow(
-            AiSdkToolNotExecutableError
-        );
+        expect([first, second]).toEqual(["first:a", "second:b"]);
     });
 });

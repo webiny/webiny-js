@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
@@ -100,7 +100,7 @@ const GrantFolderAccessToolHandler = AiSdkToolHandler.createImplementation({
  * the model omitted disappeared silently. One target per call keeps the approval honest: what the user
  * sees in the plan is the whole change.
  */
-class GrantFolderAccessToolImpl implements AiSdkTool.Interface<Input> {
+class GrantFolderAccessToolImpl implements AiSdkToolDefinition.Interface<Input> {
     readonly name = "grantFolderAccess";
     readonly title = "Grant folder access";
     readonly description =
@@ -110,7 +110,7 @@ class GrantFolderAccessToolImpl implements AiSdkTool.Interface<Input> {
     readonly handler = GrantFolderAccessToolHandler;
 }
 
-export const GrantFolderAccessTool = AiSdkTool.createImplementation({
+export const GrantFolderAccessTool = AiSdkToolDefinition.createImplementation({
     implementation: GrantFolderAccessToolImpl,
     dependencies: []
 });

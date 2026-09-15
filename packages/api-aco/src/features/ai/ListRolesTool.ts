@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { ListRolesUseCase } from "@webiny/api-core/features/security/roles/ListRoles/index.js";
 
 const inputSchema = z.object({});
@@ -50,7 +50,7 @@ const ListRolesToolHandler = AiSdkToolHandler.createImplementation({
  * `id` is what a team actually stores. Nothing at the type level separates the two, so `createTeam`
  * accepts either and resolves it rather than making the caller guess which one that field wants.
  */
-class ListRolesToolImpl implements AiSdkTool.Interface<Record<string, never>> {
+class ListRolesToolImpl implements AiSdkToolDefinition.Interface<Record<string, never>> {
     readonly name = "listRoles";
     readonly title = "List roles";
     readonly description =
@@ -60,7 +60,7 @@ class ListRolesToolImpl implements AiSdkTool.Interface<Record<string, never>> {
     readonly handler = ListRolesToolHandler;
 }
 
-export const ListRolesTool = AiSdkTool.createImplementation({
+export const ListRolesTool = AiSdkToolDefinition.createImplementation({
     implementation: ListRolesToolImpl,
     dependencies: []
 });

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AiSdkTool, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 import { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
@@ -184,7 +184,7 @@ const QueryEntriesToolHandler = AiSdkToolHandler.createImplementation({
  * model's own fields under `values` and leave entry meta at the top. The flat form is what a model
  * writes, because `describeContentModel` hands it a flat list of fieldIds.
  */
-class QueryEntriesToolImpl implements AiSdkTool.Interface<Input> {
+class QueryEntriesToolImpl implements AiSdkToolDefinition.Interface<Input> {
     readonly name = "queryEntries";
     readonly title = "Query content entries";
     readonly description =
@@ -194,7 +194,7 @@ class QueryEntriesToolImpl implements AiSdkTool.Interface<Input> {
     readonly handler = QueryEntriesToolHandler;
 }
 
-export const QueryEntriesTool = AiSdkTool.createImplementation({
+export const QueryEntriesTool = AiSdkToolDefinition.createImplementation({
     implementation: QueryEntriesToolImpl,
     dependencies: []
 });
