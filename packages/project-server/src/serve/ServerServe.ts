@@ -4,8 +4,10 @@ import {
     ServersWatcher,
     type IServerProcessSpec
 } from "@webiny/project/features/Watch/watchers/ServersWatcher.js";
-import { runApiServer } from "./runApiServer.js";
-import { runAdminServer } from "./runAdminServer.js";
+import { spawnApiServer } from "./spawnApiServer.js";
+import { spawnAdminServer } from "./spawnAdminServer.js";
+import { spawnDevProxy } from "./spawnDevProxy.js";
+import { isDevProxyEnabled } from "./devProxy/index.js";
 
 /**
  * Server hosting-type Serve implementation: describes the server process(es) for the requested app(s) as
@@ -44,7 +46,7 @@ export class ServerServe implements Serve.Interface {
             const app = this.getApp.execute("api");
             specs.push({
                 name: "api",
-                spawn: () => runApiServer(app, { watch: false, ignoreGenericPort: both })
+                spawn: () => spawnApiServer(app, { watch: false, ignoreGenericPort: both })
             });
         }
 
@@ -52,8 +54,14 @@ export class ServerServe implements Serve.Interface {
             const app = this.getApp.execute("admin");
             specs.push({
                 name: "admin",
-                spawn: () => runAdminServer(app, { ignoreGenericPort: both })
+                spawn: () => spawnAdminServer(app, { ignoreGenericPort: both })
             });
+        }
+
+        // The single-port proxy in front of the two, when the CLI asked for one. Last, so it's the
+        // last line of the startup output and the URL worth opening is the one left on screen.
+        if (isDevProxyEnabled()) {
+            specs.push({ name: "proxy", spawn: () => spawnDevProxy() });
         }
 
         return { serversWatcher: new ServersWatcher(specs) };

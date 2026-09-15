@@ -33,7 +33,7 @@ interface IRunApiServerOptions {
  * for watch the `--watch` output filtering) and lifecycle — same split as the build watcher
  * processes.
  */
-export async function runApiServer(
+export async function spawnApiServer(
     app: IAppModel,
     options: IRunApiServerOptions = {}
 ): Promise<ChildProcess> {
