@@ -8,6 +8,13 @@ import { getSelectedNode } from "~/utils/getSelectedNode.js";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
 
+/**
+ * Sentinel for "no explicit font colour": the text renders with whatever the editor inherits,
+ * which follows the active theme. Reporting `#000` here instead meant the toolbar icon and the
+ * picker both assumed black, regardless of the theme.
+ */
+export const INHERITED_FONT_COLOR = "inherit";
+
 export const FontColorPicker = makeDecoratable("FontColorPicker", (): React.JSX.Element | null => {
     useEffect(() => {
         console.log("Default FontColorPicker, please add your own component");
@@ -31,11 +38,11 @@ export const FontColorAction: FontColorAction = () => {
     const { editor } = useRichTextEditor();
     const fontColor = useDeriveValueFromSelection(({ rangeSelection }) => {
         if (!rangeSelection) {
-            return "#000";
+            return INHERITED_FONT_COLOR;
         }
 
         const node = getSelectedNode(rangeSelection);
-        return $isFontColorNode(node) ? node.getColorStyle().color : "#000";
+        return $isFontColorNode(node) ? node.getColorStyle().color : INHERITED_FONT_COLOR;
     });
 
     const onFontColorSelect = useCallback(

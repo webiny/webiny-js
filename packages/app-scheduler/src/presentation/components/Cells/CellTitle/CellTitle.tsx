@@ -1,5 +1,6 @@
 import React from "react";
-import { ReactComponent as File } from "@material-design-icons/svg/outlined/description.svg";
+import { Icon } from "@webiny/admin-ui";
+import { ReactComponent as File } from "@webiny/icons/description.svg";
 import { RowIcon, RowText, RowTitle } from "./CellTitle.styled.js";
 import { SchedulerListConfig } from "~/presentation/configs/index.js";
 
@@ -10,7 +11,12 @@ export const CellTitle = () => {
     return (
         <RowTitle>
             <RowIcon>
-                <File />
+                <Icon
+                    size={"sm"}
+                    color={"neutral-strong"}
+                    icon={<File />}
+                    label={`Entry - ${row.data.title}`}
+                />
             </RowIcon>
             <RowText size={"sm"}>{row.data.title}</RowText>
         </RowTitle>

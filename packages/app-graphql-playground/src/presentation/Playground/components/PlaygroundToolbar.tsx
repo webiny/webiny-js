@@ -29,10 +29,12 @@ export const PlaygroundToolbar = observer((props: PlaygroundToolbarProps) => {
     const isExecuting = vm.activeTab ? vm.activeTab.isExecuting : false;
 
     return (
-        <div className="flex justify-between items-center px-4 py-2 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex justify-between items-center px-4 py-2 bg-neutral-base border-b border-neutral-dimmed shadow-sm">
             <div>
                 <strong>GraphQL Playground</strong>
-                <span className="ml-4 text-xs text-gray-500">{shortcutKey}+Enter to execute</span>
+                <span className="ml-4 text-xs text-neutral-muted">
+                    {shortcutKey}+Enter to execute
+                </span>
             </div>
             <div className="flex gap-2 items-center">
                 <Button

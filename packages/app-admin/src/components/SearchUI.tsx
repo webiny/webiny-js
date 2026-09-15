@@ -26,7 +26,7 @@ export const SearchUI = ({
             onChange={onChange}
             onEnter={onEnter}
             autoComplete="off"
-            startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
+            startIcon={<Icon label={"Search"} icon={<SearchIcon />} color={"neutral-strong"} />}
             variant={"ghost"}
             size={"md"}
             data-testid={dataTestId}

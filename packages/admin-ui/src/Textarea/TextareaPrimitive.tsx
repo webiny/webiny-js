@@ -22,8 +22,8 @@ const textareaVariants = cva(
                 ],
                 ghost: [
                     "bg-transparent border-transparent text-neutral-strong placeholder:text-neutral-dimmed",
-                    "hover:bg-neutral-dark/5",
-                    "focus:bg-neutral-dark/5",
+                    "hover:bg-neutral-overlay/5",
+                    "focus:bg-neutral-overlay/5",
                     "disabled:bg-transparent disabled:text-neutral-disabled disabled:placeholder:text-neutral-disabled"
                 ],
                 "ghost-negative": [

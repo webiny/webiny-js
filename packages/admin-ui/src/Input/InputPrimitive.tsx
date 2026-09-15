@@ -66,9 +66,9 @@ const inputVariants = cva(
                 ],
                 ghost: [
                     "bg-transparent border-transparent text-neutral-strong placeholder:text-neutral-dimmed",
-                    "hover:bg-neutral-dark/5",
-                    "focus-within:bg-neutral-dark/5!",
-                    "data-[focused=true]:bg-neutral-dark/5!",
+                    "hover:bg-neutral-overlay/5",
+                    "focus-within:bg-neutral-overlay/5!",
+                    "data-[focused=true]:bg-neutral-overlay/5!",
                     "has-disabled:bg-transparent has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
                     "data-[disabled=true]:bg-transparent data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],

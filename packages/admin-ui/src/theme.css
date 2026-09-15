@@ -71,7 +71,9 @@
   --color-destructive-xstrong: var(--color-destructive-800);
 
   --color-neutral-base: var(--color-neutral-0);
+  --color-neutral-elevated: var(--color-neutral-0);
   --color-neutral-dark: var(--color-neutral-900);
+  --color-neutral-overlay: var(--color-neutral-dark);
   --color-neutral-dimmed: var(--color-neutral-200);
   --color-neutral-disabled: var(--color-neutral-200);
   --color-neutral-light: var(--color-neutral-100);
@@ -149,6 +151,7 @@
   --fill-destructive: var(--color-destructive-500);
 
   --fill-neutral-base: var(--color-neutral-0);
+  --fill-neutral-primary: var(--color-neutral-900);
   --fill-neutral-dark: var(--color-neutral-800);
   --fill-neutral-disabled: var(--color-neutral-400);
   --fill-neutral-strong: var(--color-neutral-500);
@@ -246,6 +249,7 @@
   --text-color-accent-subtle: var(--color-primary-100);
 
   --text-color-destructive-muted: var(--color-destructive-300);
+  --text-color-destructive-strong: var(--color-destructive-700);
   --text-color-destructive-primary: var(--color-destructive-500);
   --text-color-destructive-subtle: var(--color-destructive-100);
 
@@ -258,7 +262,10 @@
 
   --text-color-success-muted: var(--color-success-400);
   --text-color-success-primary: var(--color-success-500);
+  --text-color-success-strong: var(--color-success-700);
   --text-color-success-subtle: var(--color-success-200);
+
+  --text-color-warning-strong: var(--color-warning-700);
 
   /* Text sizes. */
   --text-sm: 12px;
@@ -354,6 +361,32 @@
       background-color: var(--color-neutral-disabled);
     }
   }
+}
+
+/*
+ * Light is the built-in default theme (the `@theme` values above). Dark themes are no longer
+ * static `[data-theme]` blocks — they are registered at runtime as individual files (see the
+ * admin themes extension) and applied as inline CSS variables on `<html>` by
+ * `@webiny/app-admin`'s applyTheme (the shared dark mapping lives in
+ * `@webiny/admin-ui` `themes/darkThemeBase.ts`).
+ *
+ * The page background follows the neutral surface for every theme: in light it is white, and a
+ * dark theme overrides `--color-neutral-base` at runtime.
+ */
+body {
+  background-color: var(--color-neutral-base);
+}
+
+/*
+ * Tells the browser which palette to draw *native* UI in — the widgets CSS cannot reach:
+ * the `::-webkit-calendar-picker-indicator` on `<input type="date">` / `type="time"`,
+ * scrollbars, `<select>` popups, autofill, spinners. These ignore `fill` and `color`, so
+ * without this they stay black-on-light in every theme (and, on an OS set to dark, could go
+ * dark while the light theme is active). A dark theme sets `--color-scheme: dark`; the
+ * fallback keeps light explicit rather than leaving it to the OS preference.
+ */
+:root {
+  color-scheme: var(--color-scheme, light);
 }
 
 @utility container {
