@@ -1,22 +1,22 @@
 import camelCase from "lodash/camelCase.js";
 import WebinyError from "@webiny/error";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { ITaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const DEFAULT_MAX_ITERATIONS = 50;
 
 /**
- * RunnableTaskDecorator adds runtime behavior to TaskDefinition:
- * - Applies default values (maxIterations, isPrivate, databaseLogs, fields)
- * - Validates task ID (must be camelCase)
- * - Provides field management methods
+ * Fills in the defaults a definition is allowed to leave out, and rejects an id that is not
+ * camelCase.
+ *
+ * Everything here is metadata. A definition carries no behaviour, so there is nothing to forward:
+ * `GetTaskDefinitionUseCase` takes `run` and the hooks from the handler that `handler` names, after
+ * this decorator has run.
  */
 class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
     constructor(private decoratee: TaskDefinition.Interface) {
         this.validate();
     }
 
-    // Delegate simple properties
     get id() {
         return this.decoratee.id;
     }
@@ -29,7 +29,11 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
         return this.decoratee.description;
     }
 
-    // Apply default values
+    get handler() {
+        return this.decoratee.handler;
+    }
+
+    // The three defaults.
     get isPrivate() {
         return this.decoratee.isPrivate || false;
     }
@@ -46,53 +50,12 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
         return this.decoratee.selfCleanup;
     }
 
-    get createInputValidation() {
-        return this.decoratee.createInputValidation;
-    }
-
-    // A definition that delegates to a `handler` class has no `run` of its own — the handler
-    // supplies it, and GetTaskDefinitionUseCase merges the two halves after this decorator runs.
-    get handler() {
-        return this.decoratee.handler;
-    }
-
-    // Delegate lifecycle methods (bind to preserve context)
-    get run() {
-        return this.decoratee.run?.bind(this.decoratee);
-    }
-
-    get onBeforeTrigger() {
-        return this.decoratee.onBeforeTrigger?.bind(this.decoratee);
-    }
-
-    get onDone() {
-        return this.decoratee.onDone?.bind(this.decoratee);
-    }
-
-    get onError() {
-        return this.decoratee.onError?.bind(this.decoratee);
-    }
-
-    get onAbort() {
-        return this.decoratee.onAbort?.bind(this.decoratee);
-    }
-
-    get onMaxIterations() {
-        return this.decoratee.onMaxIterations?.bind(this.decoratee);
-    }
-
-    // Validation logic
     private validate(): void {
         if (camelCase(this.decoratee.id) !== this.decoratee.id) {
             throw new WebinyError(
                 `Task ID "${this.decoratee.id}" is invalid. It must be in camelCase format, for example: "myCustomTask".`
             );
         }
-    }
-
-    // Method to get the underlying task (for compatibility with existing code)
-    public getTask(): ITaskDefinition {
-        return this;
     }
 }
 

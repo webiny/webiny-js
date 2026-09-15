@@ -3,16 +3,17 @@ import { createMockEvent } from "~tests/mocks";
 import { createLiveContextFactory } from "~tests/live";
 import { useTaskHandler } from "~tests/helpers/useTaskHandler";
 
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { Container } from "@webiny/di";
 
 const TASK_ID = "taskRunnerTask";
 
-class TestingRunTask implements TaskDefinition.Interface {
-    id = TASK_ID;
-    title = "Task Runner Task";
+class TestingRunTaskHandlerImpl implements TaskHandler.Interface {
     constructor(
         private controller: TaskController.Interface,
         private tenantContext: TenantContext.Interface
@@ -25,9 +26,20 @@ class TestingRunTask implements TaskDefinition.Interface {
     }
 }
 
+const TestingRunTaskHandler = TaskHandler.createImplementation({
+    implementation: TestingRunTaskHandlerImpl,
+    dependencies: [TaskController, TenantContext]
+});
+
+class TestingRunTask implements TaskDefinition.Interface {
+    id = TASK_ID;
+    title = "Task Runner Task";
+    handler = TestingRunTaskHandler;
+}
+
 const TestingRunTaskDefinition = TaskDefinition.createImplementation({
     implementation: TestingRunTask,
-    dependencies: [TaskController, TenantContext]
+    dependencies: []
 });
 
 const defaults = {

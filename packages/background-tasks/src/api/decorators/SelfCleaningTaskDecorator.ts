@@ -1,122 +1,57 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { Logger } from "@webiny/api-core/features/logger/index.js";
-import type { ISelfCleanupEvent } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { normalizeSelfCleanup } from "~/api/utils/normalizeSelfCleanup.js";
-import { CleanupTaskSubtreeUseCase } from "~/api/features/CleanupTaskSubtree/index.js";
-import { getErrorProperties } from "~/api/utils/getErrorProperties.js";
 
-type LifecycleHook = TaskDefinition.Interface["onDone"];
-type HookParams = Parameters<NonNullable<LifecycleHook>>[0];
-
+/**
+ * The metadata half of self-cleanup: a task that deletes itself has nowhere to keep logs, so asking
+ * for any cleanup event forces `databaseLogs` off.
+ *
+ * The cleanup itself lives in {@link SelfCleaningTaskHandlerDecorator}, because it runs in the
+ * lifecycle hooks and those belong to the handler.
+ */
 export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
-    private readonly events: ReadonlySet<ISelfCleanupEvent>;
+    private readonly cleansUp: boolean;
 
-    public constructor(
-        private readonly cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface,
-        private readonly logger: Logger.Interface,
-        private decoratee: TaskDefinition.Interface
-    ) {
-        this.events = normalizeSelfCleanup(decoratee.selfCleanup);
+    public constructor(private decoratee: TaskDefinition.Interface) {
+        this.cleansUp = normalizeSelfCleanup(decoratee.selfCleanup).size > 0;
     }
 
-    // A definition that delegates to a `handler` class has no `run` of its own.
+    get id() {
+        return this.decoratee.id;
+    }
+
+    get title() {
+        return this.decoratee.title;
+    }
+
+    get description() {
+        return this.decoratee.description;
+    }
+
     get handler() {
         return this.decoratee.handler;
     }
 
-    // Pass-through properties.
-    get id() {
-        return this.decoratee.id;
-    }
-    get title() {
-        return this.decoratee.title;
-    }
-    get description() {
-        return this.decoratee.description;
-    }
     get isPrivate() {
         return this.decoratee.isPrivate;
     }
+
     get maxIterations() {
         return this.decoratee.maxIterations;
     }
+
     get selfCleanup() {
         return this.decoratee.selfCleanup;
     }
-    get createInputValidation() {
-        return this.decoratee.createInputValidation;
-    }
-    get run() {
-        return this.decoratee.run?.bind(this.decoratee);
-    }
-    get onBeforeTrigger() {
-        return this.decoratee.onBeforeTrigger?.bind(this.decoratee);
-    }
-    get onMaxIterations() {
-        return this.decoratee.onMaxIterations?.bind(this.decoratee);
-    }
 
-    // databaseLogs override — any non-empty event set forces false.
     get databaseLogs() {
-        if (this.events.size > 0) {
+        if (this.cleansUp) {
             return false;
         }
         return this.decoratee.databaseLogs;
-    }
-
-    // Always-defined lifecycle hooks. Each runs the user's hook first, then
-    // triggers cleanup if the matching event is in the set.
-    get onDone() {
-        return async (params: HookParams) => {
-            await this.safeCall(this.decoratee.onDone, params, "onDone");
-            if (this.events.has("onSuccess")) {
-                await this.runCleanup(params);
-            }
-        };
-    }
-
-    get onError() {
-        return async (params: HookParams) => {
-            await this.safeCall(this.decoratee.onError, params, "onError");
-            if (this.events.has("onError")) {
-                await this.runCleanup(params);
-            }
-        };
-    }
-
-    get onAbort() {
-        return async (params: HookParams) => {
-            await this.safeCall(this.decoratee.onAbort, params, "onAbort");
-            if (this.events.has("onAbort")) {
-                await this.runCleanup(params);
-            }
-        };
-    }
-
-    private async runCleanup(params: HookParams): Promise<void> {
-        await this.cleanupTaskSubtree.execute(params.task.id);
-    }
-
-    private async safeCall(
-        hook: LifecycleHook | undefined,
-        params: HookParams,
-        name: string
-    ): Promise<void> {
-        if (!hook) {
-            return;
-        }
-        try {
-            await hook.call(this.decoratee, params);
-        } catch (ex) {
-            this.logger.error(
-                { error: getErrorProperties(ex), taskId: params.task.id, hook: name },
-                "Error executing task lifecycle hook."
-            );
-        }
     }
 }
 
 export const SelfCleaningTaskDecorator = TaskDefinition.createDecorator({
     decorator: SelfCleaningTaskDecoratorImpl,
-    dependencies: [CleanupTaskSubtreeUseCase, Logger]
+    dependencies: []
 });

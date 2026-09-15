@@ -5,7 +5,6 @@ import {
     TaskDefinition,
     TaskHandler
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { TaskHandlerResolver } from "~/api/features/TaskHandlerResolver/index.js";
 
 /**
@@ -23,25 +22,11 @@ const makeResolver = () => {
     return { resolver, resolved };
 };
 
-const makeLogger = () => {
-    const errors: unknown[] = [];
-    const logger = {
-        error: (...args: unknown[]) => {
-            errors.push(args);
-        },
-        warn: () => undefined,
-        info: () => undefined,
-        debug: () => undefined
-    } as unknown as Logger.Interface;
-    return { logger, errors };
-};
-
 const useCaseOf = (
     definitions: TaskDefinition.Interface[],
-    resolver: TaskHandlerResolver.Interface,
-    logger: Logger.Interface = makeLogger().logger
+    resolver: TaskHandlerResolver.Interface
 ) => {
-    return new GetTaskDefinitionUseCaseImpl(definitions, resolver, logger);
+    return new GetTaskDefinitionUseCaseImpl(definitions, resolver);
 };
 
 /**
@@ -107,34 +92,6 @@ describe("GetTaskDefinitionUseCase", () => {
         });
     });
 
-    it("still accepts a definition that carries run() itself", async () => {
-        const { resolver, resolved } = makeResolver();
-        const legacy: TaskDefinition.Interface = {
-            id: "legacy",
-            title: "Legacy",
-            run: async () => ({ status: "done", output: { legacy: true } }) as any
-        };
-
-        const result = useCaseOf([legacy], resolver).execute("legacy");
-
-        expect(result.isOk()).toBe(true);
-        expect(resolved).toEqual([]);
-        await expect(result.value.run({} as any)).resolves.toEqual({
-            status: "done",
-            output: { legacy: true }
-        });
-    });
-
-    it("fails when a definition supplies neither a handler nor run()", () => {
-        const { resolver } = makeResolver();
-        const broken = { id: "broken", title: "Broken" } as TaskDefinition.Interface;
-
-        const result = useCaseOf([broken], resolver).execute("broken");
-
-        expect(result.isFail()).toBe(true);
-        expect(result.error.code).toBe("BackgroundTasks/TaskDefinition/NotRunnableError");
-    });
-
     it("fails when no definition matches the id", () => {
         const { resolver } = makeResolver();
 
@@ -144,114 +101,34 @@ describe("GetTaskDefinitionUseCase", () => {
         expect(result.error.code).toBe("BackgroundTasks/TaskDefinition/NotFoundError");
     });
 
-    describe("hook chaining", () => {
-        // A definition-level hook is what a decorator contributes — SelfCleaningTaskDecorator's
-        // onDone is exactly this. Dropping either half would break decoration or the task itself.
-        const makeChained = (onHandlerDone: () => void, onDefinitionDone: () => void) => {
-            class ChainedHandlerImpl implements TaskHandler.Interface {
-                async run() {
-                    return { status: "done" } as any;
-                }
-                async onDone() {
-                    onHandlerDone();
-                }
+    it("takes the hooks from the handler", async () => {
+        const calls: string[] = [];
+        const { resolver } = makeResolver();
+
+        class HookedHandlerImpl implements TaskHandler.Interface {
+            async run() {
+                return { status: "done" } as any;
             }
+            async onDone() {
+                calls.push("onDone");
+            }
+        }
 
-            const ChainedHandler = TaskHandler.createImplementation({
-                implementation: ChainedHandlerImpl,
-                dependencies: []
-            });
+        const HookedHandler = TaskHandler.createImplementation({
+            implementation: HookedHandlerImpl,
+            dependencies: []
+        });
 
-            return {
-                id: "chained",
-                title: "Chained",
-                handler: ChainedHandler,
-                onDone: async () => {
-                    onDefinitionDone();
-                }
-            } as TaskDefinition.Interface;
+        const definition: TaskDefinition.Interface = {
+            id: "hooked",
+            title: "Hooked",
+            handler: HookedHandler
         };
 
-        it("runs the handler's hook before the decorator's", async () => {
-            const calls: string[] = [];
-            const { resolver } = makeResolver();
-            const definition = makeChained(
-                () => calls.push("handler"),
-                () => calls.push("decorator")
-            );
+        const result = useCaseOf([definition], resolver).execute("hooked");
+        await result.value.onDone!({} as any);
 
-            const result = useCaseOf([definition], resolver).execute("chained");
-            await result.value.onDone!({} as any);
-
-            expect(calls).toEqual(["handler", "decorator"]);
-        });
-
-        it("still runs the decorator's hook when the handler's throws", async () => {
-            const calls: string[] = [];
-            const { resolver } = makeResolver();
-            const { logger, errors } = makeLogger();
-            const definition = makeChained(
-                () => {
-                    throw new Error("boom");
-                },
-                () => calls.push("decorator")
-            );
-
-            const result = useCaseOf([definition], resolver, logger).execute("chained");
-            await result.value.onDone!({} as any);
-
-            expect(calls).toEqual(["decorator"]);
-            expect(errors).toHaveLength(1);
-        });
-
-        // A single-object definition passes onBeforeTrigger and onMaxIterations straight through,
-        // so a throw reaches the caller: it aborts a trigger, and it makes TaskManager answer with
-        // "Failed to execute onMaxIterations handler." Swallowing them here would quietly change
-        // behaviour for a task that moved to a handler.
-        it.each(["onBeforeTrigger", "onMaxIterations"] as const)(
-            "rethrows a throwing handler %s, after running the decorator's half",
-            async hook => {
-                const calls: string[] = [];
-                const { resolver } = makeResolver();
-                const boom = new Error("boom");
-
-                class ThrowingHandlerImpl implements TaskHandler.Interface {
-                    async run() {
-                        return { status: "done" } as any;
-                    }
-                    async [hook]() {
-                        calls.push("handler");
-                        throw boom;
-                    }
-                }
-
-                const ThrowingHandler = TaskHandler.createImplementation({
-                    implementation: ThrowingHandlerImpl,
-                    dependencies: []
-                });
-
-                const definition = {
-                    id: "throwing",
-                    title: "Throwing",
-                    handler: ThrowingHandler,
-                    [hook]: async () => {
-                        calls.push("decorator");
-                    }
-                } as TaskDefinition.Interface;
-
-                const result = useCaseOf([definition], resolver).execute("throwing");
-
-                await expect(result.value[hook]!({} as any)).rejects.toBe(boom);
-                expect(calls).toEqual(["handler", "decorator"]);
-            }
-        );
-
-        it("leaves a hook undefined when neither half defines it", () => {
-            const { resolver } = makeResolver();
-
-            const result = useCaseOf([greet], resolver).execute("greet");
-
-            expect(result.value.onAbort).toBeUndefined();
-        });
+        expect(calls).toEqual(["onDone"]);
+        expect(result.value.onAbort).toBeUndefined();
     });
 });
