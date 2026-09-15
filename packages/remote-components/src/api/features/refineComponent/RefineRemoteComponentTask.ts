@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { RefineRemoteComponentUseCase } from "./abstractions.js";
@@ -12,14 +15,7 @@ export interface IRefineRemoteComponentTaskInput {
     additionalFileIds?: string[] | null;
 }
 
-class RefineRemoteComponentTaskImpl implements TaskDefinition.Interface<IRefineRemoteComponentTaskInput> {
-    id = REFINE_REMOTE_COMPONENT_TASK_ID;
-    title = "Remote Components - Refine Component";
-    description = "Refines an existing remote component using AI.";
-    maxIterations = 1;
-    isPrivate = true;
-    databaseLogs = false;
-
+class RefineRemoteComponentTaskHandlerImpl implements TaskHandler.Interface<IRefineRemoteComponentTaskInput> {
     constructor(
         private identityContext: IdentityContext.Interface,
         private refineComponent: RefineRemoteComponentUseCase.Interface,
@@ -29,7 +25,7 @@ class RefineRemoteComponentTaskImpl implements TaskDefinition.Interface<IRefineR
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IRefineRemoteComponentTaskInput>): Promise<
+    }: TaskHandler.RunParams<IRefineRemoteComponentTaskInput>): Promise<
         TaskDefinition.Result<IRefineRemoteComponentTaskInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -82,7 +78,23 @@ class RefineRemoteComponentTaskImpl implements TaskDefinition.Interface<IRefineR
     }
 }
 
+const RefineRemoteComponentTaskHandler = TaskHandler.createImplementation({
+    implementation: RefineRemoteComponentTaskHandlerImpl,
+    dependencies: [IdentityContext, RefineRemoteComponentUseCase, WebsocketsSendToIdentityUseCase]
+});
+
+class RefineRemoteComponentTaskImpl implements TaskDefinition.Interface {
+    id = REFINE_REMOTE_COMPONENT_TASK_ID;
+    title = "Remote Components - Refine Component";
+    description = "Refines an existing remote component using AI.";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+
+    handler = RefineRemoteComponentTaskHandler;
+}
+
 export const RefineRemoteComponentTask = TaskDefinition.createImplementation({
     implementation: RefineRemoteComponentTaskImpl,
-    dependencies: [IdentityContext, RefineRemoteComponentUseCase, WebsocketsSendToIdentityUseCase]
+    dependencies: []
 });

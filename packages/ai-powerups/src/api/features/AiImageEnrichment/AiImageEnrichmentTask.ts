@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { ApplyImageEnrichmentUseCase, PrepareImageEnrichmentUseCase } from "./abstractions.js";
 import { buildEnrichmentAiRequest } from "./buildEnrichmentAiRequest.js";
@@ -15,16 +18,7 @@ export interface IAiImageEnrichmentTaskInput {
  * with the streaming HTTP route (`AiImageEnrichmentStreamRoute`); the only difference is that this
  * one waits for the whole AI response, because a background task has no one to stream to.
  */
-class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnrichmentTaskInput> {
-    id = AI_IMAGE_ENRICHMENT_TASK_ID;
-    title = "File Manager - AI Image Enrichment";
-    description = "Automatically enriches uploaded images with AI-generated tags and description.";
-    maxIterations = 1;
-    isPrivate = true;
-    databaseLogs = false;
-
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
+class AiImageEnrichmentTaskHandlerImpl implements TaskHandler.Interface<IAiImageEnrichmentTaskInput> {
     constructor(
         private prepare: PrepareImageEnrichmentUseCase.Interface,
         private apply: ApplyImageEnrichmentUseCase.Interface,
@@ -34,7 +28,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IAiImageEnrichmentTaskInput>): Promise<
+    }: TaskHandler.RunParams<IAiImageEnrichmentTaskInput>): Promise<
         TaskDefinition.Result<IAiImageEnrichmentTaskInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -81,7 +75,24 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
     }
 }
 
+const AiImageEnrichmentTaskHandler = TaskHandler.createImplementation({
+    implementation: AiImageEnrichmentTaskHandlerImpl,
+    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
+});
+
+class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface {
+    id = AI_IMAGE_ENRICHMENT_TASK_ID;
+    title = "File Manager - AI Image Enrichment";
+    description = "Automatically enriches uploaded images with AI-generated tags and description.";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = AiImageEnrichmentTaskHandler;
+}
+
 export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
     implementation: AiImageEnrichmentTaskImpl,
-    dependencies: [PrepareImageEnrichmentUseCase, ApplyImageEnrichmentUseCase, Ai]
+    dependencies: []
 });

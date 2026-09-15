@@ -3,6 +3,7 @@ import { SelfCleaningTaskDecoratorImpl } from "~/api/decorators/SelfCleaningTask
 import { TaskDataStatus } from "~/api/types.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { CleanupTaskSubtreeUseCase } from "~/api/features/CleanupTaskSubtree/index.js";
+import type { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { ITask } from "~/api/types.js";
 
 const fakeTask = (id = "t1"): ITask =>
@@ -29,6 +30,19 @@ const makeCleanup = () => {
     return { cleanupTaskSubtree, cleaned };
 };
 
+const makeLogger = () => {
+    const errors: unknown[] = [];
+    const logger = {
+        error: (...args: unknown[]) => {
+            errors.push(args);
+        },
+        warn: () => undefined,
+        info: () => undefined,
+        debug: () => undefined
+    } as unknown as Logger.Interface;
+    return { logger, errors };
+};
+
 const makeDefinition = (
     overrides: Partial<TaskDefinition.Interface> = {}
 ): TaskDefinition.Interface =>
@@ -48,6 +62,7 @@ describe("SelfCleaningTaskDecorator", () => {
         it("keeps databaseLogs when selfCleanup is undefined", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
                 noopCleanup,
+                makeLogger().logger,
                 makeDefinition({ databaseLogs: true })
             );
             expect(dec.databaseLogs).toBe(true);
@@ -56,6 +71,7 @@ describe("SelfCleaningTaskDecorator", () => {
         it("keeps databaseLogs when selfCleanup is 'never'", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
                 noopCleanup,
+                makeLogger().logger,
                 makeDefinition({ databaseLogs: true, selfCleanup: "never" })
             );
             expect(dec.databaseLogs).toBe(true);
@@ -64,6 +80,7 @@ describe("SelfCleaningTaskDecorator", () => {
         it("forces databaseLogs=false when selfCleanup is a single event", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
                 noopCleanup,
+                makeLogger().logger,
                 makeDefinition({ databaseLogs: true, selfCleanup: "onSuccess" })
             );
             expect(dec.databaseLogs).toBe(false);
@@ -72,6 +89,7 @@ describe("SelfCleaningTaskDecorator", () => {
         it("forces databaseLogs=false when selfCleanup is an array", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
                 noopCleanup,
+                makeLogger().logger,
                 makeDefinition({
                     databaseLogs: true,
                     selfCleanup: ["onSuccess", "onError"]
@@ -83,6 +101,7 @@ describe("SelfCleaningTaskDecorator", () => {
         it("forces databaseLogs=false when selfCleanup is 'always'", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
                 noopCleanup,
+                makeLogger().logger,
                 makeDefinition({ databaseLogs: true, selfCleanup: "always" })
             );
             expect(dec.databaseLogs).toBe(false);
@@ -91,7 +110,11 @@ describe("SelfCleaningTaskDecorator", () => {
 
     describe("hook exposure", () => {
         it("always exposes onDone / onError / onAbort even if the decoratee has none", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(noopCleanup, makeDefinition());
+            const dec = new SelfCleaningTaskDecoratorImpl(
+                noopCleanup,
+                makeLogger().logger,
+                makeDefinition()
+            );
             expect(typeof dec.onDone).toBe("function");
             expect(typeof dec.onError).toBe("function");
             expect(typeof dec.onAbort).toBe("function");
@@ -103,6 +126,7 @@ describe("SelfCleaningTaskDecorator", () => {
             const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
                 cleanupTaskSubtree,
+                makeLogger().logger,
                 makeDefinition({ selfCleanup: "onError" })
             );
             await dec.onDone!({ task: fakeTask() });
@@ -113,6 +137,7 @@ describe("SelfCleaningTaskDecorator", () => {
             const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
                 cleanupTaskSubtree,
+                makeLogger().logger,
                 makeDefinition({ selfCleanup: "onSuccess" })
             );
             await dec.onDone!({ task: fakeTask("t42") });
@@ -123,6 +148,7 @@ describe("SelfCleaningTaskDecorator", () => {
             const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
                 cleanupTaskSubtree,
+                makeLogger().logger,
                 makeDefinition({ selfCleanup: ["onError"] })
             );
             await dec.onError!({ task: fakeTask("t1") });
@@ -133,6 +159,7 @@ describe("SelfCleaningTaskDecorator", () => {
             const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
                 cleanupTaskSubtree,
+                makeLogger().logger,
                 makeDefinition({ selfCleanup: "always" })
             );
             await dec.onAbort!({ task: fakeTask() });
@@ -150,6 +177,7 @@ describe("SelfCleaningTaskDecorator", () => {
             };
             const dec = new SelfCleaningTaskDecoratorImpl(
                 cleanupTaskSubtree,
+                makeLogger().logger,
                 makeDefinition({
                     selfCleanup: "onSuccess",
                     onDone: async () => {
@@ -166,6 +194,7 @@ describe("SelfCleaningTaskDecorator", () => {
             const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
             const dec = new SelfCleaningTaskDecoratorImpl(
                 cleanupTaskSubtree,
+                makeLogger().logger,
                 makeDefinition({
                     selfCleanup: "onSuccess",
                     onDone: async () => {

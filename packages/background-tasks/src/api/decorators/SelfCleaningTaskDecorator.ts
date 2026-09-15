@@ -1,4 +1,5 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import type { ISelfCleanupEvent } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { normalizeSelfCleanup } from "~/api/utils/normalizeSelfCleanup.js";
 import { CleanupTaskSubtreeUseCase } from "~/api/features/CleanupTaskSubtree/index.js";
@@ -12,9 +13,15 @@ export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
 
     public constructor(
         private readonly cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface,
+        private readonly logger: Logger.Interface,
         private decoratee: TaskDefinition.Interface
     ) {
         this.events = normalizeSelfCleanup(decoratee.selfCleanup);
+    }
+
+    // A definition that delegates to a `handler` class has no `run` of its own.
+    get handler() {
+        return this.decoratee.handler;
     }
 
     // Pass-through properties.
@@ -40,7 +47,7 @@ export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
         return this.decoratee.createInputValidation;
     }
     get run() {
-        return this.decoratee.run.bind(this.decoratee);
+        return this.decoratee.run?.bind(this.decoratee);
     }
     get onBeforeTrigger() {
         return this.decoratee.onBeforeTrigger?.bind(this.decoratee);
@@ -101,13 +108,15 @@ export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
         try {
             await hook.call(this.decoratee, params);
         } catch (ex) {
-            console.error(`Error executing ${name} hook for task "${params.task.id}".`);
-            console.log(getErrorProperties(ex));
+            this.logger.error(
+                { error: getErrorProperties(ex), taskId: params.task.id, hook: name },
+                "Error executing task lifecycle hook."
+            );
         }
     }
 }
 
 export const SelfCleaningTaskDecorator = TaskDefinition.createDecorator({
     decorator: SelfCleaningTaskDecoratorImpl,
-    dependencies: [CleanupTaskSubtreeUseCase]
+    dependencies: [CleanupTaskSubtreeUseCase, Logger]
 });

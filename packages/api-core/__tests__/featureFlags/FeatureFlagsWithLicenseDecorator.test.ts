@@ -1,0 +1,153 @@
+import { describe, it, expect } from "vitest";
+import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
+import type { ILicense } from "@webiny/wcp/types.js";
+import { Container } from "@webiny/di";
+import { FeatureFlags } from "~/features/featureFlags/abstractions.js";
+import { FeatureFlagsWithLicenseDecorator } from "~/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.js";
+import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
+
+interface LicenseOptions {
+    present: boolean;
+    allowsAacl?: boolean;
+}
+
+const license = (options: LicenseOptions): ILicense =>
+    ({
+        getRawLicense: () => (options.present ? ({} as never) : null),
+        canUseAacl: () => Boolean(options.allowsAacl),
+        canUseFeature: () => false,
+        canUseWorkflows: () => false,
+        canUseTeams: () => false,
+        canUsePrivateFiles: () => false,
+        canUseFolderLevelPermissions: () => false,
+        canUseHcmsFieldPermissions: () => false,
+        canUseAuditLogs: () => false,
+        canUseRecordLocking: () => false,
+        canUseFileManagerThreatDetection: () => false,
+        canUseAiImageEnrichment: () => false,
+        canUseAbTesting: () => false
+    }) as unknown as ILicense;
+
+const flagsFor = (config: Record<string, unknown>, options: LicenseOptions) => {
+    const container = new Container();
+
+    container.registerInstance(FeatureFlags, {
+        get: () => new FeatureFlagsClass(config as never)
+    });
+    container.registerInstance(WcpLicenseProvider, {
+        get: () => license(options)
+    } as never);
+    container.registerDecorator(FeatureFlagsWithLicenseDecorator);
+
+    return container.resolve(FeatureFlags).get();
+};
+
+describe("FeatureFlagsWithLicenseDecorator", () => {
+    describe("license-governed flags", () => {
+        it("stays off when the license blocks it, even if config enables it", () => {
+            const flags = flagsFor(
+                { advancedAccessControlLayer: true },
+                { present: true, allowsAacl: false }
+            );
+
+            expect(flags.isEnabled("advancedAccessControlLayer")).toBe(false);
+        });
+
+        it("is on when the license allows it and config is unset", () => {
+            const flags = flagsFor({}, { present: true, allowsAacl: true });
+
+            expect(flags.isEnabled("advancedAccessControlLayer")).toBe(true);
+        });
+
+        it("lets config disable what the license allows", () => {
+            const flags = flagsFor(
+                { advancedAccessControlLayer: false },
+                { present: true, allowsAacl: true }
+            );
+
+            expect(flags.isEnabled("advancedAccessControlLayer")).toBe(false);
+        });
+    });
+
+    describe("flags the license does not govern", () => {
+        /*
+         * These used to be enabled by default for anyone holding a license, which was a workaround
+         * for capabilities the license could not express. A feature that should be sold belongs in
+         * LICENSE_CHECKS and on the license itself, so there is no third category any more: a flag
+         * the license does not govern is the project's to switch on.
+         */
+        it("is off when a license is present but nothing enabled it", () => {
+            const flags = flagsFor({}, { present: true });
+
+            expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
+        });
+
+        it("is on when the config enables it", () => {
+            const flags = flagsFor(
+                { aiPowerups: { cms: { entryGeneration: true } } },
+                { present: true }
+            );
+
+            expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(true);
+        });
+
+        it("is off when the config disables it", () => {
+            const flags = flagsFor(
+                { aiPowerups: { cms: { entryGeneration: false } } },
+                { present: true }
+            );
+
+            expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
+        });
+    });
+
+    describe("a project's own flags", () => {
+        /*
+         * The reason this decorator changed: an unlicensed install could not enable a flag it had
+         * declared itself, which the license has no business preventing.
+         */
+        it("can be enabled by config with no license at all", () => {
+            const flags = flagsFor({ myCustomFlag: true }, { present: false });
+
+            expect(flags.isEnabled("myCustomFlag")).toBe(true);
+        });
+
+        it("stays off without a license when config does not enable it", () => {
+            const flags = flagsFor({ myCustomFlag: true }, { present: false });
+
+            expect(flags.isEnabled("somethingElse")).toBe(false);
+        });
+
+        it("supports nested custom flags without a license", () => {
+            const flags = flagsFor({ myApp: { newThing: true } }, { present: false });
+
+            expect(flags.isEnabled("myApp.newThing")).toBe(true);
+            expect(flags.isEnabled("myApp.otherThing")).toBe(false);
+        });
+
+        it("is enabled by config with a license present too", () => {
+            const flags = flagsFor({ myCustomFlag: true }, { present: true });
+
+            expect(flags.isEnabled("myCustomFlag")).toBe(true);
+        });
+
+        /*
+         * The bug this closes. A license used to make EVERY unrecognised name true, because the
+         * branch was "on unless explicitly disabled". An undeclared flag was on, and so was a typo,
+         * which is the part that made it dangerous: `isEnabled("aiPowerupz")` guarded nothing and
+         * read as if it did.
+         */
+        it("is off when nothing declared it, even with a license", () => {
+            const flags = flagsFor({}, { present: true });
+
+            expect(flags.isEnabled("experimentalSuperFeat")).toBe(false);
+            expect(flags.isEnabled("aiPowerupz")).toBe(false);
+        });
+
+        it("is off when config disables it", () => {
+            const flags = flagsFor({ myCustomFlag: false }, { present: true });
+
+            expect(flags.isEnabled("myCustomFlag")).toBe(false);
+        });
+    });
+});

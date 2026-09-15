@@ -1,26 +1,152 @@
 import { Result } from "@webiny/feature/api";
+import type { Constructor } from "@webiny/di";
 import { GetTaskDefinitionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { TaskDefinitionNotFoundError } from "~/api/domain/errors.js";
+import { TaskHandlerResolver } from "~/api/features/TaskHandlerResolver/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
+import {
+    TaskDefinitionNotFoundError,
+    TaskDefinitionNotRunnableError
+} from "~/api/domain/errors.js";
 
-class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interface {
-    public constructor(private definitions: TaskDefinition.Interface[]) {}
+export class GetTaskDefinitionUseCaseImpl implements UseCaseAbstraction.Interface {
+    public constructor(
+        private definitions: TaskDefinition.Interface[],
+        private handlerResolver: TaskHandlerResolver.Interface,
+        private logger: Logger.Interface
+    ) {}
 
     public execute<
         I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
     >(id: string): Result<TaskDefinition.Runnable<I, O>, UseCaseAbstraction.Error> {
         for (const definition of this.definitions) {
-            if (definition.id === id) {
-                return Result.ok(definition as TaskDefinition.Runnable<I, O>);
+            if (definition.id !== id) {
+                continue;
             }
+
+            // New shape: the definition names a handler class, built only now that we know this is
+            // the task being asked for. Its dependencies are never touched for the other 23.
+            if (definition.handler) {
+                // The registered definition is stored under the abstraction's default generics, so
+                // its handler cannot be proven assignable to the caller's narrower <I, O>. Same
+                // reason the legacy branch below casts.
+                const handlerClass = definition.handler as Constructor<
+                    TaskDefinition.Handler<I, O>
+                >;
+                const handler = this.handlerResolver.resolve(handlerClass);
+                const runnable = toRunnable<I, O>(definition, handler, this.logger);
+
+                return Result.ok(runnable);
+            }
+
+            // Old shape: the definition carries `run()` and the hooks itself, so it IS the handler.
+            if (typeof definition.run === "function") {
+                const runnable = definition as TaskDefinition.Runnable<I, O>;
+
+                return Result.ok(runnable);
+            }
+
+            return Result.fail(new TaskDefinitionNotRunnableError(id));
         }
 
         return Result.fail(new TaskDefinitionNotFoundError(id));
     }
 }
 
+type HookName = "onBeforeTrigger" | "onDone" | "onError" | "onAbort" | "onMaxIterations";
+
+/** Hooks a single-object definition already swallows, via SelfCleaningTaskDecorator's safeCall. */
+const SWALLOWED_HOOKS: ReadonlySet<HookName> = new Set(["onDone", "onError", "onAbort"]);
+
+/**
+ * Present the two halves as the single object the runner and `context.tasks.getDefinition()` expect.
+ * Metadata reads come from the definition, behaviour from the handler.
+ *
+ * Hooks come from BOTH, in that order, because they mean different things. The handler's hook is the
+ * task author's, and the definition's is whatever a decorator added: `SelfCleaningTaskDecorator`
+ * supplies an `onDone` that deletes the finished task. Taking only the handler's would silently drop
+ * every definition-level decorator, and taking only the definition's would drop the task's own.
+ *
+ * A throwing handler hook must not stop the decorator's half from running, so the decorator's half
+ * runs either way. What happens to the error afterwards follows what a single-object definition
+ * already does, which differs per hook:
+ *
+ *  - `onDone`, `onError`, `onAbort` are swallowed and logged, because `SelfCleaningTaskDecorator`
+ *    routes them through its own `safeCall` and does exactly that;
+ *  - `onBeforeTrigger` and `onMaxIterations` are rethrown, because the decorator passes those
+ *    straight through and their callers rely on the throw. A throwing `onBeforeTrigger` aborts the
+ *    trigger, and a throwing `onMaxIterations` is what makes `TaskManager` answer with "Failed to
+ *    execute onMaxIterations handler." Swallowing either would silently change behaviour for a task
+ *    that moved to a handler.
+ *
+ * TRANSITIONAL. The chaining exists only because a definition can still carry hooks. It should not:
+ * a hook needs dependencies, and dependencies on a definition are what make looking one up by id
+ * expensive, which is the thing this whole split is removing. The final PR moves hooks onto handlers
+ * only, at which point this function takes them from the handler and the definition contributes
+ * metadata alone. `SelfCleaningTaskDecorator` splits to follow: its `databaseLogs` override stays a
+ * definition decorator, and its cleanup hooks become a `TaskHandler` decorator reading
+ * `params.definition.selfCleanup`.
+ */
+const toRunnable = <I extends TaskDefinition.TaskInput, O extends TaskDefinition.TaskOutput>(
+    definition: TaskDefinition.Interface,
+    handler: TaskDefinition.Handler<I, O>,
+    logger: Logger.Interface
+): TaskDefinition.Runnable<I, O> => {
+    const chain = (name: HookName) => {
+        const own = handler[name]?.bind(handler);
+        const decorated = definition[name]?.bind(definition);
+
+        if (!own && !decorated) {
+            return undefined;
+        }
+
+        return async (params: any) => {
+            let failure: unknown;
+
+            if (own) {
+                try {
+                    await own(params);
+                } catch (error) {
+                    if (SWALLOWED_HOOKS.has(name)) {
+                        logger.error(
+                            { error, taskId: definition.id, hook: name },
+                            "Error executing task lifecycle hook."
+                        );
+                    } else {
+                        failure = error;
+                    }
+                }
+            }
+
+            await decorated?.(params);
+
+            if (failure) {
+                throw failure;
+            }
+        };
+    };
+
+    return {
+        id: definition.id,
+        title: definition.title,
+        description: definition.description,
+        isPrivate: definition.isPrivate as boolean,
+        databaseLogs: definition.databaseLogs as boolean,
+        maxIterations: definition.maxIterations as number,
+        selfCleanup: definition.selfCleanup,
+
+        run: handler.run.bind(handler),
+        onBeforeTrigger: chain("onBeforeTrigger"),
+        onDone: chain("onDone"),
+        onError: chain("onError"),
+        onAbort: chain("onAbort"),
+        onMaxIterations: chain("onMaxIterations"),
+        createInputValidation: handler.createInputValidation?.bind(handler)
+    };
+};
+
 export const GetTaskDefinitionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetTaskDefinitionUseCaseImpl,
-    dependencies: [[TaskDefinition, { multiple: true }]]
+    dependencies: [[TaskDefinition, { multiple: true }], TaskHandlerResolver, Logger]
 });

@@ -4,8 +4,6 @@
 # For more information, run "github-actions-wac --help".
 name: Delete Merged Branches
 'on':
-  schedule:
-    - cron: 30 3 * * *
   workflow_dispatch:
     inputs:
       dryRun:

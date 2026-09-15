@@ -1,10 +1,11 @@
 import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./jobs/index.js";
 
-// Deletes branches whose pull request was merged more than a week ago, once a day.
+// Deletes branches whose pull request was merged more than a week ago.
 //
-// It can also be run by hand from the Actions tab, where `dryRun` lists what a run would delete
-// without deleting anything. The scheduled run passes no inputs, so it always deletes.
+// This runs by hand only, from the Actions tab: the daily schedule was removed so that nothing
+// deletes a branch without someone asking for it. `dryRun` lists what a run would delete without
+// deleting anything; leave it off to actually delete.
 //
 // GitHub's built-in "automatically delete head branches" setting deletes the branch the second the
 // PR merges, which is too soon: right after a merge is exactly when someone still wants to check
@@ -21,7 +22,6 @@ import { createJob } from "./jobs/index.js";
 export const deleteMergedBranches = createWorkflow({
     name: "Delete Merged Branches",
     on: {
-        schedule: [{ cron: "30 3 * * *" }],
         workflow_dispatch: {
             inputs: {
                 dryRun: {
