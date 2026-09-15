@@ -61,3 +61,6 @@ The same split applies to an **AI tool** (`AiSdkToolDefinition` names an `AiSdkT
 **background task** (`TaskDefinition` names a `TaskHandler`). In every case the reason is the same:
 something has to read the metadata of ALL of them to pick one, and that read should not build the
 dependencies of the ones it did not pick.
+
+Name the file after the thing, not after either half: `EmptyTrashBinTask.ts`, not
+`EmptyTrashBinTaskDefinition.ts`. The file holds both halves, so naming it for one of them misleads.
