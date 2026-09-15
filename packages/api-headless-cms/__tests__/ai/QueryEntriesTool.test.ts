@@ -3,7 +3,7 @@ import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
-import { AiSdkTool } from "@webiny/api-core/features/ai/index.js";
+import { AiSdkToolDefinition } from "@webiny/api-core/features/ai/index.js";
 import { QueryEntriesTool } from "~/features/ai/QueryEntriesTool.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
@@ -63,12 +63,21 @@ const resolveTool = () => {
 
     container.register(QueryEntriesTool);
 
-    return { tool: container.resolveAll(AiSdkTool)[0], captured };
+    const tool = container.resolveAll(AiSdkToolDefinition)[0];
+
+    /*
+     * The definition is metadata only; the container builds its handler the same way `AiSdkTools`
+     * does at call time. Going through `tool.handler` rather than importing the class keeps the
+     * wiring under test.
+     */
+    const handler = container.resolveImplementation(tool.handler);
+
+    return { tool, handler, captured };
 };
 
 const whereFor = async (where: Record<string, unknown>) => {
-    const { tool, captured } = resolveTool();
-    await tool.execute({ modelId: "product", where });
+    const { handler, captured } = resolveTool();
+    await handler.execute({ modelId: "product", where });
     return captured.params?.where as Record<string, any>;
 };
 
@@ -140,8 +149,8 @@ describe("queryEntries where routing", () => {
 
 describe("queryEntries sort mapping", () => {
     const sortFor = async (sort: string[]) => {
-        const { tool, captured } = resolveTool();
-        await tool.execute({ modelId: "product", sort });
+        const { handler, captured } = resolveTool();
+        await handler.execute({ modelId: "product", sort });
         return captured.params?.sort;
     };
 
@@ -170,18 +179,18 @@ describe("queryEntries sort mapping", () => {
          * The mapper discards what it cannot parse. Left alone that runs the query unsorted while the
          * model reports it as sorted, so the tool refuses and says what the format is.
          */
-        const { tool } = resolveTool();
+        const { handler } = resolveTool();
 
-        await expect(tool.execute({ modelId: "product", sort: ["nonsense"] })).rejects.toThrow(
+        await expect(handler.execute({ modelId: "product", sort: ["nonsense"] })).rejects.toThrow(
             /must be `<fieldId>_ASC` or `<fieldId>_DESC`/
         );
     });
 
     it("rejects a partly unreadable list rather than silently sorting by the rest", async () => {
-        const { tool } = resolveTool();
+        const { handler } = resolveTool();
 
         await expect(
-            tool.execute({ modelId: "product", sort: ["price_DESC", "nonsense"] })
+            handler.execute({ modelId: "product", sort: ["price_DESC", "nonsense"] })
         ).rejects.toThrow(/nonsense/);
     });
 });
@@ -189,11 +198,11 @@ describe("queryEntries sort mapping", () => {
 describe("queryEntries limits", () => {
     it("defaults to 10 and caps at 50", async () => {
         const a = resolveTool();
-        await a.tool.execute({ modelId: "product" });
+        await a.handler.execute({ modelId: "product" });
         expect(a.captured.params?.limit).toBe(10);
 
         const b = resolveTool();
-        await b.tool.execute({ modelId: "product", limit: 5000 });
+        await b.handler.execute({ modelId: "product", limit: 5000 });
         expect(b.captured.params?.limit).toBe(50);
     });
 });
