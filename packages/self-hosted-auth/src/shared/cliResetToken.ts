@@ -80,6 +80,12 @@ export const verifyCliResetToken = (params: {
             return null;
         }
 
+        // `jwt.verify` only enforces `exp` when the claim is there, so a token minted without
+        // one would be valid forever. The whole point of this token is that it is short-lived.
+        if (typeof decoded.exp !== "number") {
+            return null;
+        }
+
         const email = decoded.email;
         if (typeof email !== "string" || email === "") {
             return null;

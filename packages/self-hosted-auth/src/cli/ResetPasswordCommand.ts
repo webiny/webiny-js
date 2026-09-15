@@ -93,6 +93,14 @@ const MUTATION = /* GraphQL */ `
 // than a round trip.
 const MIN_PASSWORD_LENGTH = 8;
 
+/**
+ * How long to wait on the API before giving up. Node's fetch has no default timeout, so without
+ * this an API that accepts the connection and then never answers hangs the command indefinitely,
+ * leaving the operator with no output and no idea whether the password was changed. Generous
+ * enough for a cold-started function behind an API Gateway.
+ */
+const API_TIMEOUT_MS = 30_000;
+
 export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetPasswordCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
@@ -276,28 +284,12 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
     private async callApi(params: { apiUrl: string; token: string; password: string }) {
         const endpoint = `${params.apiUrl}/graphql`;
 
-        let response: Awaited<ReturnType<typeof fetch>>;
-        try {
-            response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({
-                    query: MUTATION,
-                    variables: { token: params.token, password: params.password }
-                })
-            });
-        } catch (err) {
-            throw new Error(
-                `Could not reach the API at ${endpoint}: ${(err as Error).message}. ` +
-                    "Make sure it is running, or point at it with --api-url."
-            );
-        }
+        // The deadline covers reading the body as well as the request itself: a response whose
+        // stream stalls halfway hangs the command just as thoroughly as one that never arrives.
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
-        if (!response.ok) {
-            throw new Error(`The API at ${endpoint} responded with ${response.status}.`);
-        }
-
-        const body = (await response.json()) as {
+        let body: {
             data?: {
                 selfHostedAuthCliResetPassword?: {
                     data: boolean | null;
@@ -306,6 +298,36 @@ export class ResetPasswordCommand implements CliCommandFactory.Interface<IResetP
             };
             errors?: Array<{ message: string }>;
         };
+
+        try {
+            let response: Awaited<ReturnType<typeof fetch>>;
+            try {
+                response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        query: MUTATION,
+                        variables: { token: params.token, password: params.password }
+                    }),
+                    signal: controller.signal
+                });
+            } catch (err) {
+                // An abort lands here too, and reads correctly: from the operator's side a timeout
+                // is one more way the API was not reachable.
+                throw new Error(
+                    `Could not reach the API at ${endpoint}: ${(err as Error).message}. ` +
+                        "Make sure it is running, or point at it with --api-url."
+                );
+            }
+
+            if (!response.ok) {
+                throw new Error(`The API at ${endpoint} responded with ${response.status}.`);
+            }
+
+            body = (await response.json()) as typeof body;
+        } finally {
+            clearTimeout(timeout);
+        }
 
         if (body.errors?.length) {
             const messages = body.errors.map(error => error.message);

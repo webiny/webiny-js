@@ -44,6 +44,17 @@ describe("CLI reset token", () => {
         expect(verifyCliResetToken({ secret: SECRET, token })).toBeNull();
     });
 
+    it("rejects a correctly issued token that never expires", () => {
+        const token = jwt.sign({ email: EMAIL }, SECRET, {
+            algorithm: "HS256",
+            issuer: CLI_RESET_ISSUER,
+            audience: CLI_RESET_AUDIENCE
+        });
+
+        expect((jwt.decode(token) as jwt.JwtPayload).exp).toBeUndefined();
+        expect(verifyCliResetToken({ secret: SECRET, token })).toBeNull();
+    });
+
     /**
      * The reason the two token kinds share a secret but not an issuer. A login token must not be
      * replayable as a reset authorization, or anyone with a session could reset any password.

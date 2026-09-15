@@ -161,6 +161,7 @@ describe("reset-password command, talking to an API", () => {
     afterEach(() => {
         vi.unstubAllGlobals();
         vi.unstubAllEnvs();
+        vi.useRealTimers();
     });
 
     it("posts a token the API side can verify, to the configured origin", async () => {
@@ -356,6 +357,46 @@ describe("reset-password command, talking to an API", () => {
         expect(verifyCliResetToken({ secret: "from-flag", token: sent.variables.token })).toEqual({
             email: "admin@example.com"
         });
+    });
+
+    /**
+     * The failure this guards against is silent: an API that accepts the connection and then goes
+     * quiet leaves the operator staring at a cursor, with no way to tell whether the password was
+     * changed. Node's fetch waits forever on its own.
+     */
+    it("gives up on an API that never answers", async () => {
+        vi.useFakeTimers();
+
+        let signal: AbortSignal | undefined;
+
+        const fetchMock = vi.fn((_url: string, init: { signal: AbortSignal }) => {
+            signal = init.signal;
+
+            // Settles only when the command aborts it, like a connection that is open but idle.
+            return new Promise((_resolve, reject) => {
+                init.signal.addEventListener("abort", () =>
+                    reject(new Error("This operation was aborted"))
+                );
+            });
+        });
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        const definition = await setup(configured).execute();
+
+        const run = definition.handler({ email: "admin@example.com" });
+        // Attached before the clock moves, so the rejection is never momentarily unhandled.
+        const rejects = expect(run).rejects.toThrow(/Could not reach the API/);
+
+        // Lets the prompts resolve and the request go out, without advancing the deadline.
+        await vi.advanceTimersByTimeAsync(0);
+        expect(signal?.aborted).toBe(false);
+
+        // Comfortably past API_TIMEOUT_MS, so the test does not pin the exact duration.
+        await vi.advanceTimersByTimeAsync(120_000);
+
+        await rejects;
+        expect(signal?.aborted).toBe(true);
     });
 
     it("says the API is unreachable rather than surfacing a raw fetch failure", async () => {
