@@ -62,9 +62,9 @@ This document provides the correct import paths and type definitions for commonl
 
 ### TaskDefinition
 
-- **Import:** `import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js"`
+- **Import:** `import { TaskDefinition, TaskHandler } from "@webiny/api-core/features/task/TaskDefinition/index.js"`
 - **Interface Type:** See `packages/api-core/src/features/task/TaskDefinition/abstractions.ts`
-- **Usage:** Define background tasks. Use `TaskDefinition.createImplementation({ implementation, dependencies })`. Register with `context.container.register(MyTask)`. The `run` method receives `{ input, controller }` where controller provides `response.done/error/aborted/continue` and `runtime.isAborted/isCloseToTimeout`.
+- **Usage:** Define background tasks as a PAIR, in one file. A `TaskHandler` implementation holds `run`, the lifecycle hooks and all the dependencies; a `TaskDefinition` implementation holds the metadata (`id`, `title`, `maxIterations`, `selfCleanup`, …), declares NO dependencies, and names the handler via `handler`. Only the definition is registered: `container.register(MyTaskDefinition)`. Looking a task up by id builds every registered definition, so keeping them dependency-free is the point; the runner resolves the one handler it needs. `run` receives `{ input, controller, definition }`, where `controller` provides `response.done/error/aborted/continue` and `runtime.isAborted/isCloseToTimeout`, and `definition` is the task's own metadata (useful in a `TaskHandler` decorator, which wraps every task).
 
 ### TaskService (high-level — trigger/abort)
 
