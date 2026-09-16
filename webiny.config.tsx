@@ -3,17 +3,17 @@ import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
-import { ServerExtensions } from "./webiny.config.server.js";
+import { StandaloneExtensions } from "./webiny.config.standalone.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
 
 /**
  * In this monorepo we develop both hosting types. The CLI bin sets WEBINY_HOSTING_TYPE ("aws" via
- * `webiny`, "server" via `webiny-server`). Shared extensions live here; the hosting-specific block
- * below pulls in AWS-only (webiny.config.aws.tsx) or server-only (webiny.config.server.tsx)
+ * `webiny`, "standalone" via `webiny-standalone`). Shared extensions live here; the hosting-specific block
+ * below pulls in AWS-only (webiny.config.aws.tsx) or standalone-only (webiny.config.standalone.tsx)
  * extensions so neither leaks into the other hosting type.
  */
-const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
+const isStandalone = process.env.WEBINY_HOSTING_TYPE === "standalone";
 
 export const FeatureFlags = () => (
     <Project.FeatureFlags
@@ -132,7 +132,7 @@ export const Extensions = () => {
             />
 
             {/* Hosting-specific 👇 (AWS: Pulumi + Cognito; Server: Admin.ApiUrl + SelfHostedAuth) */}
-            {isServer ? <ServerExtensions /> : <AwsExtensions />}
+            {isStandalone ? <StandaloneExtensions /> : <AwsExtensions />}
         </>
     );
 };

@@ -12,14 +12,14 @@ export const DIR_TEST_PROJECT = "new-webiny-project";
 // slashes, so the checkout is often more than one directory deep.
 export const PATH_TEST_PROJECT = `\${{ github.workspace }}/${DIR_TEST_PROJECT}`;
 
-// The self-hosted ("server" hosting type) test project. Kept separate from the AWS one so both can
+// The standalone test project. Kept separate from the AWS one so both can
 // exist in the same run without colliding.
-export const DIR_SERVER_PROJECT = "new-webiny-project-server";
-export const SERVER_BUILD_DIR = `${DIR_SERVER_PROJECT}/.webiny/workspace/apps`;
+export const DIR_STANDALONE_PROJECT = "new-webiny-project-standalone";
+export const STANDALONE_BUILD_DIR = `${DIR_STANDALONE_PROJECT}/.webiny/workspace/apps`;
 
-// Ports match the server template defaults (WEBINY_API_PORT / WEBINY_ADMIN_PORT), which is also
+// Ports match the standalone template defaults (WEBINY_API_PORT / WEBINY_ADMIN_PORT), which is also
 // what `setup-cypress --localhost` assumes.
-export const SERVER_API_PORT = 3002;
-export const SERVER_ADMIN_PORT = 3001;
-export const SERVER_API_URL = `http://localhost:${SERVER_API_PORT}`;
-export const SERVER_ADMIN_URL = `http://localhost:${SERVER_ADMIN_PORT}`;
+export const STANDALONE_API_PORT = 3002;
+export const STANDALONE_ADMIN_PORT = 3001;
+export const STANDALONE_API_URL = `http://localhost:${STANDALONE_API_PORT}`;
+export const STANDALONE_ADMIN_URL = `http://localhost:${STANDALONE_ADMIN_PORT}`;

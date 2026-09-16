@@ -1,7 +1,7 @@
 import type { NormalJob } from "github-actions-wac";
 
 interface CreateStatusRowUpdateStepsParams {
-    // The row's label in the status comment's first column, e.g. "DDB" or "Server (SQLite)".
+    // The row's label in the status comment's first column, e.g. "DDB" or "Standalone (SQLite)".
     label: string;
     // Shell expression producing the "Admin URL" cell. Defaults to "-" for variants that have no
     // URL anyone outside the job could open.
@@ -15,10 +15,10 @@ interface CreateStatusRowUpdateStepsParams {
 // with a URL once the deploy finishes - so an exact-match substitution silently stops matching
 // depending on how far the job got.
 //
-// The labels are not regex-safe: "DDB+OS" contains a quantifier and "Server (SQLite)" contains a
+// The labels are not regex-safe: "DDB+OS" contains a quantifier and "Standalone (SQLite)" contains a
 // group, and this is an EXTENDED regular expression (`sed -E`), so both would otherwise match
-// something other than themselves - "Server (SQLite)" would only match the literal text
-// "Server SQLite" and silently never fire.
+// something other than themselves - "Standalone (SQLite)" would only match the literal text
+// "Standalone SQLite" and silently never fire.
 const rowPattern = (label: string) => label.replace(/[\\.[\]{}()*+?^$|]/g, String.raw`\$&`);
 
 const updateStep = (

@@ -1,6 +1,6 @@
 import inquirer from "inquirer";
 
-export type HostingType = "aws" | "server";
+export type HostingType = "aws" | "standalone";
 
 const HOSTING_TYPE_OPTIONS: { value: HostingType; name: string }[] = [
     {
@@ -8,7 +8,7 @@ const HOSTING_TYPE_OPTIONS: { value: HostingType; name: string }[] = [
         name: "AWS (Lambda, DynamoDB, API Gateway — deployed with Pulumi)"
     },
     {
-        value: "server",
+        value: "standalone",
         name: "Standalone (Node HTTP server + SQL storage) — ALPHA"
     }
 ];

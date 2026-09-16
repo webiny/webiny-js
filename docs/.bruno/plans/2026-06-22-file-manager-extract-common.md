@@ -26,7 +26,7 @@
 - Create: `packages/api-file-manager/src/features/upload/types.ts`
 - Create: `packages/api-file-manager/src/features/upload/index.ts`
 - Modify: `packages/api-file-manager-s3/src/types.ts`
-- Modify: `packages/api-file-manager-server/src/types.ts`
+- Modify: `packages/api-file-manager-standalone/src/types.ts`
 
 **Interfaces:**
 - Consumes: nothing
@@ -113,7 +113,7 @@ export interface PresignedPostPayloadDataResponse {
 Replace the duplicated interfaces with re-exports from base, keeping only the server-specific types:
 
 ```typescript
-/* packages/api-file-manager-server/src/types.ts */
+/* packages/api-file-manager-standalone/src/types.ts */
 
 import "@webiny/background-tasks/api/features/TaskController/augmentation.js";
 
@@ -149,7 +149,7 @@ export interface UploadTokenPayload {
 ```bash
 yarn build -p @webiny/api-file-manager 2>&1 | tail -10
 yarn build -p @webiny/api-file-manager-s3 2>&1 | tail -10
-yarn build -p @webiny/api-file-manager-server 2>&1 | tail -10
+yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -10
 ```
 
 Expected: all three build successfully.
@@ -157,7 +157,7 @@ Expected: all three build successfully.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/api-file-manager/src/features/upload/ packages/api-file-manager-s3/src/types.ts packages/api-file-manager-server/src/types.ts
+git add packages/api-file-manager/src/features/upload/ packages/api-file-manager-s3/src/types.ts packages/api-file-manager-standalone/src/types.ts
 git commit -m "refactor(api-file-manager): extract shared upload types to base package"
 ```
 
@@ -174,9 +174,9 @@ git commit -m "refactor(api-file-manager): extract shared upload types to base p
 - Create: `packages/api-file-manager/src/features/upload/utils/FileUploadModifier.ts`
 - Create: `packages/api-file-manager/src/features/upload/utils/createFileNormalizerFromContext.ts`
 - Modify: `packages/api-file-manager-s3/src/graphql/schema.ts` (update imports)
-- Modify: `packages/api-file-manager-server/src/graphql/schema.ts` (update imports)
+- Modify: `packages/api-file-manager-standalone/src/graphql/schema.ts` (update imports)
 - Modify: `packages/api-file-manager-s3/src/index.ts` (update re-export)
-- Modify: `packages/api-file-manager-server/src/index.ts` (update re-export)
+- Modify: `packages/api-file-manager-standalone/src/index.ts` (update re-export)
 - Delete: `packages/api-file-manager-s3/src/graphql/checkPermissions.ts`
 - Delete: `packages/api-file-manager-s3/src/utils/checkPermissions.ts` (if it exists separately)
 - Delete: `packages/api-file-manager-s3/src/utils/FileKey.ts`
@@ -185,9 +185,9 @@ git commit -m "refactor(api-file-manager): extract shared upload types to base p
 - Delete: `packages/api-file-manager-s3/src/utils/FileNormalizer.ts`
 - Delete: `packages/api-file-manager-s3/src/utils/FileUploadModifier.ts`
 - Delete: `packages/api-file-manager-s3/src/utils/createFileNormalizerFromContext.ts`
-- Delete: same files from `packages/api-file-manager-server/src/utils/`
+- Delete: same files from `packages/api-file-manager-standalone/src/utils/`
 - Move: `packages/api-file-manager-s3/src/utils/FileKey.test.ts` → `packages/api-file-manager/__tests__/FileKey.test.ts`
-- Delete: `packages/api-file-manager-server/src/utils/FileKey.test.ts`
+- Delete: `packages/api-file-manager-standalone/src/utils/FileKey.test.ts`
 
 **Interfaces:**
 - Consumes: `FileData`, `PresignedPostPayloadData` from Task 1
@@ -331,7 +331,7 @@ Expected: FileKey test passes.
 ```bash
 yarn build -p @webiny/api-file-manager 2>&1 | tail -10
 yarn build -p @webiny/api-file-manager-s3 2>&1 | tail -10
-yarn build -p @webiny/api-file-manager-server 2>&1 | tail -10
+yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -10
 ```
 
 - [ ] **Step 9: Commit**
@@ -353,9 +353,9 @@ git commit -m "refactor(api-file-manager): move shared upload utils to base pack
 - Create: `packages/api-file-manager/src/features/upload/WriteFileMetadata/feature.ts`
 - Modify: `packages/api-file-manager/src/features/FileManagerFeature.ts` (register the feature)
 - Delete: `packages/api-file-manager-s3/src/features/WriteFileMetadata/` (entire directory)
-- Delete: `packages/api-file-manager-server/src/features/WriteFileMetadata/` (entire directory)
+- Delete: `packages/api-file-manager-standalone/src/features/WriteFileMetadata/` (entire directory)
 - Modify: `packages/api-file-manager-s3/src/index.ts` (remove WriteFileMetadataFeature registration)
-- Modify: `packages/api-file-manager-server/src/index.ts` (remove WriteFileMetadataFeature registration)
+- Modify: `packages/api-file-manager-standalone/src/index.ts` (remove WriteFileMetadataFeature registration)
 
 **Interfaces:**
 - Consumes: nothing new
@@ -389,7 +389,7 @@ WriteFileMetadataFeature.register(container);
 - [ ] **Step 3: Delete from both provider packages**
 
 Remove `packages/api-file-manager-s3/src/features/WriteFileMetadata/` entirely.
-Remove `packages/api-file-manager-server/src/features/WriteFileMetadata/` entirely.
+Remove `packages/api-file-manager-standalone/src/features/WriteFileMetadata/` entirely.
 
 - [ ] **Step 4: Remove registration from provider index files**
 
@@ -399,7 +399,7 @@ import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.j
 ```
 and `WriteFileMetadataFeature.register(container);`
 
-Same in `packages/api-file-manager-server/src/index.ts`.
+Same in `packages/api-file-manager-standalone/src/index.ts`.
 
 - [ ] **Step 5: Update MetadataReader imports in provider packages**
 
@@ -416,7 +416,7 @@ Same for `GetFileContentsByIdUseCase.ts` in both packages.
 ```bash
 yarn build -p @webiny/api-file-manager 2>&1 | tail -10
 yarn build -p @webiny/api-file-manager-s3 2>&1 | tail -10
-yarn build -p @webiny/api-file-manager-server 2>&1 | tail -10
+yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -10
 ```
 
 - [ ] **Step 7: Commit**
@@ -1186,16 +1186,16 @@ git commit -m "feat(api-file-manager-s3): implement upload abstractions, remove 
 ### Task 7: Implement server upload abstractions and remove old schema
 
 **Files:**
-- Create: `packages/api-file-manager-server/src/features/GetUploadPayload/GetUploadPayloadUseCase.ts`
-- Create: `packages/api-file-manager-server/src/features/GetUploadPayload/feature.ts`
-- Create: `packages/api-file-manager-server/src/features/CreateMultiPartUpload/CreateMultiPartUploadUseCase.ts`
-- Create: `packages/api-file-manager-server/src/features/CreateMultiPartUpload/feature.ts`
-- Create: `packages/api-file-manager-server/src/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.ts`
-- Create: `packages/api-file-manager-server/src/features/CompleteMultiPartUpload/feature.ts`
-- Delete: `packages/api-file-manager-server/src/graphql/schema.ts`
-- Delete: `packages/api-file-manager-server/src/graphql/` (directory)
-- Delete: `packages/api-file-manager-server/src/multiPartUpload/` (logic inlined into features)
-- Modify: `packages/api-file-manager-server/src/index.ts`
+- Create: `packages/api-file-manager-standalone/src/features/GetUploadPayload/GetUploadPayloadUseCase.ts`
+- Create: `packages/api-file-manager-standalone/src/features/GetUploadPayload/feature.ts`
+- Create: `packages/api-file-manager-standalone/src/features/CreateMultiPartUpload/CreateMultiPartUploadUseCase.ts`
+- Create: `packages/api-file-manager-standalone/src/features/CreateMultiPartUpload/feature.ts`
+- Create: `packages/api-file-manager-standalone/src/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.ts`
+- Create: `packages/api-file-manager-standalone/src/features/CompleteMultiPartUpload/feature.ts`
+- Delete: `packages/api-file-manager-standalone/src/graphql/schema.ts`
+- Delete: `packages/api-file-manager-standalone/src/graphql/` (directory)
+- Delete: `packages/api-file-manager-standalone/src/multiPartUpload/` (logic inlined into features)
+- Modify: `packages/api-file-manager-standalone/src/index.ts`
 
 **Interfaces:**
 - Consumes: same abstractions as Task 6
@@ -1204,7 +1204,7 @@ git commit -m "feat(api-file-manager-s3): implement upload abstractions, remove 
 - [ ] **Step 1: Create `GetUploadPayload` implementation**
 
 ```typescript
-/* packages/api-file-manager-server/src/features/GetUploadPayload/GetUploadPayloadUseCase.ts */
+/* packages/api-file-manager-standalone/src/features/GetUploadPayload/GetUploadPayloadUseCase.ts */
 
 import { validation } from "@webiny/validation";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -1286,7 +1286,7 @@ export const GetUploadPayloadUseCaseImplementation =
 > **Note:** Check whether `HandlerContext` is the correct abstraction for accessing `context.request`. If the request is available through a different DI token, adjust accordingly. The S3 version doesn't need the request at all; the server version needs it to call `resolveServerUrl(context.request)`.
 
 ```typescript
-/* packages/api-file-manager-server/src/features/GetUploadPayload/feature.ts */
+/* packages/api-file-manager-standalone/src/features/GetUploadPayload/feature.ts */
 
 import { createFeature } from "@webiny/feature/api";
 import { GetUploadPayloadUseCaseImplementation } from "./GetUploadPayloadUseCase.js";
@@ -1302,7 +1302,7 @@ export const GetUploadPayloadFeature = createFeature({
 - [ ] **Step 2: Create `CreateMultiPartUpload` implementation**
 
 ```typescript
-/* packages/api-file-manager-server/src/features/CreateMultiPartUpload/CreateMultiPartUploadUseCase.ts */
+/* packages/api-file-manager-standalone/src/features/CreateMultiPartUpload/CreateMultiPartUploadUseCase.ts */
 
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
@@ -1373,7 +1373,7 @@ export const CreateMultiPartUploadUseCaseImplementation =
 ```
 
 ```typescript
-/* packages/api-file-manager-server/src/features/CreateMultiPartUpload/feature.ts */
+/* packages/api-file-manager-standalone/src/features/CreateMultiPartUpload/feature.ts */
 
 import { createFeature } from "@webiny/feature/api";
 import { CreateMultiPartUploadUseCaseImplementation } from "./CreateMultiPartUploadUseCase.js";
@@ -1389,7 +1389,7 @@ export const CreateMultiPartUploadFeature = createFeature({
 - [ ] **Step 3: Create `CompleteMultiPartUpload` implementation**
 
 ```typescript
-/* packages/api-file-manager-server/src/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.ts */
+/* packages/api-file-manager-standalone/src/features/CompleteMultiPartUpload/CompleteMultiPartUploadUseCase.ts */
 
 import path from "node:path";
 import { mkdir } from "node:fs/promises";
@@ -1470,7 +1470,7 @@ export const CompleteMultiPartUploadUseCaseImplementation =
 ```
 
 ```typescript
-/* packages/api-file-manager-server/src/features/CompleteMultiPartUpload/feature.ts */
+/* packages/api-file-manager-standalone/src/features/CompleteMultiPartUpload/feature.ts */
 
 import { createFeature } from "@webiny/feature/api";
 import { CompleteMultiPartUploadUseCaseImplementation } from "./CompleteMultiPartUploadUseCase.js";
@@ -1486,16 +1486,16 @@ export const CompleteMultiPartUploadFeature = createFeature({
 - [ ] **Step 4: Delete old graphql and multiPartUpload directories**
 
 ```bash
-rm -rf packages/api-file-manager-server/src/graphql/
-rm -rf packages/api-file-manager-server/src/multiPartUpload/
+rm -rf packages/api-file-manager-standalone/src/graphql/
+rm -rf packages/api-file-manager-standalone/src/multiPartUpload/
 ```
 
 - [ ] **Step 5: Update `api-file-manager-server/src/index.ts`**
 
-Remove `createServerGraphQLSchema` import and usage. Register the three new features:
+Remove `createStandaloneGraphQLSchema` import and usage. Register the three new features:
 
 ```typescript
-/* packages/api-file-manager-server/src/index.ts */
+/* packages/api-file-manager-standalone/src/index.ts */
 
 import { existsSync } from "node:fs";
 import { mkdirSync } from "node:fs";
@@ -1560,7 +1560,7 @@ export const createFileManagerServer = () => [
 This file is no longer needed — the logic is now in `GetUploadPayloadUseCase`.
 
 ```bash
-rm packages/api-file-manager-server/src/utils/getPresignedPostPayload.ts
+rm packages/api-file-manager-standalone/src/utils/getPresignedPostPayload.ts
 ```
 
 Similarly, delete `packages/api-file-manager-s3/src/utils/getPresignedPostPayload.ts`.
@@ -1568,8 +1568,8 @@ Similarly, delete `packages/api-file-manager-s3/src/utils/getPresignedPostPayloa
 - [ ] **Step 7: Build and test**
 
 ```bash
-yarn build -p @webiny/api-file-manager-server 2>&1 | tail -10
-yarn test packages/api-file-manager-server 2>&1 | tail -30
+yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -10
+yarn test packages/api-file-manager-standalone 2>&1 | tail -30
 ```
 
 - [ ] **Step 8: Commit**
@@ -1590,7 +1590,7 @@ git commit -m "feat(api-file-manager-server): implement upload abstractions, rem
 - Create: `packages/api-file-manager/src/features/assetDelivery/transformation/WidthCollection.ts`
 - Create: `packages/api-file-manager/src/features/assetDelivery/transformation/index.ts`
 - Delete: `packages/api-file-manager-s3/src/assetDelivery/s3/transformation/` (all 4 files)
-- Delete: `packages/api-file-manager-server/src/assetDelivery/transformation/` (all 4 files)
+- Delete: `packages/api-file-manager-standalone/src/assetDelivery/transformation/` (all 4 files)
 - Modify: S3 `SharpTransform.ts` and server `LocalSharpTransform.ts` imports
 
 **Interfaces:**
@@ -1623,7 +1623,7 @@ export {
 
 ```bash
 rm -rf packages/api-file-manager-s3/src/assetDelivery/s3/transformation/
-rm -rf packages/api-file-manager-server/src/assetDelivery/transformation/
+rm -rf packages/api-file-manager-standalone/src/assetDelivery/transformation/
 ```
 
 - [ ] **Step 4: Update imports in provider packages**
@@ -1638,14 +1638,14 @@ import { getOptimalWidth } from "@webiny/api-file-manager/features/assetDelivery
 import { getImageTransformExtension } from "@webiny/api-file-manager/features/assetDelivery/transformation/index.js";
 ```
 
-Same for `packages/api-file-manager-server/src/assetDelivery/LocalSharpTransform.ts`.
+Same for `packages/api-file-manager-standalone/src/assetDelivery/LocalSharpTransform.ts`.
 
 - [ ] **Step 5: Build all three packages**
 
 ```bash
 yarn build -p @webiny/api-file-manager 2>&1 | tail -10
 yarn build -p @webiny/api-file-manager-s3 2>&1 | tail -10
-yarn build -p @webiny/api-file-manager-server 2>&1 | tail -10
+yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -10
 ```
 
 - [ ] **Step 6: Commit**
@@ -1685,14 +1685,14 @@ Fix any issues and re-run from the beginning if anything fails.
 ```bash
 yarn build -p @webiny/api-file-manager 2>&1 | tail -10
 yarn build -p @webiny/api-file-manager-s3 2>&1 | tail -10
-yarn build -p @webiny/api-file-manager-server 2>&1 | tail -10
+yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -10
 ```
 
 - [ ] **Step 3: Run tests**
 
 ```bash
 yarn test packages/api-file-manager 2>&1 | tail -30
-yarn test packages/api-file-manager-server 2>&1 | tail -30
+yarn test packages/api-file-manager-standalone 2>&1 | tail -30
 ```
 
 - [ ] **Step 4: Final commit**

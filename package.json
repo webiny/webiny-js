@@ -122,7 +122,7 @@
     "release": "tsx ./scripts/release/src/index.ts",
     "setup-cypress": "tsx scripts/setupCypress/setupCypressAws.js",
     "setup-cypress:aws": "tsx scripts/setupCypress/setupCypressAws.js",
-    "setup-cypress:server": "tsx scripts/setupCypress/setupCypressServer.js",
+    "setup-cypress:standalone": "tsx scripts/setupCypress/setupCypressStandalone.js",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-project": "node scripts/setupProject",
     "system:build": "yarn && yarn ghawac build && yarn webiny sync-dependencies && yarn build",
@@ -154,7 +154,7 @@
     "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "generate-skills": "tsx ./scripts/generateSkills/src/bin.ts",
-    "webiny-server": "node packages/cli-server/dist/bin.js"
+    "webiny-standalone": "node packages/cli-standalone/dist/bin.js"
   },
   "yargs": {
     "populate--": true
