@@ -44,6 +44,11 @@ export type CmsModelField<T = unknown> = T & {
     validation?: (CmsModelFieldValidator | Validator)[];
     listValidation?: CmsModelFieldValidator[];
     list?: boolean;
+    /**
+     * Renders the field, but doesn't let anyone edit its value. Set from a code-defined
+     * model with `.disabled()`. Admin app only, the API doesn't enforce it.
+     */
+    disabled?: boolean;
     predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: CmsModelFieldSettings<T>;
     renderer: {
