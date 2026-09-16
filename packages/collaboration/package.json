@@ -1,0 +1,46 @@
+{
+  "name": "@webiny/collaboration",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Collaboration module for Webiny CMS (threaded comments and tasks on content)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/collaboration"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-headless-cms": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/project-aws": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "mobx": "^6.16.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@webiny/build-tools": "0.0.0",
+    "rimraf": "^6.1.3",
+    "typescript": "7.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

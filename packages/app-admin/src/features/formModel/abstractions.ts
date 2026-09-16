@@ -142,6 +142,8 @@ export interface IFieldValidation {
 
 export interface IFieldVM {
     name: string;
+    /** Full dotted path of the field within the form (e.g. "author.address.street"). */
+    qualifiedName: string;
     type: string;
     label?: string;
     help?: string;

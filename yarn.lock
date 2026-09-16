@@ -12551,6 +12551,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/collaboration@npm:0.0.0, @webiny/collaboration@workspace:packages/collaboration":
+  version: 0.0.0-use.local
+  resolution: "@webiny/collaboration@workspace:packages/collaboration"
+  dependencies:
+    "@types/react": "npm:18.3.31"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    mobx: "npm:^6.16.1"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:7.0.2"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/common-audit-logs@npm:0.0.0, @webiny/common-audit-logs@workspace:packages/common-audit-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/common-audit-logs@workspace:packages/common-audit-logs"
@@ -12981,6 +13007,48 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/notifications-integrations@npm:0.0.0, @webiny/notifications-integrations@workspace:packages/notifications-integrations":
+  version: 0.0.0-use.local
+  resolution: "@webiny/notifications-integrations@workspace:packages/notifications-integrations"
+  dependencies:
+    "@types/react": "npm:18.3.31"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-workflows": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/collaboration": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/notifications": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    react: "npm:18.3.1"
+    typescript: "npm:7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/notifications@npm:0.0.0, @webiny/notifications@workspace:packages/notifications":
+  version: 0.0.0-use.local
+  resolution: "@webiny/notifications@workspace:packages/notifications"
+  dependencies:
+    "@types/react": "npm:18.3.31"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    mobx: "npm:^6.16.1"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:7.0.2"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/okta@workspace:packages/okta":
   version: 0.0.0-use.local
   resolution: "@webiny/okta@workspace:packages/okta"
@@ -13064,12 +13132,15 @@ __metadata:
     "@webiny/app-serverless-cms": "npm:0.0.0"
     "@webiny/aws-layers": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/collaboration": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/frontend-settings": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
+    "@webiny/notifications": "npm:0.0.0"
+    "@webiny/notifications-integrations": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/tenant-manager": "npm:0.0.0"
     react: "npm:18.3.1"
