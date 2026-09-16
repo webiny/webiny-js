@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils.js";
+import { useEscapeScrollLock } from "~/hooks/index.js";
 
 const popoverContentVariants = cva(
     [
@@ -41,17 +42,24 @@ const PopoverContent = ({
     sideOffset = 6,
     collisionPadding = 8,
     ...props
-}: PopoverContentProps) => (
-    <PopoverPrimitive.Portal>
-        <PopoverPrimitive.Content
-            data-slot="popover-content"
-            align={align}
-            sideOffset={sideOffset}
-            collisionPadding={collisionPadding}
-            className={cn(popoverContentVariants({ variant, arrow }), className)}
-            {...props}
-        />
-    </PopoverPrimitive.Portal>
-);
+}: PopoverContentProps) => {
+    // The popover is portaled to `document.body`, which puts it outside of a modal dialog's scroll
+    // lock. Without this, anything scrollable within the popover freezes while a dialog is open.
+    const contentRef = useEscapeScrollLock<HTMLDivElement>();
+
+    return (
+        <PopoverPrimitive.Portal>
+            <PopoverPrimitive.Content
+                ref={contentRef}
+                data-slot="popover-content"
+                align={align}
+                sideOffset={sideOffset}
+                collisionPadding={collisionPadding}
+                className={cn(popoverContentVariants({ variant, arrow }), className)}
+                {...props}
+            />
+        </PopoverPrimitive.Portal>
+    );
+};
 
 export { PopoverContent, type PopoverContentProps };
