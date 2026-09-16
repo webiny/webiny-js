@@ -10,7 +10,7 @@ const fieldIdSchema = zod
     .regex(/^!?[a-zA-Z]/, { message: "Must not start with a number." })
     .regex(/^(^[a-zA-Z0-9]+)$/, { message: "Must be alphanumeric string." });
 
-class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
+export class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
     name = "general";
     label = "General";
 
@@ -43,6 +43,12 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
                     .boolean()
                     .label("Use predefined values")
                     .disabled(!fieldType.allowPredefinedValues),
+                disabled: fields
+                    .boolean()
+                    .label("Disabled")
+                    .description(
+                        "Shows the value but doesn't let editors change it. Only useful when something else writes it, such as your code or an integration calling the API."
+                    ),
                 description: fields
                     .text()
                     .label("Description")
@@ -70,6 +76,7 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
         form.layout(layout => [
             layout.row("label", "fieldId"),
             layout.row("list", "predefinedValuesEnabled"),
+            layout.row("disabled"),
             layout.row("description"),
             layout.row("note"),
             layout.row("help"),
@@ -83,6 +90,7 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
             fieldId: field.fieldId ?? "",
             list: field.list ?? false,
             predefinedValuesEnabled: field.predefinedValues?.enabled ?? false,
+            disabled: field.disabled ?? false,
             description: field.description ?? "",
             note: field.note ?? "",
             help: field.help ?? "",
@@ -98,6 +106,7 @@ class GeneralGroupImpl implements CmsFieldEditorGroup.Interface {
             field.predefinedValues = { enabled: false, values: [] };
         }
         field.predefinedValues.enabled = formData.predefinedValuesEnabled;
+        field.disabled = formData.disabled;
         field.description = formData.description;
         field.note = formData.note;
         field.help = formData.help;
