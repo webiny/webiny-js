@@ -47,8 +47,14 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         // Port precedence matches the served admin app (`webiny serve admin`): an explicit
         // WEBINY_ADMIN_PORT wins, then a PORT injected by the environment, then the 3001 default.
+        //
+        // An explicit port is strict, same rule the api runner follows. Auto-advancing off a busy
+        // port is a reasonable default, but it's the wrong answer when something was pointed at the
+        // port that was asked for: the dev proxy forwards to WEBINY_ADMIN_PORT, and a dev server that
+        // quietly moved one along would just leave it forwarding into nothing.
         server: {
             port: process.env.WEBINY_ADMIN_PORT || process.env.PORT || 3001,
+            strictPort: Boolean(process.env.WEBINY_ADMIN_PORT),
             host: "0.0.0.0"
         },
         html: {

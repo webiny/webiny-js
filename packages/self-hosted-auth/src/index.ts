@@ -14,7 +14,10 @@ export {
 // here for convenience so the auth module's crypto seams stay discoverable in one place.
 export { Hasher } from "@webiny/api-core/features/hashing/index.js";
 export { TokenIssuer, SELF_HOSTED_ISSUER } from "./api/domain/crypto/TokenIssuer.js";
+export { CliResetTokenVerifier } from "./api/domain/crypto/CliResetTokenVerifier.js";
+export { CLI_RESET_ISSUER, CLI_RESET_AUDIENCE } from "./shared/cliResetToken.js";
 
 // Use cases — handy for installers/seeding scripts.
 export { LoginUseCase } from "./api/features/Login/index.js";
 export { SetPasswordUseCase } from "./api/features/SetPassword/index.js";
+export { CliResetPasswordUseCase } from "./api/features/CliResetPassword/index.js";

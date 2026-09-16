@@ -2,42 +2,35 @@ import { createImplementation } from "@webiny/di";
 import {
     CliCommandFactory,
     GetProjectSdkService,
-    StdioService
+    StdioService,
+    UiService
 } from "@webiny/cli-core/abstractions/index.js";
 import chalk from "chalk";
 import { colorForString, createPrefixer } from "./terminalPrefix.js";
+import { reserveDevProxyPorts } from "@webiny/project-server/serve/devProxy/index.js";
 
 interface IServeCommandParams {
     _: string[];
     app?: string;
+    proxy?: boolean;
 }
 
 export class ServerServeCommand implements CliCommandFactory.Interface<IServeCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
-        private stdioService: StdioService.Interface
+        private stdioService: StdioService.Interface,
+        private uiService: UiService.Interface
     ) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<IServeCommandParams>> {
         return {
             name: "serve",
             description: [
-                "Serves built apps as long-running servers (production). Serves both api and admin if no app is specified.",
+                "Serves your built Webiny project on a single URL.",
                 "",
-                "Ports:",
-                " ‣ api:   WEBINY_API_PORT (else PORT, else 3002)",
-                " ‣ admin: WEBINY_ADMIN_PORT (else PORT, else 3001)",
-                "PORT applies only when serving a single app (serve api / serve admin). When serving both",
-                "at once (no app), PORT is ignored — set WEBINY_API_PORT / WEBINY_ADMIN_PORT instead.",
-                "Explicit ports are strict; the defaults auto-advance to the next free port."
+                "Set PORT to choose which port that URL uses. Run `webiny-server build` first."
             ].join("\n"),
-            examples: [
-                "serve",
-                "serve api",
-                "serve admin",
-                "WEBINY_API_PORT=8000 serve api",
-                "WEBINY_API_PORT=8000 WEBINY_ADMIN_PORT=8001 serve"
-            ],
+            examples: ["serve", "serve api", "serve admin", "PORT=8000 serve"],
             params: [
                 {
                     name: "app",
@@ -45,8 +38,26 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                     type: "string"
                 }
             ],
+            options: [
+                {
+                    name: "proxy",
+                    description:
+                        "Serve the project on a single URL (default). Turn off to run each app on its own port",
+                    type: "boolean",
+                    default: true
+                }
+            ],
             handler: async (params: IServeCommandParams) => {
                 const stdio = this.stdioService;
+
+                // Ports only, no `pointAppsAtDevProxy`: serve runs what `webiny build` already
+                // produced, so the admin bundle's API URL was fixed back then and has to have been
+                // built with one that works behind the proxy.
+                const devProxyUrls = await reserveDevProxyPorts({
+                    apps: params.app ? [params.app] : ["api", "admin"],
+                    enabled: params.proxy
+                });
+
                 const projectSdk = await this.getProjectSdkService.execute();
 
                 // The project layer describes the server process(es) (lazy ServersWatcher); the CLI
@@ -73,6 +84,10 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
                     });
                 }
 
+                if (devProxyUrls) {
+                    this.uiService.info(`Webiny is available at %s`, devProxyUrls.url);
+                }
+
                 await Promise.all(processes.map(p => p.run()));
             }
         };
@@ -82,5 +97,5 @@ export class ServerServeCommand implements CliCommandFactory.Interface<IServeCom
 export const serverServeCommand = createImplementation({
     abstraction: CliCommandFactory,
     implementation: ServerServeCommand,
-    dependencies: [GetProjectSdkService, StdioService]
+    dependencies: [GetProjectSdkService, StdioService, UiService]
 });
