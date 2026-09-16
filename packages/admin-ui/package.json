@@ -18,7 +18,7 @@
     "@minoru/react-dnd-treeview": "^3.5.4",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-scroll-area": "^1.2.18",
-    "@tanstack/react-table": "9.1.2",
+    "@tanstack/react-table": "9.2.4",
     "@webiny/icons": "0.0.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/utils": "0.0.0",
