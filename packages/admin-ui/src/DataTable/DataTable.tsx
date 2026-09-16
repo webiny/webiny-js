@@ -4,23 +4,42 @@ import type {
     Column,
     ColumnDef,
     ColumnSort,
+    ColumnVisibilityState,
     OnChangeFn,
     Row,
+    RowData,
     RowSelectionState,
-    SortingState,
-    VisibilityState
+    SortingState
 } from "@tanstack/react-table";
 import {
+    columnResizingFeature,
+    columnSizingFeature,
+    columnVisibilityFeature,
+    createCoreRowModel,
+    createSortedRowModel,
     flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable
+    rowSelectionFeature,
+    rowSortingFeature,
+    tableFeatures,
+    useTable
 } from "@tanstack/react-table";
 import { CheckboxPrimitive } from "~/Checkbox/index.js";
 import { Skeleton } from "~/Skeleton/index.js";
 import { Table } from "~/Table/index.js";
 import { ColumnSorter, ColumnsVisibility } from "./components/index.js";
 import { cn, makeDecoratable } from "~/utils.js";
+
+const features = tableFeatures({
+    columnResizingFeature,
+    columnSizingFeature,
+    columnVisibilityFeature,
+    rowSelectionFeature,
+    rowSortingFeature,
+    sortedRowModel: createSortedRowModel(),
+    coreRowModel: createCoreRowModel()
+});
+
+type Features = typeof features;
 
 interface DataTableColumn<T> {
     /*
@@ -73,7 +92,7 @@ type DataTableDefaultData = {
     $selectable?: boolean;
 };
 
-type DataTableRow<T> = Row<DataTableDefaultData & T>;
+type DataTableRow<T extends RowData> = Row<Features, DataTableDefaultData & T>;
 
 type DataTableSorting = SortingState;
 
@@ -81,11 +100,11 @@ type DataTableColumnSort = ColumnSort;
 
 type OnDataTableSortingChange = OnChangeFn<DataTableSorting>;
 
-type DataTableColumnVisibility = VisibilityState;
+type DataTableColumnVisibility = ColumnVisibilityState;
 
 type OnDataTableColumnVisibilityChange = OnChangeFn<DataTableColumnVisibility>;
 
-interface DataTableProps<TEntry> {
+interface DataTableProps<TEntry extends RowData> {
     /**
      * Show or hide borders.
      */
@@ -113,7 +132,7 @@ interface DataTableProps<TEntry> {
     /**
      * Callback that is called to determine if the row is selectable.
      */
-    isRowSelectable?: (row: Row<TEntry>) => boolean;
+    isRowSelectable?: (row: Row<Features, TEntry>) => boolean;
     /**
      * Render the skeleton state while data are loading.
      */
@@ -148,26 +167,26 @@ interface DataTableProps<TEntry> {
     stickyHeader?: boolean;
 }
 
-interface DefineColumnsOptions<TEntry> {
+interface DefineColumnsOptions<TEntry extends RowData> {
     canSelectAllRows: boolean;
     onSelectRow?: DataTableProps<TEntry>["onSelectRow"];
     onToggleRow: DataTableProps<TEntry>["onToggleRow"];
     loading: DataTableProps<TEntry>["loading"];
 }
 
-const defineColumns = <T,>(
+const defineColumns = <T extends RowData>(
     columns: DataTableProps<T>["columns"],
     options: DefineColumnsOptions<T>
-): ColumnDef<T>[] => {
+): ColumnDef<Features, T>[] => {
     const { canSelectAllRows, onSelectRow, onToggleRow, loading } = options;
-
+    
     return useMemo(() => {
         const columnsList = Object.keys(columns).map(key => ({
             id: key,
             ...columns[key as keyof typeof columns]
         }));
-
-        const defaults: ColumnDef<T>[] = columnsList.map(column => {
+        
+        const defaults: ColumnDef<Features, T>[] = columnsList.map(column => {
             const {
                 accessorKey,
                 cell,
@@ -180,7 +199,7 @@ const defineColumns = <T,>(
                 id,
                 size = 100
             } = column;
-
+            
             return {
                 id,
                 accessorKey: accessorKey || id,
@@ -206,11 +225,11 @@ const defineColumns = <T,>(
                 enableHiding
             };
         });
-
+        
         let columnsDefs = defaults;
         const firstColumn = defaults[0];
         const isSelectable = onToggleRow || onSelectRow;
-
+        
         if (isSelectable && firstColumn) {
             columnsDefs = [
                 {
@@ -220,7 +239,7 @@ const defineColumns = <T,>(
                         if (!props) {
                             return null;
                         }
-
+                        
                         return (
                             <div className={"flex items-center gap-xl"}>
                                 <CheckboxPrimitive
@@ -260,7 +279,7 @@ const defineColumns = <T,>(
                 ...defaults.slice(1)
             ];
         }
-
+        
         return columnsDefs.map(column => {
             if (loading) {
                 return {
@@ -268,7 +287,7 @@ const defineColumns = <T,>(
                     cell: () => <Skeleton type={"text"} size={"md"} />
                 };
             }
-
+            
             return column;
         });
     }, [columns, onSelectRow, onToggleRow, loading]);
@@ -276,14 +295,14 @@ const defineColumns = <T,>(
 
 const typedMemo: <T>(component: T) => T = memo;
 
-interface TableCellProps<T> {
-    cell: Cell<T, unknown>;
-    getColumnWidth: (column: Column<T>) => number;
+interface TableCellProps<T extends RowData> {
+    cell: Cell<Features, T, unknown>;
+    getColumnWidth: (column: Column<Features, T>) => number;
 }
 
-const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
+const TableCell = <T extends RowData>({ cell, getColumnWidth }: TableCellProps<T>) => {
     const width = getColumnWidth(cell.column);
-
+    
     return (
         <Table.Cell {...cell.column.columnDef.meta} style={{ width, maxWidth: width }}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -293,13 +312,13 @@ const TableCell = <T,>({ cell, getColumnWidth }: TableCellProps<T>) => {
 
 const MemoTableCell = typedMemo(TableCell);
 
-interface TableRowProps<T> {
+interface TableRowProps<T extends RowData> {
     selected: boolean;
-    cells: Cell<T, unknown>[];
-    getColumnWidth: (column: Column<T>) => number;
+    cells: Cell<Features, T, unknown>[];
+    getColumnWidth: (column: Column<Features, T>) => number;
 }
 
-const TableRow = <T,>({ selected, cells, getColumnWidth }: TableRowProps<T>) => {
+const TableRow = <T extends RowData>({ selected, cells, getColumnWidth }: TableRowProps<T>) => {
     return (
         <Table.Row selected={selected}>
             {cells.map(cell => (
@@ -317,27 +336,27 @@ const MemoTableRow = typedMemo(TableRow);
 const emptyArray = Array(10).fill({});
 
 const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultData>({
-    bordered,
-    canSelectAllRows = true,
-    columnVisibility,
-    columns: initialColumns,
-    data: initialData,
-    initialSorting,
-    isRowSelectable,
-    loading,
-    onColumnVisibilityChange,
-    onSelectRow,
-    onSortingChange,
-    onToggleRow,
-    selectedRows = [],
-    sorting,
-    stickyHeader
-}: DataTableProps<T>) => {
+                                                                                        bordered,
+                                                                                        canSelectAllRows = true,
+                                                                                        columnVisibility,
+                                                                                        columns: initialColumns,
+                                                                                        data: initialData,
+                                                                                        initialSorting,
+                                                                                        isRowSelectable,
+                                                                                        loading,
+                                                                                        onColumnVisibilityChange,
+                                                                                        onSelectRow,
+                                                                                        onSortingChange,
+                                                                                        onToggleRow,
+                                                                                        selectedRows = [],
+                                                                                        sorting,
+                                                                                        stickyHeader
+                                                                                    }: DataTableProps<T>) => {
     const tableRef = useRef<HTMLDivElement>(null);
     const [tableWidth, setTableWidth] = useState(1);
-
+    
     const data = loading ? emptyArray : initialData;
-
+    
     useEffect(() => {
         const updateElementWidth = () => {
             if (tableRef.current) {
@@ -345,26 +364,26 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                 setTableWidth(width);
             }
         };
-
+        
         updateElementWidth();
-
+        
         window.addEventListener("resize", updateElementWidth);
-
+        
         return () => {
             window.removeEventListener("resize", updateElementWidth);
         };
     }, [tableRef.current]);
-
+    
     const rowSelection = useMemo(() => {
         return selectedRows.reduce<RowSelectionState>((acc, item) => {
             const recordIndex = data.findIndex(rec => rec.id === item.id);
             return { ...acc, [recordIndex]: true };
         }, {});
     }, [selectedRows, data]);
-
+    
     const onRowSelectionChange: OnChangeFn<RowSelectionState> = updater => {
         const newSelection = typeof updater === "function" ? updater(rowSelection) : updater;
-
+        
         /**
          * `@tanstack/react-table` isn't telling us what row was selected or deselected. It simply gives us
          * the new selection state (an object with row indexes that are currently selected).
@@ -378,7 +397,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
             ...Object.keys(rowSelection).filter(x => !(x in newSelection)),
             ...Object.keys(newSelection).filter(x => !(x in rowSelection))
         ];
-
+        
         // If the difference is only 1 item, and `onToggleRow` is available, execute that.
         if (toggledRows.length === 1 && typeof onToggleRow === "function") {
             onToggleRow(data[parseInt(toggledRows[0])]);
@@ -388,22 +407,23 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
             onSelectRow(selection);
         }
     };
-
+    
     const tableSorting = useMemo(() => {
         if (!Array.isArray(sorting) || !sorting.length) {
             return initialSorting;
         }
         return sorting;
     }, [sorting]);
-
+    
     const columns = defineColumns(initialColumns, {
         canSelectAllRows,
         onSelectRow,
         onToggleRow,
         loading
     });
-
-    const table = useReactTable<T>({
+    
+    const table = useTable<typeof features, T>({
+        features,
         columnResizeMode: "onChange",
         columns,
         data,
@@ -412,8 +432,6 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
         enableRowSelection: isRowSelectable,
         enableSorting: !!onSortingChange,
         enableSortingRemoval: false,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
         manualSorting: true,
         onColumnVisibilityChange,
         onRowSelectionChange,
@@ -424,14 +442,14 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
             sorting: tableSorting
         }
     });
-
+    
     const getColumnWidth = useCallback(
-        (column: Column<T>): number => {
+        (column: Column<Features, T>): number => {
             // Non-resizable columns (e.g. row-selection, actions) keep their fixed size.
             if (!column.getCanResize()) {
                 return column.getSize();
             }
-
+            
             /**
              * Resizable columns share the space left after the fixed columns, proportionally to
              * their own size. This makes the table always fill the full container width — even when
@@ -445,25 +463,25 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
             const resizableTotal = visibleColumns
                 .filter(col => col.getCanResize())
                 .reduce((total, col) => total + col.getSize(), 0);
-
+            
             if (resizableTotal === 0) {
                 return column.getSize();
             }
-
+            
             const available = Math.max(tableWidth - fixedTotal, 0);
-
+            
             return Math.ceil((column.getSize() * available) / resizableTotal);
         },
         [table, tableWidth]
     );
-
+    
     /**
      * Had to memoize the rows to avoid browser freeze.
      */
     const tableRows = useMemo(() => {
         return table.getRowModel().rows;
     }, [table, data, columns]);
-
+    
     return (
         <div ref={tableRef}>
             <Table bordered={bordered} sticky={stickyHeader}>
@@ -473,7 +491,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                             {headerGroup.headers.map((header, index) => {
                                 const isLastCell = index === headerGroup.headers.length - 1;
                                 const width = getColumnWidth(header.column);
-
+                                
                                 return (
                                     <Table.Head
                                         key={header.id}
@@ -544,6 +562,7 @@ const DataTable = makeDecoratable("DataTable", DecoratableDataTable);
 
 export {
     DataTable,
+    type Features,
     type DataTableProps,
     type DataTableColumn,
     type DataTableColumns,
