@@ -3,15 +3,9 @@ export { SelfHostedAuth } from "./SelfHostedAuth.js";
 
 export { SelfHostedAuthApiFeature } from "./api/SelfHostedAuthApiFeature.js";
 
-// Storage seams — implemented by database packages (`-sql`, `-mdb`, …).
-export {
-    CredentialsStorageOperations,
-    type StorageCredential
-} from "./api/storage/abstractions.js";
-export {
-    PasswordResetCodeStorageOperations,
-    type StoredPasswordResetCode
-} from "./api/storage/passwordResetCodes.js";
+// Storage seams — one abstraction per operation, implemented by database packages (`-sql`, …).
+export * from "./api/storage/credentials/index.js";
+export * from "./api/storage/passwordResetCodes/index.js";
 
 // Crypto seams — override to swap the KDF (e.g. Argon2id) or token strategy.
 // Hasher lives in @webiny/api-core (configurable via <Infra.Crypto.Hashing>); re-exported

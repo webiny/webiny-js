@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
+import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
 import { TokenIssuer } from "~/api/domain/crypto/TokenIssuer.js";
 import { LoginFeature } from "~/api/features/Login/index.js";
 import { LoginUseCase } from "~/api/features/Login/index.js";
@@ -28,13 +28,7 @@ const setup = (
         async (value: string, storedHash: string) => `hashed:${value}` === storedHash
     );
 
-    container.registerInstance(CredentialsStorageOperations, {
-        getCredentialByEmail: options.getCredentialByEmail ?? (async () => credential),
-        getCredentialByUserId: async () => null,
-        saveCredential: async () => undefined,
-        deleteCredential: async () => undefined
-    });
-
+    createInMemoryCredentials([credential], { getByEmail: options.getByEmail }).register(container);
     CredentialsRepositoryFeature.register(container);
 
     container.registerInstance(Hasher, {
@@ -74,7 +68,7 @@ describe("LoginUseCase", () => {
      * about the same time and the response cannot be timed to learn which addresses are registered.
      */
     it("spends a hash on an unknown address too, and reports the same error", async () => {
-        const { useCase, verify } = setup({ getCredentialByEmail: async () => null });
+        const { useCase, verify } = setup({ getByEmail: async () => null });
 
         const result = await useCase.execute({ email: "nobody@example.com", password: PASSWORD });
 
@@ -88,7 +82,7 @@ describe("LoginUseCase", () => {
      */
     it("reports a broken credential store as itself, not as bad credentials", async () => {
         const { useCase } = setup({
-            getCredentialByEmail: async () => {
+            getByEmail: async () => {
                 throw new Error("the database is on fire");
             }
         });

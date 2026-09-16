@@ -47,7 +47,7 @@ export function createSqlApiHandler(config: CreateSqlApiHandlerConfig) {
 
             // Identity provider: the self-hosted JWT IdP + its SQL credential storage. Registered in
             // the root so the RequestIdentityLoader (driven by NodeHttpIdentityLoaderDecorator) can
-            // resolve it. SelfHostedAuthSqlFeature supplies CredentialsStorageOperations over Knex.
+            // resolve it. SelfHostedAuthSqlFeature supplies the credential storage operations over Knex.
             SelfHostedAuthSqlFeature.register(container, { knex, tableNamePrefix });
             // The JWT signing secret comes from <SelfHostedAuth signingSecret> (BuildParams).
             SelfHostedAuthApiFeature.register(container);

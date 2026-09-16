@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { CliResetTokenVerifier } from "~/api/domain/crypto/CliResetTokenVerifier.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
+import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import {
     CliResetPasswordFeature,
@@ -36,14 +36,8 @@ const setup = (options: SetupOptions = {}) => {
         verify: () => (options.claims === undefined ? { email: EMAIL } : options.claims)
     });
 
+    createInMemoryCredentials([], { getByEmail: getCredentialByEmail }).register(container);
     CredentialsRepositoryFeature.register(container);
-
-    container.registerInstance(CredentialsStorageOperations, {
-        getCredentialByEmail,
-        getCredentialByUserId: async () => null,
-        saveCredential: async () => undefined,
-        deleteCredential: async () => undefined
-    });
 
     container.registerInstance(SetPasswordUseCase, { execute: setPassword });
 

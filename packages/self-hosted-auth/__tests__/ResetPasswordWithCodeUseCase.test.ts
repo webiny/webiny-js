@@ -1,12 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
-import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
+import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
-import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
+import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
 import { RESET_CODE_MAX_ATTEMPTS } from "~/api/domain/passwordResetPolicy.js";
@@ -60,21 +59,15 @@ const setup = (options: SetupOptions = {}) => {
         return Result.ok(true as const);
     });
 
-    container.registerInstance(PasswordResetCodeStorageOperations, codes.operations);
+    codes.register(container);
 
-    // The real repository over the in-memory store, so these cases cover the layer the use case
-    // actually talks to rather than a stand-in for it.
+    // The real repositories over the in-memory stores, so these cases cover the layers the use case
+    // actually talks to rather than stand-ins for them.
     PasswordResetCodesRepositoryFeature.register(container);
 
+    const resolved = options.credential === undefined ? credential : options.credential;
+    createInMemoryCredentials(resolved ? [resolved] : []).register(container);
     CredentialsRepositoryFeature.register(container);
-
-    container.registerInstance(CredentialsStorageOperations, {
-        getCredentialByEmail: async () =>
-            options.credential === undefined ? credential : options.credential,
-        getCredentialByUserId: async () => null,
-        saveCredential: async () => undefined,
-        deleteCredential: async () => undefined
-    });
 
     container.registerInstance(Hasher, {
         hash: async (value: string) => `hashed:${value}`,
@@ -242,14 +235,34 @@ describe("ResetPasswordWithCodeUseCase", () => {
         expect(codes.rows[0]!.usedOn).toBeNull();
     });
 
-    it("matches the code whatever capitals the address is typed with", async () => {
-        const { useCase } = setup();
+    /**
+     * The two halves are keyed differently on purpose, and this is where that shows. Code rows are
+     * stored under a lowercased address, so the code is still found; credentials are looked up
+     * exactly as typed, the way `LoginUseCase` looks them up, so the account is not. The outcome
+     * matches what the same user would get trying to sign in with that spelling.
+     *
+     * Both screens lowercase the field before sending it, so this is the direct-API case.
+     */
+    it("finds the code under any capitals, but still needs the address the account uses", async () => {
+        const { useCase, codes } = setup();
 
         const result = await useCase.execute({
             email: EMAIL.toUpperCase(),
             code: CODE,
             password: PASSWORD
         });
+
+        expect(result.isFail()).toBe(true);
+        expect(result.isFail() && result.error.code).toBe("INVALID_RESET_CODE");
+
+        // Found, so it was not the code lookup that failed: a wrong code would have cost an attempt.
+        expect(codes.rows[0]!.attempts).toBe(0);
+    });
+
+    it("completes for the address the account is stored under", async () => {
+        const { useCase } = setup();
+
+        const result = await useCase.execute({ email: EMAIL, code: CODE, password: PASSWORD });
 
         expect(result.isFail()).toBe(false);
     });

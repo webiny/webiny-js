@@ -4,7 +4,7 @@ import { SetPasswordUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { SetPasswordInput } from "./abstractions.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
 import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 
 const passwordPolicy = z.string().min(8);

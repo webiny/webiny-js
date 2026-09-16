@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/feature/api";
-import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
-import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
+import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { createInMemoryPasswordResetCodes } from "./helpers/inMemoryPasswordResetCodes.js";
+import type { PasswordResetCodeOperationOverrides } from "./helpers/inMemoryPasswordResetCodes.js";
 
 /**
  * What the repository is for: a database that is down reaches the caller as a result it can report,
@@ -23,15 +23,11 @@ const code: StoredPasswordResetCode = {
     attempts: 0
 };
 
-const setup = (operations: Partial<PasswordResetCodeStorageOperations.Interface> = {}) => {
+const setup = (overrides: PasswordResetCodeOperationOverrides = {}) => {
     const container = new Container();
-    const inMemory = createInMemoryPasswordResetCodes();
+    const inMemory = createInMemoryPasswordResetCodes([], overrides);
 
-    container.registerInstance(PasswordResetCodeStorageOperations, {
-        ...inMemory.operations,
-        ...operations
-    });
-
+    inMemory.register(container);
     PasswordResetCodesRepositoryFeature.register(container);
 
     return {
@@ -58,7 +54,7 @@ describe("PasswordResetCodesRepository", () => {
     });
 
     it("turns a failing read into a result, not an exception", async () => {
-        const { repository } = setup({ countCodesCreatedSince: throws });
+        const { repository } = setup({ count: throws });
 
         const result = await repository.countRequestsSince({
             email: EMAIL,
@@ -70,7 +66,7 @@ describe("PasswordResetCodesRepository", () => {
     });
 
     it("turns a failing write into a result, not an exception", async () => {
-        const { repository } = setup({ saveCode: throws });
+        const { repository } = setup({ save: throws });
 
         const result = await repository.issue({ code });
 
@@ -79,7 +75,7 @@ describe("PasswordResetCodesRepository", () => {
     });
 
     it("says nothing about the database in the message it hands back", async () => {
-        const { repository } = setup({ saveCode: throws });
+        const { repository } = setup({ save: throws });
 
         const result = await repository.issue({ code });
 
@@ -91,23 +87,23 @@ describe("PasswordResetCodesRepository", () => {
      * is safely stored would report a reset as broken when it worked.
      */
     it("still reports success when only the housekeeping fails", async () => {
-        const deleteCodesExpiredBefore = vi.fn(throws);
-        const { repository, rows } = setup({ deleteCodesExpiredBefore });
+        const deleteExpired = vi.fn(throws);
+        const { repository, rows } = setup({ deleteExpired });
 
         const result = await repository.issue({ code });
 
         expect(result.isFail()).toBe(false);
-        expect(deleteCodesExpiredBefore).toHaveBeenCalled();
+        expect(deleteExpired).toHaveBeenCalled();
         expect(rows).toHaveLength(1);
     });
 
     it("clears out rows nobody can use any more when a code is issued", async () => {
-        const deleteCodesExpiredBefore = vi.fn(async () => undefined);
-        const { repository } = setup({ deleteCodesExpiredBefore });
+        const deleteExpired = vi.fn(async () => undefined);
+        const { repository } = setup({ deleteExpired });
 
         await repository.issue({ code });
 
-        const [params] = deleteCodesExpiredBefore.mock.calls[0] as [{ before: string }];
+        const [params] = deleteExpired.mock.calls[0] as [{ before: string }];
 
         // A day back, not "now", so a support question about this morning still has rows to look at.
         expect(new Date(params.before).getTime()).toBeLessThan(Date.now());

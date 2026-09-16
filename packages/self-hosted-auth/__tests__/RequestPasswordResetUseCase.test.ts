@@ -2,10 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/feature/api";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
-import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
+import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
@@ -40,20 +39,15 @@ const setup = (options: SetupOptions = {}) => {
     const send = vi.fn(async () => options.sendSucceeds ?? true);
     const logError = vi.fn();
 
-    container.registerInstance(PasswordResetCodeStorageOperations, codes.operations);
+    codes.register(container);
 
-    // The real repository over the in-memory store, so these cases cover the layer the use case
-    // actually talks to rather than a stand-in for it.
+    // The real repositories over the in-memory stores, so these cases cover the layers the use case
+    // actually talks to rather than stand-ins for them.
     PasswordResetCodesRepositoryFeature.register(container);
 
+    const seededCredentials = options.credential ? [options.credential] : [];
+    createInMemoryCredentials(seededCredentials).register(container);
     CredentialsRepositoryFeature.register(container);
-
-    container.registerInstance(CredentialsStorageOperations, {
-        getCredentialByEmail: async () => options.credential ?? null,
-        getCredentialByUserId: async () => null,
-        saveCredential: async () => undefined,
-        deleteCredential: async () => undefined
-    });
 
     container.registerInstance(PasswordResetCodeGenerator, { generate: () => CODE });
 

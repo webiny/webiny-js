@@ -8,7 +8,7 @@ import { MailerNotConfiguredError } from "~/api/domain/errors.js";
 import { TooManyResetRequestsError } from "~/api/domain/errors.js";
 import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
-import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
+import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes/index.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";

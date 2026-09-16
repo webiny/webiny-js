@@ -1,8 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { createFeature } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
+import { GetCredentialByEmailStorageOperation } from "~/api/storage/credentials/index.js";
+import { GetCredentialByUserIdStorageOperation } from "~/api/storage/credentials/index.js";
+import { SaveCredentialStorageOperation } from "~/api/storage/credentials/index.js";
+import { DeleteCredentialStorageOperation } from "~/api/storage/credentials/index.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { CredentialsPersistenceError } from "~/api/domain/errors.js";
 
 export interface ICredentialsRepository {
@@ -43,11 +46,16 @@ export namespace CredentialsRepository {
 }
 
 class CredentialsRepositoryImpl implements ICredentialsRepository {
-    constructor(private storageOperations: CredentialsStorageOperations.Interface) {}
+    constructor(
+        private getByEmailOperation: GetCredentialByEmailStorageOperation.Interface,
+        private getByUserIdOperation: GetCredentialByUserIdStorageOperation.Interface,
+        private saveOperation: SaveCredentialStorageOperation.Interface,
+        private deleteOperation: DeleteCredentialStorageOperation.Interface
+    ) {}
 
     async getByEmail(params: { email: string }) {
         try {
-            const credential = await this.storageOperations.getCredentialByEmail(params);
+            const credential = await this.getByEmailOperation.execute(params);
 
             return Result.ok(credential);
         } catch {
@@ -57,7 +65,7 @@ class CredentialsRepositoryImpl implements ICredentialsRepository {
 
     async getByUserId(params: { userId: string }) {
         try {
-            const credential = await this.storageOperations.getCredentialByUserId(params);
+            const credential = await this.getByUserIdOperation.execute(params);
 
             return Result.ok(credential);
         } catch {
@@ -67,7 +75,7 @@ class CredentialsRepositoryImpl implements ICredentialsRepository {
 
     async save(params: { credential: StorageCredential }) {
         try {
-            await this.storageOperations.saveCredential(params);
+            await this.saveOperation.execute(params);
 
             return Result.ok(true as const);
         } catch {
@@ -77,7 +85,7 @@ class CredentialsRepositoryImpl implements ICredentialsRepository {
 
     async delete(params: { userId: string }) {
         try {
-            await this.storageOperations.deleteCredential(params);
+            await this.deleteOperation.execute(params);
 
             return Result.ok(true as const);
         } catch {
@@ -88,7 +96,12 @@ class CredentialsRepositoryImpl implements ICredentialsRepository {
 
 const credentialsRepository = CredentialsRepository.createImplementation({
     implementation: CredentialsRepositoryImpl,
-    dependencies: [CredentialsStorageOperations]
+    dependencies: [
+        GetCredentialByEmailStorageOperation,
+        GetCredentialByUserIdStorageOperation,
+        SaveCredentialStorageOperation,
+        DeleteCredentialStorageOperation
+    ]
 });
 
 export const CredentialsRepositoryFeature = createFeature({

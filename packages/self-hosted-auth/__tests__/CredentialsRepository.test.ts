@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/feature/api";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import type { StorageCredential } from "~/api/storage/abstractions.js";
+import type { StorageCredential } from "~/api/storage/credentials/index.js";
 import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
+import { createInMemoryCredentials } from "./helpers/inMemoryCredentials.js";
+import type { CredentialOperationOverrides } from "./helpers/inMemoryCredentials.js";
 
 const EMAIL = "admin@example.com";
 
@@ -19,17 +20,10 @@ const throws = () => {
     throw new Error("the database is on fire");
 };
 
-const setup = (operations: Partial<CredentialsStorageOperations.Interface> = {}) => {
+const setup = (overrides: CredentialOperationOverrides = {}) => {
     const container = new Container();
 
-    container.registerInstance(CredentialsStorageOperations, {
-        getCredentialByEmail: async () => credential,
-        getCredentialByUserId: async () => credential,
-        saveCredential: async () => undefined,
-        deleteCredential: async () => undefined,
-        ...operations
-    });
-
+    createInMemoryCredentials([credential], overrides).register(container);
     CredentialsRepositoryFeature.register(container);
 
     return container.resolve(CredentialsRepository);
@@ -47,7 +41,7 @@ describe("CredentialsRepository", () => {
      * it, and none of them can do it if "no account" and "database down" arrive the same way.
      */
     it("reports an address with no account as an empty success", async () => {
-        const repository = setup({ getCredentialByEmail: async () => null });
+        const repository = setup({ getByEmail: async () => null });
 
         const result = await repository.getByEmail({ email: "nobody@example.com" });
 
@@ -56,7 +50,7 @@ describe("CredentialsRepository", () => {
     });
 
     it("turns a failing read into a result, not an exception", async () => {
-        const repository = setup({ getCredentialByEmail: throws });
+        const repository = setup({ getByEmail: throws });
 
         const result = await repository.getByEmail({ email: EMAIL });
 
@@ -65,7 +59,7 @@ describe("CredentialsRepository", () => {
     });
 
     it("turns a failing write into a result, not an exception", async () => {
-        const repository = setup({ saveCredential: throws });
+        const repository = setup({ save: throws });
 
         const result = await repository.save({ credential });
 
@@ -74,7 +68,7 @@ describe("CredentialsRepository", () => {
     });
 
     it("says nothing about the database in the message it hands back", async () => {
-        const repository = setup({ getCredentialByEmail: throws });
+        const repository = setup({ getByEmail: throws });
 
         const result = await repository.getByEmail({ email: EMAIL });
 
