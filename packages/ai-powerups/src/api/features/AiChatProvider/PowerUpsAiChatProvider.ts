@@ -1,64 +1,49 @@
 import { AiChatProvider as Abstraction } from "@webiny/ai-chat/api/index.js";
-import type { IAiChatProviderResolution } from "@webiny/ai-chat/api/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "~/api/features/Capabilities/index.js";
+import { AI_CHAT_CAPABILITY } from "./capability.js";
 
 /**
- * Runs the assistant on the provider configured in AI Power-Ups settings.
+ * Runs the assistant on whatever the "Admin assistant" capability resolves to.
  *
- * Overrides the environment-variable default so the model and its key are managed where every other
- * AI feature in the project already manages them — in the admin UI, per tenant, with the key
- * encrypted at rest. Same source `CmsGenerateEntryContent` and `CmsCompareEntryRevisions` read.
+ * It used to read `providers.presets[0]` and decrypt that key itself, which is the duplication
+ * `ResolveAiCapabilityUseCase` replaced: the same precedence rules now decide the model for every AI
+ * feature, and the assistant gets a row in Settings → AI Power-Ups like the rest of them.
  *
- * Uses the FIRST configured provider, matching the other AI Power-Ups use cases. Picking per-feature
- * providers is a settings design question, not something to invent here.
+ * The one thing it adds over the other capability consumers is the prompt. `AiChatUseCase` cannot
+ * reach a capability (`@webiny/ai-chat` does not depend on this package, and should not — the
+ * assistant works without AI Power-Ups installed), so the composed system text travels back through
+ * the resolution it already asks for.
  */
 class PowerUpsAiChatProviderImpl implements Abstraction.Interface {
-    constructor(
-        private readonly getSettings: GetSettingsUseCase.Interface,
-        private readonly encryption: Encryption.Interface
-    ) {}
+    constructor(private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface) {}
 
-    async resolve(): Promise<IAiChatProviderResolution> {
-        const settingsResult = await this.getSettings.execute();
-
-        if (settingsResult.isFail()) {
-            throw new Error("Failed to load AI Power Ups settings.");
-        }
-
-        const provider = settingsResult.value.providers.presets[0];
-
-        if (!provider) {
-            throw new Error(
-                "No AI provider configured. Add one under Settings → AI Power-Ups → Providers."
-            );
-        }
-
-        if (!provider.model) {
-            throw new Error(
-                `The AI provider "${provider.name}" has no model selected. Pick one under Settings → AI Power-Ups → Providers.`
-            );
-        }
+    async resolve(): Promise<Abstraction.Resolution> {
+        const result = await this.resolveCapability.execute(AI_CHAT_CAPABILITY);
 
         /*
-         * A row can exist before a key is entered. Erroring here is deliberate: falling back to an
-         * environment variable when a provider IS configured is what made the previous behaviour so
-         * hard to reason about — the settings screen said one thing and the request used another.
+         * Thrown rather than swallowed. Every message the resolver produces names the setting to
+         * fix, and the chat route turns a throw into an `error` event the palette shows, so the
+         * editor reads "pick a model under Settings → AI Power-Ups → Model roles" instead of
+         * watching the assistant fail silently.
          */
-        if (!provider.apiKeyEncrypted) {
-            throw new Error(
-                `The AI provider "${provider.name}" has no API key. Add one under Settings → AI Power-Ups → Providers.`
-            );
+        if (result.isFail()) {
+            throw result.error;
         }
 
+        const capability = result.value;
+
         return {
-            model: provider.model,
-            apiKey: await this.encryption.decrypt(provider.apiKeyEncrypted)
+            model: capability.model,
+            apiKey: capability.connection.apiKey,
+            systemPrompt: withAdditionalInstructions(capability)
         };
     }
 }
 
 export const PowerUpsAiChatProvider = Abstraction.createImplementation({
     implementation: PowerUpsAiChatProviderImpl,
-    dependencies: [GetSettingsUseCase, Encryption]
+    dependencies: [ResolveAiCapabilityUseCase]
 });

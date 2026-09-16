@@ -1,5 +1,5 @@
 import { AiChatProvider as Abstraction } from "./abstractions.js";
-import type { IAiChatProviderResolution } from "./abstractions.js";
+import { SYSTEM_PROMPT } from "./systemPrompt.js";
 
 const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
 
@@ -11,8 +11,12 @@ const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
  * own variable (e.g. `WEBINY_API_ANTHROPIC_API_KEY`), so the key never has to pass through here.
  */
 class EnvAiChatProviderImpl implements Abstraction.Interface {
-    async resolve(): Promise<IAiChatProviderResolution> {
-        return { model: process.env["WEBINY_API_AI_CHAT_MODEL"] || DEFAULT_MODEL };
+    async resolve(): Promise<Abstraction.Resolution> {
+        return {
+            model: process.env["WEBINY_API_AI_CHAT_MODEL"] || DEFAULT_MODEL,
+            // No settings record to append from, so the prompt is exactly what the code ships.
+            systemPrompt: SYSTEM_PROMPT
+        };
     }
 }
 

@@ -9,7 +9,6 @@ import { AiChatConfig } from "./abstractions.js";
 import { AiChatProvider } from "./abstractions.js";
 import { AiChatUseCase as Abstraction } from "./abstractions.js";
 import type { AiChatParams } from "./abstractions.js";
-import { SYSTEM_PROMPT } from "./systemPrompt.js";
 import { isReadOnly } from "./approvals.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
@@ -232,7 +231,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         const request: Ai.GenerateTextParams = {
             model: provider.model,
             connection,
-            system: SYSTEM_PROMPT,
+            system: provider.systemPrompt,
             messages,
             tools,
             activeTools,

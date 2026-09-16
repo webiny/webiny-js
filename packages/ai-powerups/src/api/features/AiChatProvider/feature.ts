@@ -1,14 +1,18 @@
 import { createFeature } from "@webiny/feature/api";
 import { PowerUpsAiChatProvider } from "./PowerUpsAiChatProvider.js";
+import { AiChatCapability } from "./capability.js";
 
 /**
- * Points the admin AI assistant at the providers configured in AI Power-Ups.
+ * Makes the admin AI assistant one of the project's AI capabilities.
  *
- * Registered after `AiChatFeature`'s environment default so this one wins.
+ * The capability gives it a row in Settings → AI Power-Ups, so a project can point it at a different
+ * model or append its own instructions. The provider is what `@webiny/ai-chat` actually calls, and is
+ * registered after `AiChatFeature`'s environment default so this one wins.
  */
 export const AiChatProviderFeature = createFeature({
     name: "AiPowerUps/AiChatProvider",
     register(container) {
+        container.register(AiChatCapability);
         container.register(PowerUpsAiChatProvider);
     }
 });

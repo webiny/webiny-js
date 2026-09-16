@@ -11,6 +11,15 @@ export interface IAiChatProviderResolution {
      * environment variable, which is what keeps local development zero-config.
      */
     readonly apiKey?: string;
+    /**
+     * What the assistant is told about its job.
+     *
+     * Resolved here rather than read straight from `SYSTEM_PROMPT` because a project can append to
+     * it: AI Power-Ups exposes the assistant as a capability, and a capability carries the project's
+     * additional instructions alongside the model it runs on. Both come from the same settings
+     * record, so resolving them together is one read instead of two.
+     */
+    readonly systemPrompt: string;
 }
 
 export interface IAiChatProvider {
