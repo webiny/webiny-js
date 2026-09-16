@@ -206,11 +206,11 @@ Pass "--localhost" to run Cypress tests against locally run apps. Ideal for deve
 ```
 
 Note that `yarn setup-cypress` is the AWS hosting type (it reads the values back from your deployment
-state files). For a self-hosted ("server" hosting type) project there is nothing deployed to read
-from, so use `yarn setup-cypress:server` and pass the URLs directly:
+state files). For a standalone project there is nothing deployed to read
+from, so use `yarn setup-cypress:standalone` and pass the URLs directly:
 
 ```
-yarn setup-cypress:server --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
+yarn setup-cypress:standalone --apiUrl http://localhost:3002 --adminUrl http://localhost:3001
 ```
 
 #### Opening the Cypress app

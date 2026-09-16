@@ -10,7 +10,7 @@ import { configureMcp } from "@webiny/mcp";
 import type { IUi } from "@webiny/mcp";
 import { SetupBaseWebinyProject } from "./CreateWebinyProject/projects/base/SetupBaseWebinyProject.js";
 import { SetupAwsWebinyProject } from "./CreateWebinyProject/projects/aws/SetupAwsWebinyProject.js";
-import { SetupServerWebinyProject } from "./CreateWebinyProject/projects/server/SetupServerWebinyProject.js";
+import { SetupStandaloneWebinyProject } from "./CreateWebinyProject/projects/standalone/SetupStandaloneWebinyProject.js";
 import {
     runHostingTypePrompt,
     type HostingType
@@ -100,7 +100,7 @@ export class CreateWebinyProject {
 
         // Hosting type. Resolved interactively below, or taken from `--hosting-type` in non-interactive
         // mode (defaults to "aws").
-        let hostingType: HostingType = cliArgs.hostingType === "server" ? "server" : "aws";
+        let hostingType: HostingType = cliArgs.hostingType === "standalone" ? "standalone" : "aws";
 
         // In interactive mode the value above is only a placeholder until the prompt below runs.
         // Telemetry reports "unknown" while that's the case, so a failure before the prompt isn't
@@ -152,10 +152,10 @@ export class CreateWebinyProject {
             const setupBaseWebinyProject = new SetupBaseWebinyProject();
             setupBaseWebinyProject.execute(cliArgs);
 
-            if (hostingType === "server") {
-                const setupServerWebinyProject = new SetupServerWebinyProject();
-                const serverProjectParams = await setupServerWebinyProject.execute(cliArgs);
-                aiAgent = serverProjectParams.aiAgent;
+            if (hostingType === "standalone") {
+                const setupStandaloneWebinyProject = new SetupStandaloneWebinyProject();
+                const standaloneProjectParams = await setupStandaloneWebinyProject.execute(cliArgs);
+                aiAgent = standaloneProjectParams.aiAgent;
             } else {
                 const setupAwsWebinyProject = new SetupAwsWebinyProject();
                 const awsProjectParams = await setupAwsWebinyProject.execute(cliArgs);
@@ -234,15 +234,15 @@ export class CreateWebinyProject {
 
         console.log();
 
-        // Self-hosted (server) hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
-        if (hostingType === "server") {
+        // Standalone hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
+        if (hostingType === "standalone") {
             console.log(
-                `🎉 Your new self-hosted Webiny project ${green(projectName)} has been created!`
+                `🎉 Your new standalone Webiny project ${green(projectName)} has been created!`
             );
             console.log();
             console.log(
                 yellow(
-                    "⚠ The self-hosted (server) hosting type is in ALPHA. It's for local\n" +
+                    "⚠ The standalone hosting type is in ALPHA. It's for local\n" +
                         "  development and testing with `webiny watch`.\n" +
                         "  It's still maturing, so expect some rough edges."
                 )

@@ -10,12 +10,12 @@ A drop-in replacement for `api-file-manager-s3` that stores uploaded files on th
 - Storage path MUST be explicitly configured via `WEBINY_LOCAL_STORAGE_PATH` environment variable. If missing, the server MUST fail to boot with a clear error message.
 - Server URL for upload endpoints is resolved via `ServiceManifest` injection.
 
-## Package: `packages/api-file-manager-server`
+## Package: `packages/api-file-manager-standalone`
 
 ### Entry Point
 
 ```typescript
-export const createFileManagerServer = () => [contextPlugin, createServerGraphQLSchema(), uploadRoutesPlugin];
+export const createFileManagerServer = () => [contextPlugin, createStandaloneGraphQLSchema(), uploadRoutesPlugin];
 export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 ```
@@ -231,7 +231,7 @@ Notable: no `@webiny/aws-sdk` dependency. The `@webiny/background-tasks` depende
 ## File Structure
 
 ```
-packages/api-file-manager-server/
+packages/api-file-manager-standalone/
   src/
     index.ts                              # createFileManagerServer entry point + re-exports
     types.ts                              # shared types + background-tasks augmentation import
