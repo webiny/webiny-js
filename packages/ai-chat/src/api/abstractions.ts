@@ -3,14 +3,25 @@ import type { ModelMessage } from "ai";
 import type { ApprovalDecision } from "./approvals.js";
 import type { AiChatEvent } from "./events.js";
 
-export interface IAiChatProviderResolution {
-    /** Model id in `<provider>/<model>` form, e.g. "anthropic/claude-sonnet-5". */
+/** Everything a chat run needs that comes from configuration rather than from the request. */
+export interface IAiChatResolution {
+    /** Model id in `<vendor>/<model>` form, e.g. "anthropic/claude-sonnet-5". */
     readonly model: string;
     /**
-     * API key for that provider. Omit to let the provider's SDK factory fall back to its own
-     * environment variable, which is what keeps local development zero-config.
+     * Which vendor SDK runs it, and with whose key.
+     *
+     * Shaped like `Ai.GenerateTextParams["connection"]` so it is passed straight through. `sdkName`
+     * travels rather than being re-derived from `model` downstream: a configured resolver has
+     * already checked the model's vendor against the credential's, and that checked answer is the
+     * one worth using.
+     *
+     * An absent `apiKey` is meaningful — each SDK factory falls back to its own environment
+     * variable (e.g. `WEBINY_API_ANTHROPIC_API_KEY`), which is what keeps a bare checkout working.
      */
-    readonly apiKey?: string;
+    readonly connection: {
+        readonly sdkName: string;
+        readonly apiKey?: string;
+    };
     /**
      * What the assistant is told about its job.
      *
@@ -22,8 +33,8 @@ export interface IAiChatProviderResolution {
     readonly systemPrompt: string;
 }
 
-export interface IAiChatProvider {
-    resolve(): Promise<IAiChatProviderResolution>;
+export interface IAiChatResolver {
+    resolve(): Promise<IAiChatResolution>;
 }
 
 /**
@@ -34,11 +45,11 @@ export interface IAiChatProvider {
  * while a bare project has only an environment variable. The default implementation reads the
  * environment; AI Power-Ups overrides it.
  */
-export const AiChatProvider = createAbstraction<IAiChatProvider>("AiChatProvider");
+export const AiChatResolver = createAbstraction<IAiChatResolver>("AiChatResolver");
 
-export namespace AiChatProvider {
-    export type Interface = IAiChatProvider;
-    export type Resolution = IAiChatProviderResolution;
+export namespace AiChatResolver {
+    export type Interface = IAiChatResolver;
+    export type Resolution = IAiChatResolution;
 }
 
 export interface IAiChatConfig {
@@ -49,7 +60,7 @@ export interface IAiChatConfig {
     readonly maxSteps: number;
 }
 
-/** Runtime limits for the assistant. The model itself comes from `AiChatProvider`. */
+/** Runtime limits for the assistant. The model itself comes from `AiChatResolver`. */
 export const AiChatConfig = createAbstraction<IAiChatConfig>("AiChatConfig");
 
 export namespace AiChatConfig {

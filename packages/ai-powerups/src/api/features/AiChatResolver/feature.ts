@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { PowerUpsAiChatProvider } from "./PowerUpsAiChatProvider.js";
+import { PowerUpsAiChatResolver } from "./PowerUpsAiChatResolver.js";
 import { AiChatCapability } from "./capability.js";
 
 /**
@@ -9,10 +9,10 @@ import { AiChatCapability } from "./capability.js";
  * model or append its own instructions. The provider is what `@webiny/ai-chat` actually calls, and is
  * registered after `AiChatFeature`'s environment default so this one wins.
  */
-export const AiChatProviderFeature = createFeature({
-    name: "AiPowerUps/AiChatProvider",
+export const AiChatResolverFeature = createFeature({
+    name: "AiPowerUps/AiChatResolver",
     register(container) {
         container.register(AiChatCapability);
-        container.register(PowerUpsAiChatProvider);
+        container.register(PowerUpsAiChatResolver);
     }
 });

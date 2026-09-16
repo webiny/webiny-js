@@ -135,7 +135,7 @@ export async function registerApiRequestStack(
 
     // ── AI chat endpoint (in-admin assistant) ──────────────────
     // The agent loop runs here rather than in the browser, so the browser needs no model and no API
-    // key. BEFORE extensions on purpose: the feature registers a default `AiChatProvider` that reads
+    // key. BEFORE extensions on purpose: the feature registers a default `AiChatResolver` that reads
     // the environment, and an extension (AI Power-Ups) overrides it with the providers configured in
     // the admin UI. A single resolve takes the LAST registration, so registering this after extensions
     // silently won and the configured provider was ignored.

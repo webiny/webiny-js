@@ -1,4 +1,4 @@
-import { AiChatProvider as Abstraction } from "@webiny/ai-chat/api/index.js";
+import { AiChatResolver as Abstraction } from "@webiny/ai-chat/api/index.js";
 import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
@@ -17,7 +17,7 @@ import { AI_CHAT_CAPABILITY } from "./capability.js";
  * assistant works without AI Power-Ups installed), so the composed system text travels back through
  * the resolution it already asks for.
  */
-class PowerUpsAiChatProviderImpl implements Abstraction.Interface {
+class PowerUpsAiChatResolverImpl implements Abstraction.Interface {
     constructor(private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface) {}
 
     async resolve(): Promise<Abstraction.Resolution> {
@@ -37,13 +37,14 @@ class PowerUpsAiChatProviderImpl implements Abstraction.Interface {
 
         return {
             model: capability.model,
-            apiKey: capability.connection.apiKey,
+            // Passed through whole: the resolver already checked this vendor against the model's.
+            connection: capability.connection,
             systemPrompt: withAdditionalInstructions(capability)
         };
     }
 }
 
-export const PowerUpsAiChatProvider = Abstraction.createImplementation({
-    implementation: PowerUpsAiChatProviderImpl,
+export const PowerUpsAiChatResolver = Abstraction.createImplementation({
+    implementation: PowerUpsAiChatResolverImpl,
     dependencies: [ResolveAiCapabilityUseCase]
 });

@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
-import { EnvAiChatProvider } from "./EnvAiChatProvider.js";
+import { EnvAiChatResolver } from "./EnvAiChatResolver.js";
 import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 
 /**
@@ -27,7 +27,7 @@ export const AiChatFeature = createFeature({
          * Registered first so a later registration wins. AI Power-Ups overrides this with providers
          * configured in the admin UI.
          */
-        container.register(EnvAiChatProvider);
+        container.register(EnvAiChatResolver);
         container.register(AiChatUseCase);
 
         /*
