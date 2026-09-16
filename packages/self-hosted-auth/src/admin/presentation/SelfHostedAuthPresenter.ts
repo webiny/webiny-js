@@ -2,9 +2,17 @@ import { makeAutoObservable } from "mobx";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
 import { SelfHostedAuthPresenter as PresenterAbstraction } from "./abstractions.js";
-import type { AuthMessage, AuthScreen, SelfHostedAuthInitParams } from "./abstractions.js";
+import type { AuthMessage } from "./abstractions.js";
+import type { AuthScreen } from "./abstractions.js";
+import type { SelfHostedAuthInitParams } from "./abstractions.js";
 
 export const SELF_HOSTED_AUTH_TOKEN_KEY = "webiny_self_hosted_auth_token";
+
+/** What every mutation in this file returns: the payload, or the error the API chose to name. */
+interface MutationPayload<TData> {
+    data: TData | null;
+    error: { code: string; message: string } | null;
+}
 
 const LOGIN_MUTATION = /* GraphQL */ `
     mutation SelfHostedAuthLogin($email: String!, $password: String!) {
@@ -232,20 +240,20 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
         try {
             const result = await this.mutate(REQUEST_RESET_MUTATION, { email: this.resetEmail });
 
-            if (result.error) {
-                // Mail that is not configured is the installation's problem rather than the user's,
-                // and the message names the CLI command that still works, so it reads as guidance
-                // rather than a failure.
-                const type = result.error.code === "MAILER_NOT_CONFIGURED" ? "warning" : "danger";
-
+            // Mail that is not configured is the installation's problem rather than the user's,
+            // and the message names the CLI command that still works, so it reads as guidance
+            // rather than a failure.
+            if (result.error?.code === "MAILER_NOT_CONFIGURED") {
                 this.message = {
-                    title:
-                        type === "warning"
-                            ? "Password reset is not available"
-                            : "Could not send a code",
+                    title: "Password reset is not available",
                     text: result.error.message,
-                    type
+                    type: "warning"
                 };
+                return;
+            }
+
+            if (result.error) {
+                this.fail("Could not send a code", result.error.message);
                 return;
             }
 
@@ -293,7 +301,7 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
     private async mutate<TData = boolean>(
         query: string,
         variables: Record<string, unknown>
-    ): Promise<{ data: TData | null; error: { code: string; message: string } | null }> {
+    ): Promise<MutationPayload<TData>> {
         const response = await fetch(this.graphqlUrl, {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -307,9 +315,8 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
         }
 
         // One mutation per document, so whatever field came back is the one that was asked for.
-        const payload = Object.values(body?.data ?? {})[0] as
-            | { data: TData | null; error: { code: string; message: string } | null }
-            | undefined;
+        const payloads: MutationPayload<TData>[] = Object.values(body?.data ?? {});
+        const payload = payloads[0];
 
         if (!payload) {
             throw new Error("The API returned an unexpected response.");

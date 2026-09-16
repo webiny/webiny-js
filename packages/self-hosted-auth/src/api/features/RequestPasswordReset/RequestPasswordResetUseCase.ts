@@ -4,19 +4,18 @@ import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { RequestPasswordResetUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { RequestPasswordResetInput } from "./abstractions.js";
-import { MailerNotConfiguredError, TooManyResetRequestsError } from "~/api/domain/errors.js";
+import { MailerNotConfiguredError } from "~/api/domain/errors.js";
+import { TooManyResetRequestsError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
-import {
-    RESET_CODE_RETENTION_HOURS,
-    RESET_CODE_TTL_MINUTES,
-    RESET_REQUESTS_PER_WINDOW,
-    RESET_REQUEST_WINDOW_MINUTES
-} from "~/api/domain/passwordResetPolicy.js";
+import { RESET_CODE_RETENTION_HOURS } from "~/api/domain/passwordResetPolicy.js";
+import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
+import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
+import { RESET_REQUEST_WINDOW_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 
 class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

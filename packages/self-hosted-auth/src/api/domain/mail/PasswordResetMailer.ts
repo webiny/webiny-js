@@ -1,4 +1,5 @@
-import { createAbstraction, createFeature } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail/index.js";
 import { GetSettingsUseCase } from "@webiny/api-mailer/features/GetSettings/index.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";

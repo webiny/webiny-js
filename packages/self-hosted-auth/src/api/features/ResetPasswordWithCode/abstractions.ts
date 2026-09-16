@@ -1,10 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type {
-    InvalidResetCodeError,
-    NotAuthorizedError,
-    WeakPasswordError
-} from "~/api/domain/errors.js";
+import type { InvalidResetCodeError } from "~/api/domain/errors.js";
+import type { NotAuthorizedError } from "~/api/domain/errors.js";
+import type { WeakPasswordError } from "~/api/domain/errors.js";
 
 export interface ResetPasswordWithCodeInput {
     email: string;

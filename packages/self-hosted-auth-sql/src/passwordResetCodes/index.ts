@@ -1,10 +1,8 @@
 import type { Knex } from "knex";
 import WebinyError from "@webiny/error";
 import { TableManager } from "@webiny/api-core-sql/TableManager.js";
-import type {
-    PasswordResetCodeStorageOperations,
-    StoredPasswordResetCode
-} from "@webiny/self-hosted-auth";
+import type { PasswordResetCodeStorageOperations } from "@webiny/self-hosted-auth";
+import type { StoredPasswordResetCode } from "@webiny/self-hosted-auth";
 
 const TABLE_NAME = "webiny_self_hosted_password_reset_codes";
 

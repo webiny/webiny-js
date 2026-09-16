@@ -1,5 +1,6 @@
 import React from "react";
-import { Link, Text } from "@webiny/admin-ui";
+import { Link } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { makeDecoratable } from "@webiny/app-admin";
 
 export interface FooterSignInProps {

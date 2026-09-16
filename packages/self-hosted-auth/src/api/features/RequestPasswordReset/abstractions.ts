@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { MailerNotConfiguredError, TooManyResetRequestsError } from "~/api/domain/errors.js";
+import type { MailerNotConfiguredError } from "~/api/domain/errors.js";
+import type { TooManyResetRequestsError } from "~/api/domain/errors.js";
 
 export interface RequestPasswordResetInput {
     email: string;

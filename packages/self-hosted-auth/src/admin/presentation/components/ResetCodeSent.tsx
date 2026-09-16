@@ -1,7 +1,9 @@
 import React from "react";
-import { Button, OverlayLoader } from "@webiny/admin-ui";
+import { Button } from "@webiny/admin-ui";
+import { OverlayLoader } from "@webiny/admin-ui";
 import { makeDecoratable } from "@webiny/app-admin";
-import { View, Grid } from "./View.js";
+import { View } from "./View.js";
+import { Grid } from "./View.js";
 import { Message } from "./Message.js";
 import { FooterSignIn } from "./FooterSignIn.js";
 import type { ResetCodeSentVM } from "../abstractions.js";
