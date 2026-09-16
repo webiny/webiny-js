@@ -5,6 +5,7 @@ import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import type { StorageCredential } from "~/api/storage/abstractions.js";
 import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
+import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
@@ -39,6 +40,10 @@ const setup = (options: SetupOptions = {}) => {
     const logError = vi.fn();
 
     container.registerInstance(PasswordResetCodeStorageOperations, codes.operations);
+
+    // The real repository over the in-memory store, so these cases cover the layer the use case
+    // actually talks to rather than a stand-in for it.
+    PasswordResetCodesRepositoryFeature.register(container);
 
     container.registerInstance(CredentialsStorageOperations, {
         getCredentialByEmail: async () => options.credential ?? null,

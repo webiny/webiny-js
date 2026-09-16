@@ -7,19 +7,18 @@ import type { RequestPasswordResetInput } from "./abstractions.js";
 import { MailerNotConfiguredError } from "~/api/domain/errors.js";
 import { TooManyResetRequestsError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
+import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
-import { RESET_CODE_RETENTION_HOURS } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUEST_WINDOW_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 
 class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private codes: PasswordResetCodeStorageOperations.Interface,
+        private codes: PasswordResetCodesRepository.Interface,
         private credentials: CredentialsStorageOperations.Interface,
         private generator: PasswordResetCodeGenerator.Interface,
         private hasher: Hasher.Interface,
@@ -43,12 +42,16 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
         const now = new Date();
 
         const windowStart = new Date(now.getTime() - RESET_REQUEST_WINDOW_MINUTES * 60_000);
-        const recentRequests = await this.codes.countCodesCreatedSince({
+        const recentRequests = await this.codes.countRequestsSince({
             email: key,
             since: windowStart.toISOString()
         });
 
-        if (recentRequests >= RESET_REQUESTS_PER_WINDOW) {
+        if (recentRequests.isFail()) {
+            return Result.fail(recentRequests.error);
+        }
+
+        if (recentRequests.value >= RESET_REQUESTS_PER_WINDOW) {
             return Result.fail(new TooManyResetRequestsError());
         }
 
@@ -72,10 +75,10 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
             attempts: 0
         };
 
-        await this.codes.saveCode({ code: stored });
-
-        const retentionCutoff = new Date(now.getTime() - RESET_CODE_RETENTION_HOURS * 3_600_000);
-        await this.codes.deleteCodesExpiredBefore({ before: retentionCutoff.toISOString() });
+        const issued = await this.codes.issue({ code: stored });
+        if (issued.isFail()) {
+            return Result.fail(issued.error);
+        }
 
         // Looked up with the address as typed, because that is how `LoginUseCase` looks it up. A
         // user whose case does not match cannot sign in either, so the two agree.
@@ -101,7 +104,7 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
 export const RequestPasswordResetUseCase = UseCaseAbstraction.createImplementation({
     implementation: RequestPasswordResetUseCaseImpl,
     dependencies: [
-        PasswordResetCodeStorageOperations,
+        PasswordResetCodesRepository,
         CredentialsStorageOperations,
         PasswordResetCodeGenerator,
         Hasher,

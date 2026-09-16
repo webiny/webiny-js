@@ -4,6 +4,7 @@ import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
 import type { StorageCredential } from "~/api/storage/abstractions.js";
 import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
+import { PasswordResetCodesRepositoryFeature } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
@@ -59,6 +60,10 @@ const setup = (options: SetupOptions = {}) => {
     });
 
     container.registerInstance(PasswordResetCodeStorageOperations, codes.operations);
+
+    // The real repository over the in-memory store, so these cases cover the layer the use case
+    // actually talks to rather than a stand-in for it.
+    PasswordResetCodesRepositoryFeature.register(container);
 
     container.registerInstance(CredentialsStorageOperations, {
         getCredentialByEmail: async () =>

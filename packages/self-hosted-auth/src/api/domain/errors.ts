@@ -88,6 +88,19 @@ export class MailerNotConfiguredError extends BaseError {
 }
 
 /**
+ * The reset code store could not be read or written. Its own error rather than a raw throw, so a
+ * database being down arrives at the resolver as a result the caller can report, the way every
+ * other repository in the codebase reports persistence failures.
+ */
+export class PasswordResetPersistenceError extends BaseError {
+    override readonly code = "PASSWORD_RESET_PERSISTENCE_ERROR" as const;
+
+    constructor() {
+        super({ message: "The password reset could not be completed. Try again later." });
+    }
+}
+
+/**
  * Too many codes have been requested for this address lately. Counted for every address that is
  * asked about, including addresses with no account, so that arriving at this error reveals nothing
  * beyond the fact that somebody has been typing it in.

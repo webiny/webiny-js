@@ -4,14 +4,14 @@ import { ResetPasswordWithCodeUseCase as UseCaseAbstraction } from "./abstractio
 import type { ResetPasswordWithCodeInput } from "./abstractions.js";
 import { InvalidResetCodeError } from "~/api/domain/errors.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
-import { PasswordResetCodeStorageOperations } from "~/api/storage/passwordResetCodes.js";
+import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
 import { RESET_CODE_MAX_ATTEMPTS } from "~/api/domain/passwordResetPolicy.js";
 
 class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private codes: PasswordResetCodeStorageOperations.Interface,
+        private codes: PasswordResetCodesRepository.Interface,
         private credentials: CredentialsStorageOperations.Interface,
         private hasher: Hasher.Interface,
         private setPasswordUseCase: SetPasswordUseCase.Interface
@@ -24,9 +24,12 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
         const key = normalizeResetEmail(email);
         const now = new Date().toISOString();
 
-        const liveCodes = await this.codes.listLiveCodesByEmail({ email: key, now });
+        const liveCodes = await this.codes.listLive({ email: key, now });
+        if (liveCodes.isFail()) {
+            return Result.fail(liveCodes.error);
+        }
 
-        for (const candidate of liveCodes) {
+        for (const candidate of liveCodes.value) {
             // A code that has been guessed at its limit is finished, even though it has not expired
             // and has not been spent. Six digits only holds up because of this line.
             if (candidate.attempts >= RESET_CODE_MAX_ATTEMPTS) {
@@ -38,7 +41,7 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
                 // Read-modify-write is avoided here on purpose: two wrong guesses arriving together
                 // must not both read the same count and write back the same number, or the cap
                 // would be a suggestion.
-                await this.codes.incrementAttempts({ id: candidate.id });
+                await this.codes.recordFailedAttempt({ id: candidate.id });
                 continue;
             }
 
@@ -82,7 +85,10 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Spent on success, along with every other live code for the address, so that an earlier
         // message still sitting in the mailbox stops being a way in.
-        await this.codes.markCodesUsedForEmail({ email: key, usedOn: now });
+        const spent = await this.codes.spendAllForEmail({ email: key, usedOn: now });
+        if (spent.isFail()) {
+            return Result.fail(spent.error);
+        }
 
         return Result.ok(true);
     }
@@ -91,7 +97,7 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
 export const ResetPasswordWithCodeUseCase = UseCaseAbstraction.createImplementation({
     implementation: ResetPasswordWithCodeUseCaseImpl,
     dependencies: [
-        PasswordResetCodeStorageOperations,
+        PasswordResetCodesRepository,
         CredentialsStorageOperations,
         Hasher,
         SetPasswordUseCase
