@@ -77,7 +77,7 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
 
         const result: Record<string, unknown> = {};
         for (const handler of this.handlers) {
-            result[handler.name] = handler.mapFromStorage(persisted[handler.name]);
+            result[handler.name] = handler.mapFromStorage(persisted[handler.name], persisted);
         }
 
         for (const key of Object.keys(persisted)) {
