@@ -28,9 +28,11 @@ export const ResetCodeSent = makeDecoratable(
             <View.Container>
                 <View.Content>
                     {vm.isLoading ? <OverlayLoader text={"Sending a code..."} /> : null}
+                    {/* The address and the "on its way" line live in the alert, which is also what
+                        a resend refreshes. Repeating them here said the same sentence twice. */}
                     <View.Title
                         title={"Check your email"}
-                        description={`If an account exists for ${vm.email}, a reset code is on its way. It is valid for a short time and can be used once.`}
+                        description={"A code is valid for a short time and can be used once."}
                     />
                     <Message message={vm.message} />
 
