@@ -252,6 +252,17 @@ export class Field implements IField {
         if (this._disabled) {
             return true;
         }
+        /**
+         * Disabling a container disables everything inside it, the way a disabled
+         * fieldset does in HTML. Without this, marking an object field disabled would
+         * grey out the container while leaving every child editable.
+         */
+        if (this._parentPath && this._form) {
+            const parent = safeGetField(this._form, this._parentPath);
+            if (parent?.disabled) {
+                return true;
+            }
+        }
         if (this._form && this._disabledWhenCallbacks.length > 0) {
             const scoped = this._callbackParams();
             for (const cb of this._disabledWhenCallbacks) {
@@ -602,5 +613,18 @@ export class Field implements IField {
     /** True if a computedUntilDirty field has been overridden by user edit. */
     get isComputedOverridden(): boolean {
         return this._computedOverridden;
+    }
+}
+
+/**
+ * `form.field()` throws for a path it can't resolve, which happens while a form is
+ * still being assembled. Ancestor lookups treat that as "no parent" rather than
+ * failing the render.
+ */
+function safeGetField(form: IFormModel, name: string): IField | undefined {
+    try {
+        return form.field(name);
+    } catch {
+        return undefined;
     }
 }
