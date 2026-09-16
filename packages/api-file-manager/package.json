@@ -34,7 +34,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "cache-control-parser": "^2.2.0",
-    "zod": "4.4.3"
+    "zod": "4.6.4"
   },
   "devDependencies": {
     "@types/object-hash": "^3.0.6",
