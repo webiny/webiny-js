@@ -50,30 +50,36 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
 
         try {
             /*
-             * Neither of these runs before the other. Both calls are made in this same tick, left
-             * to right, and `Promise.all` only waits; the array positions pick which result lands
-             * in `data` and which in `initResults`, nothing more.
+             * Two loads of different things, started together because neither feeds the other.
              *
-             * The ordering that does matter is against `buildForm()` below. A group's `init()`
-             * loads what its `buildForm` then reads (`CapabilitiesSettings` renders a row per
-             * capability from its repository), so every init has to have settled before the form is
-             * built. The `await` here is what guarantees that, not the order of this array.
+             * `getSettings` fetches the saved *values*: the chosen connection, the model on each
+             * role, the per-capability overrides. Those go into the form at `setData` below.
+             *
+             * A group's `init()` loads the catalogue its fields are built *from*.
+             * `CapabilitiesSettings` needs the list of registered capabilities to render a row
+             * each, plus the model list for the dropdowns; `ModelRoles` and `Connections` need the
+             * model list. Four of the seven groups have no init at all, hence the optional call.
+             *
+             * So the settings blob does not say which fields exist and the catalogue does not say
+             * what is configured. Running them one after the other would just cost a round trip.
+             *
+             * Neither is "first": both calls are made in this tick and `Promise.all` only waits, so
+             * the array positions pick which result is `data` and which is `initResults`, nothing
+             * more. The ordering that matters is that both finish before `buildForm()`, which reads
+             * the catalogue, and `setData()`, which needs the values. The `await` does that.
              *
              * `allSettled`, not `all`: one group's failed init should not take the whole screen
              * down. Under `all` a single rejection skipped straight to the catch below and left the
              * page with a heading, a Save button and no tabs at all, hiding every working section.
              *
-             * How far that actually goes is worth knowing, because it is less than it looks. Firing
-             * in the same tick is exactly what puts these queries in one `BatchingGraphQLClient`
-             * batch, and it rejects *every* operation in a batch when any one of them errors (see
-             * `executeBatchGroup`). A group whose query fails against the server therefore takes
-             * `getSettings` with it and we still end up in the catch.
-             *
-             * What this does fix is the rest: a group that throws inside its own `init()`, one
-             * whose query missed the batch window, and the reporting. Instead of one opaque
-             * failure, each bad section is named. Making the parallel case survive too means not
-             * batching `getSettings` alongside the group inits, which costs a serial round trip on
-             * every load of this screen; worth doing only if this turns out to bite in practice.
+             * It rescues less than it looks, though. Firing in one tick is also what puts these
+             * queries in a single `BatchingGraphQLClient` batch, and that rejects *every* operation
+             * in a batch when any one errors (see `executeBatchGroup`), so a group whose query
+             * fails server-side takes `getSettings` down with it and we reach the catch anyway.
+             * What is left is real but narrower: a group that throws inside its own `init()`, one
+             * whose query missed the batch window, and the reporting, which now names the failing
+             * section. Covering the batched case means not batching `getSettings` with the group
+             * inits, at the cost of a serial round trip on every load of this screen.
              */
             const [data, initResults] = await Promise.all([
                 this.getSettings.execute(),
