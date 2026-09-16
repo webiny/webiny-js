@@ -62,9 +62,12 @@ const fieldSchema = zod.object({
         .default(false),
     disabled: zod
         .boolean()
-        .nullish()
         .optional()
-        .transform(value => value ?? undefined),
+        .nullish()
+        .transform(value => {
+            return !!value;
+        })
+        .default(false),
     predefinedValues: zod
         .object({
             enabled: zod.boolean(),
