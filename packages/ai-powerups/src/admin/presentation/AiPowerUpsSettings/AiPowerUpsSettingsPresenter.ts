@@ -50,16 +50,22 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
 
         try {
             /*
-             * Groups that build fields from server data get to load it first, in parallel with the
-             * settings themselves.
+             * Neither of these runs before the other. Both calls are made in this same tick, left
+             * to right, and `Promise.all` only waits; the array positions pick which result lands
+             * in `data` and which in `initResults`, nothing more.
+             *
+             * The ordering that does matter is against `buildForm()` below. A group's `init()`
+             * loads what its `buildForm` then reads (`CapabilitiesSettings` renders a row per
+             * capability from its repository), so every init has to have settled before the form is
+             * built. The `await` here is what guarantees that, not the order of this array.
              *
              * `allSettled`, not `all`: one group's failed init should not take the whole screen
              * down. Under `all` a single rejection skipped straight to the catch below and left the
              * page with a heading, a Save button and no tabs at all, hiding every working section.
              *
-             * How far that actually goes is worth knowing, because it is less than it looks. These
-             * queries all fire in the same tick, so `BatchingGraphQLClient` sends them as one HTTP
-             * request, and it rejects *every* operation in a batch when any one of them errors (see
+             * How far that actually goes is worth knowing, because it is less than it looks. Firing
+             * in the same tick is exactly what puts these queries in one `BatchingGraphQLClient`
+             * batch, and it rejects *every* operation in a batch when any one of them errors (see
              * `executeBatchGroup`). A group whose query fails against the server therefore takes
              * `getSettings` with it and we still end up in the catch.
              *
