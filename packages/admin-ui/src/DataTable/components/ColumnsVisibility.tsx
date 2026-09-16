@@ -48,8 +48,12 @@ export const ColumnsVisibility = <T extends RowData>(props: ColumnsVisibilityPro
                 return {
                     id: column.id,
                     header: getHeaderName(column),
-                    onChange: column.toggleVisibility,
-                    getValue: column.getIsVisible
+                    /**
+                     * `@tanstack/react-table` v9 puts these on the column prototype, so they
+                     * read their column off `this`. They must stay attached to the column.
+                     */
+                    onChange: value => column.toggleVisibility(value),
+                    getValue: () => column.getIsVisible()
                 };
             });
     }, [props.columns]);
