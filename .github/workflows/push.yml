@@ -926,7 +926,7 @@ jobs:
     needs:
       - constants
       - build
-    name: E2E (Server SQLite)
+    name: E2E (Standalone SQLite)
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -1086,7 +1086,7 @@ jobs:
     needs:
       - constants
       - build
-    name: E2E (Server Postgres)
+    name: E2E (Standalone Postgres)
     services:
       postgres:
         image: postgres:17

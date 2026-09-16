@@ -46,13 +46,13 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
 // command workflow. Only the wrapper differs: `push` checks out the pushed ref rather than a PR,
 // gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
 // from an artifact, and has no PR comment to report into.
-const createServerE2EJobs = (storageOps: StandaloneStorageOps) => {
+const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
     const parts = createStandaloneProjectParts(storageOps, { workingDirectory: DIR_WEBINY_JS });
 
     return {
         [`e2eTests-standalone-${storageOps}`]: createJob({
             needs: ["constants", "build"],
-            name: `E2E (Server ${storageOps === "postgres" ? "Postgres" : "SQLite"})`,
+            name: `E2E (Standalone ${storageOps === "postgres" ? "Postgres" : "SQLite"})`,
             checkout: { path: DIR_WEBINY_JS },
             ...(parts.services ? { services: parts.services } : {}),
             steps: [...yarnCacheSteps, ...runBuildCacheSteps, ...installBuildSteps, ...parts.steps]
@@ -453,7 +453,7 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(sqlStorageOps),
         ...createAwsE2EJobs(ddbStorageOps),
         ...createAwsE2EJobs(ddbOsStorageOps),
-        ...createServerE2EJobs("sqlite"),
-        ...createServerE2EJobs("postgres")
+        ...createStandaloneE2EJobs("sqlite"),
+        ...createStandaloneE2EJobs("postgres")
     }
 });
