@@ -2,45 +2,27 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/feature/admin";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
+import { SelfHostedAuthGateway } from "~/admin/gateways/SelfHostedAuthGateway.js";
 import { SelfHostedAuthPresenter } from "~/admin/presentation/abstractions.js";
 import { SelfHostedAuthFeature } from "~/admin/presentation/feature.js";
 
-const GRAPHQL_URL = "http://localhost:3002/graphql";
 const EMAIL = "admin@example.com";
 
 /**
  * The flow, driven without rendering anything. All four screens share one presenter, so the things
  * worth pinning are the moves between them and what the user is told on arrival.
+ *
+ * The gateway is stubbed rather than `fetch`: since the requests moved behind it, these cases can
+ * say what the API answered without saying how it was asked.
  */
 
-interface MutationResult {
+interface CannedResult {
     data?: unknown;
     error?: { code: string; message: string } | null;
 }
 
-const respondWith = (results: Record<string, MutationResult>) => {
-    const fetchMock = vi.fn(async (_url: string, init: { body: string }) => {
-        const { query, variables } = JSON.parse(init.body);
-
-        const name = Object.keys(results).find(key => query.includes(key));
-        if (!name) {
-            throw new Error(`No canned response for: ${query}`);
-        }
-
-        const result = results[name]!;
-
-        return {
-            json: async () => ({
-                data: { [name]: { data: result.data ?? null, error: result.error ?? null } }
-            }),
-            variables
-        };
-    });
-
-    vi.stubGlobal("fetch", fetchMock);
-
-    return fetchMock;
-};
+/** One canned answer per gateway call, keyed by the method the presenter reaches for. */
+type CannedResults = Partial<Record<keyof SelfHostedAuthGateway.Interface, CannedResult>>;
 
 const store = new Map<string, string>();
 
@@ -60,10 +42,29 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 
-const setup = (options: { passwordResetEnabled?: boolean } = {}) => {
+const setup = (options: { passwordResetEnabled?: boolean; results?: CannedResults } = {}) => {
     const container = new Container();
 
     const logIn = vi.fn(async () => undefined);
+
+    const answers = (name: keyof SelfHostedAuthGateway.Interface) => {
+        return vi.fn(async () => {
+            const canned = options.results?.[name];
+            if (!canned) {
+                throw new Error(`No canned result for gateway.${name}`);
+            }
+
+            return { data: canned.data ?? null, error: canned.error ?? null };
+        });
+    };
+
+    const gateway = {
+        signIn: answers("signIn"),
+        requestResetCode: answers("requestResetCode"),
+        resetPassword: answers("resetPassword")
+    };
+
+    container.registerInstance(SelfHostedAuthGateway, gateway as never);
 
     container.registerInstance(IdentityContext, {
         getIdentity: () => ({ isAuthenticated: false })
@@ -75,13 +76,12 @@ const setup = (options: { passwordResetEnabled?: boolean } = {}) => {
 
     const presenter = container.resolve(SelfHostedAuthPresenter);
 
-    presenter.init({
-        graphqlUrl: GRAPHQL_URL,
-        passwordResetEnabled: options.passwordResetEnabled ?? true
-    });
+    presenter.init({ passwordResetEnabled: options.passwordResetEnabled ?? true });
 
-    return { presenter, logIn };
+    return { presenter, logIn, gateway };
 };
+
+const codeSent = { results: { requestResetCode: { data: true } } };
 
 describe("SelfHostedAuthPresenter", () => {
     it("starts on sign in", () => {
@@ -98,8 +98,7 @@ describe("SelfHostedAuthPresenter", () => {
     });
 
     it("walks from sign in to the code screen and back", async () => {
-        respondWith({ selfHostedAuthRequestPasswordReset: { data: true } });
-        const { presenter } = setup();
+        const { presenter } = setup(codeSent);
 
         presenter.showRequestResetCode();
         expect(presenter.vm.screen).toBe("requestResetCode");
@@ -114,9 +113,16 @@ describe("SelfHostedAuthPresenter", () => {
         expect(presenter.vm.screen).toBe("signIn");
     });
 
+    it("asks the gateway for a code for the address it was given", async () => {
+        const { presenter, gateway } = setup(codeSent);
+
+        await presenter.requestResetCode(EMAIL);
+
+        expect(gateway.requestResetCode).toHaveBeenCalledWith({ email: EMAIL });
+    });
+
     it("names the address the code went to, so the user knows which inbox to open", async () => {
-        respondWith({ selfHostedAuthRequestPasswordReset: { data: true } });
-        const { presenter } = setup();
+        const { presenter } = setup(codeSent);
 
         await presenter.requestResetCode(EMAIL);
 
@@ -129,8 +135,7 @@ describe("SelfHostedAuthPresenter", () => {
      * to.
      */
     it("says the same thing whether or not the address has an account", async () => {
-        respondWith({ selfHostedAuthRequestPasswordReset: { data: true } });
-        const { presenter } = setup();
+        const { presenter } = setup(codeSent);
 
         await presenter.requestResetCode(EMAIL);
         const known = presenter.vm.resetCodeSent.message;
@@ -144,16 +149,17 @@ describe("SelfHostedAuthPresenter", () => {
     });
 
     it("stays put and explains when the installation cannot send mail", async () => {
-        respondWith({
-            selfHostedAuthRequestPasswordReset: {
-                error: {
-                    code: "MAILER_NOT_CONFIGURED",
-                    message: "... run `yarn webiny reset-password <email>` ..."
+        const { presenter } = setup({
+            results: {
+                requestResetCode: {
+                    error: {
+                        code: "MAILER_NOT_CONFIGURED",
+                        message: "... run `yarn webiny reset-password <email>` ..."
+                    }
                 }
             }
         });
 
-        const { presenter } = setup();
         presenter.showRequestResetCode();
 
         await presenter.requestResetCode(EMAIL);
@@ -164,13 +170,17 @@ describe("SelfHostedAuthPresenter", () => {
     });
 
     it("keeps the user on the code screen when the code is refused", async () => {
-        respondWith({
-            selfHostedAuthResetPassword: {
-                error: { code: "INVALID_RESET_CODE", message: "The code is invalid or expired." }
+        const { presenter } = setup({
+            results: {
+                resetPassword: {
+                    error: {
+                        code: "INVALID_RESET_CODE",
+                        message: "The code is invalid or expired."
+                    }
+                }
             }
         });
 
-        const { presenter } = setup();
         presenter.showSetNewPassword();
 
         await presenter.resetPassword("000000", "long-enough-password");
@@ -180,9 +190,8 @@ describe("SelfHostedAuthPresenter", () => {
     });
 
     it("returns to sign in with a success note once the password is changed", async () => {
-        respondWith({ selfHostedAuthResetPassword: { data: true } });
+        const { presenter } = setup({ results: { resetPassword: { data: true } } });
 
-        const { presenter } = setup();
         presenter.showSetNewPassword();
 
         await presenter.resetPassword("424242", "long-enough-password");
@@ -192,9 +201,9 @@ describe("SelfHostedAuthPresenter", () => {
     });
 
     it("signs in and hands the token to app-admin", async () => {
-        respondWith({ selfHostedAuthLogin: { data: { token: "a-jwt", expiresIn: 3600 } } });
-
-        const { presenter, logIn } = setup();
+        const { presenter, logIn } = setup({
+            results: { signIn: { data: { token: "a-jwt", expiresIn: 3600 } } }
+        });
 
         await presenter.signIn(EMAIL, "long-enough-password");
 
@@ -203,13 +212,11 @@ describe("SelfHostedAuthPresenter", () => {
     });
 
     it("reports a refused sign in without storing anything", async () => {
-        respondWith({
-            selfHostedAuthLogin: {
-                error: { code: "INVALID_CREDENTIALS", message: "Invalid credentials." }
+        const { presenter, logIn } = setup({
+            results: {
+                signIn: { error: { code: "INVALID_CREDENTIALS", message: "Invalid credentials." } }
             }
         });
-
-        const { presenter, logIn } = setup();
 
         await presenter.signIn(EMAIL, "wrong");
 
@@ -223,13 +230,12 @@ describe("SelfHostedAuthPresenter", () => {
      * the user to the next one and read as though it had just happened again.
      */
     it("does not carry a message from one screen to another", async () => {
-        respondWith({
-            selfHostedAuthLogin: {
-                error: { code: "INVALID_CREDENTIALS", message: "Invalid credentials." }
+        const { presenter } = setup({
+            results: {
+                signIn: { error: { code: "INVALID_CREDENTIALS", message: "Invalid credentials." } }
             }
         });
 
-        const { presenter } = setup();
         await presenter.signIn(EMAIL, "wrong");
 
         presenter.showRequestResetCode();

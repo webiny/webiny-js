@@ -1,57 +1,13 @@
 import { makeAutoObservable } from "mobx";
 import { LogInUseCase } from "@webiny/app-admin/features/security/LogIn/index.js";
 import { IdentityContext } from "@webiny/app-admin/features/security/IdentityContext/index.js";
+import { SelfHostedAuthGateway } from "~/admin/gateways/SelfHostedAuthGateway.js";
 import { SelfHostedAuthPresenter as PresenterAbstraction } from "./abstractions.js";
 import type { AuthMessage } from "./abstractions.js";
 import type { AuthScreen } from "./abstractions.js";
 import type { SelfHostedAuthInitParams } from "./abstractions.js";
 
 export const SELF_HOSTED_AUTH_TOKEN_KEY = "webiny_self_hosted_auth_token";
-
-/** What every mutation in this file returns: the payload, or the error the API chose to name. */
-interface MutationPayload<TData> {
-    data: TData | null;
-    error: { code: string; message: string } | null;
-}
-
-const LOGIN_MUTATION = /* GraphQL */ `
-    mutation SelfHostedAuthLogin($email: String!, $password: String!) {
-        selfHostedAuthLogin(email: $email, password: $password) {
-            data {
-                token
-                expiresIn
-            }
-            error {
-                code
-                message
-            }
-        }
-    }
-`;
-
-const REQUEST_RESET_MUTATION = /* GraphQL */ `
-    mutation SelfHostedAuthRequestPasswordReset($email: String!) {
-        selfHostedAuthRequestPasswordReset(email: $email) {
-            data
-            error {
-                code
-                message
-            }
-        }
-    }
-`;
-
-const RESET_MUTATION = /* GraphQL */ `
-    mutation SelfHostedAuthResetPassword($email: String!, $code: String!, $password: String!) {
-        selfHostedAuthResetPassword(email: $email, code: $code, password: $password) {
-            data
-            error {
-                code
-                message
-            }
-        }
-    }
-`;
 
 const readToken = (): string | null => {
     try {
@@ -78,7 +34,6 @@ const clearToken = () => {
 };
 
 class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
-    private graphqlUrl = "";
     private passwordResetEnabled = true;
     private initialized = false;
 
@@ -93,7 +48,8 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
 
     constructor(
         private identity: IdentityContext.Interface,
-        private logInUseCase: LogInUseCase.Interface
+        private logInUseCase: LogInUseCase.Interface,
+        private gateway: SelfHostedAuthGateway.Interface
     ) {
         makeAutoObservable(this);
     }
@@ -135,7 +91,6 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
         }
 
         this.initialized = true;
-        this.graphqlUrl = params.graphqlUrl;
         this.passwordResetEnabled = params.passwordResetEnabled;
 
         void this.restoreSession();
@@ -161,10 +116,7 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
         this.signingIn = true;
 
         try {
-            const result = await this.mutate<{ token?: string }>(LOGIN_MUTATION, {
-                email,
-                password
-            });
+            const result = await this.gateway.signIn({ email, password });
 
             if (result.error || !result.data?.token) {
                 this.fail("Sign in failed", result.error?.message ?? "Invalid email or password.");
@@ -200,7 +152,7 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
         this.formLoading = true;
 
         try {
-            const result = await this.mutate(RESET_MUTATION, {
+            const result = await this.gateway.resetPassword({
                 email: this.resetEmail,
                 code,
                 password
@@ -238,7 +190,7 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
         this.formLoading = true;
 
         try {
-            const result = await this.mutate(REQUEST_RESET_MUTATION, { email: this.resetEmail });
+            const result = await this.gateway.requestResetCode({ email: this.resetEmail });
 
             // Mail that is not configured is the installation's problem rather than the user's,
             // and the message names the CLI command that still works, so it reads as guidance
@@ -297,33 +249,6 @@ class SelfHostedAuthPresenterImpl implements PresenterAbstraction.Interface {
     private fail(title: string, text: string): void {
         this.message = { title, text, type: "danger" };
     }
-
-    private async mutate<TData = boolean>(
-        query: string,
-        variables: Record<string, unknown>
-    ): Promise<MutationPayload<TData>> {
-        const response = await fetch(this.graphqlUrl, {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ query, variables })
-        });
-
-        const body = await response.json();
-
-        if (body?.errors?.length) {
-            throw new Error(body.errors[0].message);
-        }
-
-        // One mutation per document, so whatever field came back is the one that was asked for.
-        const payloads: MutationPayload<TData>[] = Object.values(body?.data ?? {});
-        const payload = payloads[0];
-
-        if (!payload) {
-            throw new Error("The API returned an unexpected response.");
-        }
-
-        return payload;
-    }
 }
 
 const toMessage = (err: unknown, fallback: string): string => {
@@ -332,5 +257,5 @@ const toMessage = (err: unknown, fallback: string): string => {
 
 export const SelfHostedAuthPresenter = PresenterAbstraction.createImplementation({
     implementation: SelfHostedAuthPresenterImpl,
-    dependencies: [IdentityContext, LogInUseCase]
+    dependencies: [IdentityContext, LogInUseCase, SelfHostedAuthGateway]
 });

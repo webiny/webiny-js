@@ -39,7 +39,7 @@ export interface SelfHostedAuthVM {
 }
 
 export interface SelfHostedAuthInitParams {
-    graphqlUrl: string;
+    /** Whether the project left the emailed reset flow on. Baked into the bundle at build time. */
     passwordResetEnabled: boolean;
 }
 

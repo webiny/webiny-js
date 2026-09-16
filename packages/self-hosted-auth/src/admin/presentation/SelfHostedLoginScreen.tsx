@@ -21,7 +21,6 @@ import { SetNewPassword } from "./components/SetNewPassword.js";
 export { SELF_HOSTED_AUTH_TOKEN_KEY } from "./SelfHostedAuthPresenter.js";
 
 export interface SelfHostedLoginScreenProps {
-    graphqlUrl: string;
     /** Whether the project left the emailed reset flow on. Baked into the bundle at build time. */
     passwordResetEnabled: boolean;
     children: React.ReactNode;
@@ -31,10 +30,7 @@ export const SelfHostedLoginScreen = observer((props: SelfHostedLoginScreenProps
     const { presenter } = useFeature(SelfHostedAuthFeature);
 
     useEffect(() => {
-        presenter.init({
-            graphqlUrl: props.graphqlUrl,
-            passwordResetEnabled: props.passwordResetEnabled
-        });
+        presenter.init({ passwordResetEnabled: props.passwordResetEnabled });
         // Once, on mount. `init` guards itself, since an effect re-runs on a hot reload.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
