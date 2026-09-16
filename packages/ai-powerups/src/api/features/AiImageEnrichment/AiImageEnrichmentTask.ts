@@ -2,18 +2,19 @@ import { Output } from "ai";
 import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "~/api/features/Capabilities/index.js";
+import { FM_IMAGE_ENRICHMENT_CAPABILITY } from "./capability.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
-
-const AI_PROMPT =
-    "Analyze this image and return up to 5 lowercase descriptive tags and one short sentence describing the image.";
 
 const aiOutputSchema = Output.object({
     schema: z.object({
@@ -41,8 +42,8 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         private fmSettings: FmGetSettingsUseCase.Interface,
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface,
+        private resolveCapability: ResolveAiCapabilityUseCase.Interface,
+        private logger: Logger.Interface,
         private identityContext: IdentityContext.Interface,
         private sendToIdentity: WebsocketsSendToIdentityUseCase.Interface
     ) {}
@@ -74,34 +75,31 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
         const imageUrl = `${srcPrefix}${file.key}`;
 
-        const aiSettingsResult = await this.getSettings.execute();
+        const resolved = await this.resolveCapability.execute(FM_IMAGE_ENRICHMENT_CAPABILITY);
 
-        if (aiSettingsResult.isFail()) {
-            return controller.response.error({
-                message: "No AI provider configured. Add a provider in AI Power Ups settings."
-            });
+        if (resolved.isFail()) {
+            /*
+             * A skip, not a failure. This feature is not licence-gated on this branch, so every
+             * project that uploads an image without AI configured would otherwise get a failed task
+             * on every upload. Today's behaviour for an unconfigured provider is the same soft
+             * done; the log is new, because a skip and a misconfiguration used to look identical.
+             */
+            this.logger.warn(
+                { fileId: input.fileId, reason: resolved.error.message },
+                "Skipping AI image enrichment."
+            );
+            return controller.response.done(resolved.error.message);
         }
 
-        const aiSettings = aiSettingsResult.value;
-
-        const firstProvider = aiSettings.providers.presets[0];
-
-        if (!firstProvider) {
-            return controller.response.done({
-                message: "No AI provider configured. Add a provider in AI Power Ups settings."
-            });
-        }
+        const capability = resolved.value;
 
         let tags: string[] = [];
         let description = "";
         try {
             const aiResult = await this.ai.generateText({
-                model: firstProvider.model,
+                model: capability.model,
                 output: aiOutputSchema,
-                connection: {
-                    sdkName: firstProvider.model.split("/")[0],
-                    apiKey: await this.encryption.decrypt(firstProvider.apiKeyEncrypted)
-                },
+                connection: capability.connection,
                 messages: [
                     {
                         role: "user",
@@ -112,7 +110,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
                             },
                             {
                                 type: "text",
-                                text: AI_PROMPT
+                                text: withAdditionalInstructions(capability)
                             }
                         ]
                     }
@@ -166,8 +164,8 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         FmGetSettingsUseCase,
         UpdateFileUseCase,
         Ai,
-        GetSettingsUseCase,
-        Encryption,
+        ResolveAiCapabilityUseCase,
+        Logger,
         IdentityContext,
         WebsocketsSendToIdentityUseCase
     ]

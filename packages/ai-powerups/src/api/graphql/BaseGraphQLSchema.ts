@@ -5,6 +5,7 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
+import { ListAiCapabilitiesUseCase } from "~/api/features/Capabilities/index.js";
 import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
 import {
     WB_GENERATE_PAGE_CONTENT_TASK_ID,
@@ -29,8 +30,16 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 endOfLife: Date
             }
 
+            type AiCapability {
+                id: String!
+                label: String!
+                description: String!
+                defaultRole: String!
+            }
+
             type AiPowerUpsQuery {
                 listModels: [AiModel!]!
+                listCapabilities: [AiCapability!]!
                 getSettings: JSON
             }
 
@@ -93,6 +102,18 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             dependencies: [AiModelRegistry],
             resolver: (registry: AiModelRegistry.Interface) => {
                 return async () => registry.listModels();
+            }
+        });
+
+        /*
+         * Whatever features registered. The admin screen has no list of its own, so a feature that
+         * registers a capability gets a settings row without touching the admin app.
+         */
+        builder.addResolver({
+            path: "AiPowerUpsQuery.listCapabilities",
+            dependencies: [ListAiCapabilitiesUseCase],
+            resolver: (useCase: ListAiCapabilitiesUseCase.Interface) => {
+                return async () => useCase.execute();
             }
         });
 
