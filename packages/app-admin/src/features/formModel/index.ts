@@ -127,6 +127,9 @@ export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
 // Renderer factory
 export { createFieldRenderer, createObjectFieldRenderer } from "./createFieldRenderer.js";
 
+// Focus helpers
+export { hasSubtreeFocusRequest } from "./hasSubtreeFocusRequest.js";
+
 // View
 export { FormErrors } from "./FormErrors.js";
 export { PresenterErrors } from "./PresenterErrors.js";
