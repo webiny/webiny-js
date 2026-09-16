@@ -4,7 +4,7 @@ import type { Column, RowData } from "@tanstack/react-table";
 import { IconButton } from "~/Button/index.js";
 import { Checkbox } from "~/Checkbox/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
-import type {Features} from "../DataTable.js"
+import type { Features } from "../DataTable.js";
 
 interface ColumnsVisibilityProps<T extends RowData> {
     columns: Column<Features, T>[];
@@ -29,10 +29,10 @@ export const ColumnsVisibility = <T extends RowData>(props: ColumnsVisibilityPro
         if (typeof header === "string") {
             return header;
         }
-        
+
         if (typeof header === "function") {
             const flatHeader = column.table.getFlatHeaders().find(h => h.column.id === column.id);
-            
+
             if (flatHeader) {
                 return header(flatHeader.getContext());
             }
