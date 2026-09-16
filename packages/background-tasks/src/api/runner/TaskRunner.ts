@@ -11,7 +11,7 @@ import { TaskController } from "@webiny/api-core/features/task/TaskController/ab
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TaskExecutionContext } from "~/api/features/TaskExecutionContext/index.js";
 import { TasksCrud } from "~/api/TasksCrud.js";
-import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
+import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
 import type { ITaskControlDependencies } from "./TaskControl.js";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
@@ -82,7 +82,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             taskExecutionContext: container.resolve(TaskExecutionContext),
             tasksCrud: container.resolve(TasksCrud),
             taskController: container.resolve(TaskController),
-            getTaskDefinition: container.resolve(GetTaskDefinitionUseCase)
+            getRunnableTaskDefinition: container.resolve(GetRunnableTaskDefinitionUseCase)
         };
         const logger = deps.logger;
         const control = new TaskControl(this, response, this.context, deps);

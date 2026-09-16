@@ -4,7 +4,10 @@ import { createMockEvent } from "~tests/mocks";
 import { createLiveContextFactory } from "~tests/live";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Container } from "@webiny/di";
 
 /**
@@ -16,6 +19,18 @@ describe("the definition in run params", () => {
     it("passes the definition to run", async () => {
         let seen: Record<string, any> | undefined;
 
+        class TestTaskHandlerImpl implements TaskHandler.Interface {
+            async run({ controller, definition }: TaskHandler.RunParams) {
+                seen = definition as Record<string, any>;
+                return controller.response.done("Done");
+            }
+        }
+
+        const TestTaskHandler = TaskHandler.createImplementation({
+            implementation: TestTaskHandlerImpl,
+            dependencies: []
+        });
+
         class TestTask implements TaskDefinition.Interface {
             id = "definitionInParams";
             title = "Definition In Params";
@@ -25,10 +40,7 @@ describe("the definition in run params", () => {
             // currently survive, because the decorators are fixed pass-throughs.
             rateLimit = 10;
 
-            async run({ controller, definition }: TaskDefinition.RunParams) {
-                seen = definition as Record<string, any>;
-                return controller.response.done("Done");
-            }
+            handler = TestTaskHandler;
         }
 
         const TestTaskDefinition = TaskDefinition.createImplementation({
@@ -65,9 +77,8 @@ describe("the definition in run params", () => {
         expect(seen!.title).toBe("Definition In Params");
         expect(seen!.maxIterations).toBe(7);
 
-        // KNOWN GAP, pinned deliberately. RunnableTaskDecorator and SelfCleaningTaskDecorator
-        // expose a fixed set of getters, so a field the framework does not know about is dropped
-        // during decoration. If someone makes the decorators forward unknown properties, this
+        // KNOWN GAP, pinned deliberately. TaskDefinitionDefaultsDecorator exposes a fixed set of
+        // getters, so a field the framework does not know about is dropped during decoration. If someone makes the decorators forward unknown properties, this
         // assertion fails and should become `toBe(10)` — that is the intended end state, because a
         // definition is the natural place to declare policy a decorator acts on.
         expect(seen!.rateLimit).toBeUndefined();
@@ -77,14 +88,22 @@ describe("the definition in run params", () => {
         const seenIds: string[] = [];
 
         const makeTask = (id: string) => {
-            class TestTask implements TaskDefinition.Interface {
-                id = id;
-                title = id;
-
-                async run({ controller, definition }: TaskDefinition.RunParams) {
+            class TestTaskHandlerImpl implements TaskHandler.Interface {
+                async run({ controller, definition }: TaskHandler.RunParams) {
                     seenIds.push(definition.id);
                     return controller.response.done("Done");
                 }
+            }
+
+            const TestTaskHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandlerImpl,
+                dependencies: []
+            });
+
+            class TestTask implements TaskDefinition.Interface {
+                id = id;
+                title = id;
+                handler = TestTaskHandler;
             }
 
             return TaskDefinition.createImplementation({

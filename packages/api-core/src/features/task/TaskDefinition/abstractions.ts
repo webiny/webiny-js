@@ -27,13 +27,14 @@ export interface ITaskOutput {
  * wraps every task; without this it has nothing to branch on but a hardcoded list of ids, which
  * means editing the decorator every time a task is added.
  *
- * This is {@link ITaskMetadata}: identity and policy, no behaviour. The object passed at runtime is
- * the resolved task, so `run` is physically present; naming the metadata type here stops the obvious
- * mistake of a handler calling `params.definition.run(...)` and recursing forever.
+ * This is {@link ITaskMetadata}: identity and policy, no behaviour and no handler pointer. The
+ * object passed at runtime is the resolved task, so `run` is physically present; naming the metadata
+ * type here stops the obvious mistake of a handler calling `params.definition.run(...)` and
+ * recursing forever.
  *
  * Only the fields declared here arrive. A field a project adds to its own definition class is
- * currently dropped, because `RunnableTaskDecorator` and `SelfCleaningTaskDecorator` are fixed
- * pass-throughs that expose a known set of getters and nothing else. Making them forward unknown
+ * currently dropped, because `TaskDefinitionDefaultsDecorator` is a fixed pass-through that
+ * exposes a known set of getters and nothing else. Making them forward unknown
  * properties would turn a definition into a place to declare policy (a rate limit, a set of tags)
  * that a decorator acts on; `taskDefinitionInParams.test.ts` pins the current behaviour so that
  * change announces itself.
@@ -127,7 +128,7 @@ export type ITaskLifecycleHook<
  * What a task IS: identity and runtime policy, with no behaviour and no dependencies.
  *
  * Listing tasks, resolving one by id, and applying defaults all need only this. Keeping it free of
- * dependencies is the whole point — `GetTaskDefinitionUseCase` builds every registered definition
+ * dependencies is the whole point — `GetRunnableTaskDefinitionUseCase` builds every registered definition
  * to find one by id, so anything expensive here is paid 24 times per lookup.
  */
 export interface ITaskMetadata {
@@ -176,26 +177,17 @@ export interface ITaskHandler<
 }
 
 /**
- * Core TaskDefinition - minimal interface
+ * What you register: a task's {@link ITaskMetadata} plus the class that does the work.
  *
- * TRANSITIONAL SHAPE. A definition supplies its behaviour in one of two ways:
- *
- *  - the new way: `handler` names a {@link ITaskHandler} class, which the runner builds only for the
- *    task it is about to run;
- *  - the old way: the definition implements `run()` and the hooks itself, which forces every
- *    definition (and every dependency it injects) to be built just to look one up by id.
- *
- * `run` is optional ONLY to let both shapes coexist while packages migrate. Once every definition
- * carries a `handler`, this interface becomes `ITaskMetadata & { handler }` and the optionality
- * goes away. Exactly one of `run` or `handler` must be present; `GetTaskDefinitionUseCase` fails
- * with {@link TaskDefinitionNotRunnableError} if neither is.
+ * The definition takes no dependencies of its own, so `GetRunnableTaskDefinitionUseCase` can build every
+ * registered one to find a task by id without constructing anything expensive. Only the winner's
+ * `handler` gets built.
  */
 export interface ITaskDefinition<
     I extends ITaskInput = ITaskInput,
     O extends ITaskOutput = ITaskOutput
->
-    extends ITaskMetadata, Partial<ITaskHandler<I, O>> {
-    handler?: Constructor<ITaskHandler<I, O>>;
+> extends ITaskMetadata {
+    handler: Constructor<ITaskHandler<I, O>>;
 }
 
 export interface ITaskCreateInputValidationParams {
