@@ -88,6 +88,19 @@ export class MailerNotConfiguredError extends BaseError {
 }
 
 /**
+ * The credential store could not be read or written. Its own error rather than a raw throw, for the
+ * same reason as the one below: a database being down should arrive at the caller as something it
+ * can report, not as an exception thrown through a resolver.
+ */
+export class CredentialsPersistenceError extends BaseError {
+    override readonly code = "CREDENTIALS_PERSISTENCE_ERROR" as const;
+
+    constructor() {
+        super({ message: "Could not reach the credential store. Try again later." });
+    }
+}
+
+/**
  * The reset code store could not be read or written. Its own error rather than a raw throw, so a
  * database being down arrives at the resolver as a result the caller can report, the way every
  * other repository in the codebase reports persistence failures.

@@ -6,7 +6,7 @@ import { RequestPasswordResetUseCase as UseCaseAbstraction } from "./abstraction
 import type { RequestPasswordResetInput } from "./abstractions.js";
 import { MailerNotConfiguredError } from "~/api/domain/errors.js";
 import { TooManyResetRequestsError } from "~/api/domain/errors.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import type { StoredPasswordResetCode } from "~/api/storage/passwordResetCodes.js";
 import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCodeGenerator.js";
@@ -19,7 +19,7 @@ import { RESET_REQUEST_WINDOW_MINUTES } from "~/api/domain/passwordResetPolicy.j
 class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private codes: PasswordResetCodesRepository.Interface,
-        private credentials: CredentialsStorageOperations.Interface,
+        private credentials: CredentialsRepository.Interface,
         private generator: PasswordResetCodeGenerator.Interface,
         private hasher: Hasher.Interface,
         private mailer: PasswordResetMailer.Interface,
@@ -82,7 +82,12 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Looked up with the address as typed, because that is how `LoginUseCase` looks it up. A
         // user whose case does not match cannot sign in either, so the two agree.
-        const credential = await this.credentials.getCredentialByEmail({ email });
+        const found = await this.credentials.getByEmail({ email });
+        if (found.isFail()) {
+            return Result.fail(found.error);
+        }
+
+        const credential = found.value;
         if (credential) {
             const sent = await this.mailer.send({ email: credential.email, code });
 
@@ -105,7 +110,7 @@ export const RequestPasswordResetUseCase = UseCaseAbstraction.createImplementati
     implementation: RequestPasswordResetUseCaseImpl,
     dependencies: [
         PasswordResetCodesRepository,
-        CredentialsStorageOperations,
+        CredentialsRepository,
         PasswordResetCodeGenerator,
         Hasher,
         PasswordResetMailer,

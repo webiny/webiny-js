@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { MailerNotConfiguredError } from "~/api/domain/errors.js";
+import type { CredentialsPersistenceError } from "~/api/domain/errors.js";
 import type { PasswordResetPersistenceError } from "~/api/domain/errors.js";
 import type { TooManyResetRequestsError } from "~/api/domain/errors.js";
 
@@ -11,7 +12,8 @@ export interface RequestPasswordResetInput {
 export type RequestPasswordResetError =
     | MailerNotConfiguredError
     | TooManyResetRequestsError
-    | PasswordResetPersistenceError;
+    | PasswordResetPersistenceError
+    | CredentialsPersistenceError;
 
 export interface IRequestPasswordResetUseCase {
     execute(input: RequestPasswordResetInput): Promise<Result<true, RequestPasswordResetError>>;

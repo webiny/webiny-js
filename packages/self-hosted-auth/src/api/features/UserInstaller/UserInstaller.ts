@@ -5,7 +5,7 @@ import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole
 import { CreateUserUseCase } from "@webiny/api-core/features/users/CreateUser/index.js";
 import { DeleteUserUseCase } from "@webiny/api-core/features/users/DeleteUser/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 
 interface UserInstallationData {
     firstName: string;
@@ -33,7 +33,7 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
         private createUserUseCase: CreateUserUseCase.Interface,
         private setPasswordUseCase: SetPasswordUseCase.Interface,
         private deleteUserUseCase: DeleteUserUseCase.Interface,
-        private credentials: CredentialsStorageOperations.Interface
+        private credentials: CredentialsRepository.Interface
     ) {}
 
     async install(_tenant: Tenant, data: UserInstallationData): Promise<void> {
@@ -77,9 +77,7 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
         }
 
         // Deleting the user does not cascade to credentials, so remove both.
-        await this.credentials.deleteCredential({
-            userId: this.createdUser.id
-        });
+        await this.credentials.delete({ userId: this.createdUser.id });
         await this.deleteUserUseCase.execute(this.createdUser.id);
         this.createdUser = undefined;
     }
@@ -92,6 +90,6 @@ export const UserInstaller = AppInstaller.createImplementation({
         CreateUserUseCase,
         SetPasswordUseCase,
         DeleteUserUseCase,
-        CredentialsStorageOperations
+        CredentialsRepository
     ]
 });

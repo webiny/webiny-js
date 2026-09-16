@@ -3,7 +3,7 @@ import { z } from "zod";
 import { SetPasswordUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { SetPasswordInput } from "./abstractions.js";
 import { WeakPasswordError } from "~/api/domain/errors.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import type { StorageCredential } from "~/api/storage/abstractions.js";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 
@@ -11,7 +11,7 @@ const passwordPolicy = z.string().min(8);
 
 class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private credentials: CredentialsStorageOperations.Interface,
+        private credentials: CredentialsRepository.Interface,
         private hasher: Hasher.Interface
     ) {}
 
@@ -27,9 +27,12 @@ class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const passwordHash = await this.hasher.hash(input.password);
 
-        const existing = await this.credentials.getCredentialByUserId({
-            userId: input.userId
-        });
+        const found = await this.credentials.getByUserId({ userId: input.userId });
+        if (found.isFail()) {
+            return Result.fail(found.error);
+        }
+
+        const existing = found.value;
 
         const now = nowIso();
         const credential: StorageCredential = {
@@ -40,7 +43,10 @@ class SetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
             updatedOn: now
         };
 
-        await this.credentials.saveCredential({ credential });
+        const saved = await this.credentials.save({ credential });
+        if (saved.isFail()) {
+            return Result.fail(saved.error);
+        }
 
         return Result.ok(true);
     }
@@ -51,5 +57,5 @@ const nowIso = () => new Date().toISOString();
 
 export const SetPasswordUseCase = UseCaseAbstraction.createImplementation({
     implementation: SetPasswordUseCaseImpl,
-    dependencies: [CredentialsStorageOperations, Hasher]
+    dependencies: [CredentialsRepository, Hasher]
 });

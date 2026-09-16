@@ -3,13 +3,13 @@ import { CliResetPasswordUseCase as UseCaseAbstraction } from "./abstractions.js
 import type { CliResetPasswordInput } from "./abstractions.js";
 import { CredentialNotFoundForEmailError, InvalidResetTokenError } from "~/api/domain/errors.js";
 import { CliResetTokenVerifier } from "~/api/domain/crypto/CliResetTokenVerifier.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 
 class CliResetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private tokenVerifier: CliResetTokenVerifier.Interface,
-        private credentials: CredentialsStorageOperations.Interface,
+        private credentials: CredentialsRepository.Interface,
         private setPasswordUseCase: SetPasswordUseCase.Interface
     ) {}
 
@@ -22,7 +22,12 @@ class CliResetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
         // The token names the account, so the caller cannot redirect the reset at another
         // user by tampering with the request, only by minting a new token, which needs the
         // signing secret.
-        const credential = await this.credentials.getCredentialByEmail({ email: claims.email });
+        const found = await this.credentials.getByEmail({ email: claims.email });
+        if (found.isFail()) {
+            return Result.fail(found.error);
+        }
+
+        const credential = found.value;
         if (!credential) {
             return Result.fail(new CredentialNotFoundForEmailError(claims.email));
         }
@@ -39,5 +44,5 @@ class CliResetPasswordUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CliResetPasswordUseCase = UseCaseAbstraction.createImplementation({
     implementation: CliResetPasswordUseCaseImpl,
-    dependencies: [CliResetTokenVerifier, CredentialsStorageOperations, SetPasswordUseCase]
+    dependencies: [CliResetTokenVerifier, CredentialsRepository, SetPasswordUseCase]
 });

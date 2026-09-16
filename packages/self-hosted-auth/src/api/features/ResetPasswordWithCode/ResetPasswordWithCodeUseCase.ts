@@ -3,7 +3,7 @@ import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { ResetPasswordWithCodeUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { ResetPasswordWithCodeInput } from "./abstractions.js";
 import { InvalidResetCodeError } from "~/api/domain/errors.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { PasswordResetCodesRepository } from "~/api/repositories/PasswordResetCodesRepository.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
@@ -12,7 +12,7 @@ import { RESET_CODE_MAX_ATTEMPTS } from "~/api/domain/passwordResetPolicy.js";
 class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private codes: PasswordResetCodesRepository.Interface,
-        private credentials: CredentialsStorageOperations.Interface,
+        private credentials: CredentialsRepository.Interface,
         private hasher: Hasher.Interface,
         private setPasswordUseCase: SetPasswordUseCase.Interface
     ) {}
@@ -61,7 +61,12 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
     }): Promise<Result<true, UseCaseAbstraction.Error>> {
         const { email, key, password, now } = params;
 
-        const credential = await this.credentials.getCredentialByEmail({ email });
+        const found = await this.credentials.getByEmail({ email });
+        if (found.isFail()) {
+            return Result.fail(found.error);
+        }
+
+        const credential = found.value;
         if (!credential) {
             // A code exists for an address with no account, which is the ordinary outcome of
             // somebody requesting a reset for an address that was never registered. Reported as an
@@ -96,10 +101,5 @@ class ResetPasswordWithCodeUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ResetPasswordWithCodeUseCase = UseCaseAbstraction.createImplementation({
     implementation: ResetPasswordWithCodeUseCaseImpl,
-    dependencies: [
-        PasswordResetCodesRepository,
-        CredentialsStorageOperations,
-        Hasher,
-        SetPasswordUseCase
-    ]
+    dependencies: [PasswordResetCodesRepository, CredentialsRepository, Hasher, SetPasswordUseCase]
 });

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Container, Result } from "@webiny/feature/api";
 import { CliResetTokenVerifier } from "~/api/domain/crypto/CliResetTokenVerifier.js";
 import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepositoryFeature } from "~/api/repositories/CredentialsRepository.js";
 import type { StorageCredential } from "~/api/storage/abstractions.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
 import {
@@ -34,6 +35,8 @@ const setup = (options: SetupOptions = {}) => {
     container.registerInstance(CliResetTokenVerifier, {
         verify: () => (options.claims === undefined ? { email: EMAIL } : options.claims)
     });
+
+    CredentialsRepositoryFeature.register(container);
 
     container.registerInstance(CredentialsStorageOperations, {
         getCredentialByEmail,

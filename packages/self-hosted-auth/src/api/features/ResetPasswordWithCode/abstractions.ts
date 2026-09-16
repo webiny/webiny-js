@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { InvalidResetCodeError } from "~/api/domain/errors.js";
+import type { CredentialsPersistenceError } from "~/api/domain/errors.js";
 import type { PasswordResetPersistenceError } from "~/api/domain/errors.js";
 import type { NotAuthorizedError } from "~/api/domain/errors.js";
 import type { WeakPasswordError } from "~/api/domain/errors.js";
@@ -15,7 +16,8 @@ export type ResetPasswordWithCodeError =
     | InvalidResetCodeError
     | WeakPasswordError
     | NotAuthorizedError
-    | PasswordResetPersistenceError;
+    | PasswordResetPersistenceError
+    | CredentialsPersistenceError;
 
 export interface IResetPasswordWithCodeUseCase {
     execute(input: ResetPasswordWithCodeInput): Promise<Result<true, ResetPasswordWithCodeError>>;

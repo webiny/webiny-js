@@ -19,6 +19,7 @@ Read every rule in this folder before writing or editing code.
 | [one-public-function-per-file.md](./one-public-function-per-file.md)                                   | One exported function per file; composition steps always get their own.                 |
 | [prefer-type-annotation-over-cast.md](./prefer-type-annotation-over-cast.md)                           | Annotate the variable; never add parens just to cast an expression.                     |
 | [no-container-as-service-locator.md](./no-container-as-service-locator.md)                             | Declare dependencies; don't inject a Container and resolve inside methods.              |
+| [use-cases-go-through-repositories.md](./use-cases-go-through-repositories.md)                         | Use cases depend on a repository; only it touches storage operations.                   |
 | [no-stateless-private-methods.md](./no-stateless-private-methods.md)                                   | A private method that never reads `this` becomes a module-level function.               |
 | [presenter-owns-component-state.md](./presenter-owns-component-state.md)                               | Non-trivial component state goes in a presenter, reached via `useFeature`.              |
 | [reach-abstractions-through-the-namespace.md](./reach-abstractions-through-the-namespace.md)           | Use `Foo.Interface`; don't re-export the `IFoo` behind it.                              |

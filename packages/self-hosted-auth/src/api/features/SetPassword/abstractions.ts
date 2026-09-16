@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { WeakPasswordError, NotAuthorizedError } from "~/api/domain/errors.js";
+import type { CredentialsPersistenceError } from "~/api/domain/errors.js";
 
 export interface SetPasswordInput {
     userId: string;
@@ -8,7 +9,7 @@ export interface SetPasswordInput {
     password: string;
 }
 
-export type SetPasswordError = WeakPasswordError | NotAuthorizedError;
+export type SetPasswordError = WeakPasswordError | NotAuthorizedError | CredentialsPersistenceError;
 
 export interface ISetPasswordUseCase {
     execute(input: SetPasswordInput): Promise<Result<true, SetPasswordError>>;
