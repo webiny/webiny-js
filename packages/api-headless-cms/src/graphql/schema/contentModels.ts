@@ -172,6 +172,7 @@ export const createModelsSchema = ({
                 type: String!
                 tags: [String!]
                 list: Boolean
+                disabled: Boolean
                 predefinedValues: CmsPredefinedValuesInput
                 renderer: CmsFieldRendererInput
                 validation: [CmsFieldValidationInput]
@@ -289,6 +290,7 @@ export const createModelsSchema = ({
                 type: String!
                 tags: [String!]!
                 list: Boolean
+                disabled: Boolean
                 predefinedValues: CmsPredefinedValues
                 renderer: CmsFieldRenderer
                 validation: [CmsFieldValidation!]
