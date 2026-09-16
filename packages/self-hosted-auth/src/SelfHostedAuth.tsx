@@ -87,6 +87,14 @@ export const SelfHostedAuth = defineExtension({
                 )}
                 {/* Tells the install wizard's admin-user step which AppInstaller to target. */}
                 <EnvVar varName="REACT_APP_AUTH_INSTALLER_APP_NAME" value="SelfHostedAuth" />
+                {/* The same flag as the build param above, in the one form the login screen can
+                    read it: the screen renders before authentication and has no API call it could
+                    ask, so "is there a reset flow" has to be baked into the bundle. Without this
+                    the screen would offer a link to mutations that are not in the schema. */}
+                <EnvVar
+                    varName="REACT_APP_SELF_HOSTED_EMAIL_PASSWORD_RESET"
+                    value={emailPasswordResetEnabled ? "true" : "false"}
+                />
                 {/* Admin login screen (loaded by path, not imported here). */}
                 <AdminExtension src={import.meta.dirname + "/admin/Extension.js"} />
             </>
