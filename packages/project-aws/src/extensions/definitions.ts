@@ -3,7 +3,7 @@ import { ApiRoute } from "./ApiRoute.js";
 import { OpenSearch } from "./OpenSearch.js";
 import { Encryption } from "./Encryption.js";
 import { Smtp as MailerSmtp } from "./Mailer/Smtp.js";
-import { type ExtensionDefinitionModel } from "@webiny/project/defineExtension";
+import { type ExtensionDefinitionModel } from "@webiny/project/defineExtension/index.js";
 
 const definitions = [
     ApiLambdaFunction.def,
