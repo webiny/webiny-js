@@ -41,7 +41,7 @@ export interface ITaskControlDependencies {
     taskExecutionContext: TaskExecutionContext.Interface;
     tasksCrud: TasksCrud.Interface;
     taskController: TaskController.Interface;
-    getTaskDefinition: GetRunnableTaskDefinitionUseCase.Interface;
+    getRunnableTaskDefinition: GetRunnableTaskDefinitionUseCase.Interface;
 }
 
 export class TaskControl implements ITaskControl {
@@ -95,7 +95,7 @@ export class TaskControl implements ITaskControl {
         /**
          * Let's get the task definition.
          */
-        const definitionResult = this.deps.getTaskDefinition.execute(task.definitionId);
+        const definitionResult = this.deps.getRunnableTaskDefinition.execute(task.definitionId);
         if (definitionResult.isFail()) {
             return this.response.error({
                 error: {

@@ -82,7 +82,7 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
             taskExecutionContext: container.resolve(TaskExecutionContext),
             tasksCrud: container.resolve(TasksCrud),
             taskController: container.resolve(TaskController),
-            getTaskDefinition: container.resolve(GetRunnableTaskDefinitionUseCase)
+            getRunnableTaskDefinition: container.resolve(GetRunnableTaskDefinitionUseCase)
         };
         const logger = deps.logger;
         const control = new TaskControl(this, response, this.context, deps);
