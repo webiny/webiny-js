@@ -212,6 +212,19 @@ export class Field implements IField {
         this._disabled = value;
     }
 
+    /**
+     * `form.field()` throws for a path it can't resolve, which happens while a form is
+     * still being assembled. Ancestor lookups treat that as "no parent" rather than
+     * failing the render.
+     */
+    private _safeGetField(name: string): IField | undefined {
+        try {
+            return this._form?.field(name);
+        } catch {
+            return undefined;
+        }
+    }
+
     private _evaluateRules(): { visible: boolean; disabled: boolean } {
         if (!this._form) {
             return { visible: true, disabled: false };
@@ -251,6 +264,17 @@ export class Field implements IField {
     get disabled(): boolean {
         if (this._disabled) {
             return true;
+        }
+        /**
+         * Disabling a container disables everything inside it, the way a disabled
+         * fieldset does in HTML. Without this, marking an object field disabled would
+         * grey out the container while leaving every child editable.
+         */
+        if (this._parentPath && this._form) {
+            const parent = this._safeGetField(this._parentPath);
+            if (parent?.disabled) {
+                return true;
+            }
         }
         if (this._form && this._disabledWhenCallbacks.length > 0) {
             const scoped = this._callbackParams();
