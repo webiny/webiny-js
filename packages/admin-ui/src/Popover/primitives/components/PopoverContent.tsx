@@ -4,15 +4,18 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 
 const popoverContentVariants = cva(
     [
-        "bg-neutral-base rounded-sm shadow-md overflow-hidden outline-none z-popover",
+        "bg-neutral-elevated rounded-sm shadow-md overflow-hidden outline-none z-popover",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 origin-(--radix-popover-content-transform-origin)",
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
     ],
     {
         variants: {
             variant: {
-                accent: "bg-neutral-dark text-neutral-light border-neutral-black",
-                subtle: "bg-neutral-base text-neutral-primary border-neutral-muted"
+                // Border matches the surface, as in light. Not `border-neutral-black`:
+                // that token is shared with the input focus rings and flips to white in
+                // dark, which outlined the popover instead of blending.
+                accent: "bg-neutral-dark text-neutral-light border-[var(--color-neutral-dark)]",
+                subtle: "bg-neutral-elevated text-neutral-primary border-neutral-muted"
             },
             arrow: {
                 true: [

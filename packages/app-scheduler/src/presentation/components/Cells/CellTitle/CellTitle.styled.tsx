@@ -8,7 +8,8 @@ export const RowTitle = styled("div")`
 
 export const RowIcon = styled("div")`
     margin-right: 8px;
-    height: 24px;
+    display: flex;
+    align-items: center;
 `;
 
 export const RowText = styled(Text)`

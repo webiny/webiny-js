@@ -12,7 +12,9 @@ export const PageFormWorkflowState = observer(() => {
 
     return (
         <div
-            className={"max-w-screen bg-white p-sm border-solid border-b-sm border-neutral-dimmed"}
+            className={
+                "max-w-screen bg-neutral-base p-sm border-solid border-b-sm border-neutral-dimmed"
+            }
             data-affects-preview={"height"}
         >
             <WorkflowStateBar />

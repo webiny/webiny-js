@@ -74,8 +74,8 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 // bg color. We achieve that with a pseudo element. Dirty but it works well.
                 "relative",
                 "before:absolute before:inset-0 before:pointer-events-none before:rounded-[inherit]",
-                "before:bg-neutral-dark/0 before:transition-colors",
-                "hover:before:bg-neutral-dark/2",
+                "before:bg-neutral-overlay/0 before:transition-colors",
+                "hover:before:bg-neutral-overlay/2",
 
                 // These are useful for nested accordions.
                 background === "base" && "has-[.group-item:hover]:bg-neutral-base",

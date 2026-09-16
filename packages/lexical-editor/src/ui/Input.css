@@ -16,7 +16,7 @@
 .Input__label {
   display: flex;
   flex: 1;
-  color: #666;
+  color: var(--text-color-neutral-muted);
 }
 .Input__input {
   display: flex;

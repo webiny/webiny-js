@@ -1,4 +1,5 @@
 import React from "react";
+import { useColorScheme } from "@webiny/app-admin";
 import { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import Editor from "@monaco-editor/react";
@@ -48,8 +49,8 @@ export const BottomPanel = observer((props: BottomPanelProps) => {
     );
 
     return (
-        <div className="flex flex-col border-t border-gray-200 bg-white">
-            <div className="flex items-center justify-between px-2 bg-gray-50 border-b border-gray-200">
+        <div className="flex flex-col border-t border-neutral-dimmed bg-neutral-base">
+            <div className="flex items-center justify-between px-2 bg-neutral-subtle border-b border-neutral-dimmed">
                 <div className="flex">
                     <PanelTab
                         label="Variables"
@@ -65,7 +66,7 @@ export const BottomPanel = observer((props: BottomPanelProps) => {
                     />
                 </div>
                 <button
-                    className="p-1 hover:bg-gray-200 rounded"
+                    className="p-1 hover:bg-neutral-dimmed rounded"
                     onClick={handleToggle}
                     title={activeTab.isBottomPanelCollapsed ? "Expand" : "Collapse"}
                 >
@@ -98,8 +99,8 @@ const PanelTab = (props: PanelTabProps) => {
         <button
             className={`px-3 py-1.5 text-xs font-medium ${
                 isActive
-                    ? "text-blue-600 border-b-2 border-blue-500"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "text-accent-primary border-b-2 border-accent-default"
+                    : "text-neutral-muted hover:text-neutral-strong"
             }`}
             onClick={() => props.onSelect(props.panel)}
         >
@@ -114,10 +115,10 @@ interface CollapseIconProps {
 
 const CollapseIcon = (props: CollapseIconProps) => {
     if (props.isCollapsed) {
-        return <ExpandLessIcon className="w-4 h-4 text-gray-500" />;
+        return <ExpandLessIcon className="w-4 h-4 text-neutral-muted" />;
     }
 
-    return <ExpandMoreIcon className="w-4 h-4 text-gray-500" />;
+    return <ExpandMoreIcon className="w-4 h-4 text-neutral-muted" />;
 };
 
 interface PanelContentProps {
@@ -131,6 +132,10 @@ interface PanelContentProps {
 
 /* Renders the editor content when the panel is expanded. */
 const PanelContent = (props: PanelContentProps) => {
+    // Monaco themes itself, outside CSS — without this it defaults to "vs" (light) and
+    // stays a white editor on a dark page.
+    const monacoTheme = useColorScheme() === "dark" ? "vs-dark" : "vs";
+
     if (props.isCollapsed) {
         return null;
     }
@@ -143,6 +148,7 @@ const PanelContent = (props: PanelContentProps) => {
         <div style={{ height: 150 }}>
             <Editor
                 height="100%"
+                theme={monacoTheme}
                 defaultLanguage="json"
                 value={value}
                 onChange={onChange}

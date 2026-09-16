@@ -38,6 +38,10 @@ const contentEditableStyles: React.CSSProperties = {
 
 const styles: React.CSSProperties = {
     backgroundColor: "var(--color-neutral-base)",
+    // Must be set alongside the background: without it the text falls back to whatever it
+    // can inherit, which left black text on a dark surface. A typography class from the
+    // website theme still wins over this, so WYSIWYG previews are unaffected.
+    color: "var(--text-color-neutral-primary)",
     border: "1px solid var(--border-color-neutral-muted)",
     // The static toolbar sits directly above and carries the top border, so the body
     // drops its top border and rounds only the bottom corners — together one seamless
