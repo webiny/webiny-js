@@ -21,9 +21,6 @@ export const MESSAGE_FIELDS = /* GraphQL */ `
         mentions
         createdBy ${IDENTITY_FIELDS}
         createdOn
-        deleted
-        deletedBy ${IDENTITY_FIELDS}
-        deletedOn
     }
 `;
 
