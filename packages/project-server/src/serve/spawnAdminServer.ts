@@ -23,7 +23,7 @@ interface IRunAdminServerOptions {
  *
  * Returns the spawned child (stdio piped); the caller (e.g. the CLI) owns rendering + lifecycle.
  */
-export async function runAdminServer(
+export async function spawnAdminServer(
     app: IAppModel,
     options: IRunAdminServerOptions = {}
 ): Promise<ChildProcess> {
