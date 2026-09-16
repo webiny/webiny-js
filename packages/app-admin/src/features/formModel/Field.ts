@@ -212,6 +212,19 @@ export class Field implements IField {
         this._disabled = value;
     }
 
+    /**
+     * `form.field()` throws for a path it can't resolve, which happens while a form is
+     * still being assembled. Ancestor lookups treat that as "no parent" rather than
+     * failing the render.
+     */
+    private _safeGetField(name: string): IField | undefined {
+        try {
+            return this._form?.field(name);
+        } catch {
+            return undefined;
+        }
+    }
+
     private _evaluateRules(): { visible: boolean; disabled: boolean } {
         if (!this._form) {
             return { visible: true, disabled: false };
@@ -258,7 +271,7 @@ export class Field implements IField {
          * grey out the container while leaving every child editable.
          */
         if (this._parentPath && this._form) {
-            const parent = safeGetField(this._form, this._parentPath);
+            const parent = this._safeGetField(this._parentPath);
             if (parent?.disabled) {
                 return true;
             }
@@ -613,18 +626,5 @@ export class Field implements IField {
     /** True if a computedUntilDirty field has been overridden by user edit. */
     get isComputedOverridden(): boolean {
         return this._computedOverridden;
-    }
-}
-
-/**
- * `form.field()` throws for a path it can't resolve, which happens while a form is
- * still being assembled. Ancestor lookups treat that as "no parent" rather than
- * failing the render.
- */
-function safeGetField(form: IFormModel, name: string): IField | undefined {
-    try {
-        return form.field(name);
-    } catch {
-        return undefined;
     }
 }
