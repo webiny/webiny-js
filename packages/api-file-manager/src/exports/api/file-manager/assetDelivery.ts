@@ -1,5 +1,5 @@
 /*
- * Public asset-delivery surface consumed by storage variants (e.g. @webiny/api-file-manager-server).
+ * Public asset-delivery surface consumed by storage variants (e.g. @webiny/api-file-manager-standalone).
  * Re-exports the shared abstractions + primitives from their locations in this package. Storage
  * packages provide their own implementations of AssetResolver / AssetOutputStrategy /
  * AssetTransformationStrategy and resolve the primitives (AssetFactory / ObjectKey / StreamAssetReply)

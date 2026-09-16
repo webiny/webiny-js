@@ -19,6 +19,7 @@
   "license": "Webiny Enterprise",
   "dependencies": {
     "@webiny/admin-ui": "0.0.0",
+    "@webiny/ai-chat": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",

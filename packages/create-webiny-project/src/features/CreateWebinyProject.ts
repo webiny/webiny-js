@@ -10,7 +10,7 @@ import { configureMcp } from "@webiny/mcp";
 import type { IUi } from "@webiny/mcp";
 import { SetupBaseWebinyProject } from "./CreateWebinyProject/projects/base/SetupBaseWebinyProject.js";
 import { SetupAwsWebinyProject } from "./CreateWebinyProject/projects/aws/SetupAwsWebinyProject.js";
-import { SetupServerWebinyProject } from "./CreateWebinyProject/projects/server/SetupServerWebinyProject.js";
+import { SetupStandaloneWebinyProject } from "./CreateWebinyProject/projects/standalone/SetupStandaloneWebinyProject.js";
 import {
     runHostingTypePrompt,
     type HostingType
@@ -90,6 +90,9 @@ export class CreateWebinyProject {
         console.log(`Initializing a new Webiny project in ${green(projectRootPath)}...`);
 
         const analytics = new Analytics();
+        // No `hostingType` here: in interactive mode the choice hasn't been made yet, and reporting
+        // the placeholder default would inflate "aws". Use `-end` / `-error` to segment by hosting
+        // type, and this event as the funnel denominator.
         await analytics.track("start");
 
         // AI agent selected during the hosting-type prompt (used for MCP setup + final messages).
@@ -97,7 +100,12 @@ export class CreateWebinyProject {
 
         // Hosting type. Resolved interactively below, or taken from `--hosting-type` in non-interactive
         // mode (defaults to "aws").
-        let hostingType: HostingType = cliArgs.hostingType === "server" ? "server" : "aws";
+        let hostingType: HostingType = cliArgs.hostingType === "standalone" ? "standalone" : "aws";
+
+        // In interactive mode the value above is only a placeholder until the prompt below runs.
+        // Telemetry reports "unknown" while that's the case, so a failure before the prompt isn't
+        // counted as an AWS project.
+        let hostingTypeResolved = cliArgs.interactive === false;
 
         try {
             const taskItems: ListrTask[] = [
@@ -137,16 +145,17 @@ export class CreateWebinyProject {
             // Ask which hosting type to scaffold before anything hosting-specific is copied.
             if (cliArgs.interactive !== false) {
                 hostingType = await runHostingTypePrompt();
+                hostingTypeResolved = true;
                 console.log();
             }
 
             const setupBaseWebinyProject = new SetupBaseWebinyProject();
             setupBaseWebinyProject.execute(cliArgs);
 
-            if (hostingType === "server") {
-                const setupServerWebinyProject = new SetupServerWebinyProject();
-                const serverProjectParams = await setupServerWebinyProject.execute(cliArgs);
-                aiAgent = serverProjectParams.aiAgent;
+            if (hostingType === "standalone") {
+                const setupStandaloneWebinyProject = new SetupStandaloneWebinyProject();
+                const standaloneProjectParams = await setupStandaloneWebinyProject.execute(cliArgs);
+                aiAgent = standaloneProjectParams.aiAgent;
             } else {
                 const setupAwsWebinyProject = new SetupAwsWebinyProject();
                 const awsProjectParams = await setupAwsWebinyProject.execute(cliArgs);
@@ -189,7 +198,7 @@ export class CreateWebinyProject {
                 });
             }
 
-            await analytics.track("end");
+            await analytics.track("end", { hostingType });
         } catch (err) {
             const stage = "error";
             // Commenting out for now, as we don't have any graceful errors implemented yet.
@@ -198,6 +207,7 @@ export class CreateWebinyProject {
             // }
 
             await analytics.track(stage, {
+                hostingType: hostingTypeResolved ? hostingType : "unknown",
                 errorMessage: err.cause?.message || err.message,
                 errorStack: err.cause?.stack || err.stack
             });
@@ -224,16 +234,16 @@ export class CreateWebinyProject {
 
         console.log();
 
-        // Self-hosted (server) hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
-        if (hostingType === "server") {
+        // Standalone hosting type: no deploy step (ALPHA — dev-first, run with `webiny watch`).
+        if (hostingType === "standalone") {
             console.log(
-                `🎉 Your new self-hosted Webiny project ${green(projectName)} has been created!`
+                `🎉 Your new standalone Webiny project ${green(projectName)} has been created!`
             );
             console.log();
             console.log(
                 yellow(
-                    "⚠ The self-hosted (server) hosting type is in ALPHA. It's for local\n" +
-                        "  development and testing with `webiny watch api` / `webiny watch admin`.\n" +
+                    "⚠ The standalone hosting type is in ALPHA. It's for local\n" +
+                        "  development and testing with `webiny watch`.\n" +
                         "  It's still maturing, so expect some rough edges."
                 )
             );
@@ -248,10 +258,7 @@ export class CreateWebinyProject {
                 [
                     `First, enter the project directory: ${green(`cd ${projectName}`)}`,
                     "",
-                    "Then start development mode. Watching all apps at once isn't supported yet,",
-                    `so run the API and Admin apps separately, each in its own terminal: ${green(
-                        "yarn webiny watch api"
-                    )} and ${green("yarn webiny watch admin")}.`,
+                    `Then start Webiny locally: ${green("yarn dev")}`,
                     "",
                     `To see all of the available CLI commands, run ${green(
                         "yarn webiny --help"

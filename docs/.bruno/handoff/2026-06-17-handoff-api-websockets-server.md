@@ -2,7 +2,7 @@
 
 ## What was done
 
-- Designed, planned, and implemented `@webiny/api-websockets-server` — a Docker/self-hosted WebSocket server transport package
+- Designed, planned, and implemented `@webiny/api-websockets-standalone` — a Docker/self-hosted WebSocket server transport package
 - 14 commits this session, 37 tests passing across 7 test files
 - Extended `IWebsocketsConnectionRegistry` with `updateLastSeen` and `listStale` methods (SQL + DDB implementations)
 - Added `lastSeen` nullable datetime column to SQL websockets table via lazy migration

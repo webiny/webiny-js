@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { SYNC_FLP_TASK_ID, UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { type ISyncFlpTaskInput, type IUpdateFlpTaskInput } from "~/types.js";
@@ -6,22 +9,14 @@ import { FM_FILE_TYPE } from "~/constants.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 
-class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
-    public readonly id = SYNC_FLP_TASK_ID;
-    public readonly title = "ACO - Sync FLP record";
-    public readonly description =
-        "Synchronizes the FLP catalog by updating the FLP record and its descendants.";
-    public readonly databaseLogs = false;
-    public readonly isPrivate = true;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
+class SyncFlpTaskHandlerImpl implements TaskHandler.Interface<ISyncFlpTaskInput> {
     public constructor(
         private getFolder: GetFolderUseCase.Interface,
         private listFolders: ListFoldersUseCase.Interface,
         private listModels: ListModelsUseCase.Interface
     ) {}
 
-    async run({ input, controller }: TaskDefinition.RunParams<ISyncFlpTaskInput>) {
+    async run({ input, controller }: TaskHandler.RunParams<ISyncFlpTaskInput>) {
         try {
             if (controller.runtime.isAborted()) {
                 return controller.response.aborted();
@@ -155,7 +150,24 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
     }
 }
 
+const SyncFlpTaskHandler = TaskHandler.createImplementation({
+    implementation: SyncFlpTaskHandlerImpl,
+    dependencies: [GetFolderUseCase, ListFoldersUseCase, ListModelsUseCase]
+});
+
+class SyncFlpTaskImpl implements TaskDefinition.Interface {
+    public readonly id = SYNC_FLP_TASK_ID;
+    public readonly title = "ACO - Sync FLP record";
+    public readonly description =
+        "Synchronizes the FLP catalog by updating the FLP record and its descendants.";
+    public readonly databaseLogs = false;
+    public readonly isPrivate = true;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = SyncFlpTaskHandler;
+}
+
 export const SyncFlpTask = TaskDefinition.createImplementation({
     implementation: SyncFlpTaskImpl,
-    dependencies: [GetFolderUseCase, ListFoldersUseCase, ListModelsUseCase]
+    dependencies: []
 });

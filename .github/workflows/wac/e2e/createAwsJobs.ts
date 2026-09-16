@@ -19,7 +19,7 @@ import {
 // AWS-deployed E2E: scaffold a project, deploy it with Pulumi, then run Cypress against the
 // deployed URLs. One variant per storage setup ("ddb", "ddb-os").
 //
-// Named for the hosting type, not for Cypress - the self-hosted variants in createServerJobs run
+// Named for the hosting type, not for Cypress - the standalone variants in createStandaloneJobs run
 // Cypress too, so that would not distinguish them.
 export const createAwsJobs = (dbSetup: string) => {
     const jobNames = {

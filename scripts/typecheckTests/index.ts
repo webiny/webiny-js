@@ -11,6 +11,12 @@ import { writeReport, REPORT_DIR } from "./writeReport.js";
 
 const { green, red, yellow } = chalk;
 
+// Same guard as in `scripts/buildPackages`: Listr hard-wraps task titles one character per line
+// when the pty reports 0 columns, because its own fallback only covers a nullish width.
+if (process.stdout.isTTY && !process.stdout.columns) {
+    process.stdout.columns = 80;
+}
+
 const argv = yargs(hideBin(process.argv))
     .option("p", {
         alias: "package",
