@@ -74,7 +74,7 @@ describe("dynamicZone storage converter - unknown template handling", () => {
         expect(items[1]).toEqual({ _templateId: "textTemplate", title: "World" });
     });
 
-    it("should return undefined for a single-value field referencing an unknown template", () => {
+    it("should return undefined for a single-value field referencing an unknown template", async () => {
         const singleModel = createModel({
             fields: [
                 createModelField({
@@ -118,6 +118,6 @@ describe("dynamicZone storage converter - unknown template handling", () => {
             });
         };
 
-        expect(run()).resolves.toEqual({ content: undefined });
+        await expect(run()).resolves.toEqual({ content: undefined });
     });
 });
