@@ -17,7 +17,7 @@ import {
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TasksCrud } from "~/api/TasksCrud.js";
-import { GetTaskDefinitionUseCase } from "~/api/features/GetTaskDefinition/abstractions.js";
+import { GetRunnableTaskDefinitionUseCase } from "~/api/features/GetRunnableTaskDefinition/abstractions.js";
 import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
 
@@ -41,7 +41,7 @@ export interface ITaskControlDependencies {
     taskExecutionContext: TaskExecutionContext.Interface;
     tasksCrud: TasksCrud.Interface;
     taskController: TaskController.Interface;
-    getTaskDefinition: GetTaskDefinitionUseCase.Interface;
+    getRunnableTaskDefinition: GetRunnableTaskDefinitionUseCase.Interface;
 }
 
 export class TaskControl implements ITaskControl {
@@ -95,7 +95,7 @@ export class TaskControl implements ITaskControl {
         /**
          * Let's get the task definition.
          */
-        const definitionResult = this.deps.getTaskDefinition.execute(task.definitionId);
+        const definitionResult = this.deps.getRunnableTaskDefinition.execute(task.definitionId);
         if (definitionResult.isFail()) {
             return this.response.error({
                 error: {
