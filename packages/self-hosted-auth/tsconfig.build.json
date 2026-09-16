@@ -5,11 +5,13 @@
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-mailer/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../cli-core/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -25,6 +27,8 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-mailer/*": ["../api-mailer/src/*"],
+      "@webiny/api-mailer": ["../api-mailer/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
@@ -35,6 +39,8 @@
       "@webiny/form": ["../form/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     }

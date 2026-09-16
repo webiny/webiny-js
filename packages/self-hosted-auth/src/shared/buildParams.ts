@@ -34,9 +34,26 @@ export const SIGNING_SECRET_BUILD_PARAM = "SelfHostedAuthSigningSecret";
 export const TOKEN_EXPIRES_IN_BUILD_PARAM = "SelfHostedAuthTokenExpiresIn";
 
 /**
+ * Build param written by `<SelfHostedAuth emailPasswordReset={...} />`, read when building the
+ * schema to decide whether the self-service reset mutations exist.
+ *
+ * Absent means enabled, like the CLI flag, and for the same reason: the projects most in need of a
+ * way back into their own admin are the ones that never thought about it. Turning it off is for
+ * installations that must be able to say no self-service reset exists.
+ */
+export const EMAIL_PASSWORD_RESET_BUILD_PARAM = "SelfHostedAuthEmailPasswordReset";
+
+/**
  * Reads the flag the way both the API and the CLI need to read it. Only an explicit `false`
  * (boolean or the string a build param may serialize to) turns the feature off.
  */
 export const isCliPasswordResetEnabled = (value: boolean | string | null | undefined): boolean => {
+    return value !== false && value !== "false";
+};
+
+/** Same rule as the CLI flag: absent means on, only an explicit `false` turns it off. */
+export const isEmailPasswordResetEnabled = (
+    value: boolean | string | null | undefined
+): boolean => {
     return value !== false && value !== "false";
 };

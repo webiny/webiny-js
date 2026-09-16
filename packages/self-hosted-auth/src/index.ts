@@ -3,11 +3,15 @@ export { SelfHostedAuth } from "./SelfHostedAuth.js";
 
 export { SelfHostedAuthApiFeature } from "./api/SelfHostedAuthApiFeature.js";
 
-// Storage seam — implemented by database packages (`-sql`, `-mdb`, …).
+// Storage seams — implemented by database packages (`-sql`, `-mdb`, …).
 export {
     CredentialsStorageOperations,
     type StorageCredential
 } from "./api/storage/abstractions.js";
+export {
+    PasswordResetCodeStorageOperations,
+    type StoredPasswordResetCode
+} from "./api/storage/passwordResetCodes.js";
 
 // Crypto seams — override to swap the KDF (e.g. Argon2id) or token strategy.
 // Hasher lives in @webiny/api-core (configurable via <Infra.Crypto.Hashing>); re-exported
@@ -21,3 +25,9 @@ export { CLI_RESET_ISSUER, CLI_RESET_AUDIENCE } from "./shared/cliResetToken.js"
 export { LoginUseCase } from "./api/features/Login/index.js";
 export { SetPasswordUseCase } from "./api/features/SetPassword/index.js";
 export { CliResetPasswordUseCase } from "./api/features/CliResetPassword/index.js";
+export { RequestPasswordResetUseCase } from "./api/features/RequestPasswordReset/index.js";
+export { ResetPasswordWithCodeUseCase } from "./api/features/ResetPasswordWithCode/index.js";
+
+// Reset-code seams — override to change the code format or how the code is delivered.
+export { PasswordResetCodeGenerator } from "./api/domain/crypto/PasswordResetCodeGenerator.js";
+export { PasswordResetMailer } from "./api/domain/mail/PasswordResetMailer.js";
