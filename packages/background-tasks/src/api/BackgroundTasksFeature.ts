@@ -1,7 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import { RunnableTaskDecorator } from "./decorators/RunnableTaskDecorator.js";
-import { SelfCleaningTaskDecorator } from "./decorators/SelfCleaningTaskDecorator.js";
+import { TaskDefinitionDefaultsDecorator } from "./decorators/TaskDefinitionDefaultsDecorator.js";
+import { SelfCleaningTaskHandlerDecorator } from "./decorators/SelfCleaningTaskHandlerDecorator.js";
 import { TaskController } from "./features/TaskController/index.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
 import { TaskLogPrivateModel } from "./crud/TaskLogPrivateModel.js";
@@ -11,7 +11,7 @@ import { createServiceCrud } from "./crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
 import { TaskExecutionContextFeature } from "./features/TaskExecutionContext/feature.js";
 import { TaskHandlerResolverFeature } from "./features/TaskHandlerResolver/feature.js";
-import { GetTaskDefinitionFeature } from "./features/GetTaskDefinition/feature.js";
+import { GetRunnableTaskDefinitionFeature } from "./features/GetRunnableTaskDefinition/feature.js";
 import { ListTaskDefinitionsFeature } from "./features/ListTaskDefinitions/feature.js";
 import {
     CleanupTaskSubtreeUseCase,
@@ -37,13 +37,16 @@ export const BackgroundTasksFeature = createFeature({
         container.register(TaskLogPrivateModel);
         container.register(BackgroundTaskSettingsModel);
 
-        // Decorators wrapping all TaskDefinition instances.
-        container.registerDecorator(RunnableTaskDecorator);
-        container.registerDecorator(SelfCleaningTaskDecorator);
+        // Metadata rules, applied to every registered TaskDefinition.
+        container.registerDecorator(TaskDefinitionDefaultsDecorator);
+
+        // Self-cleanup runs in the lifecycle hooks, which belong to the handler. Applied when the
+        // runner resolves the handler a definition names.
+        container.registerDecorator(SelfCleaningTaskHandlerDecorator);
 
         // Task definition use cases.
         TaskHandlerResolverFeature.register(container);
-        GetTaskDefinitionFeature.register(container);
+        GetRunnableTaskDefinitionFeature.register(container);
         ListTaskDefinitionsFeature.register(container);
 
         // Build the tasks CRUD facade from the container and register it as the canonical TasksCrud

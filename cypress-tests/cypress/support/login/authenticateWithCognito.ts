@@ -6,7 +6,7 @@ global.fetch = fetch;
 // Constructed on first use, NOT at import time. `CognitoUserPool` throws "Both UserPoolId and
 // ClientId are required." when either is missing, and this module is pulled in by the support file
 // for EVERY spec - so building it eagerly made the whole suite fail to load on any setup without
-// Cognito, before a single test ran. The self-hosted (server) hosting type has its own identity
+// Cognito, before a single test ran. The standalone hosting type has its own identity
 // provider and leaves these blank.
 let userPool: AmazonCognitoIdentity.CognitoUserPool | undefined;
 

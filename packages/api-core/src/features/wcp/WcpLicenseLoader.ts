@@ -20,7 +20,7 @@ export class WcpLicenseLoader {
     };
 
     // In-flight fetch, memoized so concurrent cache-miss callers coalesce onto a single WCP request
-    // (self-hosted runs many requests in one process; we never want two license fetches at once).
+    // (standalone runs many requests in one process; we never want two license fetches at once).
     private static inflight: Promise<ILicense> | null = null;
 
     /**
