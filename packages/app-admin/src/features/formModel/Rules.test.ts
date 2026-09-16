@@ -391,3 +391,83 @@ describe("Rules system", () => {
         });
     });
 });
+
+describe("disabled cascades into containers", () => {
+    it("disables the children of a disabled object field", () => {
+        const form = createForm({
+            fields: fields => ({
+                title: fields.text().label("Title"),
+                meta: fields
+                    .object()
+                    .label("Meta")
+                    .disabled()
+                    .fields(inner => ({
+                        source: inner.text().label("Source"),
+                        comment: inner.text().label("Comment")
+                    }))
+            })
+        });
+
+        expect(form.field("meta").disabled).toBe(true);
+        expect(form.field("meta.source").disabled).toBe(true);
+        expect(form.field("meta.comment").disabled).toBe(true);
+        expect(form.field("title").disabled).toBe(false);
+    });
+
+    it("reaches grandchildren of a disabled object field", () => {
+        const form = createForm({
+            fields: fields => ({
+                outer: fields
+                    .object()
+                    .label("Outer")
+                    .disabled()
+                    .fields(inner => ({
+                        nested: inner
+                            .object()
+                            .label("Nested")
+                            .fields(deep => ({
+                                value: deep.text().label("Value")
+                            }))
+                    }))
+            })
+        });
+
+        expect(form.field("outer.nested").disabled).toBe(true);
+        expect(form.field("outer.nested.value").disabled).toBe(true);
+    });
+
+    it("leaves children alone when the container is not disabled", () => {
+        const form = createForm({
+            fields: fields => ({
+                meta: fields
+                    .object()
+                    .label("Meta")
+                    .fields(inner => ({
+                        source: inner.text().label("Source").disabled(),
+                        comment: inner.text().label("Comment")
+                    }))
+            })
+        });
+
+        expect(form.field("meta").disabled).toBe(false);
+        expect(form.field("meta.source").disabled).toBe(true);
+        expect(form.field("meta.comment").disabled).toBe(false);
+    });
+
+    it("picks up a container disabled after the form was built", () => {
+        const form = createForm({
+            fields: fields => ({
+                meta: fields
+                    .object()
+                    .label("Meta")
+                    .fields(inner => ({
+                        source: inner.text().label("Source")
+                    }))
+            })
+        });
+
+        expect(form.field("meta.source").disabled).toBe(false);
+        form.field("meta").setDisabled(true);
+        expect(form.field("meta.source").disabled).toBe(true);
+    });
+});
