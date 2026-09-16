@@ -6,7 +6,7 @@
     ".": "./index.js",
     "./*": "./*"
   },
-  "description": "Server-mode handler for Webiny Headless CMS bulk actions (empty trash bin)",
+  "description": "Standalone-mode handler for Webiny Headless CMS bulk actions (empty trash bin)",
   "keywords": [
     "api-headless-cms-bulk-actions-server:base"
   ],

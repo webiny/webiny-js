@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Server-flavour project app factories for Webiny projects.",
+  "description": "Project app factories for standalone Webiny projects.",
   "license": "MIT",
   "dependencies": {
     "@vercel/nft": "^1.11.0",

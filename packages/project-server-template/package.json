@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A Webiny self-hosted (server) project template.",
+  "description": "A Webiny standalone project template.",
   "license": "MIT",
   "dependencies": {
     "@webiny/api-event-handler-server-sql": "0.0.0",

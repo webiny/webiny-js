@@ -24,7 +24,7 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
         // If no records in the database, `manifest` object is empty POJO.
         // That's why the heavy `?.` usage.
         //
-        // The AWS hosting type serves files from a CloudFront domain (in the manifest). The self-hosted
+        // The AWS hosting type serves files from a CloudFront domain (in the manifest). The standalone
         // (server) hosting type has no CloudFront — files are served by the api's own `/files/*` route — so
         // fall back to the configured API origin, read from the WEBINY_API_URL build param (baked by
         // Infra.ApiUrl), not a process.env read.

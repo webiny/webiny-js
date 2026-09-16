@@ -32,7 +32,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             { name: "introduction", label: "Introduction" },
             { name: "basic-info", label: "Basic info" },
             // Show the admin-account step for IdPs that seed the first admin user during install:
-            // Cognito (idp type) or any IdP that declares an installer app name (e.g. self-hosted).
+            // Cognito (idp type) or any IdP that declares an installer app name (e.g. standalone).
             // External IdPs (Okta/Auth0) set neither, so the step stays hidden for them.
             process.env.REACT_APP_IDP_TYPE === "cognito" ||
             Boolean(process.env.REACT_APP_AUTH_INSTALLER_APP_NAME)

@@ -13,7 +13,7 @@ import { Postgres } from "./Postgres.js";
  * them — which is how the admin API URL (baked as `WEBINY_ADMIN_API_URL`) went missing.
  *
  * Mirrors project-aws's `ProjectAws/definitions.ts`, minus the AWS/Pulumi-only definitions (there is
- * no Pulumi or deploy in the self-hosted hosting type).
+ * no Pulumi or deploy in the standalone hosting type).
  */
 const definitions = [
     ...cliDefinitions,

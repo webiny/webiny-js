@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Server-flavour CLI commands for Webiny projects.",
+  "description": "CLI commands for standalone Webiny projects.",
   "license": "MIT",
   "bin": {
     "webiny": "./bin.js"

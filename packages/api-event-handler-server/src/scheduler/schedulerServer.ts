@@ -35,7 +35,7 @@ const consoleLogger: Logger.Interface = {
 const serverBase = () => `http://localhost:${process.env.PORT || "3002"}`;
 
 /**
- * ROOT wiring for the self-hosted (Bree, in-process) scheduler. Unlike AWS (per-request EventBridge
+ * ROOT wiring for the standalone (Bree, in-process) scheduler. Unlike AWS (per-request EventBridge
  * binding), the server holds ONE long-lived Bree instance for all tenants, started once at boot — the
  * counterpart of the WebSockets connection manager. Registered as `SchedulerService` so per-request
  * create/update/delete (during GraphQL mutations) manipulate that single live timer set.

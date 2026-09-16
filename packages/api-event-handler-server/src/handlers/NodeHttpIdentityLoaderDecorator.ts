@@ -33,7 +33,7 @@ function parseCookieHeader(cookieHeader: string): Record<string, string> {
  *
  * `x-webiny-authorization` exists for AWS parity: behind CloudFront with Origin Access Control, SigV4
  * occupies the `Authorization` header, so clients that may traverse such an origin send the token in
- * that header instead. Self-hosted has no such constraint, but it accepts the same header so one
+ * that header instead. Standalone has no such constraint, but it accepts the same header so one
  * client works against both deployments.
  *
  * Node mirror of ApiGatewayIdentityLoaderDecorator. Registered BEFORE the tenant loader so identity

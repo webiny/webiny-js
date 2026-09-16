@@ -1,5 +1,5 @@
 /**
- * Webiny API handler for the self-hosted Node HTTP server transport — storage-agnostic BASE.
+ * Webiny API handler for the standalone Node HTTP server transport — storage-agnostic BASE.
  *
  * The ROOT container wires the Node HTTP transport (NodeHttpFeature = event type + router + HttpFeature)
  * plus the auth/tenant loader decorators (extract token / x-tenant from the IncomingMessage → shared

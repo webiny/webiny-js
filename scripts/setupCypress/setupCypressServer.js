@@ -6,9 +6,9 @@ import { writeCypressConfig } from "./shared.js";
 const { green, red } = chalk;
 
 /**
- * Prepares cypress.config.ts for a self-hosted ("server" hosting type) project.
+ * Prepares cypress.config.ts for a standalone ("server" hosting type) project.
  *
- * Unlike the AWS counterpart there is nothing to read the values back from: a self-hosted project
+ * Unlike the AWS counterpart there is nothing to read the values back from: a standalone project
  * is not deployed, so the URLs are passed in. It also has its own identity provider, so the Cognito
  * values are blank - they are still substituted so the generated config stays valid TypeScript.
  *

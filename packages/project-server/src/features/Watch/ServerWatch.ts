@@ -9,7 +9,7 @@ import { isDevProxyEnabled } from "../../serve/devProxy/index.js";
 
 /**
  * Server hosting-type counterpart to project-aws's `AwsWatch`: where AWS forwards Lambda invocations to
- * local code, the self-hosted hosting type boots the built api handler as a live HTTP server that reloads
+ * local code, the standalone hosting type boots the built api handler as a live HTTP server that reloads
  * on rebuild — so `webiny watch api` both compiles AND serves. Kept out of the CLI command (which
  * stays hosting-agnostic, like cli-aws) and composed only when the server hosting type is registered.
  *

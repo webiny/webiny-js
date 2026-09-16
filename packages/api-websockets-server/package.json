@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Self-hosted WebSocket server transport for @webiny/api-websockets",
+  "description": "Standalone WebSocket server transport for @webiny/api-websockets",
   "contributors": [
     "Bruno Zorić <bruno@webiny.com>"
   ],
