@@ -1,0 +1,259 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { pointAppsAtDevProxy } from "~/serve/devProxy/pointAppsAtDevProxy.js";
+import { reserveDevProxyPorts } from "~/serve/devProxy/reserveDevProxyPorts.js";
+import { isDevProxyEnabled } from "~/serve/devProxy/isDevProxyEnabled.js";
+import { type IReserveDevProxyPortsParams } from "~/serve/devProxy/types.js";
+import { DevProxy } from "~/serve/devProxy/DevProxy.js";
+
+const MANAGED_VARS = [
+    "PORT",
+    "WEBINY_PORT",
+    "WEBINY_PROXY",
+    "WEBINY_PROXY_PORT",
+    "PORTLESS_URL",
+    "WEBINY_API_PORT",
+    "WEBINY_ADMIN_PORT",
+    "WEBINY_API_URL",
+    "WEBINY_ADMIN_API_URL",
+    "WEBINY_ADMIN_WS_API_URL"
+];
+
+describe("reserveDevProxyPorts", () => {
+    let originalEnv: Record<string, string | undefined>;
+
+    beforeEach(() => {
+        originalEnv = Object.fromEntries(MANAGED_VARS.map(name => [name, process.env[name]]));
+        for (const name of MANAGED_VARS) {
+            delete process.env[name];
+        }
+    });
+
+    afterEach(() => {
+        for (const [name, value] of Object.entries(originalEnv)) {
+            if (value === undefined) {
+                delete process.env[name];
+            } else {
+                process.env[name] = value;
+            }
+        }
+    });
+
+    const prepare = (params: Partial<IReserveDevProxyPortsParams> = {}) =>
+        reserveDevProxyPorts({ apps: ["api", "admin"], ...params });
+
+    /** What `watch` does: reserve the ports, then point the apps at the proxy. */
+    const prepareAndPoint = async (params: Partial<IReserveDevProxyPortsParams> = {}) => {
+        const urls = await prepare(params);
+        if (urls) {
+            pointAppsAtDevProxy(urls);
+        }
+        return urls;
+    };
+
+    describe("deciding whether a proxy belongs in front", () => {
+        it("does nothing for a single app, which already has a single URL", async () => {
+            expect(await prepare({ apps: ["api"] })).toBeNull();
+
+            expect(process.env.WEBINY_API_PORT).toBeUndefined();
+            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+        });
+
+        it("takes the public URL from a tool that owns the domain", async () => {
+            // portless terminates TLS on its own domain and forwards to the port it gave us, so
+            // `http://localhost:<port>` is our side of that hop, not the address anyone opens.
+            process.env.PORTLESS_URL = "https://wby6.localhost";
+
+            const urls = await prepare();
+
+            expect(urls!.url).toBe("https://wby6.localhost");
+            expect(urls!.apiUrl).toBe("https://wby6.localhost/api");
+        });
+
+        it("records the decision where the project layer can read it back", async () => {
+            // StandaloneWatch / StandaloneServe ask `isDevProxyEnabled()` when assembling their process
+            // specs, rather than the decision travelling through the hosting-agnostic Watch params.
+            expect(isDevProxyEnabled()).toBe(false);
+
+            await prepare();
+
+            expect(isDevProxyEnabled()).toBe(true);
+        });
+
+        it("does nothing when asked not to, by flag or by env", async () => {
+            expect(await prepare({ enabled: false })).toBeNull();
+
+            process.env.WEBINY_PROXY = "off";
+            expect(await prepare()).toBeNull();
+
+            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+        });
+    });
+
+    describe("ports", () => {
+        it("gives every app a port of its own, and none of them the proxy's", async () => {
+            const urls = await prepare();
+
+            const proxyPort = Number(process.env.WEBINY_PROXY_PORT);
+            const apiPort = Number(process.env.WEBINY_API_PORT);
+            const adminPort = Number(process.env.WEBINY_ADMIN_PORT);
+
+            expect(urls).not.toBeNull();
+            expect(apiPort).not.toBe(adminPort);
+            expect([apiPort, adminPort]).not.toContain(proxyPort);
+        });
+
+        it("takes over PORT rather than leaving it for an app to grab as well", async () => {
+            const port = await freePort();
+            process.env.PORT = String(port);
+
+            const urls = await prepare();
+
+            expect(urls!.url).toBe(`http://localhost:${port}`);
+            // Both app runners fall back to PORT, and two servers honouring one port means one of
+            // them quietly fails to bind.
+            expect(process.env.PORT).toBeUndefined();
+        });
+
+        it("prefers WEBINY_PORT over PORT", async () => {
+            const preferred = await freePort();
+            process.env.WEBINY_PORT = String(preferred);
+            process.env.PORT = String(await freePort(preferred + 1));
+
+            expect((await prepare())!.url).toBe(`http://localhost:${preferred}`);
+        });
+
+        it("leaves a pinned app port alone", async () => {
+            const pinned = await freePort();
+            process.env.WEBINY_API_PORT = String(pinned);
+
+            await prepare();
+
+            expect(Number(process.env.WEBINY_API_PORT)).toBe(pinned);
+        });
+
+        it("steps over a proxy port another project already holds", async () => {
+            const squatter = await occupy(3001);
+            try {
+                expect((await prepare())!.port).not.toBe(3001);
+            } finally {
+                await squatter();
+            }
+        });
+    });
+
+    it("hands the proxy the ports it reserved, end to end", async () => {
+        const urls = await prepare();
+        const port = Number(process.env.WEBINY_PROXY_PORT);
+        const apiPort = Number(process.env.WEBINY_API_PORT);
+        const adminPort = Number(process.env.WEBINY_ADMIN_PORT);
+
+        const api = await serve("api answered");
+        const admin = await serve("admin answered");
+        const proxy = await DevProxy.start({ port, apiPort, adminPort });
+
+        try {
+            await api.listenOn(apiPort);
+            await admin.listenOn(adminPort);
+
+            expect(await (await fetch(urls!.apiUrl + "/graphql")).text()).toBe("api answered");
+            expect(await (await fetch(urls!.url + "/")).text()).toBe("admin answered");
+        } finally {
+            await proxy.close();
+            await api.close();
+            await admin.close();
+        }
+    });
+
+    describe("the URLs it points the apps at", () => {
+        it("gives admin a relative API URL, so the bundle works on any origin", async () => {
+            await prepareAndPoint();
+
+            // Not `http://localhost:<port>/api`: resolved in the browser instead, which is what lets
+            // the same build run behind a portless domain or a real reverse proxy.
+            expect(process.env.WEBINY_ADMIN_API_URL).toBe("/api");
+        });
+
+        it("points the admin websocket at itself too", async () => {
+            await prepareAndPoint();
+
+            // `<Admin.WebsocketsUrl>` beats the API URL when a project sets it, and pinning it to a
+            // port is the obvious thing to write, so leaving this unset sends the socket elsewhere.
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
+        });
+
+        it("gives the api an absolute one, since it hands out URLs to clients", async () => {
+            const urls = await prepareAndPoint();
+
+            expect(process.env.WEBINY_API_URL).toBe(`${urls!.url}/api`);
+            expect(urls!.apiUrl).toBe(`${urls!.url}/api`);
+        });
+
+        it("takes over the admin URLs, because by now the config has already set them", async () => {
+            // `<Admin.ApiUrl>` emits an env var, and webiny.config was evaluated before the command
+            // handler ran, so filling in blanks would never win. Pointing admin anywhere other than
+            // the proxy is broken while the proxy is in front, so the proxy owns these; `--no-proxy`
+            // is the way out. AWS does the same in SetAdminEnvVarsBeforeWatch.
+            process.env.WEBINY_ADMIN_API_URL = "http://localhost:3002";
+            process.env.WEBINY_ADMIN_WS_API_URL = "ws://localhost:3002";
+
+            await prepareAndPoint();
+
+            expect(process.env.WEBINY_ADMIN_API_URL).toBe("/api");
+            expect(process.env.WEBINY_ADMIN_WS_API_URL).toBe("/api");
+        });
+
+        it("leaves every URL alone when only the ports are reserved", async () => {
+            // What `serve` does: it runs what `webiny build` produced, so the admin bundle's URL is
+            // already fixed and setting anything now would only be misleading.
+            const urls = await prepare();
+
+            expect(urls).not.toBeNull();
+            expect(process.env.WEBINY_ADMIN_API_URL).toBeUndefined();
+            expect(process.env.WEBINY_API_URL).toBeUndefined();
+            expect(Number(process.env.WEBINY_API_PORT)).toBeGreaterThan(0);
+        });
+    });
+});
+
+async function freePort(from = 48000 + Math.floor(Math.random() * 1000)) {
+    const { findFreePort } = await import("~/serve/findFreePort.js");
+    return findFreePort(from);
+}
+
+/** A server that answers everything with `body`, started on demand on a given port. */
+async function serve(body: string) {
+    const http = await import("node:http");
+    const server = http.createServer((_req, res) => res.end(body));
+
+    return {
+        listenOn: (port: number) => new Promise<void>(resolve => server.listen(port, resolve)),
+        close: () =>
+            new Promise<void>(resolve => {
+                server.closeAllConnections();
+                server.close(() => resolve());
+            })
+    };
+}
+
+/**
+ * Holds a port open, and returns how to let it go.
+ *
+ * Tolerates the port already being taken — by another test file, or by a dev server the developer
+ * happens to have running. Either way the port is occupied, which is all the caller is asking for,
+ * and failing to bind would otherwise hang the listen callback that never fires.
+ */
+async function occupy(port: number) {
+    const net = await import("node:net");
+    const server = net.createServer();
+
+    const bound = await new Promise<boolean>(resolve => {
+        server.once("error", () => resolve(false));
+        server.listen(port, () => resolve(true));
+    });
+
+    if (!bound) {
+        return async () => undefined;
+    }
+
+    return () => new Promise<void>(resolve => server.close(() => resolve()));
+}

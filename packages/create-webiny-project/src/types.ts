@@ -9,7 +9,7 @@ export interface CliParams {
     template: string;
 
     /** Hosting type: "aws" or "server" (standalone). Used in non-interactive mode. */
-    hostingType: "aws" | "server";
+    hostingType: "aws" | "standalone";
 
     /** JSON string with template-specific options */
     templateOptions: string | null;

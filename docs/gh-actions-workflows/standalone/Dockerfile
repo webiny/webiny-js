@@ -7,7 +7,7 @@
 # --- builder: produce the self-contained build/ folders -----------------------------------------
 FROM node:24-bookworm AS builder
 WORKDIR /project
-ENV WEBINY_HOSTING_TYPE=server NODE_ENV=production
+ENV WEBINY_HOSTING_TYPE=standalone NODE_ENV=production
 COPY . .
 RUN corepack enable && yarn install --immutable
 

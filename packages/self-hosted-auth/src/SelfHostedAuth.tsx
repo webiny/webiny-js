@@ -10,7 +10,7 @@ import { TOKEN_EXPIRES_IN_BUILD_PARAM } from "./shared/buildParams.js";
 /**
  * Config-time extension rendered in `webiny.config.tsx` (like `Cognito`). It only wires things by
  * path/env/build-param — it does NOT import the admin app code, so `webiny.config.tsx` stays
- * lightweight. The API side (SelfHostedAuthApiFeature) is registered by the server hosting type's
+ * lightweight. The API side (SelfHostedAuthApiFeature) is registered by the standalone hosting type's
  * request handler; it reads the signing secret from the `SelfHostedAuthSigningSecret` build param.
  */
 export const SelfHostedAuth = defineExtension({
