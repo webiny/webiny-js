@@ -1,7 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
-import { EnvAiChatResolver } from "./EnvAiChatResolver.js";
 import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 
 /**
@@ -24,10 +23,11 @@ export const AiChatFeature = createFeature({
             maxSteps: Number(process.env["WEBINY_API_AI_CHAT_MAX_STEPS"]) || DEFAULT_MAX_STEPS
         });
         /*
-         * Registered first so a later registration wins. AI Power-Ups overrides this with providers
-         * configured in the admin UI.
+         * No `AiChatResolver` is registered here. The model, the credential and the prompt all come
+         * from AI Power-Ups settings, so AI Power-Ups registers the only implementation. A project
+         * that removes that extension gets `No registration found for AiChatResolver` on the first
+         * request, which beats an assistant quietly running on a model nobody chose.
          */
-        container.register(EnvAiChatResolver);
         container.register(AiChatUseCase);
 
         /*

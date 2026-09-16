@@ -4,7 +4,6 @@ export { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 export { AiChatUseCase } from "./abstractions.js";
 export { AiChatConfig } from "./abstractions.js";
 export { AiChatResolver } from "./abstractions.js";
-export { EnvAiChatResolver } from "./EnvAiChatResolver.js";
 export type { AiChatParams } from "./abstractions.js";
 export type { AiChatEvent } from "./events.js";
 export { SYSTEM_PROMPT } from "./systemPrompt.js";

@@ -3,7 +3,13 @@ import type { ModelMessage } from "ai";
 import type { ApprovalDecision } from "./approvals.js";
 import type { AiChatEvent } from "./events.js";
 
-/** Everything a chat run needs that comes from configuration rather than from the request. */
+/**
+ * Everything a chat run needs that comes from configuration rather than from the request.
+ *
+ * All of it comes from AI Power-Ups settings. There is no environment-variable path and no built-in
+ * default model: a project configures the assistant where it configures every other AI feature, and
+ * `ResolveAiCapabilityUseCase` is the one place that decides what those settings mean.
+ */
 export interface IAiChatResolution {
     /** Model id in `<vendor>/<model>` form, e.g. "anthropic/claude-sonnet-5". */
     readonly model: string;
@@ -11,16 +17,13 @@ export interface IAiChatResolution {
      * Which vendor SDK runs it, and with whose key.
      *
      * Shaped like `Ai.GenerateTextParams["connection"]` so it is passed straight through. `sdkName`
-     * travels rather than being re-derived from `model` downstream: a configured resolver has
-     * already checked the model's vendor against the credential's, and that checked answer is the
+     * travels rather than being re-derived from `model` downstream, because the resolver has
+     * already checked the model's vendor against the credential's and that checked answer is the
      * one worth using.
-     *
-     * An absent `apiKey` is meaningful — each SDK factory falls back to its own environment
-     * variable (e.g. `WEBINY_API_ANTHROPIC_API_KEY`), which is what keeps a bare checkout working.
      */
     readonly connection: {
         readonly sdkName: string;
-        readonly apiKey?: string;
+        readonly apiKey: string;
     };
     /**
      * What the assistant is told about its job.

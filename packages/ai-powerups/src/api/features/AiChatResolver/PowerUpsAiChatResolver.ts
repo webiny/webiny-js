@@ -12,10 +12,11 @@ import { AI_CHAT_CAPABILITY } from "./capability.js";
  * `ResolveAiCapabilityUseCase` replaced: the same precedence rules now decide the model for every AI
  * feature, and the assistant gets a row in Settings → AI Power-Ups like the rest of them.
  *
- * The one thing it adds over the other capability consumers is the prompt. `AiChatUseCase` cannot
- * reach a capability (`@webiny/ai-chat` does not depend on this package, and should not — the
- * assistant works without AI Power-Ups installed), so the composed system text travels back through
- * the resolution it already asks for.
+ * The one thing it adds over the other capability consumers is the prompt, because `AiChatUseCase`
+ * cannot reach a capability itself. `@webiny/ai-chat` does not depend on this package and should
+ * not: the core API stack registers `AiChatFeature` in every project, while AI Power-Ups is an
+ * extension on top of it, so the dependency would point from the base at something layered above it.
+ * The composed system text therefore travels back through the resolution the chat already asks for.
  */
 class PowerUpsAiChatResolverImpl implements Abstraction.Interface {
     constructor(private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface) {}
