@@ -94,16 +94,26 @@ function ScrollArea({
 function ScrollBar({
     className,
     orientation = "vertical",
+    onMouseDown,
     ...props
 }: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        onMouseDown?.(event);
+
+        // Grabbing a scrollbar must not move focus. An autocomplete closes its list the moment its
+        // input blurs, so without this, dragging the thumb dismisses the list under the pointer.
+        event.preventDefault();
+    };
+
     return (
         <ScrollAreaPrimitive.ScrollAreaScrollbar
             data-slot="scroll-area-scrollbar"
             orientation={orientation}
+            onMouseDown={handleMouseDown}
             className={cn(
                 "flex touch-none transition-colors select-none",
-                orientation === "vertical" && "h-full w-[8px] border-l border-l-transparent",
-                orientation === "horizontal" && "h-[8px] flex-col border-t border-t-transparent",
+                orientation === "vertical" && "h-full w-[10px] p-[2px]",
+                orientation === "horizontal" && "h-[10px] flex-col p-[2px]",
                 className
             )}
             {...props}
