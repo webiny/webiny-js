@@ -1,7 +1,7 @@
 import { SYSTEM_PROMPT } from "@webiny/ai-chat/api/index.js";
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 
-export const AI_CHAT_CAPABILITY = "admin.assistant";
+export const AI_CHAT_CAPABILITY = "admin.aiChat";
 
 /**
  * The assistant behind the admin command palette.
