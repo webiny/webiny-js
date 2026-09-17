@@ -20,16 +20,16 @@
     "access": "public"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "front-matter": "^4.0.2",
-    "zod": "4.4.3"
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.24",
+    "@types/lodash": "^4.17.25",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
-    "tsx": "4.23.0",
+    "tsx": "4.23.13",
     "typescript": "6.0.3"
   },
   "scripts": {
