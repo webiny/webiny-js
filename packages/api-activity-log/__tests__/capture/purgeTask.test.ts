@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { Constructor } from "@webiny/di";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import { ActivityLogPersistenceError } from "~/core/errors.js";
 import { PurgeActivityRecordsTaskDefinition } from "~/cms/purge/PurgeActivityRecordsTaskDefinition.js";
@@ -32,7 +36,22 @@ const buildTask = (deleteAllForTarget: (...args: unknown[]) => DeleteResult) => 
 
     container.register(PurgeActivityRecordsTaskDefinition);
 
-    return container.resolve(TaskDefinition) as TaskDefinition.Interface<never, never>;
+    // A task is metadata plus a handler class, and only the handler carries behaviour. The runner
+    // resolves it the same way — `GetRunnableTaskDefinitionUseCase` builds every definition to
+    // match one by id, then builds just the winner's handler.
+    const definition = container.resolve(TaskDefinition);
+    const handlerClass = definition.handler as Constructor<TaskHandler.Interface<never, never>>;
+
+    return container.resolveImplementation(handlerClass);
+};
+
+/** The metadata half, which is what declares policy. */
+const buildDefinition = () => {
+    const container = new Container();
+
+    container.register(PurgeActivityRecordsTaskDefinition);
+
+    return container.resolve(TaskDefinition);
 };
 
 const buildController = (
@@ -149,14 +168,25 @@ describe("PurgeActivityRecordsTask", () => {
         expect(deleteAllForTarget).not.toHaveBeenCalled();
     });
 
-    it("declares itself private, self-cleaning and bounded", async () => {
-        const task = buildTask(async () => Result.ok({ finished: true, deleted: 0 }) as never);
+    it("declares itself private, self-cleaning and bounded", () => {
+        // Asserted on the definition rather than the handler: policy is the metadata half, and it
+        // is deliberately free to construct so the runner can match a task by id without building
+        // anything expensive.
+        const definition = buildDefinition();
 
-        expect(task).toMatchObject({
+        expect(definition).toMatchObject({
             id: "activityLogPurgeTargetRecords",
             isPrivate: true,
             databaseLogs: false
         });
-        expect((task as unknown as { maxIterations: number }).maxIterations).toBeGreaterThan(0);
+        expect(definition.maxIterations!).toBeGreaterThan(0);
+        expect(definition.selfCleanup).toEqual(["onSuccess", "onAbort"]);
+    });
+
+    it("builds its metadata without constructing storage", () => {
+        // The reason for the split. The runner builds every registered definition to find one by
+        // id; if that pulled in each task's dependencies, adding a task would cost every other
+        // task's construction on every lookup.
+        expect(() => buildDefinition()).not.toThrow();
     });
 });

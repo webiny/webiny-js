@@ -11,28 +11,27 @@ import { PrivateModelStorageFeature } from "~/storage/privateModel/feature.js";
 
 export interface IActivityLogAppFeatureParams {
     /**
-     * Whether the activity log is licensed for this installation.
+     * Whether the activity log runs in this installation.
      *
      * Required, with no default, and deliberately not resolved here.
      *
-     * The obvious implementation — `FeatureFlags.get().isEnabled("activityLog")`, following
-     * `RecordLockingAppFeature` — does not work yet, and fails in the worst direction. A flag name
-     * absent from `LICENSE_CHECKS` resolves to *enabled* for anyone holding any licence, so that
-     * call would gate nothing while reading exactly like a gate that works. Nor is there a public
-     * way to ask whether an unregistered flag was explicitly set: `isEnabled` answers true,
-     * `isExplicitlyDisabled` answers false, and `toDto()` re-derives only the names it already
-     * knows.
+     * The original reason was that a flag lookup could not work: a name absent from
+     * `LICENSE_CHECKS` used to resolve to *enabled* for anyone holding any licence, so
+     * `isEnabled("activityLog")` would have gated nothing while reading exactly like a gate that
+     * works. #5695 removed that behaviour — an unrecognised name is now the project's own flag and
+     * answers false unless the project's config sets it true — so a lookup would now be safe.
      *
-     * So the decision is pushed to the caller until the entitlement exists. A project that has not
-     * decided cannot switch this on by accident, and the missing wiring is visible at the call site
-     * rather than buried in a lookup that lies.
+     * It is still not what this parameter wants. A project-configured flag makes the feature opt-in
+     * per installation; it does not make it something Webiny can sell, because nothing on the
+     * licence governs it. Reading one here would swap an explicit decision at the call site for an
+     * implicit "off" that looks like an entitlement and is not one.
      *
-     * Closing it properly needs `activityLog` added to `IFeatureFlagsDto`, `KnownFeatureFlag` and
+     * Selling it needs `activityLog` added to `IFeatureFlagsDto`, `KnownFeatureFlag` and
      * `FeatureFlags.toDto()`; `canUseActivityLog()` on `ILicense`, `License`, `NullLicense` and
      * `ReactLicense`; an `ACTIVITY_LOG` entry in `PROJECT_PACKAGE_FEATURE_NAME`,
-     * `WCP_FEATURE_LABEL` and `ProjectPackageFeatures`; and the flag registered in both
-     * `LICENSE_CHECKS` maps. It also cannot become true until the WCP-issued licence payload
-     * carries `features.activityLog`, which is outside this repository.
+     * `WCP_FEATURE_LABEL` and `ProjectPackageFeatures`; and an entry in `LICENSE_CHECKS`. It also
+     * cannot become true until the WCP-issued licence payload carries `features.activityLog`,
+     * which is outside this repository.
      *
      * Never `canUseAuditLogs`: reusing that entitlement would tie this feature to enterprise
      * permanently, and business tier is intended.

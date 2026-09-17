@@ -22,10 +22,10 @@ export * from "~/timeline/index.js";
  * beside the form. They share one open/closed state through a presenter in
  * `ActivityLogAdminFeature`.
  *
- * No feature-flag check here, unlike `CmsWorkflows`: the entitlement gate is still open on the API
- * side, so gating the UI on a flag that resolves to enabled for everyone would be theatre. The
- * timeline is harmless without the entitlement — the query does not exist, so it renders an error
- * state — but that is a reason to close the gate, not to pretend it is closed.
+ * No feature-flag check here, unlike `CmsWorkflows`: nothing on the licence governs this feature
+ * yet, so the admin side follows whatever the API side was told. The timeline is harmless without
+ * it — the query does not exist, so it renders an error state — but that is a reason to close the
+ * gate properly, not to add a check that gates on the project's own config.
  */
 export const ActivityLog = () => {
     return (

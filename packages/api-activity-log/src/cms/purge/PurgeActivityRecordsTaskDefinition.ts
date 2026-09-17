@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import type { ActivityTargetType } from "~/core/types.js";
 
@@ -16,13 +19,11 @@ export interface IPurgeActivityRecordsOutput {
 }
 
 /**
- * Removes a permanently deleted target's records.
+ * What the purge actually does.
  *
- * A background task rather than inline in the after-delete handler. The established pattern for
- * cleaning up after a purged entry *is* inline and best-effort — workflows and the scheduler both
- * list related records with `limit: 10000`, loop, and swallow errors — but that shape assumes a
- * handful of related records. Retention here is permanent and records accumulate per save across
- * every entry, so the assumption does not hold and the pattern is deliberately declined.
+ * Split from the definition below because a task is now metadata plus a handler class: the runner
+ * builds every registered definition to find one by id, and only the winner's handler. Anything
+ * that costs something to construct — here, storage — therefore belongs on this half.
  *
  * `EmptyTrashBinTaskDefinition` is the structural model: continuable, with timeout checks and
  * `response.continue(...)`. It is not copied. Two things it gets wrong are avoided here:
@@ -37,23 +38,14 @@ export interface IPurgeActivityRecordsOutput {
  * A chunk that deletes nothing while reporting work remaining is treated as a stall and reported
  * as an error rather than retried forever.
  */
-class PurgeActivityRecordsTask implements TaskDefinition.Interface<
+class PurgeActivityRecordsTaskHandlerImpl implements TaskHandler.Interface<
     IPurgeActivityRecordsInput,
     IPurgeActivityRecordsOutput
 > {
-    public readonly isPrivate = true;
-    public readonly id = PURGE_ACTIVITY_RECORDS_TASK_ID;
-    public readonly title = "Activity log - remove records for a deleted target";
-    public readonly description =
-        "Deletes the activity records belonging to a permanently deleted target.";
-    public readonly maxIterations = 120;
-    public readonly databaseLogs = false;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
     constructor(private storage: ActivityLogStorage.Interface) {}
 
     async run(
-        params: TaskDefinition.RunParams<IPurgeActivityRecordsInput, IPurgeActivityRecordsOutput>
+        params: TaskHandler.RunParams<IPurgeActivityRecordsInput, IPurgeActivityRecordsOutput>
     ): Promise<TaskDefinition.Result<IPurgeActivityRecordsInput, IPurgeActivityRecordsOutput>> {
         const { input, controller } = params;
 
@@ -96,7 +88,34 @@ class PurgeActivityRecordsTask implements TaskDefinition.Interface<
     }
 }
 
-export const PurgeActivityRecordsTaskDefinition = TaskDefinition.createImplementation({
-    implementation: PurgeActivityRecordsTask,
+const PurgeActivityRecordsTaskHandler = TaskHandler.createImplementation({
+    implementation: PurgeActivityRecordsTaskHandlerImpl,
     dependencies: [ActivityLogStorage]
+});
+
+/**
+ * Removes a permanently deleted target's records.
+ *
+ * A background task rather than inline in the after-delete handler. The established pattern for
+ * cleaning up after a purged entry *is* inline and best-effort — workflows and the scheduler both
+ * list related records with `limit: 10000`, loop, and swallow errors — but that shape assumes a
+ * handful of related records. Retention here is permanent and records accumulate per save across
+ * every entry, so the assumption does not hold and the pattern is deliberately declined.
+ */
+class PurgeActivityRecordsTaskImpl implements TaskDefinition.Interface {
+    public readonly id = PURGE_ACTIVITY_RECORDS_TASK_ID;
+    public readonly title = "Activity log - remove records for a deleted target";
+    public readonly description =
+        "Deletes the activity records belonging to a permanently deleted target.";
+    public readonly maxIterations = 120;
+    public readonly isPrivate = true;
+    public readonly databaseLogs = false;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = PurgeActivityRecordsTaskHandler;
+}
+
+export const PurgeActivityRecordsTaskDefinition = TaskDefinition.createImplementation({
+    implementation: PurgeActivityRecordsTaskImpl,
+    dependencies: []
 });
