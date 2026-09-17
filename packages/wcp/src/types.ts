@@ -32,6 +32,10 @@ export interface ILicense {
     canUseAiEntryTranslation: () => boolean;
     canUseAbTesting: () => boolean;
     canUseRemoteComponents: () => boolean;
+    canUseAiPowerups: () => boolean;
+    canUseCollaboration: () => boolean;
+    canUseComments: () => boolean;
+    canUseActivityLog: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -63,7 +67,8 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     FILE_MANAGER = "fileManager",
     AI_POWERUPS = "aiPowerups",
     AB_TESTING = "abTesting",
-    REMOTE_COMPONENTS = "remoteComponents"
+    WEBSITE_BUILDER = "websiteBuilder",
+    COLLABORATION = "collaboration"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -127,8 +132,17 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
         enabled: boolean;
     };
-    [PROJECT_PACKAGE_FEATURE_NAME.REMOTE_COMPONENTS]: {
+    [PROJECT_PACKAGE_FEATURE_NAME.WEBSITE_BUILDER]: {
+        // This is always true because every project has Website Builder. What is sold sits in `options`.
+        enabled: true;
+        options: { remoteComponents?: boolean };
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
         enabled: boolean;
+        options: {
+            comments?: boolean;
+            activityLog?: boolean;
+        };
     };
 }
 
