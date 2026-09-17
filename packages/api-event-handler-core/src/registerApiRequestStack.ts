@@ -130,14 +130,10 @@ export async function registerApiRequestStack(
     CmsWorkflowsFeature.register(container);
 
     // ── Activity log ───────────────────────────────────────────
-    // After CMS and Workflows, because it records activity from both.
-    //
-    // `enabled` is hard-coded rather than read from a feature flag, and this is the tier gate's
-    // API-side site — the admin entry point in `app-serverless-cms` is the other one. A lookup
-    // would now behave correctly (#5695 made an unrecognised flag answer false rather than true),
-    // but it would gate on the project's own config rather than on an entitlement. See
-    // `ActivityLogAppFeature` for what selling this actually needs.
-    ActivityLogAppFeature.register(container, { enabled: true });
+    // After CMS and Workflows, because it records activity from both. Licence-gated inside the
+    // feature on `collaboration.activityLog`, so registering it unconditionally here costs nothing
+    // for a project without the entitlement.
+    ActivityLogAppFeature.register(container);
 
     // ── Scheduler + scheduler transport ────────────────────────
     SchedulerFeature.register(container);
