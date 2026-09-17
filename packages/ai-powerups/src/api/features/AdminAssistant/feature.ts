@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
-import { AiChatConfig } from "./abstractions.js";
-import { AiChatUseCase } from "./AiChatUseCase.js";
-import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
-import { AiChatCapability } from "./capability.js";
+import { AdminAssistantConfig } from "./abstractions.js";
+import { AdminAssistantUseCase } from "./AdminAssistantUseCase.js";
+import { AdminAssistantStreamRouteDefinition } from "./AdminAssistantStreamRoute.js";
+import { AdminAssistantCapability } from "./capability.js";
 
 /**
  * How many rounds the agent loop may take before it is cut off.
@@ -25,12 +25,12 @@ const MAX_STEPS = 12;
  * calls. As a separate package it could only reach those through an abstraction registered back
  * from this side, which is an indirection that bought nothing.
  */
-export const AiChatFeature = createFeature({
-    name: "AiPowerUps/AiChat",
+export const AdminAssistantFeature = createFeature({
+    name: "AiPowerUps/AdminAssistant",
     register(container) {
         // Register-time gate on the effective flags (project config && live WCP license), matching
         // how every other AI feature gates itself. Nothing is registered when it is off, so an
-        // unlicensed project has no `/stream/ai/chat` route and no settings row.
+        // unlicensed project has no `/stream/ai/admin-assistant` route and no settings row.
         const enabled = container
             .resolve(FeatureFlags)
             .get()
@@ -40,14 +40,14 @@ export const AiChatFeature = createFeature({
             return;
         }
 
-        container.register(AiChatCapability);
-        container.registerInstance(AiChatConfig, { maxSteps: MAX_STEPS });
-        container.register(AiChatUseCase);
+        container.register(AdminAssistantCapability);
+        container.registerInstance(AdminAssistantConfig, { maxSteps: MAX_STEPS });
+        container.register(AdminAssistantUseCase);
 
         /*
          * Only the definition is registered: the router matches on it and builds the handler it
          * names once a request actually hits the path.
          */
-        container.register(AiChatStreamRouteDefinition);
+        container.register(AdminAssistantStreamRouteDefinition);
     }
 });

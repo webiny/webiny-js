@@ -1,5 +1,5 @@
 import React from "react";
-import type { AiChatPresenter } from "@webiny/app-admin";
+import type { AdminAssistantPresenter } from "@webiny/app-admin";
 import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as ReturnIcon } from "@webiny/icons/keyboard_return.svg";
 import { ReactComponent as BackspaceIcon } from "@webiny/icons/backspace.svg";
@@ -16,13 +16,13 @@ const HINTS: Hint[] = [
  * The assistant, as a palette mode.
  *
  * Everything specific to it lives here: what the input row shows, what Enter and Backspace do, and
- * what fills the panel. The conversation itself belongs to `AiChatPresenter`.
+ * what fills the panel. The conversation itself belongs to `AdminAssistantPresenter`.
  *
  * A plain object rather than a hook. `appearance` and `body` are getters, so reading them during a
  * reactive component's render tracks the presenter's observables and re-renders on a new turn, with
  * no dependency arrays to keep honest.
  */
-export const createAiMode = (presenter: AiChatPresenter.Interface): PaletteMode => ({
+export const createAiMode = (presenter: AdminAssistantPresenter.Interface): PaletteMode => ({
     get appearance() {
         const started = presenter.vm.turns.length > 0;
 

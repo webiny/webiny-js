@@ -1,12 +1,12 @@
 import { AiCapability } from "~/api/features/Capabilities/index.js";
 import { SYSTEM_PROMPT } from "./systemPrompt.js";
 
-export const AI_CHAT_CAPABILITY = "admin.assistant";
+export const ADMIN_ASSISTANT_CAPABILITY = "admin.assistant";
 
 /**
  * The assistant behind the admin command palette.
  *
- * Named `admin.assistant` rather than `admin.aiChat`. Every other id names what the feature does
+ * Named `admin.assistant`, the same name the WCP licence option carries. Every other id names what the feature does
  * (`fm.imageEnrichment`, `cms.generateEntry`), and what this one does is deliberately not one thing:
  * today it reads and changes content, and the direction is for it to build things too, like a field
  * renderer or a menu change. "Chat" names the surface, which is the part most likely to be wrong
@@ -20,8 +20,8 @@ export const AI_CHAT_CAPABILITY = "admin.assistant";
  * `standard` rather than `fast`: the assistant chains tool calls and has to reason about which model
  * to describe before it can query anything, which is where small models fall down.
  */
-class AiChatCapabilityImpl implements AiCapability.Interface {
-    readonly id = AI_CHAT_CAPABILITY;
+class AdminAssistantCapabilityImpl implements AiCapability.Interface {
+    readonly id = ADMIN_ASSISTANT_CAPABILITY;
     readonly label = "Admin assistant";
     readonly description =
         "The assistant in the command palette. Answers questions about this project and proposes changes for approval, under the permissions of whoever is asking. The most open-ended capability here: it plans across several tool calls, so it gains the most from a strong model.";
@@ -29,7 +29,7 @@ class AiChatCapabilityImpl implements AiCapability.Interface {
     readonly guidance = SYSTEM_PROMPT;
 }
 
-export const AiChatCapability = AiCapability.createImplementation({
-    implementation: AiChatCapabilityImpl,
+export const AdminAssistantCapability = AiCapability.createImplementation({
+    implementation: AdminAssistantCapabilityImpl,
     dependencies: []
 });

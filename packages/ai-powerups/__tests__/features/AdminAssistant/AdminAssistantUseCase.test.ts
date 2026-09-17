@@ -4,11 +4,14 @@ import { Ai, AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
 import { ResolveAiCapabilityUseCase } from "~/api/features/Capabilities/index.js";
-import { AiChatConfig, AiChatUseCase } from "~/api/features/AiChat/abstractions.js";
-import { AiChatUseCase as AiChatUseCaseImplementation } from "~/api/features/AiChat/AiChatUseCase.js";
-import { AI_CHAT_CAPABILITY } from "~/api/features/AiChat/capability.js";
-import { SYSTEM_PROMPT } from "~/api/features/AiChat/systemPrompt.js";
-import type { AiChatEvent } from "~/api/features/AiChat/events.js";
+import {
+    AdminAssistantConfig,
+    AdminAssistantUseCase
+} from "~/api/features/AdminAssistant/abstractions.js";
+import { AdminAssistantUseCase as AdminAssistantUseCaseImplementation } from "~/api/features/AdminAssistant/AdminAssistantUseCase.js";
+import { ADMIN_ASSISTANT_CAPABILITY } from "~/api/features/AdminAssistant/capability.js";
+import { SYSTEM_PROMPT } from "~/api/features/AdminAssistant/systemPrompt.js";
+import type { AdminAssistantEvent } from "~/api/features/AdminAssistant/events.js";
 
 const ADDITIONAL = "Always answer in Welsh.";
 
@@ -35,13 +38,13 @@ const setup = (resolution?: Result<never, Error>) => {
         getIdentity: () => ({ isAnonymous: () => false })
     } as unknown as IdentityContext.Interface);
 
-    container.registerInstance(AiChatConfig, { maxSteps: 12 });
+    container.registerInstance(AdminAssistantConfig, { maxSteps: 12 });
 
     container.registerInstance(ResolveAiCapabilityUseCase, {
         execute: async () =>
             resolution ??
             Result.ok({
-                capabilityId: AI_CHAT_CAPABILITY,
+                capabilityId: ADMIN_ASSISTANT_CAPABILITY,
                 model: "anthropic/claude-sonnet-4-5",
                 connection: { sdkName: "anthropic", apiKey: "sk-test" },
                 roleId: "standard",
@@ -51,18 +54,18 @@ const setup = (resolution?: Result<never, Error>) => {
             })
     } as unknown as ResolveAiCapabilityUseCase.Interface);
 
-    container.register(AiChatUseCaseImplementation);
+    container.register(AdminAssistantUseCaseImplementation);
 
-    return { useCase: container.resolve(AiChatUseCase), requests };
+    return { useCase: container.resolve(AdminAssistantUseCase), requests };
 };
 
-const run = async (useCase: AiChatUseCase.Interface) => {
+const run = async (useCase: AdminAssistantUseCase.Interface) => {
     const events = useCase.stream({
         messages: [{ role: "user", content: "which products are on sale?" }],
         decisions: []
     });
 
-    const seen: AiChatEvent[] = [];
+    const seen: AdminAssistantEvent[] = [];
 
     // `stream` is a generator, so nothing runs until something pulls.
     for await (const event of events) {
@@ -72,7 +75,7 @@ const run = async (useCase: AiChatUseCase.Interface) => {
     return seen;
 };
 
-describe("AiChatUseCase", () => {
+describe("AdminAssistantUseCase", () => {
     /*
      * The resolver's tests assert what `resolve()` returns. This asserts the use case actually USES
      * it: reverting `system` to the imported `SYSTEM_PROMPT` would leave every other test green

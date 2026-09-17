@@ -9,15 +9,15 @@ import {
     ResolveAiCapabilityUseCase,
     withAdditionalInstructions
 } from "~/api/features/Capabilities/index.js";
-import { AiChatConfig } from "./abstractions.js";
-import { AI_CHAT_CAPABILITY } from "./capability.js";
-import { AiChatUseCase as Abstraction } from "./abstractions.js";
-import type { AiChatParams } from "./abstractions.js";
+import { AdminAssistantConfig } from "./abstractions.js";
+import { ADMIN_ASSISTANT_CAPABILITY } from "./capability.js";
+import { AdminAssistantUseCase as Abstraction } from "./abstractions.js";
+import type { AdminAssistantParams } from "./abstractions.js";
 import { isReadOnly } from "./approvals.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
 import type { PendingApproval } from "./approvals.js";
-import type { AiChatEvent } from "./events.js";
+import type { AdminAssistantEvent } from "./events.js";
 
 /** The subset of the AI SDK's stream parts this use case reacts to. */
 interface StreamPart {
@@ -79,17 +79,17 @@ const toApprovalMessage = (decisions: ApprovalDecision[]): ModelMessage => {
  * alone — the loop pauses and the pending call is returned for a human to approve. Everything runs
  * under the caller's identity, so each tool is checked against that user's own permissions.
  */
-class AiChatUseCaseImpl implements Abstraction.Interface {
+class AdminAssistantUseCaseImpl implements Abstraction.Interface {
     constructor(
         private readonly ai: Ai.Interface,
         private readonly aiSdkTools: AiSdkTools.Interface,
         private readonly declarations: AiSdkToolDefinition.Interface[],
         private readonly identityContext: IdentityContext.Interface,
-        private readonly config: AiChatConfig.Interface,
+        private readonly config: AdminAssistantConfig.Interface,
         private readonly resolveCapability: ResolveAiCapabilityUseCase.Interface
     ) {}
 
-    async *stream(params: AiChatParams): AsyncIterable<AiChatEvent> {
+    async *stream(params: AdminAssistantParams): AsyncIterable<AdminAssistantEvent> {
         let prepared;
 
         /*
@@ -188,7 +188,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
      * Everything both entry points need: the identity check, which tools may run unattended, and the
      * fully-formed model request. Shared so streaming and buffered runs cannot drift apart.
      */
-    private async prepare(params: AiChatParams): Promise<{
+    private async prepare(params: AdminAssistantParams): Promise<{
         request: Ai.GenerateTextParams;
         appended: ModelMessage[];
     }> {
@@ -220,7 +220,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
 
         const messages = [...params.messages, ...appended];
 
-        const resolution = await this.resolveCapability.execute(AI_CHAT_CAPABILITY);
+        const resolution = await this.resolveCapability.execute(ADMIN_ASSISTANT_CAPABILITY);
 
         /*
          * Thrown rather than swallowed. Every message the resolver produces names the setting to
@@ -292,14 +292,14 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
     }
 }
 
-export const AiChatUseCase = Abstraction.createImplementation({
-    implementation: AiChatUseCaseImpl,
+export const AdminAssistantUseCase = Abstraction.createImplementation({
+    implementation: AdminAssistantUseCaseImpl,
     dependencies: [
         Ai,
         AiSdkTools,
         [AiSdkToolDefinition, { multiple: true }],
         IdentityContext,
-        AiChatConfig,
+        AdminAssistantConfig,
         ResolveAiCapabilityUseCase
     ]
 });
