@@ -1,46 +1,70 @@
 import { describe, it, expect } from "vitest";
 import { FeatureFlags as FeatureFlagsClass } from "@webiny/feature-flags";
+import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import type { ILicense } from "@webiny/wcp/types.js";
 import { Container } from "@webiny/di";
 import { FeatureFlags } from "~/features/featureFlags/abstractions.js";
 import { FeatureFlagsWithLicenseDecorator } from "~/features/featureFlags/decorators/FeatureFlagsWithLicenseDecorator.js";
 import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 
+/*
+ * Every `canUse*` accessor on the license, so the fake answers all of them rather than only the ones
+ * a test happens to flip. `AssertNever` below fails the build when `ILicense` grows one that is
+ * missing here, which is what keeps the two in step.
+ */
+type LicenseCapability = Exclude<
+    keyof ILicense,
+    "getRawLicense" | "getProject" | "toDto" | "canUseFeature"
+>;
+
+const LICENSE_CAPABILITIES = [
+    "canUseAacl",
+    "canUseTeams",
+    "canUseAuditLogs",
+    "canUsePrivateFiles",
+    "canUseFileManagerThreatDetection",
+    "canUseFolderLevelPermissions",
+    "canUseRecordLocking",
+    "canUseWorkflows",
+    "canUseHcmsFieldPermissions",
+    "canUseAiImageEnrichment",
+    "canUseAiPageGeneration",
+    "canUseAiPageTranslation",
+    "canUseAiLexicalGeneration",
+    "canUseAiEntryGeneration",
+    "canUseAiEntryComparison",
+    "canUseAiEntryTranslation",
+    "canUseAbTesting",
+    "canUseRemoteComponents",
+    "canUseAiPowerups",
+    "canUseCollaboration",
+    "canUseComments",
+    "canUseActivityLog"
+] as const satisfies readonly LicenseCapability[];
+
+type AssertNever<T extends never> = T;
+type _EveryCapabilityIsCovered = AssertNever<
+    Exclude<LicenseCapability, (typeof LICENSE_CAPABILITIES)[number]>
+>;
+
 interface LicenseOptions {
     present: boolean;
-    allowsAacl?: boolean;
-    allowsEntryGeneration?: boolean;
-    allowsRemoteComponents?: boolean;
-    allowsComments?: boolean;
+    // What the license sells. Anything not listed is withheld.
+    allows?: LicenseCapability[];
+    // `canUseFeature` is the older, string-keyed way of asking the same question.
+    allowsFeatures?: (keyof typeof WCP_FEATURE_LABEL)[];
 }
 
-const license = (options: LicenseOptions): ILicense =>
-    ({
-        getRawLicense: () => (options.present ? ({} as never) : null),
-        canUseAacl: () => Boolean(options.allowsAacl),
-        canUseFeature: () => false,
-        canUseWorkflows: () => false,
-        canUseTeams: () => false,
-        canUsePrivateFiles: () => false,
-        canUseFolderLevelPermissions: () => false,
-        canUseHcmsFieldPermissions: () => false,
-        canUseAuditLogs: () => false,
-        canUseRecordLocking: () => false,
-        canUseFileManagerThreatDetection: () => false,
-        canUseAiImageEnrichment: () => false,
-        canUseAiPageGeneration: () => false,
-        canUseAiPageTranslation: () => false,
-        canUseAiLexicalGeneration: () => false,
-        canUseAiEntryGeneration: () => Boolean(options.allowsEntryGeneration),
-        canUseAiEntryComparison: () => false,
-        canUseAiEntryTranslation: () => false,
-        canUseAiPowerups: () => Boolean(options.allowsEntryGeneration),
-        canUseAbTesting: () => false,
-        canUseRemoteComponents: () => Boolean(options.allowsRemoteComponents),
-        canUseCollaboration: () => Boolean(options.allowsComments),
-        canUseComments: () => Boolean(options.allowsComments),
-        canUseActivityLog: () => false
-    }) as unknown as ILicense;
+const license = ({ present, allows = [], allowsFeatures = [] }: LicenseOptions): ILicense => {
+    const granted = new Set<LicenseCapability>(allows);
+
+    return {
+        ...Object.fromEntries(LICENSE_CAPABILITIES.map(name => [name, () => granted.has(name)])),
+        getRawLicense: () => (present ? {} : null),
+        canUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) =>
+            allowsFeatures.includes(featureId)
+    } as unknown as ILicense;
+};
 
 const flagsFor = (config: Record<string, unknown>, options: LicenseOptions) => {
     const container = new Container();
@@ -59,16 +83,13 @@ const flagsFor = (config: Record<string, unknown>, options: LicenseOptions) => {
 describe("FeatureFlagsWithLicenseDecorator", () => {
     describe("license-governed flags", () => {
         it("stays off when the license blocks it, even if config enables it", () => {
-            const flags = flagsFor(
-                { advancedAccessControlLayer: true },
-                { present: true, allowsAacl: false }
-            );
+            const flags = flagsFor({ advancedAccessControlLayer: true }, { present: true });
 
             expect(flags.isEnabled("advancedAccessControlLayer")).toBe(false);
         });
 
         it("is on when the license allows it and config is unset", () => {
-            const flags = flagsFor({}, { present: true, allowsAacl: true });
+            const flags = flagsFor({}, { present: true, allows: ["canUseAacl"] });
 
             expect(flags.isEnabled("advancedAccessControlLayer")).toBe(true);
         });
@@ -76,10 +97,19 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
         it("lets config disable what the license allows", () => {
             const flags = flagsFor(
                 { advancedAccessControlLayer: false },
-                { present: true, allowsAacl: true }
+                { present: true, allows: ["canUseAacl"] }
             );
 
             expect(flags.isEnabled("advancedAccessControlLayer")).toBe(false);
+        });
+
+        // The one flag still asked for by name rather than through a dedicated accessor.
+        it("governs multiTenancy through canUseFeature", () => {
+            const licensed = flagsFor({}, { present: true, allowsFeatures: ["multiTenancy"] });
+            const unlicensed = flagsFor({ multiTenancy: true }, { present: true });
+
+            expect(licensed.isEnabled("multiTenancy")).toBe(true);
+            expect(unlicensed.isEnabled("multiTenancy")).toBe(false);
         });
     });
 
@@ -92,14 +122,14 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
         it("keeps an AI capability off when the license withholds it, whatever config says", () => {
             const flags = flagsFor(
                 { aiPowerups: { cms: { entryGeneration: true } } },
-                { present: true, allowsEntryGeneration: false }
+                { present: true }
             );
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
         });
 
         it("grants an AI capability the license allows, with no config", () => {
-            const flags = flagsFor({}, { present: true, allowsEntryGeneration: true });
+            const flags = flagsFor({}, { present: true, allows: ["canUseAiEntryGeneration"] });
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(true);
         });
@@ -107,30 +137,31 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
         it("lets config disable an AI capability the license allows", () => {
             const flags = flagsFor(
                 { aiPowerups: { cms: { entryGeneration: false } } },
-                { present: true, allowsEntryGeneration: true }
+                { present: true, allows: ["canUseAiEntryGeneration"] }
             );
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
         });
 
         /*
-         * The parent is derived from the children rather than read off `aiPowerups.enabled`, because
-         * WCP has projects carrying capabilities under a parent that reads false.
+         * The `aiPowerups` parent is a license check of its own, so it is asked separately here.
+         * Whether the license derives that answer from its children is `License.canUseAiPowerups`'s
+         * business, not this decorator's.
          */
-        it("turns the aiPowerups parent on when any child capability is licensed", () => {
-            const flags = flagsFor({}, { present: true, allowsEntryGeneration: true });
+        it("asks the license about the aiPowerups parent", () => {
+            const flags = flagsFor({}, { present: true, allows: ["canUseAiPowerups"] });
 
             expect(flags.isEnabled("aiPowerups")).toBe(true);
         });
 
-        it("leaves the aiPowerups parent off when no child capability is licensed", () => {
+        it("leaves the aiPowerups parent off when the license withholds it", () => {
             const flags = flagsFor({}, { present: true });
 
             expect(flags.isEnabled("aiPowerups")).toBe(false);
         });
 
         it("governs remote components, which no license ever granted before", () => {
-            const licensed = flagsFor({}, { present: true, allowsRemoteComponents: true });
+            const licensed = flagsFor({}, { present: true, allows: ["canUseRemoteComponents"] });
             const unlicensed = flagsFor({ remoteComponents: true }, { present: true });
 
             expect(licensed.isEnabled("remoteComponents")).toBe(true);
@@ -138,7 +169,10 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
         });
 
         it("governs collaboration", () => {
-            const licensed = flagsFor({}, { present: true, allowsComments: true });
+            const licensed = flagsFor(
+                {},
+                { present: true, allows: ["canUseCollaboration", "canUseComments"] }
+            );
             const unlicensed = flagsFor({ collaboration: { comments: true } }, { present: true });
 
             expect(licensed.isEnabled("collaboration.comments")).toBe(true);
