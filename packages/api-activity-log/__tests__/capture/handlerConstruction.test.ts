@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
@@ -111,7 +112,13 @@ const minimalContainer = (): Container => {
         map: vi.fn()
     } as unknown as CmsWhereMapper.Interface);
 
-    ActivityLogAppFeature.register(container, { enabled: true });
+    // The feature is licence-gated at register time, so the entitlement is now part of the bare
+    // minimum a handler needs in order to exist at all.
+    container.registerInstance(FeatureFlags, {
+        get: () => ({ isEnabled: () => true }) as never
+    } as FeatureFlags.Interface);
+
+    ActivityLogAppFeature.register(container);
 
     return container;
 };
@@ -176,11 +183,35 @@ describe("guard 3 — every handler constructs against the bare minimum", () => 
     });
 
     it("registers nothing at all when not entitled", () => {
-        // The gate has to hold before any of the above matters.
+        // The gate has to hold before any of the above matters. `collaboration.activityLog` is
+        // nested under `collaboration`, and the licence answers false unless both are granted.
         const container = new Container();
-        ActivityLogAppFeature.register(container, { enabled: false });
+        container.registerInstance(FeatureFlags, {
+            get: () => ({ isEnabled: () => false }) as never
+        } as FeatureFlags.Interface);
+
+        ActivityLogAppFeature.register(container);
 
         expect(container.resolveAll(EntryAfterUpdateEventHandler)).toEqual([]);
+    });
+
+    it("gates on the activity log flag specifically, not on any flag being set", () => {
+        // A gate that passed for an unrelated flag would look like it works and sell nothing.
+        const container = new Container();
+        const asked: string[] = [];
+        container.registerInstance(FeatureFlags, {
+            get: () =>
+                ({
+                    isEnabled: (name: string) => {
+                        asked.push(name);
+                        return false;
+                    }
+                }) as never
+        } as FeatureFlags.Interface);
+
+        ActivityLogAppFeature.register(container);
+
+        expect(asked).toEqual(["collaboration.activityLog"]);
     });
 });
 

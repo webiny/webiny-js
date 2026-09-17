@@ -1,5 +1,5 @@
 import React from "react";
-import { RegisterFeature } from "@webiny/app-admin";
+import { RegisterFeature, useFeatureFlags } from "@webiny/app-admin";
 import { ActivityLogAdminFeature } from "~/feature.js";
 import { ActivityHeaderToggle } from "~/components/ActivityHeaderToggle.js";
 import { ContentEntryFormActivity } from "~/components/ContentEntryFormActivity.js";
@@ -22,12 +22,18 @@ export * from "~/timeline/index.js";
  * beside the form. They share one open/closed state through a presenter in
  * `ActivityLogAdminFeature`.
  *
- * No feature-flag check here, unlike `CmsWorkflows`: nothing on the licence governs this feature
- * yet, so the admin side follows whatever the API side was told. The timeline is harmless without
- * it — the query does not exist, so it renders an error state — but that is a reason to close the
- * gate properly, not to add a check that gates on the project's own config.
+ * Gated on `collaboration.activityLog`, the same flag the API side registers against, following
+ * `CmsWorkflows`. Both halves have to agree: without this the header would offer an Activity button
+ * whose query does not exist on an unentitled installation, which reads as a broken feature rather
+ * than an unsold one.
  */
 export const ActivityLog = () => {
+    const featureFlags = useFeatureFlags();
+
+    if (!featureFlags.isEnabled("collaboration.activityLog")) {
+        return null;
+    }
+
     return (
         <>
             <RegisterFeature feature={ActivityLogAdminFeature} />

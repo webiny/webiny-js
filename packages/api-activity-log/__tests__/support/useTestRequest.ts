@@ -77,7 +77,10 @@ export const useTestRequest = (options: IUseTestRequestOptions = {}) => {
             container.registerDecorator(RootTenantInitializer);
         },
         child: async container => {
-            const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense({}));
+            // The feature is licence-gated on `collaboration.activityLog`, so the suite has to grant it.
+            const wcpLicense = await WcpLicenseLoader.load(
+                createTestWcpLicense({ collaboration: true, activityLog: true })
+            );
 
             registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
             ApiCoreFeature.register(container, { wcpLicense });
@@ -86,7 +89,7 @@ export const useTestRequest = (options: IUseTestRequestOptions = {}) => {
 
             options.setup?.(container);
 
-            ActivityLogAppFeature.register(container, { enabled: true });
+            ActivityLogAppFeature.register(container);
             GraphQLEngineFeature.register(container);
 
             registerHttpRouteInstance(container, {
