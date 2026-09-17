@@ -18,6 +18,7 @@ export { CLI_RESET_ISSUER, CLI_RESET_AUDIENCE } from "./shared/cliResetToken.js"
 // Use cases — handy for installers/seeding scripts.
 export { LoginUseCase } from "./api/features/Login/index.js";
 export { SetPasswordUseCase } from "./api/features/SetPassword/index.js";
+export { DeleteCredentialUseCase } from "./api/features/DeleteCredential/index.js";
 export { CliResetPasswordUseCase } from "./api/features/CliResetPassword/index.js";
 export { RequestPasswordResetUseCase } from "./api/features/RequestPasswordReset/index.js";
 export { ResetPasswordWithCodeUseCase } from "./api/features/ResetPasswordWithCode/index.js";
