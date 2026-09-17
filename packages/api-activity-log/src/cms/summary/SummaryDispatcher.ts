@@ -151,7 +151,11 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
 
         await this.taskService.trigger({
             definition: SUMMARISE_ACTIVITY_TASK_ID,
-            input: { recordId: record.id },
+            input: {
+                recordId: record.id,
+                targetId: record.targetId,
+                revision: record.revision
+            },
             delay: this.config.dispatchDelaySeconds
         });
     }

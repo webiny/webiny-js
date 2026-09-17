@@ -67,4 +67,34 @@ describe("extractRequiredTokens", () => {
 
         expect(extractRequiredTokens(source)).toContain("Alpha");
     });
+
+    it("ignores a line comment inside a dependency array", () => {
+        // The second false positive this guard produced: explaining why a dependency was optional
+        // put the explanation's capitalised words into the offender list, so documenting the
+        // decision was penalised. Verified against the old parser, which reported "Both" and
+        // "CapabilityAvailability" from the sentence below.
+        const source = `
+            dependencies: [
+                ActivityLogStorage,
+                // Both optional for the same reason as \`CapabilityAvailability\`: the extension
+                // may not be installed.
+                [ResolveAiCapabilityUseCase, { optional: true }],
+                [Ai, { optional: true }]
+            ]
+        `;
+
+        expect(extractRequiredTokens(source)).toEqual(["ActivityLogStorage"]);
+    });
+
+    it("ignores a block comment inside a dependency array", () => {
+        const source = `
+            dependencies: [
+                IdentityContext,
+                /* TaskService is resolved lazily by the Runner instead. */
+                [TaskService, { optional: true }]
+            ]
+        `;
+
+        expect(extractRequiredTokens(source)).toEqual(["IdentityContext"]);
+    });
 });

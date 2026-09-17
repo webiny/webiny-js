@@ -2,7 +2,9 @@ import { type Container, createFeature } from "@webiny/feature/api";
 import { ActivitySummaryConfig, DEFAULT_ACTIVITY_SUMMARY_CONFIG } from "./config.js";
 import type { IActivitySummaryConfig } from "./config.js";
 import { SummaryDispatcherImplementation } from "./SummaryDispatcher.js";
-import { UnavailableSummaryModel } from "./availability.js";
+import { ActivityLogSummaryCapability } from "./capability.js";
+import { CapabilityAvailability } from "./CapabilityAvailability.js";
+import { SummariseActivityTaskDefinition } from "./SummariseActivityTaskDefinition.js";
 
 export interface IActivitySummaryFeatureParams {
     config?: Partial<IActivitySummaryConfig>;
@@ -16,8 +18,10 @@ export interface IActivitySummaryFeatureParams {
  * record *why* each save was skipped — an installation with summaries off should be diagnosable,
  * not silent.
  *
- * `UnavailableSummaryModel` answers false until the capability is registered, so nothing dispatches
- * and every record carries `ai-unavailable`. The checkpoint that adds the job replaces it.
+ * The capability registers unconditionally, following AI Power-Ups' own features: the licence is
+ * not loaded during `register`, so a gate here would read `NullLicense` and always be false.
+ * Availability is answered at dispatch time instead, and a project with no model configured gets
+ * the timeline with every record carrying `ai-unavailable`.
  */
 export const ActivitySummaryFeature = createFeature<IActivitySummaryFeatureParams>({
     name: "ActivityLog/Summary",
@@ -26,7 +30,9 @@ export const ActivitySummaryFeature = createFeature<IActivitySummaryFeatureParam
             ...DEFAULT_ACTIVITY_SUMMARY_CONFIG,
             ...params?.config
         });
-        container.register(UnavailableSummaryModel).inSingletonScope();
+        container.register(ActivityLogSummaryCapability);
+        container.register(CapabilityAvailability).inSingletonScope();
+        container.register(SummariseActivityTaskDefinition);
         container.register(SummaryDispatcherImplementation);
     }
 });

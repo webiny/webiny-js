@@ -6,6 +6,7 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-headless-cms/tsconfig.build.json" },
+    { "path": "../common-activity-log/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -23,6 +24,8 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-headless-cms/*": ["../app-headless-cms/src/*"],
       "@webiny/app-headless-cms": ["../app-headless-cms/src"],
+      "@webiny/common-activity-log/*": ["../common-activity-log/src/*"],
+      "@webiny/common-activity-log": ["../common-activity-log/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"]
     }

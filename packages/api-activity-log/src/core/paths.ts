@@ -1,3 +1,7 @@
+import { splitPathSegments } from "@webiny/common-activity-log";
+
+export { splitPathSegments };
+
 /**
  * Path encoding for changeset entries.
  *
@@ -84,11 +88,6 @@ export const encodePath = (segments: PathSegment[]): string => {
 };
 
 /** Splits an encoded path back into its rendered segments. */
-export const splitPathSegments = (path: string): string[] => {
-    return (
-        path.match(/(?:^|\.)[a-zA-Z0-9]+|#[a-z0-9]+|\[\d+\]/g)?.map(s => s.replace(/^\./, "")) ?? []
-    );
-};
 
 const joinPathSegments = (segments: string[]): string => {
     let path = "";
