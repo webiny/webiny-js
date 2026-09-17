@@ -22,7 +22,7 @@ class BuildStandaloneProjectWorkspaceImpl implements BuildProjectWorkspaceServic
     async execute() {
         await this.decoratee.execute();
 
-        this.logger.trace("Copying webiny.config.base.tsx (project-server)...");
+        this.logger.trace("Copying webiny.config.base.tsx (project-standalone)...");
 
         const templatesFolderPath = getStandaloneTemplatesFolderPath();
         const webinyConfigBaseTemplatePath = path.join(

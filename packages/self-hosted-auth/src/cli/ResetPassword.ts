@@ -28,7 +28,7 @@ import { SIGNING_SECRET_BUILD_PARAM } from "~/shared/buildParams.js";
  */
 const API_BUILD_PARAM_EXTENSION = "Api/BuildParam";
 
-/** Owned by project-server's `Infra/ApiUrl`, hence a literal rather than a shared constant. */
+/** Owned by project-standalone's `Infra/ApiUrl`, hence a literal rather than a shared constant. */
 const API_URL_BUILD_PARAM = "WEBINY_API_URL";
 
 interface BuildParamParams {
