@@ -135,13 +135,13 @@ export async function registerApiRequestStack(
 
     // ── AI chat endpoint (in-admin assistant) ──────────────────
     // The agent loop runs here rather than in the browser, so the browser needs no model and no API
-    // key. BEFORE extensions on purpose: the feature registers a default `AiChatProvider` that reads
-    // the environment, and an extension (AI Power-Ups) overrides it with the providers configured in
-    // the admin UI. A single resolve takes the LAST registration, so registering this after extensions
-    // silently won and the configured provider was ignored.
+    // key.
     //
-    // Route construction does not depend on this order — `HttpRouter` resolves routes inside `route()`,
-    // and `resolveAll(AiSdkToolDefinition)` collects every tool regardless of when it was registered.
+    // Registers no `AiChatResolver`: the model, the credential and the prompt all come from AI
+    // Power-Ups settings, so that extension registers the only implementation. Nothing here depends
+    // on running before or after it — `AiChatUseCase` resolves the resolver per request, `HttpRouter`
+    // resolves routes inside `route()`, and `resolveAll(AiSdkToolDefinition)` collects every tool
+    // whenever it was registered.
     AiChatFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────

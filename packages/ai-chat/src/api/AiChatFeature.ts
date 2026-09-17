@@ -1,14 +1,19 @@
 import { createFeature } from "@webiny/feature/api";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
-import { EnvAiChatProvider } from "./EnvAiChatProvider.js";
 import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 
 /**
- * Enough steps for the deepest expected chain: list models, describe one, query it, answer — plus room
- * for a corrected retry after a rejected filter.
+ * How many rounds the agent loop may take before it is cut off.
+ *
+ * Enough for the deepest expected chain: list models, describe one, query it, answer — plus room for
+ * a corrected retry after a rejected filter.
+ *
+ * Deliberately not configurable. It is a runaway guard, closer to a timeout than a setting, and the
+ * number only means something next to the tool chains the assistant actually walks. Exposing it
+ * invites a project to raise it to 100 and find out what that costs.
  */
-const DEFAULT_MAX_STEPS = 12;
+const MAX_STEPS = 12;
 
 /**
  * The AI chat feature: the use case, its configuration, and the HTTP route that reaches it.
@@ -20,14 +25,13 @@ const DEFAULT_MAX_STEPS = 12;
 export const AiChatFeature = createFeature({
     name: "AiChat",
     register: container => {
-        container.registerInstance(AiChatConfig, {
-            maxSteps: Number(process.env["WEBINY_API_AI_CHAT_MAX_STEPS"]) || DEFAULT_MAX_STEPS
-        });
+        container.registerInstance(AiChatConfig, { maxSteps: MAX_STEPS });
         /*
-         * Registered first so a later registration wins. AI Power-Ups overrides this with providers
-         * configured in the admin UI.
+         * No `AiChatResolver` is registered here. The model, the credential and the prompt all come
+         * from AI Power-Ups settings, so AI Power-Ups registers the only implementation. A project
+         * that removes that extension gets `No registration found for AiChatResolver` on the first
+         * request, which beats an assistant quietly running on a model nobody chose.
          */
-        container.register(EnvAiChatProvider);
         container.register(AiChatUseCase);
 
         /*

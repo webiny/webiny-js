@@ -6,10 +6,9 @@ import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { AiChatConfig } from "./abstractions.js";
-import { AiChatProvider } from "./abstractions.js";
+import { AiChatResolver } from "./abstractions.js";
 import { AiChatUseCase as Abstraction } from "./abstractions.js";
 import type { AiChatParams } from "./abstractions.js";
-import { SYSTEM_PROMPT } from "./systemPrompt.js";
 import { isReadOnly } from "./approvals.js";
 import { toPendingApproval } from "./approvals.js";
 import type { ApprovalDecision } from "./approvals.js";
@@ -83,7 +82,7 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
         private readonly declarations: AiSdkToolDefinition.Interface[],
         private readonly identityContext: IdentityContext.Interface,
         private readonly config: AiChatConfig.Interface,
-        private readonly provider: AiChatProvider.Interface
+        private readonly resolver: AiChatResolver.Interface
     ) {}
 
     async *stream(params: AiChatParams): AsyncIterable<AiChatEvent> {
@@ -217,22 +216,12 @@ class AiChatUseCaseImpl implements Abstraction.Interface {
 
         const messages = [...params.messages, ...appended];
 
-        const provider = await this.provider.resolve();
-        const [providerId] = provider.model.split("/");
-
-        /*
-         * An absent apiKey is meaningful: the provider's SDK factory then falls back to its own
-         * environment variable. Only a configured provider (e.g. AI Power-Ups) supplies one here.
-         */
-        const connection: { sdkName: string; apiKey?: string } = { sdkName: providerId };
-        if (provider.apiKey) {
-            connection.apiKey = provider.apiKey;
-        }
+        const resolved = await this.resolver.resolve();
 
         const request: Ai.GenerateTextParams = {
-            model: provider.model,
-            connection,
-            system: SYSTEM_PROMPT,
+            model: resolved.model,
+            connection: resolved.connection,
+            system: resolved.systemPrompt,
             messages,
             tools,
             activeTools,
@@ -296,6 +285,6 @@ export const AiChatUseCase = Abstraction.createImplementation({
         [AiSdkToolDefinition, { multiple: true }],
         IdentityContext,
         AiChatConfig,
-        AiChatProvider
+        AiChatResolver
     ]
 });
