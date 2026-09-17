@@ -10,7 +10,7 @@
   "dependencies": {
     "ci-info": "^4.4.0",
     "load-json-file": "^7.0.1",
-    "uuid": "^14.0.1",
+    "uuid": "^14.0.2",
     "write-json-file": "^7.0.0"
   },
   "publishConfig": {

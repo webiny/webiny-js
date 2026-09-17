@@ -11,7 +11,7 @@ export const FileUpload = () => {
     return (
         <BrowserFilePicker
             accept={["application/json"]}
-            maxSize={"5mb"}
+            maxSize={"10mb"}
             onSuccess={files => {
                 const file = files.find(f => f.src.file);
                 const uploadedFile = file?.src?.file;

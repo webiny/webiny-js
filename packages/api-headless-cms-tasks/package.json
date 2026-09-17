@@ -27,7 +27,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "zod": "4.4.3"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
@@ -38,7 +38,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.10"
+    "vitest": "^5.0.0"
   },
   "publishConfig": {
     "access": "public"

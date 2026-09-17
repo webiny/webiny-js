@@ -9,7 +9,7 @@ export default defineConfig({
         runMode: 5,
         openMode: 0
     },
-    env: {
+    expose: {
         ADMIN_URL: "{ADMIN_URL}",
         API_URL: "{API_URL}",
         GRAPHQL_API_URL: "{API_URL}/graphql",
