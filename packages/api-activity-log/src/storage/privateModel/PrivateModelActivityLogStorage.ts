@@ -3,6 +3,7 @@ import { decodeCursor, encodeCursor } from "@webiny/utils";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
+import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
@@ -51,6 +52,7 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
         private listEntries: ListLatestEntriesUseCase.Interface,
         private deleteEntry: DeleteEntryUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
+        private getEntry: GetEntryByIdUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface
     ) {}
 
@@ -240,6 +242,59 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
         }
     }
     /**
+     * Replaces a pending record's bundle so a run of saves shares one job.
+     *
+     * Reads before writing, which the other two operations do not need to, because this one has a
+     * precondition: a record whose summary has already settled must be left alone. A job that
+     * finished while a later save was extending would otherwise have its sentence overwritten by
+     * values nothing is coming to consume — content left on a record with no job for it, which is
+     * the exact state the sweeper exists to prevent and should not be routinely creating.
+     *
+     * The read costs one entry fetch per debounced save. That is the price of the debounce, and it
+     * is still far cheaper than the dispatch it avoids.
+     */
+    async extendSummaryValues(params: ActivityLogStorage.ExtendValuesParams) {
+        try {
+            const model = await this.modelProvider.get();
+
+            const existing = await this.getEntry.execute<ActivityRecordValues>(
+                model,
+                params.recordId
+            );
+
+            if (existing.isFail()) {
+                // Gone, or never existed. Nothing to extend, and nothing to report: the record may
+                // have been purged while the run was still going.
+                return Result.ok();
+            }
+
+            if (existing.value.values.summary) {
+                // Already settled. Refusing is the point of the read.
+                return Result.ok();
+            }
+
+            const result = await this.updateEntry.execute<Partial<ActivityRecordValues>>(
+                model,
+                params.recordId,
+                { values: { summaryValues: params.values } },
+                { skipValidation: true }
+            );
+
+            if (result.isFail()) {
+                if (result.error.code === "Cms/Entry/NotFound") {
+                    return Result.ok();
+                }
+
+                return Result.fail(new ActivityLogPersistenceError(result.error));
+            }
+
+            return Result.ok();
+        } catch (error) {
+            return Result.fail(new ActivityLogPersistenceError(error as Error));
+        }
+    }
+
+    /**
      * Records still holding transient values written before a given instant.
      *
      * The age test is applied here rather than in the query, and that is deliberate. A
@@ -346,6 +401,7 @@ export const PrivateModelActivityLogStorage = ActivityLogStorage.createImplement
         ListLatestEntriesUseCase,
         DeleteEntryUseCase,
         UpdateEntryUseCase,
+        GetEntryByIdUseCase,
         CmsWhereMapper
     ]
 });

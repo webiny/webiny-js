@@ -3,7 +3,8 @@ import type {
     ActivityRecord,
     ActivityRecordInput,
     ActivityTarget,
-    SummarySkipReason
+    SummarySkipReason,
+    SummaryValueEntry
 } from "./types.js";
 import type { ActivityLogPersistenceError, ActivityLogReadError } from "./errors.js";
 
@@ -37,6 +38,12 @@ export interface IActivityLogSettleSummaryParams {
     reason?: SummarySkipReason;
 }
 
+export interface IActivityLogExtendValuesParams {
+    recordId: string;
+    /** The run's bundle as it should now stand, already merged by the caller. */
+    values: SummaryValueEntry[];
+}
+
 export interface IActivityLogStaleValuesParams {
     /** Records whose values were written before this instant are considered abandoned. */
     writtenBefore: string;
@@ -56,7 +63,7 @@ export interface IActivityLogDeletionProgress {
  * The private CMS model behind this interface is a known stopgap: its per-target read loads the
  * entire model on every page view, and a lighter mechanism is expected to replace it. Nothing
  * above this interface may depend on CMS entry semantics, on the model being queryable, or on
- * anything beyond these five operations — that is what makes the swap possible.
+ * anything beyond these six operations — that is what makes the swap possible.
  */
 export interface IActivityLogStorage {
     /**
@@ -110,6 +117,24 @@ export interface IActivityLogStorage {
     ): Promise<Result<void, ActivityLogPersistenceError>>;
 
     /**
+     * Replace a pending record's transient values, so a run of saves shares one job.
+     *
+     * The debounce is the feature's entire cost control: without it every save in a run dispatches,
+     * and a dispatch is three CMS operations plus a Step Functions call plus — when delayed — an
+     * extra Lambda invocation before any work happens.
+     *
+     * Same three requirements as `settleSummary`, plus one of its own:
+     *
+     *   - **Idempotent**, **must not disturb ordering**, **must tolerate a missing record**.
+     *   - **Must refuse a record whose summary has already settled.** A job that finished while a
+     *     later save was extending would otherwise have its result overwritten by values nothing
+     *     will ever consume, leaving content on a record with no job coming for it.
+     */
+    extendSummaryValues(
+        params: IActivityLogExtendValuesParams
+    ): Promise<Result<void, ActivityLogPersistenceError>>;
+
+    /**
      * Records still carrying transient values written before a given instant.
      *
      * The only operation in the feature that looks across targets rather than within one, and the
@@ -130,5 +155,6 @@ export namespace ActivityLogStorage {
     export type ListResult = IActivityLogListResult;
     export type DeletionProgress = IActivityLogDeletionProgress;
     export type SettleSummaryParams = IActivityLogSettleSummaryParams;
+    export type ExtendValuesParams = IActivityLogExtendValuesParams;
     export type StaleValuesParams = IActivityLogStaleValuesParams;
 }

@@ -25,7 +25,7 @@ const field = (overrides: Partial<CmsModelField> & { fieldId: string }): CmsMode
 const model = (fields: CmsModelField[]): CmsModel =>
     ({ modelId: "page", fields }) as unknown as CmsModel;
 
-const change = (path: string, operation?: string): ChangesetEntry => ({
+const change = (path: string, operation?: ChangesetEntry["operation"]): ChangesetEntry => ({
     path,
     label: path,
     ...(operation ? { operation } : {})
@@ -273,11 +273,62 @@ describe("free-text classification", () => {
         ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
     });
 
-    it("needs two, not one", () => {
+    it("skips one prose field in a quiet save", () => {
+        // One rewritten field amid nothing else is described well enough by naming it.
         expect(
             route({
                 before: { intro: prose("old"), body: "short" },
                 after: { intro: prose("new"), body: "shorter" }
+            })
+        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+    });
+});
+
+describe("one prose field amid a busy save", () => {
+    // The case requiring two prose fields got wrong: a body rewritten while several headings were
+    // retouched is exactly what a sentence captures and a list of field names does not.
+    const busyModel = model([
+        field({ fieldId: "copy", type: "long-text" }),
+        field({ fieldId: "h1" }),
+        field({ fieldId: "h2" }),
+        field({ fieldId: "h3" })
+    ]);
+
+    const busy = (pathCount: number) =>
+        route({
+            model: busyModel,
+            changeset: [change("copy"), change("h1"), change("h2"), change("h3")].slice(
+                0,
+                pathCount
+            ),
+            before: { copy: prose("old"), h1: "A", h2: "B", h3: "C" },
+            after: { copy: prose("new"), h1: "D", h2: "E", h3: "F" }
+        });
+
+    it("dispatches at the total-path threshold", () => {
+        expect(busy(DEFAULT_ACTIVITY_SUMMARY_CONFIG.singleFreeTextMinPaths).dispatch).toBe(true);
+    });
+
+    it("skips one below it", () => {
+        expect(busy(DEFAULT_ACTIVITY_SUMMARY_CONFIG.singleFreeTextMinPaths - 1)).toEqual({
+            dispatch: false,
+            reason: "too-few-text-fields"
+        });
+    });
+
+    it("still needs at least one prose field, however busy the save", () => {
+        // A scatter of short edits is not made interesting by being numerous.
+        expect(
+            route({
+                model: model([
+                    field({ fieldId: "a" }),
+                    field({ fieldId: "b" }),
+                    field({ fieldId: "c" }),
+                    field({ fieldId: "d" })
+                ]),
+                changeset: [change("a"), change("b"), change("c"), change("d")],
+                before: { a: "1", b: "2", c: "3", d: "4" },
+                after: { a: "5", b: "6", c: "7", d: "8" }
             })
         ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
     });

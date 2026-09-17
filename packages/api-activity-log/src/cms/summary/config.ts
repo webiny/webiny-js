@@ -34,6 +34,22 @@ export interface IActivitySummaryConfig {
      * counts as prose having changed.
      */
     freeTextMinLength: number;
+    /**
+     * How many free-text paths make a save worth a sentence on their own.
+     *
+     * Two or more prose fields changing is a reworked section, which a list of field names does not
+     * convey.
+     */
+    minFreeTextPaths: number;
+    /**
+     * When exactly one free-text path changed, how many total changed paths it takes to qualify.
+     *
+     * Requiring two prose fields outright treats one substantial rewrite surrounded by a scatter of
+     * small edits as uninteresting, and that is precisely the save the feature exists for — a body
+     * rewritten while three headings were retouched. One prose field alone is described well enough
+     * by naming it; one prose field amid a busy save is not.
+     */
+    singleFreeTextMinPaths: number;
     /** Serialised bundle ceiling in bytes. Above it, no job and nothing stored. */
     maxValueBytes: number;
     /** How long a run stays open for further saves to join. */
@@ -46,6 +62,8 @@ export const DEFAULT_ACTIVITY_SUMMARY_CONFIG: IActivitySummaryConfig = {
     enabled: true,
     maxPaths: 30,
     freeTextMinLength: 200,
+    minFreeTextPaths: 2,
+    singleFreeTextMinPaths: 4,
     // The DynamoDB item limit is 400 KB including CMS meta, and nothing validates it anywhere, so
     // the headroom is deliberate rather than tight.
     maxValueBytes: 100 * 1024,

@@ -89,9 +89,14 @@ export const routeSummary = (params: RouteSummaryParams): RouteSummaryDecision =
         })
     );
 
-    // One prose field changing is already described by naming it. Two or more is where a sentence
-    // starts saying something a list of field names does not.
-    if (freeTextPaths.length < 2) {
+    // Two prose fields is a reworked section. One prose field is described well enough by naming
+    // it — unless it sits amid a busy save, where a body rewritten while several headings were
+    // retouched is exactly the change a sentence captures and a list of field names does not.
+    const qualifies =
+        freeTextPaths.length >= config.minFreeTextPaths ||
+        (freeTextPaths.length === 1 && changeset.length >= config.singleFreeTextMinPaths);
+
+    if (!qualifies) {
         return { dispatch: false, reason: "too-few-text-fields" };
     }
 

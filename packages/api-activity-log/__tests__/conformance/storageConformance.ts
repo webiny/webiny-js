@@ -840,5 +840,172 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                 expect(found).toBe(false);
             });
         });
+
+        describe("extendSummaryValues", () => {
+            const bundle = (paths: string[]) =>
+                paths.map(path => ({ path, label: path, before: "old", after: "new" }));
+
+            const pending = (targetId: string) =>
+                recordFor(targetId, {
+                    summaryState: {
+                        taskId: "task-1",
+                        values: bundle(["title"]),
+                        valuesWrittenOn: new Date().toISOString()
+                    }
+                });
+
+            it("replaces the bundle on a pending record", async () => {
+                const targetId = nextTargetId("extend");
+
+                const record = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(pending(targetId)), "append");
+
+                    unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: appended.id,
+                            values: bundle(["title", "body"])
+                        }),
+                        "extend"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summaryState?.values).toHaveLength(2);
+            });
+
+            it("refuses a record whose summary has already settled", async () => {
+                // The race the precondition exists for: a job finishes while a later save is still
+                // extending. Overwriting would leave content on a record with no job coming for it.
+                const targetId = nextTargetId("extend-settled");
+
+                const record = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(pending(targetId)), "append");
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended.id,
+                            summary: "Already written."
+                        }),
+                        "settle"
+                    );
+
+                    unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: appended.id,
+                            values: bundle(["title", "body", "intro"])
+                        }),
+                        "extend after settle"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summary).toBe("Already written.");
+                expect(record?.summaryState?.values).toBeUndefined();
+            });
+
+            it("is idempotent", async () => {
+                const targetId = nextTargetId("extend-twice");
+
+                const record = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(pending(targetId)), "append");
+
+                    await storage.extendSummaryValues({
+                        recordId: appended.id,
+                        values: bundle(["title", "body"])
+                    });
+                    unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: appended.id,
+                            values: bundle(["title", "body"])
+                        }),
+                        "second extend"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summaryState?.values).toHaveLength(2);
+            });
+
+            it("does nothing when the record is gone", async () => {
+                const outcome = await subject.run(async storage => {
+                    const result = await storage.extendSummaryValues({
+                        recordId: "does-not-exist#0001",
+                        values: bundle(["title"])
+                    });
+
+                    return result.isOk();
+                });
+
+                expect(outcome).toBe(true);
+            });
+
+            it("does not move the record under the keyset cursor", async () => {
+                const targetId = nextTargetId("extend-order");
+
+                const { before, after } = await subject.run(async storage => {
+                    const appended = [];
+                    for (let i = 0; i < 4; i++) {
+                        appended.push(
+                            unwrap(
+                                await storage.append(
+                                    recordFor(targetId, {
+                                        revision: `${targetId}#000${i}`,
+                                        summaryState: {
+                                            taskId: "t",
+                                            values: bundle(["title"]),
+                                            valuesWrittenOn: new Date().toISOString()
+                                        }
+                                    })
+                                ),
+                                `append ${i}`
+                            )
+                        );
+                    }
+
+                    const first = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list before"
+                    );
+
+                    unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: appended[1]!.id,
+                            values: bundle(["title", "body"])
+                        }),
+                        "extend"
+                    );
+
+                    const second = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list after"
+                    );
+
+                    return {
+                        before: first.records.map(r => r.id),
+                        after: second.records.map(r => r.id)
+                    };
+                });
+
+                expect(after).toEqual(before);
+            });
+        });
     });
 };
