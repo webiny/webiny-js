@@ -3,8 +3,11 @@ import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type {
     ActivityRecord,
     ActivityRecordInput,
+    ActivitySummaryState,
     ActivityTargetType,
-    ChangesetEntry
+    ChangesetEntry,
+    SummarySkipReason,
+    SummaryValueEntry
 } from "~/core/types.js";
 import type { ActivityRecordValues } from "./abstractions.js";
 
@@ -67,8 +70,51 @@ export const recordToValues = (record: ActivityRecordInput): ActivityRecordValue
         truncated: record.truncated,
         subjectId: record.subject?.id ?? null,
         subjectLabel: record.subject?.label ?? null,
-        hasNote: record.hasNote ?? null
+        hasNote: record.hasNote ?? null,
+        summary: record.summary ?? null,
+        summaryTaskId: record.summaryState?.taskId ?? null,
+        summaryValues: record.summaryState?.values ?? null,
+        summaryValuesWrittenOn: record.summaryState?.valuesWrittenOn ?? null,
+        summaryReason: record.summaryState?.reason ?? null
     };
+};
+
+/**
+ * Transient values, read back defensively.
+ *
+ * Same reasoning as the changeset: this is JSON in a CMS field, and a half-written or hand-edited
+ * value must degrade to "no values" rather than take a sweep or a job down with it.
+ */
+const readSummaryValues = (value: unknown): SummaryValueEntry[] => {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value.filter(
+        (item): item is SummaryValueEntry =>
+            item !== null && typeof item === "object" && typeof (item as any).path === "string"
+    );
+};
+
+/**
+ * Reassembles the job state, or omits it entirely.
+ *
+ * Omitted rather than emitted empty so that "has a job in flight" stays a presence check on the
+ * record, matching how the type is documented.
+ */
+const readSummaryState = (values: ActivityRecordValues): ActivitySummaryState | undefined => {
+    const storedValues = readSummaryValues(values.summaryValues);
+
+    const state: ActivitySummaryState = {
+        ...(values.summaryTaskId ? { taskId: values.summaryTaskId } : {}),
+        ...(storedValues.length > 0 ? { values: storedValues } : {}),
+        ...(values.summaryValuesWrittenOn
+            ? { valuesWrittenOn: values.summaryValuesWrittenOn }
+            : {}),
+        ...(values.summaryReason ? { reason: values.summaryReason as SummarySkipReason } : {})
+    };
+
+    return Object.keys(state).length > 0 ? state : undefined;
 };
 
 const readChangeset = (value: unknown): ChangesetEntry[] => {
@@ -114,6 +160,8 @@ export const entryToRecord = (entry: CmsEntry<ActivityRecordValues>): ActivityRe
             : {}),
         ...(values.hasNote === null || values.hasNote === undefined
             ? {}
-            : { hasNote: values.hasNote })
+            : { hasNote: values.hasNote }),
+        ...(values.summary ? { summary: values.summary } : {}),
+        ...(readSummaryState(values) ? { summaryState: readSummaryState(values) } : {})
     };
 };

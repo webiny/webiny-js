@@ -511,5 +511,334 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                 expect(second).toEqual({ finished: true, deleted: 0 });
             });
         });
+
+        describe("settleSummary", () => {
+            it("stores the summary and clears the transient values", async () => {
+                const targetId = nextTargetId("settle");
+
+                const record = await subject.run(async storage => {
+                    const appended = unwrap(
+                        await storage.append(
+                            recordFor(targetId, {
+                                summaryState: {
+                                    taskId: "task-1",
+                                    values: [
+                                        { path: "title", label: "Title", before: "a", after: "b" }
+                                    ],
+                                    valuesWrittenOn: new Date().toISOString()
+                                }
+                            })
+                        ),
+                        "append"
+                    );
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended.id,
+                            summary: "Reworked the pricing section."
+                        }),
+                        "settle"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summary).toBe("Reworked the pricing section.");
+                // The obligation: values must not outlive the job that consumed them.
+                expect(record?.summaryState?.values).toBeUndefined();
+            });
+
+            it("records a reason without a summary", async () => {
+                const targetId = nextTargetId("settle-reason");
+
+                const record = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(recordFor(targetId)), "append");
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended.id,
+                            reason: "generation-failed"
+                        }),
+                        "settle"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summary).toBeUndefined();
+                expect(record?.summaryState?.reason).toBe("generation-failed");
+            });
+
+            it("is idempotent", async () => {
+                // A task can run more than once. The second run must be harmless.
+                const targetId = nextTargetId("settle-twice");
+
+                const record = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(recordFor(targetId)), "append");
+
+                    await storage.settleSummary({ recordId: appended.id, summary: "Once." });
+                    unwrap(
+                        await storage.settleSummary({ recordId: appended.id, summary: "Once." }),
+                        "second settle"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summary).toBe("Once.");
+            });
+
+            it("does nothing when the record is gone", async () => {
+                // The entry may have been purged while the job ran. Stopping is correct; failing
+                // would retry forever and recreating would resurrect deleted history.
+                const outcome = await subject.run(async storage => {
+                    const result = await storage.settleSummary({
+                        recordId: "does-not-exist#0001",
+                        summary: "Nothing to attach this to."
+                    });
+
+                    return result.isOk();
+                });
+
+                expect(outcome).toBe(true);
+            });
+
+            it("does not move the record under the keyset cursor", async () => {
+                // The cursor pages on a sort key the adapter owns. An update that reordered would
+                // make a reader skip or repeat rows mid-page, which is invisible until it bites.
+                const targetId = nextTargetId("settle-order");
+
+                const { before, after, pagedIds } = await subject.run(async storage => {
+                    const appended = [];
+                    for (let i = 0; i < 5; i++) {
+                        appended.push(
+                            unwrap(
+                                await storage.append(
+                                    recordFor(targetId, { revision: `${targetId}#000${i}` })
+                                ),
+                                `append ${i}`
+                            )
+                        );
+                    }
+
+                    const first = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list before"
+                    );
+
+                    // Update one in the middle, then page through and confirm nothing shifted.
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended[2]!.id,
+                            summary: "Middle record."
+                        }),
+                        "settle"
+                    );
+
+                    const second = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list after"
+                    );
+
+                    const collected: string[] = [];
+                    let cursor: string | null = null;
+                    let guard = 0;
+                    do {
+                        const page: ActivityLogStorage.ListResult = unwrap(
+                            await storage.list({
+                                target: { type: "cms-entry", id: targetId },
+                                limit: 2,
+                                cursor
+                            }),
+                            `page ${guard + 1}`
+                        );
+                        collected.push(...page.records.map(r => r.id));
+                        cursor = page.cursor;
+                        guard++;
+                    } while (cursor && guard < 10);
+
+                    return {
+                        before: first.records.map(r => r.id),
+                        after: second.records.map(r => r.id),
+                        pagedIds: collected
+                    };
+                });
+
+                expect(after).toEqual(before);
+                // Paged two at a time across the updated record: same set, same order, no repeats.
+                expect(pagedIds).toEqual(before);
+                expect(new Set(pagedIds).size).toBe(pagedIds.length);
+            });
+
+            it("leaves a settled record listing normally", async () => {
+                const targetId = nextTargetId("settle-list");
+
+                const records = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(recordFor(targetId)), "append");
+                    await storage.append(recordFor(targetId, { revision: `${targetId}#0002` }));
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended.id,
+                            summary: "Still here."
+                        }),
+                        "settle"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records;
+                });
+
+                expect(records).toHaveLength(2);
+                expect(records.some(r => r.summary === "Still here.")).toBe(true);
+            });
+        });
+
+        describe("findStaleValues", () => {
+            it("finds records whose values predate the threshold", async () => {
+                const targetId = nextTargetId("stale");
+                const old = "2020-01-01T00:00:00.000Z";
+
+                const found = await subject.run(async storage => {
+                    const appended = unwrap(
+                        await storage.append(
+                            recordFor(targetId, {
+                                summaryState: {
+                                    taskId: "task-old",
+                                    values: [
+                                        { path: "title", label: "Title", before: "a", after: "b" }
+                                    ],
+                                    valuesWrittenOn: old
+                                }
+                            })
+                        ),
+                        "append"
+                    );
+
+                    const stale = unwrap(
+                        await storage.findStaleValues({
+                            writtenBefore: "2021-01-01T00:00:00.000Z"
+                        }),
+                        "findStaleValues"
+                    );
+
+                    return stale.some(r => r.id === appended.id);
+                });
+
+                expect(found).toBe(true);
+            });
+
+            it("ignores records whose values are newer than the threshold", async () => {
+                const targetId = nextTargetId("stale-recent");
+
+                const found = await subject.run(async storage => {
+                    const appended = unwrap(
+                        await storage.append(
+                            recordFor(targetId, {
+                                summaryState: {
+                                    taskId: "task-new",
+                                    values: [
+                                        { path: "title", label: "Title", before: "a", after: "b" }
+                                    ],
+                                    valuesWrittenOn: new Date().toISOString()
+                                }
+                            })
+                        ),
+                        "append"
+                    );
+
+                    const stale = unwrap(
+                        await storage.findStaleValues({
+                            writtenBefore: "2021-01-01T00:00:00.000Z"
+                        }),
+                        "findStaleValues"
+                    );
+
+                    return stale.some(r => r.id === appended.id);
+                });
+
+                expect(found).toBe(false);
+            });
+
+            it("ignores records carrying no values at all", async () => {
+                // The overwhelming majority. A sweep must not walk every record ever written.
+                const targetId = nextTargetId("stale-none");
+
+                const found = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(recordFor(targetId)), "append");
+
+                    const stale = unwrap(
+                        await storage.findStaleValues({
+                            writtenBefore: "2999-01-01T00:00:00.000Z"
+                        }),
+                        "findStaleValues"
+                    );
+
+                    return stale.some(r => r.id === appended.id);
+                });
+
+                expect(found).toBe(false);
+            });
+
+            it("stops finding a record once its values are settled", async () => {
+                const targetId = nextTargetId("stale-settled");
+                const old = "2020-01-01T00:00:00.000Z";
+
+                const found = await subject.run(async storage => {
+                    const appended = unwrap(
+                        await storage.append(
+                            recordFor(targetId, {
+                                summaryState: {
+                                    taskId: "task-x",
+                                    values: [
+                                        { path: "title", label: "Title", before: "a", after: "b" }
+                                    ],
+                                    valuesWrittenOn: old
+                                }
+                            })
+                        ),
+                        "append"
+                    );
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended.id,
+                            reason: "abandoned"
+                        }),
+                        "settle"
+                    );
+
+                    const stale = unwrap(
+                        await storage.findStaleValues({
+                            writtenBefore: "2021-01-01T00:00:00.000Z"
+                        }),
+                        "findStaleValues"
+                    );
+
+                    return stale.some(r => r.id === appended.id);
+                });
+
+                expect(found).toBe(false);
+            });
+        });
     });
 };

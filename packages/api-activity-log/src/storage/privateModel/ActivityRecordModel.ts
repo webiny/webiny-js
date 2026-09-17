@@ -60,7 +60,23 @@ class ActivityRecordModelImpl implements ModelFactory.Interface {
                     subjectLabel: fields.text().label("Subject Label"),
                     // Whether a note was attached. Never the note itself.
                     hasNote: fields.boolean().label("Has Note"),
-                    truncated: fields.boolean().label("Changeset Truncated")
+                    truncated: fields.boolean().label("Changeset Truncated"),
+                    // The generated sentence. The only field on this model that may contain
+                    // content values, and the reason the feature's privacy posture is stated
+                    // narrowly rather than absolutely.
+                    summary: fields.longText().label("Summary"),
+                    // Job bookkeeping. `summaryValues` holds content values transiently, between
+                    // the save that produced them and the job that consumes them.
+                    summaryTaskId: fields.text().label("Summary Task ID"),
+                    summaryValues: fields.json().label("Summary Values"),
+                    // Indexed separately from `timestamp` because the sweeper ages against when the
+                    // values were written, which is not when the change happened for a debounced
+                    // run that extended an earlier record.
+                    summaryValuesWrittenOn: fields
+                        .datetime()
+                        .label("Summary Values Written On")
+                        .withTimezone(),
+                    summaryReason: fields.text().label("Summary Reason")
                 }))
         ];
     }

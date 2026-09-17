@@ -2,12 +2,13 @@ import { Result } from "@webiny/feature/api";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import { ActivityLogPersistenceError, ActivityLogReadError } from "~/core/errors.js";
-import type { ActivityRecordInput, ActivityTarget } from "~/core/types.js";
+import type { ActivityRecord, ActivityRecordInput, ActivityTarget } from "~/core/types.js";
 import { ActivityLogModelProvider, type ActivityRecordValues } from "./abstractions.js";
 import { entryToRecord, recordToValues, sequenceOf } from "./ActivityRecordMapper.js";
 
@@ -22,6 +23,14 @@ const DEFAULT_LIMIT = 50;
  * cleanly. Finishing the job is the task's business, not this method's.
  */
 const MAX_DELETE_PASSES = 20;
+
+/**
+ * Bounds one `findStaleValues` call, for the same reason as `MAX_DELETE_PASSES`: every pass costs a
+ * full model read on the DynamoDB-only backend, and the caller is a scheduled task that has to
+ * regain control often enough to check its own timeout.
+ */
+const MAX_SCAN_PASSES = 20;
+const SCAN_PAGE_SIZE = 100;
 
 /**
  * Activity records stored one-per-entry in a private CMS model.
@@ -41,6 +50,7 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
         private createEntry: CreateEntryUseCase.Interface,
         private listEntries: ListLatestEntriesUseCase.Interface,
         private deleteEntry: DeleteEntryUseCase.Interface,
+        private updateEntry: UpdateEntryUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface
     ) {}
 
@@ -176,6 +186,137 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
      * record locking takes. Building the `where` by hand would put these keys at the top level,
      * where they would match nothing and fail silently rather than erroring.
      */
+    /**
+     * Writes the summary and clears the values in one update.
+     *
+     * Only the summary fields are sent. `UpdateEntryUseCase` merges into the stored values, so
+     * `sequence` is untouched and the record keeps its place under the keyset cursor — which is the
+     * property the conformance suite pins, because an update that reordered would make a reader
+     * skip or repeat rows mid-page.
+     *
+     * A missing record is success, not failure. The entry may have been purged while the job ran,
+     * and the correct response to "the thing you were summarising is gone" is to stop, not to
+     * retry forever or to recreate history that was deliberately deleted.
+     *
+     * Idempotent by construction: a second run writes the same summary and clears values that are
+     * already clear.
+     */
+    async settleSummary(params: ActivityLogStorage.SettleSummaryParams) {
+        try {
+            const model = await this.modelProvider.get();
+
+            const result = await this.updateEntry.execute<Partial<ActivityRecordValues>>(
+                model,
+                params.recordId,
+                {
+                    values: {
+                        summary: params.summary ?? null,
+                        summaryReason: params.reason ?? null,
+                        // The obligation. Everything else on this write is bookkeeping; this is
+                        // the part that stops content values outliving the job.
+                        summaryValues: null,
+                        summaryValuesWrittenOn: null,
+                        summaryTaskId: null
+                    }
+                },
+                // The record is append-only in everything a reader sees, so it carries no draft
+                // state a validation pass would have anything to say about. Skipping it also keeps
+                // this write cheap, which matters because the sweeper performs it in bulk.
+                { skipValidation: true }
+            );
+
+            if (result.isFail()) {
+                // A purged entry is the expected race, not an error. Anything else is real.
+                if (result.error.code === "Cms/Entry/NotFound") {
+                    return Result.ok();
+                }
+
+                return Result.fail(new ActivityLogPersistenceError(result.error));
+            }
+
+            return Result.ok();
+        } catch (error) {
+            return Result.fail(new ActivityLogPersistenceError(error as Error));
+        }
+    }
+    /**
+     * Records still holding transient values written before a given instant.
+     *
+     * The age test is applied here rather than in the query, and that is deliberate. A
+     * `summaryValuesWrittenOn_lt` filter also matches records where the field is unset — which is
+     * almost every record — so the query came back full of rows with nothing to sweep. Backend
+     * null-ordering is not something to rely on, and the conformance suite caught it.
+     *
+     * So this scans pages in insertion order and filters in memory, stopping once it has filled the
+     * caller's limit or run out of passes. An empty result therefore means "nothing stale within
+     * the scan bound", which is what lets the sweeper treat it as done. Filtering *after* applying
+     * the caller's limit would not: a page of records that all lack values would look like an
+     * empty sweep while stale records sat behind it.
+     *
+     * This is the most expensive operation in the feature and the one query the current storage
+     * does badly: there is no index on the values timestamp, so on the DynamoDB-only backend each
+     * pass inherits the whole-model read. Acceptable only because the sweeper runs on a schedule
+     * rather than in a request. **This is the query worth improving in the replacement storage
+     * layer.**
+     */
+    async findStaleValues(params: ActivityLogStorage.StaleValuesParams) {
+        try {
+            const model = await this.modelProvider.get();
+            const limit = params.limit ?? DEFAULT_LIMIT;
+            const stale: ActivityRecord[] = [];
+
+            let after: string | null = null;
+
+            for (let pass = 0; pass < MAX_SCAN_PASSES && stale.length < limit; pass++) {
+                const result = await this.listEntries.execute<ActivityRecordValues>(model, {
+                    where: this.whereMapper.map({
+                        fields: model.fields,
+                        input: after ? { sequence_gt: after } : {}
+                    }),
+                    sort: ["values_sequence_ASC"],
+                    limit: SCAN_PAGE_SIZE
+                });
+
+                if (result.isFail()) {
+                    return Result.fail(new ActivityLogReadError(result.error));
+                }
+
+                const { entries } = result.value;
+
+                if (entries.length === 0) {
+                    break;
+                }
+
+                for (const entry of entries) {
+                    const record = entryToRecord(entry);
+                    const writtenOn = record.summaryState?.valuesWrittenOn;
+
+                    if (
+                        record.summaryState?.values?.length &&
+                        writtenOn &&
+                        writtenOn < params.writtenBefore
+                    ) {
+                        stale.push(record);
+
+                        if (stale.length >= limit) {
+                            break;
+                        }
+                    }
+                }
+
+                after = sequenceOf(entries.at(-1)!);
+
+                if (entries.length < SCAN_PAGE_SIZE) {
+                    break;
+                }
+            }
+
+            return Result.ok(stale);
+        } catch (error) {
+            return Result.fail(new ActivityLogReadError(error as Error));
+        }
+    }
+
     private buildWhere(
         params: ActivityLogStorage.ListParams,
         model: CmsModel
@@ -204,6 +345,7 @@ export const PrivateModelActivityLogStorage = ActivityLogStorage.createImplement
         CreateEntryUseCase,
         ListLatestEntriesUseCase,
         DeleteEntryUseCase,
+        UpdateEntryUseCase,
         CmsWhereMapper
     ]
 });

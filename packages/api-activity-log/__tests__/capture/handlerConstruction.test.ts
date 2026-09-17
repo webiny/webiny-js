@@ -6,6 +6,7 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
@@ -58,6 +59,9 @@ const ALWAYS_PRESENT = new Set([
     "CreateEntryUseCase",
     "ListLatestEntriesUseCase",
     "DeleteEntryUseCase",
+    // Writes a summary onto an existing record. Registered by the CMS alongside the other entry
+    // use cases this adapter already depends on, so it is present whenever the feature is.
+    "UpdateEntryUseCase",
     "GetModelUseCase",
     "CmsWhereMapper",
     // Reads the target within its model, which both authorises and validates membership.
@@ -105,6 +109,9 @@ const minimalContainer = (): Container => {
     container.registerInstance(DeleteEntryUseCase, {
         execute: vi.fn()
     } as unknown as DeleteEntryUseCase.Interface);
+    container.registerInstance(UpdateEntryUseCase, {
+        execute: vi.fn()
+    } as unknown as UpdateEntryUseCase.Interface);
     container.registerInstance(GetModelUseCase, {
         execute: vi.fn()
     } as unknown as GetModelUseCase.Interface);

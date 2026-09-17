@@ -1,5 +1,10 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { ActivityRecord, ActivityRecordInput, ActivityTarget } from "./types.js";
+import type {
+    ActivityRecord,
+    ActivityRecordInput,
+    ActivityTarget,
+    SummarySkipReason
+} from "./types.js";
 import type { ActivityLogPersistenceError, ActivityLogReadError } from "./errors.js";
 
 export interface IActivityLogListParams {
@@ -19,6 +24,25 @@ export interface IActivityLogListResult {
     hasMore: boolean;
 }
 
+/**
+ * What the job writes back when it settles.
+ *
+ * A summary and a reason are mutually exclusive in practice but both are optional, because a job
+ * that fails records only a reason and the sweeper records only a reason. Either way the transient
+ * values are cleared, which is the part that must happen.
+ */
+export interface IActivityLogSettleSummaryParams {
+    recordId: string;
+    summary?: string;
+    reason?: SummarySkipReason;
+}
+
+export interface IActivityLogStaleValuesParams {
+    /** Records whose values were written before this instant are considered abandoned. */
+    writtenBefore: string;
+    limit?: number;
+}
+
 export interface IActivityLogDeletionProgress {
     /** False when records remain and the caller should invoke again. */
     finished: boolean;
@@ -32,10 +56,16 @@ export interface IActivityLogDeletionProgress {
  * The private CMS model behind this interface is a known stopgap: its per-target read loads the
  * entire model on every page view, and a lighter mechanism is expected to replace it. Nothing
  * above this interface may depend on CMS entry semantics, on the model being queryable, or on
- * anything beyond these three operations — that is what makes the swap possible.
+ * anything beyond these five operations — that is what makes the swap possible.
  */
 export interface IActivityLogStorage {
-    /** Append one record. Records are immutable once written; there is no update. */
+    /**
+     * Append one record.
+     *
+     * Records are immutable in everything capture writes. The single exception is
+     * `settleSummary` below, which adds a summary after the fact and never alters the account of
+     * the change itself.
+     */
     append(
         record: ActivityRecordInput
     ): Promise<Result<ActivityRecord, ActivityLogPersistenceError>>;
@@ -57,6 +87,39 @@ export interface IActivityLogStorage {
     deleteAllForTarget(
         target: ActivityTarget
     ): Promise<Result<IActivityLogDeletionProgress, ActivityLogPersistenceError>>;
+
+    /**
+     * Store a summary, or the reason there is none, and clear the transient values — in one write.
+     *
+     * One operation rather than two because the clear is the obligation. A job that stored a
+     * summary and then failed to clear would leave content values on a record with nothing left to
+     * consume them, which is exactly what the sweeper exists to prevent and should not be routinely
+     * relied upon.
+     *
+     * Three requirements the private-model adapter satisfies and any replacement must:
+     *
+     *   - **Idempotent.** A task can run more than once; the second run must be harmless.
+     *   - **Must not disturb ordering.** The keyset cursor pages on a sort key the adapter owns, so
+     *     an update that moved a record would make a reader skip or repeat rows mid-page.
+     *   - **Must tolerate a missing record.** The entry may have been purged while the job ran.
+     *     Doing nothing is correct; failing would retry forever and recreating it would resurrect
+     *     history that was deliberately deleted.
+     */
+    settleSummary(
+        params: IActivityLogSettleSummaryParams
+    ): Promise<Result<void, ActivityLogPersistenceError>>;
+
+    /**
+     * Records still carrying transient values written before a given instant.
+     *
+     * The only operation in the feature that looks across targets rather than within one, and the
+     * only one the current storage does badly — see the adapter. It exists for the sweeper, which
+     * runs on a schedule rather than in a request, so the cost is tolerable where it would not be
+     * on a read path.
+     */
+    findStaleValues(
+        params: IActivityLogStaleValuesParams
+    ): Promise<Result<ActivityRecord[], ActivityLogReadError>>;
 }
 
 export const ActivityLogStorage = createAbstraction<IActivityLogStorage>("ActivityLog/Storage");
@@ -66,4 +129,6 @@ export namespace ActivityLogStorage {
     export type ListParams = IActivityLogListParams;
     export type ListResult = IActivityLogListResult;
     export type DeletionProgress = IActivityLogDeletionProgress;
+    export type SettleSummaryParams = IActivityLogSettleSummaryParams;
+    export type StaleValuesParams = IActivityLogStaleValuesParams;
 }
