@@ -56,6 +56,21 @@ export interface IActivitySummaryConfig {
     debounceWindowMs: number;
     /** How long the job waits before running, so a run has time to accumulate. */
     dispatchDelaySeconds: number;
+    /**
+     * How old a bundle must be before the sweeper reclaims it.
+     *
+     * Derived from what a job's life can actually cost rather than picked: the dispatch delay
+     * (60s) plus one run of the background-task Lambda, whose timeout is 900 seconds
+     * (`ApiBackgroundTask.ts:32`, the AWS maximum). The summary job has `maxIterations: 1`, so it
+     * gets one run and no continuations — a worst case of roughly sixteen minutes.
+     *
+     * An hour is therefore about four times the realistic ceiling. It is not a guarantee on every
+     * runtime: the standalone worker allows 24 hours (`WorkerTaskService.ts:11`), so a
+     * pathologically slow job there could still be swept. That is survivable because sweeping a
+     * running job is a soft failure — the job finds no values and completes without a summary. One
+     * lost sentence, not a corrupt record.
+     */
+    sweepThresholdMs: number;
 }
 
 export const DEFAULT_ACTIVITY_SUMMARY_CONFIG: IActivitySummaryConfig = {
@@ -68,7 +83,8 @@ export const DEFAULT_ACTIVITY_SUMMARY_CONFIG: IActivitySummaryConfig = {
     // the headroom is deliberate rather than tight.
     maxValueBytes: 100 * 1024,
     debounceWindowMs: 60 * 1000,
-    dispatchDelaySeconds: 60
+    dispatchDelaySeconds: 60,
+    sweepThresholdMs: 60 * 60 * 1000
 };
 
 export const ActivitySummaryConfig = createAbstraction<IActivitySummaryConfig>(

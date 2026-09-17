@@ -320,7 +320,15 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
             const limit = params.limit ?? DEFAULT_LIMIT;
             const stale: ActivityRecord[] = [];
 
-            let after: string | null = null;
+            // Resumed from the caller's cursor, not from the start. Restarting every call would
+            // rescan the same oldest pages forever: settled records stay where they are, so on a
+            // model larger than one call's reach, nothing past that reach would ever be seen.
+            // An unreadable cursor decodes to null and the scan starts over. Costly rather than
+            // wrong: a sweep never loses records by beginning again, only by skipping ahead.
+            const resumeFrom = params.after ? decodeCursor(params.after) : null;
+            let after: string | null = typeof resumeFrom === "string" ? resumeFrom : null;
+            let reachedEnd = false;
+            let filledBatch = false;
 
             for (let pass = 0; pass < MAX_SCAN_PASSES && stale.length < limit; pass++) {
                 const result = await this.listEntries.execute<ActivityRecordValues>(model, {
@@ -339,10 +347,15 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
                 const { entries } = result.value;
 
                 if (entries.length === 0) {
+                    reachedEnd = true;
                     break;
                 }
 
                 for (const entry of entries) {
+                    // Advanced per entry, not per page. A batch that fills mid-page must resume at
+                    // the record it stopped on, or the rest of that page is skipped silently.
+                    after = sequenceOf(entry);
+
                     const record = entryToRecord(entry);
                     const writtenOn = record.summaryState?.valuesWrittenOn;
 
@@ -354,19 +367,29 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
                         stale.push(record);
 
                         if (stale.length >= limit) {
+                            filledBatch = true;
                             break;
                         }
                     }
                 }
 
-                after = sequenceOf(entries.at(-1)!);
+                if (filledBatch) {
+                    break;
+                }
 
                 if (entries.length < SCAN_PAGE_SIZE) {
+                    reachedEnd = true;
                     break;
                 }
             }
 
-            return Result.ok(stale);
+            // A null cursor is the only claim that the whole model has been seen, so it is made
+            // only where the data actually ran out — not when this call merely hit its own bound
+            // and not when it simply filled the batch it was asked for.
+            return Result.ok({
+                records: stale,
+                cursor: reachedEnd || after === null ? null : encodeCursor(after)
+            });
         } catch (error) {
             return Result.fail(new ActivityLogReadError(error as Error));
         }

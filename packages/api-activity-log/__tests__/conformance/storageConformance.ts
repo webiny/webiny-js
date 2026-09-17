@@ -6,8 +6,8 @@ import type { ActivityRecordInput } from "~/core/types.js";
 /**
  * The contract every `ActivityLogStorage` implementation must satisfy.
  *
- * Written against the interface and nothing else. It knows about `append`, `list` and
- * `deleteAllForTarget`, and about no CMS concept whatsoever — no models, no entries, no cursors it
+ * Written against the interface and nothing else. It knows about the six operations the interface
+ * declares, and about no CMS concept whatsoever — no models, no entries, no cursors it
  * can read. The private-model adapter runs it today; the lighter store runs the same file
  * unchanged when it arrives, so the replacement is verified rather than assumed.
  *
@@ -741,7 +741,7 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                         "findStaleValues"
                     );
 
-                    return stale.some(r => r.id === appended.id);
+                    return stale.records.some(r => r.id === appended.id);
                 });
 
                 expect(found).toBe(true);
@@ -773,7 +773,7 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                         "findStaleValues"
                     );
 
-                    return stale.some(r => r.id === appended.id);
+                    return stale.records.some(r => r.id === appended.id);
                 });
 
                 expect(found).toBe(false);
@@ -793,7 +793,7 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                         "findStaleValues"
                     );
 
-                    return stale.some(r => r.id === appended.id);
+                    return stale.records.some(r => r.id === appended.id);
                 });
 
                 expect(found).toBe(false);
@@ -834,10 +834,90 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                         "findStaleValues"
                     );
 
-                    return stale.some(r => r.id === appended.id);
+                    return stale.records.some(r => r.id === appended.id);
                 });
 
                 expect(found).toBe(false);
+            });
+
+            it("reports a null cursor when it reached the end of the data", async () => {
+                // Part of the contract, not an implementation detail. A sweep is finished only on
+                // a null cursor, so a store that never returned one would sweep forever, and one
+                // that always returned one would stop early with values still out there.
+                const targetId = nextTargetId("stale-cursor");
+
+                const cursor = await subject.run(async storage => {
+                    unwrap(await storage.append(recordFor(targetId)), "append");
+
+                    const stale = unwrap(
+                        await storage.findStaleValues({
+                            writtenBefore: "2021-01-01T00:00:00.000Z"
+                        }),
+                        "findStaleValues"
+                    );
+
+                    return stale.cursor;
+                });
+
+                expect(cursor).toBeNull();
+            });
+
+            it("resumes after a cursor rather than repeating what it already returned", async () => {
+                // The cursor is opaque here as everywhere in this suite: taken from one call and
+                // handed to the next, never parsed.
+                //
+                // Paged one record at a time on purpose. The search runs across every target, so
+                // this cannot assume it is alone in the store — what it asserts instead is that
+                // walking the cursor to the end returns each record once and reaches the two this
+                // test wrote, which is the property a sweep depends on.
+                const targetId = nextTargetId("stale-resume");
+
+                const staleState = {
+                    taskId: "task-resume",
+                    values: [{ path: "title", label: "Title", before: "a", after: "b" }],
+                    valuesWrittenOn: "2020-01-01T00:00:00.000Z"
+                };
+
+                const swept = await subject.run(async storage => {
+                    const first = unwrap(
+                        await storage.append(recordFor(targetId, { summaryState: staleState })),
+                        "append"
+                    );
+                    const second = unwrap(
+                        await storage.append(recordFor(targetId, { summaryState: staleState })),
+                        "append"
+                    );
+
+                    const ids: string[] = [];
+                    let cursor: string | null | undefined = undefined;
+                    let calls = 0;
+
+                    while (cursor !== null && calls < 100) {
+                        const page = unwrap(
+                            await storage.findStaleValues({
+                                writtenBefore: "2021-01-01T00:00:00.000Z",
+                                limit: 1,
+                                after: cursor
+                            }),
+                            "findStaleValues"
+                        );
+
+                        ids.push(...page.records.map(record => record.id));
+                        cursor = page.cursor;
+                        calls++;
+                    }
+
+                    return { ids, wrote: [first.id, second.id], finished: cursor === null };
+                });
+
+                // It got to the end rather than running out of attempts.
+                expect(swept.finished).toBe(true);
+                // Each record once. A resume that restarted, or that re-read its own boundary,
+                // shows up here as a duplicate.
+                expect(new Set(swept.ids).size).toBe(swept.ids.length);
+                // And the walk reached both of the records this test wrote.
+                expect(swept.ids).toContain(swept.wrote[0]);
+                expect(swept.ids).toContain(swept.wrote[1]);
             });
         });
 

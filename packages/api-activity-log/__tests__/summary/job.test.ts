@@ -92,9 +92,10 @@ const harness = (options: HarnessOptions = {}) => {
     } as unknown as ResolveAiCapabilityUseCase.Interface);
 
     const generateText = vi.fn(
-        (options.generate ?? (async () => ({
-            text: "Rewrote the hero heading and the body copy."
-        }))) as (params: { prompt: string; model: string }) => Promise<{ text: string }>
+        (options.generate ??
+            (async () => ({
+                text: "Rewrote the hero heading and the body copy."
+            }))) as (params: { prompt: string; model: string }) => Promise<{ text: string }>
     );
 
     container.registerInstance(Ai, { generateText } as unknown as Ai.Interface);
@@ -240,6 +241,65 @@ describe("failure paths, each of which owes a cleared bundle", () => {
 
             expect(settleSummary.mock.calls[0]![0].summary).toBeUndefined();
         }
+    });
+});
+
+describe("the length ceiling", () => {
+    // 600 characters, written out here rather than imported, so the number is pinned by a test and
+    // not free to drift with the constant.
+    const MAX = 600;
+
+    it("accepts a response of exactly the maximum length", async () => {
+        const text = "x".repeat(MAX);
+        const { handler, settleSummary } = harness({ generate: async () => ({ text }) });
+        const { controller: ctrl } = controller();
+
+        await handler.run({ input, controller: ctrl } as never);
+
+        expect(clearedTheBundle(settleSummary)).toEqual({ recordId: "rec-1", summary: text });
+    });
+
+    it("rejects one character more", async () => {
+        const { handler, settleSummary } = harness({
+            generate: async () => ({ text: "x".repeat(MAX + 1) })
+        });
+        const { controller: ctrl } = controller();
+
+        await handler.run({ input, controller: ctrl } as never);
+
+        expect(clearedTheBundle(settleSummary)).toMatchObject({ reason: "generation-failed" });
+    });
+
+    it("rejects rather than truncating", async () => {
+        // The behaviour worth being explicit about. Retention makes a stored summary permanent, so
+        // a sentence cut off mid-word would be a permanent artefact of a model that ran long —
+        // worse than a row that keeps its deterministic description and says nothing more.
+        const { handler, settleSummary } = harness({
+            generate: async () => ({
+                text: "The team rewrote the hero heading and then " + "kept going ".repeat(100)
+            })
+        });
+        const { controller: ctrl } = controller();
+
+        await handler.run({ input, controller: ctrl } as never);
+
+        const settled = clearedTheBundle(settleSummary);
+        expect(settled.summary).toBeUndefined();
+        expect(settled).toMatchObject({ reason: "generation-failed" });
+    });
+
+    it("measures the trimmed text, so padding does not cost a summary", async () => {
+        // Models pad with leading newlines often enough that rejecting a good summary for its
+        // whitespace would be a self-inflicted failure.
+        const text = "x".repeat(MAX);
+        const { handler, settleSummary } = harness({
+            generate: async () => ({ text: `\n\n${text}  \n` })
+        });
+        const { controller: ctrl } = controller();
+
+        await handler.run({ input, controller: ctrl } as never);
+
+        expect(clearedTheBundle(settleSummary)).toEqual({ recordId: "rec-1", summary: text });
     });
 });
 

@@ -48,6 +48,26 @@ export interface IActivityLogStaleValuesParams {
     /** Records whose values were written before this instant are considered abandoned. */
     writtenBefore: string;
     limit?: number;
+    /**
+     * Where to resume, from a previous call's `cursor`. Omitted to start from the beginning.
+     *
+     * Opaque, exactly like `list`'s: minted by the implementation, never parsed by a caller.
+     */
+    after?: string | null;
+}
+
+export interface IActivityLogStaleValuesResult {
+    records: ActivityRecord[];
+    /**
+     * Where the next call should resume, or `null` when the search reached the end of the data.
+     *
+     * Load-bearing rather than a convenience. A search across every target has to stop somewhere,
+     * and a caller that could only ever restart from the beginning would rescan the same prefix
+     * forever — on a store where settled records stay in that prefix, everything past it would be
+     * permanently unreachable. So `null` is the only signal that a sweep is finished; anything else
+     * means keep going from here.
+     */
+    cursor: string | null;
 }
 
 export interface IActivityLogDeletionProgress {
@@ -139,12 +159,16 @@ export interface IActivityLogStorage {
      *
      * The only operation in the feature that looks across targets rather than within one, and the
      * only one the current storage does badly — see the adapter. It exists for the sweeper, which
-     * runs on a schedule rather than in a request, so the cost is tolerable where it would not be
-     * on a read path.
+     * runs outside a request, so the cost is tolerable where it would not be on a read path.
+     *
+     * **Resumable, and that is a requirement rather than an optimisation.** A cross-target search
+     * has a bound, and a caller that always restarted would see only the prefix inside that bound.
+     * Records already settled stay in the prefix — nothing removes them — so on any installation
+     * past the bound, abandoned values written later would never be found at all.
      */
     findStaleValues(
         params: IActivityLogStaleValuesParams
-    ): Promise<Result<ActivityRecord[], ActivityLogReadError>>;
+    ): Promise<Result<IActivityLogStaleValuesResult, ActivityLogReadError>>;
 }
 
 export const ActivityLogStorage = createAbstraction<IActivityLogStorage>("ActivityLog/Storage");
@@ -157,4 +181,5 @@ export namespace ActivityLogStorage {
     export type SettleSummaryParams = IActivityLogSettleSummaryParams;
     export type ExtendValuesParams = IActivityLogExtendValuesParams;
     export type StaleValuesParams = IActivityLogStaleValuesParams;
+    export type StaleValuesResult = IActivityLogStaleValuesResult;
 }

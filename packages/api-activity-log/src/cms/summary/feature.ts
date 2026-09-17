@@ -5,6 +5,7 @@ import { SummaryDispatcherImplementation } from "./SummaryDispatcher.js";
 import { ActivityLogSummaryCapability } from "./capability.js";
 import { CapabilityAvailability } from "./CapabilityAvailability.js";
 import { SummariseActivityTaskDefinition } from "./SummariseActivityTaskDefinition.js";
+import { SweepStaleValuesTaskDefinition } from "./SweepStaleValuesTaskDefinition.js";
 
 export interface IActivitySummaryFeatureParams {
     config?: Partial<IActivitySummaryConfig>;
@@ -33,6 +34,7 @@ export const ActivitySummaryFeature = createFeature<IActivitySummaryFeatureParam
         container.register(ActivityLogSummaryCapability);
         container.register(CapabilityAvailability).inSingletonScope();
         container.register(SummariseActivityTaskDefinition);
+        container.register(SweepStaleValuesTaskDefinition);
         container.register(SummaryDispatcherImplementation);
     }
 });
