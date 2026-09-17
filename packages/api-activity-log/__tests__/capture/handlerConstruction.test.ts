@@ -65,6 +65,9 @@ const ALWAYS_PRESENT = new Set([
     "UpdateEntryUseCase",
     // Reads a record back before extending its bundle, to refuse one whose summary has settled.
     "GetEntryByIdUseCase",
+    // Dispatches the summary job. Optional in the dispatcher, because a project without background
+    // tasks registered must still record entries.
+    "TaskService",
     "GetModelUseCase",
     "CmsWhereMapper",
     // Reads the target within its model, which both authorises and validates membership.
@@ -75,6 +78,9 @@ const ALWAYS_PRESENT = new Set([
 /** Abstractions the feature registers itself, so they are present whenever it is. */
 const SELF_REGISTERED = new Set([
     "ActivityLogStorage",
+    "SummaryDispatcher",
+    "SummaryModelAvailability",
+    "ActivitySummaryConfig",
     "ActivityLogModelProvider",
     "ActivitySourceResolver",
     "ActivityWriter",

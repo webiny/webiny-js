@@ -3,6 +3,7 @@ import { Container } from "@webiny/di";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ActivityWriter, EntryActivityRecorder } from "~/cms/recorder/abstractions.js";
 import { EntryActivityRecorder as EntryActivityRecorderImpl } from "~/cms/recorder/EntryActivityRecorder.js";
+import { SummaryDispatcher } from "~/cms/summary/SummaryDispatcher.js";
 import { ACTIVITY_LOG_MODEL_ID } from "~/storage/privateModel/ActivityRecordModel.js";
 import { WORKFLOW_STATE_MODEL_ID } from "@webiny/api-workflows/domain/workflowState/stateModel.js";
 
@@ -32,6 +33,12 @@ const harness = () => {
     const write = vi.fn(async () => undefined);
 
     container.registerInstance(ActivityWriter, { write } as unknown as ActivityWriter.Interface);
+    // The recorder plans a summary before writing; this suite is about the private model filter,
+    // which runs before either.
+    container.registerInstance(SummaryDispatcher, {
+        plan: async () => ({ state: undefined }),
+        follow: async () => undefined
+    } as SummaryDispatcher.Interface);
     container.register(EntryActivityRecorderImpl);
 
     return { write, recorder: container.resolve(EntryActivityRecorder) };

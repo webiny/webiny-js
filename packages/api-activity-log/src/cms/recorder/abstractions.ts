@@ -2,6 +2,8 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type {
     ActivityAction,
+    ActivityRecord,
+    ActivitySummaryState,
     ActivityEntryAction,
     ActivityReviewAction,
     ActivitySubject,
@@ -69,13 +71,20 @@ export interface IWriteActivityParams {
     truncated?: boolean;
     subject?: ActivitySubject;
     hasNote?: boolean;
+    /** Attached at append time, so a run's values land in the same write as the record. */
+    summaryState?: ActivitySummaryState;
 }
 
 /**
  * Writes one record. Never throws — see the implementation for why that is stated in the type.
  */
 export interface IActivityWriter {
-    write(params: IWriteActivityParams): Promise<void>;
+    /**
+     * Never throws and never rejects. Returns the appended record, or `null` on any failure —
+     * including one a caller would rather have heard about, because there is no safe channel for
+     * that here.
+     */
+    write(params: IWriteActivityParams): Promise<ActivityRecord | null>;
 }
 
 export const ActivityWriter = createAbstraction<IActivityWriter>("ActivityLog/ActivityWriter");

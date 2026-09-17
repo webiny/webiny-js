@@ -14,6 +14,7 @@ import {
 } from "~/cms/recorder/abstractions.js";
 import { ActivityWriter as ActivityWriterImpl } from "~/cms/recorder/ActivityWriter.js";
 import { EntryActivityRecorder as EntryActivityRecorderImpl } from "~/cms/recorder/EntryActivityRecorder.js";
+import { SummaryDispatcher } from "~/cms/summary/SummaryDispatcher.js";
 
 /**
  * Failure containment is the hardest requirement in the feature, and it lives in exactly one
@@ -75,13 +76,30 @@ const writerHarness = (
     return { writer: container.resolve(ActivityWriter), append };
 };
 
+/**
+ * A dispatcher that decides nothing.
+ *
+ * The recorder's containment is what these tests are about, and a real dispatcher would drag in
+ * storage, an identity and a task service to prove a property that has nothing to do with any of
+ * them. Its own failure modes get their own tests.
+ */
+const inertDispatcher = (
+    overrides: Partial<SummaryDispatcher.Interface> = {}
+): SummaryDispatcher.Interface => ({
+    plan: async () => ({ state: undefined }),
+    follow: async () => undefined,
+    ...overrides
+});
+
 const recorderHarness = (
-    writeImpl: (params: IWriteActivityParams) => unknown = async () => undefined
+    writeImpl: (params: IWriteActivityParams) => unknown = async () => undefined,
+    dispatcher?: SummaryDispatcher.Interface
 ) => {
     const container = new Container();
     const write = vi.fn(writeImpl);
 
     container.registerInstance(ActivityWriter, { write } as unknown as ActivityWriter.Interface);
+    container.registerInstance(SummaryDispatcher, dispatcher ?? inertDispatcher());
     container.register(EntryActivityRecorderImpl);
 
     return { recorder: container.resolve(EntryActivityRecorder), write };
@@ -100,13 +118,13 @@ describe("ActivityWriter containment", () => {
             Result.fail(new ActivityLogPersistenceError(new Error("table gone")))
         );
 
-        await expect(writer.write(params)).resolves.toBeUndefined();
+        await expect(writer.write(params)).resolves.toBeNull();
     });
 
     it("resolves when storage rejects", async () => {
         const { writer } = writerHarness(() => Promise.reject(new Error("network down")));
 
-        await expect(writer.write(params)).resolves.toBeUndefined();
+        await expect(writer.write(params)).resolves.toBeNull();
     });
 
     it("resolves when storage throws synchronously", async () => {
@@ -114,19 +132,19 @@ describe("ActivityWriter containment", () => {
             throw new Error("thrown, not rejected");
         });
 
-        await expect(writer.write(params)).resolves.toBeUndefined();
+        await expect(writer.write(params)).resolves.toBeNull();
     });
 
     it("resolves when identity resolution throws", async () => {
         const { writer } = writerHarness(written, { identityThrows: true });
 
-        await expect(writer.write(params)).resolves.toBeUndefined();
+        await expect(writer.write(params)).resolves.toBeNull();
     });
 
     it("resolves when source resolution throws", async () => {
         const { writer } = writerHarness(written, { sourceThrows: true });
 
-        await expect(writer.write(params)).resolves.toBeUndefined();
+        await expect(writer.write(params)).resolves.toBeNull();
     });
 
     it("reports the failure rather than swallowing it silently", async () => {
@@ -328,5 +346,93 @@ describe("EntryActivityRecorder", () => {
         expect(write.mock.calls[0]![0]).toMatchObject({
             changeset: [{ path: "title", label: "Title" }]
         });
+    });
+});
+
+/**
+ * The summary dispatcher runs inside the recorder, therefore inside the write.
+ *
+ * `ActivityWriter.write` gained a return value so the dispatcher could be handed a record id, which
+ * put a new failure surface on a path that must never throw. These pin both halves: nothing the
+ * dispatcher does can escape, and the new return value carries no failure of its own.
+ */
+describe("summary dispatch containment", () => {
+    beforeEach(() => {
+        vi.spyOn(console, "error").mockImplementation(() => undefined);
+    });
+
+    it("resolves when planning throws", async () => {
+        const { recorder } = recorderHarness(
+            async () => undefined,
+            inertDispatcher({
+                plan: async () => {
+                    throw new Error("routing blew up");
+                }
+            })
+        );
+
+        await expect(
+            recorder.record({ model: model(), entry: entry(), action: "entry.update" })
+        ).resolves.toBeUndefined();
+    });
+
+    it("resolves when the follow-up throws", async () => {
+        // Dispatch is three CMS operations plus a Step Functions call, and a trigger failure
+        // rethrows into its caller — which is this, inside the entry write.
+        const { recorder } = recorderHarness(
+            async () => undefined,
+            inertDispatcher({
+                follow: async () => {
+                    throw new Error("could not trigger the task");
+                }
+            })
+        );
+
+        await expect(
+            recorder.record({ model: model(), entry: entry(), action: "entry.update" })
+        ).resolves.toBeUndefined();
+    });
+
+    it("resolves when planning rejects", async () => {
+        const { recorder } = recorderHarness(
+            async () => undefined,
+            inertDispatcher({ plan: () => Promise.reject(new Error("rejected")) })
+        );
+
+        await expect(
+            recorder.record({ model: model(), entry: entry(), action: "entry.update" })
+        ).resolves.toBeUndefined();
+    });
+
+    it("still writes the record when planning throws", async () => {
+        // Containment is not enough on its own: a dispatcher failure must cost the summary, not
+        // the record. A save that lost its activity row because a model could not be reached would
+        // be a far worse outcome than a missing sentence.
+        const { recorder, write } = recorderHarness(
+            async () => undefined,
+            inertDispatcher({
+                plan: async () => {
+                    throw new Error("routing blew up");
+                }
+            })
+        );
+
+        await recorder.record({ model: model(), entry: entry(), action: "entry.update" });
+
+        expect(write).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not follow up when the append failed", async () => {
+        // No record means no id to hand a job and nothing to extend. Following up anyway would
+        // dispatch a job pointed at a record that does not exist.
+        const follow = vi.fn(async () => undefined);
+        const { recorder } = recorderHarness(
+            async () => null,
+            inertDispatcher({ plan: async () => ({ state: undefined, dispatch: true }), follow })
+        );
+
+        await recorder.record({ model: model(), entry: entry(), action: "entry.update" });
+
+        expect(follow).not.toHaveBeenCalled();
     });
 });

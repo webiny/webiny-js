@@ -136,7 +136,9 @@ export type SummarySkipReason =
     /** The job ran but could not produce a usable sentence. */
     | "generation-failed"
     /** The job never ran and the sweeper reclaimed the values. */
-    | "abandoned";
+    | "abandoned"
+    /** This save joined a run already covered by a pending job, so it needs none of its own. */
+    | "covered-by-run";
 
 /**
  * The before and after values for one changed path, held only until the job consumes them.

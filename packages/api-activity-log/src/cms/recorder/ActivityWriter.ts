@@ -1,7 +1,7 @@
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { ActivityLogStorage } from "~/core/abstractions.js";
-import type { ActivityActor } from "~/core/types.js";
+import type { ActivityActor, ActivityRecord } from "~/core/types.js";
 import {
     ActivitySourceResolver,
     ActivityWriter as Abstraction,
@@ -18,6 +18,11 @@ import {
  *
  * `write` never throws and never rejects. Event handlers run inline, sequentially and awaited
  * inside the write, so a rejection here fails a save that has already persisted.
+ *
+ * It returns the appended record so a caller can act on it — the summary dispatcher needs an id to
+ * hand a job. That return is `null` on *every* failure path, which keeps the contract intact: the
+ * only thing a caller can learn from it is whether there is a record to work with, and a caller
+ * that ignores it behaves exactly as before.
  */
 class ActivityWriterImpl implements Abstraction.Interface {
     constructor(
@@ -26,7 +31,7 @@ class ActivityWriterImpl implements Abstraction.Interface {
         private sourceResolver: ActivitySourceResolver.Interface
     ) {}
 
-    async write(params: IWriteActivityParams): Promise<void> {
+    async write(params: IWriteActivityParams): Promise<ActivityRecord | null> {
         try {
             const result = await this.storage.append({
                 targetType: "cms-entry",
@@ -40,16 +45,21 @@ class ActivityWriterImpl implements Abstraction.Interface {
                 changeset: params.changeset ?? [],
                 truncated: params.truncated ?? false,
                 ...(params.subject ? { subject: params.subject } : {}),
-                ...(params.hasNote === undefined ? {} : { hasNote: params.hasNote })
+                ...(params.hasNote === undefined ? {} : { hasNote: params.hasNote }),
+                ...(params.summaryState ? { summaryState: params.summaryState } : {})
             });
 
             if (result.isFail()) {
                 // Storage converts its failures into values rather than throwing, so this arrives
                 // as a result. Report and carry on; the write must not be affected.
                 this.report(params, result.error);
+                return null;
             }
+
+            return result.value;
         } catch (error) {
             this.report(params, error);
+            return null;
         }
     }
 

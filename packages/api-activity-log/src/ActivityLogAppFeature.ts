@@ -3,6 +3,7 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { CaptureFeature } from "~/cms/capture/feature.js";
 import { PurgeFeature } from "~/cms/purge/feature.js";
 import { RecorderFeature } from "~/cms/recorder/feature.js";
+import { ActivitySummaryFeature } from "~/cms/summary/feature.js";
 import { ListActivityFeature } from "~/features/listActivity/feature.js";
 import { ActivityLogPermissionsFeature } from "~/features/permissions/feature.js";
 import { ReviewCaptureFeature } from "~/cms/review/feature.js";
@@ -43,6 +44,8 @@ export const ActivityLogAppFeature = createFeature({
 
         PrivateModelStorageFeature.register(container);
         ActivityLogPermissionsFeature.register(container);
+        // Before the recorder, which depends on the dispatcher.
+        ActivitySummaryFeature.register(container, {});
         RecorderFeature.register(container);
         ListActivityFeature.register(container);
         container.register(ActivityLogGraphQLFactory);
