@@ -268,6 +268,13 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseAiAdminAssistant() {
+        return (
+            this.decoratee.canUseAiAdminAssistant() &&
+            this.featureFlags.get().isEnabled("aiPowerups.adminAssistant")
+        );
+    }
+
     canUseAiEntryGeneration() {
         return (
             this.decoratee.canUseAiEntryGeneration() &&

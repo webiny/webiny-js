@@ -6,10 +6,13 @@ import { ReactComponent as AiIcon } from "@webiny/icons/auto_awesome.svg";
 /**
  * A dead end is the best moment to offer the assistant: the user has already expressed intent in
  * words, so hand that exact query straight to AI rather than making them retype it.
+ *
+ * `onAskAi` is optional because the assistant is licensed separately. Without it this is a plain
+ * "nothing matched" state rather than an offer the project cannot accept.
  */
 export interface NoResultsProps {
     query: string;
-    onAskAi: () => void;
+    onAskAi?: () => void;
 }
 
 export const NoResults = ({ query, onAskAi }: NoResultsProps) => (
@@ -19,13 +22,17 @@ export const NoResults = ({ query, onAskAi }: NoResultsProps) => (
             {`No results for “${query}”`}
         </Text>
         <Text as="div" size="sm" className="mb-md mt-xxs text-neutral-muted">
-            No page or action matches. Ask the assistant instead.
+            {onAskAi
+                ? "No page or action matches. Ask the assistant instead."
+                : "No page or action matches."}
         </Text>
-        <Button
-            variant="secondary"
-            text="Ask AI"
-            icon={<Icon icon={<AiIcon />} size="sm" label="" color="inherit" />}
-            onClick={onAskAi}
-        />
+        {onAskAi ? (
+            <Button
+                variant="secondary"
+                text="Ask AI"
+                icon={<Icon icon={<AiIcon />} size="sm" label="" color="inherit" />}
+                onClick={onAskAi}
+            />
+        ) : null}
     </div>
 );

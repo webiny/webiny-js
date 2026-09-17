@@ -52,6 +52,8 @@ export interface CommandItemVm {
     keywords?: string[];
     shortcut?: string;
     hasDetailView: boolean;
+    /** Selecting this switches the palette into AI mode. Lets a caller hide it when AI is off. */
+    entersAiMode: boolean;
 }
 
 export interface ActiveCommandVm {

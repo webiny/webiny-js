@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { PowerUpsAiChatResolver } from "./PowerUpsAiChatResolver.js";
 import { AiChatCapability } from "./capability.js";
 
@@ -12,6 +13,16 @@ import { AiChatCapability } from "./capability.js";
 export const AiChatResolverFeature = createFeature({
     name: "AiPowerUps/AiChatResolver",
     register(container) {
+        const enabled = container
+            .resolve(FeatureFlags)
+            .get()
+            .isEnabled("aiPowerups.adminAssistant");
+
+        if (!enabled) {
+            return;
+        }
+
+        // Inside the gate, so an unlicensed project gets no settings row for a feature it cannot use.
         container.register(AiChatCapability);
         container.register(PowerUpsAiChatResolver);
     }

@@ -27,6 +27,7 @@ export interface ILicense {
     canUseAiPageGeneration: () => boolean;
     canUseAiPageTranslation: () => boolean;
     canUseAiLexicalGeneration: () => boolean;
+    canUseAiAdminAssistant: () => boolean;
     canUseAiEntryGeneration: () => boolean;
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
@@ -122,6 +123,7 @@ export interface ProjectPackageFeatures {
             websiteBuilder?: { pageGeneration?: boolean; pageTranslation?: boolean };
             fileManager?: { imageEnrichment?: boolean };
             lexicalGeneration?: boolean;
+            adminAssistant?: boolean;
             cms?: {
                 entryGeneration?: boolean;
                 entryComparison?: boolean;
