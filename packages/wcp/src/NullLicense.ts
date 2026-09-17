@@ -75,6 +75,10 @@ export class NullLicense implements ILicense {
         return false;
     }
 
+    canUseAiAdminAssistant(): boolean {
+        return false;
+    }
+
     canUseAiEntryGeneration(): boolean {
         return false;
     }

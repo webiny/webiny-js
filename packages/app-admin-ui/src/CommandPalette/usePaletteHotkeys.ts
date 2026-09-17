@@ -6,6 +6,8 @@ interface PaletteHotkeysParams {
     presenter: CommandPalettePresenter.Interface;
     /* Not `presenter.close`: closing also resets the mode, which is the palette's business. */
     close: () => void;
+    /** False when the license blocks the assistant, so mod+k must not cycle into it. */
+    aiEnabled: boolean;
 }
 
 /**
@@ -15,7 +17,7 @@ interface PaletteHotkeysParams {
  * Reads the view model during render, so a reactive component calling this still re-renders when
  * the palette opens, a detail view appears, or AI mode is entered.
  */
-export const usePaletteHotkeys = ({ presenter, close }: PaletteHotkeysParams) => {
+export const usePaletteHotkeys = ({ presenter, close, aiEnabled }: PaletteHotkeysParams) => {
     const { isOpen, activeCommand, aiModeActive } = presenter.vm;
 
     /*
@@ -43,7 +45,7 @@ export const usePaletteHotkeys = ({ presenter, close }: PaletteHotkeysParams) =>
                     return;
                 }
 
-                if (!aiModeActive) {
+                if (aiEnabled && !aiModeActive) {
                     presenter.enterAiMode();
                     return;
                 }
@@ -59,7 +61,7 @@ export const usePaletteHotkeys = ({ presenter, close }: PaletteHotkeysParams) =>
             },
             ...presenter.shortcutKeys
         }),
-        [presenter, presenter.shortcutKeys, isOpen, activeCommand, aiModeActive, close]
+        [presenter, presenter.shortcutKeys, isOpen, activeCommand, aiModeActive, close, aiEnabled]
     );
 
     useHotkeys({ zIndex: PALETTE_HOTKEY_ZINDEX, keys });

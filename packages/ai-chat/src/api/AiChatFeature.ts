@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
 import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
@@ -25,6 +26,20 @@ const MAX_STEPS = 12;
 export const AiChatFeature = createFeature({
     name: "AiChat",
     register: container => {
+        /*
+         * Register-time gate on the effective flags (project config && live WCP license), matching
+         * how every other AI feature gates itself. Nothing is registered when it is off, so an
+         * unlicensed project has no `/stream/ai/chat` route at all rather than one that fails.
+         */
+        const enabled = container
+            .resolve(FeatureFlags)
+            .get()
+            .isEnabled("aiPowerups.adminAssistant");
+
+        if (!enabled) {
+            return;
+        }
+
         container.registerInstance(AiChatConfig, { maxSteps: MAX_STEPS });
         /*
          * No `AiChatResolver` is registered here. The model, the credential and the prompt all come

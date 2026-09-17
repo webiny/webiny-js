@@ -31,6 +31,7 @@ const LICENSE_CAPABILITIES = [
     "canUseAiPageGeneration",
     "canUseAiPageTranslation",
     "canUseAiLexicalGeneration",
+    "canUseAiAdminAssistant",
     "canUseAiEntryGeneration",
     "canUseAiEntryComparison",
     "canUseAiEntryTranslation",
@@ -158,6 +159,30 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             const flags = flagsFor({}, { present: true });
 
             expect(flags.isEnabled("aiPowerups")).toBe(false);
+        });
+
+        /*
+         * The assistant shipped ungated: it had no accessor, no LICENSE_CHECKS entry, and no flag
+         * check anywhere in `@webiny/ai-chat`, so every project got it regardless of license.
+         */
+        it("governs the admin assistant, which shipped ungated", () => {
+            const licensed = flagsFor({}, { present: true, allows: ["canUseAiAdminAssistant"] });
+            const unlicensed = flagsFor(
+                { aiPowerups: { adminAssistant: true } },
+                { present: true }
+            );
+
+            expect(licensed.isEnabled("aiPowerups.adminAssistant")).toBe(true);
+            expect(unlicensed.isEnabled("aiPowerups.adminAssistant")).toBe(false);
+        });
+
+        it("lets config disable the admin assistant the license allows", () => {
+            const flags = flagsFor(
+                { aiPowerups: { adminAssistant: false } },
+                { present: true, allows: ["canUseAiAdminAssistant"] }
+            );
+
+            expect(flags.isEnabled("aiPowerups.adminAssistant")).toBe(false);
         });
 
         it("governs remote components, which no license ever granted before", () => {
