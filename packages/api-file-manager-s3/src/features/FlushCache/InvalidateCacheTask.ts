@@ -1,6 +1,9 @@
 import { ServiceDiscovery } from "@webiny/api-core/features/serviceDiscovery/index.js";
 import { CloudFront } from "@webiny/aws-sdk/client-cloudfront/index.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { executeWithRetry } from "@webiny/utils";
 
 class ReturnContinue extends Error {}
@@ -16,18 +19,10 @@ export interface InvalidateCacheInput {
     paths: string[];
 }
 
-class InvalidateCloudfrontCacheTask implements TaskDefinition.Interface<InvalidateCacheInput> {
-    id = "invalidateAssetCache";
-    title = "Invalidate CloudFront Cache";
-    description = "A task to invalidate Cloudfront cache by given paths.";
-    maxIterations = 100;
-    isPrivate = true;
-
-    selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
+class InvalidateCloudfrontCacheTaskHandlerImpl implements TaskHandler.Interface<InvalidateCacheInput> {
     private continueIfCode = ["TooManyInvalidationsInProgress", "Throttling"];
 
-    public async run({ input, controller }: TaskDefinition.RunParams<InvalidateCacheInput>) {
+    public async run({ input, controller }: TaskHandler.RunParams<InvalidateCacheInput>) {
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
         }
@@ -101,6 +96,22 @@ class InvalidateCloudfrontCacheTask implements TaskDefinition.Interface<Invalida
             }
         });
     }
+}
+
+const InvalidateCloudfrontCacheTaskHandler = TaskHandler.createImplementation({
+    implementation: InvalidateCloudfrontCacheTaskHandlerImpl,
+    dependencies: []
+});
+
+class InvalidateCloudfrontCacheTask implements TaskDefinition.Interface {
+    id = "invalidateAssetCache";
+    title = "Invalidate CloudFront Cache";
+    description = "A task to invalidate Cloudfront cache by given paths.";
+    maxIterations = 100;
+    isPrivate = true;
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    handler = InvalidateCloudfrontCacheTaskHandler;
 }
 
 export const InvalidateCloudfrontCacheTaskDefinition = TaskDefinition.createImplementation({

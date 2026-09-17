@@ -4,7 +4,10 @@ import { createMockEvent } from "~tests/mocks";
 import { createLiveContextFactory } from "~tests/live";
 import { timerFactory } from "@webiny/utils/features/Timer/factory.js";
 import { TaskEventValidation } from "~/api/runner/TaskEventValidation";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Container } from "@webiny/di";
 import { TaskDataStatus } from "~/api/types.js";
 
@@ -13,15 +16,23 @@ describe("task lifecycle hooks", () => {
         it("should call onBeforeTrigger when task is triggered", async () => {
             const onBeforeTrigger = vi.fn();
 
+            class TestTaskHandler implements TaskHandler.Interface {
+                onBeforeTrigger = onBeforeTrigger;
+
+                async run({ controller }: TaskHandler.RunParams) {
+                    return controller.response.done("Done", { result: true });
+                }
+            }
+
+            const TestHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandler,
+                dependencies: []
+            });
+
             class TestTask implements TaskDefinition.Interface {
                 id = "testOnBeforeTrigger";
                 title = "Test onBeforeTrigger";
-
-                onBeforeTrigger = onBeforeTrigger;
-
-                async run({ controller }: TaskDefinition.RunParams) {
-                    return controller.response.done("Done", { result: true });
-                }
+                handler = TestHandler;
             }
 
             const TestTaskDefinition = TaskDefinition.createImplementation({
@@ -53,7 +64,8 @@ describe("task lifecycle hooks", () => {
                     name: "Test task",
                     input: { test: "value" },
                     parentId: undefined
-                }
+                },
+                definition: expect.objectContaining({ id: "testOnBeforeTrigger" })
             });
         });
     });
@@ -62,17 +74,25 @@ describe("task lifecycle hooks", () => {
         it("should call onDone when task completes successfully", async () => {
             const onDone = vi.fn();
 
-            class TestTask implements TaskDefinition.Interface {
-                id = "testOnDone";
-                title = "Test onDone";
-
+            class TestTaskHandler implements TaskHandler.Interface {
                 onDone = onDone;
 
-                async run({ controller }: TaskDefinition.RunParams) {
+                async run({ controller }: TaskHandler.RunParams) {
                     return controller.response.done("Task completed", {
                         result: "success"
                     });
                 }
+            }
+
+            const TestHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandler,
+                dependencies: []
+            });
+
+            class TestTask implements TaskDefinition.Interface {
+                id = "testOnDone";
+                title = "Test onDone";
+                handler = TestHandler;
             }
 
             const TestTaskDefinition = TaskDefinition.createImplementation({
@@ -114,7 +134,8 @@ describe("task lifecycle hooks", () => {
                     output: expect.objectContaining({
                         result: "success"
                     })
-                })
+                }),
+                definition: expect.objectContaining({ id: "testOnDone" })
             });
         });
     });
@@ -123,18 +144,26 @@ describe("task lifecycle hooks", () => {
         it("should call onError when task fails", async () => {
             const onError = vi.fn();
 
-            class TestTask implements TaskDefinition.Interface {
-                id = "testOnError";
-                title = "Test onError";
-
+            class TestTaskHandler implements TaskHandler.Interface {
                 onError = onError;
 
-                async run({ controller }: TaskDefinition.RunParams) {
+                async run({ controller }: TaskHandler.RunParams) {
                     return controller.response.error({
                         message: "Something went wrong",
                         code: "TEST_ERROR"
                     });
                 }
+            }
+
+            const TestHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandler,
+                dependencies: []
+            });
+
+            class TestTask implements TaskDefinition.Interface {
+                id = "testOnError";
+                title = "Test onError";
+                handler = TestHandler;
             }
 
             const TestTaskDefinition = TaskDefinition.createImplementation({
@@ -173,7 +202,8 @@ describe("task lifecycle hooks", () => {
                     definitionId: "testOnError",
                     taskStatus: TaskDataStatus.FAILED,
                     input: { test: "input" }
-                })
+                }),
+                definition: expect.objectContaining({ id: "testOnError" })
             });
         });
     });
@@ -182,15 +212,23 @@ describe("task lifecycle hooks", () => {
         it("should call onAbort when task is aborted", async () => {
             const onAbort = vi.fn();
 
+            class TestTaskHandler implements TaskHandler.Interface {
+                onAbort = onAbort;
+
+                async run({ controller }: TaskHandler.RunParams) {
+                    return controller.response.done("Done");
+                }
+            }
+
+            const TestHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandler,
+                dependencies: []
+            });
+
             class TestTask implements TaskDefinition.Interface {
                 id = "testOnAbort";
                 title = "Test onAbort";
-
-                onAbort = onAbort;
-
-                async run({ controller }: TaskDefinition.RunParams) {
-                    return controller.response.done("Done");
-                }
+                handler = TestHandler;
             }
 
             const TestTaskDefinition = TaskDefinition.createImplementation({
@@ -227,7 +265,8 @@ describe("task lifecycle hooks", () => {
                     definitionId: "testOnAbort",
                     taskStatus: TaskDataStatus.ABORTED,
                     input: { test: "input" }
-                })
+                }),
+                definition: expect.objectContaining({ id: "testOnAbort" })
             });
         });
     });
@@ -236,17 +275,25 @@ describe("task lifecycle hooks", () => {
         it("should call onMaxIterations when task reaches max iterations", async () => {
             const onMaxIterations = vi.fn();
 
+            class TestTaskHandler implements TaskHandler.Interface {
+                onMaxIterations = onMaxIterations;
+
+                async run({ input, controller }: TaskHandler.RunParams) {
+                    // Always continue to trigger max iterations
+                    return controller.response.continue(input);
+                }
+            }
+
+            const TestHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandler,
+                dependencies: []
+            });
+
             class TestTask implements TaskDefinition.Interface {
                 id = "testOnMaxIterations";
                 title = "Test onMaxIterations";
                 maxIterations = 2;
-
-                onMaxIterations = onMaxIterations;
-
-                async run({ input, controller }: TaskDefinition.RunParams) {
-                    // Always continue to trigger max iterations
-                    return controller.response.continue(input);
-                }
+                handler = TestHandler;
             }
 
             const TestTaskDefinition = TaskDefinition.createImplementation({
@@ -302,7 +349,8 @@ describe("task lifecycle hooks", () => {
                     definitionId: "testOnMaxIterations",
                     input: { test: "input" },
                     iterations: 2
-                })
+                }),
+                definition: expect.objectContaining({ id: "testOnMaxIterations" })
             });
         });
     });
@@ -311,10 +359,7 @@ describe("task lifecycle hooks", () => {
         it("should call hooks in correct order for successful task", async () => {
             const calls: string[] = [];
 
-            class TestTask implements TaskDefinition.Interface {
-                id = "testMultipleHooks";
-                title = "Test Multiple Hooks";
-
+            class TestTaskHandler implements TaskHandler.Interface {
                 async onBeforeTrigger() {
                     calls.push("onBeforeTrigger");
                 }
@@ -323,10 +368,21 @@ describe("task lifecycle hooks", () => {
                     calls.push("onDone");
                 }
 
-                async run({ controller }: TaskDefinition.RunParams) {
+                async run({ controller }: TaskHandler.RunParams) {
                     calls.push("run");
                     return controller.response.done("Done");
                 }
+            }
+
+            const TestHandler = TaskHandler.createImplementation({
+                implementation: TestTaskHandler,
+                dependencies: []
+            });
+
+            class TestTask implements TaskDefinition.Interface {
+                id = "testMultipleHooks";
+                title = "Test Multiple Hooks";
+                handler = TestHandler;
             }
 
             const TestTaskDefinition = TaskDefinition.createImplementation({

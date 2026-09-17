@@ -8,6 +8,7 @@ import type {
 import type { IHttpRoute } from "~/features/http/abstractions.js";
 
 export interface IRegisterHttpRouteInstanceParams {
+    readonly name?: string;
     readonly method: string;
     readonly path: string;
     readonly route: IHttpRoute;
@@ -39,6 +40,7 @@ export function registerHttpRouteInstance(
     });
 
     class DelegatingRouteDefinition implements HttpRouteDefinition.Interface {
+        readonly name = params.name ?? `test:${params.method}${params.path}`;
         readonly method = params.method;
         readonly path = params.path;
         readonly handler = handler;

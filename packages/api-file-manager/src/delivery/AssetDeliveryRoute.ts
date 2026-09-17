@@ -81,6 +81,7 @@ export const AssetDeliveryRoute = HttpRouteHandler.createImplementation({
 });
 
 class AssetDeliveryRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "asset-delivery";
     readonly method = "GET";
     readonly path = "/files/*";
     readonly handler = AssetDeliveryRoute;

@@ -8,6 +8,8 @@ import {
 export class CommandPalettePresenter implements Abstraction.Interface {
     private isOpen = false;
     private activeCommandName: string | null = null;
+    private aiModeActive = false;
+    private query = "";
     private resolvedCommands: Command.Interface[] = [];
 
     constructor(private getCommands: () => Command.Interface[]) {
@@ -39,6 +41,8 @@ export class CommandPalettePresenter implements Abstraction.Interface {
 
         return {
             isOpen: this.isOpen,
+            aiModeActive: this.aiModeActive,
+            query: this.query,
             commands: this.resolvedCommands.map(cmd => ({
                 name: cmd.name,
                 label: cmd.label,
@@ -62,12 +66,30 @@ export class CommandPalettePresenter implements Abstraction.Interface {
     open(): void {
         this.resolvedCommands = this.getCommands();
         this.activeCommandName = null;
+        this.aiModeActive = false;
+        this.query = "";
         this.isOpen = true;
     }
 
     close(): void {
         this.isOpen = false;
         this.activeCommandName = null;
+        this.aiModeActive = false;
+        this.query = "";
+    }
+
+    enterAiMode(): void {
+        this.aiModeActive = true;
+        this.query = "";
+    }
+
+    exitAiMode(): void {
+        this.aiModeActive = false;
+        this.query = "";
+    }
+
+    setQuery(query: string): void {
+        this.query = query;
     }
 
     toggle(): void {
@@ -84,13 +106,20 @@ export class CommandPalettePresenter implements Abstraction.Interface {
             return;
         }
 
+        if (cmd.entersAiMode) {
+            // A mode replaces the command list and keeps the input row, so the palette stays open.
+            this.enterAiMode();
+            return;
+        }
+
         if (cmd.detailView) {
             this.activeCommandName = name;
             this.isOpen = true;
-        } else {
-            cmd.execute();
-            this.close();
+            return;
         }
+
+        cmd.execute?.();
+        this.close();
     }
 
     cancelCommand(): void {

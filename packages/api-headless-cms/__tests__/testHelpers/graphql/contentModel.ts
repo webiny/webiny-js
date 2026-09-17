@@ -24,6 +24,7 @@ const DATA_FIELD = /* GraphQL*/ `
             type
             tags
             list
+            disabled
             predefinedValues {
                 enabled
                 values {

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../ai-chat/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-activity-log/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
@@ -33,6 +34,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-chat/*": ["../ai-chat/src/*"],
+      "@webiny/ai-chat": ["../ai-chat/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-activity-log/*": ["../api-activity-log/src/*"],

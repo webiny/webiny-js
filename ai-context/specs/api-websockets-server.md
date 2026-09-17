@@ -1,6 +1,6 @@
 # api-websockets-server — Design Spec
 
-Package: `@webiny/api-websockets-server`
+Package: `@webiny/api-websockets-standalone`
 Date: 2026-06-16
 Status: Approved
 
@@ -35,7 +35,7 @@ A Docker/self-hosted WebSocket server transport for the platform-agnostic `@webi
 ## Package Structure
 
 ```
-packages/api-websockets-server/src/
+packages/api-websockets-standalone/src/
 ├── index.ts                               # createServerWebsockets()
 ├── abstractions.ts                        # All 3 DI abstractions + namespaces
 ├── server/

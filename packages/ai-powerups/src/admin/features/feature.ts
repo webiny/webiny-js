@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/admin";
 import { ListModelsFeature } from "~/admin/features/listModels/index.js";
+import { ListCapabilitiesFeature } from "~/admin/features/listCapabilities/index.js";
 import { SharedSettingsFeature } from "~/admin/features/settings/shared/index.js";
 import { GetSettingsFeature } from "~/admin/features/settings/getSettings/index.js";
 import { UpdateSettingsFeature } from "~/admin/features/settings/updateSettings/index.js";
@@ -13,6 +14,7 @@ export const AiPowerUpsHeadlessFeatures = createFeature({
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
         ListModelsFeature.register(container);
+        ListCapabilitiesFeature.register(container);
         GeneratePageContentFeature.register(container);
         CompareEntryRevisionsFeature.register(container);
     },

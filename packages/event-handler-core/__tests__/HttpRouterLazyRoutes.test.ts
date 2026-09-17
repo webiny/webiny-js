@@ -102,12 +102,11 @@ describe("HttpRouter route construction", () => {
     });
 
     /**
-     * Documents a known limitation of building the route from its class rather than resolving a
-     * per-route abstraction: decorators registered on the shared `HttpRouteHandler` do NOT reach
-     * routes. That is the price of not resolving the abstraction, which would build all of them.
-     * Nothing decorates routes today; a route that needs it has to get its own abstraction.
+     * Lazy construction does NOT cost decoration. The matched route is registered alone in a child
+     * scope and resolved there, so it goes through the ordinary resolution path — decorators on the
+     * shared `HttpRouteHandler` apply, while the routes that did not match are still never built.
      */
-    it("does not apply HttpRouteHandler decorators to routes", async () => {
+    it("applies HttpRouteHandler decorators to the matched route", async () => {
         const container = new Container();
         const handle = vi.fn(async (): Promise<IHttpResponse> => ({
             statusCode: 200,
@@ -144,7 +143,7 @@ describe("HttpRouter route construction", () => {
 
         const result = await container.resolve(HttpRouter).route(req("GET", "/decorated"));
 
-        expect(result.body).toBe("original");
-        expect(handle).toHaveBeenCalledOnce();
+        expect(result.body).toBe("decorated");
+        expect(handle).not.toHaveBeenCalled();
     });
 });

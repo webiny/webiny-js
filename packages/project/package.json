@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/global-config": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",

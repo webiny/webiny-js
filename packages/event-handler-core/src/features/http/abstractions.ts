@@ -2,6 +2,17 @@ import { Abstraction } from "@webiny/di";
 import type { Constructor } from "@webiny/di";
 import type { HttpStreamSource } from "./HttpStreamBody.js";
 
+/**
+ * Which route the router matched, as seen from inside `handle()` — the `req.route` of Express-style
+ * handlers. It is the definition without its `handler`, so a route (or anything wrapping one) can
+ * tell WHICH route is running and act only on the one it cares about.
+ */
+export interface IMatchedRouteDefinition {
+    readonly name: string;
+    readonly method: string;
+    readonly path: string;
+}
+
 export interface IHttpRequest {
     method: string;
     path: string;
@@ -9,6 +20,12 @@ export interface IHttpRequest {
     query: Record<string, string>;
     pathParameters: Record<string, string>;
     body: any;
+    /**
+     * Set by `HttpRouter` once a route matches, so it is absent on the request a transport builds
+     * and always present by the time `handle()` runs. Handlers should take
+     * {@link HttpRouteHandler.Request}, where it is required.
+     */
+    route?: IMatchedRouteDefinition;
 }
 
 export interface IHttpResponse {
@@ -128,6 +145,14 @@ export interface IHttpRoute {
  * provider before finding the route it wanted.
  */
 export interface IHttpRouteDefinition {
+    /**
+     * Identifies this route so a decorator can pick it out.
+     *
+     * Decorators DO reach `HttpRouteDefinition` (unlike `HttpRouteHandler`, which the router builds
+     * directly), so decorating it hands you every route in turn — `name` is how you tell which one
+     * you have, and whether to wrap its handler or pass it through.
+     */
+    readonly name: string;
     readonly method: string;
     readonly path: string;
     readonly handler: Constructor<IHttpRoute>;
@@ -152,8 +177,11 @@ export namespace HttpRouteDefinition {
 
 export namespace HttpRouteHandler {
     export type Interface = IHttpRoute;
-    /** The request handed to `handle()`. Shorthand for {@link IHttpRequest}. */
-    export type Request = IHttpRequest;
+    /**
+     * The request handed to `handle()`: an {@link IHttpRequest} that has been through the router,
+     * so {@link IMatchedRouteDefinition} is guaranteed rather than optional.
+     */
+    export type Request = IHttpRequest & { route: IMatchedRouteDefinition };
     /**
      * The response handed to `handle()` — the mutable builder, not the materialized
      * {@link IHttpResponse}. Shorthand for {@link IHttpResponseBuilder}.

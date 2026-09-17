@@ -1,16 +1,10 @@
-import { TaskDefinition } from "webiny/api/tasks";
+import { TaskDefinition, TaskHandler } from "webiny/api/tasks";
 import { MailerService } from "webiny/api/mailer";
 
-class SelfCleaningTaskImpl implements TaskDefinition.Interface {
-    public readonly id = "sendEmailTask";
-    public readonly title = "Send Email";
-    public readonly description = "A task which will send an email with stringified input params.";
-    public readonly isPrivate = false;
-    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
-
+class SendEmailTaskHandlerImpl implements TaskHandler.Interface {
     public constructor(private readonly mailerService: MailerService.Interface) {}
 
-    public async run(params: TaskDefinition.RunParams): Promise<TaskDefinition.Result> {
+    public async run(params: TaskHandler.RunParams): Promise<TaskHandler.Result> {
         const { controller, input } = params;
 
         const result = await this.mailerService.sendMail({
@@ -32,7 +26,22 @@ class SelfCleaningTaskImpl implements TaskDefinition.Interface {
     }
 }
 
-export default TaskDefinition.createImplementation({
-    implementation: SelfCleaningTaskImpl,
+const SendEmailTaskHandler = TaskHandler.createImplementation({
+    implementation: SendEmailTaskHandlerImpl,
     dependencies: [MailerService]
+});
+
+class SendEmailTaskImpl implements TaskDefinition.Interface {
+    public readonly id = "sendEmailTask";
+    public readonly title = "Send Email";
+    public readonly description = "A task which will send an email with stringified input params.";
+    public readonly isPrivate = false;
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
+    public readonly handler = SendEmailTaskHandler;
+}
+
+export default TaskDefinition.createImplementation({
+    implementation: SendEmailTaskImpl,
+    dependencies: []
 });

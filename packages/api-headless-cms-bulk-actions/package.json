@@ -31,7 +31,7 @@
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms-testing": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.14.2",

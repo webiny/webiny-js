@@ -1,12 +1,16 @@
 import set from "lodash/set";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { GetDefaultLanguageUseCase } from "@webiny/languages/exports/api/languages.js";
 import { TranslatePageUseCase } from "@webiny/api-website-builder/features/pages/TranslatePage/index.js";
 import { UpdatePageRepository } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
-import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import {
+    ResolveAiCapabilityUseCase,
+    withAdditionalInstructions
+} from "~/api/features/Capabilities/index.js";
+import { WB_TRANSLATE_PAGE_CAPABILITY } from "./capability.js";
 import { LexicalParser } from "./abstractions/LexicalParser.js";
 
 type InputType = "text" | "longText" | "lexical";
@@ -30,9 +34,9 @@ interface TranslatedData {
 class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
     constructor(
         private getDefaultLanguage: GetDefaultLanguageUseCase.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        private resolveCapability: ResolveAiCapabilityUseCase.Interface,
+        private logger: Logger.Interface,
         private ai: Ai.Interface,
-        private encryption: Encryption.Interface,
         private lexicalParser: LexicalParser.Interface,
         private updatePageRepository: UpdatePageRepository.Interface,
         private decoratee: TranslatePageUseCase.Interface
@@ -79,19 +83,19 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         sourceLanguage: string,
         targetLanguage: string
     ): Promise<TranslatedData | null> {
-        const settingsResult = await this.getSettings.execute();
-        if (settingsResult.isFail()) {
+        const resolved = await this.resolveCapability.execute(WB_TRANSLATE_PAGE_CAPABILITY);
+        if (resolved.isFail()) {
+            /*
+             * Translation is a decorator on top of a successful page save, so it stays
+             * non-fatal: the page is already created, just untranslated. It does get logged
+             * now, because a silently skipped translation was indistinguishable from a
+             * misconfigured one.
+             */
+            this.logger.warn({ reason: resolved.error.message }, "Skipping AI page translation.");
             return null;
         }
 
-        const settings = settingsResult.value;
-        const firstProvider = settings.providers.presets[0];
-
-        if (!firstProvider) {
-            return null;
-        }
-
-        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
+        const capability = resolved.value;
 
         const properties = {
             title: page.properties["title"],
@@ -102,12 +106,9 @@ class WbTranslatePageDecoratorImpl implements TranslatePageUseCase.Interface {
         const input = JSON.stringify({ properties, bindings });
 
         const result = await this.ai.generateText({
-            model: firstProvider.model,
-            connection: {
-                sdkName: firstProvider.model.split("/")[0],
-                apiKey
-            },
-            system: `You are a professional translator. Translate all user-provided text to language code "${targetLanguage}", preserving placeholders and formatting. Return a JSON object with the same keys, only changing the values.`,
+            model: capability.model,
+            connection: capability.connection,
+            system: withAdditionalInstructions(capability),
             prompt: `Translate given key-value pairs from "${sourceLanguage}" to language code "${targetLanguage}". Do not modify the keys. "properties" is a simple key-value pair. "bindings" values are located in the "value" key. ${input}`,
             temperature: 0.3
         });
@@ -199,9 +200,9 @@ export const WbTranslatePageDecorator = TranslatePageUseCase.createDecorator({
     decorator: WbTranslatePageDecoratorImpl,
     dependencies: [
         GetDefaultLanguageUseCase,
-        GetSettingsUseCase,
+        ResolveAiCapabilityUseCase,
+        Logger,
         Ai,
-        Encryption,
         LexicalParser,
         UpdatePageRepository
     ]

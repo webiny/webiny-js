@@ -26,6 +26,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         listValidation = [],
         validation = [],
         list = false,
+        disabled = false,
         predefinedValues = {
             values: [],
             enabled: false
@@ -51,6 +52,7 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         listValidation,
         validation,
         list,
+        disabled,
         predefinedValues,
         help,
         placeholder,
