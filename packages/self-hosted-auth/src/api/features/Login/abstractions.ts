@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { InvalidCredentialsError } from "~/api/domain/errors.js";
+import type { CredentialsPersistenceError } from "~/api/domain/errors.js";
 
 export interface LoginInput {
     email: string;
@@ -12,7 +13,7 @@ export interface LoginOutput {
     expiresIn: number;
 }
 
-export type LoginError = InvalidCredentialsError;
+export type LoginError = InvalidCredentialsError | CredentialsPersistenceError;
 
 export interface ILoginUseCase {
     execute(input: LoginInput): Promise<Result<LoginOutput, LoginError>>;

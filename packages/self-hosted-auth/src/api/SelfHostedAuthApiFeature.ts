@@ -5,9 +5,17 @@ import { SelfHostedIdpFeature } from "./features/SelfHostedIdp/index.js";
 import { LoginFeature } from "./features/Login/index.js";
 import { SetPasswordFeature } from "./features/SetPassword/index.js";
 import { CliResetPasswordFeature } from "./features/CliResetPassword/index.js";
+import { DeleteCredentialFeature } from "./features/DeleteCredential/index.js";
+import { RequestPasswordResetFeature } from "./features/RequestPasswordReset/index.js";
+import { ResetPasswordWithCodeFeature } from "./features/ResetPasswordWithCode/index.js";
+import { CredentialsRepositoryFeature } from "./repositories/CredentialsRepository.js";
+import { PasswordResetCodesRepositoryFeature } from "./repositories/PasswordResetCodesRepository.js";
+import { PasswordResetCodeGeneratorFeature } from "./domain/crypto/PasswordResetCodeGenerator.js";
+import { PasswordResetMailerFeature } from "./domain/mail/PasswordResetMailer.js";
 import { UserInstallerFeature } from "./features/UserInstaller/index.js";
 import { SelfHostedAuthSchema } from "./graphql/auth.gql.js";
 import { SelfHostedAuthCliResetPasswordSchema } from "./graphql/cliResetPassword.gql.js";
+import { SelfHostedAuthPasswordResetSchema } from "./graphql/passwordReset.gql.js";
 
 /**
  * Wires the whole self-hosted auth module: crypto services, the JWT identity
@@ -31,6 +39,13 @@ export const SelfHostedAuthApiFeature = createFeature({
         LoginFeature.register(container);
         SetPasswordFeature.register(container);
         CliResetPasswordFeature.register(container);
+        DeleteCredentialFeature.register(container);
+        CredentialsRepositoryFeature.register(container);
+        PasswordResetCodesRepositoryFeature.register(container);
+        PasswordResetCodeGeneratorFeature.register(container);
+        PasswordResetMailerFeature.register(container);
+        RequestPasswordResetFeature.register(container);
+        ResetPasswordWithCodeFeature.register(container);
         UserInstallerFeature.register(container);
 
         container.register(SelfHostedAuthSchema);
@@ -38,5 +53,8 @@ export const SelfHostedAuthApiFeature = createFeature({
         // the flag is a build param, so it is read where BuildParams is resolvable (the schema
         // factory), not here at registration time.
         container.register(SelfHostedAuthCliResetPasswordSchema);
+        // Same arrangement for the self-service flow: the flag is a build param, so the factory
+        // reads it where BuildParams is resolvable rather than here.
+        container.register(SelfHostedAuthPasswordResetSchema);
     }
 });
