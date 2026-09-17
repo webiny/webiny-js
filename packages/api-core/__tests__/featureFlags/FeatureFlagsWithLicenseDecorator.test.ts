@@ -163,7 +163,7 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
         /*
          * The assistant shipped ungated: it had no accessor, no LICENSE_CHECKS entry, and no flag
-         * check anywhere in `@webiny/ai-chat`, so every project got it regardless of license.
+         * check anywhere in the chat feature, so every project got it regardless of license.
          */
         it("governs the admin assistant, which shipped ungated", () => {
             const licensed = flagsFor({}, { present: true, allows: ["canUseAiAdminAssistant"] });

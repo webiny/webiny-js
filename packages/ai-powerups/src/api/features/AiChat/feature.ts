@@ -3,6 +3,7 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { AiChatConfig } from "./abstractions.js";
 import { AiChatUseCase } from "./AiChatUseCase.js";
 import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
+import { AiChatCapability } from "./capability.js";
 
 /**
  * How many rounds the agent loop may take before it is cut off.
@@ -17,20 +18,19 @@ import { AiChatStreamRouteDefinition } from "./AiChatStreamRoute.js";
 const MAX_STEPS = 12;
 
 /**
- * The AI chat feature: the use case, its configuration, and the HTTP route that reaches it.
+ * The admin assistant: its capability, the use case, and the HTTP route that reaches it.
  *
- * Routes live beside the use case rather than in a separate package, matching `AiImageEnrichment`.
- * The assistant is only ever reached over HTTP, so a second package bought an indirection nobody
- * used and one more manifest to keep in sync.
+ * Lives in AI Power-Ups rather than in a package of its own because everything it needs is here —
+ * the settings that choose its model, the capability resolver that reads them, and the tools it
+ * calls. As a separate package it could only reach those through an abstraction registered back
+ * from this side, which is an indirection that bought nothing.
  */
 export const AiChatFeature = createFeature({
-    name: "AiChat",
-    register: container => {
-        /*
-         * Register-time gate on the effective flags (project config && live WCP license), matching
-         * how every other AI feature gates itself. Nothing is registered when it is off, so an
-         * unlicensed project has no `/stream/ai/chat` route at all rather than one that fails.
-         */
+    name: "AiPowerUps/AiChat",
+    register(container) {
+        // Register-time gate on the effective flags (project config && live WCP license), matching
+        // how every other AI feature gates itself. Nothing is registered when it is off, so an
+        // unlicensed project has no `/stream/ai/chat` route and no settings row.
         const enabled = container
             .resolve(FeatureFlags)
             .get()
@@ -40,13 +40,8 @@ export const AiChatFeature = createFeature({
             return;
         }
 
+        container.register(AiChatCapability);
         container.registerInstance(AiChatConfig, { maxSteps: MAX_STEPS });
-        /*
-         * No `AiChatResolver` is registered here. The model, the credential and the prompt all come
-         * from AI Power-Ups settings, so AI Power-Ups registers the only implementation. A project
-         * that removes that extension gets `No registration found for AiChatResolver` on the first
-         * request, which beats an assistant quietly running on a model nobody chose.
-         */
         container.register(AiChatUseCase);
 
         /*
