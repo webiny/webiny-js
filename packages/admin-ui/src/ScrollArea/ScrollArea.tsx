@@ -19,6 +19,11 @@ interface ScrollAreaProps extends Omit<
 > {
     onScrollPositionChange?: (position: ScrollPosition) => void;
     onScroll?: (position: ScrollPosition) => void;
+    /**
+     * Classes for the scrolling element itself. Put the height limit here when the area has to grow
+     * with its content up to a maximum, instead of filling a parent of a known height.
+     */
+    viewportClassName?: string;
 }
 
 function ScrollArea({
@@ -26,6 +31,7 @@ function ScrollArea({
     children,
     onScrollPositionChange,
     onScroll,
+    viewportClassName,
     ...props
 }: ScrollAreaProps) {
     const viewportRef = React.useRef<HTMLDivElement>(null);
@@ -72,7 +78,10 @@ function ScrollArea({
             <ScrollAreaPrimitive.Viewport
                 ref={viewportRef}
                 data-slot="scroll-area-viewport"
-                className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+                className={cn(
+                    "focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1",
+                    viewportClassName
+                )}
             >
                 {children}
             </ScrollAreaPrimitive.Viewport>
