@@ -16,7 +16,7 @@ import { Command } from "../abstractions.js";
 class AskAiCommandImpl implements Command.Interface {
     name = "admin.ai.ask";
     label = "Ask AI";
-    description = "Ask about your content in plain language";
+    description = "Ask about this project, or ask for a change, in plain language";
     category = "Assistant";
     keywords = ["ai", "ask", "assistant", "chat", "search"];
     icon = <Icon icon={<AiIcon />} size="sm" color="neutral-strong" label="" />;

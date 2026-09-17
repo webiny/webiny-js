@@ -31,7 +31,7 @@ export const createAiMode = (presenter: AiChatPresenter.Interface): PaletteMode 
             iconColor: "accent" as const,
             iconLabel: "Ask AI",
             badge: <AiModeBadge />,
-            placeholder: started ? "Ask a follow-up…" : "Ask about your content…",
+            placeholder: started ? "Ask a follow-up…" : "Ask about this project…",
             footerLabel: "Webiny AI",
             hints: HINTS,
             tall: true
