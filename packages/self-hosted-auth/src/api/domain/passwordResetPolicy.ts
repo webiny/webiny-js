@@ -26,6 +26,20 @@ export const RESET_REQUESTS_PER_WINDOW = 3;
 export const RESET_REQUEST_WINDOW_MINUTES = 15;
 
 /**
+ * The shortest a reset request may take to answer.
+ *
+ * Everything up to the last step costs the same for an address with an account and one without: the
+ * same count, the same hash, the same row write, the same credential lookup. Only the last step
+ * differs, because a real account gets an email sent, and waiting on an SMTP server is time an
+ * attacker can measure. Holding every answer to the same floor hides that difference.
+ *
+ * Chosen to sit above a typical send. It is not a guarantee: a mail server slower than this still
+ * pushes the real path past the floor, which is why the honest fix is to take the send off the
+ * request entirely. This closes the everyday gap without waiting for that.
+ */
+export const RESET_REQUEST_MIN_DURATION_MS = 1_000;
+
+/**
  * How long spent and expired rows are kept before a later write clears them out. Not zero, so that
  * a support question about a reset that happened an hour ago still has something to look at.
  */

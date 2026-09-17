@@ -13,6 +13,7 @@ import { PasswordResetCodeGenerator } from "~/api/domain/crypto/PasswordResetCod
 import { PasswordResetMailer } from "~/api/domain/mail/PasswordResetMailer.js";
 import { normalizeResetEmail } from "~/api/domain/normalizeResetEmail.js";
 import { RESET_CODE_TTL_MINUTES } from "~/api/domain/passwordResetPolicy.js";
+import { RESET_REQUEST_MIN_DURATION_MS } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUESTS_PER_WINDOW } from "~/api/domain/passwordResetPolicy.js";
 import { RESET_REQUEST_WINDOW_MINUTES } from "~/api/domain/passwordResetPolicy.js";
 
@@ -27,6 +28,21 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(
+        input: RequestPasswordResetInput
+    ): Promise<Result<true, UseCaseAbstraction.Error>> {
+        const startedAt = Date.now();
+
+        try {
+            return await this.requestCode(input);
+        } finally {
+            // Every exit waits, not just the successful ones, so the answer takes the same time
+            // whether or not the address has an account. Awaiting in `finally` holds the returned
+            // promise, which is the point: the caller must not learn anything from how fast it came.
+            await holdUntilFloor(startedAt);
+        }
+    }
+
+    private async requestCode(
         input: RequestPasswordResetInput
     ): Promise<Result<true, UseCaseAbstraction.Error>> {
         const email = input.email.trim();
@@ -105,6 +121,20 @@ class RequestPasswordResetUseCaseImpl implements UseCaseAbstraction.Interface {
         return Result.ok(true);
     }
 }
+
+const holdUntilFloor = async (startedAt: number): Promise<void> => {
+    const remaining = RESET_REQUEST_MIN_DURATION_MS - (Date.now() - startedAt);
+
+    if (remaining <= 0) {
+        return;
+    }
+
+    // The global `setTimeout` rather than the one from `node:timers/promises`, which reads better
+    // but is not what a fake clock replaces. Tests would then wait a real second each.
+    await new Promise<void>(resolve => {
+        setTimeout(resolve, remaining);
+    });
+};
 
 export const RequestPasswordResetUseCase = UseCaseAbstraction.createImplementation({
     implementation: RequestPasswordResetUseCaseImpl,
