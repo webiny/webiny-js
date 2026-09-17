@@ -36,8 +36,19 @@ const LICENSE_CHECKS: Record<string, (license: ILicense) => boolean> = {
     auditLogs: l => l.canUseAuditLogs(),
     recordLocking: l => l.canUseRecordLocking(),
     "fileManager.threatDetection": l => l.canUseFileManagerThreatDetection(),
+    aiPowerups: l => l.canUseAiPowerups(),
     "aiPowerups.fileManager.imageEnrichment": l => l.canUseAiImageEnrichment(),
-    abTesting: l => l.canUseAbTesting()
+    "aiPowerups.websiteBuilder.pageGeneration": l => l.canUseAiPageGeneration(),
+    "aiPowerups.websiteBuilder.pageTranslation": l => l.canUseAiPageTranslation(),
+    "aiPowerups.lexicalGeneration": l => l.canUseAiLexicalGeneration(),
+    "aiPowerups.cms.entryGeneration": l => l.canUseAiEntryGeneration(),
+    "aiPowerups.cms.entryComparison": l => l.canUseAiEntryComparison(),
+    "aiPowerups.cms.entryTranslation": l => l.canUseAiEntryTranslation(),
+    abTesting: l => l.canUseAbTesting(),
+    remoteComponents: l => l.canUseRemoteComponents(),
+    collaboration: l => l.canUseCollaboration(),
+    "collaboration.comments": l => l.canUseComments(),
+    "collaboration.activityLog": l => l.canUseActivityLog()
 };
 
 class LicenseDecoratedFeatureFlags extends FeatureFlagsClass {

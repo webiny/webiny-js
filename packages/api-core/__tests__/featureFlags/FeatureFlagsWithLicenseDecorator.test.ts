@@ -9,6 +9,9 @@ import { WcpLicenseProvider } from "~/features/wcp/WcpLicenseProvider.js";
 interface LicenseOptions {
     present: boolean;
     allowsAacl?: boolean;
+    allowsEntryGeneration?: boolean;
+    allowsRemoteComponents?: boolean;
+    allowsComments?: boolean;
 }
 
 const license = (options: LicenseOptions): ILicense =>
@@ -25,7 +28,18 @@ const license = (options: LicenseOptions): ILicense =>
         canUseRecordLocking: () => false,
         canUseFileManagerThreatDetection: () => false,
         canUseAiImageEnrichment: () => false,
-        canUseAbTesting: () => false
+        canUseAiPageGeneration: () => false,
+        canUseAiPageTranslation: () => false,
+        canUseAiLexicalGeneration: () => false,
+        canUseAiEntryGeneration: () => Boolean(options.allowsEntryGeneration),
+        canUseAiEntryComparison: () => false,
+        canUseAiEntryTranslation: () => false,
+        canUseAiPowerups: () => Boolean(options.allowsEntryGeneration),
+        canUseAbTesting: () => false,
+        canUseRemoteComponents: () => Boolean(options.allowsRemoteComponents),
+        canUseCollaboration: () => Boolean(options.allowsComments),
+        canUseComments: () => Boolean(options.allowsComments),
+        canUseActivityLog: () => false
     }) as unknown as ILicense;
 
 const flagsFor = (config: Record<string, unknown>, options: LicenseOptions) => {
@@ -69,35 +83,67 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
         });
     });
 
-    describe("flags the license does not govern", () => {
+    describe("capabilities the license sells", () => {
         /*
-         * These used to be enabled by default for anyone holding a license, which was a workaround
-         * for capabilities the license could not express. A feature that should be sold belongs in
-         * LICENSE_CHECKS and on the license itself, so there is no third category any more: a flag
-         * the license does not govern is the project's to switch on.
+         * Every one of these used to be config-governed, because the accessor existed on the license
+         * but nothing wired it into LICENSE_CHECKS. Config alone could turn on something the customer
+         * had not bought.
          */
-        it("is off when a license is present but nothing enabled it", () => {
-            const flags = flagsFor({}, { present: true });
+        it("keeps an AI capability off when the license withholds it, whatever config says", () => {
+            const flags = flagsFor(
+                { aiPowerups: { cms: { entryGeneration: true } } },
+                { present: true, allowsEntryGeneration: false }
+            );
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
         });
 
-        it("is on when the config enables it", () => {
-            const flags = flagsFor(
-                { aiPowerups: { cms: { entryGeneration: true } } },
-                { present: true }
-            );
+        it("grants an AI capability the license allows, with no config", () => {
+            const flags = flagsFor({}, { present: true, allowsEntryGeneration: true });
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(true);
         });
 
-        it("is off when the config disables it", () => {
+        it("lets config disable an AI capability the license allows", () => {
             const flags = flagsFor(
                 { aiPowerups: { cms: { entryGeneration: false } } },
-                { present: true }
+                { present: true, allowsEntryGeneration: true }
             );
 
             expect(flags.isEnabled("aiPowerups.cms.entryGeneration")).toBe(false);
+        });
+
+        /*
+         * The parent is derived from the children rather than read off `aiPowerups.enabled`, because
+         * WCP has projects carrying capabilities under a parent that reads false.
+         */
+        it("turns the aiPowerups parent on when any child capability is licensed", () => {
+            const flags = flagsFor({}, { present: true, allowsEntryGeneration: true });
+
+            expect(flags.isEnabled("aiPowerups")).toBe(true);
+        });
+
+        it("leaves the aiPowerups parent off when no child capability is licensed", () => {
+            const flags = flagsFor({}, { present: true });
+
+            expect(flags.isEnabled("aiPowerups")).toBe(false);
+        });
+
+        it("governs remote components, which no license ever granted before", () => {
+            const licensed = flagsFor({}, { present: true, allowsRemoteComponents: true });
+            const unlicensed = flagsFor({ remoteComponents: true }, { present: true });
+
+            expect(licensed.isEnabled("remoteComponents")).toBe(true);
+            expect(unlicensed.isEnabled("remoteComponents")).toBe(false);
+        });
+
+        it("governs collaboration", () => {
+            const licensed = flagsFor({}, { present: true, allowsComments: true });
+            const unlicensed = flagsFor({ collaboration: { comments: true } }, { present: true });
+
+            expect(licensed.isEnabled("collaboration.comments")).toBe(true);
+            expect(licensed.isEnabled("collaboration.activityLog")).toBe(false);
+            expect(unlicensed.isEnabled("collaboration.comments")).toBe(false);
         });
     });
 
