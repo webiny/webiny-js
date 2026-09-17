@@ -35,7 +35,7 @@
     "type-fest": "^5.9.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.1.0",
-    "zod": "4.6.4"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.25",

@@ -48,7 +48,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "zod": "4.6.4"
+    "zod": "4.6.5"
   },
   "webiny": {
     "publishFrom": "dist"

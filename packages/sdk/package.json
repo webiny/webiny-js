@@ -14,7 +14,7 @@
     "p-map": "^7.0.8",
     "p-retry": "^8.0.1",
     "standardwebhooks": "^1.1.1",
-    "zod": "4.6.4"
+    "zod": "4.6.5"
   },
   "author": "Webiny",
   "license": "MIT",

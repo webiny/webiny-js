@@ -28,7 +28,7 @@
     "date-fns": "^4.4.0",
     "graphql-tag": "^2.12.7",
     "lodash": "^4.18.1",
-    "zod": "4.6.4"
+    "zod": "4.6.5"
   },
   "peerDependencies": {
     "react": "18.3.1"

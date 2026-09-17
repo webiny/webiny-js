@@ -47,7 +47,7 @@
     "react-dom": "18.3.1",
     "ts-invariant": "^0.10.3",
     "warning": "^4.0.3",
-    "zod": "4.6.4"
+    "zod": "4.6.5"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.25",
