@@ -98,6 +98,20 @@ export type {
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
 
+// AI chat — server-side assistant used by the command palette's AI mode.
+export { AiChatGateway, AiChatFeature, AiChatPresenter } from "./features/aiChat/index.js";
+export type {
+    IAiChatGateway,
+    AiChatMessage,
+    AiChatToolCall,
+    AiChatPendingApproval,
+    AiChatDecision,
+    AiChatRequest,
+    AiTurnViewModel,
+    IAiChatPresenter,
+    IAiChatViewModel
+} from "./features/aiChat/index.js";
+
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
 // anywhere in a view; the header renders every mounted one as the trail.
 export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";

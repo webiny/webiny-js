@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
 import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
@@ -109,7 +110,7 @@ class RolesPresenterImpl implements IRolesPresenter {
                 this._form.setData({
                     name: role.name,
                     slug: role.slug,
-                    description: role.description,
+                    description: role.description ?? "",
                     permissions: role.permissions || []
                 });
             });
@@ -167,14 +168,16 @@ class RolesPresenterImpl implements IRolesPresenter {
                     this._form.setData({
                         name: role.name,
                         slug: role.slug,
-                        description: role.description,
+                        description: role.description ?? "",
                         permissions: role.permissions || []
                     });
                 });
                 return role;
             }
-        } catch {
-            return null;
+            // Errors deliberately propagate to the caller, which reports them to the user. This
+            // used to be a bare `catch { return null }`, and `null` is also what `save()` returns
+            // when client-side validation fails - so a rejected request looked to the view exactly
+            // like a form that had not been submitted, and failed silently.
         } finally {
             runInAction(() => {
                 this._saving = false;
@@ -217,6 +220,9 @@ class RolesPresenterImpl implements IRolesPresenter {
                     .text()
                     .label("Description")
                     .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .renderer("textarea")
                     .disabled(!canModify),
                 permissions: fields

@@ -115,6 +115,13 @@ export interface CmsModelField {
      */
     list?: boolean;
     /**
+     * Renders the field in the admin app, but doesn't let anyone edit its value.
+     *
+     * This only affects the admin app. The API doesn't check it, so a disabled field
+     * can still be written to over GraphQL.
+     */
+    disabled?: boolean;
+    /**
      * Fields can be tagged to give them contextual meaning.
      */
     tags?: string[];
@@ -181,6 +188,10 @@ export interface CmsModelFieldInput {
      * Are multiple values allowed?
      */
     list?: boolean;
+    /**
+     * @see CmsModelField.disabled
+     */
+    disabled?: boolean;
     /**
      * Predefined values options for the field. Check the reference for more information.
      */

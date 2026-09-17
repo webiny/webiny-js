@@ -1,6 +1,7 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
+import { AiChatFeature } from "@webiny/ai-chat/api/index.js";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -29,7 +30,7 @@ export type TransportRegistrar = (container: Container) => void | Promise<void>;
 export interface RegisterApiRequestStackConfig {
     /**
      * Project-defined extensions, applied at register() time (so extension features — including
-     * code-defined CMS models — are registered before any initializer lists/caches the model set).
+     * code-defined CMS models — are registered before anything lists/caches the model set).
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
@@ -43,7 +44,7 @@ export interface RegisterApiRequestStackConfig {
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
      * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
      * capability. AWS supplies AWS adapters (API Gateway Management API / EventBridge / S3); the
-     * self-hosted server supplies in-process adapters (server WebSockets / Bree / local disk).
+     * standalone server supplies in-process adapters (server WebSockets / Bree / local disk).
      */
     transports?: {
         /**
@@ -75,8 +76,8 @@ export interface RegisterApiRequestStackConfig {
  * (HTTP/event transport, auth/tenant loaders, identity provider, DB + storage) before dispatch reaches
  * this per-request stack.
  *
- * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before any initializer
- * that lists + caches the per-request model set; the GraphQL engine must be registered last.
+ * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
+ * lists + caches the per-request model set; the GraphQL engine must be registered last.
  */
 export async function registerApiRequestStack(
     container: Container,
@@ -132,14 +133,24 @@ export async function registerApiRequestStack(
     await config.transports?.scheduler?.(container);
     CmsSchedulerFeature.register(container);
 
+    // ── AI chat endpoint (in-admin assistant) ──────────────────
+    // The agent loop runs here rather than in the browser, so the browser needs no model and no API
+    // key.
+    //
+    // Registers no `AiChatResolver`: the model, the credential and the prompt all come from AI
+    // Power-Ups settings, so that extension registers the only implementation. Nothing here depends
+    // on running before or after it — `AiChatUseCase` resolves the resolver per request, `HttpRouter`
+    // resolves routes inside `route()`, and `resolveAll(AiSdkToolDefinition)` collects every tool
+    // whenever it was registered.
+    AiChatFeature.register(container);
+
     // ── Extensions ─────────────────────────────────────────────
-    // Apply at register() time (not via a post-auth initializer) so extension features — including
-    // code-defined CMS models (ModelFactory), e.g. Languages — are registered before any initializer
-    // populates ModelCache. Anything reaching the model set through GetModel/ListModels (which go
-    // via ModelsFetcher -> ModelCache.getOrSet) caches it for the rest of the request, so a set
-    // built before extensions register would be missing their models. The Website Builder
-    // initializer is the remaining case; ACO no longer is — it now resolves models at schema-build
-    // time, after all registration.
+    // Apply at register() time so extension features — including code-defined CMS models
+    // (ModelFactory), e.g. Languages — are registered before anything populates ModelCache. Anything
+    // reaching the model set through GetModel/ListModels (which go via ModelsFetcher ->
+    // ModelCache.getOrSet) caches it for the rest of the request, so a set built before extensions
+    // register would be missing their models. Every consumer now resolves models at schema-build or
+    // resolver time, i.e. after all registration.
     await registerExtensions(container, config.extensions());
 
     // ── GraphQL engine (always last) ───────────────────────────

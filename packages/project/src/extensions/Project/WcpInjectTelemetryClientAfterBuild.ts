@@ -63,7 +63,7 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
             //    cost of no telemetry for that function, which is the right trade.
             //
             // 2. Via a NAMESPACE import, not `export { streamHandler } from ...`. This injection also
-            //    runs for the self-hosted api build, whose bundle has no `streamHandler` (streaming is
+            //    runs for the standalone api build, whose bundle has no `streamHandler` (streaming is
             //    native there, with no Lambda involved), and a named re-export of a missing binding is
             //    a hard ESM error that would break the whole handler. A namespace access just yields
             //    `undefined`, which nothing on that path reads.
@@ -73,7 +73,7 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
             // machines. The agreed fix is one line on the WCP side — `export * from "./_handler.mjs"`
             // right after that file's own import, which passes through every bundle export unwrapped
             // (the explicit `export { handler }` still shadows the star, and `export *` re-exports
-            // nothing on the self-hosted bundle). When that ships, this whole append goes away.
+            // nothing on the standalone bundle). When that ships, this whole append goes away.
             const wrapperCode =
                 telemetryCodeAsString +
                 '\nimport * as _webinyBuiltHandlers from "./_handler.mjs";\n' +

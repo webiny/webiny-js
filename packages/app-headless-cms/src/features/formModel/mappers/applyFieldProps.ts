@@ -36,6 +36,10 @@ export function applyFieldProps(
         builder.list();
     }
 
+    if (field.disabled) {
+        builder.disabled(true);
+    }
+
     if (field.predefinedValues?.enabled && field.predefinedValues.values) {
         const optionsBuilder = builder as any;
         if (typeof optionsBuilder.options === "function") {

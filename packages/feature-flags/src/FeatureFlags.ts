@@ -21,6 +21,9 @@ export type KnownFeatureFlag =
     | "aiPowerups.cms.entryTranslation"
     | "abTesting"
     | "remoteComponents"
+    | "collaboration"
+    | "collaboration.comments"
+    | "collaboration.activityLog"
     | "bugReporter";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
@@ -139,7 +142,13 @@ export class FeatureFlags {
                   }
                 : false,
             abTesting: this.isEnabled("abTesting"),
-            remoteComponents: this.isEnabled("remoteComponents")
+            remoteComponents: this.isEnabled("remoteComponents"),
+            collaboration: this.isEnabled("collaboration")
+                ? {
+                      comments: this.isEnabled("collaboration.comments"),
+                      activityLog: this.isEnabled("collaboration.activityLog")
+                  }
+                : false
         };
     }
 }

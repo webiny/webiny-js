@@ -1,6 +1,6 @@
 import { ACTION } from "./utils/index.js";
 import { createWorkflow } from "github-actions-wac";
-import { createJob } from "./jobs/index.js";
+import { createJob, createSlackFailureJob } from "./jobs/index.js";
 
 const VERSION = "${{ github.event.inputs.version }}";
 
@@ -178,6 +178,10 @@ export const fullRelease = createWorkflow({
                     run: `gh workflow run create-release-branch.yml --repo webiny/docs.webiny.com -f version=${VERSION}`
                 }
             ]
+        }),
+        notifySlackOnFailure: createSlackFailureJob({
+            needs: ["resolveSource", "createWebinyJsBranch", "createDocsBranch"],
+            label: `Full release of Webiny ${VERSION}`
         })
     }
 });

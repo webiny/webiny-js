@@ -11,8 +11,10 @@ import {
 import {
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    createWaitForOpenSearchStep,
     NODE_OPTIONS,
     NODE_VERSION,
+    OPENSEARCH_SERVICE,
     runNodeScript
 } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
@@ -123,16 +125,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
+    const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-
-        if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
-            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        }
 
         if (storageOps instanceof PgliteStorageOps) {
             env["WEBINY_SQL_CLIENT"] = "pglite";
@@ -191,13 +189,17 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             "runs-on": "${{ matrix.os }}",
             env,
-            awsAuth: storageOps && storageOps.id === "ddb-os,ddb",
+            // DDB+OS was the only group that assumed an AWS role, and it did so for the shared
+            // OpenSearch domain. With the container there is nothing left in this workflow that
+            // talks to AWS: DynamoDB in these tests is dynalite.
+            ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
+                ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
                 ...withCommonParams([{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }], {
                     "working-directory": DIR_WEBINY_JS
                 })

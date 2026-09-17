@@ -74,7 +74,17 @@ export class HandlerApp {
                           detailType: (event as any)["detail-type"]
                       }
                     : { type: typeof event };
-            const registered = eventTypes.map(et => (et as any)?.constructor?.name);
+            // Name each registered type by the handler abstraction it dispatches to, NOT by
+            // `constructor.name`: the production bundle minifies class names, so every entry came
+            // back as "implementation" — useless in exactly the place this message matters. An
+            // abstraction's name is a string literal, so it survives bundling.
+            const registered = eventTypes.map(et => {
+                try {
+                    return String(et.getHandlerAbstraction());
+                } catch {
+                    return "<unknown>";
+                }
+            });
             throw new Error(
                 `No event type matched the incoming event. Event shape: ${JSON.stringify(
                     shape

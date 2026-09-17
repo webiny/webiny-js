@@ -6,6 +6,9 @@ import { GetSettingsFeature } from "./features/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "./features/UpdateSettings/feature.js";
 import { WbGeneratePageContentFeature } from "./features/WbGeneratePageContent/feature.js";
 import { ProvidersFeature } from "./features/Providers/feature.js";
+import { ConnectionsFeature } from "./features/Connections/feature.js";
+import { ModelRolesFeature } from "./features/ModelRoles/feature.js";
+import { CapabilitiesFeature } from "./features/Capabilities/feature.js";
 import { ReaderPersonasFeature } from "./features/ReaderPersonas/feature.js";
 import { WriterPersonasFeature } from "./features/WriterPersonas/feature.js";
 import { ProjectsFeature } from "./features/Projects/feature.js";
@@ -14,6 +17,7 @@ import { AiImageEnrichmentFeature } from "./features/AiImageEnrichment/feature.j
 import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature.js";
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
 import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
+import { AiChatResolverFeature } from "./features/AiChatResolver/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
@@ -25,7 +29,15 @@ export const Extension = createFeature({
 
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
+        /*
+         * `ProvidersFeature` is still registered so the legacy `providers` section keeps round-
+         * tripping through storage. `Connections` and `ModelRoles` read it once to seed
+         * themselves; nothing else does. It goes away with the next breaking release.
+         */
         ProvidersFeature.register(container);
+        ConnectionsFeature.register(container);
+        ModelRolesFeature.register(container);
+        CapabilitiesFeature.register(container);
         ReaderPersonasFeature.register(container);
         WriterPersonasFeature.register(container);
         ProjectsFeature.register(container);
@@ -33,6 +45,7 @@ export const Extension = createFeature({
         WbGeneratePageContentFeature.register(container);
         CmsGenerateEntryContentFeature.register(container);
         CmsResolveImageToolFeature.register(container);
+        AiChatResolverFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
         // Registered unconditionally. The WCP license gate lives inside the feature's

@@ -1,4 +1,5 @@
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
+import type { WcpProject } from "@webiny/wcp/types.js";
 import { WcpContext } from "../abstractions.js";
 import { FeatureFlags } from "../../../featureFlags/abstractions.js";
 
@@ -16,7 +17,7 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         return this.decoratee.getProject();
     }
 
-    getProjectWithFeatureFlags() {
+    getProjectWithFeatureFlags(): WcpProject | null {
         const project = this.decoratee.getProjectWithFeatureFlags();
         if (!project) {
             return null;
@@ -138,11 +139,29 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             ? project.package.features.abTesting?.enabled
                             : false
                     },
-                    remoteComponents: {
-                        ...project.package.features.remoteComponents,
-                        enabled: flags.isEnabled("remoteComponents")
-                            ? project.package.features.remoteComponents?.enabled
-                            : false
+                    websiteBuilder: {
+                        ...project.package.features.websiteBuilder,
+                        // Every project has Website Builder; the flag governs what is inside it.
+                        enabled: true,
+                        options: {
+                            remoteComponents: flags.isEnabled("remoteComponents")
+                                ? project.package.features.websiteBuilder?.options?.remoteComponents
+                                : false
+                        }
+                    },
+                    collaboration: {
+                        ...project.package.features.collaboration,
+                        enabled: flags.isEnabled("collaboration")
+                            ? project.package.features.collaboration?.enabled
+                            : false,
+                        options: {
+                            comments: flags.isEnabled("collaboration.comments")
+                                ? project.package.features.collaboration?.options?.comments
+                                : false,
+                            activityLog: flags.isEnabled("collaboration.activityLog")
+                                ? project.package.features.collaboration?.options?.activityLog
+                                : false
+                        }
                     }
                 }
             }
@@ -249,6 +268,13 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseAiAdminAssistant() {
+        return (
+            this.decoratee.canUseAiAdminAssistant() &&
+            this.featureFlags.get().isEnabled("aiPowerups.adminAssistant")
+        );
+    }
+
     canUseAiEntryGeneration() {
         return (
             this.decoratee.canUseAiEntryGeneration() &&
@@ -270,6 +296,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseAiPowerups() {
+        return this.decoratee.canUseAiPowerups() && this.featureFlags.get().isEnabled("aiPowerups");
+    }
+
     canUseAbTesting() {
         return this.decoratee.canUseAbTesting() && this.featureFlags.get().isEnabled("abTesting");
     }
@@ -278,6 +308,27 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         return (
             this.decoratee.canUseRemoteComponents() &&
             this.featureFlags.get().isEnabled("remoteComponents")
+        );
+    }
+
+    canUseCollaboration() {
+        return (
+            this.decoratee.canUseCollaboration() &&
+            this.featureFlags.get().isEnabled("collaboration")
+        );
+    }
+
+    canUseComments() {
+        return (
+            this.decoratee.canUseComments() &&
+            this.featureFlags.get().isEnabled("collaboration.comments")
+        );
+    }
+
+    canUseActivityLog() {
+        return (
+            this.decoratee.canUseActivityLog() &&
+            this.featureFlags.get().isEnabled("collaboration.activityLog")
         );
     }
 

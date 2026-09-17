@@ -41,7 +41,7 @@
     "@webiny/api-graphql": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/build-tools": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/event-handler-core": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",

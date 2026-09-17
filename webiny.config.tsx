@@ -3,17 +3,17 @@ import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { FeatureFlag } from "@webiny/project";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 import { AwsExtensions } from "./webiny.config.aws.js";
-import { ServerExtensions } from "./webiny.config.server.js";
+import { StandaloneExtensions } from "./webiny.config.standalone.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
 
 /**
  * In this monorepo we develop both hosting types. The CLI bin sets WEBINY_HOSTING_TYPE ("aws" via
- * `webiny`, "server" via `webiny-server`). Shared extensions live here; the hosting-specific block
- * below pulls in AWS-only (webiny.config.aws.tsx) or server-only (webiny.config.server.tsx)
+ * `webiny`, "standalone" via `webiny-standalone`). Shared extensions live here; the hosting-specific block
+ * below pulls in AWS-only (webiny.config.aws.tsx) or standalone-only (webiny.config.standalone.tsx)
  * extensions so neither leaks into the other hosting type.
  */
-const isServer = process.env.WEBINY_HOSTING_TYPE === "server";
+const isStandalone = process.env.WEBINY_HOSTING_TYPE === "standalone";
 
 export const FeatureFlags = () => (
     <Project.FeatureFlags
@@ -66,7 +66,14 @@ export const Extensions = () => {
             <Infra.Api.MaxBundleSize size={6291456} />
 
             {/* Api 👇 */}
-            {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
+            <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
+            {/* Written with `:orderId` on purpose: API Gateway needs `{orderId}` and the router
+                needs `:orderId`, and the extension converts for each. Either spelling should work. */}
+            <Api.Route
+                method={"GET"}
+                path={"/my-api-echo/:orderId"}
+                src={"/extensions/MyApiEchoRoute.ts"}
+            />
             {/*<Api.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModel.ts"} />*/}
             {/*<Admin.Extension src={"@/extensions/rendererShowcase/RendererShowcaseModifier.tsx"} />*/}
             {/* Bulk actions demo: Products model (the bulk actions themselves are registered
@@ -127,7 +134,7 @@ export const Extensions = () => {
             />
 
             {/* Hosting-specific 👇 (AWS: Pulumi + Cognito; Server: Admin.ApiUrl + SelfHostedAuth) */}
-            {isServer ? <ServerExtensions /> : <AwsExtensions />}
+            {isStandalone ? <StandaloneExtensions /> : <AwsExtensions />}
         </>
     );
 };

@@ -1,10 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { HttpRoute, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
+import { HttpRouteHandler, HttpStreamBody, invokeHttpRoute } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { AiImageEnrichmentStreamRoute } from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
+import {
+    AiImageEnrichmentStreamRoute,
+    AiImageEnrichmentStreamRouteDefinition
+} from "~/api/features/AiImageEnrichment/AiImageEnrichmentStreamRoute.js";
 import {
     ApplyImageEnrichmentUseCase,
     PrepareImageEnrichmentUseCase
@@ -21,6 +24,7 @@ const prepared: IPreparedImageEnrichment = {
     imageBase64: "aGVsbG8=",
     imageMediaType: "image/png",
     model: "anthropic/claude-sonnet-4-5",
+    prompt: "Describe this image.",
     connection: { sdkName: "anthropic", apiKey: "key" }
 };
 
@@ -59,7 +63,7 @@ function errorBody(response: IHttpResponse) {
 
 describe("AiImageEnrichmentStreamRoute", () => {
     let container: Container;
-    let route: HttpRoute.Interface;
+    let route: HttpRouteHandler.Interface;
     let prepare: { execute: ReturnType<typeof vi.fn> };
     let apply: { execute: ReturnType<typeof vi.fn> };
     let ai: { streamText: ReturnType<typeof vi.fn> };
@@ -83,14 +87,17 @@ describe("AiImageEnrichmentStreamRoute", () => {
         container.registerInstance(PrepareImageEnrichmentUseCase, prepare as any);
         container.registerInstance(ApplyImageEnrichmentUseCase, apply as any);
         container.registerInstance(Ai, ai as any);
-        container.register(AiImageEnrichmentStreamRoute);
 
-        route = container.resolveAll(HttpRoute)[0];
+        route = container.resolveImplementation(AiImageEnrichmentStreamRoute);
     });
 
     it("should be a POST route with a file-scoped path", () => {
-        expect(route.method).toBe("POST");
-        expect(route.path).toBe("/stream/fm/files/:fileId/enrich");
+        // The definition is what the router matches on; it has no dependencies, so building it
+        // costs nothing and never touches the route itself.
+        const definition = new AiImageEnrichmentStreamRouteDefinition();
+
+        expect(definition.method).toBe("POST");
+        expect(definition.path).toBe("/stream/fm/files/:fileId/enrich");
     });
 
     it("should respond with SSE headers that defeat proxy buffering", async () => {

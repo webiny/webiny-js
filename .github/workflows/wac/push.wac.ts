@@ -3,7 +3,9 @@ import {
     ACTION,
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    createWaitForOpenSearchStep,
     NODE_VERSION,
+    OPENSEARCH_SERVICE,
     runNodeScript
 } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
@@ -16,7 +18,7 @@ import {
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import { createServerProjectParts, type ServerStorageOps } from "./e2e/index.js";
+import { createStandaloneProjectParts, type StandaloneStorageOps } from "./e2e/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
 import { DdbOsStorageOps, DdbStorageOps, SqlStorageOps } from "./storageOps/index.js";
 
@@ -44,13 +46,13 @@ const runBuildCacheSteps = createRunBuildCacheSteps({
 // command workflow. Only the wrapper differs: `push` checks out the pushed ref rather than a PR,
 // gets the build output from the run CACHE (a trusted trigger, so cache writes work) rather than
 // from an artifact, and has no PR comment to report into.
-const createServerE2EJobs = (storageOps: ServerStorageOps) => {
-    const parts = createServerProjectParts(storageOps, { workingDirectory: DIR_WEBINY_JS });
+const createStandaloneE2EJobs = (storageOps: StandaloneStorageOps) => {
+    const parts = createStandaloneProjectParts(storageOps, { workingDirectory: DIR_WEBINY_JS });
 
     return {
-        [`e2eTests-server-${storageOps}`]: createJob({
+        [`e2eTests-standalone-${storageOps}`]: createJob({
             needs: ["constants", "build"],
-            name: `E2E (Server ${storageOps === "postgres" ? "Postgres" : "SQLite"})`,
+            name: `E2E (Standalone ${storageOps === "postgres" ? "Postgres" : "SQLite"})`,
             checkout: { path: DIR_WEBINY_JS },
             ...(parts.services ? { services: parts.services } : {}),
             steps: [...yarnCacheSteps, ...runBuildCacheSteps, ...installBuildSteps, ...parts.steps]
@@ -290,16 +292,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
+    const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-
-        if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
-            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        }
     }
 
     return {
@@ -336,11 +334,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             "runs-on": "${{ matrix.os }}",
             env,
             awsAuth: !!storageOps,
+            ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
             checkout: { path: DIR_WEBINY_JS },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,
+                ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
                 {
                     name: "Run tests",
                     run: "${{ matrix.testCommand.cmd }}",
@@ -453,7 +453,7 @@ export const push = createWorkflow({
         ...createVitestTestsJobs(sqlStorageOps),
         ...createAwsE2EJobs(ddbStorageOps),
         ...createAwsE2EJobs(ddbOsStorageOps),
-        ...createServerE2EJobs("sqlite"),
-        ...createServerE2EJobs("postgres")
+        ...createStandaloneE2EJobs("sqlite"),
+        ...createStandaloneE2EJobs("postgres")
     }
 });

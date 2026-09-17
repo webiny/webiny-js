@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -86,14 +86,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         // Build context by running all GraphQL context enhancers, then contextual schemas
         // (replicates GraphQLEngineImpl.buildContext + CmsGraphQLRoute.handle order).
         const enhancers = container.resolveAll(GraphQLContextEnhancer);
-        const initializers = container.resolveAll(RequestContextInitializer);
         const contextualSchemas = container.resolveAll(GraphQLContextualSchema);
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
-        }
-        for (const initializer of initializers) {
-            await initializer.init(ctx);
         }
         for (const schema of contextualSchemas) {
             await schema.build(ctx);

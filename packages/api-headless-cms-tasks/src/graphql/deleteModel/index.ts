@@ -1,7 +1,6 @@
 import zod from "zod";
-import type { Container } from "@webiny/di";
-import { RequestContainer } from "@webiny/event-handler-core";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
+import { Logger } from "@webiny/api-core/features/logger/index.js";
 import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaFactory } from "@webiny/api-headless-cms";
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
@@ -53,8 +52,9 @@ const getValidation = zod
  */
 class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interface {
     constructor(
-        private readonly container: Container,
-        private readonly tenantContext: TenantContext.Interface
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly headlessCms: HeadlessCms.Interface,
+        private readonly logger: Logger.Interface
     ) {}
 
     async execute() {
@@ -62,7 +62,7 @@ class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interfa
 
         // On a fresh project there is no tenant until installation completes; and the delete-model
         // schema only belongs on the MANAGE endpoint. (`isHeadlessCmsReady` only checks the tenant.)
-        if (!this.tenantContext.getTenant() || !this.container.resolve(HeadlessCms).MANAGE) {
+        if (!this.tenantContext.getTenant() || !this.headlessCms.MANAGE) {
             return [];
         }
 
@@ -123,7 +123,10 @@ class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interfa
                                 .resolve(DeleteModelOperations)
                                 .isModelBeingDeleted(model.modelId);
                         } catch (ex) {
-                            console.error(ex);
+                            this.logger.error(
+                                { error: ex, modelId: model.modelId },
+                                "Failed to read the delete-model status."
+                            );
                         }
                         return true;
                     }
@@ -216,5 +219,5 @@ class DeleteModelGraphQLSchemaFactory implements CmsGraphQLSchemaFactory.Interfa
 
 export const DeleteModelGraphQLSchemaFactoryImpl = CmsGraphQLSchemaFactory.createImplementation({
     implementation: DeleteModelGraphQLSchemaFactory,
-    dependencies: [RequestContainer, TenantContext]
+    dependencies: [TenantContext, HeadlessCms, Logger]
 });
