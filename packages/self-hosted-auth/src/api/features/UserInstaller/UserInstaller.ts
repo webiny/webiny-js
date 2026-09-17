@@ -5,7 +5,7 @@ import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole
 import { CreateUserUseCase } from "@webiny/api-core/features/users/CreateUser/index.js";
 import { DeleteUserUseCase } from "@webiny/api-core/features/users/DeleteUser/index.js";
 import { SetPasswordUseCase } from "~/api/features/SetPassword/index.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { DeleteCredentialUseCase } from "~/api/features/DeleteCredential/index.js";
 
 interface UserInstallationData {
     firstName: string;
@@ -33,7 +33,7 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
         private createUserUseCase: CreateUserUseCase.Interface,
         private setPasswordUseCase: SetPasswordUseCase.Interface,
         private deleteUserUseCase: DeleteUserUseCase.Interface,
-        private credentials: CredentialsStorageOperations.Interface
+        private deleteCredentialUseCase: DeleteCredentialUseCase.Interface
     ) {}
 
     async install(_tenant: Tenant, data: UserInstallationData): Promise<void> {
@@ -76,12 +76,21 @@ class UserInstallerImpl implements AppInstaller.Interface<UserInstallationData> 
             return;
         }
 
-        // Deleting the user does not cascade to credentials, so remove both.
-        await this.credentials.deleteCredential({
+        // Deleting the user does not cascade to credentials, so remove both. The user goes
+        // second either way: a credential that outlives its user still holds its address, and the
+        // address is unique, so the next install using it would fail on a constraint instead.
+        const deletedCredential = await this.deleteCredentialUseCase.execute({
             userId: this.createdUser.id
         });
+
         await this.deleteUserUseCase.execute(this.createdUser.id);
         this.createdUser = undefined;
+
+        if (deletedCredential.isFail()) {
+            throw new Error(
+                `Deleted the admin user but not its password: ${deletedCredential.error.message}`
+            );
+        }
     }
 }
 
@@ -92,6 +101,6 @@ export const UserInstaller = AppInstaller.createImplementation({
         CreateUserUseCase,
         SetPasswordUseCase,
         DeleteUserUseCase,
-        CredentialsStorageOperations
+        DeleteCredentialUseCase
     ]
 });

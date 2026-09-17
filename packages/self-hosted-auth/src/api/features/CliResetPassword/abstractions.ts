@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type {
     CredentialNotFoundForEmailError,
+    CredentialsPersistenceError,
     InvalidResetTokenError,
     NotAuthorizedError,
     WeakPasswordError
@@ -17,7 +18,8 @@ export type CliResetPasswordError =
     | InvalidResetTokenError
     | CredentialNotFoundForEmailError
     | WeakPasswordError
-    | NotAuthorizedError;
+    | NotAuthorizedError
+    | CredentialsPersistenceError;
 
 export interface ICliResetPasswordUseCase {
     execute(input: CliResetPasswordInput): Promise<Result<true, CliResetPasswordError>>;

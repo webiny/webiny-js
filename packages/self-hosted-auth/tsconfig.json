@@ -5,11 +5,14 @@
     { "path": "../admin-ui" },
     { "path": "../api-core" },
     { "path": "../api-graphql" },
+    { "path": "../api-mailer" },
+    { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../cli-core" },
     { "path": "../feature" },
     { "path": "../form" },
     { "path": "../project" },
+    { "path": "../utils" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -25,6 +28,10 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-graphql/*": ["../api-graphql/src/*"],
       "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-mailer/*": ["../api-mailer/src/*"],
+      "@webiny/api-mailer": ["../api-mailer/src"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
@@ -35,6 +42,8 @@
       "@webiny/form": ["../form/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     }
