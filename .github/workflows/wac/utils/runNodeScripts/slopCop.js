@@ -316,7 +316,13 @@ const main = async () => {
     }
 
     const result = await callClaude(buildPrompt(loadPr()));
-    fs.writeFileSync(outputPath, renderReport(result), "utf8");
+    const report = renderReport(result);
+
+    fs.writeFileSync(outputPath, report, "utf8");
+
+    // Also printed, because the comment it is about to become is sticky: the next push overwrites
+    // it, and a finding nobody read by then is gone. Run logs are per-run and stay put.
+    console.log(report);
     console.log(`Slop cop report written (verdict: ${result.verdict}).`);
 
     // Machine-readable signal for the workflow, which uses it to decide whether to fail the job for
