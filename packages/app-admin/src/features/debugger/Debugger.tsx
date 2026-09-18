@@ -6,7 +6,6 @@ import { useCanCaptureDebugData } from "./permissions.js";
 import { debuggerStore } from "./DebuggerStore.js";
 import { DebuggerView } from "./DebuggerView.js";
 import { DebuggerRoutes } from "./routes.js";
-import { SecurityPermission } from "./SecurityPermission.js";
 
 /**
  * No menu entry: the header indicator is the way in, and it downloads the report directly. The
@@ -25,7 +24,6 @@ export const Debugger = observer(() => {
 
     return (
         <AdminConfig>
-            <SecurityPermission />
             <AdminConfig.Route
                 route={DebuggerRoutes.Debugger}
                 element={
