@@ -18,7 +18,7 @@ describe("serialize", () => {
 
         const { parsed } = parse(circular);
 
-        expect(parsed).toEqual({ name: "root", self: "[Circular]" });
+        expect(parsed).toEqual({ name: "root", self: "#[Circular]" });
     });
 
     it("should not report siblings as circular", () => {
@@ -48,7 +48,7 @@ describe("serialize", () => {
     it("should describe binary data without including its contents", () => {
         const { parsed } = parse({ buffer: Buffer.from("hello world") });
 
-        expect(parsed).toEqual({ buffer: "[Buffer 11 bytes]" });
+        expect(parsed).toEqual({ buffer: "#[Buffer 11 bytes]" });
     });
 
     it("should serialize Map and Set", () => {
@@ -64,7 +64,7 @@ describe("serialize", () => {
     it("should keep a key whose value is undefined, which JSON.stringify drops entirely", () => {
         const { parsed } = parse({ present: undefined });
 
-        expect(parsed).toEqual({ present: "[undefined]" });
+        expect(parsed).toEqual({ present: "#[Undefined value]" });
     });
 
     it("should not throw when a getter throws", () => {
@@ -77,14 +77,14 @@ describe("serialize", () => {
 
         const { parsed } = parse(value);
 
-        expect(parsed.exploding).toBe("[Throws: Nope]");
+        expect(parsed.exploding).toBe("#[Throws: Nope]");
         expect(parsed.safe).toBe(1);
     });
 
     it("should cap depth", () => {
         const { parsed } = parse({ a: { b: { c: { d: "deep" } } } }, { depth: 2 });
 
-        expect(parsed).toEqual({ a: { b: "[Depth limit]" } });
+        expect(parsed).toEqual({ a: { b: "#[Depth limit]" } });
     });
 
     it("should cap string length and say how much was cut", () => {
@@ -119,7 +119,7 @@ describe("serialize", () => {
         const { parsed } = parse({ value });
 
         expect(parsed.value.id).toBe(1);
-        expect(parsed.value.toJSON).toBe("[Function: toJSON]");
+        expect(parsed.value.toJSON).toBe("#[Function: toJSON]");
     });
 
     it("should keep non-finite numbers readable instead of turning them into null", () => {

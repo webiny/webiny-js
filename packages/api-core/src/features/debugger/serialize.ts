@@ -7,9 +7,16 @@ export interface ISerializeResult {
     truncated: boolean;
 }
 
-const UNDEFINED = "[undefined]";
-const CIRCULAR = "[Circular]";
-const DEPTH_LIMIT = "[Depth limit]";
+/**
+ * Markers stand in for values that cannot be represented as JSON.
+ *
+ * They are prefixed with `#` so a reader can tell at a glance that a value was substituted by the
+ * serializer rather than being what the code actually held - the previous `[undefined]` read as an
+ * array literal in documents that are full of real arrays.
+ */
+const UNDEFINED = "#[Undefined value]";
+const CIRCULAR = "#[Circular]";
+const DEPTH_LIMIT = "#[Depth limit]";
 
 const isPlainValue = (value: unknown): boolean => {
     const type = typeof value;
@@ -18,7 +25,7 @@ const isPlainValue = (value: unknown): boolean => {
 
 const describeBinary = (value: ArrayBufferView): string => {
     const name = value.constructor?.name || "TypedArray";
-    return `[${name} ${value.byteLength} bytes]`;
+    return `#[${name} ${value.byteLength} bytes]`;
 };
 
 /**
@@ -65,7 +72,7 @@ const walk = (
     }
 
     if (typeof value === "function") {
-        return `[Function: ${value.name || "anonymous"}]`;
+        return `#[Function: ${value.name || "anonymous"}]`;
     }
 
     if (value instanceof Error) {
@@ -89,7 +96,7 @@ const walk = (
     }
 
     if (value instanceof ArrayBuffer) {
-        return `[ArrayBuffer ${value.byteLength} bytes]`;
+        return `#[ArrayBuffer ${value.byteLength} bytes]`;
     }
 
     if (depth >= limits.depth) {
@@ -153,7 +160,7 @@ const walk = (
             try {
                 item = (value as Record<string, unknown>)[key];
             } catch (ex) {
-                result[key] = `[Throws: ${ex instanceof Error ? ex.message : String(ex)}]`;
+                result[key] = `#[Throws: ${ex instanceof Error ? ex.message : String(ex)}]`;
                 continue;
             }
             result[key] = walk(item, limits, seen, depth + 1);
