@@ -1,10 +1,12 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "../abstractions.js";
-import type { CreateFolderParams, Folder } from "~/folder/folder.types.js";
+import type { CreateFolderParams } from "~/folder/folder.types.js";
+import type { Folder } from "~/folder/folder.types.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { createDecorator, Result } from "@webiny/feature/api";
 import { FolderNotAuthorizedError } from "~/domain/folder/errors.js";
-import { CodeFlpMerger, CodeFlpsProvider } from "~/features/flp/shared/index.js";
+import { CodeFlpMerger } from "~/features/flp/shared/index.js";
+import { CodeFlpsProvider } from "~/features/flp/shared/index.js";
 
 class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -47,10 +49,11 @@ class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.
 
         const folder = result.value;
 
+        const permissions = await this.withCodePermissions(folder, folder?.permissions ?? []);
+
         // Let's set default permissions based on the current user.
-        const permissionsWithDefaults = await this.folderLevelPermissions.getDefaultPermissions(
-            await this.withCodePermissions(folder, folder?.permissions ?? [])
-        );
+        const permissionsWithDefaults =
+            await this.folderLevelPermissions.getDefaultPermissions(permissions);
 
         return Result.ok({
             ...folder,

@@ -1,11 +1,13 @@
 import { createDecorator, Result } from "@webiny/feature/api";
-import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
+import type { Folder } from "~/folder/folder.types.js";
+import type { UpdateFolderParams } from "~/folder/folder.types.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderUseCase } from "../abstractions.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
-import { CodeFlpMerger, CodeFlpsProvider } from "~/features/flp/shared/index.js";
+import { CodeFlpMerger } from "~/features/flp/shared/index.js";
+import { CodeFlpsProvider } from "~/features/flp/shared/index.js";
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -40,9 +42,13 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             rwd: "w"
         });
 
-        const permissions = await this.folderLevelPermissions.getDefaultPermissions(
-            await this.withCodePermissions(original, params.permissions ?? [])
+        const submittedPermissions = await this.withCodePermissions(
+            original,
+            params.permissions ?? []
         );
+
+        const permissions =
+            await this.folderLevelPermissions.getDefaultPermissions(submittedPermissions);
 
         // Check if the user still has access to the folder with the provided permissions.
         const stillHasAccess = await this.folderLevelPermissions.canAccessFolder({
@@ -114,11 +120,17 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
 
         // Resolved again against the updated folder: a rename or a move changes the path, and with
         // it which code-defined rules apply.
+        const updatedPermissions = await this.withCodePermissions(
+            result.value,
+            params.permissions ?? []
+        );
+
+        const updatedPermissionsWithDefaults =
+            await this.folderLevelPermissions.getDefaultPermissions(updatedPermissions);
+
         return Result.ok({
             ...result.value,
-            permissions: await this.folderLevelPermissions.getDefaultPermissions(
-                await this.withCodePermissions(result.value, params.permissions ?? [])
-            )
+            permissions: updatedPermissionsWithDefaults
         });
     }
 
