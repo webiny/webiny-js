@@ -1391,6 +1391,9 @@ export const createEntriesStorageOperations = (
                 body
             });
 
+            console.log(
+                `cms.os.list debugger should go out? ${debuggerService.isEnabled("cms.os.list") ? "yes" : "no"}`
+            );
             debuggerService.log("cms.os.list", () => ({
                 index,
                 query: body,
