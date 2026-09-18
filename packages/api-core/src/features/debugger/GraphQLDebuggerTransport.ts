@@ -16,6 +16,7 @@ export interface IGraphQLDeliveryTarget extends IDebugDeliveryTarget {
     result: Record<string, any>;
     requestId: string;
     operations: string[];
+    url: string;
 }
 
 const isGraphQLTarget = (target: IDebugDeliveryTarget): target is IGraphQLDeliveryTarget => {
@@ -32,6 +33,15 @@ export class GraphQLDebuggerTransportImpl implements DebuggerTransportAbstractio
 
     public deliver({ target, session }: IDebuggerTransportDeliverParams): void {
         if (!isGraphQLTarget(target)) {
+            return;
+        }
+
+        /**
+         * Nothing matched the filter on this request. Writing an envelope with an empty `entries`
+         * array would put a payload on every response for no benefit, and give whoever reads the
+         * report a pile of blanks to scroll past.
+         */
+        if (session.entries.length === 0) {
             return;
         }
 
@@ -53,6 +63,7 @@ export class GraphQLDebuggerTransportImpl implements DebuggerTransportAbstractio
         writeExtension(target.result, {
             enabled: true,
             requestId: target.requestId,
+            url: target.url,
             namespaces: session.namespaces,
             operations: target.operations,
             entries,

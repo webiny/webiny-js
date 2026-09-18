@@ -129,18 +129,27 @@ const createFlushPlugin = () => {
 
             let operations: string[] = [];
             let requestId = "";
+            let url = "";
             try {
-                operations = readOperationNames(context.container.resolve(Request).body);
+                const request = context.container.resolve(Request);
+                operations = readOperationNames(request.body);
                 requestId = context.container.resolve(RequestId).value;
+                /**
+                 * Which endpoint this was. An Admin session talks to several - the main API and the
+                 * CMS manage, read and preview endpoints - and knowing which one produced an entry
+                 * is most of the context when reading a report.
+                 */
+                url = request.url || "";
             } catch {
-                // Both are conveniences; their absence must not stop the flush.
+                // All three are conveniences; their absence must not stop the flush.
             }
 
             const target: IGraphQLDeliveryTarget = {
                 type: GRAPHQL_TARGET,
                 result,
                 requestId,
-                operations
+                operations,
+                url
             };
 
             await debuggerService.flush(target);

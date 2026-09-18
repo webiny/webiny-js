@@ -14,6 +14,7 @@ export interface IDebugEntry {
 export interface IDebugPayload {
     enabled: boolean;
     requestId?: string;
+    url?: string;
     namespaces?: string[];
     operations?: string[];
     entries?: IDebugEntry[];
@@ -101,6 +102,18 @@ export class DebuggerStore {
     };
 
     public collect = (payload: IDebugPayload): void => {
+        /**
+         * The server already omits sessions that captured nothing. This guards the case where a
+         * response carries an envelope with no entries anyway - there is nothing to read in it, and
+         * it would only pad the report.
+         *
+         * A denied payload is kept: it has no entries either, but it is the only signal the panel
+         * has that capture is unavailable for this account.
+         */
+        if (payload.enabled && !payload.entries?.length) {
+            return;
+        }
+
         this._sessions.push({ ...payload, collectedAt: Date.now() });
     };
 
