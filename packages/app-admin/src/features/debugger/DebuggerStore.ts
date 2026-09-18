@@ -106,18 +106,6 @@ export class DebuggerStore {
         }, 0);
     }
 
-    /**
-     * True when the server reported that capture is not available for this identity. Surfaced so the
-     * panel can say so, rather than showing an empty list that looks like a broken feature.
-     */
-    public get denied(): boolean {
-        return this._sessions.length > 0 && this._sessions.every(session => !session.enabled);
-    }
-
-    /**
-     * An explicit choice, persisted either way - including "off", so that it is not undone by
-     * `applyPermission` on the next load.
-     */
     public setEnabled = (enabled: boolean): void => {
         this._enabled = enabled;
         writeStorage(TOGGLE_STORAGE_KEY, enabled ? "true" : "false");
@@ -133,11 +121,8 @@ export class DebuggerStore {
          * The server already omits sessions that captured nothing. This guards the case where a
          * response carries an envelope with no entries anyway - there is nothing to read in it, and
          * it would only pad the report.
-         *
-         * A denied payload is kept: it has no entries either, but it is the only signal the panel
-         * has that capture is unavailable for this account.
          */
-        if (payload.enabled && !payload.entries?.length) {
+        if (!payload.entries?.length) {
             return;
         }
 

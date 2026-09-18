@@ -10,11 +10,7 @@ import { Debugger } from "./abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { parseNamespaceHeader } from "./matchNamespace.js";
 import { canCaptureDebugData } from "./permissions.js";
-import {
-    GRAPHQL_TARGET,
-    writeExtension,
-    type IGraphQLDeliveryTarget
-} from "./GraphQLDebuggerTransport.js";
+import { GRAPHQL_TARGET, type IGraphQLDeliveryTarget } from "./GraphQLDebuggerTransport.js";
 
 export const DEBUG_HEADER = "x-webiny-debug";
 export const DEBUG_PERMISSION = "dev-tools.debug";
@@ -115,8 +111,8 @@ const createFlushPlugin = () => {
             }
 
             /**
-             * Anonymous callers get no `debug` key at all. Reporting `{ enabled: false }` would
-             * fingerprint the feature to any unauthenticated caller for no benefit.
+             * Anonymous callers are rejected before permissions are resolved: `getPermission` runs
+             * every registered Authorizer, some of which hit the database.
              */
             if (identityContext.getIdentity().isAnonymous()) {
                 debuggerService.discard();
@@ -132,8 +128,12 @@ const createFlushPlugin = () => {
                 (await canCaptureDebugData(identityContext));
 
             if (!isAuthorized) {
+                /**
+                 * Nothing is written. Reporting the denial would tell every unauthorized caller that
+                 * the feature exists, and the Admin app already knows from the identity's own
+                 * permissions whether capture is available to it.
+                 */
                 debuggerService.discard();
-                writeExtension(result, { enabled: false });
                 return payload;
             }
 

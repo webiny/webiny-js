@@ -49,13 +49,6 @@ export const DebuggerView = observer(() => {
                 </span>
             </label>
 
-            {debuggerStore.denied ? (
-                <Alert type={"info"}>
-                    Debug capture is not available for your account. Ask an administrator to grant
-                    the Debugger permission.
-                </Alert>
-            ) : null}
-
             <div className={"flex gap-sm items-center"}>
                 <span>
                     {debuggerStore.sessions.length} responses collected, {debuggerStore.entryCount}{" "}
