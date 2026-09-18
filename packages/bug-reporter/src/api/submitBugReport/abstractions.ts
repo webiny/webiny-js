@@ -1,5 +1,5 @@
-import { createAbstraction } from "webiny/api";
-import type { Result } from "webiny/api";
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { BugReportStreamEvent } from "../../shared/types.js";
 import type { IBugReportPayload } from "../../shared/types.js";
 import type { SubmitBugReportError } from "./errors.js";

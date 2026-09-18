@@ -4,7 +4,7 @@ import { AuthenticatedIdentity } from "@webiny/api-core/features/security/Identi
 import { SubmitBugReportUseCaseImpl } from "~/api/submitBugReport/SubmitBugReportUseCase.js";
 import type { BugReportConfig } from "~/api/config/abstractions.js";
 import type { GitHubIssueGateway } from "~/api/github/abstractions.js";
-import type { IdentityContext } from "webiny/api/security";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type { IssueDrafter } from "~/api/drafter/abstractions.js";
 import type { BugReportStreamEvent } from "~/shared/types.js";
 import type { IBugReportPayload } from "~/shared/types.js";

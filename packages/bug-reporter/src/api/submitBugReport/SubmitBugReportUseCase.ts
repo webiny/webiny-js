@@ -1,5 +1,5 @@
-import { Result } from "webiny/api";
-import { IdentityContext } from "webiny/api/security";
+import { Result } from "@webiny/feature/api";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import { BugReportConfig } from "../config/abstractions.js";
 import { IssueDrafter } from "../drafter/abstractions.js";
 import { GitHubIssueGateway } from "../github/abstractions.js";

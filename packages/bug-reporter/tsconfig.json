@@ -8,8 +8,7 @@
     { "path": "../app-admin" },
     { "path": "../event-handler-core" },
     { "path": "../feature" },
-    { "path": "../project-aws" },
-    { "path": "../webiny" }
+    { "path": "../project-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -31,9 +30,7 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
-      "webiny/*": ["../webiny/src/*"],
-      "webiny": ["../webiny/src"]
+      "@webiny/project-aws": ["../project-aws/src"]
     }
   }
 }

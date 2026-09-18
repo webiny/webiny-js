@@ -1,4 +1,4 @@
-import { BaseError } from "webiny/api";
+import { BaseError } from "@webiny/feature/api";
 
 /*
  * The reporter is not signed in. Filing runs under the server's GitHub token, so this is the

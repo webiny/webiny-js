@@ -77,7 +77,6 @@
     "./admin/ui": "./admin/ui.js",
     "./admin/ai-powerups": "./admin/ai-powerups.js",
     "./api/ai-powerups": "./api/ai-powerups.js",
-    "./api/bug-reporter": "./api/bug-reporter.js",
     "./api/aco/flp": "./api/aco/flp.js",
     "./api/aco/folder": "./api/aco/folder.js",
     "./api/build-params": "./api/build-params.js",
@@ -141,6 +140,7 @@
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./admin/websockets": "./admin/websockets.js",
+    "./api/bug-reporter": "./api/bug-reporter.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
     "./api/db": "./api/db.js",
@@ -153,7 +153,7 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "38fb0c05e2413b49802236822826dc3b1cd1767deb1bbc4114ac2cec8cd461c1",
+  "exportGenerationHash": "642c01f55d9627df81354543a53c53c60d812e0d71fcb43a9285b5a28454a759",
   "webiny": {
     "publishFrom": "dist"
   }

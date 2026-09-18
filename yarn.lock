@@ -12457,7 +12457,6 @@ __metadata:
     rimraf: "npm:^6.1.3"
     typescript: "npm:^7.0.2"
     vitest: "npm:^4.1.11"
-    webiny: "npm:0.0.0"
   languageName: unknown
   linkType: soft
 
@@ -27626,7 +27625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webiny@npm:0.0.0, webiny@workspace:packages/webiny":
+"webiny@workspace:packages/webiny":
   version: 0.0.0-use.local
   resolution: "webiny@workspace:packages/webiny"
   dependencies:
