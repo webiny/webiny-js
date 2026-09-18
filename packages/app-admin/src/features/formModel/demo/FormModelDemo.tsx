@@ -8,6 +8,8 @@ import { FieldRenderersDemoPresenter } from "./FieldRenderersDemoPresenter.js";
 import { FormModelDemoPresenter } from "./FormModelDemoPresenter.js";
 import { FormModelPhase8c1Presenter } from "./FormModelPhase8c1Presenter.js";
 import { FormModelPhase11Presenter } from "./FormModelPhase11Presenter.js";
+// PROBE — remove with the rest of src/probe.
+import { GeneratedRendererProbeSection } from "~/probe/GeneratedRendererProbePage.js";
 
 export const FormModelDemo = observer(() => {
     const { formModelFactory } = useFeature(FormModelFeature);
@@ -21,6 +23,7 @@ export const FormModelDemo = observer(() => {
 
     return (
         <div className={"p-lg flex flex-col gap-2xl max-w-4xl mx-auto"}>
+            <GeneratedRendererProbeSection />
             <FieldRenderersSection />
 
             <div className={"flex flex-col gap-lg"}>
