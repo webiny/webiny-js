@@ -3,11 +3,11 @@ import { execaSync } from "execa";
 import { constraints } from "./constraints.js";
 
 export class SystemRequirements {
+    // Runs on every CLI invocation, so it spawns as little as possible: the Node version is already in
+    // this process, which leaves a single `yarn --version` call.
     static validate() {
         const nodeVersion = SystemRequirements.getNodeVersion();
         const yarnVersion = SystemRequirements.getYarnVersion();
-        const npmVersion = SystemRequirements.getNpmVersion();
-        const npxVersion = SystemRequirements.getNpxVersion();
 
         const systemRequirements = {
             valid: false,
@@ -16,16 +16,6 @@ export class SystemRequirements {
                 requiredVersion: constraints.node,
                 valid: semver.satisfies(nodeVersion, constraints.node)
             },
-            npm: {
-                currentVersion: npmVersion,
-                requiredVersion: constraints.npm,
-                valid: semver.satisfies(npmVersion, constraints.npm)
-            },
-            npx: {
-                currentVersion: npxVersion,
-                requiredVersion: constraints.npx,
-                valid: semver.satisfies(npxVersion, constraints.npx)
-            },
             yarn: {
                 currentVersion: yarnVersion,
                 requiredVersion: constraints.yarn,
@@ -33,11 +23,7 @@ export class SystemRequirements {
             }
         };
 
-        systemRequirements.valid =
-            systemRequirements.node.valid &&
-            systemRequirements.npm.valid &&
-            systemRequirements.npx.valid &&
-            systemRequirements.yarn.valid;
+        systemRequirements.valid = systemRequirements.node.valid && systemRequirements.yarn.valid;
 
         return systemRequirements;
     }
@@ -50,6 +36,7 @@ export class SystemRequirements {
         return process.platform;
     }
 
+    // Not part of `validate`. Only `webiny info` and create-webiny-project print these.
     static getNpmVersion() {
         const { stdout } = execaSync("npm", ["--version"]);
         return stdout;

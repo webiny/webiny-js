@@ -1,5 +1,9 @@
-import { execaSync } from "execa";
 import chalk from "chalk";
+import { getCacheFilePath } from "./getCacheFilePath.js";
+import { hashYarnLock } from "./hashYarnLock.js";
+import { listWebinyPackageVersions } from "./listWebinyPackageVersions.js";
+import { readClearedYarnLockHash } from "./readClearedYarnLockHash.js";
+import { writeClearedYarnLockHash } from "./writeClearedYarnLockHash.js";
 
 const DEBUG_FLAG = "--debug";
 const usingDebugFlag = process.argv.includes(DEBUG_FLAG);
@@ -7,41 +11,29 @@ const usingDebugFlag = process.argv.includes(DEBUG_FLAG);
 const SKIP_WEBINY_VERSIONS_CHECK_FLAG = "--no-package-versions-check";
 const skippingWebinyVersionsCheck = process.argv.includes(SKIP_WEBINY_VERSIONS_CHECK_FLAG);
 
-const listWebinyPackageVersions = (): Map<string, Set<string>> => {
-    const { stdout } = execaSync("yarn", ["info", "@webiny/*", "--name-only", "--all", "--json"], {
-        encoding: "utf8"
-    });
-
-    // Each line is a JSON string, so parse them individually.
-    const lines = stdout
-        .trim()
-        .split("\n")
-        .map(line => JSON.parse(line) as string);
-
-    const versionMap = new Map<string, Set<string>>();
-
-    for (const entry of lines) {
-        // An example entry: "@webiny/cli@npm:5.42.3".
-        const match = entry.match(/^(@webiny\/[^@]+)@npm:(.+)$/);
-        if (!match) {
-            continue;
-        }
-
-        const [, pkg, version] = match;
-        if (!versionMap.has(pkg)) {
-            versionMap.set(pkg, new Set());
-        }
-
-        versionMap.get(pkg)!.add(version);
-    }
-
-    return versionMap;
-};
-
+/*
+ * Two `@webiny/*` packages on different versions in one install produce failures that are hard to
+ * read, so the CLI refuses to start on a mismatch. The check runs on every invocation and the `yarn
+ * info` call behind it is slow, so a pass is remembered against the lockfile hash and skipped while
+ * that hash holds.
+ *
+ * Only a pass is cached. A failed `yarn info` warns and returns, and a mismatch exits, so neither
+ * writes the file and the next run checks again.
+ */
 export const ensureSameWebinyPackageVersions = (): void => {
     // Just in case, we want to allow users to skip the check.
     if (skippingWebinyVersionsCheck) {
         return;
+    }
+
+    const cacheFilePath = getCacheFilePath();
+    const yarnLockHash = hashYarnLock();
+
+    if (cacheFilePath && yarnLockHash) {
+        const clearedYarnLockHash = readClearedYarnLockHash(cacheFilePath);
+        if (clearedYarnLockHash === yarnLockHash) {
+            return;
+        }
     }
 
     let webinyVersions: Map<string, Set<string>>;
@@ -87,5 +79,9 @@ export const ensureSameWebinyPackageVersions = (): void => {
 
         console.error(chalk.red(message.join("\n")));
         process.exit(1);
+    }
+
+    if (cacheFilePath && yarnLockHash) {
+        writeClearedYarnLockHash(cacheFilePath, yarnLockHash);
     }
 };

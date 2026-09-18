@@ -5,7 +5,7 @@ import "tsx/esm";
 import "@webiny/cli-core/utils/suppressPunycodeWarnings.js";
 
 import { Cli } from "@webiny/cli-core";
-import { ensureSameWebinyPackageVersions } from "@webiny/cli-core/utils/ensureSameWebinyPackageVersions.js";
+import { ensureSameWebinyPackageVersions } from "@webiny/cli-core/utils/ensureSameWebinyPackageVersions/index.js";
 import { registerAwsFeatures } from "./index.js";
 import { ensureSystemRequirements } from "@webiny/system-requirements";
 import { startTrace } from "@webiny/project/utils/trace/index.js";
