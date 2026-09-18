@@ -6,13 +6,14 @@ export const ADMIN_ASSISTANT_CAPABILITY = "admin.assistant";
 /**
  * The assistant behind the admin command palette.
  *
- * Named `admin.assistant`, the same name the WCP licence option carries. Every other id names what the feature does
- * (`fm.imageEnrichment`, `cms.generateEntry`), and what this one does is deliberately not one thing:
- * today it reads and changes content, and the direction is for it to build things too, like a field
- * renderer or a menu change. "Chat" names the surface, which is the part most likely to be wrong
- * later. The id is the persisted settings key, so a rename orphans a project's overrides.
+ * `admin.assistant` matches the WCP licence option and the `aiPowerups.adminAssistant` flag, so the
+ * feature has one name everywhere. It is also the name that survives: every other id says what the
+ * feature does (`fm.imageEnrichment`, `cms.generateEntry`), and this one deliberately does not do
+ * one thing. Today it reads and changes content, and the direction is for it to build things
+ * too, like a field renderer or a menu change. The id is the persisted settings key, so a later rename
+ * orphans a project's overrides.
  *
- * `guidance` is the prompt `@webiny/ai-chat` ships, imported rather than restated so the two cannot
+ * `guidance` is the prompt this feature ships, imported rather than restated so the two cannot
  * drift. Unlike most capabilities this one is safe to append to freely: its output is prose for a
  * human, not a shape the surrounding code parses. House rules ("our product is spelled like this",
  * "never mention internal model ids") belong here.
