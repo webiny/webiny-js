@@ -1,8 +1,6 @@
 import * as React from "react";
 import { Select as SelectPrimitives } from "radix-ui";
 import { cn } from "~/utils.js";
-import { SelectScrollUpButton } from "./SelectScrollUpButton.js";
-import { SelectScrollDownButton } from "./SelectScrollDownButton.js";
 
 type SelectContentProps = SelectPrimitives.SelectContentProps;
 
@@ -20,7 +18,9 @@ const SelectContent = ({ className, children, ...props }: SelectContentProps) =>
             position={"popper"}
             {...props}
         >
-            <SelectScrollUpButton />
+            {/* No scroll buttons: the list has a scrollbar, and the buttons come and go with the
+                scroll position, which changes the viewport height and with it the size of the
+                thumb. */}
             <SelectPrimitives.Viewport
                 className={cn([
                     "py-xs",
@@ -29,7 +29,6 @@ const SelectContent = ({ className, children, ...props }: SelectContentProps) =>
             >
                 {children}
             </SelectPrimitives.Viewport>
-            <SelectScrollDownButton />
         </SelectPrimitives.Content>
     </SelectPrimitives.Portal>
 );
