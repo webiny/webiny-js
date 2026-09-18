@@ -1,5 +1,5 @@
 import { IssueDrafter as Abstraction } from "./abstractions.js";
-import type { IIssueDraft } from "./abstractions.js";
+
 import type { IBugReportPayload } from "../../shared/types.js";
 
 function buildTitle(description: string): string {
@@ -29,7 +29,7 @@ function buildTitle(description: string): string {
  * rather than as a form with blanks in it.
  */
 class VerbatimIssueDrafterImpl implements Abstraction.Interface {
-    async execute(payload: IBugReportPayload): Promise<IIssueDraft> {
+    async execute(payload: IBugReportPayload): Promise<Abstraction.Draft> {
         return {
             title: buildTitle(payload.description),
             summary: payload.description,

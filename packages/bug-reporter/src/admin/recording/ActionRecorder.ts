@@ -56,15 +56,25 @@ function readLabel(element: Element): string {
     return condense(text).slice(0, 60);
 }
 
+/*
+ * A label is only read off something interactive — a button, a link, a menu item. Falling back to
+ * the raw click target would read its text, and clicking a table cell that shows a customer's email
+ * would put that email in the issue. Same reason field values are never recorded: the selector says
+ * where they clicked without saying what was in it.
+ */
 function describeTarget(target: EventTarget | null): string {
     if (!(target instanceof Element)) {
         return "an unknown element";
     }
 
     const interactive = target.closest(INTERACTIVE_SELECTOR);
-    const element = interactive ?? target;
-    const label = readLabel(element);
-    const selector = readSelector(element);
+
+    if (!interactive) {
+        return readSelector(target);
+    }
+
+    const label = readLabel(interactive);
+    const selector = readSelector(interactive);
 
     if (label) {
         return `"${label}" (${selector})`;
@@ -296,7 +306,8 @@ class ActionRecorderImpl implements Abstraction.Interface {
                 return response;
             } catch (error) {
                 const target = operationName ?? shortenUrl(url);
-                this.record("network", `${method} ${target} never completed`, describeError(error));
+                const detail = describeError(error);
+                this.record("network", `${method} ${target} never completed`, detail);
                 throw error;
             }
         };
@@ -350,7 +361,8 @@ class ActionRecorderImpl implements Abstraction.Interface {
     private watchExceptions(): void {
         const onError = (event: ErrorEvent) => {
             const stack = readStack(event.error);
-            this.record("exception", condense(event.message), stack);
+            const summary = condense(event.message);
+            this.record("exception", summary, stack);
         };
 
         const onRejection = (event: PromiseRejectionEvent) => {

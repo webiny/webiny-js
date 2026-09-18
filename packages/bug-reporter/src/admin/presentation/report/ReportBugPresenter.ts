@@ -136,7 +136,14 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             }
         }
 
-        this.controller = null;
+        /*
+         * Only clear it if it is still ours. A submission that was aborted by close() and then
+         * followed by a new one would otherwise null the NEW controller as it unwinds, leaving the
+         * second request with nothing to abort.
+         */
+        if (this.controller === controller) {
+            this.controller = null;
+        }
     }
 
     /*

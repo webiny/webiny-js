@@ -8,8 +8,6 @@ export { GetSettingsUseCase } from "@webiny/ai-powerups/api/features/GetSettings
  */
 export { AiCapability } from "@webiny/ai-powerups/api/features/Capabilities/abstractions.js";
 export { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/api/features/Capabilities/abstractions.js";
-export type { IAiCapability } from "@webiny/ai-powerups/api/features/Capabilities/abstractions.js";
-export type { IResolvedAiCapability } from "@webiny/ai-powerups/api/features/Capabilities/abstractions.js";
 export { withAdditionalInstructions } from "@webiny/ai-powerups/api/features/Capabilities/index.js";
 export { AI_MODEL_ROLE_IDS } from "@webiny/ai-powerups/api/features/ModelRoles/index.js";
 export type { AiModelRoleId } from "@webiny/ai-powerups/api/features/ModelRoles/index.js";

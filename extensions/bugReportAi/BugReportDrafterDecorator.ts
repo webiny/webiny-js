@@ -5,7 +5,6 @@ import { Logger } from "webiny/api";
 import { ResolveAiCapabilityUseCase } from "webiny/api/ai-powerups";
 import { withAdditionalInstructions } from "webiny/api/ai-powerups";
 import { IssueDrafter } from "webiny/api/bug-reporter";
-import type { IIssueDraft } from "webiny/api/bug-reporter";
 import type { IBugReportPayload } from "webiny/api/bug-reporter";
 import { BUG_REPORT_DRAFT_CAPABILITY } from "./capability.js";
 
@@ -99,7 +98,7 @@ class BugReportDrafterDecoratorImpl implements IssueDrafter.Interface {
         private decoratee: IssueDrafter.Interface
     ) {}
 
-    async execute(payload: IBugReportPayload, timeline: string): Promise<IIssueDraft> {
+    async execute(payload: IBugReportPayload, timeline: string): Promise<IssueDrafter.Draft> {
         const verbatim = await this.decoratee.execute(payload, timeline);
 
         const resolved = await this.resolveCapability.execute(BUG_REPORT_DRAFT_CAPABILITY);
@@ -110,13 +109,17 @@ class BugReportDrafterDecoratorImpl implements IssueDrafter.Interface {
         const capability = resolved.value;
         const prompt = buildPrompt(payload, timeline);
 
+        const output = Output.object({ schema: issueDraftSchema });
+        const system = withAdditionalInstructions(capability);
+        const content = buildContent(payload, prompt);
+
         try {
             const result = await this.ai.generateText({
                 model: capability.model,
                 connection: capability.connection,
-                output: Output.object({ schema: issueDraftSchema }),
-                system: withAdditionalInstructions(capability),
-                messages: [{ role: "user", content: buildContent(payload, prompt) }]
+                output,
+                system,
+                messages: [{ role: "user", content }]
             });
 
             return {

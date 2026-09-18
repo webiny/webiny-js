@@ -31,8 +31,10 @@ class BugReportDraftCapabilityImpl implements AiCapability.Interface {
     readonly label = "Bug report drafting";
     readonly description =
         "Turns a reported bug into an issue title, summary and steps to reproduce.";
-    // Reads screenshots, so `vision` would fit — but `vision` falls back to `standard` when unset,
-    // and a project that has only configured `standard` should still get drafting.
+    /*
+     * Reads screenshots, so `vision` would fit — but `vision` falls back to `standard` when unset,
+     * and a project that has only configured `standard` should still get drafting.
+     */
     readonly defaultRole = "standard" as const;
     readonly guidance = guidance;
 }

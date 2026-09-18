@@ -1,11 +1,20 @@
 import { BugReportConfig } from "../config/abstractions.js";
 import { TOOL_LABEL } from "../config/BugReportConfig.js";
+import { EXTENSION_BY_MEDIA_TYPE } from "../screenshotMediaTypes.js";
+import { parseRepository } from "./parseRepository.js";
 import { GitHubIssueGateway as Abstraction } from "./abstractions.js";
 import type { ICreateIssueInput } from "./abstractions.js";
 import type { IFiledIssue } from "../../shared/types.js";
+import type { IRepositoryRef } from "./parseRepository.js";
 import type { IReportedScreenshot } from "../../shared/types.js";
 
 const API_ROOT = "https://api.github.com";
+
+/*
+ * Node's fetch has no default timeout. Without this a stalled connection holds the function open to
+ * its own limit while the stream sits on "Creating the issue..." with nothing more to say.
+ */
+const REQUEST_TIMEOUT_MS = 15000;
 
 /*
  * Screenshots are committed to a branch of their own rather than to the default branch, so they
@@ -15,26 +24,6 @@ const ASSETS_BRANCH = "bug-report-assets";
 
 const TOOL_LABEL_COLOR = "1d76db";
 const TOOL_LABEL_DESCRIPTION = "Filed from the admin app by the bug reporter";
-
-interface IRepositoryRef {
-    owner: string;
-    name: string;
-}
-
-function parseRepository(repository: string): IRepositoryRef {
-    const [owner, name] = repository.split("/");
-    if (!owner || !name) {
-        throw new Error(`"${repository}" is not a valid repository. Use the "owner/name" form.`);
-    }
-    return { owner, name };
-}
-
-const EXTENSION_BY_MEDIA_TYPE: Record<string, string> = {
-    "image/png": "png",
-    "image/jpeg": "jpg",
-    "image/gif": "gif",
-    "image/webp": "webp"
-};
 
 /* Pasted images are not always PNG, and GitHub renders by extension. */
 function buildScreenshotPath(mediaType: string): string {
@@ -127,7 +116,22 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
             description: TOOL_LABEL_DESCRIPTION
         };
 
-        await this.request(`${base}/labels`, { method: "POST", body: JSON.stringify(payload) });
+        /*
+         * Check-then-create races: two first-ever reports against the same repository both see the
+         * label missing and both POST. GitHub answers the loser with 422, which means the label now
+         * exists — exactly what was wanted, so it is not a failure worth losing a report over.
+         */
+        const created = await fetch(`${API_ROOT}${base}/labels`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: this.buildHeaders(),
+            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+        });
+
+        if (!created.ok && created.status !== 422) {
+            const message = await readErrorMessage(created);
+            throw new Error(`GitHub responded ${created.status}: ${message}`);
+        }
     }
 
     /*
@@ -170,14 +174,18 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
     }
 
     private async exists(path: string): Promise<boolean> {
-        const response = await fetch(`${API_ROOT}${path}`, { headers: this.buildHeaders() });
+        const response = await fetch(`${API_ROOT}${path}`, {
+            headers: this.buildHeaders(),
+            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+        });
         return response.ok;
     }
 
     private async request(path: string, init: RequestInit): Promise<Record<string, unknown>> {
         const response = await fetch(`${API_ROOT}${path}`, {
             ...init,
-            headers: this.buildHeaders()
+            headers: this.buildHeaders(),
+            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
         });
 
         if (!response.ok) {

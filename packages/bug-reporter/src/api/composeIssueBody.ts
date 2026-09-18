@@ -1,16 +1,24 @@
 import type { IReportedEnvironment } from "../shared/types.js";
-import type { IIssueDraft } from "./drafter/abstractions.js";
+import { IssueDrafter } from "./drafter/abstractions.js";
 
 export interface IComposeIssueBodyInput {
-    draft: IIssueDraft;
+    draft: IssueDrafter.Draft;
     description: string;
     environment: IReportedEnvironment;
     timeline: string;
     screenshotUrls: string[];
 }
 
+/*
+ * A page title is whatever the editor typed, and a URL can carry one in a query string. An
+ * unescaped pipe would split the cell and misalign the rest of the row.
+ */
+function escapeCell(value: string): string {
+    return value.split("|").join("\\|");
+}
+
 function buildEnvironmentTable(environment: IReportedEnvironment): string {
-    const rows = [
+    const rows: [string, string][] = [
         ["Page", environment.page],
         ["URL", environment.url],
         ["Viewport", environment.viewport],
@@ -23,7 +31,7 @@ function buildEnvironmentTable(environment: IReportedEnvironment): string {
     const lines = ["| | |", "|---|---|"];
 
     for (const [key, value] of rows) {
-        lines.push(`| ${key} | ${value} |`);
+        lines.push(`| ${key} | ${escapeCell(value)} |`);
     }
 
     return lines.join("\n");

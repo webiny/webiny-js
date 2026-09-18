@@ -1,5 +1,6 @@
 import React from "react";
-import { Api, Admin } from "@webiny/project-aws";
+import { Admin } from "@webiny/project-aws";
+import { Api } from "@webiny/project-aws";
 import { BugReporterGitHub } from "./GitHub.js";
 
 /**
