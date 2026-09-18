@@ -142,8 +142,10 @@ export const Documentation: Story = {
 };
 
 /**
- * A dialog locks scrolling outside of its own content, and the popover is portaled out of it.
- * The list below has to stay scrollable with the mouse wheel while the dialog is open.
+ * A dialog locks scrolling outside of its own content, and the popover is portaled out of it, so
+ * the lock covers the popover too. What that costs is the wheel and the trackpad: the list below
+ * still moved by its scrollbar and by the arrow keys, but a wheel event over it did nothing at all.
+ * It has to scroll by wheel while the dialog is open.
  */
 export const InsideDialog: Story = {
     render: () => (
