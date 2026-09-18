@@ -45,6 +45,13 @@ const walk = (
     depth: number
 ): unknown => {
     if (value === undefined) {
+        /**
+         * Only reached for array elements and for a top-level payload. Object properties holding
+         * `undefined` are dropped before they get here, matching `JSON.stringify`.
+         *
+         * Inside an array the element cannot be dropped without shifting every later index, and
+         * `JSON.stringify` would turn it into `null` - which is a meaningful value in its own right.
+         */
         return UNDEFINED;
     }
 
@@ -163,6 +170,18 @@ const walk = (
                 result[key] = `#[Throws: ${ex instanceof Error ? ex.message : String(ex)}]`;
                 continue;
             }
+
+            /**
+             * Drop the key, as `JSON.stringify` does.
+             *
+             * Captured payloads are frequently copies of something that went over the wire, and the
+             * wire never carried these keys - keeping them would describe a request that was never
+             * made.
+             */
+            if (item === undefined) {
+                continue;
+            }
+
             result[key] = walk(item, limits, seen, depth + 1);
         }
         return result;

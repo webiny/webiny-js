@@ -61,10 +61,16 @@ describe("serialize", () => {
         expect(parsed.set).toEqual({ __type: "Set", items: [1, 2] });
     });
 
-    it("should keep a key whose value is undefined, which JSON.stringify drops entirely", () => {
-        const { parsed } = parse({ present: undefined });
+    it("should drop an undefined property, so a logged payload matches what was sent", () => {
+        const { parsed } = parse({ kept: 1, dropped: undefined });
 
-        expect(parsed).toEqual({ present: "#[Undefined value]" });
+        expect(parsed).toEqual({ kept: 1 });
+    });
+
+    it("should keep undefined array elements, where dropping would shift every later index", () => {
+        const { parsed } = parse({ items: [1, undefined, 3] });
+
+        expect(parsed).toEqual({ items: [1, "#[Undefined value]", 3] });
     });
 
     it("should not throw when a getter throws", () => {
