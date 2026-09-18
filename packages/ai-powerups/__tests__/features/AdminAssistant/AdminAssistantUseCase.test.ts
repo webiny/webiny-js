@@ -15,11 +15,19 @@ import type { AdminAssistantEvent } from "~/api/features/AdminAssistant/events.j
 
 const ADDITIONAL = "Always answer in Welsh.";
 
-/** Nothing to stream; the test only cares about what was handed to `streamText`. */
-const emptyStream = {
+/**
+ * A run that streams nothing and ends cleanly.
+ *
+ * `responseMessages` and `steps` are both awaited after the stream drains, so a fake without them
+ * throws at the end and the use case reports an `error` event. The request assertions would still
+ * pass, which is exactly the false green worth avoiding.
+ */
+const emptyStream = () => ({
     fullStream: (async function* () {})(),
-    response: Promise.resolve({ messages: [] })
-};
+    response: Promise.resolve({ messages: [] }),
+    responseMessages: Promise.resolve([]),
+    steps: Promise.resolve([])
+});
 
 const setup = (resolution?: Result<never, Error>) => {
     const requests: Ai.GenerateTextParams[] = [];
@@ -28,7 +36,7 @@ const setup = (resolution?: Result<never, Error>) => {
     container.registerInstance(Ai, {
         streamText: async (request: Ai.StreamTextParams) => {
             requests.push(request as unknown as Ai.GenerateTextParams);
-            return emptyStream;
+            return emptyStream();
         }
     } as unknown as Ai.Interface);
 
@@ -91,6 +99,14 @@ describe("AdminAssistantUseCase", () => {
         expect(requests[0].system).toContain(SYSTEM_PROMPT);
         expect(requests[0].system).toContain(ADDITIONAL);
         expect(requests[0].system).not.toBe(SYSTEM_PROMPT);
+    });
+
+    it("finishes the run rather than falling over at the end", async () => {
+        const { useCase } = setup();
+
+        const events = await run(useCase);
+
+        expect(events.map(event => event.type)).toEqual(["done"]);
     });
 
     it("sends the capability's model and connection", async () => {
