@@ -1,6 +1,7 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "../abstractions.js";
-import type { CreateFolderParams } from "~/folder/folder.types.js";
+import type { CreateFolderParams, Folder } from "~/folder/folder.types.js";
+import type { FolderPermission } from "~/flp/flp.types.js";
 import { createDecorator, Result } from "@webiny/feature/api";
 import { FolderNotAuthorizedError } from "~/domain/folder/errors.js";
 import { CodeFlpMerger, CodeFlpsProvider } from "~/features/flp/shared/index.js";
@@ -46,24 +47,36 @@ class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.
 
         const folder = result.value;
 
-        // Code-defined permissions are resolved from the folder's own type and path, not from the
-        // FLP catalog — the record for a folder this new is written by an event handler and may not
-        // exist yet. Without this the response would omit them until something refetched the folder.
-        const codePermissions =
-            (await this.codeFlpsProvider?.getPermissions({
-                type: folder.type,
-                path: folder.path
-            })) ?? [];
-
         // Let's set default permissions based on the current user.
         const permissionsWithDefaults = await this.folderLevelPermissions.getDefaultPermissions(
-            CodeFlpMerger.mergePermissions(folder?.permissions ?? [], codePermissions)
+            await this.withCodePermissions(folder, folder?.permissions ?? [])
         );
 
         return Result.ok({
             ...folder,
             permissions: permissionsWithDefaults
         });
+    }
+
+    /**
+     * Code-defined permissions are resolved from the folder's own type and path rather than the FLP
+     * catalog: the record for a folder this new is written by an event handler and may not exist
+     * yet. Without this the response would omit them until something refetched the folder.
+     */
+    private async withCodePermissions(
+        folder: Pick<Folder, "type" | "path">,
+        permissions: FolderPermission[]
+    ): Promise<FolderPermission[]> {
+        if (!this.codeFlpsProvider) {
+            return permissions;
+        }
+
+        const codePermissions = await this.codeFlpsProvider.getPermissions({
+            type: folder.type,
+            path: folder.path
+        });
+
+        return CodeFlpMerger.mergePermissions(permissions, codePermissions);
     }
 }
 

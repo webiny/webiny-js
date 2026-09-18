@@ -130,11 +130,14 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
         folder: Pick<Folder, "type" | "path">,
         permissions: FolderPermission[]
     ): Promise<FolderPermission[]> {
-        const codePermissions =
-            (await this.codeFlpsProvider?.getPermissions({
-                type: folder.type,
-                path: folder.path
-            })) ?? [];
+        if (!this.codeFlpsProvider) {
+            return permissions;
+        }
+
+        const codePermissions = await this.codeFlpsProvider.getPermissions({
+            type: folder.type,
+            path: folder.path
+        });
 
         return CodeFlpMerger.mergePermissions(permissions, codePermissions);
     }
