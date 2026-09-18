@@ -26,8 +26,17 @@ const describeBinary = (value: ArrayBufferView): string => {
  *
  * Caps are applied during the walk rather than by slicing the finished JSON string, so the output is
  * always parseable.
+ *
+ * A custom `toJSON` is never invoked - own properties are enumerated instead. That means an object
+ * is reported as its internals rather than its intended representation, which is what you want when
+ * debugging, and it removes a whole class of failure where a third-party `toJSON` throws.
  */
-const walk = (value: unknown, limits: IDebuggerLimits, seen: WeakSet<object>, depth: number): unknown => {
+const walk = (
+    value: unknown,
+    limits: IDebuggerLimits,
+    seen: WeakSet<object>,
+    depth: number
+): unknown => {
     if (value === undefined) {
         return UNDEFINED;
     }
