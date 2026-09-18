@@ -98,7 +98,8 @@ export type {
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
 
-// AI chat — server-side assistant used by the command palette's AI mode.
+// Admin assistant — the browser half. Holds the conversation the palette's AI mode renders and
+// talks to the api over HTTP; the assistant itself lives in @webiny/ai-powerups.
 export {
     AdminAssistantGateway,
     AdminAssistantFeature,
