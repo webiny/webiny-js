@@ -1,20 +1,27 @@
 import { createDecorator, Result } from "@webiny/feature/api";
+import type { Folder } from "~/folder/folder.types.js";
 import type { UpdateFolderParams } from "~/folder/folder.types.js";
+import type { FolderPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderUseCase } from "../abstractions.js";
 import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
+import { CodeFlpMerger } from "~/features/flp/shared/index.js";
+import { CodeFlpsProvider } from "~/features/flp/shared/index.js";
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
     private readonly decoretee: UpdateFolderUseCase.Interface;
+    private readonly codeFlpsProvider?: CodeFlpsProvider.Interface;
 
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         folderLevelPermissions: FolderLevelPermissions.Interface,
+        codeFlpsProvider: CodeFlpsProvider.Interface | undefined,
         decoretee: UpdateFolderUseCase.Interface
     ) {
         this.folderLevelPermissions = folderLevelPermissions;
+        this.codeFlpsProvider = codeFlpsProvider;
         this.decoretee = decoretee;
     }
 
@@ -35,9 +42,13 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             rwd: "w"
         });
 
-        const permissions = await this.folderLevelPermissions.getDefaultPermissions(
+        const submittedPermissions = await this.withCodePermissions(
+            original,
             params.permissions ?? []
         );
+
+        const permissions =
+            await this.folderLevelPermissions.getDefaultPermissions(submittedPermissions);
 
         // Check if the user still has access to the folder with the provided permissions.
         const stillHasAccess = await this.folderLevelPermissions.canAccessFolder({
@@ -107,15 +118,47 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
             return Result.fail(result.error);
         }
 
+        // Resolved again against the updated folder: a rename or a move changes the path, and with
+        // it which code-defined rules apply.
+        const updatedPermissions = await this.withCodePermissions(
+            result.value,
+            params.permissions ?? []
+        );
+
+        const updatedPermissionsWithDefaults =
+            await this.folderLevelPermissions.getDefaultPermissions(updatedPermissions);
+
         return Result.ok({
             ...result.value,
-            permissions
+            permissions: updatedPermissionsWithDefaults
         });
+    }
+
+    /**
+     * Code-defined permissions are resolved from the folder's own type and path rather than the FLP
+     * catalog, so they apply even when the stored record is missing or not yet written.
+     */
+    private async withCodePermissions(
+        folder: Pick<Folder, "type" | "path">,
+        permissions: FolderPermission[]
+    ): Promise<FolderPermission[]> {
+        if (!this.codeFlpsProvider) {
+            return permissions;
+        }
+
+        const codePermissions = await this.codeFlpsProvider.getPermissions({
+            type: folder.type,
+            path: folder.path
+        });
+
+        return CodeFlpMerger.mergePermissions(permissions, codePermissions);
     }
 }
 
 export const UpdateFolderWithFolderLevelPermissions = createDecorator({
     abstraction: UpdateFolderUseCase,
     decorator: UpdateFolderWithFolderLevelPermissionsImpl,
-    dependencies: [GetFolderUseCase, FolderLevelPermissions]
+    // `CodeFlpsProvider` is optional: `CodeFlpsFeature` does not register it unless the project has
+    // the folder-level permissions entitlement.
+    dependencies: [GetFolderUseCase, FolderLevelPermissions, [CodeFlpsProvider, { optional: true }]]
 });
