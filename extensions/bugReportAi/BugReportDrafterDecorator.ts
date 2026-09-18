@@ -26,6 +26,14 @@ const issueDraftSchema = z.object({
     actual: z.string()
 });
 
+/* Capped because a provider error message can itself be a response body. */
+const MAX_REASON_LENGTH = 200;
+
+function describeFailure(error: unknown): string {
+    const message = error instanceof Error ? error.message : String(error);
+    return message.slice(0, MAX_REASON_LENGTH);
+}
+
 interface IFilePart {
     type: "file";
     data: string;
@@ -130,7 +138,16 @@ class BugReportDrafterDecoratorImpl implements IssueDrafter.Interface {
                 actual: result.output.actual
             };
         } catch (error) {
-            this.logger.error({ error }, "Bug report drafting failed; filing verbatim.");
+            /*
+             * The message only, never the error object. An AI SDK error carries
+             * `requestBodyValues`, and the request body here is the reporter's description plus
+             * the whole timeline, so logging the object would copy the report into the API logs.
+             * It also carries response headers, and the logger configures no redaction.
+             */
+            this.logger.error(
+                { code: "BUG_REPORT_DRAFTING_FAILED", reason: describeFailure(error) },
+                "Bug report drafting failed; filing verbatim."
+            );
             return verbatim;
         }
     }

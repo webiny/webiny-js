@@ -176,18 +176,28 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     /*
      * Compose mode opens GitHub straight away rather than asking first. It is the default for any
      * project without a token, so a confirmation would sit between every reporter and the thing
-     * they just asked for — and the composer itself already tells them to paste their screenshot.
+     * they just asked for, and the composer itself already tells them to paste their screenshot.
      *
      * A pop-up blocker can still refuse this: the click that started the submit is a few hundred
      * milliseconds old by now, and further back than that when a model did the drafting. Nothing is
      * lost when it does, the URL just has to be offered as a link instead.
+     *
+     * No `noreferrer`, which is why the opener is cleared by hand. `noreferrer` implies `noopener`,
+     * and `window.open` returns null whenever `noopener` is set, success or not. That made every
+     * compose report look blocked.
      */
     private openCompose(url: string): void {
-        const opened = window.open(url, "_blank", "noreferrer");
+        const opened = window.open(url, "_blank");
 
         if (!opened) {
             this.markBlocked(url);
             return;
+        }
+
+        try {
+            opened.opener = null;
+        } catch {
+            // Cross-origin by the time the navigation commits. Nothing to do, and nothing lost.
         }
 
         this.status = null;

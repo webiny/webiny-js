@@ -33,9 +33,18 @@ describe("BugReportConfig", () => {
         }
     );
 
-    it("only files directly once there is a token", () => {
+    /*
+     * Filing is the irreversible direction. A token with no repository used to file into the
+     * default, which is ours, under the project's own PAT and with nobody reviewing it.
+     */
+    it("needs a token AND an explicit repository before it will file directly", () => {
         expect(buildConfig({}).canFileDirectly).toBe(false);
-        expect(buildConfig({ BUG_REPORT_GITHUB_TOKEN: "t" }).canFileDirectly).toBe(true);
+        expect(buildConfig({ BUG_REPORT_GITHUB_TOKEN: "t" }).canFileDirectly).toBe(false);
+        expect(buildConfig({ BUG_REPORT_REPOSITORY: "acme/app" }).canFileDirectly).toBe(false);
+        expect(
+            buildConfig({ BUG_REPORT_GITHUB_TOKEN: "t", BUG_REPORT_REPOSITORY: "acme/app" })
+                .canFileDirectly
+        ).toBe(true);
     });
 
     it("always applies the tool label, on top of whatever is configured", () => {

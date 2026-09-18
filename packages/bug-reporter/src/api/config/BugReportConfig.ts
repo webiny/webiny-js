@@ -72,8 +72,17 @@ export class BugReportConfigImpl implements Abstraction.Interface {
         return parseLabels(readParam(this.params, LABELS_PARAM));
     }
 
+    /*
+     * Both, not just the token. A project that sets a token and forgets the repository would
+     * otherwise have its API file reports straight into OUR public repository, unreviewed, under
+     * its own PAT. Filing is the irreversible direction, so it asks to be told where explicitly.
+     * Compose mode still defaults, because it only prefills a URL the reporter chooses to submit.
+     */
     get canFileDirectly(): boolean {
-        return this.token !== "";
+        if (this.token === "") {
+            return false;
+        }
+        return readParam(this.params, REPOSITORY_PARAM) !== "";
     }
 }
 
