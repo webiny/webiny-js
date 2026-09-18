@@ -8,8 +8,6 @@ import { BugReportMount } from "./BugReportMount.js";
  *
  * Hit cmd+shift+b (or find "Report a bug" in the command palette), say what went wrong, paste a
  * screenshot, and the report goes to the API.
- *
- * See ../../README.md for setup.
  */
 export const Extension = () => {
     return (

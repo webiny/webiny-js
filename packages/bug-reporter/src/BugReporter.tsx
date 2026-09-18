@@ -20,7 +20,12 @@ export const BugReporter = () => {
 
             {/* All optional. Without a token the API returns a prefilled GitHub URL instead
                 of filing, which needs no credentials. Read at build time, so CI can hold
-                them as secrets. */}
+                them as secrets.
+
+                The token needs write on BOTH issues and contents. Contents is not optional
+                once anyone pastes an image: GitHub's issue API has no attachment endpoint,
+                so screenshots are committed to a `bug-report-assets` branch and linked.
+                A classic PAT covers both with one `repo` scope. */}
             <Api.BuildParam
                 paramName={"BUG_REPORT_GITHUB_TOKEN"}
                 value={process.env.BUG_REPORT_GITHUB_TOKEN || ""}
