@@ -12,6 +12,12 @@ import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
 import { FeatureFlagsProvider } from "./FeatureFlagsContext.js";
 import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
+import { startTrace } from "~/utils/trace/index.js";
+import { traceAsync } from "~/utils/trace/index.js";
+import { traceRecorder } from "~/utils/trace/index.js";
+
+// The parent CLI process forwards this worker's stderr when tracing is on.
+startTrace("Config render worker");
 
 const sendError = (err: Error) => {
     const message: RenderConfigWorkerMessageDto = {
@@ -55,9 +61,11 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { Extensions } = await import(
-    toImportSpecifier(project.paths.webinyConfigBaseFile.toString())
-);
+const { Extensions } = await traceAsync("import webiny.config", () => {
+    const configPath = toImportSpecifier(project.paths.webinyConfigBaseFile.toString());
+
+    return import(configPath);
+});
 
 const RENDER_TIMEOUT_MS = 30_000;
 
@@ -73,11 +81,16 @@ const timeout = setTimeout(() => {
 
 const onChange = debounce((value: any) => {
     clearTimeout(timeout);
+    stopRenderTrace();
     sendSuccess(toObject(value));
     process.exit(0);
 });
 
+const stopJsdomTrace = traceRecorder.start("create JSDOM");
+
 const { window } = new JSDOM(`<div id="root"/>`);
+
+stopJsdomTrace();
 
 (global as any).window = window;
 
@@ -86,6 +99,8 @@ const { window } = new JSDOM(`<div id="root"/>`);
 const root = window.document.getElementById("root")!;
 
 const reactRoot = createRoot(root);
+
+const stopRenderTrace = traceRecorder.start("render config tree");
 
 reactRoot.render(
     <WcpProjectLicenseProvider>
