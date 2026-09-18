@@ -366,6 +366,34 @@
   @apply bg-neutral-light;
 }
 
+/*
+ * A Select hides its scrollbar and offers scroll buttons instead, which leaves a long list looking
+ * like it ends where it is cut off. These rules bring the scrollbar back, shaped like the thumb
+ * `ScrollArea` draws, so the two kinds of dropdown read the same. Radix injects the rules that hide
+ * it when the list opens, hence `!important`.
+ */
+[data-radix-select-viewport] {
+  /* Back to the initial value, both to undo Radix and because Chrome drops the rules below when
+     `scrollbar-width` or `scrollbar-color` say anything else. */
+  scrollbar-width: auto !important;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar {
+  display: block !important;
+  width: 10px;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--color-neutral-strong) 70%, transparent);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: calc(infinity * 1px);
+}
+
 @layer base {
   a {
     @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
