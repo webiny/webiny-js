@@ -32,6 +32,9 @@ function ScrollArea({
     onScrollPositionChange,
     onScroll,
     viewportClassName,
+    // Radix would only show the scrollbar once the pointer is inside. Showing it whenever there is
+    // more content is the same rule the rest of the admin follows, a Select included.
+    type = "auto",
     ...props
 }: ScrollAreaProps) {
     const viewportRef = React.useRef<HTMLDivElement>(null);
@@ -72,6 +75,7 @@ function ScrollArea({
     return (
         <ScrollAreaPrimitive.Root
             data-slot="scroll-area"
+            type={type}
             className={cn("relative", className)}
             {...props}
         >
