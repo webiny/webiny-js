@@ -9,7 +9,7 @@ export const SecurityPermission = () => {
     return (
         <AdminConfig>
             <Security.Permissions
-                name="dev-tools"
+                name="dev-tools-graphql-playground"
                 title="Dev Tools"
                 description="Manage Dev Tools access."
                 icon={<DevToolsIcon />}

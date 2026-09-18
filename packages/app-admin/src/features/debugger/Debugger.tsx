@@ -7,6 +7,7 @@ import { AdminLayout } from "~/components/AdminLayout.js";
 import { useDebuggerPermissions } from "./permissions.js";
 import { DebuggerView } from "./DebuggerView.js";
 import { DebuggerRoutes } from "./routes.js";
+import { SecurityPermission } from "./SecurityPermission.js";
 
 /**
  * The `dev-tools` parent menu is declared by the playground packages, which ship with every Admin
@@ -19,6 +20,7 @@ export const Debugger = observer(() => {
 
     return (
         <AdminConfig>
+            <SecurityPermission />
             {canDebug ? (
                 <AdminConfig.Menu
                     name={"dev-tools.debugger"}
