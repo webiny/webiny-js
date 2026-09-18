@@ -34,6 +34,7 @@ import {
     showLogsGlobalOption,
     stackTraceGlobalOption,
     syncDepsCommand,
+    traceGlobalOption,
     UpgradeCommandFeature,
     verifyDepsCommand,
     whoAmICommand
@@ -47,6 +48,7 @@ import {
     UiService
 } from "~/abstractions/index.js";
 import { GracefulError, toImportSpecifier } from "@webiny/project";
+import { traceAsync } from "@webiny/project/utils/trace/index.js";
 import { commandsWithGracefulErrorHandling } from "./decorators/index.js";
 import { CliCommand } from "~/extensions/index.js";
 
@@ -84,6 +86,7 @@ export const createCliContainer = async (
     container.register(showLogsGlobalOption).inSingletonScope();
     container.register(logLevelGlobalOption).inSingletonScope();
     container.register(stackTraceGlobalOption).inSingletonScope();
+    container.register(traceGlobalOption).inSingletonScope();
 
     // Services.
     container.register(argvParserService).inSingletonScope();
@@ -110,13 +113,20 @@ export const createCliContainer = async (
         // Immediately set CLI instance params via the `CliParamsService`.
         container.resolve(CliParamsService).set(params);
 
-        const projectSdk = await container.resolve(GetProjectSdkService).execute();
+        const getProjectSdk = container.resolve(GetProjectSdkService);
+        const projectSdk = await traceAsync("initialize project SDK", () =>
+            getProjectSdk.execute()
+        );
 
-        const projectConfig = await projectSdk.getProjectConfig({
-            tags: { runtimeContext: "cli" }
+        const projectConfig = await traceAsync("get project config", () => {
+            return projectSdk.getProjectConfig({
+                tags: { runtimeContext: "cli" }
+            });
         });
 
-        await projectSdk.validateProjectConfig(projectConfig);
+        await traceAsync("validate project config", () => {
+            return projectSdk.validateProjectConfig(projectConfig);
+        });
 
         const project = projectSdk.getProject();
 
@@ -143,11 +153,13 @@ export const createCliContainer = async (
         };
 
         const commands = projectConfig.extensionsByType(CliCommand);
-        for (const command of commands) {
-            const commandImplementation = await importFromPath(command.params.src);
+        await traceAsync("import project CLI commands", async () => {
+            for (const command of commands) {
+                const commandImplementation = await importFromPath(command.params.src);
 
-            container.register(commandImplementation).inSingletonScope();
-        }
+                container.register(commandImplementation).inSingletonScope();
+            }
+        });
     } catch (error) {
         let realError = error;
         if (error.cause) {

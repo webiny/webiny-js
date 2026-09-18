@@ -13254,6 +13254,7 @@ __metadata:
     tsx: "npm:4.23.12"
     type-fest: "npm:^5.8.0"
     typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.11"
     wrap-ansi: "npm:9.0.2"
     write-json-file: "npm:^7.0.0"
     zod: "npm:4.4.3"

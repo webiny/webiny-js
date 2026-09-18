@@ -15,6 +15,7 @@ import { ExtensionDefinitions as ExtensionDefinitionsExtension } from "~/extensi
 import { ExtensionInstanceModel } from "~/defineExtension/index.js";
 import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
 import { toImportSpecifier } from "~/utils/index.js";
+import { traceAsync } from "~/utils/trace/index.js";
 import { renderConfig } from "./renderConfig.js";
 
 export class DefaultGetProjectConfigService implements GetProjectConfigService.Interface {
@@ -41,11 +42,16 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
 
             try {
                 const projectSdkParams = this.projectSdkParamsService.get();
-                this.cachedRenderedConfigs[cacheKey] = await renderConfig({
-                    project,
-                    args: params.renderArgs,
-                    sdkParams: projectSdkParams
-                });
+                this.cachedRenderedConfigs[cacheKey] = await traceAsync(
+                    "render project config",
+                    () => {
+                        return renderConfig({
+                            project,
+                            args: params.renderArgs,
+                            sdkParams: projectSdkParams
+                        });
+                    }
+                );
             } catch (err) {
                 this.loggerService.error(
                     { err },
@@ -66,7 +72,9 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const renderedConfig = this.cachedRenderedConfigs[cacheKey];
         this.loggerService.debug({ config: renderedConfig }, `Project config rendering complete.`);
 
-        const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
+        const hydratedConfig = await traceAsync("hydrate project config", () => {
+            return this.hydrateConfig(renderedConfig, params);
+        });
         this.loggerService.debug({ config: hydratedConfig }, `Project config hydration complete.`);
 
         const model = ProjectConfigModel.create(hydratedConfig);
