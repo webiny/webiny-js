@@ -3,8 +3,7 @@ import { ReactComponent as DebuggerIcon } from "@webiny/icons/bug_report.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { useRouter } from "@webiny/app";
 import { AdminLayout } from "~/components/AdminLayout.js";
-import { HasPermission } from "~/presentation/security/components/HasPermission.js";
-import { DEBUGGER_PERMISSIONS_SCHEMA } from "./permissionsSchema.js";
+import { DEBUGGER_PERMISSIONS_SCHEMA, useDebuggerPermissions } from "./permissions.js";
 import { DebuggerView } from "./DebuggerView.js";
 import { DebuggerRoutes } from "./routes.js";
 
@@ -16,18 +15,20 @@ const { Menu, Route, Security } = AdminConfig;
  */
 export const Debugger = () => {
     const router = useRouter();
+    const { canAccess } = useDebuggerPermissions();
+    const canDebug = canAccess("debug");
 
     return (
         <AdminConfig>
             <Security.Permissions
-                name={"debugger"}
+                name={"dev-tools-debugger"}
                 title={"Debugger"}
-                description={"Manage debug capture permissions."}
+                description={"Manage debug capture access."}
                 icon={<DebuggerIcon />}
                 schema={DEBUGGER_PERMISSIONS_SCHEMA}
             />
 
-            <HasPermission any={["debugger.*", "debugger.capture"]}>
+            {canDebug ? (
                 <Menu
                     name={"dev-tools.debugger"}
                     parent={"dev-tools"}
@@ -39,7 +40,7 @@ export const Debugger = () => {
                         />
                     }
                 />
-            </HasPermission>
+            ) : null}
 
             <Route
                 route={DebuggerRoutes.Debugger}

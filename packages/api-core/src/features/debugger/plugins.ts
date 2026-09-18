@@ -9,6 +9,7 @@ import type { Context } from "@webiny/handler/types.js";
 import { Debugger } from "./abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { parseNamespaceHeader } from "./matchNamespace.js";
+import { DebuggerPermissions } from "./permissions.js";
 import {
     GRAPHQL_TARGET,
     writeExtension,
@@ -16,7 +17,7 @@ import {
 } from "./GraphQLDebuggerTransport.js";
 
 export const DEBUG_HEADER = "x-webiny-debug";
-export const DEBUG_PERMISSION = "debugger.capture";
+export const DEBUG_PERMISSION = "dev-tools.debug";
 
 const isPlainObject = (value: unknown): value is Record<string, any> => {
     return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -118,7 +119,7 @@ const createFlushPlugin = () => {
              */
             const isAuthorized =
                 identityContext.isAuthorizationEnabled() &&
-                Boolean(await identityContext.getPermission(DEBUG_PERMISSION));
+                (await context.container.resolve(DebuggerPermissions).canAccess("debug"));
 
             if (!isAuthorized) {
                 debuggerService.discard();
@@ -154,7 +155,7 @@ const createFlushPlugin = () => {
             try {
                 context.container.resolve(Debugger).discard();
             } catch {
-                // Nothing further to do.i
+                // Nothing further to do.
             }
         }
 

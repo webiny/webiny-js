@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { Container } from "@webiny/di";
 import { Debugger } from "./Debugger.js";
 import { GraphQLDebuggerTransport } from "./GraphQLDebuggerTransport.js";
+import { DebuggerPermissionsFeature } from "./permissions.js";
 
 export const DebuggerFeature = createFeature({
     name: "DebuggerFeature",
@@ -13,5 +14,6 @@ export const DebuggerFeature = createFeature({
          */
         container.register(Debugger).inSingletonScope();
         container.register(GraphQLDebuggerTransport);
+        DebuggerPermissionsFeature.register(container);
     }
 });
