@@ -1,5 +1,11 @@
 import React from "react";
-import { AdminConfig, AdminLayout, useRouter, RegisterFeature } from "@webiny/app-admin";
+import {
+    AdminConfig,
+    AdminLayout,
+    useRouter,
+    RegisterFeature,
+    useFeatureFlags
+} from "@webiny/app-admin";
 import { AiPowerUpsSettingsFeature } from "./presentation/AiPowerUpsSettings/index.js";
 import { AiPowerUpsSettingsPage } from "./presentation/AiPowerUpsSettings/AiPowerUpsSettingsPage.js";
 import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
@@ -43,6 +49,18 @@ const AiPowerUpsSettings = () => {
 };
 
 export const Extension = () => {
+    /*
+     * Gated here rather than around `<Admin.Extension>` in `AiPowerups.tsx`, so a licence granted
+     * after the last deploy takes effect on the next page load instead of the next deploy. Returning
+     * null registers nothing, so an unlicensed project has no AI Power-Ups settings screen and no AI
+     * buttons, rather than ones that fail when clicked. `app-audit-logs` gates the same way.
+     */
+    const featureFlags = useFeatureFlags();
+
+    if (!featureFlags.isEnabled("aiPowerups")) {
+        return null;
+    }
+
     return (
         <>
             <RegisterFeature feature={AiPromptFormFeature} />

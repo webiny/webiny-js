@@ -10264,7 +10264,6 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/languages": "npm:0.0.0"
     "@webiny/lexical-converter": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
