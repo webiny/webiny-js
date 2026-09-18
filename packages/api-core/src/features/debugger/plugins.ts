@@ -154,7 +154,7 @@ const createFlushPlugin = () => {
             try {
                 context.container.resolve(Debugger).discard();
             } catch {
-                // Nothing further to do.
+                // Nothing further to do.i
             }
         }
 

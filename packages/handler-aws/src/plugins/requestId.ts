@@ -21,7 +21,7 @@ export const createRequestIdPlugin = () => {
     return createHandlerOnRequest<Context>(async (request, _reply, context) => {
         const awsRequestId = (request as unknown as RequestWithLambdaContext).awsLambda?.context
             ?.awsRequestId;
-
+        // TODO do we have default request id instance? this will break when resolving - no instance found
         if (!awsRequestId) {
             return;
         }
