@@ -2,9 +2,10 @@ import { createFeature } from "@webiny/feature/api";
 import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { AiImageEnrichmentAfterCreateHandler } from "./AiImageEnrichmentAfterCreateHandler.js";
 import { AiImageEnrichmentTask } from "./AiImageEnrichmentTask.js";
-import { AiImageEnrichmentStreamRoute } from "./AiImageEnrichmentStreamRoute.js";
+import { AiImageEnrichmentStreamRouteDefinition } from "./AiImageEnrichmentStreamRoute.js";
 import { PrepareImageEnrichmentUseCase } from "./PrepareImageEnrichmentUseCase.js";
 import { ApplyImageEnrichmentUseCase } from "./ApplyImageEnrichmentUseCase.js";
+import { FmImageEnrichmentCapability } from "./capability.js";
 
 export const AiImageEnrichmentFeature = createFeature({
     name: "AiPowerUps/AiImageEnrichment",
@@ -22,6 +23,9 @@ export const AiImageEnrichmentFeature = createFeature({
             return;
         }
 
+        // Registered inside the gate, so a project without the license does not get a settings
+        // row for a feature it cannot use.
+        container.register(FmImageEnrichmentCapability);
         container.register(PrepareImageEnrichmentUseCase);
         container.register(ApplyImageEnrichmentUseCase);
 
@@ -30,6 +34,6 @@ export const AiImageEnrichmentFeature = createFeature({
         container.register(AiImageEnrichmentTask);
 
         // On-demand re-enrichment, streamed.
-        container.register(AiImageEnrichmentStreamRoute);
+        container.register(AiImageEnrichmentStreamRouteDefinition);
     }
 });

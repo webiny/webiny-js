@@ -10,6 +10,7 @@ import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
 import type { ApiKeyPermission } from "~/types/security.js";
 import { generateToken } from "../shared/generateToken.js";
 import { ApiKeyValidationError, ApiKeyNotAuthorizedError } from "../shared/errors.js";
+import { descriptionOnCreate } from "../../shared/description.js";
 
 class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interface {
     constructor(
@@ -37,13 +38,19 @@ class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interfac
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
 
+        // Normalised up front so that null reaches neither the entity nor the published events.
+        const createInput: CreateApiKeyInput = {
+            ...data,
+            description: descriptionOnCreate(data.description)
+        };
+
         const apiKey: ApiKey = {
             id: mdbid(),
-            name: data.name,
-            slug: data.slug,
-            description: data.description,
+            name: createInput.name,
+            slug: createInput.slug,
+            description: descriptionOnCreate(createInput.description),
             token,
-            permissions: data.permissions,
+            permissions: createInput.permissions,
             createdOn: new Date().toISOString(),
             createdBy: {
                 id: identity.id,
@@ -53,7 +60,7 @@ class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interfac
         };
 
         await this.eventPublisher.publish(
-            new ApiKeyBeforeCreateEvent({ apiKey, input: validation.data })
+            new ApiKeyBeforeCreateEvent({ apiKey, input: createInput })
         );
 
         const result = await this.repository.create(apiKey);
@@ -63,7 +70,7 @@ class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interfac
         }
 
         await this.eventPublisher.publish(
-            new ApiKeyAfterCreateEvent({ apiKey, input: validation.data })
+            new ApiKeyAfterCreateEvent({ apiKey, input: createInput })
         );
 
         return Result.ok(apiKey);

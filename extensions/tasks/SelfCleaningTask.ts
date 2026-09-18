@@ -1,21 +1,14 @@
-import { TaskDefinition } from "webiny/api/tasks";
+import { TaskDefinition, TaskHandler } from "webiny/api/tasks";
 import { ListModelsUseCase } from "webiny/api/cms/model.js";
 import { ListLatestEntriesUseCase } from "webiny/api/cms/entry";
 
-class SelfCleaningTaskImpl implements TaskDefinition.Interface {
-    public readonly id = "selfCleaningTask";
-    public readonly title = "Self-Cleaning Task";
-    public readonly description =
-        "A task which will remove db records related to itself after execution.";
-    public readonly isPrivate = false;
-    public readonly selfCleanup = "always";
-
+class SelfCleaningTaskHandlerImpl implements TaskHandler.Interface {
     public constructor(
         private readonly listCmsModels: ListModelsUseCase.Interface,
         private readonly listLatestCmsEntries: ListLatestEntriesUseCase.Interface
     ) {}
 
-    public async run(params: TaskDefinition.RunParams): Promise<TaskDefinition.Result> {
+    public async run(params: TaskHandler.RunParams): Promise<TaskHandler.Result> {
         // NOTE (temporary): `controller.response` is added to api-core's TaskController by a
         // `declare module` augmentation living in @webiny/background-tasks. It only resolves when
         // that augmentation is in the compile program (i.e. something imports background-tasks).
@@ -54,7 +47,23 @@ class SelfCleaningTaskImpl implements TaskDefinition.Interface {
     }
 }
 
+const SelfCleaningTaskHandler = TaskHandler.createImplementation({
+    implementation: SelfCleaningTaskHandlerImpl,
+    dependencies: [ListModelsUseCase, ListLatestEntriesUseCase]
+});
+
+class SelfCleaningTaskImpl implements TaskDefinition.Interface {
+    public readonly id = "selfCleaningTask";
+    public readonly title = "Self-Cleaning Task";
+    public readonly description =
+        "A task which will remove db records related to itself after execution.";
+    public readonly isPrivate = false;
+    public readonly selfCleanup = "always";
+
+    public readonly handler = SelfCleaningTaskHandler;
+}
+
 export default TaskDefinition.createImplementation({
     implementation: SelfCleaningTaskImpl,
-    dependencies: [ListModelsUseCase, ListLatestEntriesUseCase]
+    dependencies: []
 });

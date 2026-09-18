@@ -31,6 +31,11 @@ export interface IAiPowerupsOptions {
     cms?: IAiPowerupsCmsOptions;
 }
 
+export interface ICollaborationOptions {
+    comments?: boolean;
+    activityLog?: boolean;
+}
+
 /**
  * Top-level feature flags interface. Add new flags here as needed.
  * A boolean value controls whether the feature is enabled.
@@ -47,4 +52,5 @@ export interface IFeatureFlagsDto {
     aiPowerups?: boolean | IAiPowerupsOptions;
     abTesting?: boolean;
     remoteComponents?: boolean;
+    collaboration?: boolean | ICollaborationOptions;
 }

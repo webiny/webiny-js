@@ -1,5 +1,5 @@
 import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
-import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
+import { createJob, createSlackFailureJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
     createRunBuildArtifactDownloadSteps,
@@ -213,6 +213,10 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                     ].join("\n")
                 }
             ]
+        }),
+        notifySlackOnFailure: createSlackFailureJob({
+            needs: ["prBranch", "build", "npmReleaseBeta", "npmReleaseLatest"],
+            label: "Beta release (/beta)"
         })
     }
 });

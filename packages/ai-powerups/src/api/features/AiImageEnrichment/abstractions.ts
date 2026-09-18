@@ -34,6 +34,12 @@ export interface IPreparedImageEnrichment {
     imageBase64: string;
     imageMediaType: string;
     model: string;
+    /**
+     * The resolved prompt: this capability's guidance (or the project's replacement for it) with
+     * the project's additional instructions appended. `AI_ENRICHMENT_PROMPT` is the default that
+     * feeds it, not what gets sent.
+     */
+    prompt: string;
     connection: {
         sdkName: string;
         apiKey: string;

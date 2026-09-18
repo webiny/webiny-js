@@ -3,6 +3,7 @@ import { OpenAiSdkFactory } from "./OpenAiSdkFactory.js";
 import { AnthropicSdkFactory } from "./AnthropicSdkFactory.js";
 import { Ai } from "./Ai.js";
 import { AiSdkTools } from "./AiSdkTools.js";
+import { AiSdkToolHandlerResolver } from "./AiSdkToolHandlerResolver.js";
 import { AiOutputToolRegistry } from "./toolPipeline/AiOutputToolRegistry.js";
 import { AiToolPipelineRunner } from "./toolPipeline/AiToolPipelineRunner.js";
 import { DefaultTextExtractor } from "./TextExtractor/DefaultTextExtractor.js";
@@ -14,6 +15,7 @@ export const AiFeature = createFeature({
         container.register(AnthropicSdkFactory);
         container.register(Ai);
         container.register(AiSdkTools);
+        container.register(AiSdkToolHandlerResolver);
         container.register(AiOutputToolRegistry);
         container.register(AiToolPipelineRunner);
         container.register(DefaultTextExtractor);

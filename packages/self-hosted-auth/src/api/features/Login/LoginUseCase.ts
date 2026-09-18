@@ -3,13 +3,13 @@ import { LoginUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { LoginInput, LoginOutput } from "./abstractions.js";
 import { loginValidation } from "./schema.js";
 import { InvalidCredentialsError } from "~/api/domain/errors.js";
-import { CredentialsStorageOperations } from "~/api/storage/abstractions.js";
+import { CredentialsRepository } from "~/api/repositories/CredentialsRepository.js";
 import { Hasher } from "@webiny/api-core/features/hashing/index.js";
 import { TokenIssuer } from "~/api/domain/crypto/TokenIssuer.js";
 
 class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private credentials: CredentialsStorageOperations.Interface,
+        private credentials: CredentialsRepository.Interface,
         private hasher: Hasher.Interface,
         private tokenIssuer: TokenIssuer.Interface
     ) {}
@@ -26,7 +26,12 @@ class LoginUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // Credentials are global (email is the login key), mirroring Cognito's user pool. Tenant
         // membership is resolved by the security layer, not from the credential.
-        const credential = await this.credentials.getCredentialByEmail({ email });
+        const found = await this.credentials.getByEmail({ email });
+        if (found.isFail()) {
+            return Result.fail(found.error);
+        }
+
+        const credential = found.value;
         if (!credential) {
             // Anti-enumeration: verify against a throwaway hash even though there is no account, so
             // the "no such user" path spends the same (deliberately slow) scrypt time as the
@@ -63,5 +68,5 @@ const DUMMY_HASH =
 
 export const LoginUseCase = UseCaseAbstraction.createImplementation({
     implementation: LoginUseCaseImpl,
-    dependencies: [CredentialsStorageOperations, Hasher, TokenIssuer]
+    dependencies: [CredentialsRepository, Hasher, TokenIssuer]
 });
