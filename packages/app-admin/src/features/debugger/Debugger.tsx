@@ -4,7 +4,7 @@ import { ReactComponent as DebuggerIcon } from "@webiny/icons/bug_report.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { useRouter } from "@webiny/app";
 import { AdminLayout } from "~/components/AdminLayout.js";
-import { useDebuggerPermissions } from "./permissions.js";
+import { useCanCaptureDebugData } from "./permissions.js";
 import { debuggerStore } from "./DebuggerStore.js";
 import { DebuggerView } from "./DebuggerView.js";
 import { DebuggerRoutes } from "./routes.js";
@@ -16,8 +16,7 @@ import { SecurityPermission } from "./SecurityPermission.js";
  */
 export const Debugger = observer(() => {
     const router = useRouter();
-    const { canAccess } = useDebuggerPermissions();
-    const canDebug = canAccess("debug");
+    const canDebug = useCanCaptureDebugData();
 
     /**
      * Holding the permission is the opt-in, so capture starts on. An identity that has explicitly

@@ -1,3 +1,4 @@
+import { useAuthentication } from "~/presentation/security/hooks/useAuthentication.js";
 import {
     createPermissionSchema,
     createPermissionsAbstraction,
@@ -34,3 +35,20 @@ export const DebuggerPermissionsFeature = createPermissionsFeature(
 );
 
 export const useDebuggerPermissions = createUsePermissions(DebuggerPermissions);
+
+export const DEBUG_PERMISSION_NAME = "dev-tools.debug";
+
+/**
+ * Whether the current identity may capture debug data.
+ *
+ * An exact match, deliberately: `*` and `dev-tools.*` do not grant it. Capture runs automatically
+ * for whoever holds this, so a wildcard would leave it permanently on for every full-access
+ * administrator, collecting record content on every request for people who never asked for it.
+ *
+ * Full access is therefore not enough. The entity has to be granted deliberately, and that act is
+ * the opt-in.
+ */
+export const useCanCaptureDebugData = (): boolean => {
+    const { identity } = useAuthentication();
+    return Boolean(identity.getPermission(DEBUG_PERMISSION_NAME, true));
+};

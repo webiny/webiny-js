@@ -9,7 +9,7 @@ import type { Context } from "@webiny/handler/types.js";
 import { Debugger } from "./abstractions.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { parseNamespaceHeader } from "./matchNamespace.js";
-import { DebuggerPermissions } from "./permissions.js";
+import { canCaptureDebugData } from "./permissions.js";
 import {
     GRAPHQL_TARGET,
     writeExtension,
@@ -129,7 +129,7 @@ const createFlushPlugin = () => {
              */
             const isAuthorized =
                 identityContext.isAuthorizationEnabled() &&
-                (await context.container.resolve(DebuggerPermissions).canAccess("debug"));
+                (await canCaptureDebugData(identityContext));
 
             if (!isAuthorized) {
                 debuggerService.discard();
