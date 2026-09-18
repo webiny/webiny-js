@@ -1,11 +1,12 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
+/*
+ * Only set when the API filed the issue itself. Compose mode has nothing to show: GitHub opens
+ * with the report already in it, so a confirmation would just be a step between the reporter and
+ * the thing they asked for.
+ */
 export interface IReportBugOutcomeVm {
-    /* "filed" — done, here is the issue. "compose" — open this and submit it yourself. */
-    mode: "filed" | "compose";
     url: string;
-    /* Only in "compose" mode, and only when there was something to paste. */
-    remindToPasteScreenshot: boolean;
 }
 
 export interface IReportBugViewModel {
@@ -20,6 +21,8 @@ export interface IReportBugViewModel {
     statusLabel: string | null;
     error: string | null;
     outcome: IReportBugOutcomeVm | null;
+    /* Set only when a pop-up blocker refused the composer, so it can be offered as a link. */
+    composeUrl: string | null;
     canSubmit: boolean;
 }
 

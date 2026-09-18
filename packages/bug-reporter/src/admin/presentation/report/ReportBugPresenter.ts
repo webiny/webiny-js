@@ -48,6 +48,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private status: string | null = null;
     private error: string | null = null;
     private outcome: IReportBugOutcomeVm | null = null;
+    private composeUrl: string | null = null;
     private controller: AbortController | null = null;
 
     constructor(
@@ -79,6 +80,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             statusLabel: this.status,
             error: this.error,
             outcome: this.outcome,
+            composeUrl: this.composeUrl,
             // A screenshot on its own is a report: the error text is often in the image.
             canSubmit: this.status === null && !this.isEmpty()
         };
@@ -183,8 +185,33 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             this.markFailed(event.message);
             return;
         }
+        if (event.type === "compose") {
+            this.openCompose(event.url);
+            return;
+        }
 
-        this.markDone(event.type, event.url);
+        this.markFiled(event.url);
+    }
+
+    /*
+     * Compose mode opens GitHub straight away rather than asking first. It is the default for any
+     * project without a token, so a confirmation would sit between every reporter and the thing
+     * they just asked for — and the composer itself already tells them to paste their screenshot.
+     *
+     * A pop-up blocker can still refuse this: the click that started the submit is a few hundred
+     * milliseconds old by now, and further back than that when a model did the drafting. Nothing is
+     * lost when it does, the URL just has to be offered as a link instead.
+     */
+    private openCompose(url: string): void {
+        const opened = window.open(url, "_blank", "noreferrer");
+
+        if (!opened) {
+            this.markBlocked(url);
+            return;
+        }
+
+        this.status = null;
+        this.isOpen = false;
     }
 
     private setStatus(status: string): void {
@@ -204,6 +231,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.screenshots = [];
         this.error = null;
         this.outcome = null;
+        this.composeUrl = null;
         this.status = null;
         this.capturedAt = Date.now();
         this.events = this.recorder.getEvents();
@@ -219,17 +247,19 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     private beginSubmission(): void {
         this.error = null;
+        this.composeUrl = null;
         // Deliberately vague: which ending we get is the API's call, not known until it answers.
         this.status = "Writing up the report...";
     }
 
-    private markDone(mode: "filed" | "compose", url: string): void {
+    private markFiled(url: string): void {
         this.status = null;
-        this.outcome = {
-            mode,
-            url,
-            remindToPasteScreenshot: mode === "compose" && this.screenshots.length > 0
-        };
+        this.outcome = { url };
+    }
+
+    private markBlocked(url: string): void {
+        this.status = null;
+        this.composeUrl = url;
     }
 
     private markFailed(message: string): void {

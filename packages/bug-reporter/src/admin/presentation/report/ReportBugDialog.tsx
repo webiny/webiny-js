@@ -78,6 +78,20 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                     </Alert>
                 ) : null}
 
+                {vm.composeUrl ? (
+                    <Alert type={"warning"} title={"Your browser blocked the new tab"}>
+                        <span>{"The report is written up and waiting. "}</span>
+                        <a
+                            href={vm.composeUrl}
+                            target={"_blank"}
+                            rel={"noreferrer"}
+                            className={"text-accent-primary underline"}
+                        >
+                            {"Open it on GitHub"}
+                        </a>
+                    </Alert>
+                ) : null}
+
                 <Textarea
                     rows={5}
                     autoFocus={true}

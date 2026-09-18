@@ -20,9 +20,14 @@ the ending differs.
 | Needs a GitHub account       | no                            | yes                              |
 | Timeline                     | all 150 events                | last 60, to fit in a URL         |
 
-`compose` returns a prefilled `github.com/.../issues/new?...` URL that the dialog opens on a
-click. Nothing is created until the reporter presses Submit. This is the zero-credential path:
-it works with no setup at all.
+`compose` returns a prefilled `github.com/.../issues/new?...` URL, and the dialog opens it
+straight away — no confirmation step, because compose is the default for any project without a
+token and a confirmation would sit between every reporter and the thing they just asked for.
+Nothing is created until they press Submit on GitHub. This is the zero-credential path: it works
+with no setup at all.
+
+If a pop-up blocker refuses the tab, the dialog offers the same URL as a link instead. Nothing is
+lost either way.
 
 ## Setup
 
@@ -108,7 +113,7 @@ cmd+shift+b
   │    → "creating"           the issue itself
   │    → "filed"              with the issue URL
   └─ no token
-       → "compose"            with a prefilled issues/new URL to open
+       → "compose"            GitHub opens with the report already in it
 ```
 
 The response is server-sent events, not a GraphQL mutation. Drafting calls a model and filing
