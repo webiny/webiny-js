@@ -60,10 +60,33 @@ export class DebuggerStore {
     private _sessions: ICollectedSession[] = [];
 
     public constructor() {
+        /**
+         * Absent means "no choice made yet", which is different from an explicit "off" - the first
+         * decides whether the permission turns capture on, the second must survive it.
+         */
         this._enabled = readStorage(TOGGLE_STORAGE_KEY) === "true";
         this._namespaces = readStorage(NAMESPACES_STORAGE_KEY) || "*";
         makeAutoObservable(this);
     }
+
+    /**
+     * Turns capture on for an identity that holds the permission, unless they have already turned it
+     * off themselves.
+     *
+     * Holding `dev-tools.debug` is the opt-in: the permission is granted deliberately, for a support
+     * session, and nobody should then have to find a second switch before the thing they were asked
+     * to reproduce is captured.
+     */
+    public applyPermission = (canCapture: boolean): void => {
+        if (!canCapture) {
+            this._enabled = false;
+            return;
+        }
+
+        if (readStorage(TOGGLE_STORAGE_KEY) === null) {
+            this._enabled = true;
+        }
+    };
 
     public get enabled(): boolean {
         return this._enabled;
@@ -91,9 +114,13 @@ export class DebuggerStore {
         return this._sessions.length > 0 && this._sessions.every(session => !session.enabled);
     }
 
+    /**
+     * An explicit choice, persisted either way - including "off", so that it is not undone by
+     * `applyPermission` on the next load.
+     */
     public setEnabled = (enabled: boolean): void => {
         this._enabled = enabled;
-        writeStorage(TOGGLE_STORAGE_KEY, enabled ? "true" : null);
+        writeStorage(TOGGLE_STORAGE_KEY, enabled ? "true" : "false");
     };
 
     public setNamespaces = (namespaces: string): void => {
