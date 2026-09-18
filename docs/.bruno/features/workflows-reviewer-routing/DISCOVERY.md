@@ -21,29 +21,40 @@ behaviour and the CMS `where` language:
 
 ## Open questions, answered
 
-### Counting open assignments per user
+### Rotation data
 
-Cheap, as long as you query the **assignment** side, not the user side.
+Cheap, and it does not come from workflow states. A reviewer holding nothing appears in no
+open state at all, so any query over states is blind to exactly the person rotation should
+pick next. Scanning finished states instead grows with history forever.
 
-Store `currentAssignee` on the workflow state root and count:
+One record per reviewer answers it:
 
 ```
-isActive: true AND state_in: [pending, inReview] AND currentAssignee.id: X
+wbyWorkflowAssignment
+  userId, lastAssignedOn, openCount
 ```
 
-Two traps:
+Read by id, never as a list — ids are derivable from the candidate set, and a list read goes
+through the search index, which lags about a second behind writes. Two nearby resolutions
+would see stale timestamps and pick the same person.
 
-- **Don't put it on the step.** OpenSearch object lists here are mapped as `object`, not
-  `nested` (no `nested` anywhere in `api-opensearch`, `api-headless-cms-utils-os`,
-  `api-headless-cms-pg-os`; `ObjectFilter` flattens to a dotted path). So filters on an
-  object array don't correlate within the same element — `steps.assignee.id` would match
-  steps that are already approved or not yet started.
+`lastAssignedOn` sorts first and is written forward, never decremented, so it cannot drift.
+`openCount` is a tiebreak only, which is what lets it stay approximate: a missed decrement
+costs a wrong tiebreak, not a starved reviewer.
+
+Load-based assignment as a *primary* sort is out. A stuck count would silently starve someone
+forever, and defending that needs nine transitions each firing exactly once, plus a repair
+pass.
+
+Two other traps worth recording:
+
+- **Don't put the assignee on the step.** OpenSearch object lists here are mapped as
+  `object`, not `nested` (no `nested` anywhere in `api-opensearch`,
+  `api-headless-cms-utils-os`, `api-headless-cms-pg-os`; `ObjectFilter` flattens to a dotted
+  path). Filters on an object array don't correlate within one element, so
+  `steps.assignee.id` would match steps already approved or not yet started.
 - **`isActive` doesn't mean "in progress".** It's `true` from creation and set `false` only
-  by `CancelWorkflowState`. Finished and rejected states stay `true`. Without the `state_in`
-  filter you'd count a reviewer's lifetime history, not their current load.
-
-Aggregation can't replace the team member list, though: someone with zero assignments
-appears in no record. Least-loaded needs the candidate list to find them.
+  by `CancelWorkflowState`. Finished and rejected states stay `true`.
 
 ### Folder descendant matching
 
@@ -114,8 +125,8 @@ a second flag on this schema.
   on a user-facing picker. Cost is fine; the capability is just missing.
 - **No assignee field.** `IWorkflowStateRecordStep` has `savedBy` (who acted), not an
   assignee.
-- **Target context is missing locale.** `CmsWorkflowStateContextProvider` returns
-  `{folderId, modelId}`. Locale and requester teams aren't captured.
+- **No locale in the API at all.** The concept is *language*, a CMS model (`wbyLanguage`),
+  supplied only by Website Builder via `page.properties.language`.
 - **No notification handlers.** `NotificationTransport` and `MailNotificationTransport` are
   registered. Handlers *do* exist for create, update, delete and cancel — eight in
   `api-headless-cms-workflows`, siblings in `api-website-builder-workflows`. Missing is
@@ -133,7 +144,7 @@ a second flag on this schema.
 | `currentAssignee` on the state root, full identity object | matches `savedBy`/`createdBy` |
 | Assignment is optional — nullable | brief says falling through to the pool is valid |
 | Resolve lazily, at creation and on approve | not on `start()` — that's a human pull that already stamps `savedBy` |
-| `currentAssignee` follows who holds it | moves on `start()`/`takeOver()` by someone else, so load stays honest |
+| `currentAssignee` follows who holds it | moves on `start()`/`takeOver()` by someone else, so one holder means one answer everywhere |
 | Never cleared | `state_in` + `isActive` already exclude finished work |
 | `start()` stays open to the team | assignment is advisory, not a lock |
 | Requester excluded at assignment time | `enrichStep` only blocks them acting, not being picked |
@@ -151,7 +162,7 @@ a second flag on this schema.
 | Resolution is its own use case returning a decision, not logic inside the write path | `ResolveStepAssigneeUseCase` returns `{assignee, matchedRule, source, reason}` |
 | Rule inspector is a server dry-run, `simulateAssignment(...)` | runs the real resolver and discards the result, so the explanation cannot drift from behaviour |
 | Candidates are never stored. Computed per resolution from `step.teams`, minus requester, minus excluded | snapshot already carries the teams |
-| `currentAssignee` written on every resolution, `null` included | "never cleared" was wrong — a fall-through left a decremented holder in place |
+| `currentAssignee` written on every resolution, `null` included | a fall-through would otherwise leave the previous step's holder in place |
 | Reassign targets the current step, and moves `savedBy` when the step is `inReview` | `approve`/`reject` gate on `isStepOwner`, so without it the old holder keeps the only right to approve |
 | `start()`/`takeOver()` by a non-assignee moves `step.assignee` too, source `takeover` | one holder, one answer everywhere |
 | Rule conditions include `language`; apps declare which keys they supply | language is a CMS model (`wbyLanguage`); there is no locale in the API |
@@ -167,34 +178,15 @@ isn't persisted by `WorkflowStateMapper.toCmsEntry` — the CMS sets it.
 
 - Nothing. All concerns from the brief are settled.
 
-## Keeping `openCount` correct
-
-This is the price of storing it. Every point that changes who holds a step must move the
-count. Assumed OpenSearch-backed deployments; DynamoDB-only is out of scope.
-
-| Event | Effect |
-| --- | --- |
-| Assignment resolved (creation, or on approve of previous step) | increment new holder, set `lastAssignedOn` |
-| Manual pick applied at creation | same as above |
-| Assignee invalid at activation, cleared | decrement it, then increment whoever resolution picks |
-| `start()` or `takeOver()` by someone other than the assignee | decrement old holder, increment new |
-| Reassign | decrement old holder, increment new |
-| Approve step | decrement holder |
-| Reject | decrement holder |
-| Cancel | decrement holder |
-
-A missed decrement leaves a reviewer permanently "busy", and least-loaded then never picks
-them again. A rebuild task must recompute every count from open states. No backfill is
-needed for existing tenants — nothing was ever assigned before this feature.
-
-The dry-run (`simulateAssignment`) must never write.
+Known gaps against the brief, accepted deliberately: no assignment history, so no audit
+entry; and rotation is least-recently-assigned across the tenant rather than within a step.
 
 ## Rough order
 
 1. Team → members lookup inside `api-workflows`.
 2. `currentAssignee` + reassignment, defined against the existing takeover path.
 3. Notification handler for the existing state events.
-4. Strategies (round-robin, then least-loaded).
+4. Rotation strategy.
 5. Routing rules.
 6. Exclusion list + its settings surface.
 7. Manual selection at submit.
