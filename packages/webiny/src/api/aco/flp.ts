@@ -1,4 +1,5 @@
 export { FlpFactory } from "@webiny/api-aco/features/flp/shared/abstractions.js";
+export type { CodeFlp } from "@webiny/api-aco/features/flp/shared/abstractions.js";
 export { CreateFlpUseCase } from "@webiny/api-aco/features/flp/CreateFlp/abstractions.js";
 export { DeleteFlpUseCase } from "@webiny/api-aco/features/flp/DeleteFlp/abstractions.js";
 export { FolderLevelPermissions } from "@webiny/api-aco/features/flp/FolderLevelPermissions/abstractions.js";
