@@ -1,3 +1,5 @@
+export { FlpFactory } from "~/features/flp/shared/abstractions.js";
+export type { CodeFlp } from "~/features/flp/shared/abstractions.js";
 export { CreateFlpUseCase } from "~/features/flp/CreateFlp/abstractions.js";
 export { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/abstractions.js";
 export { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/abstractions.js";
