@@ -1,4 +1,5 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
 import { ReactComponent as DebuggerIcon } from "@webiny/icons/bug_report.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { useRouter } from "@webiny/app";
@@ -13,7 +14,7 @@ const { Menu, Route, Security } = AdminConfig;
  * The `dev-tools` parent menu is declared by the playground packages, which ship with every Admin
  * app, so only the child is declared here.
  */
-export const Debugger = () => {
+export const Debugger = observer(() => {
     const router = useRouter();
     const { canAccess } = useDebuggerPermissions();
     const canDebug = canAccess("debug");
@@ -52,4 +53,4 @@ export const Debugger = () => {
             />
         </AdminConfig>
     );
-};
+});
