@@ -3,7 +3,6 @@ import { ActionRecorder } from "../../recording/abstractions.js";
 import type { IRecordedEvent } from "../../recording/abstractions.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
-import { SpeechDictation } from "../../speech/abstractions.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
 import type { IReportBugOutcomeVm } from "./abstractions.js";
 import type { IReportBugViewModel } from "./abstractions.js";
@@ -40,7 +39,6 @@ function parseDataUrl(dataUrl: string): IReportedScreenshot | null {
 class ReportBugPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
     private description = "";
-    private listening = false;
     private screenshots: string[] = [];
     private events: IRecordedEvent[] = [];
     private environment: IReportedEnvironment | null = null;
@@ -53,17 +51,12 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
 
     constructor(
         private recorder: ActionRecorder.Interface,
-        private gateway: SubmitBugReportGateway.Interface,
-        private dictation: SpeechDictation.Interface
+        private gateway: SubmitBugReportGateway.Interface
     ) {
         // `controller` is machinery, not state anything renders, so it stays out of the map.
-        makeAutoObservable<
-            ReportBugPresenterImpl,
-            "recorder" | "gateway" | "dictation" | "controller"
-        >(this, {
+        makeAutoObservable<ReportBugPresenterImpl, "recorder" | "gateway" | "controller">(this, {
             recorder: false,
             gateway: false,
-            dictation: false,
             controller: false
         });
     }
@@ -72,8 +65,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         return {
             open: this.isOpen,
             description: this.description,
-            listening: this.listening,
-            dictationSupported: this.dictation.supported,
             screenshots: this.screenshots,
             recordedEventCount: this.events.length,
             busy: this.status !== null,
@@ -92,26 +83,12 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     }
 
     close(): void {
-        this.stopDictation();
         this.abort();
         this.isOpen = false;
     }
 
     describe(description: string): void {
         this.description = description;
-    }
-
-    toggleDictation(): void {
-        if (this.listening) {
-            this.stopDictation();
-            return;
-        }
-
-        this.listening = true;
-        this.dictation.start(
-            text => this.appendDictated(text),
-            () => this.markNotListening()
-        );
     }
 
     attachScreenshot(dataUrl: string): void {
@@ -127,7 +104,6 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
             return;
         }
 
-        this.stopDictation();
         this.beginSubmission();
 
         const screenshots: IReportedScreenshot[] = [];
@@ -266,26 +242,9 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         this.status = null;
         this.error = message;
     }
-
-    private appendDictated(text: string): void {
-        if (this.description === "") {
-            this.description = text;
-            return;
-        }
-        this.description = `${this.description} ${text}`;
-    }
-
-    private markNotListening(): void {
-        this.listening = false;
-    }
-
-    private stopDictation(): void {
-        this.dictation.stop();
-        this.listening = false;
-    }
 }
 
 export const ReportBugPresenter = Abstraction.createImplementation({
     implementation: ReportBugPresenterImpl,
-    dependencies: [ActionRecorder, SubmitBugReportGateway, SpeechDictation]
+    dependencies: [ActionRecorder, SubmitBugReportGateway]
 });

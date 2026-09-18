@@ -7,8 +7,6 @@ import { Dialog } from "@webiny/admin-ui";
 import { IconButton } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
-import { ReactComponent as MicIcon } from "@webiny/icons/mic.svg";
-import { ReactComponent as MicOffIcon } from "@webiny/icons/mic_off.svg";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { readPastedImage } from "../../capture/readPastedImage.js";
 import { BugReportFeature } from "../../feature.js";
@@ -48,9 +46,6 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
     if (vm.outcome) {
         return <OutcomeDialog outcome={vm.outcome} open={vm.open} onClose={() => report.close()} />;
     }
-
-    const micLabel = vm.listening ? "Stop dictating" : "Dictate";
-    const micIcon = vm.listening ? <MicOffIcon /> : <MicIcon />;
 
     return (
         <Dialog
@@ -99,18 +94,6 @@ export const ReportBugDialog = createReactiveComponent(function ReportBugDialog(
                     value={vm.description}
                     onChange={(value: string) => report.describe(value)}
                 />
-
-                {vm.dictationSupported ? (
-                    <div>
-                        <Button
-                            variant={"secondary"}
-                            size={"sm"}
-                            icon={micIcon}
-                            text={micLabel}
-                            onClick={() => report.toggleDictation()}
-                        />
-                    </div>
-                ) : null}
 
                 {vm.screenshots.length > 0 ? (
                     <div className={"flex flex-wrap gap-sm"}>
