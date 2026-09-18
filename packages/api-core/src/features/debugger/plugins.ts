@@ -1,4 +1,9 @@
-import { createBeforeHandlerPlugin, createHandlerResultPlugin, Request } from "@webiny/handler";
+import {
+    createBeforeHandlerPlugin,
+    createHandlerResultPlugin,
+    Request,
+    RequestId
+} from "@webiny/handler";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { Context } from "@webiny/handler/types.js";
 import { Debugger } from "./abstractions.js";
@@ -122,16 +127,18 @@ const createFlushPlugin = () => {
             }
 
             let operations: string[] = [];
+            let requestId = "";
             try {
                 operations = readOperationNames(context.container.resolve(Request).body);
+                requestId = context.container.resolve(RequestId).value;
             } catch {
-                // Operation names are a convenience; their absence must not stop the flush.
+                // Both are conveniences; their absence must not stop the flush.
             }
 
             const target: IGraphQLDeliveryTarget = {
                 type: GRAPHQL_TARGET,
                 result,
-                requestId: "",
+                requestId,
                 operations
             };
 
