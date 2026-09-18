@@ -7,6 +7,8 @@ import { CheckboxPrimitiveRenderer } from "~/Checkbox/index.js";
 import { Icon } from "~/Icon/index.js";
 import { IconButton } from "~/Button/index.js";
 import { selectTriggerVariants } from "~/Select/primitives/components/index.js";
+import { ScrollArea } from "~/ScrollArea/index.js";
+import { useEscapeScrollLock } from "~/hooks/index.js";
 
 interface MultiSelectOptionDto {
     label: string;
@@ -115,48 +117,56 @@ interface MultiSelectContentProps {
 }
 
 const MultiSelectContent = ({ options, value, onToggle }: MultiSelectContentProps) => {
+    // This popover is built on the Radix primitive directly, so it needs the same scroll-lock
+    // escape hatch that `PopoverPrimitive.Content` applies.
+    const contentRef = useEscapeScrollLock<HTMLDivElement>();
+
     return (
         <Popover.Portal>
             <Popover.Content
+                ref={contentRef}
                 className={cn(
-                    "relative z-popover shadow-lg py-sm overflow-y-auto rounded-sm border-sm border-neutral-muted bg-neutral-base text-neutral-strong",
+                    "relative z-popover shadow-lg py-sm overflow-hidden rounded-sm border-sm border-neutral-muted bg-neutral-base text-neutral-strong",
                     "data-[state=open]:animate-in data-[state=closed]:animate-out",
                     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                     "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
                     "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2",
                     "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1"
                 )}
-                style={{
-                    width: "var(--radix-popover-trigger-width)",
-                    maxHeight: "min(250px, var(--radix-popover-content-available-height, 250px))"
-                }}
+                style={{ width: "var(--radix-popover-trigger-width)" }}
                 align={"start"}
                 sideOffset={4}
             >
-                {options.map(option => (
-                    <div
-                        key={option.value}
-                        className={cn(
-                            "rounded-sm p-sm mx-sm cursor-pointer",
-                            "hover:bg-neutral-dimmed",
-                            option.disabled && "opacity-50 pointer-events-none"
-                        )}
-                        onClick={() => onToggle(option.value)}
-                    >
-                        <div className={"pointer-events-none"}>
-                            <CheckboxPrimitiveRenderer
-                                id={option.value}
-                                label={option.label}
-                                value={option.value}
-                                checked={value.includes(option.value)}
-                                disabled={option.disabled ?? false}
-                                indeterminate={false}
-                                hasLabel={true}
-                                changeChecked={() => {}}
-                            />
+                <ScrollArea
+                    viewportClassName={
+                        "max-h-[min(250px,var(--radix-popover-content-available-height,250px))]"
+                    }
+                >
+                    {options.map(option => (
+                        <div
+                            key={option.value}
+                            className={cn(
+                                "rounded-sm p-sm mx-sm cursor-pointer",
+                                "hover:bg-neutral-dimmed",
+                                option.disabled && "opacity-50 pointer-events-none"
+                            )}
+                            onClick={() => onToggle(option.value)}
+                        >
+                            <div className={"pointer-events-none"}>
+                                <CheckboxPrimitiveRenderer
+                                    id={option.value}
+                                    label={option.label}
+                                    value={option.value}
+                                    checked={value.includes(option.value)}
+                                    disabled={option.disabled ?? false}
+                                    indeterminate={false}
+                                    hasLabel={true}
+                                    changeChecked={() => {}}
+                                />
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </ScrollArea>
             </Popover.Content>
         </Popover.Portal>
     );

@@ -1,6 +1,8 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Popover } from "./Popover.js";
+import { Button } from "~/Button/index.js";
+import { Dialog } from "~/Dialog/index.js";
 
 const meta: Meta<typeof Popover> = {
     title: "Components/Popover",
@@ -137,4 +139,34 @@ export const Documentation: Story = {
             control: "boolean"
         }
     }
+};
+
+/**
+ * A dialog locks scrolling outside of its own content, and the popover is portaled out of it, so
+ * the lock covers the popover too. What that costs is the wheel and the trackpad: the list below
+ * still moved by its scrollbar and by the arrow keys, but a wheel event over it did nothing at all.
+ * It has to scroll by wheel while the dialog is open.
+ */
+export const InsideDialog: Story = {
+    render: () => (
+        <Dialog
+            trigger={<Button variant={"primary"} text={"Open dialog"} />}
+            title={"Popover inside a dialog"}
+        >
+            <Popover
+                trigger={
+                    <span>
+                        <Button variant={"secondary"} text={"Open popover"} />
+                    </span>
+                }
+                content={
+                    <ul className={"max-h-48 w-[220px] overflow-y-auto"}>
+                        {Array.from({ length: 40 }, (_, index) => (
+                            <li key={index}>Option {index + 1}</li>
+                        ))}
+                    </ul>
+                }
+            />
+        </Dialog>
+    )
 };
