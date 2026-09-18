@@ -2,17 +2,28 @@ import fs from "fs";
 import path from "path";
 import { loadJsonFileSync } from "load-json-file";
 import { execa } from "execa";
-import pRetry from "p-retry";
+import pRetry, { AbortError } from "p-retry";
 import type { PackageJson } from "type-fest";
+
+// NPM answers a re-publish of an existing version with a permanent 403, not the 409 that local
+// registries such as Verdaccio use. Retrying it only multiplies PUTs: a 150-package release that
+// collides on every package sent enough of them to get rate-limited (429) partway through.
+const ALREADY_PUBLISHED = "You cannot publish over the previously published versions";
+
+// p-retry rejects with the AbortError's `originalError`, so the abort has to carry its own type
+// for the caller to spot it once the retry wrapper has unwrapped it.
+class VersionTakenError extends Error {}
 
 interface PublishResult {
     name: string;
     success: boolean;
     error?: string;
+    versionTaken?: boolean;
 }
 
 interface PublishOptions {
     distTag: string;
+    version: string;
     concurrency?: number;
     retries?: number;
     logger: {
@@ -24,7 +35,7 @@ interface PublishOptions {
 }
 
 export async function publishPackages(opts: PublishOptions): Promise<PublishResult[]> {
-    const { distTag, concurrency = 10, retries = 3, logger } = opts;
+    const { distTag, version, concurrency = 10, retries = 3, logger } = opts;
     const packagesDir = path.resolve(process.cwd(), "packages");
     const entries = fs.readdirSync(packagesDir, { withFileTypes: true });
 
@@ -54,7 +65,12 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
         toPublish.push({ name: pkgJson.name!, pkgRoot, publishDir });
     }
 
-    logger.info("Publishing %s packages with dist-tag %s", toPublish.length, distTag);
+    logger.info(
+        "Publishing %s packages as %s with dist-tag %s",
+        toPublish.length,
+        version,
+        distTag
+    );
 
     // Run per-package prepublishOnly scripts from the package root.
     for (const pkg of toPublish) {
@@ -94,6 +110,13 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
                                     logger.info("Already published %s, skipping", pkg.name);
                                     return;
                                 }
+                                if (err.stderr && err.stderr.includes(ALREADY_PUBLISHED)) {
+                                    throw new AbortError(
+                                        new VersionTakenError(
+                                            `${pkg.name}@${version} is already on NPM.`
+                                        )
+                                    );
+                                }
                                 throw err;
                             } finally {
                                 if (fs.existsSync(tarballPath)) {
@@ -107,11 +130,28 @@ export async function publishPackages(opts: PublishOptions): Promise<PublishResu
                     return { name: pkg.name, success: true };
                 } catch (err: any) {
                     logger.error("Failed to publish %s: %s", pkg.name, err.message);
-                    return { name: pkg.name, success: false, error: err.message };
+                    return {
+                        name: pkg.name,
+                        success: false,
+                        error: err.message,
+                        versionTaken: err instanceof VersionTakenError
+                    };
                 }
             })
         );
         results.push(...batchResults);
+
+        // A taken version is not a per-package problem, it means the release computed a version
+        // that is already out. Stop rather than send another hundred-odd doomed PUTs.
+        if (batchResults.some(r => r.versionTaken)) {
+            logger.error(
+                "Version %s is already published. Stopping: %s of %s package(s) were not attempted.",
+                version,
+                toPublish.length - results.length,
+                toPublish.length
+            );
+            break;
+        }
     }
 
     const failures = results.filter(r => !r.success);

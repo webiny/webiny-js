@@ -1,9 +1,12 @@
 import { describe, test, expect, beforeEach } from "vitest";
 import { useGqlHandler } from "../useGqlHandler";
 import mocks from "../mocks/securityTeam";
+import roleMocks from "../mocks/securityRole";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
+import { getStorageOps } from "~/testing/environment.js";
+import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 class TestRoleFactory implements RoleFactory.Interface {
     execute(): RoleFactory.Return {
@@ -54,13 +57,102 @@ const testTeamFactory = TeamFactory.createImplementation({
 });
 
 describe("Security Team CRUD Test", () => {
-    const { install, securityTeam } = useGqlHandler({
+    const { install, securityTeam, securityRole } = useGqlHandler({
         wcpLicense: createTestWcpLicense(),
         registrations: [testRoleFactory, testTeamFactory]
     });
 
     beforeEach(async () => {
         await install.install();
+    });
+
+    /*
+     * A team stores role IDs, and only IDs: GetPermissionsFromIdentity resolves them with `id_in`.
+     * A slug stored there matches nothing, so the team is created, reads correctly, and grants no
+     * permissions. These use a DATABASE role on purpose, because a plugin role gets `id: slug`
+     * (RoleProvider) and so cannot tell the two apart.
+     */
+    describe("role identifiers", () => {
+        const createDatabaseRole = async () => {
+            const [response] = await securityRole.create({ data: roleMocks.roleA });
+            const role = response.data.security.createRole.data;
+
+            // The premise of all of this: for a database role the two differ.
+            expect(role.id).not.toEqual(role.slug);
+
+            return role;
+        };
+
+        test("should accept a role slug and store the role id", async () => {
+            const role = await createDatabaseRole();
+
+            const [response] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: [role.slug] }
+            });
+
+            expect(response.data.security.createTeam.error).toBeNull();
+            expect(response.data.security.createTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
+
+        test("should accept a role id unchanged", async () => {
+            const role = await createDatabaseRole();
+
+            const [response] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: [role.id] }
+            });
+
+            expect(response.data.security.createTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
+
+        test("should reject an identifier that is neither an id nor a slug", async () => {
+            const [response] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: ["not-a-role"] }
+            });
+
+            expect(response.data.security.createTeam.data).toBeNull();
+            expect(response.data.security.createTeam.error.message).toMatch(
+                /Not a known role id or slug: "not-a-role"/
+            );
+        });
+
+        test("should resolve a slug on update too", async () => {
+            const role = await createDatabaseRole();
+
+            const [createResponse] = await securityTeam.create({ data: mocks.teamA });
+            const team = createResponse.data.security.createTeam.data;
+
+            const [response] = await securityTeam.update({
+                id: team.id,
+                data: { roles: [role.slug] }
+            });
+
+            expect(response.data.security.updateTeam.error).toBeNull();
+            expect(response.data.security.updateTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
+
+        test("should leave stored roles alone when an update omits them", async () => {
+            const role = await createDatabaseRole();
+
+            const [createResponse] = await securityTeam.create({
+                data: { ...mocks.teamA, roles: [role.slug] }
+            });
+            const team = createResponse.data.security.createTeam.data;
+
+            const [response] = await securityTeam.update({
+                id: team.id,
+                data: { name: "Renamed" }
+            });
+
+            expect(response.data.security.updateTeam.data.roles.map((r: any) => r.id)).toEqual([
+                role.id
+            ]);
+        });
     });
 
     test("should able to create, read, update and delete `Security Teams`", async () => {
@@ -186,6 +278,112 @@ describe("Security Team CRUD Test", () => {
                     }
                 }
             }
+        });
+    });
+
+    // `description` is declared `String` (nullable) in the GraphQL schema, so clients may send
+    // `null` - and the admin app does exactly that when it reads a team saved without a
+    // description and submits the edit form again. Both schemas used Zod's `.optional()`, which
+    // accepts only `undefined`, so these requests failed with "Invalid input: expected string,
+    // received null".
+    test("should accept a null `description` on create and update", async () => {
+        const [createResponse] = await securityTeam.create({
+            data: { ...mocks.teamA, description: null }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                security: {
+                    createTeam: {
+                        data: { name: "Team-A", slug: "team-a", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const team = createResponse.data.security.createTeam.data;
+
+        const [updateResponse] = await securityTeam.update({
+            id: team.id,
+            data: { description: null }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                security: {
+                    updateTeam: {
+                        data: { name: "Team-A", slug: "team-a", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    // An update that does not mention `description` must leave the stored one alone. Easy to break
+    // while making the field accept null, because a Zod `.transform()` on an optional key makes it
+    // required in the parsed output, so the spread onto the existing team writes `undefined`.
+    test("should not clear `description` on an update that omits it", async () => {
+        const [createResponse] = await securityTeam.create({ data: mocks.teamA });
+        const team = createResponse.data.security.createTeam.data;
+
+        const [updateResponse] = await securityTeam.update({
+            id: team.id,
+            data: { name: "Team-A renamed" }
+        });
+
+        expect(updateResponse.data.security.updateTeam).toMatchObject({
+            data: {
+                name: "Team-A renamed",
+                description: mocks.teamA.description
+            },
+            error: null
+        });
+    });
+
+    // The read path for rows written before `description` was normalised. Those still hold null in
+    // storage, and `SecurityTeam.description` is declared `String` (nullable), so GraphQL has to
+    // return the null rather than error on it - which is what lets the admin app coalesce it to "".
+    test("should return a null `description` stored before normalisation", async () => {
+        const [createResponse] = await securityTeam.create({ data: mocks.teamA });
+        const team = createResponse.data.security.createTeam.data;
+
+        // Write null straight through storage, bypassing the use case that would coalesce it.
+        const { securityStorageOperations } =
+            getStorageOps<ApiCoreStorageOperations>("apiCore").storageOperations;
+
+        const stored = await securityStorageOperations.getTeam({
+            where: { id: team.id, tenant: "root" }
+        });
+
+        await securityStorageOperations.updateTeam({
+            original: stored as any,
+            team: { ...(stored as any), description: null }
+        });
+
+        const [getResponse] = await securityTeam.get({ id: team.id });
+
+        // `id` is not in this query's selection set - `description` is, which is the point.
+        expect(getResponse.data.security.getTeam).toMatchObject({
+            data: { name: "Team-A", description: null },
+            error: null
+        });
+
+        // A GraphQL-level rejection would surface here instead of in the payload.
+        expect(getResponse.errors).toBeUndefined();
+    });
+
+    // The 500 character cap predates this branch but had no coverage, so nothing would catch it
+    // being dropped from the schema.
+    test("should reject a `description` longer than 500 characters", async () => {
+        const [response] = await securityTeam.create({
+            data: { ...mocks.teamA, description: "x".repeat(501) }
+        });
+
+        expect(response.data.security.createTeam).toMatchObject({
+            data: null,
+            error: { code: "TEAM_VALIDATION_ERROR" }
         });
     });
 

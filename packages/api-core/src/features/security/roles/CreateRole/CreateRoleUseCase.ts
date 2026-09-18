@@ -9,6 +9,7 @@ import { createRoleValidation } from "./schema.js";
 import { RoleBeforeCreateEvent, RoleAfterCreateEvent } from "./events.js";
 import type { Role, CreateRoleInput } from "../shared/types.js";
 import { NotAuthorizedError, RoleExistsError, RoleValidationError } from "../shared/errors.js";
+import { descriptionOnCreate } from "../../shared/description.js";
 
 class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -38,12 +39,18 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new RoleExistsError(data.slug));
         }
 
+        // Normalised up front so that null reaches neither the entity nor the published events.
+        const createInput: CreateRoleInput = {
+            ...data,
+            description: descriptionOnCreate(data.description)
+        };
+
         const role: Role = {
             id: mdbid(),
-            name: data.name,
-            slug: data.slug,
-            description: data.description,
-            permissions: data.permissions,
+            name: createInput.name,
+            slug: createInput.slug,
+            description: descriptionOnCreate(createInput.description),
+            permissions: createInput.permissions,
             system: input.system || false,
             createdOn: new Date().toISOString(),
             createdBy: {
@@ -54,9 +61,7 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
             plugin: false
         };
 
-        await this.eventPublisher.publish(
-            new RoleBeforeCreateEvent({ role, input: validation.data })
-        );
+        await this.eventPublisher.publish(new RoleBeforeCreateEvent({ role, input: createInput }));
 
         const result = await this.repository.create(role);
 
@@ -64,9 +69,7 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(result.error);
         }
 
-        await this.eventPublisher.publish(
-            new RoleAfterCreateEvent({ role, input: validation.data })
-        );
+        await this.eventPublisher.publish(new RoleAfterCreateEvent({ role, input: createInput }));
 
         return Result.ok(role);
     }

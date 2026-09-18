@@ -62,7 +62,7 @@ argv.command<CliParams>(
             demandOption: false
         });
         yargs.option("hosting-type", {
-            describe: `Hosting type to use: "aws" (default) or "server" (self-hosted, ALPHA). Used in non-interactive mode`,
+            describe: `Hosting type to use: "aws" (default) or "server" (standalone, ALPHA). Used in non-interactive mode`,
             type: "string",
             default: "aws",
             demandOption: false

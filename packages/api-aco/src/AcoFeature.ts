@@ -53,6 +53,7 @@ import { CodeFlpsFeature } from "~/features/flp/shared/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
+import { AcoAiToolsFeature } from "~/features/ai/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
@@ -73,6 +74,7 @@ export const AcoFeature = createFeature({
     name: "Aco",
     register(container: Container) {
         container.register(FolderModel);
+        AcoAiToolsFeature.register(container);
         container.register(FilterPrivateModel);
 
         // Background task definitions — pure wiring, no tenant/identity needed.

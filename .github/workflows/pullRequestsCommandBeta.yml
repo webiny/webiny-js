@@ -135,7 +135,7 @@ jobs:
         with:
           name: run-build-cache
           path: run-build-cache.tzst
-          retention-days: 1
+          retention-days: 7
           compression-level: 0
           if-no-files-found: error
           overwrite: true
@@ -178,8 +178,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -271,8 +277,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: run-build-cache
+        continue-on-error: true
       - name: Extract build cache
         run: >-
+          if [ ! -f run-build-cache.tzst ]; then
+            echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."
+            exit 0
+          fi
+
           tar -xf run-build-cache.tzst --use-compress-program=zstdmt -C
           "${WEBINY_JS_DIR:-.}"
         env:
@@ -322,6 +334,66 @@ jobs:
           curl -s -o /dev/null -X POST \
             -H "Content-type: application/json" \
             --data "{\"text\":\"${MSG}\"}" \
+            "$SLACK_RELEASE_CHANNEL_WEBHOOK"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+  notifySlackOnFailure:
+    name: Notify Slack on failure
+    needs:
+      - prBranch
+      - build
+      - npmReleaseBeta
+      - npmReleaseLatest
+    if: failure()
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      LABEL: Beta release (/beta)
+      RUN_URL: >-
+        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{
+        github.run_id }}
+    steps:
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 24
+      - name: Notify Slack
+        run: >-
+          set -euo pipefail
+
+
+          [ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not
+          configured, skipping." && exit 0
+
+
+          # Name the jobs that actually failed, so the message says something
+          without
+
+          # anyone having to open the run first.
+
+          FAILED=$(gh api --paginate "repos/${{ github.repository
+          }}/actions/runs/${{ github.run_id }}/jobs" \
+            --jq '[.jobs[] | select(.conclusion == "failure") | .name] | join(", ")')
+          [ -n "$FAILED" ] || FAILED="unknown job"
+
+
+          # Built with jq, not string interpolation: job names here contain
+          double quotes
+
+          # (`NPM release ("latest" tag)`) and would produce invalid JSON
+          otherwise.
+
+          jq -nc --arg label "$LABEL" --arg failed "$FAILED" --arg url
+          "$RUN_URL" \
+            '{ text: ":rotating_light: \($label) failed: \($failed)\n\($url)" }' \
+            > /tmp/slack-payload.json
+
+          curl -s -o /dev/null -X POST \
+            -H "Content-type: application/json" \
+            --data @/tmp/slack-payload.json \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
     permissions:

@@ -73,7 +73,7 @@ export const createServiceCrud = (container: Container): ITasksContextServiceObj
             };
 
             if (definition.onBeforeTrigger) {
-                await definition.onBeforeTrigger({ data: input });
+                await definition.onBeforeTrigger({ data: input, definition });
             }
             validateDelay<T>({
                 input,
@@ -203,7 +203,8 @@ export const createServiceCrud = (container: Container): ITasksContextServiceObj
                  */
                 if (definition.onAbort) {
                     await definition.onAbort({
-                        task: updatedTask
+                        task: updatedTask,
+                        definition
                     });
                 }
 

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Split `@webiny/background-tasks` into platform-agnostic core + `@webiny/background-tasks-aws` (SFN/EventBridge/Lambda) + `@webiny/background-tasks-server` (worker-thread orchestrator).
+**Goal:** Split `@webiny/background-tasks` into platform-agnostic core + `@webiny/background-tasks-aws` (SFN/EventBridge/Lambda) + `@webiny/background-tasks-standalone` (worker-thread orchestrator).
 
 **Architecture:** Core keeps all features, CRUD, GraphQL, runner, response, plugins. AWS package gets transport plugins + Lambda handler. Server package gets worker-thread transport + process timer. App templates compose all three independently.
 
@@ -597,14 +597,14 @@ git commit -m "refactor(background-tasks): update consumers to import from backg
 
 ---
 
-### Task 6: Create `@webiny/background-tasks-server` package — ProcessTimer
+### Task 6: Create `@webiny/background-tasks-standalone` package — ProcessTimer
 
 Start the server package with `ProcessTimer` — the simplest piece with no external dependencies.
 
 **Files:**
-- Create: `packages/background-tasks-server/package.json`
-- Create: `packages/background-tasks-server/tsconfig.json`
-- Create: `packages/background-tasks-server/src/timer/ProcessTimer.ts`
+- Create: `packages/background-tasks-standalone/package.json`
+- Create: `packages/background-tasks-standalone/tsconfig.json`
+- Create: `packages/background-tasks-standalone/src/timer/ProcessTimer.ts`
 
 **Interfaces:**
 - Produces: `ProcessTimer` implementing `ITimer` from `@webiny/background-tasks/api`
@@ -613,7 +613,7 @@ Start the server package with `ProcessTimer` — the simplest piece with no exte
 
 ```json
 {
-  "name": "@webiny/background-tasks-server",
+  "name": "@webiny/background-tasks-standalone",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -624,7 +624,7 @@ Start the server package with `ProcessTimer` — the simplest piece with no exte
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/background-tasks-server"
+    "directory": "packages/background-tasks-standalone"
   },
   "license": "MIT",
   "dependencies": {
@@ -673,7 +673,7 @@ Start the server package with `ProcessTimer` — the simplest piece with no exte
 - [ ] **Step 3: Create ProcessTimer**
 
 ```ts
-/* packages/background-tasks-server/src/timer/ProcessTimer.ts */
+/* packages/background-tasks-standalone/src/timer/ProcessTimer.ts */
 import type { ITimer } from "@webiny/background-tasks/api";
 
 const DEFAULT_MAX_DURATION_MS = 86_400_000; /* 24 hours. */
@@ -702,7 +702,7 @@ export class ProcessTimer implements ITimer {
 
 - [ ] **Step 4: Build**
 
-Run: `yarn build -p @webiny/background-tasks-server --safe-replace 2>&1 | tail -30`
+Run: `yarn build -p @webiny/background-tasks-standalone --safe-replace 2>&1 | tail -30`
 Expected: successful build.
 
 - [ ] **Step 5: Commit**
@@ -719,9 +719,9 @@ git commit -m "feat(background-tasks-server): add ProcessTimer with 24h default"
 The worker's TypeScript files: message types, orchestrator class, and entry point. The worker is a dumb HTTP client loop — no Webiny, no native modules.
 
 **Files:**
-- Create: `packages/background-tasks-server/src/worker/TaskOrchestratorMessage.ts`
-- Create: `packages/background-tasks-server/src/worker/TaskOrchestrator.ts`
-- Create: `packages/background-tasks-server/src/worker/workerEntry.ts`
+- Create: `packages/background-tasks-standalone/src/worker/TaskOrchestratorMessage.ts`
+- Create: `packages/background-tasks-standalone/src/worker/TaskOrchestrator.ts`
+- Create: `packages/background-tasks-standalone/src/worker/workerEntry.ts`
 
 **Interfaces:**
 - Consumes: `ProcessTimer` from Task 6
@@ -730,7 +730,7 @@ The worker's TypeScript files: message types, orchestrator class, and entry poin
 - [ ] **Step 1: Create message types**
 
 ```ts
-/* packages/background-tasks-server/src/worker/TaskOrchestratorMessage.ts */
+/* packages/background-tasks-standalone/src/worker/TaskOrchestratorMessage.ts */
 
 export interface TaskEventPayload {
     readonly webinyTaskId: string;
@@ -765,7 +765,7 @@ export type ParentToWorkerMessage = StartMessage;
 - [ ] **Step 2: Create TaskOrchestrator**
 
 ```ts
-/* packages/background-tasks-server/src/worker/TaskOrchestrator.ts */
+/* packages/background-tasks-standalone/src/worker/TaskOrchestrator.ts */
 import http from "node:http";
 import type { StartMessage, WorkerToParentMessage } from "./TaskOrchestratorMessage.js";
 import { ProcessTimer } from "~/timer/ProcessTimer.js";
@@ -906,7 +906,7 @@ export class TaskOrchestrator {
 - [ ] **Step 3: Create workerEntry.ts**
 
 ```ts
-/* packages/background-tasks-server/src/worker/workerEntry.ts */
+/* packages/background-tasks-standalone/src/worker/workerEntry.ts */
 import { parentPort } from "node:worker_threads";
 import type { ParentToWorkerMessage } from "./TaskOrchestratorMessage.js";
 import { TaskOrchestrator } from "./TaskOrchestrator.js";
@@ -931,7 +931,7 @@ port.on("message", async (message: ParentToWorkerMessage) => {
 
 - [ ] **Step 4: Build**
 
-Run: `yarn build -p @webiny/background-tasks-server --safe-replace 2>&1 | tail -30`
+Run: `yarn build -p @webiny/background-tasks-standalone --safe-replace 2>&1 | tail -30`
 Expected: successful build.
 
 - [ ] **Step 5: Commit**
@@ -943,23 +943,23 @@ git commit -m "feat(background-tasks-server): add worker thread orchestrator"
 
 ---
 
-### Task 8: Create WorkerTransportPlugin and BackgroundTasksServerFeature
+### Task 8: Create WorkerTransportPlugin and BackgroundTasksStandaloneFeature
 
 Wire the worker transport into the DI system and create the feature entry point.
 
 **Files:**
-- Create: `packages/background-tasks-server/src/service/WorkerTransportPlugin.ts`
-- Create: `packages/background-tasks-server/src/BackgroundTasksServerFeature.ts`
-- Create: `packages/background-tasks-server/src/index.ts`
+- Create: `packages/background-tasks-standalone/src/service/WorkerTransportPlugin.ts`
+- Create: `packages/background-tasks-standalone/src/BackgroundTasksStandaloneFeature.ts`
+- Create: `packages/background-tasks-standalone/src/index.ts`
 
 **Interfaces:**
 - Consumes: `TaskServicePlugin`, `TaskServiceTransport` from `@webiny/background-tasks/api`; worker files from Task 7
-- Produces: `WorkerTransportPlugin` (TaskServicePlugin impl); `BackgroundTasksServerFeature`
+- Produces: `WorkerTransportPlugin` (TaskServicePlugin impl); `BackgroundTasksStandaloneFeature`
 
 - [ ] **Step 1: Create WorkerTransportPlugin**
 
 ```ts
-/* packages/background-tasks-server/src/service/WorkerTransportPlugin.ts */
+/* packages/background-tasks-standalone/src/service/WorkerTransportPlugin.ts */
 import { Worker } from "node:worker_threads";
 import { TaskServicePlugin } from "@webiny/background-tasks/api/plugins/TaskServicePlugin.js";
 import type {
@@ -1072,15 +1072,15 @@ interface WorkerHandle {
 }
 ```
 
-- [ ] **Step 2: Create BackgroundTasksServerFeature**
+- [ ] **Step 2: Create BackgroundTasksStandaloneFeature**
 
 ```ts
-/* packages/background-tasks-server/src/BackgroundTasksServerFeature.ts */
+/* packages/background-tasks-standalone/src/BackgroundTasksStandaloneFeature.ts */
 import { type Container, createFeature } from "@webiny/feature/api";
 import { TaskServiceTransport } from "@webiny/background-tasks/api";
 import { WorkerTransportPlugin } from "~/service/WorkerTransportPlugin.js";
 
-export const BackgroundTasksServerFeature = createFeature({
+export const BackgroundTasksStandaloneFeature = createFeature({
     name: "BackgroundTasksServer",
     register(container: Container) {
         container.registerInstance(
@@ -1094,15 +1094,15 @@ export const BackgroundTasksServerFeature = createFeature({
 - [ ] **Step 3: Create index.ts**
 
 ```ts
-/* packages/background-tasks-server/src/index.ts */
-export { BackgroundTasksServerFeature } from "./BackgroundTasksServerFeature.js";
+/* packages/background-tasks-standalone/src/index.ts */
+export { BackgroundTasksStandaloneFeature } from "./BackgroundTasksStandaloneFeature.js";
 export { WorkerTransportPlugin } from "./service/WorkerTransportPlugin.js";
 export { ProcessTimer } from "./timer/ProcessTimer.js";
 ```
 
 - [ ] **Step 4: Build**
 
-Run: `yarn build -p @webiny/background-tasks-server --safe-replace 2>&1 | tail -30`
+Run: `yarn build -p @webiny/background-tasks-standalone --safe-replace 2>&1 | tail -30`
 Expected: successful build.
 
 - [ ] **Step 5: Commit**
@@ -1166,7 +1166,7 @@ Run:
 ```bash
 yarn check -p @webiny/background-tasks
 yarn check -p @webiny/background-tasks-aws
-yarn check -p @webiny/background-tasks-server
+yarn check -p @webiny/background-tasks-standalone
 yarn check -p @webiny/api-background-tasks-ddb
 yarn check -p @webiny/api-background-tasks-os
 ```

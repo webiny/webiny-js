@@ -60,6 +60,14 @@ const fieldSchema = zod.object({
             return !!value;
         })
         .default(false),
+    disabled: zod
+        .boolean()
+        .optional()
+        .nullish()
+        .transform(value => {
+            return !!value;
+        })
+        .default(false),
     predefinedValues: zod
         .object({
             enabled: zod.boolean(),
