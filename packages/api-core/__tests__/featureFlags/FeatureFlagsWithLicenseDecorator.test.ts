@@ -163,7 +163,7 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
         /*
          * The assistant shipped ungated: it had no accessor, no LICENSE_CHECKS entry, and no flag
-         * check anywhere in `@webiny/ai-chat`, so every project got it regardless of license.
+         * check anywhere in the chat feature, so every project got it regardless of license.
          */
         it("governs the admin assistant, which shipped ungated", () => {
             const licensed = flagsFor({}, { present: true, allows: ["canUseAiAdminAssistant"] });
@@ -174,6 +174,25 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
 
             expect(licensed.isEnabled("aiPowerups.adminAssistant")).toBe(true);
             expect(unlicensed.isEnabled("aiPowerups.adminAssistant")).toBe(false);
+        });
+
+        /*
+         * `isEnabled` answering correctly is not enough: the admin app never calls it, it reads the
+         * DTO this serialises to. The assistant shipped with the flag wired into LICENSE_CHECKS but
+         * missing from `toDto`, so the api said yes, the browser never heard, and the palette hid a
+         * feature the project had paid for.
+         */
+        it("carries the admin assistant through the DTO the admin app reads", () => {
+            // The parent too: `toDto` omits the whole `aiPowerups` object when it is off. The real
+            // `License` derives the parent from its children, this fake answers each one on its own.
+            const flags = flagsFor(
+                {},
+                { present: true, allows: ["canUseAiAdminAssistant", "canUseAiPowerups"] }
+            );
+
+            const dto = flags.toDto();
+
+            expect(dto.aiPowerups).toMatchObject({ adminAssistant: true });
         });
 
         it("lets config disable the admin assistant the license allows", () => {
