@@ -113,6 +113,11 @@ export interface IHttpResponseBuilder {
      * proxies) compressing the body, which buffers chunks, and `x-accel-buffering: no` opts out of
      * nginx-family response buffering.
      *
+     * `no-store` is not about delivery. Every stream that goes through here carries per-identity
+     * output — an assistant's answer, an enrichment for one file — and `no-cache` alone permits an
+     * intermediary to STORE the response and merely revalidate before reusing it. `no-store` is the
+     * directive that forbids keeping a copy at all.
+     *
      * Framing is the caller's job — `source` should yield complete `data: ...\n\n` records.
      */
     sse(source: HttpStreamSource): this;
