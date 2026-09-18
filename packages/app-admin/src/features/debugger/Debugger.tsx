@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { ReactComponent as DebuggerIcon } from "@webiny/icons/bug_report.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
-import { useRouter } from "@webiny/app";
 import { AdminLayout } from "~/components/AdminLayout.js";
 import { useCanCaptureDebugData } from "./permissions.js";
 import { debuggerStore } from "./DebuggerStore.js";
@@ -11,11 +9,10 @@ import { DebuggerRoutes } from "./routes.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 
 /**
- * The `dev-tools` parent menu is declared by the playground packages, which ship with every Admin
- * app, so only the child is declared here.
+ * No menu entry: the header indicator is the way in, and it downloads the report directly. The
+ * panel remains reachable by URL for anyone who wants the namespace filter or the session list.
  */
 export const Debugger = observer(() => {
-    const router = useRouter();
     const canDebug = useCanCaptureDebugData();
 
     /**
@@ -29,25 +26,6 @@ export const Debugger = observer(() => {
     return (
         <AdminConfig>
             <SecurityPermission />
-            {canDebug ? (
-                <AdminConfig.Menu
-                    name={"dev-tools.debugger"}
-                    parent={"dev-tools"}
-                    element={
-                        <AdminConfig.Menu.Link
-                            text={"Debugger"}
-                            to={router.getLink(DebuggerRoutes.Debugger)}
-                            icon={
-                                <AdminConfig.Menu.Link.Icon
-                                    label="Debugger"
-                                    element={<DebuggerIcon />}
-                                />
-                            }
-                        />
-                    }
-                />
-            ) : null}
-
             <AdminConfig.Route
                 route={DebuggerRoutes.Debugger}
                 element={
