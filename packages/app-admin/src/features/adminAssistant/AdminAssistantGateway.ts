@@ -1,9 +1,9 @@
 import { ApiStreamClient } from "@webiny/app/features/apiStreamClient";
 import { readServerSentEvents } from "@webiny/app/features/apiStreamClient";
 import { EnvConfig } from "@webiny/app/features/envConfig";
-import { AiChatGateway as Abstraction } from "./abstractions.js";
-import type { AiChatRequest } from "./abstractions.js";
-import type { AiChatStreamEvent } from "./abstractions.js";
+import { AdminAssistantGateway as Abstraction } from "./abstractions.js";
+import type { AdminAssistantRequest } from "./abstractions.js";
+import type { AdminAssistantStreamEvent } from "./abstractions.js";
 import { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";
 import { TenantContext } from "~/features/tenancy/abstractions.js";
 
@@ -11,9 +11,9 @@ import { TenantContext } from "~/features/tenancy/abstractions.js";
  * The `/stream/` prefix is required, not cosmetic: it is the CloudFront behavior that targets the
  * Lambda Function URL. Any other path lands on API Gateway and gets buffered.
  */
-const CHAT_STREAM_PATH = "/stream/ai/chat";
+const STREAM_PATH = "/stream/ai/admin-assistant";
 
-const toBody = (request: AiChatRequest): Record<string, unknown> => {
+const toBody = (request: AdminAssistantRequest): Record<string, unknown> => {
     const body: Record<string, unknown> = { messages: request.messages };
 
     if (request.approvals?.length) {
@@ -34,7 +34,7 @@ const toBody = (request: AiChatRequest): Record<string, unknown> => {
  * The buffered call still uses `fetch`: `ApiStreamClient` hands back an unread `Response` for a caller
  * that owns a read loop, which is the wrong shape for a single JSON answer.
  */
-class AiChatGatewayImpl implements Abstraction.Interface {
+class AdminAssistantGatewayImpl implements Abstraction.Interface {
     constructor(
         private authContext: AuthenticationContext.Interface,
         private envConfig: EnvConfig.Interface,
@@ -42,18 +42,21 @@ class AiChatGatewayImpl implements Abstraction.Interface {
         private streamClient: ApiStreamClient.Interface
     ) {}
 
-    async *stream(request: AiChatRequest, signal?: AbortSignal): AsyncIterable<AiChatStreamEvent> {
+    async *stream(
+        request: AdminAssistantRequest,
+        signal?: AbortSignal
+    ): AsyncIterable<AdminAssistantStreamEvent> {
         const response = await this.streamClient.execute({
-            path: CHAT_STREAM_PATH,
+            path: STREAM_PATH,
             body: toBody(request),
             signal
         });
 
-        yield* readServerSentEvents<AiChatStreamEvent>(response);
+        yield* readServerSentEvents<AdminAssistantStreamEvent>(response);
     }
 }
 
-export const AiChatGateway = Abstraction.createImplementation({
-    implementation: AiChatGatewayImpl,
+export const AdminAssistantGateway = Abstraction.createImplementation({
+    implementation: AdminAssistantGatewayImpl,
     dependencies: [AuthenticationContext, EnvConfig, TenantContext, ApiStreamClient]
 });

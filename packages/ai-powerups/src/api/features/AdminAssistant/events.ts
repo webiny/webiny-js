@@ -11,7 +11,7 @@ import type { PendingApproval } from "./approvals.js";
  * Transport-free by design. A transport frames these (as SSE, as newline JSON, as a CLI render); the
  * feature only says what happened.
  */
-export type AiChatEvent =
+export type AdminAssistantEvent =
     /** A fragment of the answer. Concatenate in arrival order. */
     | { type: "text"; text: string }
     /** A tool started running. Named so the UI can show work in progress, not just a spinner. */

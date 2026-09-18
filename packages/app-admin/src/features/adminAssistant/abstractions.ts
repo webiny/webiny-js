@@ -5,16 +5,16 @@ import { createAbstraction } from "@webiny/feature/admin";
  * assistant and tool messages carrying approval requests, which must be replayed VERBATIM for the
  * agent loop to resume — the request exists nowhere else, since the server keeps no session.
  */
-export type AiChatMessage = { role: string; content: unknown };
+export type AdminAssistantMessage = { role: string; content: unknown };
 
 /** A tool the assistant invoked, so the UI can show its work rather than just an answer. */
-export interface AiChatToolCall {
+export interface AdminAssistantToolCall {
     name: string;
     input: unknown;
 }
 
 /** A tool call the assistant wants to make but has not made, because it changes something. */
-export interface AiChatPendingApproval {
+export interface AdminAssistantPendingApproval {
     approvalId: string;
     toolName: string;
     title?: string;
@@ -23,51 +23,55 @@ export interface AiChatPendingApproval {
     destructive: boolean;
 }
 
-export interface AiChatDecision {
+export interface AdminAssistantDecision {
     approvalId: string;
     approved: boolean;
     reason?: string;
 }
 
-export interface AiChatRequest {
-    messages: AiChatMessage[];
+export interface AdminAssistantRequest {
+    messages: AdminAssistantMessage[];
     /** Approve or reject calls the server paused on. */
-    approvals?: AiChatDecision[];
+    approvals?: AdminAssistantDecision[];
 }
 
 /**
- * What the assistant emits while it works. Mirrors the server's `AiChatEvent`; declared here so the
+ * What the assistant emits while it works. Mirrors the server's `AdminAssistantEvent`; declared here so the
  * admin bundle carries no server or AI SDK code.
  */
-export type AiChatStreamEvent =
+export type AdminAssistantStreamEvent =
     | { type: "text"; text: string }
     | { type: "tool-call"; name: string }
     | { type: "tool-result"; name: string }
     // A tool threw. Pairs with `tool-call` by name, and does not end the run.
     | { type: "tool-error"; name: string; message: string }
-    | { type: "approval"; approvals: AiChatPendingApproval[] }
-    | { type: "done"; messages: AiChatMessage[]; steps: number }
+    | { type: "approval"; approvals: AdminAssistantPendingApproval[] }
+    | { type: "done"; messages: AdminAssistantMessage[]; steps: number }
     | { type: "error"; message: string };
 
-export interface IAiChatGateway {
+export interface IAdminAssistantGateway {
     /**
      * Run and yield progress as it arrives. Preferred in the UI: a multi-tool question takes tens of
      * seconds, and an approval request is worth showing the moment it appears.
      */
-    stream(request: AiChatRequest, signal?: AbortSignal): AsyncIterable<AiChatStreamEvent>;
+    stream(
+        request: AdminAssistantRequest,
+        signal?: AbortSignal
+    ): AsyncIterable<AdminAssistantStreamEvent>;
 }
 
 /** Sends a question to the server-side AI assistant (`POST /ai/chat`). */
-export const AiChatGateway = createAbstraction<IAiChatGateway>("AiChatGateway");
+export const AdminAssistantGateway =
+    createAbstraction<IAdminAssistantGateway>("AdminAssistantGateway");
 
-export namespace AiChatGateway {
-    export type Interface = IAiChatGateway;
-    export type Message = AiChatMessage;
-    export type ToolCall = AiChatToolCall;
-    export type PendingApproval = AiChatPendingApproval;
-    export type Decision = AiChatDecision;
-    export type Request = AiChatRequest;
-    export type StreamEvent = AiChatStreamEvent;
+export namespace AdminAssistantGateway {
+    export type Interface = IAdminAssistantGateway;
+    export type Message = AdminAssistantMessage;
+    export type ToolCall = AdminAssistantToolCall;
+    export type PendingApproval = AdminAssistantPendingApproval;
+    export type Decision = AdminAssistantDecision;
+    export type Request = AdminAssistantRequest;
+    export type StreamEvent = AdminAssistantStreamEvent;
 }
 
 /**
@@ -91,19 +95,19 @@ export interface AiTurnViewModel {
     failed: string[];
     /** Set while a tool is running and no answer text has arrived yet. */
     running: boolean;
-    pendingApprovals: AiChatPendingApproval[];
+    pendingApprovals: AdminAssistantPendingApproval[];
     settled: boolean;
     error?: string;
 }
 
-export interface IAiChatViewModel {
+export interface IAdminAssistantViewModel {
     turns: AiTurnViewModel[];
     /** A run is in flight. Asking again or deciding again is refused while true. */
     busy: boolean;
 }
 
-export interface IAiChatPresenter {
-    readonly vm: IAiChatViewModel;
+export interface IAdminAssistantPresenter {
+    readonly vm: IAdminAssistantViewModel;
     /** Ask a question, carrying the settled turns before it as context. */
     ask(question: string): void;
     /** Approve or reject the calls a turn paused on, then resume it. */
@@ -112,10 +116,11 @@ export interface IAiChatPresenter {
     reset(): void;
 }
 
-export const AiChatPresenter = createAbstraction<IAiChatPresenter>("AiChatPresenter");
+export const AdminAssistantPresenter =
+    createAbstraction<IAdminAssistantPresenter>("AdminAssistantPresenter");
 
-export namespace AiChatPresenter {
-    export type Interface = IAiChatPresenter;
-    export type ViewModel = IAiChatViewModel;
+export namespace AdminAssistantPresenter {
+    export type Interface = IAdminAssistantPresenter;
+    export type ViewModel = IAdminAssistantViewModel;
     export type Turn = AiTurnViewModel;
 }

@@ -1,7 +1,6 @@
 import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
-import { AiChatFeature } from "@webiny/ai-chat/api/index.js";
 import { ApiCoreFeature } from "@webiny/api-core";
 import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
@@ -132,17 +131,6 @@ export async function registerApiRequestStack(
     SchedulerFeature.register(container);
     await config.transports?.scheduler?.(container);
     CmsSchedulerFeature.register(container);
-
-    // ── AI chat endpoint (in-admin assistant) ──────────────────
-    // The agent loop runs here rather than in the browser, so the browser needs no model and no API
-    // key.
-    //
-    // Registers no `AiChatResolver`: the model, the credential and the prompt all come from AI
-    // Power-Ups settings, so that extension registers the only implementation. Nothing here depends
-    // on running before or after it — `AiChatUseCase` resolves the resolver per request, `HttpRouter`
-    // resolves routes inside `route()`, and `resolveAll(AiSdkToolDefinition)` collects every tool
-    // whenever it was registered.
-    AiChatFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────
     // Apply at register() time so extension features — including code-defined CMS models

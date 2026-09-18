@@ -31,7 +31,7 @@ export interface ICommand {
      * needs the shared input row, so the palette stays open and `execute` is never called.
      *
      * Named after the one mode that exists. If a second one ever arrives, this becomes
-     * `entersMode: "aiChat"` and the palette looks the mode up by name instead of hardcoding it.
+     * `entersMode: "adminAssistant"` and the palette looks the mode up by name instead of hardcoding it.
      */
     entersAiMode?: boolean;
 }

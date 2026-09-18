@@ -1,16 +1,16 @@
 import { makeAutoObservable } from "mobx";
-import { AiChatGateway } from "./abstractions.js";
-import type { AiChatMessage, AiChatRequest } from "./abstractions.js";
+import { AdminAssistantGateway } from "./abstractions.js";
+import type { AdminAssistantMessage, AdminAssistantRequest } from "./abstractions.js";
 import {
-    AiChatPresenter as Abstraction,
+    AdminAssistantPresenter as Abstraction,
     type AiTurnViewModel,
-    type IAiChatViewModel
+    type IAdminAssistantViewModel
 } from "./abstractions.js";
 
 /** A turn plus the conversation state the view never sees. */
 interface Turn extends AiTurnViewModel {
     /** Server messages replayed to continue this conversation or resume its approval. */
-    messages: AiChatMessage[];
+    messages: AdminAssistantMessage[];
 }
 
 const emptyTurn = (question: string): Turn => ({
@@ -33,17 +33,17 @@ const emptyTurn = (question: string): Turn => ({
  *
  * Registered as a singleton, so `reset` genuinely clears rather than relying on unmount.
  */
-class AiChatPresenterImpl implements Abstraction.Interface {
+class AdminAssistantPresenterImpl implements Abstraction.Interface {
     private turns: Turn[] = [];
     private busy = false;
     private controller: AbortController | null = null;
 
-    constructor(private gateway: AiChatGateway.Interface) {
+    constructor(private gateway: AdminAssistantGateway.Interface) {
         // The controller is machinery, not state anything renders, so keep it out of the map.
-        makeAutoObservable<AiChatPresenterImpl, "controller">(this, { controller: false });
+        makeAutoObservable<AdminAssistantPresenterImpl, "controller">(this, { controller: false });
     }
 
-    get vm(): IAiChatViewModel {
+    get vm(): IAdminAssistantViewModel {
         return {
             busy: this.busy,
             turns: this.turns.map(turn => ({
@@ -91,7 +91,7 @@ class AiChatPresenterImpl implements Abstraction.Interface {
          * The paused assistant message must be replayed unchanged: the approval request lives only in
          * the server's messages, so resuming means sending the same history back plus the decision.
          */
-        const messages: AiChatMessage[] = [
+        const messages: AdminAssistantMessage[] = [
             ...this.historyBefore(turnIndex),
             { role: "user", content: turn.question },
             ...turn.messages
@@ -110,8 +110,8 @@ class AiChatPresenterImpl implements Abstraction.Interface {
     }
 
     /** Replays settled turns so a follow-up ("and which of those is cheapest?") has context. */
-    private historyBefore(upTo: number): AiChatMessage[] {
-        const history: AiChatMessage[] = [];
+    private historyBefore(upTo: number): AdminAssistantMessage[] {
+        const history: AdminAssistantMessage[] = [];
 
         for (const turn of this.turns.slice(0, upTo)) {
             if (!turn.settled || turn.error) {
@@ -124,7 +124,11 @@ class AiChatPresenterImpl implements Abstraction.Interface {
         return history;
     }
 
-    private async run(index: number, request: AiChatRequest, resuming = false): Promise<void> {
+    private async run(
+        index: number,
+        request: AdminAssistantRequest,
+        resuming = false
+    ): Promise<void> {
         this.controller?.abort();
         const controller = new AbortController();
         this.controller = controller;
@@ -143,7 +147,7 @@ class AiChatPresenterImpl implements Abstraction.Interface {
             const tools: string[] = existing ? [...existing.tools] : [];
             const completed: string[] = existing ? [...existing.completed] : [];
             const failed: string[] = existing ? [...existing.failed] : [];
-            const priorMessages: AiChatMessage[] = existing ? [...existing.messages] : [];
+            const priorMessages: AdminAssistantMessage[] = existing ? [...existing.messages] : [];
 
             for await (const event of this.gateway.stream(request, controller.signal)) {
                 if (event.type === "text") {
@@ -226,7 +230,7 @@ class AiChatPresenterImpl implements Abstraction.Interface {
     }
 }
 
-export const AiChatPresenter = Abstraction.createImplementation({
-    implementation: AiChatPresenterImpl,
-    dependencies: [AiChatGateway]
+export const AdminAssistantPresenter = Abstraction.createImplementation({
+    implementation: AdminAssistantPresenterImpl,
+    dependencies: [AdminAssistantGateway]
 });
