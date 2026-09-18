@@ -7,8 +7,7 @@ import { BugReportMount } from "./BugReportMount.js";
  * Admin entry point, loaded by `<Admin.Extension>` from `BugReporter.tsx`.
  *
  * Hit cmd+shift+b (or find "Report a bug" in the command palette), say what went wrong, paste a
- * screenshot, and the report goes to the API. Only reachable when the `bugReporter` feature flag
- * is on, since the flag gates registration at composition time.
+ * screenshot, and the report goes to the API.
  *
  * See ../../README.md for setup.
  */
