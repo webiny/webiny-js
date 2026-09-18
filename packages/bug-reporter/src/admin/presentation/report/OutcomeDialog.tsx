@@ -2,10 +2,10 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { Dialog } from "@webiny/admin-ui";
 import { Text } from "@webiny/admin-ui";
-import type { IReportBugOutcomeVm } from "./abstractions.js";
+import type { ReportBugPresenter } from "./abstractions.js";
 
 interface IOutcomeDialogProps {
-    outcome: IReportBugOutcomeVm;
+    outcome: ReportBugPresenter.Outcome;
     open: boolean;
     onClose: () => void;
 }

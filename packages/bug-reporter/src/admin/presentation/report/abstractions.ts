@@ -41,4 +41,5 @@ export const ReportBugPresenter = createAbstraction<IReportBugPresenter>(
 export namespace ReportBugPresenter {
     export type Interface = IReportBugPresenter;
     export type ViewModel = IReportBugViewModel;
+    export type Outcome = IReportBugOutcomeVm;
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseRepository } from "~/api/github/parseRepository.js";
+import { parseRepository } from "~/api/parseRepository.js";
 
 describe("parseRepository", () => {
     it("splits an owner/name pair", () => {

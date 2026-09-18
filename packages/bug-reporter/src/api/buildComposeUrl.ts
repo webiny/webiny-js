@@ -92,7 +92,8 @@ function buildUrl(base: string, title: string, body: string, labels: string): st
         }
     }
 
-    return toUrl(base, title, `${body.slice(0, low)}${TRUNCATION_NOTE}`, labels);
+    const trimmed = `${body.slice(0, low)}${TRUNCATION_NOTE}`;
+    return toUrl(base, title, trimmed, labels);
 }
 
 function toUrl(base: string, title: string, body: string, labels: string): string {

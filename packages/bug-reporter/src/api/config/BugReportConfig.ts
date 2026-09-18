@@ -1,5 +1,6 @@
 import { BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 import { BugReportConfig as Abstraction } from "./abstractions.js";
+import { parseRepository } from "../parseRepository.js";
 
 /* Set from webiny.config.tsx, which reads them from the environment at build time. */
 const TOKEN_PARAM = "BUG_REPORT_GITHUB_TOKEN";
@@ -44,19 +45,27 @@ function parseLabels(raw: string): string[] {
     return labels;
 }
 
-class BugReportConfigImpl implements Abstraction.Interface {
+export class BugReportConfigImpl implements Abstraction.Interface {
     constructor(private params: BuildParams.Interface) {}
 
     get token(): string {
         return readParam(this.params, TOKEN_PARAM);
     }
 
+    /*
+     * A configured value is validated rather than sniffed for a slash. Falling back on anything
+     * that did not look right sent a project that typo'd `BUG_REPORT_REPOSITORY` to OUR issue
+     * composer, prefilled with their page titles, URLs and click timeline, and said nothing about
+     * it. Throwing surfaces the typo as a failed report instead.
+     */
     get repository(): string {
         const configured = readParam(this.params, REPOSITORY_PARAM);
-        if (configured.includes("/")) {
-            return configured;
+        if (configured === "") {
+            return DEFAULT_REPOSITORY;
         }
-        return DEFAULT_REPOSITORY;
+
+        parseRepository(configured);
+        return configured;
     }
 
     get labels(): string[] {

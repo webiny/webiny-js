@@ -34,10 +34,12 @@ const DRAFT: IssueDrafter.Draft = {
 };
 
 function buildIdentityContext(anonymous: boolean): IdentityContext.Interface {
-    const identity = anonymous
-        ? new AnonymousIdentity()
-        : new AuthenticatedIdentity({ id: "1", displayName: "Ada", type: "admin" });
+    if (anonymous) {
+        const identity = new AnonymousIdentity();
+        return { getIdentity: () => identity } as IdentityContext.Interface;
+    }
 
+    const identity = new AuthenticatedIdentity({ id: "1", displayName: "Ada", type: "admin" });
     return { getIdentity: () => identity } as IdentityContext.Interface;
 }
 

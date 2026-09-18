@@ -1,11 +1,10 @@
 import { BugReportConfig } from "../config/abstractions.js";
 import { TOOL_LABEL } from "../config/BugReportConfig.js";
 import { EXTENSION_BY_MEDIA_TYPE } from "../screenshotMediaTypes.js";
-import { parseRepository } from "./parseRepository.js";
+import { parseRepository } from "../parseRepository.js";
 import { GitHubIssueGateway as Abstraction } from "./abstractions.js";
-import type { ICreateIssueInput } from "./abstractions.js";
 import type { IFiledIssue } from "../../shared/types.js";
-import type { IRepositoryRef } from "./parseRepository.js";
+import type { IRepositoryRef } from "../parseRepository.js";
 import type { IReportedScreenshot } from "../../shared/types.js";
 
 const API_ROOT = "https://api.github.com";
@@ -77,7 +76,7 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
         throw new Error("GitHub accepted the screenshot but returned no URL for it.");
     }
 
-    async createIssue(input: ICreateIssueInput): Promise<IFiledIssue> {
+    async createIssue(input: Abstraction.CreateIssueInput): Promise<IFiledIssue> {
         const repository = this.readRepository();
         await this.ensureToolLabel(repository);
 
@@ -105,7 +104,8 @@ class GitHubIssueGatewayImpl implements Abstraction.Interface {
      */
     private async ensureToolLabel(repository: IRepositoryRef): Promise<void> {
         const base = `/repos/${repository.owner}/${repository.name}`;
-        const exists = await this.exists(`${base}/labels/${encodeURIComponent(TOOL_LABEL)}`);
+        const name = encodeURIComponent(TOOL_LABEL);
+        const exists = await this.exists(`${base}/labels/${name}`);
         if (exists) {
             return;
         }

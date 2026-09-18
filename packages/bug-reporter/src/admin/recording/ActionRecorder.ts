@@ -1,5 +1,4 @@
 import { ActionRecorder as Abstraction } from "./abstractions.js";
-import type { IRecordedEvent } from "./abstractions.js";
 import type { RecordedEventKind } from "./abstractions.js";
 
 /*
@@ -179,7 +178,7 @@ function describeLocation(): string {
  * because reports get filed from tenants holding real customer data.
  */
 class ActionRecorderImpl implements Abstraction.Interface {
-    private events: IRecordedEvent[] = [];
+    private events: Abstraction.Event[] = [];
     private running = false;
     private teardown: Array<() => void> = [];
 
@@ -195,7 +194,8 @@ class ActionRecorderImpl implements Abstraction.Interface {
         this.watchNetwork();
         this.watchConsole();
         this.watchExceptions();
-        this.record("route", `Opened ${describeLocation()}`);
+        const opened = describeLocation();
+        this.record("route", `Opened ${opened}`);
     }
 
     stop(): void {
@@ -211,12 +211,12 @@ class ActionRecorderImpl implements Abstraction.Interface {
         this.running = false;
     }
 
-    getEvents(): IRecordedEvent[] {
+    getEvents(): Abstraction.Event[] {
         return [...this.events];
     }
 
     private record(kind: RecordedEventKind, summary: string, detail?: string): void {
-        const event: IRecordedEvent = { at: Date.now(), kind, summary };
+        const event: Abstraction.Event = { at: Date.now(), kind, summary };
         if (detail) {
             event.detail = detail;
         }
@@ -257,7 +257,8 @@ class ActionRecorderImpl implements Abstraction.Interface {
 
     private watchNavigation(): void {
         const recordLocation = () => {
-            this.record("route", `Navigated to ${describeLocation()}`);
+            const location = describeLocation();
+            this.record("route", `Navigated to ${location}`);
         };
 
         const originalPushState = window.history.pushState;
@@ -343,12 +344,14 @@ class ActionRecorderImpl implements Abstraction.Interface {
         const originalWarn = console.warn;
 
         console.error = (...args: unknown[]) => {
-            this.record("console", `console.error: ${formatArguments(args)}`);
+            const formatted = formatArguments(args);
+            this.record("console", `console.error: ${formatted}`);
             originalError.apply(console, args);
         };
 
         console.warn = (...args: unknown[]) => {
-            this.record("console", `console.warn: ${formatArguments(args)}`);
+            const formatted = formatArguments(args);
+            this.record("console", `console.warn: ${formatted}`);
             originalWarn.apply(console, args);
         };
 
@@ -367,7 +370,8 @@ class ActionRecorderImpl implements Abstraction.Interface {
 
         const onRejection = (event: PromiseRejectionEvent) => {
             const stack = readStack(event.reason);
-            this.record("exception", `Unhandled rejection: ${describeError(event.reason)}`, stack);
+            const reason = describeError(event.reason);
+            this.record("exception", `Unhandled rejection: ${reason}`, stack);
         };
 
         window.addEventListener("error", onError);

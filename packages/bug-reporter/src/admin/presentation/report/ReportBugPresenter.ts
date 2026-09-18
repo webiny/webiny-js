@@ -1,11 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { ActionRecorder } from "../../recording/abstractions.js";
-import type { IRecordedEvent } from "../../recording/abstractions.js";
 import { collectEnvironment } from "../../capture/collectEnvironment.js";
 import { SubmitBugReportGateway } from "../../gateway/abstractions.js";
 import { ReportBugPresenter as Abstraction } from "./abstractions.js";
-import type { IReportBugOutcomeVm } from "./abstractions.js";
-import type { IReportBugViewModel } from "./abstractions.js";
 import type { IReportedEnvironment } from "../../../shared/types.js";
 import type { IReportedScreenshot } from "../../../shared/types.js";
 
@@ -40,12 +37,12 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
     private isOpen = false;
     private description = "";
     private screenshots: string[] = [];
-    private events: IRecordedEvent[] = [];
+    private events: ActionRecorder.Event[] = [];
     private environment: IReportedEnvironment | null = null;
     private capturedAt = 0;
     private status: string | null = null;
     private error: string | null = null;
-    private outcome: IReportBugOutcomeVm | null = null;
+    private outcome: Abstraction.Outcome | null = null;
     private composeUrl: string | null = null;
     private controller: AbortController | null = null;
 
@@ -61,7 +58,7 @@ class ReportBugPresenterImpl implements Abstraction.Interface {
         });
     }
 
-    get vm(): IReportBugViewModel {
+    get vm(): Abstraction.ViewModel {
         return {
             open: this.isOpen,
             description: this.description,

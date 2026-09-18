@@ -52,7 +52,8 @@ class SubmitBugReportRouteImpl implements HttpRouteHandler.Interface {
             return response.status(status).json({ message: error.message, code: error.code });
         }
 
-        return response.sse(toSseFrames(result.value));
+        const frames = toSseFrames(result.value);
+        return response.sse(frames);
     }
 }
 
