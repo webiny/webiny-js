@@ -53,9 +53,4 @@ export interface IFeatureFlagsDto {
     abTesting?: boolean;
     remoteComponents?: boolean;
     collaboration?: boolean | ICollaborationOptions;
-    /**
-     * Internal. Gates @webiny/bug-reporter, which is not part of DefaultExtensions and so only
-     * reaches a project that registers <BugReporter /> itself.
-     */
-    bugReporter?: boolean;
 }

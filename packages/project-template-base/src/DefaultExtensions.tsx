@@ -16,7 +16,6 @@ export const DefaultExtensions = () => {
             <Languages />
             <TenantManager />
             <AiPowerups />
-            {/* Internal, opt-in: off unless `bugReporter: true` is in the project config. */}
             <BugReporter />
         </>
     );

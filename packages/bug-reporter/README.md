@@ -4,10 +4,8 @@ Report a bug by talking to the app. Hit `cmd+shift+b`, say what went wrong, past
 screenshot, and a GitHub issue appears with it attached alongside the environment and a
 timeline of what you did in the minutes before you reported it.
 
-Nobody using it configures anything. Whatever keys exist live on the API.
-
-This is internal. It is registered in this repo's `webiny.config.tsx`, which projects created
-from Webiny never get.
+On in every Webiny project. Nobody configures anything: with no GitHub token the API writes the
+report up and hands back a prefilled `issues/new` URL to submit, which needs no credentials.
 
 ## Two modes
 
@@ -28,8 +26,9 @@ it works with no setup at all.
 
 ## Setup
 
-Everything is optional. `BugReporterExtension.tsx` reads these from the environment that builds
-the API and passes them through as build params, so CI can hold them as secrets:
+Everything is optional — with none of it set you get compose mode, which works. `BugReporter.tsx`
+reads these from the environment that builds the API and passes them through as build params, so
+CI can hold them as secrets:
 
 | Variable                  |                                                           |
 | ------------------------- | --------------------------------------------------------- |

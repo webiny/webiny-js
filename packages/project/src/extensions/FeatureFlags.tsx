@@ -68,8 +68,7 @@ export const FeatureFlags = defineExtension({
                         activityLog: z.boolean().optional()
                     })
                 ])
-                .optional(),
-            bugReporter: z.boolean().optional()
+                .optional()
         })
     }),
     render: ({ features = {} }) => {

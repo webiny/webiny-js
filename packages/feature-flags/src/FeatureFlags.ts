@@ -23,8 +23,7 @@ export type KnownFeatureFlag =
     | "remoteComponents"
     | "collaboration"
     | "collaboration.comments"
-    | "collaboration.activityLog"
-    | "bugReporter";
+    | "collaboration.activityLog";
 
 export type FeatureFlagName = KnownFeatureFlag | (string & {});
 
@@ -57,23 +56,6 @@ export class FeatureFlags {
     }
 
     isEnabled(name: FeatureFlagName): boolean {
-        return this.readConfigured(name);
-    }
-
-    /**
-     * True only when the config actually turns this flag on. Same reading as the base
-     * `isEnabled`, but the license decorators do NOT override it — which is the point.
-     *
-     * They override `isEnabled` so that a flag outside their LICENSE_CHECKS resolves to
-     * `!isExplicitlyDisabled(name)`, i.e. a licensed project that never mentions the key gets the
-     * feature. That is right for flags that ship on by default, and wrong for an opt-in flag,
-     * where an unset key has to mean off for everyone. Use this for those.
-     */
-    isExplicitlyEnabled(name: FeatureFlagName): boolean {
-        return this.readConfigured(name);
-    }
-
-    private readConfigured(name: FeatureFlagName): boolean {
         const segments = name.split(".");
         let current: unknown = this.flags;
 

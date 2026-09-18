@@ -11,9 +11,6 @@ import { BugReportDrafterDecorator } from "./BugReportDrafterDecorator.js";
  *
  * Registering the capability also puts a row in the AI Power-Ups settings screen, so the model and
  * any extra instructions are configurable per project like any built-in AI feature.
- *
- * Inert unless the `bugReporter` flag is on — with it off nothing registers `IssueDrafter`, and a
- * decorator for an abstraction nobody resolves never runs.
  */
 export default createFeature({
     name: "BugReporter/Ai",

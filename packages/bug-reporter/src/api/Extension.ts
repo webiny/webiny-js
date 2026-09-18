@@ -3,6 +3,7 @@ import { BugReportConfig } from "./config/BugReportConfig.js";
 import { VerbatimIssueDrafter } from "./drafter/VerbatimIssueDrafter.js";
 import { GitHubIssueGateway } from "./github/GitHubIssueGateway.js";
 import { SubmitBugReportRoute } from "./SubmitBugReportRoute.js";
+import { SubmitBugReportRouteDefinition } from "./SubmitBugReportRoute.js";
 
 /*
  * Named `Extension`, matching the filename, because that is what the extension codegen imports.
@@ -17,5 +18,6 @@ export const Extension = createFeature({
         container.register(VerbatimIssueDrafter);
         container.register(GitHubIssueGateway);
         container.register(SubmitBugReportRoute);
+        container.register(SubmitBugReportRouteDefinition);
     }
 });

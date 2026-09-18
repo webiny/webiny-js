@@ -1,4 +1,4 @@
-import { HttpRoute, toSseFrame } from "@webiny/event-handler-core";
+import { HttpRouteDefinition, HttpRouteHandler, toSseFrame } from "@webiny/event-handler-core";
 import type { IHttpRequest, IHttpResponseBuilder } from "@webiny/event-handler-core";
 import { BugReportConfig } from "./config/abstractions.js";
 import { IssueDrafter } from "./drafter/abstractions.js";
@@ -107,10 +107,7 @@ function readPayload(body: unknown): IBugReportPayload | null {
  * Validation happens BEFORE the response opens, so a malformed body comes back as a real 400. Once
  * the first frame is out the status is committed to 200 and failures can only be an `error` event.
  */
-class SubmitBugReportRouteImpl implements HttpRoute.Interface {
-    readonly method = "POST";
-    readonly path = "/stream/bug-report";
-
+class SubmitBugReportRouteImpl implements HttpRouteHandler.Interface {
     constructor(
         private config: BugReportConfig.Interface,
         private drafter: IssueDrafter.Interface,
@@ -188,7 +185,20 @@ class SubmitBugReportRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const SubmitBugReportRoute = HttpRoute.createImplementation({
+export const SubmitBugReportRoute = HttpRouteHandler.createImplementation({
     implementation: SubmitBugReportRouteImpl,
     dependencies: [BugReportConfig, IssueDrafter, GitHubIssueGateway]
+});
+
+class SubmitBugReportRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "bug-report-stream";
+    readonly method = "POST";
+    readonly path = "/stream/bug-report";
+    readonly handler = SubmitBugReportRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const SubmitBugReportRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: SubmitBugReportRouteDefinitionImpl,
+    dependencies: []
 });

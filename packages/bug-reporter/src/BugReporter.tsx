@@ -1,22 +1,20 @@
 import React from "react";
 import { Api, Admin } from "@webiny/project-aws";
-import { FeatureFlag } from "@webiny/project";
 
 /**
  * Report a bug by talking to the app.
  *
- * Internal. The `bugReporter` feature flag gates this at COMPOSITION time, so with the flag off
- * neither extension is registered and nothing reaches either bundle — there is no dead UI to hide
- * and no runtime flag check to plumb through `toDto()`.
+ * On in every Webiny project, no flag and nothing to configure. With no GitHub token the API
+ * writes the report up and hands back a prefilled `issues/new` URL for the reporter to submit
+ * themselves, which needs no credentials at all — so the zero-config path is a working feature
+ * rather than a disabled one.
  *
- * `CanUseExplicitly`, not `CanUse`: an unset flag has to mean OFF here. `CanUse` resolves an unset
- * flag to ON for licensed projects, because the license decorator reads anything outside its
- * LICENSE_CHECKS as `!isExplicitlyDisabled` — which would hand this to every existing customer on
- * upgrade. `bugReporter: true` in the project config is the only way in.
+ * Drafting is not here. The base files the reporter's own words; `extensions/bugReportAi`
+ * decorates `IssueDrafter` to add a title and steps to reproduce.
  */
 export const BugReporter = () => {
     return (
-        <FeatureFlag.CanUseExplicitly name={"bugReporter"}>
+        <>
             <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />
             <Admin.Extension src={import.meta.dirname + "/admin/Extension.js"} />
 
@@ -35,6 +33,6 @@ export const BugReporter = () => {
                 paramName={"BUG_REPORT_LABELS"}
                 value={process.env.BUG_REPORT_LABELS || "bug"}
             />
-        </FeatureFlag.CanUseExplicitly>
+        </>
     );
 };

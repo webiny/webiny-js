@@ -22,9 +22,7 @@ export const FeatureFlags = () => (
             fileManager: {
                 threatDetection: false
             },
-            recordLocking: false,
-            // Internal bug reporter. Off everywhere it is not explicitly turned on.
-            bugReporter: true
+            recordLocking: false
         }}
     />
 );
@@ -116,8 +114,8 @@ export const Extensions = () => {
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
 
-            {/* AI drafting for the bug reporter. Internal: the base feature ships with Webiny and
-                files reports verbatim; this decorates it. Inert unless `bugReporter` is on. */}
+            {/* AI drafting for the bug reporter. Internal: the base ships with Webiny and files
+                reports verbatim; this decorates it with a title and steps to reproduce. */}
             <Api.Extension src={"@/extensions/bugReportAi/Extension.ts"} />
 
             {/* Tasks 👇 */}

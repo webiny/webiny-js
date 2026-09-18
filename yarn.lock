@@ -12469,7 +12469,6 @@ __metadata:
     "@webiny/event-handler-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     mobx: "npm:^7.0.3"
     react: "npm:18.3.1"
