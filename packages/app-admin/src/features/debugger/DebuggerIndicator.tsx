@@ -27,9 +27,9 @@ export const DebuggerIndicator = observer(() => {
 
     return (
         <Tag
-            variant={"accent-light"}
+            variant={"warning"}
             icon={<DebuggerIcon />}
-            content={count > 0 ? `Debug · ${count}` : "Debug"}
+            content={count > 0 ? `Debug mode · ${count}` : "Debug mode"}
             title={
                 count > 0
                     ? `Debug capture is on. ${count} entries collected.`
