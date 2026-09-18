@@ -137,4 +137,9 @@ export type {
     LayoutRenderers,
     TabsNodeRendererProps
 } from "./features/formModel/FormView.js";
-export { Debugger, DebuggerRoutes, debuggerStore } from "./features/debugger/index.js";
+export {
+    Debugger,
+    DebuggerIndicator,
+    DebuggerRoutes,
+    debuggerStore
+} from "./features/debugger/index.js";
