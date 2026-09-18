@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { BaseGraphQLSchema } from "./graphql/BaseGraphQLSchema.js";
 import AiPowerUpsSettingsGraphQLMapperImpl from "./graphql/AiPowerUpsSettingsGraphQLMapper.js";
 import { AiPowerUpsSettingsCache } from "./features/shared/SettingsCache.js";
@@ -25,6 +26,25 @@ import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisio
 export const Extension = createFeature({
     name: "AiPowerUps",
     register(container) {
+        /*
+         * The whole extension is gated here rather than around `<Api.Extension>` in
+         * `AiPowerups.tsx`. That wrapper read project config while the project graph was built, so
+         * a licence bought after the last deploy did nothing until the next one.
+         *
+         * Register time is early enough and the flags are correct here: `registerApiRequestStack`
+         * refreshes the WCP licence before any feature registers, so `isEnabled` sees the effective
+         * flags (project config && live licence). `AcoFeature` and `AiChatFeature` gate the same
+         * way.
+         *
+         * Nothing is registered when it is off, so a project without AI Power-Ups has no settings
+         * schema and no capability resolver at all, rather than ones that fail on use. Anything
+         * outside this extension that wants a capability must therefore declare
+         * `[ResolveAiCapabilityUseCase, { optional: true }]` and handle its absence.
+         */
+        if (!container.resolve(FeatureFlags).get().isEnabled("aiPowerups")) {
+            return;
+        }
+
         container.register(AiPowerUpsSettingsCache).inSingletonScope();
 
         GetSettingsFeature.register(container);

@@ -28,6 +28,7 @@ export interface IAiPowerupsOptions {
     websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
     fileManager?: IAiPowerupsFileManagerOptions;
     lexicalGeneration?: boolean;
+    adminAssistant?: boolean;
     cms?: IAiPowerupsCmsOptions;
 }
 
