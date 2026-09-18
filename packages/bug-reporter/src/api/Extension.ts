@@ -1,6 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { BugReportConfig } from "./config/BugReportConfig.js";
-import { IssueDrafter } from "./drafter/IssueDrafter.js";
+import { VerbatimIssueDrafter } from "./drafter/VerbatimIssueDrafter.js";
 import { GitHubIssueGateway } from "./github/GitHubIssueGateway.js";
 import { SubmitBugReportRoute } from "./SubmitBugReportRoute.js";
 
@@ -14,7 +14,7 @@ export const Extension = createFeature({
     name: "BugReporter/Api",
     register(container) {
         container.register(BugReportConfig);
-        container.register(IssueDrafter);
+        container.register(VerbatimIssueDrafter);
         container.register(GitHubIssueGateway);
         container.register(SubmitBugReportRoute);
     }

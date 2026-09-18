@@ -1,18 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { z } from "zod";
 import type { IBugReportPayload } from "../../shared/types.js";
-
-/*
- * Exported as the bare zod schema rather than a ready-made `Output.object(...)`: the AI SDK's
- * `Output` type can't be named in emitted declarations (TS4023), so the call site wraps it.
- */
-export const issueDraftSchema = z.object({
-    title: z.string(),
-    summary: z.string(),
-    stepsToReproduce: z.array(z.string()),
-    expected: z.string(),
-    actual: z.string()
-});
 
 export interface IIssueDraft {
     title: string;
@@ -24,8 +11,11 @@ export interface IIssueDraft {
 
 export interface IIssueDrafter {
     /*
-     * Never fails: with no AI provider configured, or when the model call errors, the reporter's
-     * own words are the draft. A verbatim report plus the timeline is still a usable issue.
+     * Never fails. The base implementation files the reporter's own words, which is a usable issue
+     * on its own — the timeline and screenshots carry the evidence either way.
+     *
+     * AI drafting decorates this rather than replacing it: see the bug reporter AI extension, which
+     * falls back to whatever this returns when no model role is configured or the call errors.
      */
     execute(payload: IBugReportPayload, timeline: string): Promise<IIssueDraft>;
 }

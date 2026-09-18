@@ -65,9 +65,19 @@ branch instead.
 
 Both go in the same `Authorization: Bearer` header, so the code doesn't care which you use.
 
-Drafting uses the **first provider configured in AI Power-Ups**, decrypted server-side, the
-same way AI image enrichment resolves its provider. Nothing to set: if a provider is there it
-gets used, and if it isn't, the report goes out word for word with the timeline attached.
+## AI drafting is not in this package
+
+The base files the reporter's own words. It has no `ai`, `zod` or ai-powerups dependency and no
+opinion about models.
+
+Drafting lives in `extensions/bugReportAi/`, internal to this repo, and decorates `IssueDrafter`.
+It registers a `bugReporter.draftIssue` capability with `defaultRole: "standard"`, so the model
+and any extra instructions are configurable per project in AI settings like any built-in AI
+feature. A decorator rather than a replacement because the base is the fallback: no model role
+configured, or the call failing, both return the verbatim draft.
+
+So a project without that extension gets a working bug reporter that files verbatim. Nothing
+degrades, and nothing has to be configured to turn it off.
 
 ## What gets captured
 
@@ -93,7 +103,7 @@ cmd+shift+b
   → the dialog opens; type or dictate, paste screenshots
   → POST /stream/bug-report carries the text, events, environment and images
   ↓ API, streaming back as it goes
-  → "drafting"    the first AI Power-Ups provider writes title / summary / steps
+  → "drafting"    the AI extension writes title / summary / steps, if installed
   ├─ token set
   │    → "uploading 1 of 2"   each image to the bug-report-assets branch
   │    → "creating"           the issue itself
@@ -110,7 +120,9 @@ A background task would be wrong twice over: there is somebody watching, and the
 base64 screenshots, routinely megabytes, which cannot fit in a task's persisted `input` under
 DynamoDB's 400 kB item cap.
 
-The model writes five fields: `title`, `summary`, `stepsToReproduce`, `expected`, `actual`.
+With the AI extension installed the model writes five fields: `title`, `summary`,
+`stepsToReproduce`, `expected`, `actual`. Without it, `title` is the reporter's first line and
+`summary` is their text, and the empty sections are omitted.
 Everything else in the body is assembled by `api/composeIssueBody.ts` from what was recorded,
 so the factual half of the issue can't be paraphrased or invented.
 
@@ -144,7 +156,7 @@ presentation/report/   presenter and dialogs                     (admin)
 commands/              the command palette entry                 (admin)
 gateway/               the SSE client for /stream/bug-report     (admin)
 api/config/            build params, and which mode they imply   (api)
-api/drafter/           the AI Power-Ups call                     (api)
+api/drafter/           the verbatim base drafter                 (api)
 api/github/            filed mode: uploads and issue creation    (api)
 api/buildComposeUrl.ts compose mode: the prefilled URL           (api)
 api/SubmitBugReportRoute.ts  the SSE route that orchestrates it   (api)
@@ -158,9 +170,5 @@ api/SubmitBugReportRoute.ts  the SSE route that orchestrates it   (api)
   on to carry. I have not measured where GitHub itself starts returning 414, so that number is
   the general-purpose safe limit rather than a tested one.
 - Build params are baked at build time, so rotating the token means a redeploy of the API.
-- `packages/webiny/src/api/ai-powerups.ts` now side-effect-imports the AI Power-Ups settings
-  augmentations. The package emits unresolved `~/...` specifiers in its `.d.ts`, so without
-  that, `settings.providers` is invisible to every consumer outside the package. Drop those
-  imports once ai-powerups rewrites aliases on build.
 - No PR is opened. A well-formed issue is the deliverable; wiring an agent to pick it up is a
   separate job.

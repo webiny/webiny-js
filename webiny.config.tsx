@@ -116,6 +116,10 @@ export const Extensions = () => {
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
 
+            {/* AI drafting for the bug reporter. Internal: the base feature ships with Webiny and
+                files reports verbatim; this decorates it. Inert unless `bugReporter` is on. */}
+            <Api.Extension src={"@/extensions/bugReportAi/Extension.ts"} />
+
             {/* Tasks 👇 */}
             <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
 
