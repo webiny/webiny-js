@@ -117,6 +117,9 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             lexicalGeneration: flags.isEnabled("aiPowerups.lexicalGeneration")
                                 ? project.package.features.aiPowerups?.options?.lexicalGeneration
                                 : false,
+                            adminAssistant: flags.isEnabled("aiPowerups.adminAssistant")
+                                ? project.package.features.aiPowerups?.options?.adminAssistant
+                                : false,
                             cms: {
                                 entryGeneration: flags.isEnabled("aiPowerups.cms.entryGeneration")
                                     ? project.package.features.aiPowerups?.options?.cms
