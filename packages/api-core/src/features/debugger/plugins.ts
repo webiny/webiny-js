@@ -67,11 +67,21 @@ const createStartPlugin = () => {
          */
         try {
             const request = context.container.resolve(Request);
-            const namespaces = parseNamespaceHeader(request.headers[DEBUG_HEADER]);
 
-            if (namespaces.length === 0) {
-                return;
-            }
+            /**
+             * A session starts on every request, and the permission check at flush decides whether
+             * anything is delivered or the whole thing is discarded.
+             *
+             * Nothing is required from the client. Asking for a request header would mean putting it
+             * on the CORS allow-list, which is cached in preflight responses at CloudFront and in
+             * the browser for a day - so rolling one out breaks requests intermittently until every
+             * cache entry expires.
+             *
+             * The header is still honoured when present, so a direct API client can narrow what it
+             * captures.
+             */
+            const requested = parseNamespaceHeader(request.headers[DEBUG_HEADER]);
+            const namespaces = requested.length > 0 ? requested : ["*"];
 
             context.container.resolve(Debugger).start({ namespaces });
         } catch {
