@@ -130,4 +130,31 @@ export const MenuBuilderFieldRenderer = createObjectFieldRenderer(({ field }) =>
  *
  * Unanswered, and the real risk: this is hand-written. It proves the ceiling is high enough, not
  * that a model reaches it. The next step is generating this same file from a prompt and diffing.
+ *
+ * ---
+ *
+ * Answered, by generating it cold and then running it in a browser (`GENERATED_SOURCE.ts`).
+ *
+ * 5. A model reaches the ceiling, but not on the first try, and compiling is not the bar. The cold
+ *    draft had one compile error; it had TWO more bugs that compile fine and only appear once the
+ *    thing is on screen with data in it:
+ *
+ *      - It passed custom node data FLAT to `Tree` and read it back flat. Only the read side is
+ *        flat. `NodeDto.data` goes in nested, `WithDefaultNodeData<T>` comes back merged. Both the
+ *        cold draft and this hand-written file got that asymmetry wrong, in opposite halves.
+ *      - It never passed `sort`, so `Tree` fell through to react-dnd-treeview's default and
+ *        alphabetized the rows by label. A menu builder whose entire feature is drag-to-reorder
+ *        silently reordered itself the moment a user typed a label. Nothing throws; the form data
+ *        stays correct; only the screen disagrees with it.
+ *
+ * 6. So a compile-and-retry loop is necessary and not sufficient. The `sort` bug survives any
+ *    amount of type checking, and a generator has no way to know the default is "sorted" unless it
+ *    is told. Whatever ships needs either a render-and-check step, or `Tree`'s defaults documented
+ *    in whatever type surface the generator is handed.
+ *
+ * 7. The mechanism is fine. Generated string -> esbuild-wasm in the browser -> `new Function` with
+ *    the admin's own React and design system injected -> a working renderer bound to a real
+ *    `FormModel`, no build step and no page reload. The per-item error boundary in `FormView` also
+ *    contained both failures above rather than blanking the page, which is what makes iterating on
+ *    generated code survivable.
  */

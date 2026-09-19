@@ -47,7 +47,7 @@ const Renderer = createObjectFieldRenderer(({ field }) => {
                 ? labelField.value
                 : "Untitled menu item";
 
-        return { id: item.key, label, parentId: ROOT_ID, droppable: false, item };
+        return { id: item.key, label, parentId: ROOT_ID, droppable: false, data: { item } };
     });
 
     const handleDrop = (newTree, options) => {
@@ -73,6 +73,7 @@ const Renderer = createObjectFieldRenderer(({ field }) => {
                 <Tree
                     rootId={ROOT_ID}
                     nodes={nodes}
+                    sort={false}
                     canDrag={() => !field.disabled}
                     canDrop={(_, options) => options.dropTargetId === ROOT_ID}
                     onDrop={handleDrop}

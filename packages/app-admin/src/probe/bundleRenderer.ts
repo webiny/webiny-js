@@ -1,16 +1,20 @@
-import { build, initialize } from "esbuild-wasm";
+import { build, initialize, version } from "esbuild-wasm";
 
-let initialized = false;
+let initialized: Promise<void> | null = null;
 
-async function ensureInitialized(): Promise<void> {
-    if (initialized) {
-        return;
+/*
+ * The wasm binary must be the exact version of the JS half. A mismatch throws inside the worker,
+ * where nothing rejects this promise — the caller just waits forever — so take the version from the
+ * package itself rather than writing it out and letting it drift on the next bump.
+ */
+function ensureInitialized(): Promise<void> {
+    if (!initialized) {
+        initialized = initialize({
+            wasmURL: `https://unpkg.com/esbuild-wasm@${version}/esbuild.wasm`,
+            worker: true
+        });
     }
-    await initialize({
-        wasmURL: "https://unpkg.com/esbuild-wasm@0.28.1/esbuild.wasm",
-        worker: true
-    });
-    initialized = true;
+    return initialized;
 }
 
 const GLOBAL_NAME = "__adminRenderer__";
