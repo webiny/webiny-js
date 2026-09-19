@@ -29,6 +29,14 @@ const KINDS = [
     contract: "packages/ai-powerups/src/api/features/AdminComponents/rendererContract.generated.ts",
     exportName: "RENDERER_CONTRACT",
     withTypeSurface: true
+  },
+  {
+    source: "skills/shared/extensions/menu.md",
+    skill: "skills/user-skills/admin/extensions/menu/SKILL.md",
+    contract: "packages/ai-powerups/src/api/features/AdminComponents/menuContract.generated.ts",
+    exportName: "MENU_CONTRACT",
+    /* A menu is configuration, not a component. There is no component surface to describe. */
+    withTypeSurface: false
   }
 ];
 
