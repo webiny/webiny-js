@@ -14,6 +14,9 @@ import { CmsEntryWizardExtension } from "~/admin/presentation/CmsEntryWizard/Ext
 import { CmsCompareEntryRevisions } from "~/admin/presentation/CmsCompareEntryRevisions/Extension.js";
 import { AiPowerUpsHeadlessFeatures } from "~/admin/features/feature.js";
 import { AiPromptFormFeature } from "~/admin/presentation/AiPromptFormFactory/feature.js";
+import { AdminComponentsFeature } from "~/admin/features/adminComponents/feature.js";
+import { GeneratedFieldRenderers } from "~/admin/presentation/GeneratedFieldRenderers/GeneratedFieldRenderers.js";
+import { GeneratedMenus } from "./presentation/GeneratedMenus/GeneratedMenus.js";
 import { Routes } from "./routes.js";
 
 const { Menu, Route } = AdminConfig;
@@ -66,7 +69,12 @@ export const Extension = () => {
             <RegisterFeature feature={AiPromptFormFeature} />
             <RegisterFeature feature={AiPowerUpsHeadlessFeatures} />
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />
+            <RegisterFeature feature={AdminComponentsFeature} />
             <AiPowerUpsSettings />
+            {/* AI-authored field renderers, loaded from storage and registered by name. */}
+            <GeneratedFieldRenderers />
+            {/* AI-authored sidebar items. Configuration, so nothing is evaluated. */}
+            <GeneratedMenus />
             {/* Website Builder Extension */}
             <WbContentGeneration />
             {/* Headless CMS Extension */}
