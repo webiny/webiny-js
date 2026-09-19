@@ -5,6 +5,9 @@ interface LicenseOptions {
     recordLocking?: boolean;
     folderLevelPermissions?: boolean;
     hcmsFieldPermissions?: boolean;
+    collaboration?: boolean;
+    comments?: boolean;
+    activityLog?: boolean;
 }
 
 export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProjectLicense => {
@@ -65,8 +68,13 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                     }
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
-                    enabled: false,
-                    options: {}
+                    // Nested, and `canUseActivityLog()` checks the parent first, so a suite that
+                    // wants the child has to grant both.
+                    enabled: options?.collaboration ?? false,
+                    options: {
+                        comments: options?.comments ?? false,
+                        activityLog: options?.activityLog ?? false
+                    }
                 }
             }
         }

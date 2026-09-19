@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-aco/tsconfig.build.json" },
+    { "path": "../app-activity-log/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-admin-ui/tsconfig.build.json" },
     { "path": "../app-audit-logs/tsconfig.build.json" },
@@ -38,6 +39,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
       "@webiny/app-aco": ["../app-aco/src"],
+      "@webiny/app-activity-log/*": ["../app-activity-log/src/*"],
+      "@webiny/app-activity-log": ["../app-activity-log/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-admin-ui/*": ["../app-admin-ui/src/*"],

@@ -13,6 +13,7 @@ import { RecordLockingAppFeature } from "@webiny/api-record-locking";
 import { AuditLogsFeature } from "@webiny/api-audit-logs";
 import { WebhooksFeature } from "@webiny/webhooks/api";
 import { AcoFeature } from "@webiny/api-aco";
+import { ActivityLogAppFeature } from "@webiny/api-activity-log";
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
@@ -126,6 +127,12 @@ export async function registerApiRequestStack(
     // ── Workflows ──────────────────────────────────────────────
     WorkflowsFeature.register(container);
     CmsWorkflowsFeature.register(container);
+
+    // ── Activity log ───────────────────────────────────────────
+    // After CMS and Workflows, because it records activity from both. Licence-gated inside the
+    // feature on `collaboration.activityLog`, so registering it unconditionally here costs nothing
+    // for a project without the entitlement.
+    ActivityLogAppFeature.register(container);
 
     // ── Scheduler + scheduler transport ────────────────────────
     SchedulerFeature.register(container);

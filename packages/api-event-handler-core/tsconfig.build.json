@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-activity-log/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
@@ -34,6 +35,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-activity-log/*": ["../api-activity-log/src/*"],
+      "@webiny/api-activity-log": ["../api-activity-log/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
