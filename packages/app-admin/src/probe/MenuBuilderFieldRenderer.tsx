@@ -190,4 +190,22 @@ export const MenuBuilderFieldRenderer = createObjectFieldRenderer(({ field }) =>
  *    `FormModel`, no build step and no page reload. The per-item error boundary in `FormView` also
  *    contained both failures above rather than blanking the page, which is what makes iterating on
  *    generated code survivable.
+ *
+ * 10. So the contract is generated now, and that closed it. A script reads the built types of
+ *     `admin-ui` and `app-admin` and emits the component props, the size unions and the field view
+ *     model; the hand-written half keeps only what no type can state, like `sort={false}` being
+ *     effectively mandatory. Filtering out anything declared inside @types/react is what makes it
+ *     readable: `InputProps` resolves to 309 properties, 292 of them inherited DOM attributes, and
+ *     the 17 that remain are the ones a caller actually chooses.
+ *
+ *     The next renderer generated after that, a drag-to-reorder checklist asked for cold, got every
+ *     one of the earlier bugs right on the first attempt and needed no correction round: `nodes` and
+ *     `renderer` rather than the wrapped library's names, `sort={false}`, string ids, custom data
+ *     nested going in and flat coming back, `aria-label` on IconButton, and both `<Text>children</Text>`
+ *     and `<FormComponentLabel text={...} />` correct in the same file, which is the exact
+ *     distinction it had generalised away twice before.
+ *
+ *     One sample is not a measurement, and the generator cannot help with anything that is a
+ *     judgement rather than a shape. But the failures it does remove were the entire correction
+ *     loop up to this point.
  */
