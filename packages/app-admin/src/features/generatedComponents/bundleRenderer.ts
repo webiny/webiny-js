@@ -20,7 +20,7 @@ function ensureInitialized(): Promise<void> {
 const GLOBAL_NAME = "__adminRenderer__";
 
 /**
- * PROBE. Wrap generated source in the factory the loader expects, and transpile it.
+ * Wrap generated source in the factory the loader expects, and transpile it.
  *
  * The generated file is written as if it had imports, because that is what a model produces well and
  * what a human can read. They are stripped and replaced by a destructure of the injected runtime, so

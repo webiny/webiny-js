@@ -152,7 +152,22 @@ export const MenuBuilderFieldRenderer = createObjectFieldRenderer(({ field }) =>
  *    is told. Whatever ships needs either a render-and-check step, or `Tree`'s defaults documented
  *    in whatever type surface the generator is handed.
  *
- * 7. The mechanism is fine. Generated string -> esbuild-wasm in the browser -> `new Function` with
+ * 7. Then the whole loop ran for real: a prompt in the command palette, the assistant calling
+ *    `createFieldRenderer`, the source stored in the CMS, and the admin loading it on the next
+ *    page load. It worked on the second attempt, and the first failure is the useful one.
+ *
+ *    Given prose telling it to pass `sort={false}` and to nest node data, the model wrote
+ *    `tree={...}` and `render={...}` — the prop names of `@minoru/react-dnd-treeview`, which
+ *    `Tree` wraps but does not re-expose. It knew the underlying library and reached for its API.
+ *    JSX accepts unknown props silently, so the renderer compiled, loaded, registered, and drew an
+ *    empty box. Replacing the prose with the literal signature fixed it on the next try.
+ *
+ *    So the contract has to name the props, not describe them, and the failure that remains is the
+ *    one that cannot be prompted away: a wrapper whose underlying library is famous enough for the
+ *    model to have an opinion about. That argues for handing over the real type surface rather
+ *    than a hand-written summary, because this list only grows as more of `admin-ui` gets used.
+ *
+ * 8. The mechanism is fine. Generated string -> esbuild-wasm in the browser -> `new Function` with
  *    the admin's own React and design system injected -> a working renderer bound to a real
  *    `FormModel`, no build step and no page reload. The per-item error boundary in `FormView` also
  *    contained both failures above rather than blanking the page, which is what makes iterating on

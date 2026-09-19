@@ -19,6 +19,7 @@ import { ExtractFrontmatterFeature } from "./features/ExtractFrontmatter/feature
 import { CmsGenerateEntryContentFeature } from "./features/CmsGenerateEntryContent/feature.js";
 import { CmsResolveImageToolFeature } from "./features/CmsResolveImageTool/feature.js";
 import { AdminAssistantFeature } from "./features/AdminAssistant/index.js";
+import { AdminComponentsFeature } from "./features/AdminComponents/index.js";
 import { CmsCompareEntryRevisionsFeature } from "./features/CmsCompareEntryRevisions/feature.js";
 import { WbTranslatePageFeature } from "./features/WbTranslatePage/feature.js";
 import { CmsCompareEntryRevisionsSchema } from "./graphql/CmsCompareEntryRevisionsSchema.js";
@@ -66,6 +67,7 @@ export const Extension = createFeature({
         CmsGenerateEntryContentFeature.register(container);
         CmsResolveImageToolFeature.register(container);
         AdminAssistantFeature.register(container);
+        AdminComponentsFeature.register(container);
         ExtractFrontmatterFeature.register(container);
 
         // Registered unconditionally. The WCP license gate lives inside the feature's

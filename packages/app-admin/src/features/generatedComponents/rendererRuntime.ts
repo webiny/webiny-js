@@ -8,12 +8,16 @@ import {
 import type { IFieldVM } from "~/features/formModel/abstractions.js";
 
 /**
- * PROBE. What a generated admin renderer is handed, and how it gets loaded.
+ * What a generated admin renderer is handed, and how it gets loaded.
  *
- * The injection set is deliberately everything the admin already loads, and nothing else — a
+ * The injection set is deliberately everything the admin already loads, and nothing else. A
  * generated renderer must not be able to pull a dependency of its own. `observer` is in here because
  * the cold-generation probe proved it has to be: without it a child input does not re-render when
  * its own value changes, and the renderer still compiles, which is the worst way to be wrong.
+ *
+ * `version` is on the wire because stored source outlives the code that runs it. A renderer written
+ * against v1 is still in someone's CMS when this set changes, and the loader needs to be able to say
+ * so rather than fail on a missing name.
  */
 export interface RendererRuntime {
     version: "1";

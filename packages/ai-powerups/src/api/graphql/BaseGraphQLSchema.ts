@@ -6,6 +6,7 @@ import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstraction
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
 import { ListAiCapabilitiesUseCase } from "~/api/features/Capabilities/index.js";
+import { AdminComponentsRepository } from "~/api/features/AdminComponents/index.js";
 import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
 import {
     WB_GENERATE_PAGE_CONTENT_TASK_ID,
@@ -35,9 +36,18 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 defaultRole: String!
             }
 
+            type AdminComponent {
+                id: String!
+                kind: String!
+                name: String!
+                description: String!
+                source: String!
+            }
+
             type AiPowerUpsQuery {
                 listModels: [AiModel!]!
                 listCapabilities: [AiCapability!]!
+                listAdminComponents(kind: String!): [AdminComponent!]!
                 getSettings: JSON
             }
 
@@ -112,6 +122,27 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             dependencies: [ListAiCapabilitiesUseCase],
             resolver: (useCase: ListAiCapabilitiesUseCase.Interface) => {
                 return async () => useCase.execute();
+            }
+        });
+
+        /*
+         * The admin asks for one kind at a time. It loads `fieldRenderer` on boot, and a later kind
+         * (menus, routes) is a separate call from whatever registers that kind, not a filter applied
+         * to one big list the admin has to sort out itself.
+         *
+         * Returns an empty list rather than failing when the feature is off: the admin always asks,
+         * and a project without AI Power-Ups should render normally, not show an error on every page.
+         */
+        builder.addResolver<{ kind: string }>({
+            path: "AiPowerUpsQuery.listAdminComponents",
+            dependencies: [[AdminComponentsRepository, { optional: true }]],
+            resolver: (repository?: AdminComponentsRepository.Interface) => {
+                return async ({ args }) => {
+                    if (!repository) {
+                        return [];
+                    }
+                    return repository.listEnabled(args.kind);
+                };
             }
         });
 

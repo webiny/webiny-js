@@ -117,6 +117,23 @@ export type {
     IAdminAssistantViewModel
 } from "./features/adminAssistant/index.js";
 
+// Generated components — the browser half of AI-authored admin UI. Takes renderer source stored
+// elsewhere, transpiles and evaluates it here, and registers the result as a field renderer. The
+// storage and the tool that writes into it live in @webiny/ai-powerups.
+export {
+    GeneratedFieldRenderer,
+    useGeneratedRenderer,
+    bundleRenderer,
+    loadRenderer,
+    createRendererRuntime
+} from "./features/generatedComponents/index.js";
+export type {
+    GeneratedFieldRendererProps,
+    GeneratedRendererState,
+    RendererRuntime,
+    BundledRenderer
+} from "./features/generatedComponents/index.js";
+
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
 // anywhere in a view; the header renders every mounted one as the trail.
 export { Breadcrumb } from "./config/AdminConfig/Breadcrumbs.js";
