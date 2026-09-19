@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AiSdkToolDefinition, AiSdkToolHandler } from "@webiny/api-core/features/ai/index.js";
 import { AdminComponentsRepository } from "./abstractions.js";
-import { RENDERER_CONTRACT } from "./rendererContract.js";
+import { RENDERER_CONTRACT } from "./rendererContract.generated.js";
 
 const inputSchema = z.object({
     name: z

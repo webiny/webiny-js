@@ -29,6 +29,34 @@ const GLOBAL_NAME = "__adminRenderer__";
  */
 const IMPORT_LINE = /^\s*import\s[\s\S]*?;\s*$/gm;
 
+/**
+ * The `admin-ui` components a generated renderer may use, by name.
+ *
+ * This is the definition, not a copy of one. The wrapper below destructures exactly these, and the
+ * contract handed to the assistant is generated from this same list, so a component cannot be
+ * described as available without being in scope or vice versa. Adding one here is the only step
+ * needed; regenerate the contract afterwards.
+ */
+export const INJECTED_COMPONENTS = [
+    "Button",
+    "Icon",
+    "IconButton",
+    "Input",
+    "Text",
+    "Tree",
+    "FormComponentLabel",
+    "FormComponentDescription"
+] as const;
+
+/** The non-component globals a generated renderer is given. */
+export const INJECTED_GLOBALS = [
+    "React",
+    "ui",
+    "observer",
+    "createFieldRenderer",
+    "createObjectFieldRenderer"
+] as const;
+
 export const wrapSource = (source: string): string => {
     const body = source
         .replace(IMPORT_LINE, "")
@@ -37,11 +65,8 @@ export const wrapSource = (source: string): string => {
 
     return `
 export function createRenderer(runtime) {
-    const { React, ui, observer, createFieldRenderer, createObjectFieldRenderer } = runtime.dependencies;
-    const {
-        Button, Icon, IconButton, Input, Text, Tree,
-        FormComponentLabel, FormComponentDescription
-    } = ui;
+    const { ${INJECTED_GLOBALS.join(", ")} } = runtime.dependencies;
+    const { ${INJECTED_COMPONENTS.join(", ")} } = ui;
 
     ${body}
 

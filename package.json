@@ -68,6 +68,7 @@
     "react-dom": "18.3.1",
     "semver": "^7.8.5",
     "ts-expect": "^1.3.0",
+    "ts-morph": "^28.0.0",
     "tsx": "4.23.12",
     "type-fest": "^5.8.0",
     "typescript": "^7.0.2",
@@ -153,8 +154,9 @@
     "webiny-admin-storybook-docs": "cd packages/admin-ui && yarn storybook-docs",
     "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
     "webiny-versions": "node ./scripts/webinyVersions.js",
-    "generate-skills": "tsx ./scripts/generateSkills/src/bin.ts",
-    "webiny-standalone": "node packages/cli-standalone/dist/bin.js"
+    "generate-skills": "tsx ./scripts/generateSkills/src/bin.ts && yarn generate-extension-contracts",
+    "webiny-standalone": "node packages/cli-standalone/dist/bin.js",
+    "generate-extension-contracts": "node scripts/generateExtensionContracts.mjs"
   },
   "yargs": {
     "populate--": true
