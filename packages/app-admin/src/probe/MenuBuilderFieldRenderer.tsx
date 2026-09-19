@@ -167,7 +167,25 @@ export const MenuBuilderFieldRenderer = createObjectFieldRenderer(({ field }) =>
  *    model to have an opinion about. That argues for handing over the real type surface rather
  *    than a hand-written summary, because this list only grows as more of `admin-ui` gets used.
  *
- * 8. The mechanism is fine. Generated string -> esbuild-wasm in the browser -> `new Function` with
+ * 8. Wiring it into the CMS field editor found three more of the same kind, and at that point the
+ *    pattern is the finding rather than the individual bugs. Every one was a plausible guess at an
+ *    API that happens to be wrong, and none of them threw at the point of the mistake:
+ *
+ *      - `<Text text={...} />`. `Text` takes children. `Button` and `FormComponentLabel` take a
+ *        `text` prop, so the model generalised across a design system that is not consistent.
+ *        React drops the unknown prop and renders an empty element.
+ *      - Iterating `field.validation` looking for a maxLength rule. It is a RESULT,
+ *        `{ isValid, message }`, not a list of rules. That one did throw, which made it the easiest
+ *        of the three to find.
+ *      - TypeScript annotations in the source. That one was mine: the bundler used esbuild's `jsx`
+ *        loader while every label on the input said TSX, so the first `: any` was a syntax error.
+ *
+ *    Three rounds of "add the missing thing to the prose contract" each fixed the specific bug and
+ *    none of them fixed the class. The contract is now most of a hand-written type definition, which
+ *    is the argument for generating it from the real types instead: the list of ways to be plausibly
+ *    wrong about `admin-ui` is as long as `admin-ui` is.
+ *
+ * 9. The mechanism is fine. Generated string -> esbuild-wasm in the browser -> `new Function` with
  *    the admin's own React and design system injected -> a working renderer bound to a real
  *    `FormModel`, no build step and no page reload. The per-item error boundary in `FormView` also
  *    contained both failures above rather than blanking the page, which is what makes iterating on

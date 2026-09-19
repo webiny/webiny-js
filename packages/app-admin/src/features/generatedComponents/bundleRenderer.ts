@@ -59,7 +59,13 @@ export const bundleRenderer = async (source: string): Promise<BundledRenderer> =
     await ensureInitialized();
 
     const result = await build({
-        stdin: { contents: wrapSource(source), loader: "jsx", resolveDir: "/" },
+        /*
+         * `tsx`, not `jsx`. Everything about this calls the input TSX, and a model asked for TSX
+         * writes type annotations without being told to. Under the `jsx` loader the first `: any`
+         * is a syntax error, which reads as "the generated code is broken" when the loader was the
+         * thing that was wrong. Types are erased here, never checked.
+         */
+        stdin: { contents: wrapSource(source), loader: "tsx", resolveDir: "/" },
         bundle: true,
         format: "iife",
         globalName: GLOBAL_NAME,

@@ -2,10 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useFeature } from "@webiny/app";
 import { GeneratedFieldRenderer } from "@webiny/app-admin";
 import { AdminComponentsFeature } from "~/admin/features/adminComponents/feature.js";
+import { useRegisterCmsFieldRenderers } from "~/admin/features/adminComponents/useRegisterCmsFieldRenderers.js";
 import type { AdminComponent } from "~/admin/features/adminComponents/abstractions.js";
 
 /**
- * Loads every stored field renderer and registers it.
+ * Loads every stored field renderer and registers it in both places it has to be.
+ *
+ * A generated renderer needs two registrations to be usable, and they are separate registries:
+ * `AdminConfig.Form.FieldRenderer` resolves a name to a component when a form renders, and
+ * `CmsFieldRenderer` is the catalogue the field editor's Appearance tab offers. One without the
+ * other gives you either a renderer nothing can select, or an option that draws nothing.
  *
  * Mounted once, near the root, because a field renderer has to exist before any form asks for it.
  * Fetched once per admin load rather than watched: a renderer the assistant writes mid-session
@@ -40,6 +46,9 @@ export const GeneratedFieldRenderers = () => {
             cancelled = true;
         };
     }, [gateway]);
+
+    /* Makes each one selectable in the field editor; the JSX below makes it render. */
+    useRegisterCmsFieldRenderers(components);
 
     return (
         <>

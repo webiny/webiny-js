@@ -9,9 +9,26 @@ const inputSchema = z.object({
         .describe(
             "The renderer name a field will ask for, e.g. 'menuBuilder'. camelCase, no spaces."
         ),
+    label: z
+        .string()
+        .describe(
+            "Short title for the renderer list, in the style of the built-in ones: 'Text Input', 'Hidden Field'. Two or three words, no trailing full stop."
+        ),
     description: z
         .string()
-        .describe("One line on what this renderer does, shown to whoever reviews it later."),
+        .describe(
+            "One sentence under the label, saying what it does. Written for whoever is choosing between renderers, so say how it differs from the default rather than repeating the label."
+        ),
+    fieldType: z
+        .string()
+        .describe(
+            "The CMS field type this renderer is for, e.g. 'text', 'long-text', 'number', 'boolean', 'datetime', 'object', 'file', 'ref', 'json'. Only fields of this type will offer it. Use describeContentModel to confirm the type of the field you are targeting rather than assuming it."
+        ),
+    appliesTo: z
+        .enum(["single", "list", "both"])
+        .describe(
+            "Whether this renderer handles a single value, a list of values, or either. A renderer that reads field.items is 'list'; one that reads field.value is 'single'. Getting this wrong offers the renderer on fields whose value shape it cannot read."
+        ),
     source: z.string().describe(`The renderer's TSX source. ${RENDERER_CONTRACT}`)
 });
 
@@ -24,7 +41,10 @@ class CreateFieldRendererToolHandlerImpl implements AiSdkToolHandler.Interface<I
         const component = await this.repository.create({
             kind: "fieldRenderer",
             name: input.name,
+            label: input.label,
             description: input.description,
+            fieldType: input.fieldType,
+            appliesTo: input.appliesTo,
             source: input.source
         });
 
@@ -35,8 +55,11 @@ class CreateFieldRendererToolHandlerImpl implements AiSdkToolHandler.Interface<I
              * The source is not transpiled here, so "created" is not "works". The admin bundles it on
              * next load and shows the failure inline if it does not compile. Say so, rather than
              * letting the assistant report a successful write as a working renderer.
+             *
+             * The second sentence is the one users need: saving a renderer does not apply it. It has
+             * to be picked, per field, in the model editor.
              */
-            note: `Saved. It is applied to fields using renderer "${component.name}" the next time the admin loads. If it fails to compile, the error appears where the field is rendered.`
+            note: `Saved. Reload the admin, then pick "${component.label}" under Appearance on any ${component.fieldType} field to use it. It is offered only on ${component.fieldType} fields. If the source fails to compile, the error appears in place of the field.`
         };
     }
 }
@@ -58,7 +81,7 @@ class CreateFieldRendererToolImpl implements AiSdkToolDefinition.Interface<Input
     readonly name = "createFieldRenderer";
     readonly title = "Create field renderer";
     readonly description =
-        "Creates a custom field renderer for the admin, from TSX source you write. Use this when someone asks to change how a field looks or behaves in the admin, e.g. 'make the menu field a drag-and-drop builder'. The source runs in the browser with no imports available — read the source parameter's description before writing it. Requires user approval.";
+        "Creates a custom field renderer for the admin, from TSX source you write. Use this when someone asks to change how a field looks or behaves in the admin, e.g. 'make the menu field a drag-and-drop builder'. The source runs in the browser with no imports available, so read the source parameter's description before writing it. Requires user approval.";
     readonly inputSchema = inputSchema;
     readonly annotations = { readOnlyHint: false };
     readonly handler = CreateFieldRendererToolHandler;

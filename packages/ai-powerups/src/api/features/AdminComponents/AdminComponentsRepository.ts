@@ -3,22 +3,35 @@ import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/cont
 import {
     AdminComponentModelProvider,
     AdminComponentsRepository as Abstraction,
-    type AdminComponent
+    type AdminComponent,
+    type AdminComponentAppliesTo
 } from "./abstractions.js";
 
 interface AdminComponentValues {
     kind: string;
     name: string;
+    label: string;
     description: string;
+    fieldType: string;
+    appliesTo: string;
     source: string;
     enabled: boolean;
 }
+
+/* Anything unrecognised widens to "both" rather than narrowing to nothing: a renderer that offers
+ * itself too widely is a visible mistake, one that offers itself nowhere looks like a failed save. */
+const toAppliesTo = (value: string | undefined): AdminComponentAppliesTo =>
+    value === "single" || value === "list" ? value : "both";
 
 const toComponent = (id: string, values: Partial<AdminComponentValues>): AdminComponent => ({
     id,
     kind: values.kind ?? "",
     name: values.name ?? "",
+    /* Older entries predate `label`; the name is a usable fallback in the renderer list. */
+    label: values.label || values.name || "",
     description: values.description ?? "",
+    fieldType: values.fieldType ?? "",
+    appliesTo: toAppliesTo(values.appliesTo),
     source: values.source ?? "",
     enabled: values.enabled !== false
 });

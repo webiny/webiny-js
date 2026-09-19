@@ -40,7 +40,10 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 id: String!
                 kind: String!
                 name: String!
+                label: String!
                 description: String!
+                fieldType: String!
+                appliesTo: String!
                 source: String!
             }
 

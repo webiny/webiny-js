@@ -26,7 +26,17 @@ class AdminComponentModelFactory implements ModelFactory.Interface {
             kind: fields.text().label("Kind"),
             /* The renderer name a field asks for, e.g. `menuBuilder`. Unique per kind, in practice. */
             name: fields.text().label("Name"),
+            /* Short human label for the renderer list; `description` is the line under it. */
+            label: fields.text().label("Label"),
             description: fields.text().label("Description"),
+            /*
+             * Which fields may select this renderer, in the CMS field editor's Appearance tab.
+             * `fieldType` is a CMS field type (`text`, `object`, ...) and `appliesTo` is
+             * single/list/both. Without these a renderer would be offered on every field, including
+             * the ones whose value shape it cannot read.
+             */
+            fieldType: fields.text().label("Field type"),
+            appliesTo: fields.text().label("Applies to"),
             /* TSX, as written. Transpiled in the browser, never on the way in. */
             source: fields.longText().label("Source"),
             enabled: fields.boolean().label("Enabled")

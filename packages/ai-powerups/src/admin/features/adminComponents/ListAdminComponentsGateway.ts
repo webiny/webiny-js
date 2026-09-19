@@ -11,7 +11,10 @@ const LIST_ADMIN_COMPONENTS = /* GraphQL */ `
                 id
                 kind
                 name
+                label
                 description
+                fieldType
+                appliesTo
                 source
             }
         }
