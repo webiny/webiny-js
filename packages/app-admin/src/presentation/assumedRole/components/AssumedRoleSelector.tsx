@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { DropdownMenu, Icon, useToast } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
+import { Permission } from "~/features/accessManagement/constants.js";
 import { AssumedRoleSelector as BaseAssumedRoleSelector } from "~/base/ui/AssumedRoleSelector.js";
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { AssumedRolePresenterFeature } from "../feature.js";
@@ -44,11 +45,15 @@ const AssumedRoleSelectorView = observer(() => {
     const [opened, setOpened] = useState(false);
 
     /*
-     * While previewing, the identity no longer holds "*", so the full-access check alone would
-     * hide the control and strand whoever started the preview. An active preview keeps it visible.
+     * Gated on managing roles, the same permission that gates the Roles view, rather than on
+     * holding "*" literally. Whether full access shows up as a single "*" entry is a detail of how
+     * the role was stored, and the real boundary is the API: it refuses the assume-role header
+     * from anyone whose own permissions fall short, so this check only decides who sees the
+     * control. An active preview keeps it visible — the previewed role usually cannot manage
+     * roles, and hiding the control would strand whoever started the preview.
      */
-    const hasFullAccess = identity.getPermission("*", true) !== null;
-    if (!hasFullAccess && !vm.assumedRole) {
+    const canManageRoles = identity.getPermissions(Permission.Roles).length > 0;
+    if (!canManageRoles && !vm.assumedRole) {
         return null;
     }
 
