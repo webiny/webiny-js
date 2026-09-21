@@ -1,7 +1,6 @@
 const uniqid = require("uniqid");
 const del = require("del");
 const lodashSome = require("lodash/some");
-const { addMatchImageSnapshotPlugin } = require("cypress-image-snapshot/plugin");
 
 module.exports = (on, config) => {
     config.env.TEST_RUN_ID = uniqid();
@@ -21,8 +20,6 @@ module.exports = (on, config) => {
             }
         }
     });
-
-    addMatchImageSnapshotPlugin(on, config);
 
     return config;
 };
