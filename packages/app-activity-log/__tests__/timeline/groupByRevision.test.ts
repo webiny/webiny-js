@@ -196,6 +196,43 @@ describe("summariseItem", () => {
         expect(summariseItem(item!).summary).toBeNull();
     });
 
+    it("withholds the row's sentence when the row holds more than one run", () => {
+        // The same judgement as refusing to name a field on a truncated changeset: the row stands
+        // for more than the sentence on offer, and offering it anyway attributes a statement to
+        // saves it was never about.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 50), summary: "Rewrote the intro." }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Reworded the title." })
+        ]);
+
+        expect(summariseItem(item!).summary).toBeNull();
+    });
+
+    it("carries the sentence when several saves belong to one run", () => {
+        // Several saves is not several runs. A row that maps onto one run is unambiguous however
+        // many saves it holds.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" })
+        ]);
+
+        expect(summariseItem(item!).summary?.text).toBe("Rewrote the intro.");
+    });
+
+    it("never puts pending beside a sentence the row already has", () => {
+        // "Summarising…" beneath a settled sentence reads as though that sentence is the one being
+        // worked on. It is not — the run still in flight is a different run.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a", summaryPending: true })
+        ]);
+
+        const summary = summariseItem(item!);
+
+        expect(summary.summary?.text).toBe("Rewrote the intro.");
+        expect(summary.summaryPending).toBe(false);
+    });
+
     it("reports pending when any save in the row is still waiting", () => {
         // The pending record is the *oldest* in the row, which is where it really sits: the save
         // that dispatched the job is the one carrying the values, and later saves join it. A
@@ -247,7 +284,9 @@ describe("discloseItem", () => {
             })
         ]);
 
-        expect(discloseItem(item!).saves[0]!.changes[0]!.text).toBe("Sections › Blocks › Title");
+        expect(discloseItem(item!).runs[0]!.saves[0]!.changes[0]!.text).toBe(
+            "Sections › Blocks › Title"
+        );
     });
 
     it("states that values are not available rather than leaving it to be inferred", () => {
@@ -272,29 +311,34 @@ describe("discloseItem", () => {
 
         const disclosure = discloseItem(item!);
 
-        expect(Object.keys(disclosure).sort()).toEqual([
-            "saves",
-            "summaries",
-            "truncated",
-            "valuesAvailable"
-        ]);
+        expect(Object.keys(disclosure).sort()).toEqual(["runs", "truncated", "valuesAvailable"]);
 
-        for (const save of disclosure.saves) {
-            expect(Object.keys(save).sort()).toEqual([
-                "changes",
+        for (const run of disclosure.runs) {
+            expect(Object.keys(run).sort()).toEqual([
+                "grouped",
                 "id",
-                "sentence",
-                "timestamp",
-                "truncated"
+                "pending",
+                "saves",
+                "summary"
             ]);
 
-            for (const change of save.changes) {
-                expect(Object.keys(change).sort()).toEqual([
-                    "ancestors",
-                    "label",
-                    "operation",
-                    "text"
+            for (const save of run.saves) {
+                expect(Object.keys(save).sort()).toEqual([
+                    "changes",
+                    "id",
+                    "sentence",
+                    "timestamp",
+                    "truncated"
                 ]);
+
+                for (const change of save.changes) {
+                    expect(Object.keys(change).sort()).toEqual([
+                        "ancestors",
+                        "label",
+                        "operation",
+                        "text"
+                    ]);
+                }
             }
         }
     });
@@ -309,23 +353,107 @@ describe("discloseItem", () => {
 
         const disclosure = discloseItem(item!);
 
-        expect(disclosure.saves.map(save => save.changes.map(change => change.label))).toEqual([
-            ["Title"],
-            ["Body"]
-        ]);
+        expect(
+            disclosure.runs.flatMap(run => run.saves.map(save => save.changes.map(c => c.label)))
+        ).toEqual([["Title"], ["Body"]]);
     });
 
-    it("carries the summaries a row holds, newest first", () => {
+    it("attaches each sentence to the run it covers, newest first", () => {
+        // Three saves, two runs, and nothing stacked: each sentence sits with the saves it
+        // describes rather than in a block above all of them.
         const [item] = collapseConsecutive([
-            record({ timestamp: at(10, 20), summary: "Rewrote the intro." }),
-            record({ timestamp: at(10, 15) }),
-            record({ timestamp: at(10, 10), summary: "Tightened the pricing copy." })
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Tightened the pricing copy." })
         ]);
 
-        expect(discloseItem(item!).summaries.map(summary => summary.text)).toEqual([
+        const runs = discloseItem(item!).runs;
+
+        expect(runs.map(run => run.summary?.text ?? null)).toEqual([
             "Rewrote the intro.",
             "Tightened the pricing copy."
         ]);
+        expect(runs.map(run => run.saves.map(save => save.id))).toEqual([["a", "b"], ["c"]]);
+    });
+
+    it("groups by the run each record names, not by where it sits", () => {
+        // The reason membership is stored at all. Interleaved saves are ordinary — a run debounces
+        // on a minute and a row collapses on an hour — and grouping by adjacency would put a
+        // sentence at the head of saves it never covered.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 30), summary: "Rewrote the intro." }),
+            record({ id: "x", timestamp: at(10, 25), summary: "Reworded the title." }),
+            record({ id: "b", timestamp: at(10, 20), summaryRunId: "a" })
+        ]);
+
+        const runs = discloseItem(item!).runs;
+
+        expect(runs.map(run => run.id)).toEqual(["a", "x"]);
+        // `b` sits two positions from `a` and still belongs to it.
+        expect(runs[0]!.saves.map(save => save.id)).toEqual(["a", "b"]);
+    });
+
+    it("gives a record that joined no run a run of its own", () => {
+        // The unsummarised majority, and the reason the client needs no special case for them.
+        const [item] = collapseConsecutive([record({ id: "solo" })]);
+
+        expect(discloseItem(item!).runs.map(run => run.id)).toEqual(["solo"]);
+    });
+
+    it("wraps a run that covers several saves under one sentence", () => {
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Reworded the title." })
+        ]);
+
+        const runs = discloseItem(item!).runs;
+
+        expect(runs[0]!.grouped).toBe(true);
+        // A run of one has nothing to bind together.
+        expect(runs[1]!.grouped).toBe(false);
+    });
+
+    it("does not wrap a run of several that produced no sentence", () => {
+        // Without a sentence to head it a run is invisible to a reader, and a box around it would
+        // assert a grouping that says nothing.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20) }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" })
+        ]);
+
+        expect(discloseItem(item!).runs[0]!.grouped).toBe(false);
+    });
+
+    it("withholds the run's sentence from the expansion when the row already shows it", () => {
+        // A single-save row shows its sentence in the header, and the header stays on screen when
+        // the row opens. Showing it again underneath is the duplication this shape removes.
+        const [item] = collapseConsecutive([record({ id: "a", summary: "Rewrote the intro." })]);
+
+        expect(summariseItem(item!).summary?.text).toBe("Rewrote the intro.");
+        expect(discloseItem(item!).runs[0]!.summary).toBeNull();
+    });
+
+    it("shows each sentence in the expansion when the row shows none", () => {
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Reworded the title." })
+        ]);
+
+        expect(summariseItem(item!).summary).toBeNull();
+        expect(discloseItem(item!).runs.map(run => run.summary?.text)).toEqual([
+            "Rewrote the intro.",
+            "Reworded the title."
+        ]);
+    });
+
+    it("says which run is waiting, rather than which row", () => {
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "c", timestamp: at(10, 10), summaryPending: true })
+        ]);
+
+        expect(discloseItem(item!).runs.map(run => run.pending)).toEqual([false, true]);
     });
 
     it("says so when the list is incomplete", () => {

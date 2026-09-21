@@ -53,6 +53,16 @@ export interface TimelineRecord {
      * summary is a restatement of what was recorded and everything else on this timeline is too.
      */
     summaryKind?: "ai" | "deterministic" | null;
+    /**
+     * The run of saves this record belongs to.
+     *
+     * Always present from the API: a save that joined a run carries that run's id, and one that
+     * did not carries its own. Optional here only because fixtures predate it.
+     *
+     * It is what grouping reads. Position is not a substitute — a row collapses on an hour and a
+     * run debounces on a minute, so one row routinely holds several runs.
+     */
+    summaryRunId?: string | null;
     /** True while a summary is being generated. False once the record has settled, either way. */
     summaryPending?: boolean | null;
 }

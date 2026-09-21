@@ -80,6 +80,7 @@ const LIST_ACTIVITY_QUERY = /* GraphQL */ `
                 hasNote
                 summary
                 summaryKind
+                summaryRunId
                 summaryPending
             }
             meta {

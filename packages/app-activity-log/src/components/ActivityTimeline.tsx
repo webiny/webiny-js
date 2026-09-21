@@ -28,6 +28,7 @@ import type { TimelineCoverage } from "~/timeline/deriveTimelineState.js";
 import {
     discloseItem,
     summariseItem,
+    type DisclosedRun,
     type DisclosedSave,
     type TimelineSummary
 } from "~/timeline/summariseItem.js";
@@ -232,6 +233,56 @@ const SaveBlock = ({ save }: { save: DisclosedSave }) => (
     </div>
 );
 
+/** The one thing a reader is told about a summary that has not arrived. */
+const PendingNote = () => (
+    <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
+        {"Summarising…"}
+    </Text>
+);
+
+/**
+ * One run inside an opened row: its sentence, then the saves it covers.
+ *
+ * The wrapper is what binds a sentence to the several saves it describes, and a run of one gets
+ * none — there is nothing to bind, and a box around a single save would suggest a grouping that is
+ * not there. Which of the two this is was decided in `discloseItem`; this only renders it.
+ */
+const RunBlock = ({ run }: { run: DisclosedRun }) => {
+    const heading =
+        run.summary || run.pending ? (
+            <div className={"flex flex-col gap-xxs bg-neutral-base px-sm-extra py-sm"}>
+                {run.summary ? <SummaryLine summary={run.summary} /> : null}
+                {run.pending ? <PendingNote /> : null}
+            </div>
+        ) : null;
+
+    if (!run.grouped) {
+        return (
+            <div className={"border-b-sm border-neutral-dimmed last:border-b-none"}>
+                {heading}
+                {run.saves.map(save => (
+                    <SaveBlock key={save.id} save={save} />
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div
+            className={
+                "border-b-sm border-l-sm border-l-neutral-strong border-neutral-dimmed last:border-b-none"
+            }
+        >
+            {heading}
+            <div className={"flex flex-col"}>
+                {run.saves.map(save => (
+                    <SaveBlock key={save.id} save={save} />
+                ))}
+            </div>
+        </div>
+    );
+};
+
 /**
  * What one row discloses when opened.
  *
@@ -249,20 +300,9 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
                 "m-sm-extra overflow-hidden rounded-md border-sm border-neutral-dimmed bg-neutral-light"
             }
         >
-            {disclosure.summaries.length > 0 ? (
-                <div
-                    className={
-                        "flex flex-col gap-xs border-b-sm border-neutral-dimmed bg-neutral-base px-sm-extra py-sm"
-                    }
-                >
-                    {disclosure.summaries.map((summary, index) => (
-                        <SummaryLine key={index} summary={summary} />
-                    ))}
-                </div>
-            ) : null}
             <div className={"flex flex-col"}>
-                {disclosure.saves.map(save => (
-                    <SaveBlock key={save.id} save={save} />
+                {disclosure.runs.map(run => (
+                    <RunBlock key={run.id} run={run} />
                 ))}
             </div>
             {disclosure.truncated ? (
@@ -372,11 +412,7 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                               row, not as a row missing something.
                             */}
                             {summary.summary ? <SummaryLine summary={summary.summary} /> : null}
-                            {summary.summaryPending ? (
-                                <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
-                                    {"Summarising…"}
-                                </Text>
-                            ) : null}
+                            {summary.summaryPending ? <PendingNote /> : null}
                             <RowTime timestamp={summary.latestTimestamp} />
                             {summary.spansTime ? (
                                 <span>

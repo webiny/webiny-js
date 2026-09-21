@@ -3,6 +3,66 @@ import { describeAction } from "./describeAction.js";
 import { describeChangeset, type DescribedChange } from "./describeChange.js";
 import { isRedactedActor, type TimelineRecord } from "./types.js";
 
+/** One summary, with how it was produced — which decides whether the row marks it. */
+export interface TimelineSummary {
+    text: string;
+    /** True when a model wrote it. False for one rendered from the recorded values. */
+    generated: boolean;
+}
+
+/** One save inside an expanded row, described on its own terms. */
+export interface DisclosedSave {
+    /** The record's id, which is also the list key. */
+    id: string;
+    timestamp: string;
+    /**
+     * The field-name description for this save alone.
+     *
+     * Per save rather than per row, because the row's own description covers the whole run — "made
+     * 4 saves, editing 6 fields" — and a reader who opened it is asking what each of those four was.
+     *
+     * Always present, whatever happened to the sentences above it. It is what the timeline showed
+     * before summaries existed and what every failure, refusal and suppression falls back to, which
+     * is why no state in this timeline reads as broken.
+     */
+    sentence: string;
+    changes: DescribedChange[];
+    truncated: boolean;
+}
+
+/**
+ * A run of saves, which is what a summary describes.
+ *
+ * The debounce joins consecutive saves by one person to one revision inside a minute, and the job
+ * writes a single sentence covering all of them. Rows collapse on an hour, so one row routinely
+ * holds several runs — which is why membership is read from the record rather than inferred from
+ * position.
+ */
+export interface DisclosedRun {
+    /** The run's id, which is also its list key. */
+    id: string;
+    /**
+     * The sentence covering this run, to be shown inside the expansion.
+     *
+     * Null when the run has none, and also when the collapsed row is already showing this one — a
+     * row that maps onto a single run puts that run's sentence in its header, and the expansion
+     * repeating it underneath is the duplication this shape exists to remove.
+     */
+    summary: TimelineSummary | null;
+    /** True while this run's job is still in flight. */
+    pending: boolean;
+    /**
+     * Whether the run needs a wrapper of its own.
+     *
+     * A sentence covering several saves has to be visibly attached to all of them. A run of one has
+     * nothing to bind together, so it renders as a save and is given no weight suggesting
+     * otherwise. Decided here rather than by a component counting saves.
+     */
+    grouped: boolean;
+    /** The saves this run covers, newest first. */
+    saves: DisclosedSave[];
+}
+
 export interface ItemSummary {
     action: string;
     /** How many records the row stands for. One unless saves were collapsed. */
@@ -23,62 +83,104 @@ export interface ItemSummary {
     changedFieldCount: number;
     truncated: boolean;
     /**
-     * The generated sentence for this row, when exactly one covers the whole of it.
+     * The sentence for this row, when the row maps onto exactly one run.
      *
-     * Null when the row carries none, which is the overwhelming majority — and also when it
-     * carries several, because a row collapses on a far wider window than a summary is debounced
-     * on. An hour of editing can hold two or three summarised runs, and putting one of them on a
-     * closed row would attribute a sentence to saves it never saw. The expansion shows all of them
-     * instead.
+     * Null when the row holds several, and that is the same judgement as refusing to name a field
+     * on a truncated changeset rather than a rule of its own. In both cases the row stands for more
+     * than the thing on offer, and offering it anyway attributes a statement to saves it was never
+     * about — which a reader would act on.
      *
-     * Null is not a failure signal and must never be rendered as one. A record that never
-     * qualified, one whose job failed, one the sweeper reclaimed and one whose summary this reader
-     * may not see all arrive here identically, deliberately: the row has its deterministic
-     * description either way, and there is nothing for a reader to do about any of them.
+     * Null is not a failure signal and must never be rendered as one. A row whose runs produced no
+     * sentence, one whose job failed, one the sweeper reclaimed, one whose sentence this reader may
+     * not see, and one that simply holds two runs all arrive here identically. Every one of them
+     * still has its field-name description, which is what the timeline showed before summaries
+     * existed.
      */
     summary: TimelineSummary | null;
     /**
-     * True while any save in the row is still waiting for its summary.
+     * True while this row is waiting for a sentence it does not yet have.
      *
-     * The only summary state a reader is shown, and the only one worth showing: it is the single
-     * case where something really is coming, and a row that looked settled would be wrong about it
-     * for a minute.
+     * Never set beside one it already has. A row showing a settled sentence with "Summarising…"
+     * beneath it reads as though that sentence is the one being worked on — a different claim, and
+     * a wrong one, because the run still in flight is a different run.
      */
     summaryPending: boolean;
 }
 
-/** One summary, with how it was produced — which decides whether the row marks it. */
-export interface TimelineSummary {
-    text: string;
-    /** True when a model wrote it. False for one rendered from the recorded values. */
-    generated: boolean;
+const summaryOf = (record: TimelineRecord): TimelineSummary | null => {
+    if (typeof record.summary !== "string" || record.summary === "") {
+        return null;
+    }
+
+    return {
+        text: record.summary,
+        // Only a model's prose is marked. A rendered summary restates recorded values, which is
+        // what every other line on this timeline does, so marking it would say nothing.
+        generated: record.summaryKind === "ai"
+    };
+};
+
+/** Which run a record belongs to. A record that joined none is its own run. */
+const runIdOf = (record: TimelineRecord): string => record.summaryRunId ?? record.id;
+
+/** One record, shaped the way a row is, so the same describer can read it. */
+const asItem = (record: TimelineRecord): TimelineItem => collapseConsecutive([record])[0]!;
+
+interface RunMembers {
+    id: string;
+    records: TimelineRecord[];
 }
 
-/** The summaries a row carries, newest first. Usually none, sometimes one, rarely more. */
-const summariesOf = (item: TimelineItem): TimelineSummary[] => {
-    return item.records
-        .filter(record => typeof record.summary === "string" && record.summary !== "")
-        .map(record => ({
-            text: record.summary as string,
-            // Only a model's prose is marked. A rendered summary restates recorded values, which is
-            // what every other line on this timeline does, so marking it would say nothing.
-            generated: record.summaryKind === "ai"
-        }));
+/**
+ * The runs a row holds, newest first, grouped by the id each record carries.
+ *
+ * By membership rather than by adjacency, which is the whole point: a row collapses on an hour and
+ * a run debounces on a minute, so position says nothing about which sentence covers which save.
+ */
+const runsOf = (item: TimelineItem): RunMembers[] => {
+    const order: string[] = [];
+    const members = new Map<string, TimelineRecord[]>();
+
+    for (const record of item.records) {
+        const id = runIdOf(record);
+
+        if (!members.has(id)) {
+            members.set(id, []);
+            order.push(id);
+        }
+
+        members.get(id)!.push(record);
+    }
+
+    return order.map(id => ({ id, records: members.get(id)! }));
 };
+
+/**
+ * The run's sentence, which lives on the record that opened the run.
+ *
+ * Taken from whichever member carries one rather than from the record whose id matches: a save by
+ * someone else in the middle of a run splits the row, and a run whose opening record is not in this
+ * row shows no sentence here rather than borrowing another run's.
+ */
+const sentenceFor = (run: RunMembers): TimelineSummary | null =>
+    run.records.map(summaryOf).find(found => found !== null) ?? null;
 
 /**
  * What a collapsed row states before anyone expands it.
  *
  * Deliberately excludes the changed fields. A row says how much changed, not what — the list is
- * what expanding is for. A closed row that already named every field would make expanding
- * pointless and the timeline unreadable at a glance.
+ * what expanding is for. A closed row that already named every field would make expanding pointless
+ * and the timeline unreadable at a glance.
  *
- * The summary is the one exception and it earns it: it is a sentence rather than a list, and it
+ * The sentence is the one exception and it earns it: it is a sentence rather than a list, and it
  * says what the run was about in the place a reader is already looking.
  */
 export const summariseItem = (item: TimelineItem): ItemSummary => {
     const { latest } = item;
-    const summaries = summariesOf(item);
+    const runs = runsOf(item);
+
+    // One run, one sentence, and no question about what it covers.
+    const summary = runs.length === 1 ? sentenceFor(runs[0]!) : null;
 
     return {
         action: latest.action,
@@ -94,39 +196,15 @@ export const summariseItem = (item: TimelineItem): ItemSummary => {
         hasNote: latest.hasNote === true,
         changedFieldCount: item.changeset.length,
         truncated: item.truncated,
-        summary: summaries.length === 1 ? summaries[0]! : null,
-        summaryPending: item.records.some(record => record.summaryPending === true)
+        summary,
+        summaryPending:
+            summary === null && item.records.some(record => record.summaryPending === true)
     };
 };
 
-/** One save inside an expanded row, described on its own terms. */
-export interface DisclosedSave {
-    /** The record's id, which is also the list key. */
-    id: string;
-    timestamp: string;
-    /**
-     * The deterministic sentence for this save alone.
-     *
-     * Per save rather than per row, because the row's own sentence describes the run — "made 4
-     * saves, editing 6 fields" — and a reader who opened it is asking what each of those four was.
-     */
-    sentence: string;
-    changes: DescribedChange[];
-    truncated: boolean;
-}
-
 export interface ItemDisclosure {
-    /**
-     * The row's summaries, newest first, shown above the saves.
-     *
-     * Above rather than against any particular save. The client is told which records carry a
-     * summary, never which saves a summary covered: a run's values are joined server-side and that
-     * mapping does not cross the API, so pinning a sentence to individual rows here would be a
-     * guess presented as a fact.
-     */
-    summaries: TimelineSummary[];
-    /** Every save the row stands for, newest first. */
-    saves: DisclosedSave[];
+    /** The runs this row holds, newest first, each with the saves it covers. */
+    runs: DisclosedRun[];
     /**
      * True when more changed than is listed, because the changeset hit its cap and the remainder
      * were rolled up to a common parent.
@@ -140,15 +218,12 @@ export interface ItemDisclosure {
      * Whether the changeset carries values. Always false, and stated rather than implied.
      *
      * The changeset records which fields changed and never what they became, so an expanded save
-     * has to say so or read as though the values failed to load. Note the scope, which the copy
-     * has to keep straight: a *summary* is prose about the change and may quote a fragment of it.
-     * The two are different things and only one of them is a record of values.
+     * has to say so or read as though the values failed to load. Note the scope, which the copy has
+     * to keep straight: both kinds of *sentence* quote short values on purpose. A sentence and a
+     * changeset are different things and only one of them is a record of values.
      */
     valuesAvailable: false;
 }
-
-/** One record, shaped the way a row is, so the same describer can read it. */
-const asItem = (record: TimelineRecord): TimelineItem => collapseConsecutive([record])[0]!;
 
 /**
  * What an expanded row discloses.
@@ -159,15 +234,29 @@ const asItem = (record: TimelineRecord): TimelineItem => collapseConsecutive([re
  * reader has to infer from an empty space.
  */
 export const discloseItem = (item: TimelineItem): ItemDisclosure => {
+    const runs = runsOf(item);
+    // The row shows its own sentence in the header when it maps onto a single run, and that header
+    // is on screen whether the row is open or closed.
+    const carriedByRow = runs.length === 1 && sentenceFor(runs[0]!) !== null;
+
     return {
-        summaries: summariesOf(item),
-        saves: item.records.map(record => ({
-            id: record.id,
-            timestamp: record.timestamp,
-            sentence: describeAction(asItem(record)).sentence,
-            changes: describeChangeset(record.changeset),
-            truncated: record.truncated
-        })),
+        runs: runs.map(run => {
+            const summary = sentenceFor(run);
+
+            return {
+                id: run.id,
+                summary: carriedByRow ? null : summary,
+                pending: run.records.some(record => record.summaryPending === true),
+                grouped: run.records.length > 1 && summary !== null,
+                saves: run.records.map(record => ({
+                    id: record.id,
+                    timestamp: record.timestamp,
+                    sentence: describeAction(asItem(record)).sentence,
+                    changes: describeChangeset(record.changeset),
+                    truncated: record.truncated
+                }))
+            };
+        }),
         truncated: item.truncated,
         valuesAvailable: false
     };

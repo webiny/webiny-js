@@ -20,6 +20,7 @@ export { groupByRevision, parseVersion } from "./groupByRevision.js";
 export type { TimelineGroup } from "./groupByRevision.js";
 export { discloseItem, summariseItem } from "./summariseItem.js";
 export type {
+    DisclosedRun,
     DisclosedSave,
     ItemDisclosure,
     ItemSummary,
