@@ -2,6 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwContext, ApwReviewer, ListWorkflowsParams } from "~/types";
 import resolve from "~/utils/resolve";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -161,10 +162,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getWorkflow: async (_, args: any, context) => {
-                return resolve(() => context.apw.workflow.get(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.workflow.get(args.id);
+                });
             },
             listWorkflows: async (_, args: any, context) => {
                 try {
+                    ensureAuthentication(context);
                     /**
                      * We know that args is ListWorkflowsParams.
                      */
@@ -179,13 +184,22 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createWorkflow: async (_, args: any, context) => {
-                return resolve(() => context.apw.workflow.create(args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.workflow.create(args.data);
+                });
             },
             updateWorkflow: async (_, args: any, context) => {
-                return resolve(() => context.apw.workflow.update(args.id, args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.workflow.update(args.id, args.data);
+                });
             },
             deleteWorkflow: async (_, args: any, context) => {
-                return resolve(() => context.apw.workflow.delete(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.workflow.delete(args.id);
+                });
             }
         }
     }

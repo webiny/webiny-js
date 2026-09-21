@@ -2,6 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwContext, ApwCommentListParams } from "~/types";
 import resolve from "~/utils/resolve";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -130,10 +131,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     resolvers: {
         ApwQuery: {
             getComment: async (_, args: any, context) => {
-                return resolve(() => context.apw.comment.get(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.comment.get(args.id);
+                });
             },
             listComments: async (_, args: any, context) => {
                 try {
+                    ensureAuthentication(context);
                     /**
                      * We know that args is ApwCommentListParams.
                      */
@@ -148,13 +153,22 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createComment: async (_, args: any, context) => {
-                return resolve(() => context.apw.comment.create(args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.comment.create(args.data);
+                });
             },
             updateComment: async (_, args: any, context) => {
-                return resolve(() => context.apw.comment.update(args.id, args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.comment.update(args.id, args.data);
+                });
             },
             deleteComment: async (_, args: any, context) => {
-                return resolve(() => context.apw.comment.delete(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.comment.delete(args.id);
+                });
             }
         }
     }

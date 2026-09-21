@@ -2,6 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwChangeRequestListParams, ApwContext } from "~/types";
 import resolve from "~/utils/resolve";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -114,10 +115,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     resolvers: {
         ApwQuery: {
             getChangeRequest: async (_, args: any, context) => {
-                return resolve(() => context.apw.changeRequest.get(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.changeRequest.get(args.id);
+                });
             },
             listChangeRequests: async (_, args: any, context) => {
                 try {
+                    ensureAuthentication(context);
                     /**
                      * We know that args is ApwChangeRequestListParams.
                      */
@@ -132,13 +137,22 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwMutation: {
             createChangeRequest: async (_, args: any, context) => {
-                return resolve(() => context.apw.changeRequest.create(args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.changeRequest.create(args.data);
+                });
             },
             updateChangeRequest: async (_, args: any, context) => {
-                return resolve(() => context.apw.changeRequest.update(args.id, args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.changeRequest.update(args.id, args.data);
+                });
             },
             deleteChangeRequest: async (_, args: any, context) => {
-                return resolve(() => context.apw.changeRequest.delete(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.changeRequest.delete(args.id);
+                });
             }
         }
     }

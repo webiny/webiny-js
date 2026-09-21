@@ -2,6 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { ApwContext, ApwReviewerListParams } from "~/types";
 import resolve from "~/utils/resolve";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -85,10 +86,14 @@ const workflowSchema = new GraphQLSchemaPlugin<ApwContext>({
     resolvers: {
         ApwQuery: {
             getReviewer: async (_, args: any, context) => {
-                return resolve(() => context.apw.reviewer.get(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.reviewer.get(args.id);
+                });
             },
             listReviewers: async (_, args: any, context) => {
                 try {
+                    ensureAuthentication(context);
                     /**
                      * We know that args is ApwReviewerListParams.
                      */

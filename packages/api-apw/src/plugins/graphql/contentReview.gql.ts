@@ -8,6 +8,7 @@ import {
     ApwContentReviewContent
 } from "~/types";
 import resolve from "~/utils/resolve";
+import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { onByFields, dateTimeFieldsSorters } from "./utils";
 
 const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
@@ -323,10 +324,14 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
         },
         ApwQuery: {
             getContentReview: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.get(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.get(args.id);
+                });
             },
             listContentReviews: async (_, args: any, context) => {
                 try {
+                    ensureAuthentication(context);
                     /**
                      * We know that args is ApwContentReviewListParams.
                      */
@@ -339,34 +344,54 @@ const contentReviewSchema = new GraphQLSchemaPlugin<ApwContext>({
                 }
             },
             isReviewRequired: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.isReviewRequired(args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.isReviewRequired(args.data);
+                });
             }
         },
         ApwMutation: {
             createContentReview: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.create(args.data));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.create(args.data);
+                });
             },
             deleteContentReview: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.delete(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.delete(args.id);
+                });
             },
             provideSignOff: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.provideSignOff(args.id, args.step));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.provideSignOff(args.id, args.step);
+                });
             },
             retractSignOff: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.retractSignOff(args.id, args.step));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.retractSignOff(args.id, args.step);
+                });
             },
             publishContent: async (_, args: any, context) => {
-                return resolve(() =>
-                    context.apw.contentReview.publishContent(args.id, args.datetime)
-                );
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.publishContent(args.id, args.datetime);
+                });
             },
             unpublishContent: async (_, args: any, context) => {
-                return resolve(() =>
-                    context.apw.contentReview.unpublishContent(args.id, args.datetime)
-                );
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.unpublishContent(args.id, args.datetime);
+                });
             },
             deleteScheduledAction: async (_, args: any, context) => {
-                return resolve(() => context.apw.contentReview.deleteScheduledAction(args.id));
+                return resolve(() => {
+                    ensureAuthentication(context);
+                    return context.apw.contentReview.deleteScheduledAction(args.id);
+                });
             }
         }
     }
