@@ -239,6 +239,8 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
     steps:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -327,6 +329,21 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"${{ env.AWS_REGION
           }}","storageOps":"ddb"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: new-webiny-project
+        run: >-
+          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
+          webiny.config.tsx to insert into."; exit 1; }
+
+          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
+          's|<>|<>\n            <BugReporter.GitHub
+          token={process.env.BUG_REPORT_GITHUB_TOKEN}
+          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
+
+          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
+          insert <BugReporter.GitHub>."; exit 1; }
+
+          cat webiny.config.tsx
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -490,6 +507,8 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
       WEBINY_INFRA_API_MAX_BUNDLE_SIZE: ${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}
+      BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+      BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
       AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
       OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
       OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
@@ -592,6 +611,21 @@ jobs:
           ""} endpoint={process.env.OPENSEARCH_ENDPOINT}
           username={process.env.OPENSEARCH_USERNAME}
           password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: new-webiny-project
+        run: >-
+          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
+          webiny.config.tsx to insert into."; exit 1; }
+
+          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
+          's|<>|<>\n            <BugReporter.GitHub
+          token={process.env.BUG_REPORT_GITHUB_TOKEN}
+          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
+
+          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
+          insert <BugReporter.GitHub>."; exit 1; }
+
+          cat webiny.config.tsx
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -783,6 +817,21 @@ jobs:
           --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"sqlite"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: new-webiny-project-standalone
+        run: >-
+          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
+          webiny.config.tsx to insert into."; exit 1; }
+
+          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
+          's|<>|<>\n            <BugReporter.GitHub
+          token={process.env.BUG_REPORT_GITHUB_TOKEN}
+          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
+
+          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
+          insert <BugReporter.GitHub>."; exit 1; }
+
+          cat webiny.config.tsx
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -791,6 +840,8 @@ jobs:
         env:
           WEBINY_HOSTING_TYPE: standalone
           WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
       - name: Start API
         env:
@@ -1006,6 +1057,21 @@ jobs:
           --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
+      - name: Configure the bug reporter in webiny.config.tsx
+        working-directory: new-webiny-project-standalone
+        run: >-
+          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
+          webiny.config.tsx to insert into."; exit 1; }
+
+          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
+          's|<>|<>\n            <BugReporter.GitHub
+          token={process.env.BUG_REPORT_GITHUB_TOKEN}
+          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
+
+          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
+          insert <BugReporter.GitHub>."; exit 1; }
+
+          cat webiny.config.tsx
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1014,6 +1080,8 @@ jobs:
         env:
           WEBINY_HOSTING_TYPE: standalone
           WEBINY_API_URL: http://localhost:3002
+          BUG_REPORT_GITHUB_TOKEN: ${{ secrets.BUG_REPORT_GITHUB_TOKEN }}
+          BUG_REPORT_REPOSITORY: ${{ vars.BUG_REPORT_REPOSITORY }}
         run: yarn webiny build api && yarn webiny build admin
       - name: Start API
         env:
