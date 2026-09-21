@@ -97,8 +97,10 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         YARN_ENABLE_IMMUTABLE_INSTALLS: "false",
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
-        // Read by `<BugReporter.GitHub>` while `webiny deploy api` builds, so it has to be on the
-        // job that deploys, not only on the step that edits the config.
+        /*
+         * Read by `<BugReporter.GitHub>` while `webiny deploy api` builds, so it has to be on the
+         * job that deploys, not only on the step that edits the config.
+         */
         ...BUG_REPORTER_ENV
     };
 

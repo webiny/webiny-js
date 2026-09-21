@@ -172,8 +172,10 @@ export const createStandaloneProjectParts = (
                 env: {
                     WEBINY_HOSTING_TYPE: "standalone",
                     WEBINY_API_URL: STANDALONE_API_URL,
-                    // `<BugReporter.GitHub>` reads these while the API bundle is built, so they
-                    // belong on this step rather than at runtime on "Start API".
+                    /*
+                     * `<BugReporter.GitHub>` reads these while the API bundle is built, so they
+                     * belong on this step rather than at runtime on "Start API".
+                     */
                     ...BUG_REPORTER_ENV
                 },
                 run: "yarn webiny build api && yarn webiny build admin"

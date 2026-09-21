@@ -18,8 +18,10 @@ export const BUG_REPORTER_ENV: Record<string, string> = {
 interface ConfigureBugReporterParams {
     // Where the webiny-js checkout lives, since that is where the script is read from.
     workingDirectory: string;
-    // Absolute path to the scaffolded project. Absolute because this step runs from the checkout,
-    // and `../` cannot reach the project when the checkout is a branch name several levels deep.
+    /*
+     * Absolute path to the scaffolded project. Absolute because this step runs from the checkout,
+     * and `../` cannot reach the project when the checkout is a branch name several levels deep.
+     */
     projectPath: string;
 }
 
