@@ -98,6 +98,14 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                     enabled: cf
                         .boolean()
                         .label("Enabled")
+                        /*
+                         * On unless storage explicitly says otherwise. Nothing is written down for a
+                         * capability a licence enabled, so the stored value is absent, and a switch
+                         * renders absent as off. Without this default every untouched capability
+                         * shows as disabled while actually running, which is the same `undefined`
+                         * confusion the storage side guards against, seen from the front.
+                         */
+                        .defaultValue(true)
                         .description(
                             "Turn this off to remove the feature from the app. Everything below is ignored while it is off."
                         ),
