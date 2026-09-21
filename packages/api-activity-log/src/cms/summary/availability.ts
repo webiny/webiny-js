@@ -23,15 +23,3 @@ export const SummaryModelAvailability = createAbstraction<ISummaryModelAvailabil
 export namespace SummaryModelAvailability {
     export type Interface = ISummaryModelAvailability;
 }
-
-/** Stands in until the capability is registered, in the checkpoint that adds the job. */
-class UnavailableSummaryModelImpl implements ISummaryModelAvailability {
-    isAvailable(): boolean {
-        return false;
-    }
-}
-
-export const UnavailableSummaryModel = SummaryModelAvailability.createImplementation({
-    implementation: UnavailableSummaryModelImpl,
-    dependencies: []
-});

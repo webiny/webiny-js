@@ -73,6 +73,7 @@ interface HarnessOptions {
     config?: Partial<typeof DEFAULT_ACTIVITY_SUMMARY_CONFIG>;
     onExtend?: () => void;
     source?: string;
+    identity?: { id: string; type: string; displayName: string };
 }
 
 const harness = (options: HarnessOptions = {}) => {
@@ -109,7 +110,7 @@ const harness = (options: HarnessOptions = {}) => {
     } as ActivitySourceResolver.Interface);
 
     container.registerInstance(IdentityContext, {
-        getIdentity: () => ({ id: "u-1", type: "admin", displayName: "Ada" })
+        getIdentity: () => options.identity ?? { id: "u-1", type: "admin", displayName: "Ada" }
     } as unknown as IdentityContext.Interface);
 
     container.registerInstance(SummaryModelAvailability, {
@@ -329,6 +330,51 @@ describe("when a run must not be joined", () => {
         await dispatcher.follow(result, pendingRecord({ id: "rec-2" }));
 
         expect(trigger).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("what a run is scoped to", () => {
+    // The debounce joins saves within one run, and a run is one person's consecutive saves to one
+    // revision. Both halves of that are enforced by the query rather than by a check afterwards, so
+    // these assert the query — a lookup that dropped either key would find a neighbouring run and
+    // merge two editing sessions, or two people, into one summary.
+
+    it("asks only for the revision being saved", async () => {
+        const { dispatcher, list } = harness({ previous: pendingRecord() });
+
+        await dispatcher.plan({
+            model,
+            targetId: "abc",
+            revision: "abc#0002",
+            changeset,
+            before: values("old"),
+            after: values("new")
+        });
+
+        expect(list.mock.calls[0]![0].revision).toBe("abc#0002");
+    });
+
+    it("asks only for the acting identity", async () => {
+        // Joining someone else's run would put one editor's changes inside another's summary, and
+        // attribute the sentence to the wrong person on the timeline.
+        const { dispatcher, list } = harness({ previous: pendingRecord() });
+
+        await plan(dispatcher);
+
+        expect(list.mock.calls[0]![0].actorId).toBe("u-1");
+    });
+
+    it("starts its own run when there is no identity to key on", async () => {
+        // The safe direction. An unattributable save starting a run of its own costs one job; an
+        // unattributable save joining whatever ran last costs correctness.
+        const { dispatcher, list } = harness({
+            previous: pendingRecord(),
+            identity: { id: "", type: "", displayName: "" }
+        });
+
+        await plan(dispatcher);
+
+        expect(list.mock.calls[0]![0].actorId).toBeUndefined();
     });
 });
 

@@ -356,6 +356,41 @@ describe("summaries, of which only one state is a state", () => {
         expect(text()).toContain(SENTENCE);
     });
 
+    it("marks the sentence as generated, because nothing else on this timeline is", () => {
+        // Every other line is a record of what was captured. This one was written by a model, it
+        // is kept as long as the record is, and some of them will be wrong.
+        const { text } = renderState([
+            record({ changeset: [{ path: "body", label: "Body" }], summary: SENTENCE })
+        ]);
+
+        expect(text()).toContain("AI-generated");
+    });
+
+    it("does not mark anything when there is no summary to mark", () => {
+        const { text } = renderState([record({ changeset: [{ path: "body", label: "Body" }] })]);
+
+        expect(text()).not.toContain("AI-generated");
+    });
+
+    it("marks each summary once, not the row", () => {
+        const { text } = renderState([
+            record({
+                timestamp: at(50),
+                changeset: [{ path: "body", label: "Body" }],
+                summary: SENTENCE
+            }),
+            record({
+                timestamp: at(10),
+                changeset: [{ path: "title", label: "Title" }],
+                summary: "Reworded the page title."
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        expect(text().match(/AI-generated/g)).toHaveLength(2);
+    });
+
     it("keeps the deterministic sentence alongside it, not instead of it", () => {
         // The summary is an enrichment. A row that traded its own description for generated prose
         // would lose the one part of itself that is derived from what was recorded.

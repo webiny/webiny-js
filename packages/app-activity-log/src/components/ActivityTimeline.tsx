@@ -180,11 +180,20 @@ const ChangeRow = ({ change }: { change: DescribedChange }) => {
 /**
  * The run's summary, wherever it appears.
  *
- * Rendered as prose and nothing else — no badge, no icon, no framing that would invite a reader to
- * treat its absence as a fault. It is an enrichment of a row that already says what happened.
+ * Marked as generated, and that mark is the only decoration it gets. Every other line on this
+ * timeline is a record of what was captured; this one was written by a model, it is kept for as
+ * long as the record is, and some of them will be wrong. A reader who took a wrong sentence for a
+ * captured fact would lose trust in the whole timeline rather than in one line, which is a poor
+ * trade for two words.
+ *
+ * Deliberately not a state: it appears only where a summary does, says the same thing every time,
+ * and leaves the reader nothing to interpret. Absence still means absence and never a fault.
  */
 const SummaryLine = ({ text }: { text: string }) => (
     <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
+        <Text size={"sm"} className={"text-neutral-muted"}>
+            {"AI-generated · "}
+        </Text>
         {text}
     </Text>
 );

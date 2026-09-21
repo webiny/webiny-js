@@ -11,7 +11,11 @@ import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { Constructor } from "@webiny/di";
 import { EntryAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { EntryAfterUpdateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { EntryRevisionAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
@@ -202,10 +206,32 @@ describe("guard 3 — every handler constructs against the bare minimum", () => 
         expect(() => container.resolve(abstraction as never)).not.toThrow();
     });
 
-    it("resolves the purge task definition", () => {
+    it("resolves every task definition", () => {
         const container = minimalContainer();
 
         expect(() => container.resolveAll(TaskDefinition)).not.toThrow();
+    });
+
+    it("constructs every task handler, not only its definition", () => {
+        // The hole this guard had, and the defect that went through it.
+        //
+        // A `TaskDefinition` is metadata pointing at a handler class; the runner constructs that
+        // class separately, with `container.resolveImplementation(definition.handler)`. Resolving
+        // definitions therefore proves nothing about whether their handlers can be built — and the
+        // summary job declared two AI Power-Ups dependencies as required, which would have made
+        // every task in the install fail to construct on any project without the extension.
+        //
+        // Extension-provided dependencies are precisely the ones this container does not register,
+        // which is what makes this the right place to catch them.
+        const container = minimalContainer();
+
+        for (const definition of container.resolveAll(TaskDefinition)) {
+            expect(() =>
+                container.resolveImplementation(
+                    definition.handler as Constructor<TaskHandler.Interface>
+                )
+            ).not.toThrow();
+        }
     });
 
     it("registers nothing at all when not entitled", () => {
