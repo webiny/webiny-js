@@ -2,6 +2,7 @@ import { WebinyError } from "@webiny/error";
 import { KnexClient } from "@webiny/api-core-sql";
 import { ConnectionRegistry } from "@webiny/api-websockets/exports/api.js";
 import { TableName } from "~/TableName/abstractions.js";
+import { toIsoString } from "~/toIsoString.js";
 
 interface ConnectionRow {
     connectionId: string;
@@ -268,7 +269,7 @@ class WebsocketsConnectionRegistryImpl implements ConnectionRegistry.Interface {
             },
             tenant: row.tenant,
             endpoint: row.endpoint,
-            connectedOn: row.connectedOn
+            connectedOn: toIsoString(row.connectedOn)
         };
     }
 }

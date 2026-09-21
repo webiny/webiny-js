@@ -123,11 +123,20 @@ export namespace SchedulerService {
 }
 
 /**
- * ScheduledActionModel - A CMS model used by the scheduler for persistence.
+ * Provides the scheduler's CMS model for the current request's tenant.
+ *
+ * A provider rather than the model itself: fetching a model is asynchronous and tenant-dependent,
+ * and DI resolution is synchronous — so an already-resolved `CmsModel` could only be supplied by a
+ * per-request hook running before every consumer. Consumers `await get()` at the point of use.
  */
-/** Content model definition for scheduled actions. */
-export const ScheduledActionModel = createAbstraction<CmsModel>("ScheduledActionModel");
+export interface IScheduledActionModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace ScheduledActionModel {
-    export type Interface = CmsModel;
+export const ScheduledActionModelProvider = createAbstraction<IScheduledActionModelProvider>(
+    "ScheduledActionModelProvider"
+);
+
+export namespace ScheduledActionModelProvider {
+    export type Interface = IScheduledActionModelProvider;
 }

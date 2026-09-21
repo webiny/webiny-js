@@ -9,7 +9,7 @@ interface BaseComponentProps {
 
 describe("Built-in decorator factory", () => {
     it("with external augmentation", async () => {
-        const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
+        const BaseComponent = makeDecoratable("BaseComponent", ({}: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });
 
@@ -36,7 +36,7 @@ describe("Built-in decorator factory", () => {
 
     it("with built-in augmentation", async () => {
         const WithDefaultDecorator = withDecoratorFactory<{ name: string }>()(
-            makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
+            makeDecoratable("BaseComponent", ({}: BaseComponentProps) => {
                 return <span>BaseComponent</span>;
             })
         );

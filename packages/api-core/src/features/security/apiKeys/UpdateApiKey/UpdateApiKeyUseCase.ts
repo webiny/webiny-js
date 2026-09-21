@@ -7,6 +7,7 @@ import { updateApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
 import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { descriptionOnUpdate } from "../../shared/description.js";
 
 class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interface {
     private repository: ApiKeysRepository.Interface;
@@ -44,16 +45,26 @@ class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interfac
 
         const existingApiKey = existingResult.value;
 
+        // `description` is pulled out of the spread because it is the one field that accepts null.
+        // Normalising it here keeps null out of both the entity and the published events, whose
+        // input type declares `description?: string`.
+        const { description, ...rest } = validation.data;
+
+        const changes: UpdateApiKeyInput = {
+            ...rest,
+            ...descriptionOnUpdate(description)
+        };
+
         const updatedApiKey: ApiKey = {
             ...existingApiKey,
-            ...validation.data
+            ...changes
         };
 
         await this.eventPublisher.publish(
             new ApiKeyBeforeUpdateEvent({
                 original: existingApiKey,
                 updated: updatedApiKey,
-                input: validation.data
+                input: changes
             })
         );
 
@@ -67,7 +78,7 @@ class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interfac
             new ApiKeyAfterUpdateEvent({
                 original: existingApiKey,
                 updated: updatedApiKey,
-                input: validation.data
+                input: changes
             })
         );
 

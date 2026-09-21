@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { GetFileRepository as RepositoryAbstraction } from "./abstractions.js";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { File } from "~/domain/file/types.js";
 import {
     FileNotAuthorizedError,
@@ -13,11 +13,12 @@ import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
 class GetFileRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private fileModel: FileModel.Interface
+        private fileModelProvider: FileModelProvider.Interface
     ) {}
 
     async execute(id: string): Promise<Result<File, RepositoryAbstraction.Error>> {
-        const result = await this.getEntryById.execute(this.fileModel, `${id}#0001`);
+        const fileModel = await this.fileModelProvider.get();
+        const result = await this.getEntryById.execute(fileModel, `${id}#0001`);
 
         if (result.isFail()) {
             const error = result.error;
@@ -40,5 +41,5 @@ class GetFileRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const GetFileRepository = RepositoryAbstraction.createImplementation({
     implementation: GetFileRepositoryImpl,
-    dependencies: [GetEntryByIdUseCase, FileModel]
+    dependencies: [GetEntryByIdUseCase, FileModelProvider]
 });

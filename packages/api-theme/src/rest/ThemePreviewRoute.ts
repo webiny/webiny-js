@@ -1,5 +1,9 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import { NO_CACHE_CONTROL, THEME_PREVIEW_ROUTE, toRevisionId } from "~/constants.js";
 import { GetThemeByIdRepository } from "~/features/GetThemeById/index.js";
@@ -22,13 +26,10 @@ const json = (statusCode: number, body: unknown): IHttpResponse => ({
  * A draft that is not yet valid returns its blocker list, which is what lets the editor show why a
  * preview cannot render.
  */
-class ThemePreviewRouteImpl implements HttpRoute.Interface {
-    readonly method = "GET";
-    readonly path = THEME_PREVIEW_ROUTE;
-
+class ThemePreviewRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
-    async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    async handle(request: HttpRouteHandler.Request): Promise<IHttpResponse> {
         const { themeId, version, file } = request.pathParameters;
 
         if (!isArtifactFile(file)) {
@@ -80,7 +81,20 @@ class ThemePreviewRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const ThemePreviewRoute = HttpRoute.createImplementation({
+export const ThemePreviewRoute = HttpRouteHandler.createImplementation({
     implementation: ThemePreviewRouteImpl,
     dependencies: [RequestContainer]
+});
+
+class ThemePreviewRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "theme-preview-artifact";
+    readonly method = "GET";
+    readonly path = THEME_PREVIEW_ROUTE;
+    readonly handler = ThemePreviewRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const ThemePreviewRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: ThemePreviewRouteDefinitionImpl,
+    dependencies: []
 });

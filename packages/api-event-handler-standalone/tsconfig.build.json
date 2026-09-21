@@ -1,0 +1,58 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-event-handler-core/tsconfig.build.json" },
+    { "path": "../api-file-manager-standalone/tsconfig.build.json" },
+    { "path": "../api-graphql/tsconfig.build.json" },
+    { "path": "../api-headless-cms-bulk-actions-standalone/tsconfig.build.json" },
+    { "path": "../api-scheduler/tsconfig.build.json" },
+    { "path": "../api-scheduler-standalone/tsconfig.build.json" },
+    { "path": "../api-websockets-standalone/tsconfig.build.json" },
+    { "path": "../background-tasks-standalone/tsconfig.build.json" },
+    { "path": "../event-handler-core/tsconfig.build.json" },
+    { "path": "../event-handler-standalone/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-event-handler-core/*": ["../api-event-handler-core/src/*"],
+      "@webiny/api-event-handler-core": ["../api-event-handler-core/src"],
+      "@webiny/api-file-manager-standalone/*": ["../api-file-manager-standalone/src/*"],
+      "@webiny/api-file-manager-standalone": ["../api-file-manager-standalone/src"],
+      "@webiny/api-graphql/*": ["../api-graphql/src/*"],
+      "@webiny/api-graphql": ["../api-graphql/src"],
+      "@webiny/api-headless-cms-bulk-actions-standalone/*": [
+        "../api-headless-cms-bulk-actions-standalone/src/*"
+      ],
+      "@webiny/api-headless-cms-bulk-actions-standalone": [
+        "../api-headless-cms-bulk-actions-standalone/src"
+      ],
+      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
+      "@webiny/api-scheduler": ["../api-scheduler/src"],
+      "@webiny/api-scheduler-standalone/*": ["../api-scheduler-standalone/src/*"],
+      "@webiny/api-scheduler-standalone": ["../api-scheduler-standalone/src"],
+      "@webiny/api-websockets-standalone/*": ["../api-websockets-standalone/src/*"],
+      "@webiny/api-websockets-standalone": ["../api-websockets-standalone/src"],
+      "@webiny/background-tasks-standalone/*": ["../background-tasks-standalone/src/*"],
+      "@webiny/background-tasks-standalone": ["../background-tasks-standalone/src"],
+      "@webiny/event-handler-core/*": ["../event-handler-core/src/*"],
+      "@webiny/event-handler-core": ["../event-handler-core/src"],
+      "@webiny/event-handler-standalone/*": ["../event-handler-standalone/src/*"],
+      "@webiny/event-handler-standalone": ["../event-handler-standalone/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
+    }
+  }
+}

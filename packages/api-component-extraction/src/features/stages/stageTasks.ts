@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { STAGES, stageTaskId, type Stage } from "~/constants.js";
 import { StageTaskRunner, type StageTaskInput, type StageTaskOutput } from "./StageTaskRunner.js";
 
@@ -23,6 +26,29 @@ const STAGE_MAX_ITERATIONS: Partial<Record<Stage, number>> = {
 const DEFAULT_MAX_ITERATIONS = 30;
 
 const createStageTask = (stage: Stage) => {
+    class StageTaskHandlerImpl implements TaskHandler.Interface<StageTaskInput, StageTaskOutput> {
+        // Public (not `private`) because the class is produced by a factory and its inferred type is
+        // exported via STAGE_TASKS — a private member would trip TS4094 on the exported anonymous type.
+        constructor(readonly runner: StageTaskRunner.Interface) {}
+
+        run(params: TaskHandler.RunParams<StageTaskInput, StageTaskOutput>) {
+            return this.runner.execute(stage, params);
+        }
+
+        // If a stage ever exhausts its iterations, mark it failed so the ledger never stays stuck
+        // "running" behind a dead task — the operator can then re-run it to resume from the checkpoint.
+        async onMaxIterations({
+            task
+        }: TaskHandler.LifecycleHookParams<StageTaskInput, StageTaskOutput>) {
+            await this.runner.markStalled(stage, task.input.runId);
+        }
+    }
+
+    const StageTaskHandler = TaskHandler.createImplementation({
+        implementation: StageTaskHandlerImpl,
+        dependencies: [StageTaskRunner]
+    });
+
     class StageTaskImpl implements TaskDefinition.Interface<StageTaskInput, StageTaskOutput> {
         readonly id = stageTaskId(stage);
         readonly title = `Component extraction — ${stage}`;
@@ -31,26 +57,12 @@ const createStageTask = (stage: Stage) => {
         readonly isPrivate = false;
         readonly databaseLogs = true;
 
-        // Public (not `private`) because the class is produced by a factory and its inferred type is
-        // exported via STAGE_TASKS — a private member would trip TS4094 on the exported anonymous type.
-        constructor(readonly runner: StageTaskRunner.Interface) {}
-
-        run(params: TaskDefinition.RunParams<StageTaskInput, StageTaskOutput>) {
-            return this.runner.execute(stage, params);
-        }
-
-        // If a stage ever exhausts its iterations, mark it failed so the ledger never stays stuck
-        // "running" behind a dead task — the operator can then re-run it to resume from the checkpoint.
-        async onMaxIterations({
-            task
-        }: TaskDefinition.LifecycleHookParams<StageTaskInput, StageTaskOutput>) {
-            await this.runner.markStalled(stage, task.input.runId);
-        }
+        readonly handler = StageTaskHandler;
     }
 
     return TaskDefinition.createImplementation({
         implementation: StageTaskImpl,
-        dependencies: [StageTaskRunner]
+        dependencies: []
     });
 };
 

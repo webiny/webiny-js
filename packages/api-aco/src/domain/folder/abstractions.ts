@@ -2,11 +2,19 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
 
 /**
- * FolderModel abstraction - represents the ACO folder CMS model.
- * This will be registered via container.registerInstance in the composite feature.
+ * Provides the tenant's ACO folder CMS model.
+ *
+ * A provider rather than the model itself: fetching a model is asynchronous and tenant-dependent,
+ * while DI resolution is synchronous — so an already-resolved `CmsModel` could only be supplied by a
+ * per-request hook running before every consumer (what `AcoInitializer` used to do). Consumers
+ * `await get()` at the point of use.
  */
-export const FolderModel = createAbstraction<CmsModel>("FolderModel");
+export interface IFolderModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace FolderModel {
-    export type Interface = CmsModel;
+export const FolderModelProvider = createAbstraction<IFolderModelProvider>("FolderModelProvider");
+
+export namespace FolderModelProvider {
+    export type Interface = IFolderModelProvider;
 }

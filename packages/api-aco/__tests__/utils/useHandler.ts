@@ -1,10 +1,10 @@
 import { Container } from "@webiny/di";
-import { RequestContainer, RequestContextInitializer } from "@webiny/event-handler-core";
+import { RequestContainer } from "@webiny/event-handler-core";
 import { ApiCoreFeature, registerApiCoreStorageOperations } from "@webiny/api-core";
 import { GraphQLContextEnhancer, GraphQLContextualSchema } from "@webiny/api-graphql";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { FileModel } from "@webiny/api-file-manager/domain/file/file.model.js";
-import { loadWcpLicense } from "@webiny/api-core/features/wcp/loadWcpLicense.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/abstractions.js";
 import { AuthenticationContext } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -48,7 +48,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         const container = rootContainer.createChildContainer();
         container.registerInstance(RequestContainer, container);
 
-        const wcpLicense = await loadWcpLicense(createTestWcpLicense());
+        const wcpLicense = await WcpLicenseLoader.load(createTestWcpLicense());
         registerApiCoreStorageOperations(container, apiCoreStorage.storageOperations);
         ApiCoreFeature.register(container, { wcpLicense });
         processLegacyPlugins(container, apiAcoStorage.plugins);
@@ -86,14 +86,10 @@ export const useHandler = (params: UseHandlerParams = {}) => {
         // Build context by running all GraphQL context enhancers, then contextual schemas
         // (replicates GraphQLEngineImpl.buildContext + CmsGraphQLRoute.handle order).
         const enhancers = container.resolveAll(GraphQLContextEnhancer);
-        const initializers = container.resolveAll(RequestContextInitializer);
         const contextualSchemas = container.resolveAll(GraphQLContextualSchema);
         const ctx: Record<string, any> = { container };
         for (const enhancer of enhancers) {
             await enhancer.enhance(ctx);
-        }
-        for (const initializer of initializers) {
-            await initializer.init(ctx);
         }
         for (const schema of contextualSchemas) {
             await schema.build(ctx);

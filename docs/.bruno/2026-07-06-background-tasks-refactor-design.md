@@ -9,7 +9,7 @@ Split `@webiny/background-tasks/src/api` into three packages:
 
 1. **`@webiny/background-tasks`** — platform-agnostic core (abstractions, features, CRUD, GraphQL, runner, response)
 2. **`@webiny/background-tasks-aws`** — AWS-specific transport (Step Functions, EventBridge, Lambda handler, Lambda timer)
-3. **`@webiny/background-tasks-server`** — Node server transport (worker thread orchestrator, process timer)
+3. **`@webiny/background-tasks-standalone`** — Node server transport (worker thread orchestrator, process timer)
 
 After refactor, core has zero AWS dependencies. Server package has zero AWS dependencies.
 
@@ -60,13 +60,13 @@ packages/background-tasks-aws/src/
 
 Dependencies: `@webiny/background-tasks`, `@webiny/aws-sdk`, `@webiny/handler-aws`, `@webiny/event-handler-aws`.
 
-### `@webiny/background-tasks-server`
+### `@webiny/background-tasks-standalone`
 
 Node server implementation using worker threads for task orchestration.
 
 ```
-packages/background-tasks-server/src/
-  BackgroundTasksServerFeature.ts
+packages/background-tasks-standalone/src/
+  BackgroundTasksStandaloneFeature.ts
   worker/
     TaskOrchestrator.ts
     TaskOrchestratorMessage.ts
@@ -77,7 +77,7 @@ packages/background-tasks-server/src/
     ProcessTimer.ts
 ```
 
-- **BackgroundTasksServerFeature** — registers worker-based transport via `TaskServiceTransport`.
+- **BackgroundTasksStandaloneFeature** — registers worker-based transport via `TaskServiceTransport`.
 - **WorkerTransportPlugin** — `TaskServicePlugin` impl. `send()` spawns a `worker_threads.Worker`, passes typed message.
 - **TaskOrchestrator** — class in worker thread: HTTP POST loop to running server's background-task endpoint. Handles continue/done/error responses. Mimics SFN retry loop.
 - **TaskOrchestratorMessage** — typed interfaces for parent↔worker communication.
@@ -150,9 +150,9 @@ Host is always `localhost` — worker runs on the same machine as the server.
   ├── depends on: @webiny/background-tasks, @webiny/aws-sdk, @webiny/handler-aws, @webiny/event-handler-aws
   └── exports: BackgroundTasksAwsFeature, BackgroundTaskLambdaHandler
 
-@webiny/background-tasks-server
+@webiny/background-tasks-standalone
   ├── depends on: @webiny/background-tasks
-  └── exports: BackgroundTasksServerFeature
+  └── exports: BackgroundTasksStandaloneFeature
 
 @webiny/api-background-tasks-ddb
   ├── depends on: @webiny/background-tasks (core only)
@@ -189,7 +189,7 @@ import { BackgroundTaskLambdaHandler } from "@webiny/background-tasks-aws";
 
 ```ts
 import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
-import { BackgroundTasksServerFeature } from "@webiny/background-tasks-server";
+import { BackgroundTasksStandaloneFeature } from "@webiny/background-tasks-standalone";
 ```
 
 ### `api-background-tasks-ddb` / `api-background-tasks-os`
@@ -206,6 +206,6 @@ Registers models, CRUD, GraphQL, permissions. No transports. Current `Background
 
 Registers SFN transport (default) + EventBridge transport. Does NOT call `BackgroundTasksFeature.register()` — app template registers core separately.
 
-### `BackgroundTasksServerFeature`
+### `BackgroundTasksStandaloneFeature`
 
 Registers worker-thread transport. Does NOT call `BackgroundTasksFeature.register()` — app template registers core separately.

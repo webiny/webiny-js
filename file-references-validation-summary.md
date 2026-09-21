@@ -12,12 +12,12 @@ hooks can live.
 **"Image references persist both file ID and URL" — partly true.** Eight distinct write paths
 persist file references, in **six different shapes**:
 
-| Stores ID + URL | Stores URL only |
-|---|---|
-| WB `createFileInput` → `Asset` object | **CMS `file` field → bare `String`** |
-| CMS `asset` field → `Asset` object | WB background image → CSS `url("…")` |
-| Lexical `wby-image` node → `{id, src}` | `fileUrl` field, custom icons |
-| Page settings image / social image | |
+| Stores ID + URL                        | Stores URL only                      |
+| -------------------------------------- | ------------------------------------ |
+| WB `createFileInput` → `Asset` object  | **CMS `file` field → bare `String`** |
+| CMS `asset` field → `Asset` object     | WB background image → CSS `url("…")` |
+| Lexical `wby-image` node → `{id, src}` | `fileUrl` field, custom icons        |
+| Page settings image / social image     |                                      |
 
 The CMS `file` field is the sharp edge — `field.onChange(file.src || "")`
 (`CmsFilePickerRenderer.tsx:39`), GraphQL type `String` / `[String]`. No ID, no name, no
@@ -33,7 +33,7 @@ make the index useful.
 
 1. **Reference-bearing content is gzipped at rest.** WB `bindings`/`elements` (`json`) and CMS
    `rich-text` are `{compression: "gzip", value: "<base64>"}` in storage. Worse, a `rich-text`
-   nested inside an `object` is compressed *independently at its own position* — so extraction
+   nested inside an `object` is compressed _independently at its own position_ — so extraction
    must walk the model field tree in step with the value tree, not scan raw records. A cheap
    table-scan backfill is off the table.
 

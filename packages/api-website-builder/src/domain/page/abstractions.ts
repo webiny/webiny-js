@@ -58,8 +58,19 @@ export interface WbPageRevision {
  * PageModel abstraction - represents the Website Builder page CMS model.
  * This will be registered via container.registerInstance in the composite feature.
  */
-export const PageModel = createAbstraction<CmsModel>("Wb/PageModel");
+/**
+ * Provides the tenant's Website Builder page CMS model.
+ *
+ * A provider rather than the model itself: fetching a model is asynchronous and tenant-dependent,
+ * while DI resolution is synchronous — so an already-resolved `CmsModel` could only be supplied by
+ * something running before every consumer. Consumers `await get()` at the point of use.
+ */
+export interface IPageModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace PageModel {
-    export type Interface = CmsModel;
+export const PageModelProvider = createAbstraction<IPageModelProvider>("Wb/PageModelProvider");
+
+export namespace PageModelProvider {
+    export type Interface = IPageModelProvider;
 }

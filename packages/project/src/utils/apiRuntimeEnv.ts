@@ -2,7 +2,7 @@
  * Environment variable name prefixes that are safe to expose to the api RUNTIME — as opposed to
  * build-time-only vars (notably `WCP_PROJECT_LICENSE`, which the runtime deliberately re-fetches a
  * fresh copy of). This is the single source of truth shared by both hosting types: the AWS Lambda sets
- * exactly these on the function, and the self-hosted server spawns its api process with exactly
+ * exactly these on the function, and the standalone server spawns its api process with exactly
  * these. `WCP_PROJECT_LICENSE` is excluded simply by not being listed.
  */
 export const API_RUNTIME_ENV_PREFIXES = [
@@ -70,7 +70,7 @@ const SYSTEM_ENV_NAMES = [
 const SYSTEM_ENV_PREFIXES = ["NODE_", "LC_"];
 
 /**
- * Env for a spawned self-hosted server process: the api runtime allowlist (see above) PLUS the
+ * Env for a spawned standalone server process: the api runtime allowlist (see above) PLUS the
  * system vars the process needs to run. This is the hybrid the server uses instead of inheriting the
  * whole environment — it forwards the same app vars as the Lambda (no arbitrary leakage) while still
  * keeping the process runnable.

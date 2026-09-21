@@ -25,6 +25,7 @@ conventions; direct source reading for facts.
   ```
 
   This is the field-anchoring primitive the comments UI depends on. **It does not exist on `next`.**
+
 - Registration/packaging only: `app-serverless-cms/src/Admin.tsx`, `cli/files/references.json`,
   `project-aws/_templates/**`, `yarn.lock`.
 
@@ -34,14 +35,14 @@ areas.
 
 ## Terminology map (important — the brief's vocabulary is not the code's)
 
-| Brief | Code |
-|---|---|
-| workflow | `IWorkflow`, CMS model `wbyWorkflow` |
-| step | `IWorkflowStep` |
-| **content review** | **workflow state** — `IWorkflowStateRecord` / `WorkflowState`, CMS model `wbyWorkflowState` |
-| sign-off | `approveWorkflowStateStep` mutation → `WorkflowState.approve()` |
-| **comment** | **collaboration thread** — `ICollabThread`, CMS model `wbyCollabThread`; individual comments are `ICollabMessage` inside `thread.messages` |
-| "APW" in audit-log config | legacy v5 naming, unused (see Area 7) |
+| Brief                     | Code                                                                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| workflow                  | `IWorkflow`, CMS model `wbyWorkflow`                                                                                                       |
+| step                      | `IWorkflowStep`                                                                                                                            |
+| **content review**        | **workflow state** — `IWorkflowStateRecord` / `WorkflowState`, CMS model `wbyWorkflowState`                                                |
+| sign-off                  | `approveWorkflowStateStep` mutation → `WorkflowState.approve()`                                                                            |
+| **comment**               | **collaboration thread** — `ICollabThread`, CMS model `wbyCollabThread`; individual comments are `ICollabMessage` inside `thread.messages` |
+| "APW" in audit-log config | legacy v5 naming, unused (see Area 7)                                                                                                      |
 
 There is no package named `api-apw`. The feature lives in six packages:
 `api-workflows`, `app-workflows` (core), `api-headless-cms-workflows`,
@@ -58,60 +59,66 @@ There is no package named `api-apw`. The feature lives in six packages:
 
 ```ts
 export interface IWorkflowStepNotification {
-    id: string;
+  id: string;
 }
 
 export interface IWorkflowStepTeam {
-    id: string;
+  id: string;
 }
 
 export interface IWorkflowStep {
-    id: string;
-    title: string;
-    color: string;
-    description?: string;
-    teams: NonEmptyArray<IWorkflowStepTeam>;
-    notifications?: IWorkflowStepNotification[];
+  id: string;
+  title: string;
+  color: string;
+  description?: string;
+  teams: NonEmptyArray<IWorkflowStepTeam>;
+  notifications?: IWorkflowStepNotification[];
 }
 
 export interface IWorkflowValues {
-    app: string;
-    name: string;
-    steps: NonEmptyArray<IWorkflowStep>;
+  app: string;
+  name: string;
+  steps: NonEmptyArray<IWorkflowStep>;
 }
 
 export interface IWorkflow extends IWorkflowValues {
-    id: string;
+  id: string;
 }
 ```
 
 Storage is a **private** CMS model, `packages/api-workflows/src/domain/workflow/workflowModel.ts`:
 
 ```ts
-builder
-    .private({ modelId: WORKFLOW_MODEL_ID, name: "Workflow" })
+builder.private({ modelId: WORKFLOW_MODEL_ID, name: "Workflow" }).fields(fields => ({
+  name: fields.text().label("Name").required("Workflow name is required."),
+  app: fields.text().label("App").required("App is required."),
+  steps: fields
+    .object()
+    .label("Steps")
+    .list()
+    .required("Steps are required.")
+    .listMinLength(1, "At least one step is required.")
     .fields(fields => ({
-        name: fields.text().label("Name").required("Workflow name is required."),
-        app: fields.text().label("App").required("App is required."),
-        steps: fields
-            .object()
-            .label("Steps")
-            .list()
-            .required("Steps are required.")
-            .listMinLength(1, "At least one step is required.")
-            .fields(fields => ({
-                id: fields.text().label("ID").required("ID is required."),
-                title: fields.text().label("Title").required("Title is required."),
-                color: fields.text().label("Color"),
-                description: fields.text().label("Description"),
-                teams: fields.object().label("Teams").list().fields(teamFields => ({
-                    id: teamFields.text().label("ID").required("ID is required.")
-                })),
-                notifications: fields.object().list().label("Notifications").fields(fields => ({
-                    id: fields.text().label("Id").required("Id is required.")
-                }))
-            }))
+      id: fields.text().label("ID").required("ID is required."),
+      title: fields.text().label("Title").required("Title is required."),
+      color: fields.text().label("Color"),
+      description: fields.text().label("Description"),
+      teams: fields
+        .object()
+        .label("Teams")
+        .list()
+        .fields(teamFields => ({
+          id: teamFields.text().label("ID").required("ID is required.")
+        })),
+      notifications: fields
+        .object()
+        .list()
+        .label("Notifications")
+        .fields(fields => ({
+          id: fields.text().label("Id").required("Id is required.")
+        }))
     }))
+}));
 ```
 
 `packages/api-workflows/src/constants.ts`:
@@ -130,7 +137,7 @@ Client-side mirror: `packages/app-workflows/src/types.ts` (`IWorkflowStep`, iden
 
 ```ts
 export const createWorkflowAppName = ({ model }: IParams): string => {
-    return `cms.${model.modelId}`;
+  return `cms.${model.modelId}`;
 };
 ```
 
@@ -140,7 +147,7 @@ fails if `meta.totalCount > 1` with `MultipleWorkflowsFoundError`.
 ## 1.2 How are steps stored and ordered?
 
 As an **ordered array** in the `steps` object-list field on the workflow entry. There is no explicit
-`order`/`position` field — array index *is* the order. `id` is the step identity (client-generated,
+`order`/`position` field — array index _is_ the order. `id` is the step identity (client-generated,
 `mdbid`-style, set by the admin editor).
 
 Reordering is pure array manipulation in the admin presenter
@@ -171,7 +178,7 @@ returns nothing.
 
 Every step is implicitly **both** mandatory and blocking, by two mechanisms:
 
-1. `WorkflowState.done` requires *all* steps approved:
+1. `WorkflowState.done` requires _all_ steps approved:
 
    ```ts
    get done(): boolean {
@@ -190,10 +197,10 @@ There is also no notion of a step being skipped or optional in `WorkflowStateRec
 
 ```ts
 export enum WorkflowStateRecordState {
-    pending = "pending",
-    inReview = "inReview",
-    approved = "approved",
-    rejected = "rejected"
+  pending = "pending",
+  inReview = "inReview",
+  approved = "approved",
+  rejected = "rejected"
 }
 ```
 
@@ -224,40 +231,49 @@ as-is and existing rows simply lack the key. Two supporting facts:
 
   and `.../entryDataFactories/mapAndCleanUpdatedInputData.ts` does the same for updates. Neither
   recurses into object sub-fields, so nested unknown keys are **not** stripped by storage.
+
 - Entry validation (`packages/api-headless-cms/src/crud/contentEntry/entryDataValidation.ts`)
   iterates the model's declared fields; it never rejects undeclared keys.
 
 However, adding the field still requires **eleven code edits**, and every one of them silently drops
 the value if missed:
 
-| # | File | Why |
-|---|---|---|
-| 1 | `api-workflows/src/domain/workflow/abstractions.ts` | `IWorkflowStep` |
-| 2 | `api-workflows/src/domain/workflow/workflowModel.ts` | CMS model sub-field (needed for filtering/validation) |
-| 3 | `api-workflows/src/domain/workflowState/abstractions.ts` | `IWorkflowStateRecordStep extends IWorkflowStep` — inherits automatically |
-| 4 | `api-workflows/src/domain/workflowState/stateModel.ts` | the state's own copy of the step sub-schema |
-| 5 | `api-workflows/src/graphql/validation/step.ts` | **zod `.object()` strips unknown keys by default** |
-| 6 | `api-workflows/src/graphql/workflows.ts` | `WorkflowStepInput` + `WorkflowStep` SDL |
-| 7 | `api-workflows/src/graphql/workflowState.ts` | `WorkflowStateStep` SDL |
-| 8 | `app-workflows/src/types.ts` | client `IWorkflowStep` |
-| 9 | `app-workflows/src/domain/WorkflowStepModel.ts` | **`toJS()` is an explicit whitelist** |
-| 10 | `app-workflows/src/features/graphqlFields.ts` | `WORKFLOW_FIELDS` / `WORKFLOW_STATE_STEP_FIELDS` are hand-written selection sets |
-| 11 | `app-workflows/src/presentation/workflowsEditor/components/Editor/Step/Form/*` | editor UI |
+| #   | File                                                                           | Why                                                                              |
+| --- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| 1   | `api-workflows/src/domain/workflow/abstractions.ts`                            | `IWorkflowStep`                                                                  |
+| 2   | `api-workflows/src/domain/workflow/workflowModel.ts`                           | CMS model sub-field (needed for filtering/validation)                            |
+| 3   | `api-workflows/src/domain/workflowState/abstractions.ts`                       | `IWorkflowStateRecordStep extends IWorkflowStep` — inherits automatically        |
+| 4   | `api-workflows/src/domain/workflowState/stateModel.ts`                         | the state's own copy of the step sub-schema                                      |
+| 5   | `api-workflows/src/graphql/validation/step.ts`                                 | **zod `.object()` strips unknown keys by default**                               |
+| 6   | `api-workflows/src/graphql/workflows.ts`                                       | `WorkflowStepInput` + `WorkflowStep` SDL                                         |
+| 7   | `api-workflows/src/graphql/workflowState.ts`                                   | `WorkflowStateStep` SDL                                                          |
+| 8   | `app-workflows/src/types.ts`                                                   | client `IWorkflowStep`                                                           |
+| 9   | `app-workflows/src/domain/WorkflowStepModel.ts`                                | **`toJS()` is an explicit whitelist**                                            |
+| 10  | `app-workflows/src/features/graphqlFields.ts`                                  | `WORKFLOW_FIELDS` / `WORKFLOW_STATE_STEP_FIELDS` are hand-written selection sets |
+| 11  | `app-workflows/src/presentation/workflowsEditor/components/Editor/Step/Form/*` | editor UI                                                                        |
 
 The two silent-drop traps, quoted:
 
 ```ts
 // api-workflows/src/graphql/validation/step.ts — zod strips anything not listed
 export const stepValidation = zod.object({
-    id: zod.string().min(1, "ID is required."),
-    title: zod.string().min(1, "Title is required."),
-    color: zod.string().min(1, "Color is required."),
-    description: zod.string().nullish().optional().transform(value => value || undefined),
-    teams: zod.array(zod.object({ id: zod.string().min(1, "Team ID is required.") }))
-        .min(1, "You must select at least one team.")
-        .transform(value => value as NonEmptyArray<IWorkflowStepTeam>),
-    notifications: zod.array(zod.object({ id: zod.string().min(1, "Notification ID is required.") }))
-        .nullish().optional().transform(value => value || undefined)
+  id: zod.string().min(1, "ID is required."),
+  title: zod.string().min(1, "Title is required."),
+  color: zod.string().min(1, "Color is required."),
+  description: zod
+    .string()
+    .nullish()
+    .optional()
+    .transform(value => value || undefined),
+  teams: zod
+    .array(zod.object({ id: zod.string().min(1, "Team ID is required.") }))
+    .min(1, "You must select at least one team.")
+    .transform(value => value as NonEmptyArray<IWorkflowStepTeam>),
+  notifications: zod
+    .array(zod.object({ id: zod.string().min(1, "Notification ID is required.") }))
+    .nullish()
+    .optional()
+    .transform(value => value || undefined)
 });
 ```
 
@@ -306,7 +322,7 @@ populated by an injectable provider
 
 ```ts
 export interface IWorkflowStateContextProvider {
-    provide(params: IWorkflowStateContextProviderParams): Promise<GenericRecord>;
+  provide(params: IWorkflowStateContextProviderParams): Promise<GenericRecord>;
 }
 ```
 
@@ -324,35 +340,35 @@ be idiomatic — but it is new, not existing.
 
 ```ts
 export interface IWorkflowStateIdentity {
-    id: string;
-    displayName: string;
-    type: string;
+  id: string;
+  displayName: string;
+  type: string;
 }
 
 export interface IWorkflowStateRecordStep extends IWorkflowStep {
-    state: WorkflowStateRecordState;
-    comment: string | null;
-    savedBy: IWorkflowStateIdentity | null;
+  state: WorkflowStateRecordState;
+  comment: string | null;
+  savedBy: IWorkflowStateIdentity | null;
 }
 
 export interface IWorkflowStateRecord<
-    Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep
+  Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep
 > {
-    id: string;
-    app: string;
-    title: string;
-    workflowId: string;
-    targetId: string;
-    targetRevisionId: string;
-    isActive: boolean;
-    comment: string | undefined;
-    state: WorkflowStateRecordState;
-    steps: Steps[];
-    createdOn: Date;
-    savedOn: Date;
-    createdBy: IWorkflowStateIdentity;
-    savedBy: IWorkflowStateIdentity;
-    targetContext: GenericRecord;
+  id: string;
+  app: string;
+  title: string;
+  workflowId: string;
+  targetId: string;
+  targetRevisionId: string;
+  isActive: boolean;
+  comment: string | undefined;
+  state: WorkflowStateRecordState;
+  steps: Steps[];
+  createdOn: Date;
+  savedOn: Date;
+  createdBy: IWorkflowStateIdentity;
+  savedBy: IWorkflowStateIdentity;
+  targetContext: GenericRecord;
 }
 ```
 
@@ -360,18 +376,18 @@ The read model adds derived, per-caller data:
 
 ```ts
 export interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep {
-    isOwner: boolean;
-    canTakeOver: boolean;
-    canReview: boolean;
+  isOwner: boolean;
+  canTakeOver: boolean;
+  canReview: boolean;
 }
 
 export interface IWorkflowState {
-    // ... all IWorkflowStateRecord fields as readonly ...
-    readonly steps: IEnrichedWorkflowStateRecordStep[];
-    readonly done: boolean;
-    readonly currentStep: IEnrichedWorkflowStateRecordStep;
-    readonly nextStep: IEnrichedWorkflowStateRecordStep | null;
-    readonly previousStep: IEnrichedWorkflowStateRecordStep | null;
+  // ... all IWorkflowStateRecord fields as readonly ...
+  readonly steps: IEnrichedWorkflowStateRecordStep[];
+  readonly done: boolean;
+  readonly currentStep: IEnrichedWorkflowStateRecordStep;
+  readonly nextStep: IEnrichedWorkflowStateRecordStep | null;
+  readonly previousStep: IEnrichedWorkflowStateRecordStep | null;
 }
 ```
 
@@ -477,7 +493,7 @@ approve(comment?: string): Result<void, WorkflowState.Error> {
 `getActiveStep()` returns the `inReview` step, or `null` if any step is `rejected`.
 
 **Consequence for the design:** an automated step cannot simply be "activated". `start()` requires
-`canReview` (team overlap with the caller's teams) and `approve()` requires *both* `canReview` **and**
+`canReview` (team overlap with the caller's teams) and `approve()` requires _both_ `canReview` **and**
 `isStepOwner` (i.e. the same identity that started it). A synthetic identity has no teams, so both
 guards fail. A new domain method is required — see Risks.
 
@@ -518,7 +534,7 @@ async handle(event: EntryBeforePublishEventHandler.Event): Promise<void> {
 ```
 
 The gate reads **only** `state.done`, i.e. "every step's `state === approved`". It has no notion of
-*who* or *what* approved a step. `isModelAllowed` excludes private and singleton models
+_who_ or _what_ approved a step. `isModelAllowed` excludes private and singleton models
 (`packages/api-headless-cms-workflows/src/utils/modelAllowed.ts`).
 
 Admin mirror (`app-headless-cms-workflows/src/presentation/ContentEntryFormPresenterWorkflowDecorator.ts`):
@@ -543,9 +559,9 @@ Mutation: `mutation { workflows { createWorkflowState(app: String!, targetRevisi
 
 ```ts
 export const createWorkflowStateValidation = zod.object({
-    app: zod.string().min(1, "App is required."),
-    targetRevisionId: zod.string().min(1, "Target revision ID is required."),
-    title: zod.string().min(5, "Title is required.")
+  app: zod.string().min(1, "App is required."),
+  targetRevisionId: zod.string().min(1, "Target revision ID is required."),
+  title: zod.string().min(5, "Title is required.")
 });
 ```
 
@@ -563,27 +579,28 @@ export const createWorkflowStateValidation = zod.object({
 
    ```ts
    const record: CreateWorkflowStateRepository.Input = {
-       workflowId: workflow.id,
-       comment: undefined,
+     workflowId: workflow.id,
+     comment: undefined,
+     state: WorkflowStateRecordState.pending,
+     app: input.app,
+     title: input.title,
+     targetId,
+     isActive: true,
+     targetRevisionId: input.targetRevisionId,
+     targetContext,
+     steps: workflow.steps.map(step => ({
+       ...step,
        state: WorkflowStateRecordState.pending,
-       app: input.app,
-       title: input.title,
-       targetId,
-       isActive: true,
-       targetRevisionId: input.targetRevisionId,
-       targetContext,
-       steps: workflow.steps.map(step => ({
-           ...step,
-           state: WorkflowStateRecordState.pending,
-           savedBy: null,
-           comment: null
-       }))
+       savedBy: null,
+       comment: null
+     }))
    };
 
    const createResult = await this.repository.execute(record);
    ```
 
    (`CreateWorkflowStateRepository` → `CreateEntryUseCase` on the `wbyWorkflowState` model.)
+
 8. `getUserTeams.execute(identity.id)`, construct `new WorkflowState(createdRecord, teams, identity)`.
 9. Publish `WorkflowStateAfterCreateEvent({ state })`.
 10. Return the `WorkflowState`.
@@ -593,10 +610,10 @@ The **only** consumer of step 9 today writes the summary onto the entry
 
 ```ts
 await this.updateEntry.execute(
-    model,
-    state.targetRevisionId,
-    { system: { workflow: values } },
-    { skipValidation: true }
+  model,
+  state.targetRevisionId,
+  { system: { workflow: values } },
+  { skipValidation: true }
 );
 ```
 
@@ -604,13 +621,13 @@ with `values` from `packages/api-headless-cms-workflows/src/utils/state.ts`:
 
 ```ts
 export const getStateValues = (state: WorkflowState): ICmsEntryWorkflowState => {
-    const activeStep = state.currentStep;
-    return {
-        workflowId: state.workflowId,
-        stepId: activeStep.id,
-        stepName: activeStep.title,
-        state: activeStep.state
-    };
+  const activeStep = state.currentStep;
+  return {
+    workflowId: state.workflowId,
+    stepId: activeStep.id,
+    stepName: activeStep.title,
+    state: activeStep.state
+  };
 };
 ```
 
@@ -626,7 +643,7 @@ Admin path: `WorkflowStatePresenter.requestReview` → `RequestReviewUseCase` �
 (`CreateWorkflowStateRepository` has no other caller), it is registered transient in the DI
 container, and the DI layer supports decoration (`container.registerDecorator`). Two hook options:
 
-- **Decorate `CreateWorkflowStateUseCase`** — runs *before* the state row is written, so checks
+- **Decorate `CreateWorkflowStateUseCase`** — runs _before_ the state row is written, so checks
   could seed step verdicts into the initial `steps` array.
 - **Handle `WorkflowStateAfterCreateEvent`** — runs after the row exists; matches how
   `api-headless-cms-workflows` already integrates.
@@ -660,7 +677,7 @@ locked: true,
 const originalEntry = result.value;
 
 if (originalEntry.locked) {
-    return Result.fail(new EntryLockedError());
+  return Result.fail(new EntryLockedError());
 }
 ```
 
@@ -683,28 +700,30 @@ plus `canSave: base.canSave && !wfVm.hasState`, plus a warning banner
 (`Components/ContentEntryForm/ContentEntryFormWorkflow.tsx`):
 
 ```tsx
-{presenter.vm.hasState ? (
+{
+  presenter.vm.hasState ? (
     <Alert type="danger" className={"mt-sm"}>
-        Any changes you do on the entry will not be stored!
+      Any changes you do on the entry will not be stored!
     </Alert>
-) : null}
+  ) : null;
+}
 ```
 
-Note `hasState` — not `isInReview`. Any active workflow state (including a *rejected* one) blocks
+Note `hasState` — not `isInReview`. Any active workflow state (including a _rejected_ one) blocks
 saving in the UI.
 
 ## 3.2 What can and cannot be modified on a "locked" revision?
 
 Enforced at the API for a revision with an active, not-`done` workflow state:
 
-| Operation | Blocked? | Where |
-|---|---|---|
-| Publish | **Yes** | `ValidateWorkflowStateOnEntryBeforePublish` (throws `WORKFLOW_STATE_NOT_COMPLETED`) |
-| Move (to another folder) | **Yes** | `BlockMoveOnActiveWorkflowState` → `EntryMoveBlockedByWorkflowStateError` |
-| Update / save values | **No** | `UpdateEntryUseCase` has no workflow-aware guard; `EntryWorkflows` feature registers no before-update handler |
-| Create a new revision | **No** | nothing intercepts it |
-| Permanent delete | **No** — allowed, and it cascades: `DeleteWorkflowStateOnEntryAfterDelete` deletes the state |
-| Unpublish | **No** | no handler |
+| Operation                | Blocked?                                                                                     | Where                                                                                                         |
+| ------------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Publish                  | **Yes**                                                                                      | `ValidateWorkflowStateOnEntryBeforePublish` (throws `WORKFLOW_STATE_NOT_COMPLETED`)                           |
+| Move (to another folder) | **Yes**                                                                                      | `BlockMoveOnActiveWorkflowState` → `EntryMoveBlockedByWorkflowStateError`                                     |
+| Update / save values     | **No**                                                                                       | `UpdateEntryUseCase` has no workflow-aware guard; `EntryWorkflows` feature registers no before-update handler |
+| Create a new revision    | **No**                                                                                       | nothing intercepts it                                                                                         |
+| Permanent delete         | **No** — allowed, and it cascades: `DeleteWorkflowStateOnEntryAfterDelete` deletes the state |
+| Unpublish                | **No**                                                                                       | no handler                                                                                                    |
 
 The registered handler set (`packages/api-headless-cms-workflows/src/features/EntryWorkflows/feature.ts`):
 
@@ -816,7 +835,7 @@ private get canCancel(): boolean {
 - The new record's steps are built fresh: `steps: workflow.steps.map(step => ({ ...step, state: pending, savedBy: null, comment: null }))`.
 - Sequencing then starts at the first `pending` step.
 
-**Undocumented consequence:** the old rejected state on revision N is *not* deactivated. Nothing in
+**Undocumented consequence:** the old rejected state on revision N is _not_ deactivated. Nothing in
 the codebase does that. After "reject → new revision → request review", the entry has **two**
 `isActive: true` workflow states with the same `targetId` and different `targetRevisionId`. They are
 distinguishable per-revision, but the Content Reviews list
@@ -846,6 +865,7 @@ Yes, three:
    `isOwner` / not-rejected rules quoted in 3.4 exist only in the admin presenter. Any authenticated
    caller who can reach the GraphQL endpoint can cancel any workflow state by id, including a
    rejected one.
+
 2. **`deleteWorkflow`** — and `DeleteWorkflowsOnModelAfterDelete` when a model is deleted.
 3. **Permanent entry delete** — `DeleteWorkflowStateOnEntryAfterDelete` →
    `DeleteTargetWorkflowStateUseCase` → `WorkflowStateAfterDeleteEvent` →
@@ -862,28 +882,28 @@ Yes, three:
 
 ```ts
 export enum CollabThreadType {
-    note = "note",
-    task = "task"
+  note = "note",
+  task = "task"
 }
 
 /**
  * The canonical Webiny identity projection stored on records and messages.
  */
 export interface ICollabIdentity {
-    id: string;
-    displayName: string;
-    type: string;
+  id: string;
+  displayName: string;
+  type: string;
 }
 
 export interface ICollabMessage {
-    id: string;
-    body: string;
-    mentions: string[];
-    createdBy: ICollabIdentity;
-    createdOn: string;
-    deleted?: boolean;
-    deletedBy?: ICollabIdentity | null;
-    deletedOn?: string | null;
+  id: string;
+  body: string;
+  mentions: string[];
+  createdBy: ICollabIdentity;
+  createdOn: string;
+  deleted?: boolean;
+  deletedBy?: ICollabIdentity | null;
+  deletedOn?: string | null;
 }
 
 /**
@@ -891,27 +911,27 @@ export interface ICollabMessage {
  * thread itself are the CMS entry system fields and are NOT part of the stored values.
  */
 export interface ICollabThreadValues {
-    contentType: string;
-    contentId: string;
-    locator: string;
-    type: CollabThreadType;
-    resolved: boolean;
-    resolvedBy?: ICollabIdentity | null;
-    resolvedOn?: string | null;
-    // task variant only
-    assigneeId?: string | null;
-    dueDate?: string | null;
-    messages: ICollabMessage[];
-    // soft-delete of the whole thread
-    deleted?: boolean;
-    deletedBy?: ICollabIdentity | null;
-    deletedOn?: string | null;
+  contentType: string;
+  contentId: string;
+  locator: string;
+  type: CollabThreadType;
+  resolved: boolean;
+  resolvedBy?: ICollabIdentity | null;
+  resolvedOn?: string | null;
+  // task variant only
+  assigneeId?: string | null;
+  dueDate?: string | null;
+  messages: ICollabMessage[];
+  // soft-delete of the whole thread
+  deleted?: boolean;
+  deletedBy?: ICollabIdentity | null;
+  deletedOn?: string | null;
 }
 
 export interface ICollabThread extends ICollabThreadValues {
-    id: string;
-    createdBy: ICollabIdentity;
-    createdOn: string;
+  id: string;
+  createdBy: ICollabIdentity;
+  createdOn: string;
 }
 ```
 
@@ -925,7 +945,7 @@ Registration is **currently ungated** (`packages/api-collaboration/src/index.ts`
 // appropriate WCP capability (e.g. wcpContext.canUseWorkflows()). Ungated for now so it
 // works without a workflows license during development.
 if (!tenantContext.getTenant()) {
-    return;
+  return;
 }
 ```
 
@@ -937,11 +957,11 @@ request identity (`packages/api-collaboration/src/utils/identity.ts`):
 
 ```ts
 export const toCollabIdentity = (identity: WebinyIdentityLike): ICollabIdentity => {
-    return {
-        id: identity.id,
-        displayName: identity.displayName,
-        type: identity.type
-    };
+  return {
+    id: identity.id,
+    displayName: identity.displayName,
+    type: identity.type
+  };
 };
 ```
 
@@ -955,9 +975,7 @@ The only identity gate is anonymity (`CreateThreadUseCase`):
 ```ts
 const identity = this.identityContext.getIdentity();
 if (identity.isAnonymous()) {
-    return Result.fail(
-        new CollabThreadNotAuthorizedError("You must be signed in to comment.")
-    );
+  return Result.fail(new CollabThreadNotAuthorizedError("You must be signed in to comment."));
 }
 ```
 
@@ -987,9 +1005,9 @@ withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T
 
 ```ts
 export class AuthenticatedIdentity extends Identity {
-    isAnonymous(): boolean {
-        return false;
-    }
+  isAnonymous(): boolean {
+    return false;
+  }
 }
 ```
 
@@ -998,12 +1016,12 @@ The precedent already exists in the task runner
 
 ```ts
 this.context.security.setIdentity(
-    new AuthenticatedIdentity({
-        id: task.createdBy.id,
-        type: task.createdBy.type,
-        displayName: task.createdBy.displayName ?? "",
-        context: { canAccessTenant: true }
-    })
+  new AuthenticatedIdentity({
+    id: task.createdBy.id,
+    type: task.createdBy.type,
+    displayName: task.createdBy.displayName ?? "",
+    context: { canAccessTenant: true }
+  })
 );
 ```
 
@@ -1015,10 +1033,10 @@ entry read-access as the permission gate (`CmsLocatorResolver`):
 // "Cms/Entry/NotAuthorized" when the caller may not read the entry.
 const entryResult = await this.getLatestRevision.execute(model, { id: entryId });
 if (entryResult.isFail()) {
-    if (entryResult.error.code === "Cms/Entry/NotAuthorized") {
-        return { exists: false, authorized: false };
-    }
-    return { exists: false, authorized: true };
+  if (entryResult.error.code === "Cms/Entry/NotAuthorized") {
+    return { exists: false, authorized: false };
+  }
+  return { exists: false, authorized: true };
 }
 ```
 
@@ -1050,7 +1068,7 @@ Entry-level case (`CmsLocatorResolver`):
 // Empty locator = an entry-level (unanchored) comment. The entry read above is the
 // access gate; the anchor is the entry itself.
 if (!params.locator || params.locator.trim().length === 0) {
-    return { exists: true, authorized: true, label: "Entry", path: [], contentTitle };
+  return { exists: true, authorized: true, label: "Entry", path: [], contentTitle };
 }
 ```
 
@@ -1087,14 +1105,25 @@ Via domain events (`packages/api-collaboration/src/domain/thread/events.ts`):
 ```ts
 const actor = message.createdBy;
 const title = anchor.contentTitle || anchor.label || "a comment";
-const link = { app: APP_HEADLESS_CMS, contentType: thread.contentType, contentId: thread.contentId, locator: thread.locator, threadId: thread.id };
+const link = {
+  app: APP_HEADLESS_CMS,
+  contentType: thread.contentType,
+  contentId: thread.contentId,
+  locator: thread.locator,
+  threadId: thread.id
+};
 
 const recipients = new Set((message.mentions || []).filter(id => id && id !== actor.id));
 
 for (const recipientId of recipients) {
-    await this.createNotification.execute({
-        recipientId, type: NotificationType.mention, actor, title, snippet: message.body, link
-    });
+  await this.createNotification.execute({
+    recipientId,
+    type: NotificationType.mention,
+    actor,
+    title,
+    snippet: message.body,
+    link
+  });
 }
 ```
 
@@ -1118,11 +1147,11 @@ user-store lookup happens.
  * and the (revision-independent) entry id as `"<modelId>:<entryId>"`.
  */
 export const formatCmsContentId = (modelId: string, entryId: string): string => {
-    return `${modelId}:${entryId}`;
+  return `${modelId}:${entryId}`;
 };
 ```
 
-and the resolver reads the *latest* revision (`GetLatestRevisionByEntryIdUseCase`). Listing filters on
+and the resolver reads the _latest_ revision (`GetLatestRevisionByEntryIdUseCase`). Listing filters on
 `contentType` + `contentId` (+ optional `type` / `resolved`), never on revision.
 
 **Consequence:** a check-step comment posted during review of `#0001` will still be visible on
@@ -1163,34 +1192,34 @@ A first-class one. Abstractions live in `@webiny/api-core`; the engine lives in
 
 ```ts
 export interface ITaskDefinition<
-    I extends ITaskInput = ITaskInput,
-    O extends ITaskOutput = ITaskOutput
+  I extends ITaskInput = ITaskInput,
+  O extends ITaskOutput = ITaskOutput
 > {
-    id: string;
-    title: string;
-    description?: string;
-    maxIterations?: number;
-    databaseLogs?: boolean;
-    isPrivate?: boolean;
-    selfCleanup?: ISelfCleanup;
+  id: string;
+  title: string;
+  description?: string;
+  maxIterations?: number;
+  databaseLogs?: boolean;
+  isPrivate?: boolean;
+  selfCleanup?: ISelfCleanup;
 
-    run(params: ITaskRunParams<I, O>): Promise<ITaskResult<I, O>>;
+  run(params: ITaskRunParams<I, O>): Promise<ITaskResult<I, O>>;
 
-    onBeforeTrigger?(params: ITaskBeforeTriggerParams<I>): Promise<void>;
-    onDone?(params: ITaskLifecycleHook<I, O>): Promise<void>;
-    onError?(params: ITaskLifecycleHook<I, O>): Promise<void>;
-    onAbort?(params: ITaskLifecycleHook<I, O>): Promise<void>;
-    onMaxIterations?(params: ITaskLifecycleHook<I, O>): Promise<void>;
-    createInputValidation?(
-        params: ITaskCreateInputValidationParams
-    ): GenericRecord<keyof I, zod.Schema> | zod.Schema;
+  onBeforeTrigger?(params: ITaskBeforeTriggerParams<I>): Promise<void>;
+  onDone?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+  onError?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+  onAbort?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+  onMaxIterations?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+  createInputValidation?(
+    params: ITaskCreateInputValidationParams
+  ): GenericRecord<keyof I, zod.Schema> | zod.Schema;
 }
 
 export enum TaskResultStatus {
-    DONE = "done",
-    CONTINUE = "continue",
-    ERROR = "error",
-    ABORTED = "aborted"
+  DONE = "done",
+  CONTINUE = "continue",
+  ERROR = "error",
+  ABORTED = "aborted"
 }
 ```
 
@@ -1301,30 +1330,30 @@ new StepFunctionServicePlugin({ default: true }),
 
 ```ts
 builder.addResolver<ICmsGenerateEntryContentTaskInput>({
-    path: "AiPowerUpsMutation.generateEntryContent",
-    dependencies: [TaskService],
-    resolver: (taskService: TaskService.Interface) => {
-        return async ({ args }) => {
-            const result = await taskService.trigger<ICmsGenerateEntryContentTaskInput>({
-                definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
-                input: {
-                    prompt: args.prompt,
-                    modelId: args.modelId,
-                    projectId: args.projectId ?? null,
-                    excludedFileIds: args.excludedFileIds ?? null,
-                    readerPersonaId: args.readerPersonaId ?? null,
-                    writerPersonaId: args.writerPersonaId ?? null,
-                    additionalFileIds: args.additionalFileIds ?? null
-                }
-            });
+  path: "AiPowerUpsMutation.generateEntryContent",
+  dependencies: [TaskService],
+  resolver: (taskService: TaskService.Interface) => {
+    return async ({ args }) => {
+      const result = await taskService.trigger<ICmsGenerateEntryContentTaskInput>({
+        definition: CMS_GENERATE_ENTRY_CONTENT_TASK_ID,
+        input: {
+          prompt: args.prompt,
+          modelId: args.modelId,
+          projectId: args.projectId ?? null,
+          excludedFileIds: args.excludedFileIds ?? null,
+          readerPersonaId: args.readerPersonaId ?? null,
+          writerPersonaId: args.writerPersonaId ?? null,
+          additionalFileIds: args.additionalFileIds ?? null
+        }
+      });
 
-            if (result.isFail()) {
-                throw result.error;
-            }
+      if (result.isFail()) {
+        throw result.error;
+      }
 
-            return { id: result.value.id };
-        };
-    }
+      return { id: result.value.id };
+    };
+  }
 });
 ```
 
@@ -1336,16 +1365,16 @@ Returns the task id immediately; the client then waits on websockets.
 
 ```ts
 try {
-    const input = structuredClone(this.store.getInput());
-    const controller = this.context.container.resolve(TaskController);
-    /**
-     * We always run the task without authorization because we are running a task without a user - nothing to authorize against.
-     */
-    result = await this.context.security.withoutAuthorization(async () => {
-        return await definition.run({ input, controller });
-    });
+  const input = structuredClone(this.store.getInput());
+  const controller = this.context.container.resolve(TaskController);
+  /**
+   * We always run the task without authorization because we are running a task without a user - nothing to authorize against.
+   */
+  result = await this.context.security.withoutAuthorization(async () => {
+    return await definition.run({ input, controller });
+  });
 } catch (ex) {
-    return this.response.error({ error: getErrorProperties(ex) });
+  return this.response.error({ error: getErrorProperties(ex) });
 }
 ```
 
@@ -1375,28 +1404,28 @@ Two layers.
 
 ```ts
 export interface IAiSdkFactory {
-    readonly id: string; // machine id, e.g. "anthropic"
-    readonly name: string; // human-friendly name, e.g. "Anthropic"
-    readonly models: readonly IAiSdkModel[]; // static model list, no API call needed
-    execute(apiKey?: string): Promise<IAiSdk>;
+  readonly id: string; // machine id, e.g. "anthropic"
+  readonly name: string; // human-friendly name, e.g. "Anthropic"
+  readonly models: readonly IAiSdkModel[]; // static model list, no API call needed
+  execute(apiKey?: string): Promise<IAiSdk>;
 }
 
 export interface IAiConnectionInline {
-    readonly sdkName: string;
-    readonly apiKey?: string;
+  readonly sdkName: string;
+  readonly apiKey?: string;
 }
 
 export type AiGenerateTextParams = Omit<SDKGenerateTextParams, "model"> & {
-    model: string;
-    connection?: string | IAiConnectionInline;
+  model: string;
+  connection?: string | IAiConnectionInline;
 };
 
 export interface IAi {
-    generateText(params: AiGenerateTextParams): ReturnType<typeof generateText>;
-    streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>>;
-    listModels(): Promise<AiModel[]>;
-    listModelsByConnections(): Promise<AiModel[]>;
-    listModelsByConnection(connection: string | IAiConnectionInline): Promise<AiModel[]>;
+  generateText(params: AiGenerateTextParams): ReturnType<typeof generateText>;
+  streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>>;
+  listModels(): Promise<AiModel[]>;
+  listModelsByConnections(): Promise<AiModel[]>;
+  listModelsByConnection(connection: string | IAiConnectionInline): Promise<AiModel[]>;
 }
 ```
 
@@ -1406,9 +1435,9 @@ Shipped factories: `AnthropicSdkFactory.ts`, `OpenAiSdkFactory.ts`. Model ids ar
 ```ts
 const slashIndex = modelId.indexOf("/");
 if (slashIndex === -1) {
-    throw new Error(
-        `Invalid model ID "${modelId}". Expected format: "<providerId>/<modelId>" (e.g. "openai/gpt-4o").`
-    );
+  throw new Error(
+    `Invalid model ID "${modelId}". Expected format: "<providerId>/<modelId>" (e.g. "openai/gpt-4o").`
+  );
 }
 ```
 
@@ -1421,13 +1450,13 @@ in AI Power Ups settings (`packages/ai-powerups/src/api/features/Providers/types
 
 ```ts
 export interface ProviderPreset {
-    id: string;
-    name: string;
-    description?: string;
-    model: string;
-    apiKey?: string;
-    apiKeyMasked: string;
-    apiKeyEncrypted: string;
+  id: string;
+  name: string;
+  description?: string;
+  model: string;
+  apiKey?: string;
+  apiKeyMasked: string;
+  apiKeyEncrypted: string;
 }
 ```
 
@@ -1461,9 +1490,9 @@ const settings = settingsResult.value;
 const firstProvider = settings.providers.presets[0];
 
 if (!firstProvider) {
-    return Result.fail(
-        new Error("No AI provider configured. Add a provider in AI Power Ups settings.")
-    );
+  return Result.fail(
+    new Error("No AI provider configured. Add a provider in AI Power Ups settings.")
+  );
 }
 ```
 
@@ -1484,10 +1513,10 @@ Yes — `Ai` / `AiSdk` / `AiSdkFactory` / `AiConnectionFactory` / `AiSdkTool` / 
 
 ```ts
 dependencies: [
-    [AiSdkFactory, { multiple: true }],
-    [AiConnectionFactory, { multiple: true }],
-    EventPublisher
-]
+  [AiSdkFactory, { multiple: true }],
+  [AiConnectionFactory, { multiple: true }],
+  EventPublisher
+];
 ```
 
 It publishes four domain events (`packages/api-core/src/features/ai/events.ts`):
@@ -1535,7 +1564,7 @@ This is the only use of `Output.object` in the repo; `generateObject` is not use
 **Fallback: lenient JSON scraping** (`packages/ai-powerups/src/api/features/WbGeneratePageContent/LlmJsonResponse.ts`),
 used by both `WbGeneratePageContent` and `CmsGenerateEntryContent`:
 
-```ts
+````ts
 static fromRawText(raw: string): LlmJsonResponse {
     let text = raw
         .replace(/^```(?:json)?\s*\n?/, "")
@@ -1549,7 +1578,7 @@ static fromRawText(raw: string): LlmJsonResponse {
     const startIdx = text.search(/[\[{]/);
     ...
 }
-```
+````
 
 There is also a full prompt-context builder (`AiPromptContextBuilder`, Projects / Writer Persona /
 Reader Persona, project-file tools, Anthropic prompt caching via
@@ -1565,20 +1594,20 @@ const { requestId, result, duration } = event.payload;
 const createAuditLog = getAuditConfig(AUDIT.AI.TEXT.GENERATE);
 
 await createAuditLog(
-    "AI Generate Text",
-    {
-        after: {
-            status: "success",
-            duration: Math.round(duration),
-            text: result.text,
-            usage: result.usage,
-            finishReason: result.finishReason,
-            steps: result.steps.length,
-            toolCalls: result.steps.reduce((sum, step) => sum + step.toolCalls.length, 0)
-        }
-    },
-    requestId,
-    this.context
+  "AI Generate Text",
+  {
+    after: {
+      status: "success",
+      duration: Math.round(duration),
+      text: result.text,
+      usage: result.usage,
+      finishReason: result.finishReason,
+      steps: result.steps.length,
+      toolCalls: result.steps.reduce((sum, step) => sum + step.toolCalls.length, 0)
+    }
+  },
+  requestId,
+  this.context
 );
 ```
 
@@ -1609,9 +1638,9 @@ private getIdentity(): IAuditLogCreatedBy {
 
 ```ts
 export interface IAuditLogCreatedBy {
-    id: string;
-    type: string;
-    displayName: string;
+  id: string;
+  type: string;
+  displayName: string;
 }
 ```
 
@@ -1620,11 +1649,11 @@ override hook — `AuditLogBeforeCreateEvent` exposes `setAuditLog(input)`:
 
 ```ts
 const beforeCreateEvent = new AuditLogBeforeCreateEvent({
-    auditLog: auditLog,
-    context,
-    setAuditLog(input) {
-        Object.assign(auditLog, input);
-    }
+  auditLog: auditLog,
+  context,
+  setAuditLog(input) {
+    Object.assign(auditLog, input);
+  }
 });
 await this.eventPublisher.publish(beforeCreateEvent);
 ```
@@ -1634,8 +1663,8 @@ await this.eventPublisher.publish(beforeCreateEvent);
 
 ```ts
 if (!context.security.getIdentity()?.id) {
-    console.log("No identity - skipping audit log creation.");
-    return null;
+  console.log("No identity - skipping audit log creation.");
+  return null;
 }
 ```
 
@@ -1645,9 +1674,22 @@ if (!context.security.getIdentity()?.id) {
    and admin). Shape (`packages/common-audit-logs/src/types.ts`):
 
    ```ts
-   export interface Action { type: string; displayName: string; newEntryDelay?: number; }
-   export interface Entity { type: string; displayName: string; linkToEntity?: (id: string) => string; actions: Action[]; }
-   export interface App { app: string; displayName: string; entities: Entity[]; }
+   export interface Action {
+     type: string;
+     displayName: string;
+     newEntryDelay?: number;
+   }
+   export interface Entity {
+     type: string;
+     displayName: string;
+     linkToEntity?: (id: string) => string;
+     actions: Action[];
+   }
+   export interface App {
+     app: string;
+     displayName: string;
+     entities: Entity[];
+   }
    ```
 
 2. **Write the entry** through `getAuditConfig(AUDIT.<APP>.<ENTITY>.<ACTION>)`, which returns
@@ -1710,13 +1752,13 @@ But `grep -rn 'AUDIT\.APW' packages/` returns **nothing**, and there is no `subs
 
 ```ts
 export const createSubscriptionHooks = (context: AuditLogsContext) => {
-    createFileManagerHooks(context);
-    createHeadlessCmsHooks(context);
-    createSecurityHooks(context);
-    createMailerHooks(context);
-    createAcoHooks(context);
-    createWebsiteBuilderHooks(context);
-    createAiHooks(context);
+  createFileManagerHooks(context);
+  createHeadlessCmsHooks(context);
+  createSecurityHooks(context);
+  createMailerHooks(context);
+  createAcoHooks(context);
+  createWebsiteBuilderHooks(context);
+  createAiHooks(context);
 };
 ```
 
@@ -1735,8 +1777,8 @@ A single boolean, `workflows.editor`. Schema (`packages/app-workflows/src/domain
 
 ```ts
 export const WORKFLOWS_PERMISSIONS_SCHEMA = createPermissionSchema({
-    prefix: "workflows",
-    fullAccess: { editor: true }
+  prefix: "workflows",
+  fullAccess: { editor: true }
 });
 ```
 
@@ -1744,7 +1786,7 @@ No entities — it is binary full-access-with-one-flag. API type (`packages/api-
 
 ```ts
 export interface IWorkflowsSecurityPermission extends SecurityPermission {
-    editor: boolean;
+  editor: boolean;
 }
 ```
 
@@ -1799,7 +1841,7 @@ Authority to sign off comes only from **team membership**, evaluated inside the 
 
 ```ts
 const canReview = step.teams.some(team => {
-    return this.teams.some(t => t.id === team.id);
+  return this.teams.some(t => t.id === team.id);
 });
 ```
 
@@ -1820,12 +1862,17 @@ prefix / entity ids / action names.
 
    ```ts
    createPermissionSchema({
-       prefix: "workflows",
-       fullAccess: { editor: true },
-       entities: [
-           { id: "automatedStep", permission: "workflows.automatedStep", scopes: ["full"], actions: [{ name: "configure", label: "Configure automated steps" }] }
-       ]
-   })
+     prefix: "workflows",
+     fullAccess: { editor: true },
+     entities: [
+       {
+         id: "automatedStep",
+         permission: "workflows.automatedStep",
+         scopes: ["full"],
+         actions: [{ name: "configure", label: "Configure automated steps" }]
+       }
+     ]
+   });
    ```
 
 2. `features/permissions/abstractions.ts` and `feature.ts` (`createPermissionsAbstraction` /
@@ -1843,12 +1890,12 @@ prefix / entity ids / action names.
 
 ```ts
 export const FM_PERMISSIONS_SCHEMA = createPermissionSchema({
-    prefix: "fm",
-    fullAccess: true,
-    entities: [
-        { id: "file", permission: "fm.file", scopes: ["full", "own"], actions: [{ name: "rwd" }] },
-        { id: "settings", permission: "fm.settings", scopes: ["full"] }
-    ]
+  prefix: "fm",
+  fullAccess: true,
+  entities: [
+    { id: "file", permission: "fm.file", scopes: ["full", "own"], actions: [{ name: "rwd" }] },
+    { id: "settings", permission: "fm.settings", scopes: ["full"] }
+  ]
 });
 ```
 
@@ -1905,7 +1952,7 @@ Two things to flag:
 
   ```tsx
   <Bind name={"teams"} validators={validation.create("required,minLength:1")}>
-      {bind => <Autocomplete bind={bind} />}
+    {bind => <Autocomplete bind={bind} />}
   </Bind>
   ```
 
@@ -1938,13 +1985,13 @@ codebase that gives per-check-type config forms without hand-writing each one.
 
 There is no single "content review detail" page. Review state surfaces in five places:
 
-| Surface | Location |
-|---|---|
-| Content Reviews list screen | `app-workflows/src/presentation/ContentReviews.tsx` → `workflowStateList/components/List/WorkflowStateListView.tsx` (+ `WorkflowStateListFilters.tsx`, `WorkflowStateListOptions.tsx`) |
+| Surface                      | Location                                                                                                                                                                                                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Content Reviews list screen  | `app-workflows/src/presentation/ContentReviews.tsx` → `workflowStateList/components/List/WorkflowStateListView.tsx` (+ `WorkflowStateListFilters.tsx`, `WorkflowStateListOptions.tsx`)                                                         |
 | **Bar above the entry form** | `workflowState/components/Bar/WorkflowStateBar.tsx` + nine state-specific decorators in `Bar/Bars/` (`WorkflowStateBarRequestReview`, `…StartReview`, `…Review`, `…Approved`, `…Rejected`, `…CancelReview`, `…Workflow`, `…Loading`, `…Error`) |
-| Step-progress tooltip | `workflowState/components/Tooltip/WorkflowStateTooltipContent.tsx` |
-| Dashboard widgets | `workflowStatesWidget/components/WorkflowStatesOwnWidget.tsx`, `WorkflowStatesRequestedWidget.tsx` |
-| CMS entry-list column | `app-headless-cms-workflows/src/presentation/TableRowMapperWorkflowDecorator.ts` |
+| Step-progress tooltip        | `workflowState/components/Tooltip/WorkflowStateTooltipContent.tsx`                                                                                                                                                                             |
+| Dashboard widgets            | `workflowStatesWidget/components/WorkflowStatesOwnWidget.tsx`, `WorkflowStatesRequestedWidget.tsx`                                                                                                                                             |
+| CMS entry-list column        | `app-headless-cms-workflows/src/presentation/TableRowMapperWorkflowDecorator.ts`                                                                                                                                                               |
 
 **Best fit for a per-step panel: the bar area.** It is already decorator-based
 (`makeDecoratable("WorkflowStateBarComponent", ...)`), it is injected into the CMS entry form by
@@ -1953,21 +2000,23 @@ hand. The existing tooltip is the closest thing to a per-step display and shows 
 would take:
 
 ```tsx
-{state.steps.map(step => {
+{
+  state.steps.map(step => {
     return (
-        <Fragment key={`step-${step.id}`}>
-            <Grid.Column span={4}>
-                <Tag swatchColor={step.color} content={step.title} variant={"neutral-light"} />
-            </Grid.Column>
-            <Grid.Column span={4}>
-                <TagState state={step.state} />
-            </Grid.Column>
-            <Grid.Column span={4}>
-                <WorkflowStateTooltipContentComment showComment={createShowComment(step)} step={step} />
-            </Grid.Column>
-        </Fragment>
+      <Fragment key={`step-${step.id}`}>
+        <Grid.Column span={4}>
+          <Tag swatchColor={step.color} content={step.title} variant={"neutral-light"} />
+        </Grid.Column>
+        <Grid.Column span={4}>
+          <TagState state={step.state} />
+        </Grid.Column>
+        <Grid.Column span={4}>
+          <WorkflowStateTooltipContentComment showComment={createShowComment(step)} step={step} />
+        </Grid.Column>
+      </Fragment>
     );
-})}
+  });
+}
 ```
 
 A tooltip is the wrong container for check output (rationale text, findings list, re-run button), so
@@ -2005,6 +2054,7 @@ per-step panel.
 # Assumptions: confirmed or falsified
 
 ### 1. New optional properties can be added to a step without breaking existing workflows or requiring a data migration
+
 **Supported on data; contradicted on cost.** No data migration is needed — CMS value cleanup and
 validation operate on top-level fields only, so existing `steps` rows simply lack the key and nothing
 strips or rejects nested extras. But the value is silently dropped at **three whitelists** unless all
@@ -2013,9 +2063,10 @@ are updated: `stepValidation` (zod strips unknown keys), the GraphQL SDL types, 
 not.
 
 ### 2. Content is genuinely immutable for the duration of a review, so a content-only check produces the same verdict at any point in the sequence
+
 **Contradicted.** A draft revision under review is not locked at the API level: `entry.locked`
 derives solely from publish status (`const locked = status !== STATUS_DRAFT`), and the `EntryWorkflows`
-feature registers no before-update handler. Only *publish* and *move* are blocked. The immutability
+feature registers no before-update handler. Only _publish_ and _move_ are blocked. The immutability
 that exists is one presenter method:
 
 ```ts
@@ -2032,6 +2083,7 @@ extension's event handler — can mutate the revision mid-review. **A verdict co
 guaranteed to still hold at step 4.**
 
 ### 3. A rejection always requires the author to create a new revision, and a new review then starts from the first step
+
 **Half supported.** The "new review starts from step 1" half is solid: a new revision gets a new
 `targetRevisionId`, `createWorkflowState`'s duplicate check is keyed on `targetRevisionId` so it
 succeeds, and steps are rebuilt all-`pending`.
@@ -2044,12 +2096,14 @@ Also undocumented: the rejected state on the old revision is never deactivated, 
 with two `isActive: true` workflow states across revisions.
 
 ### 4. Review creation happens at a single interception point where checks could run before the revision locks
+
 **Supported for the interception point; the second clause is moot.** `CreateWorkflowStateUseCase` is
 the sole writer, is DI-registered and decoratable, and also emits `WorkflowStateAfterCreateEvent`.
-There is no revision lock to run "before" (see #2), but there *is* a single well-defined place to run
+There is no revision lock to run "before" (see #2), but there _is_ a single well-defined place to run
 checks and seed step verdicts before the state row is written.
 
 ### 5. Comments can be made to accept a system identity with a small, contained change
+
 **Supported — smaller than assumed.** `createdBy` is projected from `identityContext.getIdentity()`,
 `Identity.type` is a free string, and `IdentityContext.withIdentity` is AsyncLocalStorage-scoped and
 already used this way by the task runner. **Zero changes to `api-collaboration` are required.** One
@@ -2058,6 +2112,7 @@ wrapped in `withoutAuthorization` as well as `withIdentity`, or the synthetic id
 authorization check.
 
 ### 6. Background task infrastructure exists that can run an operation taking tens of seconds and return a result to the admin app
+
 **Supported, with an existing template.** `TaskDefinition` + `TaskService.trigger` + Step Functions;
 `AiImageEnrichmentTask` already does exactly "AI call with a zod-validated structured response inside
 a task, result pushed to the admin over websockets". `getTask` polling is available as an
@@ -2065,12 +2120,14 @@ alternative. Caveats: no automatic retry (Area 5.5), websocket delivery targets 
 and the task's identity is the triggering human, not a system identity.
 
 ### 7. The publish gate reads step state in a way that would tolerate steps resolved by something other than a human sign-off
+
 **Supported.** The gate reads only `state.done`, i.e. `steps.every(s => s.state === approved)`. It
 never inspects `savedBy`, teams, or how a step reached `approved`. The admin mirror
 (`canPublish: base.canPublish && (!wfVm.hasWorkflow || wfVm.isApproved)`) reads the record-level
 `state` and is equally indifferent.
 
 ### 8. A per-step configuration payload can be stored without a schema redesign
+
 **Supported, but net-new.** No per-step payload exists today. Adding `config: fields.json()` to the
 step sub-schema in both `workflowModel.ts` and `stateModel.ts` is additive and matches an existing
 pattern in the same model (`targetContext: fields.json()`). It still incurs the full boundary tax
@@ -2083,16 +2140,21 @@ from #1, and JSON fields are not usefully filterable through `CmsWhereMapper`.
 ## Blockers — things that will not work as designed
 
 ### B1. `WorkflowState.approve()` cannot be called by a system identity
-Approving requires *both* guards to pass:
+
+Approving requires _both_ guards to pass:
 
 ```ts
-if (!canReview(step)) { return Result.fail(new WorkflowStateStepCannotReviewError(step)); }
-if (!isStepOwner(step)) { return Result.fail(new WorkflowStateStepNotStepOwnerError(step)); }
+if (!canReview(step)) {
+  return Result.fail(new WorkflowStateStepCannotReviewError(step));
+}
+if (!isStepOwner(step)) {
+  return Result.fail(new WorkflowStateStepNotStepOwnerError(step));
+}
 ```
 
 `canReview` is team overlap between the step's `teams` and `GetUserTeamsUseCase(identity.id)`;
 `isStepOwner` is `step.savedBy?.id === identity.id`. A synthetic identity has no teams, so `canReview`
-is false and `start()` fails too. And if you instead run the check as the *requesting user*, the
+is false and `start()` fails too. And if you instead run the check as the _requesting user_, the
 `createdBy.id === identity.id` branch in `enrichStep` forces `canReview: false` for them.
 
 **There is no code path today by which a non-team, non-human actor can resolve a step.** A new domain
@@ -2100,16 +2162,17 @@ method on `WorkflowState` (e.g. `resolveAutomatically(stepId, verdict, comment)`
 team/owner guards is required. This is the largest single piece of new domain logic.
 
 ### B2. `teams` is structurally mandatory on a step
+
 `teams: NonEmptyArray<IWorkflowStepTeam>` in TypeScript; `.min(1, "You must select at least one team.")`
 in zod; `.required(...).listMinLength(1, ...)` in the **state** model:
 
 ```ts
 teams: stepFields
-    .object()
-    .label("Teams")
-    .list()
-    .required("At least one team is required.")
-    .listMinLength(1, "At least one team is required.")
+  .object()
+  .label("Teams")
+  .list()
+  .required("At least one team is required.")
+  .listMinLength(1, "At least one team is required.");
 ```
 
 An automated step has no reviewing team. Making `teams` conditional means relaxing the state model's
@@ -2118,6 +2181,7 @@ form's `required,minLength:1` validator — while keeping it mandatory for manua
 cross-cutting, and the state model change affects **all existing rows'** validation on next write.
 
 ### B3. Content mutability breaks verdict stability
+
 See Assumption #2. Two ways out, both with costs:
 
 - **Add an API-level guard.** An `EntryBeforeUpdateEventHandler` in `api-headless-cms-workflows`.
@@ -2133,6 +2197,7 @@ See Assumption #2. Two ways out, both with costs:
 ## Risks — things that will make this harder than assumed
 
 ### R1. No `AiConnectionFactory` implementation exists
+
 `Ai.generateText({ model })` without an explicit `connection` throws
 `No AI connection found for provider "..."`. Every existing caller reads AI Power Ups settings,
 decrypts `apiKeyEncrypted`, and passes an inline connection. So the AI step either
@@ -2145,28 +2210,33 @@ Also: every existing consumer hardcodes `providers.presets[0]`. If the workflow 
 model per AI step, that selection UI and plumbing is entirely new.
 
 ### R2. Sign-off is unauthorized today, so adding "who may configure automated steps" exposes the gap
+
 No `workflowState/*` use case checks permissions; `cancelWorkflowState` is unguarded. If the new
 feature introduces a distinct permission, reviewers will reasonably ask why the existing mutations
 have none. Fixing that is a separate, wider change (nine use cases), and `api-workflows` does not use
 `createPermissionSchema` at all, so it would also be a pattern migration.
 
 ### R3. Comments are per-entry, not per-review or per-revision
+
 `contentId` is `<modelId>:<entryId>`. A check comment from the review of `#0001` will still be listed
 on `#0002`, and re-running a check will accumulate threads. Nothing auto-resolves. Mitigation exists
 (`resolved` + `ResolveThreadUseCase`, and `type: task`), but a policy has to be designed:
 resolve-on-new-revision, resolve-on-re-run, or dedupe by locator + check id.
 
 ### R4. Field-anchored findings can't address list items
+
 Documented in `packages/app-collaboration/src/cms/listFieldLocators.ts`: a field inside a list field
 shares one `qualifiedName` across all items, so comment markers are hidden for those fields. An AI
 step that says "item 3 of `sections` is off-brand" cannot anchor there today. `walkModelLocator`
 already skips numeric segments server-side, so this is an admin-side gap too.
 
 ### R5. `qualifiedName` is `feat/notifications`-only
+
 `IFieldVM.qualifiedName` in `@webiny/app-admin` does not exist on `next`. Any field-anchored design
 is coupled to the notifications/collaboration branch landing.
 
 ### R6. Task failure semantics require own retry
+
 No automatic retry. A transient provider error becomes a `FAILED` task and a step stuck in whatever
 state it was in. Retry must be implemented as `TaskResultStatus.CONTINUE` with an attempt counter in
 the task input, bounded by `maxIterations` (default 50). Also: a stuck `inReview` step is only
@@ -2174,6 +2244,7 @@ recoverable through `takeOverWorkflowStateStep`, which requires team overlap —
 system-resolved step. A "re-run this check" affordance is not optional.
 
 ### R7. Step-level notifications are dead code — do not build on them
+
 `NotificationTransport.send()` has **no caller** anywhere in the repo (the only references to
 `NotificationTransport` outside its own directory are two registration lines in
 `api-workflows/src/index.ts`), and `StepFormNotifications` is commented out of the editor. The
@@ -2183,16 +2254,18 @@ through `api-notifications` + `api-notifications-integrations`
 `ThreadCreatedNotificationHandler`, `ReplyAddedNotificationHandler`).
 
 ### R8. Licence and tenancy gates
+
 `api-workflows` bails out entirely unless `wcpContext.canUseWorkflows()`; `canReview` depends on teams,
 which depend on `canUseTeams()` / `canUseAacl()` (see `applyAaclLogic` in `IdentityContext`).
 `api-collaboration` is currently **ungated** with a `TODO(before release)` to put it behind the
 workflows capability — the automated-steps feature will inherit whatever that becomes.
 
 ### R9. Small changes with wide blast radius
+
 - `WorkflowState.enrichStep` / `approve` / `reject` / `start` — every reviewer interaction, all three
   app bindings (CMS, WB, list/widgets), and the `graphql/workflowState.ts` resolvers.
 - `stateModel.ts` step sub-schema — validation for every existing workflow-state row.
-- `IWorkflowStep` — shared by workflow *and* state (`IWorkflowStateRecordStep extends IWorkflowStep`),
+- `IWorkflowStep` — shared by workflow _and_ state (`IWorkflowStateRecordStep extends IWorkflowStep`),
   so one type change ripples into both models, both SDLs, both zod validators, and both admin models.
 - Any `EntryBeforeUpdate` handler — the hot path of every CMS write in the product (see B3).
 - `packages/api-workflows/src/domain/workflowState/WorkflowState.ts:142` throws
@@ -2207,14 +2280,16 @@ workflows capability — the automated-steps feature will inherit whatever that 
 ## Approaches that may be materially better than the one described
 
 ### A1. Give automated steps their own resolution path, not a fake sign-off
+
 Rather than making a system identity satisfy `canReview` + `isStepOwner`, add a step `kind`
 (`"manual" | "check" | "ai"`) and a dedicated domain method that transitions the step directly, with
 its own guard ("this step is automated and not yet resolved"). This sidesteps B1 and B2 in one move:
 automated steps need no `teams`, no `savedBy` identity semantics, and no synthetic identity for the
-*workflow* mutation — only for the *comment*, where it is a two-line `withIdentity` wrapper. It also
+_workflow_ mutation — only for the _comment_, where it is a two-line `withIdentity` wrapper. It also
 keeps `enrichStep`'s human rules untouched, which is the riskiest function to change.
 
 ### A2. Run content-only checks at review creation, not as sequenced steps
+
 `CreateWorkflowStateUseCase` is the one place where "the content is what it is" is unambiguously true,
 and it is a single, decoratable interception point (Area 2.6). Running content-only checks there and
 seeding the resulting step verdicts into the initial `steps` array:
@@ -2225,12 +2300,13 @@ seeding the resulting step verdicts into the initial `steps` array:
 
 This conflicts with the brief's "step runs when it becomes active" model, and it doesn't suit an AI
 step that takes tens of seconds (which would still block the mutation). A hybrid is plausible:
-content-only *check* steps resolve at creation; *AI* steps queue a task at creation and resolve
+content-only _check_ steps resolve at creation; _AI_ steps queue a task at creation and resolve
 asynchronously, so the review's step sequence is about **display order and gating**, not about when
 work runs. Worth putting to the engineering team explicitly, because it changes the shape of the
 design.
 
 ### A3. Model check findings as collaboration threads of `type: task`, and use `resolved`
+
 `CollabThreadType.task` plus `resolved`/`resolvedBy`/`resolvedOn` and `assigneeId`/`dueDate` already
 exist and are already surfaced in `CommentsPanel`. Findings-as-tasks gives the author a checklist and
 gives the feature a natural "this finding is addressed" signal — without inventing a parallel findings
@@ -2238,6 +2314,7 @@ store. Combine with `locator` set from the CMS `fieldId` path so a finding point
 field (subject to R4).
 
 ### A4. Copy `AiImageEnrichmentTask` rather than designing the AI plumbing
+
 It is the only place in the repo that combines `TaskDefinition`, `Output.object({ schema: z.object(...) })`,
 AI Power Ups credential decryption, and websocket result delivery — i.e. every mechanism an AI step
 needs, in ~170 lines, with `maxIterations = 1`, `isPrivate = true`, `databaseLogs = false`,
@@ -2247,6 +2324,7 @@ verdicts with SDK-level retries on shape mismatch, which is what "returning a ve
 shape" requires.
 
 ### A5. Wire audit-log handlers for workflow config while you are in there
+
 `AUDIT.APW.WORKFLOW.{CREATE,UPDATE,DELETE}` and `AUDIT.APW.CONTENT_REVIEW.CREATE` already exist in
 `common-audit-logs` but have no subscription hooks (Area 7.3). The domain events
 (`WorkflowAfterCreateEvent`, `WorkflowAfterUpdateEvent`, `WorkflowAfterDeleteEvent`,

@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { UpdateFileRepository as RepositoryAbstraction } from "./abstractions.js";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModelProvider } from "~/domain/file/abstractions.js";
 import type { File } from "~/domain/file/types.js";
 import {
     FileNotAuthorizedError,
@@ -13,7 +13,7 @@ import { FileToEntryMapper } from "../shared/FileToEntryMapper.js";
 class UpdateFileRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
-        private fileModel: FileModel.Interface
+        private fileModelProvider: FileModelProvider.Interface
     ) {}
 
     async update(file: File): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -22,7 +22,8 @@ class UpdateFileRepositoryImpl implements RepositoryAbstraction.Interface {
         // Files are not versioned, so we're always updating the same revision
         const id = `${file.id}#0001`;
 
-        const result = await this.updateEntry.execute(this.fileModel, id, {
+        const fileModel = await this.fileModelProvider.get();
+        const result = await this.updateEntry.execute(fileModel, id, {
             wbyAco_location: file.location,
             values: entry.values
         });
@@ -46,5 +47,5 @@ class UpdateFileRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdateFileRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateFileRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, FileModel]
+    dependencies: [UpdateEntryUseCase, FileModelProvider]
 });

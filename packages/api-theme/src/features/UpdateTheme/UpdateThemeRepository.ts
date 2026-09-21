@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateThemeRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ThemeModel } from "~/domain/theme/abstractions.js";
+import { ThemeModelProvider } from "~/domain/theme/abstractions.js";
 import { EntryToThemeMapper } from "~/domain/theme/EntryToThemeMapper.js";
 import {
     ThemeNotFoundError,
@@ -14,11 +14,12 @@ class UpdateThemeRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private themeModel: ThemeModel.Interface
+        private themeModelProvider: ThemeModelProvider.Interface
     ) {}
 
     async execute({ id, data }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const existing = await this.getEntryById.execute(this.themeModel, id);
+        const themeModel = await this.themeModelProvider.get();
+        const existing = await this.getEntryById.execute(themeModel, id);
 
         if (existing.isFail()) {
             if (existing.error.code === "Cms/Entry/NotFound") {
@@ -42,7 +43,7 @@ class UpdateThemeRepositoryImpl implements RepositoryAbstraction.Interface {
             extensions: data.extensions ?? current.extensions
         };
 
-        const result = await this.updateEntry.execute(this.themeModel, id, { values });
+        const result = await this.updateEntry.execute(themeModel, id, { values });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {
@@ -60,5 +61,5 @@ class UpdateThemeRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdateThemeRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateThemeRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, ThemeModel]
+    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, ThemeModelProvider]
 });

@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/admin";
 import { AuthenticationContext as AuthenticationContextAbstraction } from "./abstractions.js";
 import { AuthenticationContext } from "./AuthenticationContext.js";
 import { GraphQLClientDecorator } from "./GraphQLClientDecorator.js";
+import { ApiStreamClientDecorator } from "./ApiStreamClientDecorator.js";
 import { InternalIdTokenProvider } from "./InternalIdTokenProvider.js";
 
 export const AuthenticationContextFeature = createFeature({
@@ -10,6 +11,7 @@ export const AuthenticationContextFeature = createFeature({
         container.register(InternalIdTokenProvider).inSingletonScope();
         container.register(AuthenticationContext).inSingletonScope();
         container.registerDecorator(GraphQLClientDecorator);
+        container.registerDecorator(ApiStreamClientDecorator);
     },
     resolve(container) {
         return {

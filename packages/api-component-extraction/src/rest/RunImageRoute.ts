@@ -1,5 +1,9 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import { IMMUTABLE_CACHE_CONTROL, RUN_IMAGE_ROUTE, stageArtifactKey } from "~/constants.js";
 import { RunRepository } from "~/domain/abstractions.js";
@@ -31,13 +35,10 @@ const notFound = json(404, { message: "Image not found." });
  * Derived-image keys carry the stage version, so an object never changes under a key — hence the
  * immutable cache header; the content type comes from the stored object.
  */
-class RunImageRouteImpl implements HttpRoute.Interface {
-    readonly method = "GET";
-    readonly path = RUN_IMAGE_ROUTE;
-
+class RunImageRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
-    async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    async handle(request: HttpRouteHandler.Request): Promise<IHttpResponse> {
         const runId = request.pathParameters.runId;
         const ref = request.query.ref;
         if (!ref) {
@@ -126,7 +127,20 @@ class RunImageRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const RunImageRoute = HttpRoute.createImplementation({
+export const RunImageRoute = HttpRouteHandler.createImplementation({
     implementation: RunImageRouteImpl,
     dependencies: [RequestContainer]
+});
+
+class RunImageRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "component-extraction-run-image";
+    readonly method = "GET";
+    readonly path = RUN_IMAGE_ROUTE;
+    readonly handler = RunImageRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const RunImageRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: RunImageRouteDefinitionImpl,
+    dependencies: []
 });

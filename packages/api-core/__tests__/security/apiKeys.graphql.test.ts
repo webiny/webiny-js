@@ -32,6 +32,84 @@ describe("Security API Key Test", () => {
         await install.install();
     });
 
+    // `description` is declared `String` (nullable) in the GraphQL schema, but the create schema
+    // required a bare `z.string()` - so an API key created without a description was rejected
+    // whether the client sent null or left the field out entirely.
+    test("should accept a null or missing `description`", async () => {
+        const [nullResponse] = await securityApiKeys.create({
+            data: { name: "Null desc", slug: "null-desc", description: null, permissions: [] }
+        });
+
+        expect(nullResponse).toMatchObject({
+            data: {
+                security: {
+                    createApiKey: {
+                        data: { name: "Null desc", slug: "null-desc", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [missingResponse] = await securityApiKeys.create({
+            data: { name: "No desc", slug: "no-desc", permissions: [] }
+        });
+
+        expect(missingResponse).toMatchObject({
+            data: {
+                security: {
+                    createApiKey: {
+                        data: { name: "No desc", slug: "no-desc", description: "" },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    // An update that does not mention `description` must leave the stored one alone.
+    test("should not clear `description` on an update that omits it", async () => {
+        const [createResponse] = await securityApiKeys.create({
+            data: {
+                name: "Keep desc",
+                slug: "keep-desc",
+                description: "Original description",
+                permissions: []
+            }
+        });
+
+        const apiKey = createResponse.data.security.createApiKey.data;
+
+        // `SecurityApiKeyInput` is shared by create and update, so `name` and `permissions` are
+        // required here even though only `description` is under test.
+        const [updateResponse] = await securityApiKeys.update({
+            id: apiKey.id,
+            data: { name: "Keep desc renamed", permissions: [] }
+        });
+
+        expect(updateResponse.data.security.updateApiKey).toMatchObject({
+            data: { name: "Keep desc renamed", description: "Original description" },
+            error: null
+        });
+    });
+
+    // Length cap matches teams and roles. This was the one description field without one.
+    test("should reject a `description` longer than 500 characters", async () => {
+        const [response] = await securityApiKeys.create({
+            data: {
+                name: "Too long",
+                slug: "too-long",
+                description: "x".repeat(501),
+                permissions: []
+            }
+        });
+
+        expect(response.data.security.createApiKey).toMatchObject({
+            data: null,
+            error: { code: "ApiKey/Validation" }
+        });
+    });
+
     test("should create, list, update and delete an API key", async () => {
         // Create a token
         const [createResponse] = await securityApiKeys.create({

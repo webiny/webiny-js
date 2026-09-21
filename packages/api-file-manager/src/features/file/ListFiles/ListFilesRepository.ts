@@ -5,7 +5,7 @@ import {
     ListFilesOutput,
     ListFilesRepository as RepositoryAbstraction
 } from "./abstractions.js";
-import { FileModel } from "~/domain/file/abstractions.js";
+import { FileModelProvider } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
 import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
@@ -15,7 +15,7 @@ import { GenericRecord } from "@webiny/api/types.js";
 class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private fileModel: FileModel.Interface,
+        private fileModelProvider: FileModelProvider.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface,
         private cmsSortMapper: CmsSortMapper.Interface
     ) {}
@@ -23,17 +23,19 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
     async execute(
         input: ListFilesInput
     ): Promise<Result<ListFilesOutput, RepositoryAbstraction.Error>> {
+        const fileModel = await this.fileModelProvider.get();
+
         const where = this.cmsWhereMapper.map<GenericRecord>({
             input: input.where || {},
-            fields: this.fileModel.fields
+            fields: fileModel.fields
         });
 
         const sort = this.cmsSortMapper.map({
             input: input.sort,
-            fields: this.fileModel.fields
+            fields: fileModel.fields
         });
 
-        const result = await this.listLatestEntries.execute(this.fileModel, {
+        const result = await this.listLatestEntries.execute(fileModel, {
             where,
             limit: input.limit || 40,
             after: input.after || undefined,
@@ -58,5 +60,5 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListFilesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFilesRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FileModel, CmsWhereMapper, CmsSortMapper]
+    dependencies: [ListLatestEntriesUseCase, FileModelProvider, CmsWhereMapper, CmsSortMapper]
 });

@@ -7,7 +7,10 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { HeadlessCms } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { addAcoBaseSchema } from "./createAcoGraphQL.js";
 import { addFilterSchema } from "~/filter/filter.gql.js";
-import { AcoInitializer } from "./AcoInitializer.js";
+import { AcoFolderSchemaFactory } from "./AcoFolderSchemaFactory.js";
+import { FolderModelProvider } from "~/features/folder/FolderModelProvider.js";
+import { CmsFlpFeature } from "~/features/cms/index.js";
+import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import { CreateFlpTask } from "~/flp/tasks/createFlp.task.js";
 import { UpdateFlpTask } from "~/flp/tasks/updateFlp.task.js";
 import { DeleteFlpTask } from "~/flp/tasks/deleteFlp.task.js";
@@ -49,11 +52,12 @@ import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
+import { AcoAiToolsFeature } from "~/features/ai/index.js";
 
 class AcoSchemaFactoryImpl implements GraphQLSchemaFactory.Interface {
     async execute(builder: IGraphQLSchemaBuilder): Promise<IGraphQLSchemaBuilder> {
-        // Static ACO base + filter schema (DI-native contributors declaring their deps). The dynamic
-        // folder schema (needs the per-tenant folder model) is still built by AcoInitializer.
+        // Static ACO base + filter schema (DI-native contributors declaring their deps). The
+        // dynamic, per-tenant folder schema is built by AcoFolderSchemaFactory.
         addAcoBaseSchema(builder);
         addFilterSchema(builder);
         return builder;
@@ -69,6 +73,7 @@ export const AcoFeature = createFeature({
     name: "Aco",
     register(container: Container) {
         container.register(FolderModel);
+        AcoAiToolsFeature.register(container);
         container.register(FilterPrivateModel);
 
         // Background task definitions — pure wiring, no tenant/identity needed.
@@ -145,7 +150,24 @@ export const AcoFeature = createFeature({
             return filterCrudMethods;
         });
 
-        container.register(AcoInitializer);
+        // The per-tenant folder model is resolved on demand — see FolderModelProvider.
+        container.register(FolderModelProvider);
+
+        // CMS-entry folder-level-permission decorators, feature-flag gated. These must be
+        // registered before any CMS-entry abstraction they wrap is first resolved, which is why
+        // they used to sit in a pre-resolver initializer. Register time is strictly earlier and the
+        // gate is valid here: the WCP license is refreshed before any feature registers (see
+        // registerApiRequestStack).
+        if (
+            container
+                .resolve(FeatureFlags)
+                .get()
+                .isEnabled("advancedAccessControlLayer.folderLevelPermissions")
+        ) {
+            CmsFlpFeature.register(container);
+        }
+
         container.register(AcoSchemaFactory);
+        container.register(AcoFolderSchemaFactory);
     }
 });

@@ -3,7 +3,7 @@
 import "@webiny/background-tasks/api/types.js";
 import { createAbstraction, createImplementation } from "@webiny/feature/api";
 import {
-    TaskDefinition,
+    TaskHandler,
     type IResponseError
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
@@ -78,8 +78,8 @@ export interface StageTaskOutput {
 /** How many trailing activity lines to keep in the output (bounds the task record's size). */
 const ACTIVITY_LIMIT = 60;
 
-type RunParams = TaskDefinition.RunParams<StageTaskInput, StageTaskOutput>;
-type RunResult = Promise<TaskDefinition.Result<StageTaskInput, StageTaskOutput>>;
+type RunParams = TaskHandler.RunParams<StageTaskInput, StageTaskOutput>;
+type RunResult = Promise<TaskHandler.Result<StageTaskInput, StageTaskOutput>>;
 
 /**
  * The one place a stage's run is orchestrated, shared by all nine stage tasks.

@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateExperimentRepository as RepositoryAbstraction } from "./abstractions/UpdateExperimentRepository.js";
-import { ExperimentModel } from "~/domain/experiment/abstractions.js";
+import { ExperimentModelProvider } from "~/domain/experiment/abstractions.js";
 import type { CmsEntryWbExperimentValues } from "~/domain/experiment/abstractions.js";
 import { EntryToExperimentMapper } from "~/domain/experiment/EntryToExperimentMapper.js";
 import {
@@ -15,11 +15,12 @@ class UpdateExperimentRepositoryImpl implements RepositoryAbstraction.Interface 
     constructor(
         private updateEntry: UpdateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private experimentModel: ExperimentModel.Interface
+        private experimentModelProvider: ExperimentModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const getResult = await this.getEntryById.execute(this.experimentModel, params.id);
+        const experimentModel = await this.experimentModelProvider.get();
+        const getResult = await this.getEntryById.execute(experimentModel, params.id);
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
                 return Result.fail(new ExperimentNotFoundError(params.id));
@@ -28,7 +29,7 @@ class UpdateExperimentRepositoryImpl implements RepositoryAbstraction.Interface 
         }
 
         const result = await this.updateEntry.execute<CmsEntryWbExperimentValues>(
-            this.experimentModel,
+            experimentModel,
             params.id,
             { values: params.data as Partial<CmsEntryWbExperimentValues> }
         );
@@ -49,5 +50,5 @@ class UpdateExperimentRepositoryImpl implements RepositoryAbstraction.Interface 
 
 export const UpdateExperimentRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateExperimentRepositoryImpl,
-    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, ExperimentModel]
+    dependencies: [UpdateEntryUseCase, GetEntryByIdUseCase, ExperimentModelProvider]
 });

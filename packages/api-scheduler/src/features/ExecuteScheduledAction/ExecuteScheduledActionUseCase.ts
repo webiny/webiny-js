@@ -8,7 +8,7 @@ import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstrac
 import {
     type IScheduledAction,
     ScheduledActionHandler,
-    ScheduledActionModel
+    ScheduledActionModelProvider
 } from "~/shared/abstractions.js";
 import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
@@ -36,7 +36,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
         private actionHandler: ScheduledActionHandler.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
         private updateEntryUseCase: UpdateEntryUseCase.Interface,
-        private model: ScheduledActionModel.Interface,
+        private modelProvider: ScheduledActionModelProvider.Interface,
         private identityContext: IdentityContext.Interface
     ) {}
 
@@ -52,6 +52,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
         params: UseCaseAbstraction.Params
     ): Promise<Result<void, UseCaseAbstraction.Error>> {
         const { id } = params;
+        const model = await this.modelProvider.get();
         // Load scheduled action
         const getResult = await this.getScheduledActionUseCase.execute<T>(params);
 
@@ -92,7 +93,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
+            await this.updateEntryUseCase.execute<IScheduledAction<T>>(model, scheduleId, {
                 values: {
                     error: error.message
                 }
@@ -106,7 +107,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             await this.actionHandler.handle(scheduledAction);
 
             // Delete schedule entry on success
-            const deleteResult = await this.deleteEntryUseCase.execute(this.model, scheduleId, {
+            const deleteResult = await this.deleteEntryUseCase.execute(model, scheduleId, {
                 force: true,
                 permanently: true
             });
@@ -125,7 +126,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             );
 
             // Update entry with error for debugging
-            await this.updateEntryUseCase.execute<IScheduledAction<T>>(this.model, scheduleId, {
+            await this.updateEntryUseCase.execute<IScheduledAction<T>>(model, scheduleId, {
                 values: {
                     error: executionError.message
                 }
@@ -143,7 +144,7 @@ export const ExecuteScheduledActionUseCase = UseCaseAbstraction.createImplementa
         ScheduledActionHandler,
         DeleteEntryUseCase,
         UpdateEntryUseCase,
-        ScheduledActionModel,
+        ScheduledActionModelProvider,
         IdentityContext
     ]
 });

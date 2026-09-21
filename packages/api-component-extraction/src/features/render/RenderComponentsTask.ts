@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { BrowserProvider } from "@webiny/site-capture";
 import { RENDER_COMPONENTS_TASK_ID, stageArtifactKey } from "~/constants.js";
 import { RunRepository, JobRepository } from "~/domain/abstractions.js";
@@ -39,8 +42,8 @@ interface RenderCheckpoint {
 // mid-render.
 const RENDER_SAFETY_MARGIN_SECONDS = 120;
 
-type RunParams = TaskDefinition.RunParams<RenderTaskInput, RenderTaskOutput>;
-type RunResult = Promise<TaskDefinition.Result<RenderTaskInput, RenderTaskOutput>>;
+type RunParams = TaskHandler.RunParams<RenderTaskInput, RenderTaskOutput>;
+type RunResult = Promise<TaskHandler.Result<RenderTaskInput, RenderTaskOutput>>;
 
 /**
  * Renders a run's generated components to screenshots (W7.7). Not a pipeline stage — triggered on
@@ -49,17 +52,10 @@ type RunResult = Promise<TaskDefinition.Result<RenderTaskInput, RenderTaskOutput
  * a Render artifact keyed to the Generate stage version. Resumable: it checkpoints after each component
  * and continues in a fresh invocation near the Lambda timeout, like Capture and Generate.
  */
-class RenderComponentsTaskImpl implements TaskDefinition.Interface<
+class RenderComponentsTaskHandlerImpl implements TaskHandler.Interface<
     RenderTaskInput,
     RenderTaskOutput
 > {
-    readonly id = RENDER_COMPONENTS_TASK_ID;
-    readonly title = "Component extraction — render components";
-    readonly description = "Screenshots a run's generated components for the Generate view.";
-    readonly maxIterations = 30;
-    readonly isPrivate = false;
-    readonly databaseLogs = true;
-
     constructor(
         readonly runRepository: RunRepository.Interface,
         readonly jobRepository: JobRepository.Interface,
@@ -235,8 +231,8 @@ class RenderComponentsTaskImpl implements TaskDefinition.Interface<
     }
 }
 
-export const RenderComponentsTask = TaskDefinition.createImplementation({
-    implementation: RenderComponentsTaskImpl,
+const RenderComponentsTaskHandler = TaskHandler.createImplementation({
+    implementation: RenderComponentsTaskHandlerImpl,
     dependencies: [
         RunRepository,
         JobRepository,
@@ -246,4 +242,23 @@ export const RenderComponentsTask = TaskDefinition.createImplementation({
         ThemeCssResolver,
         PreviewDomainResolver
     ]
+});
+
+class RenderComponentsTaskImpl implements TaskDefinition.Interface<
+    RenderTaskInput,
+    RenderTaskOutput
+> {
+    readonly id = RENDER_COMPONENTS_TASK_ID;
+    readonly title = "Component extraction — render components";
+    readonly description = "Screenshots a run's generated components for the Generate view.";
+    readonly maxIterations = 30;
+    readonly isPrivate = false;
+    readonly databaseLogs = true;
+
+    readonly handler = RenderComponentsTaskHandler;
+}
+
+export const RenderComponentsTask = TaskDefinition.createImplementation({
+    implementation: RenderComponentsTaskImpl,
+    dependencies: []
 });

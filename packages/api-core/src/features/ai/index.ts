@@ -3,17 +3,12 @@ export {
     AiSdkFactory,
     AiConnectionFactory,
     Ai,
-    AiSdkTool,
+    AiSdkToolDefinition,
+    AiSdkToolHandler,
+    AiSdkToolHandlerResolver,
     AiSdkTools
 } from "./abstractions.js";
-export type {
-    IAiConnection,
-    IAiConnectionInline,
-    AiModel,
-    IAiSdkModel,
-    IAiSdkTool,
-    IAiSdkTools
-} from "./abstractions.js";
+export type { IAiConnection, IAiConnectionInline, AiModel, IAiSdkModel } from "./abstractions.js";
 export { AiOutputTool, AiOutputToolRegistry, AiToolPipelineRunner } from "./toolPipeline/index.js";
 export type {
     IAiOutputTool,

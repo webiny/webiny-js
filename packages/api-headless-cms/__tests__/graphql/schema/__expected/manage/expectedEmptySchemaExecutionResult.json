@@ -1177,6 +1177,11 @@
               "type": { "kind": "SCALAR", "name": "Boolean", "ofType": null }
             },
             {
+              "name": "disabled",
+              "description": null,
+              "type": { "kind": "SCALAR", "name": "Boolean", "ofType": null }
+            },
+            {
               "name": "predefinedValues",
               "description": null,
               "type": { "kind": "OBJECT", "name": "CmsPredefinedValues", "ofType": null }

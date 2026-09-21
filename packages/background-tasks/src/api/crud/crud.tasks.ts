@@ -88,7 +88,7 @@ const convertToLog = (entry: CmsEntry<ITaskLog>): ITaskLog => {
 };
 
 interface IValidateParams {
-    definition: Pick<TaskDefinition.Interface, "createInputValidation">;
+    definition: Pick<TaskDefinition.Runnable, "createInputValidation">;
     data: Pick<ITaskCreateData, "input">;
 }
 

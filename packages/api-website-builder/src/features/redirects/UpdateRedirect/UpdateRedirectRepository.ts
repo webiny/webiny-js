@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { UpdateRedirectRepository as RepositoryAbstraction } from "./abstractions.js";
-import { RedirectModel } from "~/domain/redirect/abstractions.js";
+import { RedirectModelProvider } from "~/domain/redirect/abstractions.js";
 import {
     RedirectValidationError,
     RedirectNotFoundError,
@@ -12,7 +12,7 @@ import { EntryToRedirectMapper } from "~/domain/redirect/EntryToRedirectMapper.j
 
 class UpdateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private redirectModel: RedirectModel.Interface,
+        private redirectModelProvider: RedirectModelProvider.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface
     ) {}
@@ -21,8 +21,9 @@ class UpdateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
         id: string,
         data: RepositoryAbstraction.UpdateData
     ): RepositoryAbstraction.Return {
+        const redirectModel = await this.redirectModelProvider.get();
         // First, validate the redirect exists
-        const getResult = await this.getEntryById.execute(this.redirectModel, id);
+        const getResult = await this.getEntryById.execute(redirectModel, id);
 
         if (getResult.isFail()) {
             if (getResult.error.code === "Cms/Entry/NotFound") {
@@ -32,7 +33,7 @@ class UpdateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         // Update the entry
-        const result = await this.updateEntry.execute(this.redirectModel, id, {
+        const result = await this.updateEntry.execute(redirectModel, id, {
             location: data.location,
             values: data
         });
@@ -54,5 +55,5 @@ class UpdateRedirectRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdateRedirectRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateRedirectRepositoryImpl,
-    dependencies: [RedirectModel, UpdateEntryUseCase, GetEntryByIdUseCase]
+    dependencies: [RedirectModelProvider, UpdateEntryUseCase, GetEntryByIdUseCase]
 });

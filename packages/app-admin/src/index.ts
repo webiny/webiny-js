@@ -66,6 +66,16 @@ export type { IDateFormatter, FormattableDate } from "./features/dateFormatter/a
 export { DateFormatterFeature } from "./features/dateFormatter/feature.js";
 export { useDateFormatter } from "./features/dateFormatter/useDateFormatter.js";
 
+export { StringFormatter } from "./features/stringFormatter/abstractions.js";
+export type { IStringFormatter } from "./features/stringFormatter/abstractions.js";
+export { StringFormatterFeature } from "./features/stringFormatter/feature.js";
+export { useStringFormatter } from "./features/stringFormatter/useStringFormatter.js";
+
+// Fine-grained, decoratable transform behind StringFormatter.slugify(). Decorate this to change slug
+// logic without touching the rest of the string formatter.
+export { Slugify } from "./features/slugify/abstractions.js";
+export type { ISlugify } from "./features/slugify/abstractions.js";
+
 // Hooks
 export * from "./hooks/index.js";
 export { useFeatureFlags } from "./presentation/featureFlags/useFeatureFlags.js";
@@ -87,6 +97,25 @@ export type {
     ActiveCommandVm,
     CommandPaletteViewModel
 } from "./presentation/commandPalette/index.js";
+
+// Admin assistant — the browser half. Holds the conversation the palette's AI mode renders and
+// talks to the api over HTTP; the assistant itself lives in @webiny/ai-powerups.
+export {
+    AdminAssistantGateway,
+    AdminAssistantFeature,
+    AdminAssistantPresenter
+} from "./features/adminAssistant/index.js";
+export type {
+    IAdminAssistantGateway,
+    AdminAssistantMessage,
+    AdminAssistantToolCall,
+    AdminAssistantPendingApproval,
+    AdminAssistantDecision,
+    AdminAssistantRequest,
+    AiTurnViewModel,
+    IAdminAssistantPresenter,
+    IAdminAssistantViewModel
+} from "./features/adminAssistant/index.js";
 
 // Breadcrumbs — pure-presentation trail via the React Config API. Drop a `<Breadcrumb>`
 // anywhere in a view; the header renders every mounted one as the trail.

@@ -12,8 +12,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 /**
  * Registers the "default" bulk-action GraphQL for every public model: the shared response types plus,
  * per model, an empty `BulkAction<Model>Name` enum + `bulkAction<Model>` mutation skeleton (each
- * action extends the enum via createBulkActionGraphQL). Run per-request from the bulk-actions
- * RequestContextInitializer (models are only known at request time).
+ * action extends the enum via createBulkActionGraphQL). Run per request, since models are only
+ * known at request time.
  */
 export const registerDefaultBulkActionGraphQL = async (context: HcmsBulkActionsContext) => {
     const tenant = context.container.resolve(TenantContext).getTenant();

@@ -5,7 +5,7 @@ import {
     type IGetAncestorsRepository
 } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { FolderModel } from "~/domain/folder/abstractions.js";
+import { FolderModelProvider } from "~/domain/folder/abstractions.js";
 import type { CmsEntryFolder, Folder } from "~/folder/folder.types.js";
 import { EntryToFolderMapper } from "../shared/EntryToFolderMapper.js";
 import { FolderPersistenceError } from "~/domain/folder/errors.js";
@@ -14,12 +14,13 @@ import { ROOT_FOLDER } from "~/constants.js";
 class GetAncestorsRepositoryImpl implements IGetAncestorsRepository {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private folderModel: FolderModel.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(
         params: GetAncestorsParams
     ): Promise<Result<Folder[], RepositoryAbstraction.Error>> {
+        const folderModel = await this.folderModelProvider.get();
         const { folder } = params;
 
         // No folder found: return an empty array
@@ -39,7 +40,7 @@ class GetAncestorsRepositoryImpl implements IGetAncestorsRepository {
         });
 
         // Retrieve all folders that match the specified type and any of the constructed paths
-        const result = await this.listLatestEntries.execute<CmsEntryFolder>(this.folderModel, {
+        const result = await this.listLatestEntries.execute<CmsEntryFolder>(folderModel, {
             where: {
                 values: {
                     type: folder.type,
@@ -92,5 +93,5 @@ class GetAncestorsRepositoryImpl implements IGetAncestorsRepository {
 
 export const GetAncestorsRepository = RepositoryAbstraction.createImplementation({
     implementation: GetAncestorsRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FolderModel]
+    dependencies: [ListLatestEntriesUseCase, FolderModelProvider]
 });

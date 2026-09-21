@@ -1,3 +1,4 @@
+import { ACTION } from "../utils/index.js";
 interface CreateRunBuildArtifactStepsParams {
     workingDirectory: string;
 }
@@ -23,9 +24,13 @@ interface CreateRunBuildArtifactStepsParams {
 // both ways.
 const ARCHIVE = "run-build-cache.tzst";
 
-// Artifacts are already scoped to a single workflow run, so the attempt number is all that is
-// needed to keep re-runs from colliding with the previous attempt's upload.
-const ARTIFACT_NAME = "run-build-cache-${{ github.run_attempt }}";
+// Deliberately does NOT include `github.run_attempt`. Artifacts are scoped to a workflow run and
+// survive across its attempts, but "Re-run failed jobs" does NOT re-run the successful `build`
+// job - so an attempt-numbered name has the consumers looking for an artifact that was never
+// produced ("Artifact not found for name: run-build-cache-2"). A stable name lets a re-run of
+// failed jobs pick up the artifact the first attempt uploaded, and `overwrite: true` on the
+// upload lets a full re-run replace it instead of failing on the duplicate name.
+const ARTIFACT_NAME = "run-build-cache";
 
 const CACHED_PACKAGES = ".webiny/cached-packages";
 
@@ -46,29 +51,48 @@ export const createRunBuildArtifactUploadSteps = (params: CreateRunBuildArtifact
         },
         {
             name: "Upload build cache",
-            uses: "actions/upload-artifact@v7",
+            uses: ACTION.uploadArtifact,
             with: {
                 name: ARTIFACT_NAME,
                 path: ARCHIVE,
-                "retention-days": 1,
+                // A day was enough while every consumer ran minutes after the build. It is not
+                // enough for `/beta`, whose "latest" job sits behind a required reviewer on the
+                // `release` environment: one release waited 3 days 22 hours for approval and then
+                // failed on an artifact that had expired 3 days earlier. The download is no longer
+                // fatal (see below), but a week of retention keeps the fast path working for any
+                // realistic approval delay. The tarball is ~10 MB per run.
+                "retention-days": 7,
                 // The tarball is already zstd-compressed; re-deflating it only burns CPU.
                 "compression-level": 0,
-                "if-no-files-found": "error"
+                "if-no-files-found": "error",
+                overwrite: true
             }
         }
     ] as const;
 };
 
+// The artifact is a CACHE, not an input: every consumer job runs `yarn install` and `yarn build`
+// after extracting it, and `.webiny/cached-packages` only makes that build fast. So a missing
+// artifact has to mean a slower job, never a failed one - which is what `continue-on-error` plus
+// the guard in the extract step buy. No retention number can be trusted on its own here, because
+// a job waiting on a required reviewer can outlive any of them.
 export const createRunBuildArtifactDownloadSteps = (params: CreateRunBuildArtifactStepsParams) => {
     return [
         {
             name: "Download build cache",
-            uses: "actions/download-artifact@v8",
-            with: { name: ARTIFACT_NAME }
+            uses: ACTION.downloadArtifact,
+            with: { name: ARTIFACT_NAME },
+            "continue-on-error": true
         },
         {
             name: "Extract build cache",
-            run: `tar -xf ${ARCHIVE} --use-compress-program=zstdmt -C ${TARGET_DIR}`,
+            run: [
+                `if [ ! -f ${ARCHIVE} ]; then`,
+                `  echo "::warning::No build cache artifact - building from scratch. This job will be slower than usual."`,
+                "  exit 0",
+                "fi",
+                `tar -xf ${ARCHIVE} --use-compress-program=zstdmt -C ${TARGET_DIR}`
+            ].join("\n"),
             env: { WEBINY_JS_DIR: params.workingDirectory }
         }
     ] as const;

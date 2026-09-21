@@ -9,6 +9,7 @@ import { MoveToFolder as FileDetailsMoveToFolder } from "./FileDetails/MoveToFol
 import { CopyUrl as FileDetailsCopyUrl } from "./FileDetails/CopyUrl.js";
 import { DeleteImage as FileDetailsDeleteImage } from "./FileDetails/DeleteImage.js";
 import { EditImage as FileDetailsEditImage } from "./FileDetails/EditImage.js";
+import { ReenrichWithAi } from "~/modules/AiEnrichment/ReenrichWithAi.js";
 
 const { Browser, FileDetails } = FileManagerViewConfig;
 
@@ -26,6 +27,7 @@ export const FileActions = () => {
             <FileDetails.Action name={"moveToFolder"} element={<FileDetailsMoveToFolder />} />
             <FileDetails.Action name={"copyUrl"} element={<FileDetailsCopyUrl />} />
             <FileDetails.Action name={"delete"} element={<FileDetailsDeleteImage />} />
+            <FileDetails.Action name={"reenrichWithAi"} element={<ReenrichWithAi />} />
         </>
     );
 };

@@ -27,8 +27,8 @@
     "@webiny/icons": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/project-aws": "0.0.0",
-    "mobx": "^7.0.0",
-    "mobx-react-lite": "^5.0.0",
+    "mobx": "^7.0.3",
+    "mobx-react-lite": "^5.0.3",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

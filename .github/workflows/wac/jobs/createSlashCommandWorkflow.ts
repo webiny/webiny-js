@@ -1,3 +1,4 @@
+import { ACTION } from "../utils/index.js";
 import { createWorkflow } from "github-actions-wac";
 import { createJob } from "./createJob.js";
 import { checkCommandStep, commandTriggeredIf } from "./checkCommand.js";
@@ -46,7 +47,7 @@ export const createSlashCommandWorkflow = (params: CreateSlashCommandWorkflowPar
             {
                 name: "Create comment",
                 id: "create-comment",
-                uses: "peter-evans/create-or-update-comment@v5",
+                uses: ACTION.createOrUpdateComment,
                 with: {
                     "issue-number": "${{ github.event.issue.number }}",
                     body: comment

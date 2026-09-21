@@ -29,10 +29,10 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       ANTHROPIC_MODEL: claude-sonnet-5
     steps:
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version: 24
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
       - name: Gather PR signals
         run: >-
           set -euo pipefail
@@ -58,6 +58,7 @@ jobs:
 
           gh pr diff "$PR_NUMBER" --repo "$REPO" > "$WORKDIR/diff.patch" || true
       - name: Run slop cop analysis
+        id: slop-cop
         if: ${{ env.ANTHROPIC_API_KEY != '' }}
         env:
           PR_JSON_FILE: ${{ runner.temp }}/slop-cop/pr.json
@@ -105,4 +106,17 @@ jobs:
               -F "body=@$REPORT"
             echo "::notice::Posted new slop cop comment."
           fi
+      - name: Fail if slop cop found something
+        if: >-
+          ${{ always() && contains(fromJSON('["adrians5j"]'),
+          github.event.pull_request.user.login) &&
+          steps.slop-cop.outputs.findings-count != '' &&
+          steps.slop-cop.outputs.findings-count != '0' }}
+        env:
+          FINDINGS_COUNT: ${{ steps.slop-cop.outputs.findings-count }}
+        run: >-
+          echo "::error::Slop cop reported $FINDINGS_COUNT finding(s). See the
+          slop cop comment on this PR."
+
+          exit 1
     runs-on: ubuntu-latest

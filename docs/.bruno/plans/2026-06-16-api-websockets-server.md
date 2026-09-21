@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create `@webiny/api-websockets-server` — a Docker/self-hosted WebSocket server transport that implements the platform-agnostic `@webiny/api-websockets` base package abstractions.
+**Goal:** Create `@webiny/api-websockets-standalone` — a Docker/self-hosted WebSocket server transport that implements the platform-agnostic `@webiny/api-websockets` base package abstractions.
 
 **Architecture:** Three DI abstractions (adapter, upgrade handler, connection manager) + a transport implementation + an event validator + a server lifecycle orchestrator. Mirrors the `@webiny/api-websockets-aws` package structure. Uses Node built-in `ws` as default WebSocket library. Single shared Webiny context created at startup.
 
@@ -239,19 +239,19 @@ git commit -m "feat(api-websockets): add updateLastSeen and listStale to connect
 ## Task 1: Scaffold the new package
 
 **Files:**
-- Create: `packages/api-websockets-server/package.json`
-- Create: `packages/api-websockets-server/tsconfig.json`
-- Create: `packages/api-websockets-server/tsconfig.build.json`
-- Create: `packages/api-websockets-server/webiny.config.js`
-- Create: `packages/api-websockets-server/vitest.config.ts`
-- Create: `packages/api-websockets-server/src/index.ts` (empty placeholder)
-- Create: `packages/api-websockets-server/src/exports/api.ts` (empty placeholder)
+- Create: `packages/api-websockets-standalone/package.json`
+- Create: `packages/api-websockets-standalone/tsconfig.json`
+- Create: `packages/api-websockets-standalone/tsconfig.build.json`
+- Create: `packages/api-websockets-standalone/webiny.config.js`
+- Create: `packages/api-websockets-standalone/vitest.config.ts`
+- Create: `packages/api-websockets-standalone/src/index.ts` (empty placeholder)
+- Create: `packages/api-websockets-standalone/src/exports/api.ts` (empty placeholder)
 
 - [ ] **Step 1: Create `package.json`**
 
 ```json
 {
-  "name": "@webiny/api-websockets-server",
+  "name": "@webiny/api-websockets-standalone",
   "version": "0.0.0",
   "type": "module",
   "repository": {
@@ -408,12 +408,12 @@ export default defineConfig({
 
 - [ ] **Step 6: Create placeholder source files**
 
-`packages/api-websockets-server/src/index.ts`:
+`packages/api-websockets-standalone/src/index.ts`:
 ```typescript
 export {};
 ```
 
-`packages/api-websockets-server/src/exports/api.ts`:
+`packages/api-websockets-standalone/src/exports/api.ts`:
 ```typescript
 export {};
 ```
@@ -421,13 +421,13 @@ export {};
 - [ ] **Step 7: Install dependencies and verify build**
 
 Run: `yarn > /dev/null 2>&1`
-Run: `yarn build -p @webiny/api-websockets-server 2>&1 | tail -30`
+Run: `yarn build -p @webiny/api-websockets-standalone 2>&1 | tail -30`
 Expected: Build succeeds (empty package compiles).
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add packages/api-websockets-server
+git add packages/api-websockets-standalone
 git commit -m "chore(api-websockets-server): scaffold new package"
 ```
 
@@ -436,8 +436,8 @@ git commit -m "chore(api-websockets-server): scaffold new package"
 ## Task 2: DI abstractions
 
 **Files:**
-- Create: `packages/api-websockets-server/src/abstractions.ts`
-- Test: `packages/api-websockets-server/__tests__/abstractions.test.ts`
+- Create: `packages/api-websockets-standalone/src/abstractions.ts`
+- Test: `packages/api-websockets-standalone/__tests__/abstractions.test.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -469,12 +469,12 @@ describe("abstractions", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL — cannot import from `~/abstractions.js`.
 
 - [ ] **Step 3: Implement abstractions**
 
-`packages/api-websockets-server/src/abstractions.ts`:
+`packages/api-websockets-standalone/src/abstractions.ts`:
 
 ```typescript
 import type { Server as HttpServer } from "node:http";
@@ -569,13 +569,13 @@ export namespace WebsocketsConnectionManager {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/abstractions.ts packages/api-websockets-server/__tests__
+git add packages/api-websockets-standalone/src/abstractions.ts packages/api-websockets-standalone/__tests__
 git commit -m "feat(api-websockets-server): add DI abstractions"
 ```
 
@@ -584,8 +584,8 @@ git commit -m "feat(api-websockets-server): add DI abstractions"
 ## Task 3: Default upgrade handler
 
 **Files:**
-- Create: `packages/api-websockets-server/src/upgradeHandler/DefaultUpgradeHandler.ts`
-- Test: `packages/api-websockets-server/__tests__/upgradeHandler/DefaultUpgradeHandler.test.ts`
+- Create: `packages/api-websockets-standalone/src/upgradeHandler/DefaultUpgradeHandler.ts`
+- Test: `packages/api-websockets-standalone/__tests__/upgradeHandler/DefaultUpgradeHandler.test.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -617,7 +617,7 @@ describe("DefaultUpgradeHandler", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL — cannot import `DefaultUpgradeHandlerImpl`.
 
 - [ ] **Step 3: Implement DefaultUpgradeHandler**
@@ -641,13 +641,13 @@ export const DefaultUpgradeHandler = WebsocketsUpgradeHandler.createImplementati
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/upgradeHandler packages/api-websockets-server/__tests__/upgradeHandler
+git add packages/api-websockets-standalone/src/upgradeHandler packages/api-websockets-standalone/__tests__/upgradeHandler
 git commit -m "feat(api-websockets-server): add DefaultUpgradeHandler"
 ```
 
@@ -656,9 +656,9 @@ git commit -m "feat(api-websockets-server): add DefaultUpgradeHandler"
 ## Task 4: Node WS adapter
 
 **Files:**
-- Create: `packages/api-websockets-server/src/adapter/types.ts`
-- Create: `packages/api-websockets-server/src/adapter/NodeWsAdapter.ts`
-- Test: `packages/api-websockets-server/__tests__/adapter/NodeWsAdapter.test.ts`
+- Create: `packages/api-websockets-standalone/src/adapter/types.ts`
+- Create: `packages/api-websockets-standalone/src/adapter/NodeWsAdapter.ts`
+- Test: `packages/api-websockets-standalone/__tests__/adapter/NodeWsAdapter.test.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -778,19 +778,19 @@ describe("NodeWsAdapter", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL — cannot import `NodeWsAdapterImpl`.
 
 - [ ] **Step 3: Implement the adapter**
 
-`packages/api-websockets-server/src/adapter/types.ts`:
+`packages/api-websockets-standalone/src/adapter/types.ts`:
 ```typescript
 import type { WebSocket } from "ws";
 
 export type NodeSocket = WebSocket;
 ```
 
-`packages/api-websockets-server/src/adapter/NodeWsAdapter.ts`:
+`packages/api-websockets-standalone/src/adapter/NodeWsAdapter.ts`:
 ```typescript
 import { WebSocketServer } from "ws";
 import type { WebSocket } from "ws";
@@ -871,13 +871,13 @@ export const NodeWsAdapter = WebsocketsServerAdapter.createImplementation({
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/adapter packages/api-websockets-server/__tests__/adapter
+git add packages/api-websockets-standalone/src/adapter packages/api-websockets-standalone/__tests__/adapter
 git commit -m "feat(api-websockets-server): add NodeWsAdapter"
 ```
 
@@ -886,8 +886,8 @@ git commit -m "feat(api-websockets-server): add NodeWsAdapter"
 ## Task 5: Connection manager
 
 **Files:**
-- Create: `packages/api-websockets-server/src/connectionManager/ServerConnectionManager.ts`
-- Test: `packages/api-websockets-server/__tests__/connectionManager/ServerConnectionManager.test.ts`
+- Create: `packages/api-websockets-standalone/src/connectionManager/ServerConnectionManager.ts`
+- Test: `packages/api-websockets-standalone/__tests__/connectionManager/ServerConnectionManager.test.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -1027,7 +1027,7 @@ describe("ServerConnectionManager", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL — cannot import `ServerConnectionManagerImpl`.
 
 - [ ] **Step 3: Implement ServerConnectionManager**
@@ -1105,13 +1105,13 @@ export const ServerConnectionManager = WebsocketsConnectionManager.createImpleme
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/connectionManager packages/api-websockets-server/__tests__/connectionManager
+git add packages/api-websockets-standalone/src/connectionManager packages/api-websockets-standalone/__tests__/connectionManager
 git commit -m "feat(api-websockets-server): add ServerConnectionManager"
 ```
 
@@ -1120,8 +1120,8 @@ git commit -m "feat(api-websockets-server): add ServerConnectionManager"
 ## Task 6: Event validator
 
 **Files:**
-- Create: `packages/api-websockets-server/src/validator/ServerWebsocketsEventValidator.ts`
-- Test: `packages/api-websockets-server/__tests__/validator/ServerWebsocketsEventValidator.test.ts`
+- Create: `packages/api-websockets-standalone/src/validator/ServerWebsocketsEventValidator.ts`
+- Test: `packages/api-websockets-standalone/__tests__/validator/ServerWebsocketsEventValidator.test.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -1251,7 +1251,7 @@ describe("ServerWebsocketsEventValidator", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL.
 
 - [ ] **Step 3: Implement the validator**
@@ -1288,13 +1288,13 @@ export class ServerWebsocketsEventValidator implements IWebsocketsEventValidator
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/validator packages/api-websockets-server/__tests__/validator
+git add packages/api-websockets-standalone/src/validator packages/api-websockets-standalone/__tests__/validator
 git commit -m "feat(api-websockets-server): add ServerWebsocketsEventValidator"
 ```
 
@@ -1303,8 +1303,8 @@ git commit -m "feat(api-websockets-server): add ServerWebsocketsEventValidator"
 ## Task 7: Server transport
 
 **Files:**
-- Create: `packages/api-websockets-server/src/transport/ServerWebsocketsTransport.ts`
-- Test: `packages/api-websockets-server/__tests__/transport/ServerWebsocketsTransport.test.ts`
+- Create: `packages/api-websockets-standalone/src/transport/ServerWebsocketsTransport.ts`
+- Test: `packages/api-websockets-standalone/__tests__/transport/ServerWebsocketsTransport.test.ts`
 
 - [ ] **Step 1: Write the test**
 
@@ -1430,7 +1430,7 @@ describe("ServerWebsocketsTransport", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL.
 
 - [ ] **Step 3: Implement the transport**
@@ -1508,13 +1508,13 @@ export const ServerWebsocketsTransport = WebsocketsTransport.createImplementatio
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/transport packages/api-websockets-server/__tests__/transport
+git add packages/api-websockets-standalone/src/transport packages/api-websockets-standalone/__tests__/transport
 git commit -m "feat(api-websockets-server): add ServerWebsocketsTransport"
 ```
 
@@ -1523,13 +1523,13 @@ git commit -m "feat(api-websockets-server): add ServerWebsocketsTransport"
 ## Task 8: Server lifecycle orchestrator
 
 **Files:**
-- Create: `packages/api-websockets-server/src/server/types.ts`
-- Create: `packages/api-websockets-server/src/server/WebsocketsServer.ts`
-- Test: `packages/api-websockets-server/__tests__/server/WebsocketsServer.test.ts`
+- Create: `packages/api-websockets-standalone/src/server/types.ts`
+- Create: `packages/api-websockets-standalone/src/server/WebsocketsServer.ts`
+- Test: `packages/api-websockets-standalone/__tests__/server/WebsocketsServer.test.ts`
 
 - [ ] **Step 1: Create server config types**
 
-`packages/api-websockets-server/src/server/types.ts`:
+`packages/api-websockets-standalone/src/server/types.ts`:
 
 ```typescript
 import type { Server as HttpServer } from "node:http";
@@ -1613,12 +1613,12 @@ describe("WebsocketsServer", () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: FAIL.
 
 - [ ] **Step 4: Implement WebsocketsServer**
 
-`packages/api-websockets-server/src/server/WebsocketsServer.ts`:
+`packages/api-websockets-standalone/src/server/WebsocketsServer.ts`:
 
 ```typescript
 import { createServer } from "node:http";
@@ -1914,13 +1914,13 @@ Note: The `connectionManager` is set to `undefined` initially. During the full c
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -30`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -30`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/server packages/api-websockets-server/__tests__/server
+git add packages/api-websockets-standalone/src/server packages/api-websockets-standalone/__tests__/server
 git commit -m "feat(api-websockets-server): add WebsocketsServer lifecycle orchestrator"
 ```
 
@@ -1929,8 +1929,8 @@ git commit -m "feat(api-websockets-server): add WebsocketsServer lifecycle orche
 ## Task 9: DI plugin and package exports
 
 **Files:**
-- Modify: `packages/api-websockets-server/src/index.ts`
-- Modify: `packages/api-websockets-server/src/exports/api.ts`
+- Modify: `packages/api-websockets-standalone/src/index.ts`
+- Modify: `packages/api-websockets-standalone/src/exports/api.ts`
 
 - [ ] **Step 1: Implement `createServerWebsockets()` in `index.ts`**
 
@@ -1970,13 +1970,13 @@ export type { IWebsocketsServer } from "~/server/types.js";
 
 - [ ] **Step 3: Build the package**
 
-Run: `yarn build -p @webiny/api-websockets-server 2>&1 | tail -30`
+Run: `yarn build -p @webiny/api-websockets-standalone 2>&1 | tail -30`
 Expected: Build succeeds.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add packages/api-websockets-server/src/index.ts packages/api-websockets-server/src/exports
+git add packages/api-websockets-standalone/src/index.ts packages/api-websockets-standalone/src/exports
 git commit -m "feat(api-websockets-server): add DI plugin and package exports"
 ```
 
@@ -1986,7 +1986,7 @@ git commit -m "feat(api-websockets-server): add DI plugin and package exports"
 
 - [ ] **Step 1: Run all tests in the new package**
 
-Run: `yarn test packages/api-websockets-server 2>&1 | tail -50`
+Run: `yarn test packages/api-websockets-standalone 2>&1 | tail -50`
 Expected: All tests pass.
 
 - [ ] **Step 2: Run tests in affected packages**
@@ -2011,7 +2011,7 @@ git add .
 
 - [ ] **Step 4: Build all affected packages**
 
-Run: `yarn build -p @webiny/api-websockets -p @webiny/api-websockets-sql -p @webiny/api-websockets-ddb -p @webiny/api-websockets-server 2>&1 | tail -30`
+Run: `yarn build -p @webiny/api-websockets -p @webiny/api-websockets-sql -p @webiny/api-websockets-ddb -p @webiny/api-websockets-standalone 2>&1 | tail -30`
 Expected: All 4 packages build successfully.
 
 - [ ] **Step 5: Final commit**
@@ -2026,7 +2026,7 @@ git commit -m "chore(api-websockets-server): pre-commit checklist pass"
 
 - [ ] **Step 1: Add the new package to `ai-context/core-features-reference.md`**
 
-Add an entry for `@webiny/api-websockets-server` under the websockets section, documenting:
+Add an entry for `@webiny/api-websockets-standalone` under the websockets section, documenting:
 - Package purpose (self-hosted WebSocket server transport)
 - Key exports (`createServerWebsockets`, `createWebsocketsServer`, `attachWebsocketsServer`)
 - DI abstractions (`WebsocketsServerAdapter`, `WebsocketsUpgradeHandler`, `WebsocketsConnectionManager`)

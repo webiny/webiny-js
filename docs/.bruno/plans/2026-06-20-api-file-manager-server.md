@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create `@webiny/api-file-manager-server`, a drop-in replacement for `@webiny/api-file-manager-s3` that stores uploaded files on local disk instead of AWS S3.
+**Goal:** Create `@webiny/api-file-manager-standalone`, a drop-in replacement for `@webiny/api-file-manager-s3` that stores uploaded files on local disk instead of AWS S3.
 
 **Architecture:** Mirrors `api-file-manager-s3` — same GraphQL schema, same DI feature pattern, same event handler wiring. Replaces S3 operations with `node:fs/promises`, presigned S3 URLs with HMAC-SHA256 upload tokens, and S3 lifecycle policies with a background cleanup task.
 
@@ -32,7 +32,7 @@ Many files are near-identical copies from `api-file-manager-s3`. When a step say
 
 **Goal:** Create the package structure and all shared utilities that other tasks depend on.
 
-**Files to create** (all under `packages/api-file-manager-server/`):
+**Files to create** (all under `packages/api-file-manager-standalone/`):
 
 | File | Source |
 |------|--------|
@@ -182,7 +182,7 @@ describe("uploadToken", () => {
 
 - [ ] Create all files listed above
 - [ ] Run: `yarn > /dev/null 2>&1`
-- [ ] Run: `yarn test packages/api-file-manager-server 2>&1 | tail -30` — expect 11 PASS
+- [ ] Run: `yarn test packages/api-file-manager-standalone 2>&1 | tail -30` — expect 11 PASS
 - [ ] Commit: `feat(api-file-manager-server): scaffold package with types, utils, and upload token`
 
 ---
@@ -226,7 +226,7 @@ const sorted = entries
 ```
 
 - [ ] Create all files, adapting schema.ts from S3
-- [ ] Run: `yarn build -p @webiny/api-file-manager-server 2>&1 | tail -30` — expect success
+- [ ] Run: `yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -30` — expect success
 - [ ] Commit: `feat(api-file-manager-server): add GraphQL schema, presigned payload, and multipart use cases`
 
 ---
@@ -262,7 +262,7 @@ const sorted = entries
 5. Return `200 OK` with `ETag` header (MD5 hash of chunk)
 
 - [ ] Create `src/routes/uploadRoutes.ts`
-- [ ] Run: `yarn build -p @webiny/api-file-manager-server 2>&1 | tail -30` — expect success
+- [ ] Run: `yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -30` — expect success
 - [ ] Commit: `feat(api-file-manager-server): add HTTP upload endpoints with token verification`
 
 ---
@@ -290,7 +290,7 @@ const sorted = entries
 - Use `readdirSafe()` that returns `[]` on ENOENT
 
 - [ ] Create all feature directories and files
-- [ ] Run: `yarn build -p @webiny/api-file-manager-server 2>&1 | tail -30` — expect success
+- [ ] Run: `yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -30` — expect success
 - [ ] Commit: `feat(api-file-manager-server): add DI features for file lifecycle, metadata, and cleanup`
 
 ---
@@ -317,7 +317,7 @@ const sorted = entries
 | `createAssetDelivery.ts` | Same | Remove threat detection plugin loader. Keep `createAssetDeliveryPluginLoader` with lazy import. |
 
 - [ ] Create all asset delivery files
-- [ ] Run: `yarn build -p @webiny/api-file-manager-server 2>&1 | tail -30` — expect success
+- [ ] Run: `yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -30` — expect success
 - [ ] Commit: `feat(api-file-manager-server): add local asset delivery pipeline`
 
 ---
@@ -337,13 +337,13 @@ const sorted = entries
 1. ContextPlugin validates `WEBINY_LOCAL_STORAGE_PATH` and `WEBINY_UPLOAD_SECRET` exist; creates storage dir if needed (`mkdirSync(storagePath, { recursive: true })`)
 2. Register all 7 features (no `ApplyThreatScanningFeature` — skip the WCP enterprise check)
 3. Add `CleanupStaleMultipartUploadsFeature.register(container)`
-4. `createFileManagerServer()` returns `[contextPlugin, createServerGraphQLSchema(), uploadRoutesPlugin, modifyFastifyPlugin]`
+4. `createFileManagerServer()` returns `[contextPlugin, createStandaloneGraphQLSchema(), uploadRoutesPlugin, modifyFastifyPlugin]`
 5. Re-export `createFileUploadModifier` from `./utils/FileUploadModifier.js`
 6. Re-export `createAssetDelivery` from `./assetDelivery/createAssetDelivery.js`
 7. Name: `"fileManagerServer.context"` (not `"fileManagerS3.context"`)
 
 - [ ] Create `src/index.ts`
 - [ ] Run pre-commit checklist: `yarn > /dev/null 2>&1 && node scripts/generateTsConfigsInPackages.js && yarn adio && yarn format > /dev/null 2>&1 && yarn lint && yarn webiny sync-dependencies`
-- [ ] Run: `yarn build -p @webiny/api-file-manager-server 2>&1 | tail -30` — expect success
-- [ ] Run: `yarn test packages/api-file-manager-server 2>&1 | tail -30` — expect 11 PASS
+- [ ] Run: `yarn build -p @webiny/api-file-manager-standalone 2>&1 | tail -30` — expect success
+- [ ] Run: `yarn test packages/api-file-manager-standalone 2>&1 | tail -30` — expect 11 PASS
 - [ ] Commit: `feat(api-file-manager-server): add entry point and complete package`

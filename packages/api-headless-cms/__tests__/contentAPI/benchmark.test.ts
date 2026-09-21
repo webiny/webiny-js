@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { BenchmarkAbstraction } from "@webiny/api";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
+import { GraphQLContextualSchema } from "@webiny/api-graphql";
+import { buildSchema } from "graphql";
 import type { Container } from "@webiny/di";
 import { createIcon } from "~tests/__helpers/icon.js";
 
@@ -14,16 +15,19 @@ describe("benchmark points", () => {
             (container: Container) => {
                 // Benchmark moved from `context.benchmark` to the DI container during the DI
                 // migration; resolve the same instance createCmsRoute flushes per request. It's
-                // registered by HeadlessCmsFeature (after the plugins loop), so enable it from a
-                // post-auth initializer where the abstraction is resolvable.
-                container.registerInstance(RequestContextInitializer, {
-                    async init(ctx: Record<string, any>) {
+                // registered by HeadlessCmsFeature — AFTER this plugins loop — so enable it from
+                // GraphQLContextualSchema, the per-request hook createCmsRoute runs before the
+                // resolvers. The route ignores the returned schema, hence the empty stub.
+                container.registerInstance(GraphQLContextualSchema, {
+                    async build(ctx: Record<string, any>) {
                         const benchmark = ctx.container.resolve(BenchmarkAbstraction);
                         benchmark.enable();
 
                         benchmark.onOutput(async ({ benchmark }: any) => {
                             elapsed = benchmark.elapsed;
                         });
+
+                        return buildSchema("type Query { _empty: String }");
                     }
                 });
             }

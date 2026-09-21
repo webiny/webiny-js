@@ -32,7 +32,7 @@ const SendMessageDetailView = ({ command, onClose }: Command.DetailProps) => {
                     variant="primary"
                     text="Send"
                     onClick={() => {
-                        command.execute({ recipient, message });
+                        command.execute?.({ recipient, message });
                         onClose();
                     }}
                 />

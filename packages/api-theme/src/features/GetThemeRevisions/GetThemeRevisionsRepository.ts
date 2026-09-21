@@ -1,18 +1,19 @@
 import { Result } from "@webiny/feature/api";
 import { GetRevisionsByEntryIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionsByEntryId/index.js";
 import { GetThemeRevisionsRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ThemeModel } from "~/domain/theme/abstractions.js";
+import { ThemeModelProvider } from "~/domain/theme/abstractions.js";
 import { EntryToThemeMapper } from "~/domain/theme/EntryToThemeMapper.js";
 import { ThemePersistenceError } from "~/domain/theme/errors.js";
 
 class GetThemeRevisionsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private themeModel: ThemeModel.Interface,
+        private themeModelProvider: ThemeModelProvider.Interface,
         private getRevisions: GetRevisionsByEntryIdUseCase.Interface
     ) {}
 
     async execute(entryId: string): RepositoryAbstraction.Return {
-        const result = await this.getRevisions.execute(this.themeModel, entryId);
+        const themeModel = await this.themeModelProvider.get();
+        const result = await this.getRevisions.execute(themeModel, entryId);
 
         if (result.isFail()) {
             return Result.fail(new ThemePersistenceError(result.error));
@@ -28,5 +29,5 @@ class GetThemeRevisionsRepositoryImpl implements RepositoryAbstraction.Interface
 
 export const GetThemeRevisionsRepository = RepositoryAbstraction.createImplementation({
     implementation: GetThemeRevisionsRepositoryImpl,
-    dependencies: [ThemeModel, GetRevisionsByEntryIdUseCase]
+    dependencies: [ThemeModelProvider, GetRevisionsByEntryIdUseCase]
 });

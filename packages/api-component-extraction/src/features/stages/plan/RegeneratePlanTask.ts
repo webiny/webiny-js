@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { REGENERATE_PLAN_TASK_ID, stageArtifactKey, stagesAfter } from "~/constants.js";
 import { RunRepository, JobRepository, OverrideRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
@@ -21,8 +24,8 @@ export interface RegeneratePlanTaskInput {
     instruction?: string;
 }
 
-type RunParams = TaskDefinition.RunParams<RegeneratePlanTaskInput>;
-type RunResult = Promise<TaskDefinition.Result<RegeneratePlanTaskInput>>;
+type RunParams = TaskHandler.RunParams<RegeneratePlanTaskInput>;
+type RunResult = Promise<TaskHandler.Result<RegeneratePlanTaskInput>>;
 
 /**
  * Regenerate one component's Plan contract (W8) — a fresh model call for that single cluster that proposes
@@ -31,14 +34,7 @@ type RunResult = Promise<TaskDefinition.Result<RegeneratePlanTaskInput>>;
  * edits the fresh contract from there. The plan stage is then re-applied and everything downstream
  * (Generate, Assemble, Promote) marked stale, exactly as any other Plan correction does.
  */
-class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanTaskInput> {
-    readonly id = REGENERATE_PLAN_TASK_ID;
-    readonly title = "Component extraction — regenerate plan";
-    readonly description = "Re-proposes a single component's props and token bindings.";
-    readonly maxIterations = 1;
-    readonly isPrivate = false;
-    readonly databaseLogs = true;
-
+class RegeneratePlanTaskHandlerImpl implements TaskHandler.Interface<RegeneratePlanTaskInput> {
     constructor(
         readonly runRepository: RunRepository.Interface,
         readonly jobRepository: JobRepository.Interface,
@@ -221,8 +217,8 @@ class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanT
     }
 }
 
-export const RegeneratePlanTask = TaskDefinition.createImplementation({
-    implementation: RegeneratePlanTaskImpl,
+const RegeneratePlanTaskHandler = TaskHandler.createImplementation({
+    implementation: RegeneratePlanTaskHandlerImpl,
     dependencies: [
         RunRepository,
         JobRepository,
@@ -232,4 +228,20 @@ export const RegeneratePlanTask = TaskDefinition.createImplementation({
         OverrideRepository,
         OverrideApplicator
     ]
+});
+
+class RegeneratePlanTaskImpl implements TaskDefinition.Interface<RegeneratePlanTaskInput> {
+    readonly id = REGENERATE_PLAN_TASK_ID;
+    readonly title = "Component extraction — regenerate plan";
+    readonly description = "Re-proposes a single component's props and token bindings.";
+    readonly maxIterations = 1;
+    readonly isPrivate = false;
+    readonly databaseLogs = true;
+
+    readonly handler = RegeneratePlanTaskHandler;
+}
+
+export const RegeneratePlanTask = TaskDefinition.createImplementation({
+    implementation: RegeneratePlanTaskImpl,
+    dependencies: []
 });

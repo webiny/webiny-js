@@ -26,6 +26,7 @@ export const FIELDS_FIELDS = `
         }
     }
     list
+    disabled
     renderer {
         name
         settings

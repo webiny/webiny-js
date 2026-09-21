@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { RefineRemoteComponentUseCase } from "@webiny/remote-components/api/features/refineComponent/abstractions.js";
 import { REGENERATE_COMPONENT_TASK_ID, stageArtifactKey } from "~/constants.js";
 import { RunRepository, JobRepository } from "~/domain/abstractions.js";
@@ -21,8 +24,8 @@ export interface RegenerateTaskInput {
 // Mirrors Generate's text-preservation budget: only the first N source fragments are asserted.
 const PRESERVED_TEXT_LIMIT = 40;
 
-type RunParams = TaskDefinition.RunParams<RegenerateTaskInput>;
-type RunResult = Promise<TaskDefinition.Result<RegenerateTaskInput>>;
+type RunParams = TaskHandler.RunParams<RegenerateTaskInput>;
+type RunResult = Promise<TaskHandler.Result<RegenerateTaskInput>>;
 
 /**
  * Regenerate one generated component (W7.8) via the refine path — an AI edit of the component's current
@@ -30,14 +33,7 @@ type RunResult = Promise<TaskDefinition.Result<RegenerateTaskInput>>;
  * starting point. The result is re-validated with the same three validators and replaces that component
  * in the Generate artifact; the component's stale render is dropped so the card re-renders on demand.
  */
-class RegenerateComponentTaskImpl implements TaskDefinition.Interface<RegenerateTaskInput> {
-    readonly id = REGENERATE_COMPONENT_TASK_ID;
-    readonly title = "Component extraction — regenerate component";
-    readonly description = "Refines a single generated component from an instruction.";
-    readonly maxIterations = 1;
-    readonly isPrivate = false;
-    readonly databaseLogs = true;
-
+class RegenerateComponentTaskHandlerImpl implements TaskHandler.Interface<RegenerateTaskInput> {
     constructor(
         readonly runRepository: RunRepository.Interface,
         readonly jobRepository: JobRepository.Interface,
@@ -167,8 +163,8 @@ class RegenerateComponentTaskImpl implements TaskDefinition.Interface<Regenerate
     }
 }
 
-export const RegenerateComponentTask = TaskDefinition.createImplementation({
-    implementation: RegenerateComponentTaskImpl,
+const RegenerateComponentTaskHandler = TaskHandler.createImplementation({
+    implementation: RegenerateComponentTaskHandlerImpl,
     dependencies: [
         RunRepository,
         JobRepository,
@@ -176,4 +172,20 @@ export const RegenerateComponentTask = TaskDefinition.createImplementation({
         RefineRemoteComponentUseCase,
         ThemeManifestResolver
     ]
+});
+
+class RegenerateComponentTaskImpl implements TaskDefinition.Interface<RegenerateTaskInput> {
+    readonly id = REGENERATE_COMPONENT_TASK_ID;
+    readonly title = "Component extraction — regenerate component";
+    readonly description = "Refines a single generated component from an instruction.";
+    readonly maxIterations = 1;
+    readonly isPrivate = false;
+    readonly databaseLogs = true;
+
+    readonly handler = RegenerateComponentTaskHandler;
+}
+
+export const RegenerateComponentTask = TaskDefinition.createImplementation({
+    implementation: RegenerateComponentTaskImpl,
+    dependencies: []
 });

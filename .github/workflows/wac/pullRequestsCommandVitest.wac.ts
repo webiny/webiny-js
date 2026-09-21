@@ -1,5 +1,6 @@
 import { NormalJob } from "github-actions-wac";
 import {
+    createCheckoutPrSteps,
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
     createRunBuildArtifactDownloadSteps,
@@ -10,8 +11,10 @@ import {
 import {
     AWS_REGION,
     BUILD_PACKAGES_RUNNER,
+    createWaitForOpenSearchStep,
     NODE_OPTIONS,
     NODE_VERSION,
+    OPENSEARCH_SERVICE,
     runNodeScript
 } from "./utils/index.js";
 import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
@@ -32,29 +35,20 @@ const pgliteStorageOps = new PgliteStorageOps();
 const DIR_WEBINY_JS = "${{ needs.baseBranch.outputs.base-branch }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: DIR_WEBINY_JS,
+    restoreOnly: true
+});
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({
+    workingDirectory: DIR_WEBINY_JS,
+    restoreOnly: true
+});
 const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
     workingDirectory: DIR_WEBINY_JS
 });
 const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
     workingDirectory: DIR_WEBINY_JS
 });
-
-const createCheckoutPrSteps = () =>
-    [
-        {
-            name: "Checkout Pull Request",
-            "working-directory": DIR_WEBINY_JS,
-            // Detach onto the SHA `baseBranch` resolved, so every job in this run builds and
-            // tests the same commit even if the PR is pushed to mid-run.
-            run: [
-                "gh pr checkout ${{ github.event.issue.number }}",
-                "git checkout --detach ${{ needs.baseBranch.outputs.pr-sha }}"
-            ].join("\n"),
-            env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" }
-        }
-    ] as NonNullable<NormalJob["steps"]>;
 
 // Live status table shown in the PR comment. Rows are updated in place as each
 // group progresses (Queued -> Running -> Passed/Failed) by the per-group jobs,
@@ -131,16 +125,12 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     const env: Record<string, string> = { AWS_REGION };
 
+    // The container needs no configuration at all - see `utils/openSearch.ts` for why there is no
+    // endpoint, no credentials and no index prefix here.
+    const needsOpenSearch = storageOps?.id === "ddb-os,ddb";
+
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-
-        if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
-            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
-            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
-            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        }
 
         if (storageOps instanceof PgliteStorageOps) {
             env["WEBINY_SQL_CLIENT"] = "pglite";
@@ -160,6 +150,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             steps: [
                 createMarkRunningStep(rowLabel),
+                // Test discovery reads `packages/` off disk, so it has to run against the PR's
+                // code. Without this the job kept the default `issue_comment` checkout (the
+                // default branch), and a PR that added a package, added the first tests to an
+                // existing one, or changed a package's testing/sharding config would have those
+                // changes silently ignored - while a PR that deleted a package would still get a
+                // test job for it.
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 {
                     id: "list-vitest-test-commands",
                     name: "List Vitest Test Commands",
@@ -192,13 +189,17 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             "runs-on": "${{ matrix.os }}",
             env,
-            awsAuth: storageOps && storageOps.id === "ddb-os,ddb",
+            // DDB+OS was the only group that assumed an AWS role, and it did so for the shared
+            // OpenSearch domain. With the container there is nothing left in this workflow that
+            // talks to AWS: DynamoDB in these tests is dynalite.
+            ...(needsOpenSearch ? { services: OPENSEARCH_SERVICE } : {}),
             checkout: { path: DIR_WEBINY_JS },
             steps: [
-                ...createCheckoutPrSteps(),
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,
                 ...installBuildSteps,
+                ...(needsOpenSearch ? [createWaitForOpenSearchStep()] : []),
                 ...withCommonParams([{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }], {
                     "working-directory": DIR_WEBINY_JS
                 })
@@ -209,7 +210,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
 export const pullRequestsCommandVitest = createSlashCommandWorkflow({
     command: "vitest",
-    name: "Pull Requests Command - Vitest",
+    name: "💬 PR Command - Vitest",
     comment: INITIAL_COMMENT_BODY,
     captureCommentId: true,
     workflow: {
@@ -267,7 +268,7 @@ export const pullRequestsCommandVitest = createSlashCommandWorkflow({
             checkout: { path: DIR_WEBINY_JS },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
-                ...createCheckoutPrSteps(),
+                ...createCheckoutPrSteps({ workingDirectory: DIR_WEBINY_JS }),
                 ...yarnCacheSteps,
                 ...globalBuildCacheSteps,
                 ...installBuildSteps,

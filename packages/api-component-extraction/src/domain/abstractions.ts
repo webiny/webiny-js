@@ -15,32 +15,49 @@ import type {
 import type { ExtractionError } from "./errors.js";
 
 /**
- * The three CMS models, registered per request (see `ComponentExtractionFeature`'s
- * `RequestContextInitializer`). Repositories inject these rather than resolving models themselves.
+ * Providers for the five CMS models this feature stores its entities in. Repositories inject a
+ * provider and `await get()` inside the method that needs the model, rather than injecting an
+ * already-resolved `CmsModel`: resolution is synchronous while fetching a model is not, so the
+ * resolved value could only ever be supplied by a per-request hook that had to run before any
+ * consumer. See `ai-context/code-style/prefer-provider-over-resolved-value.md`.
  */
-export const JobModel = createAbstraction<CmsModel>("ComponentExtraction/JobModel");
-export namespace JobModel {
-    export type Interface = CmsModel;
+export interface ICmsModelProvider {
+    get(): Promise<CmsModel>;
 }
 
-export const RunModel = createAbstraction<CmsModel>("ComponentExtraction/RunModel");
-export namespace RunModel {
-    export type Interface = CmsModel;
+export const JobModelProvider = createAbstraction<ICmsModelProvider>(
+    "ComponentExtraction/JobModelProvider"
+);
+export namespace JobModelProvider {
+    export type Interface = ICmsModelProvider;
 }
 
-export const OverrideModel = createAbstraction<CmsModel>("ComponentExtraction/OverrideModel");
-export namespace OverrideModel {
-    export type Interface = CmsModel;
+export const RunModelProvider = createAbstraction<ICmsModelProvider>(
+    "ComponentExtraction/RunModelProvider"
+);
+export namespace RunModelProvider {
+    export type Interface = ICmsModelProvider;
 }
 
-export const ModelCallModel = createAbstraction<CmsModel>("ComponentExtraction/ModelCallModel");
-export namespace ModelCallModel {
-    export type Interface = CmsModel;
+export const OverrideModelProvider = createAbstraction<ICmsModelProvider>(
+    "ComponentExtraction/OverrideModelProvider"
+);
+export namespace OverrideModelProvider {
+    export type Interface = ICmsModelProvider;
 }
 
-export const CorrectionModel = createAbstraction<CmsModel>("ComponentExtraction/CorrectionModel");
-export namespace CorrectionModel {
-    export type Interface = CmsModel;
+export const ModelCallModelProvider = createAbstraction<ICmsModelProvider>(
+    "ComponentExtraction/ModelCallModelProvider"
+);
+export namespace ModelCallModelProvider {
+    export type Interface = ICmsModelProvider;
+}
+
+export const CorrectionModelProvider = createAbstraction<ICmsModelProvider>(
+    "ComponentExtraction/CorrectionModelProvider"
+);
+export namespace CorrectionModelProvider {
+    export type Interface = ICmsModelProvider;
 }
 
 /** Paged-list envelope. `cursor` is opaque and passed straight back as `after`. */

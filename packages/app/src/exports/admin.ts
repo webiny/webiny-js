@@ -1,4 +1,5 @@
 export { MainGraphQLClient } from "~/features/mainGraphQLClient/index.js";
+export { ApiStreamClient, readServerSentEvents } from "~/features/apiStreamClient/index.js";
 export { useFeature } from "~/shared/di/useFeature.js";
 export { NetworkErrorEventHandler } from "~/errors/index.js";
 export { createProviderPlugin } from "~/core/createProviderPlugin.js";

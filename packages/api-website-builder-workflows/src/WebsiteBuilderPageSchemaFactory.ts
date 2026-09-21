@@ -3,19 +3,14 @@ import type {
     IGraphQLSchemaFactory,
     GraphQLSchemaFactory as GQLSchemaFactory
 } from "@webiny/api-graphql/graphql/abstractions.js";
-import { FeatureFlags } from "@webiny/api-core/features/featureFlags/abstractions.js";
 import type { WbPage } from "@webiny/api-website-builder/domain/page/abstractions.js";
 
+// Only registered when advancedPublishingWorkflow is licensed (WebsiteBuilderWorkflowsFeature gates
+// on the flag at register time), so no per-request license guard is needed here.
 class WebsiteBuilderPageSchemaFactoryImpl implements IGraphQLSchemaFactory {
-    constructor(private featureFlags: FeatureFlags.Interface) {}
-
     async execute(
         builder: GQLSchemaFactory.SchemaBuilder
     ): Promise<GQLSchemaFactory.SchemaBuilder> {
-        if (!this.featureFlags.get().isEnabled("advancedPublishingWorkflow")) {
-            return builder;
-        }
-
         builder.addTypeDefs(/* GraphQL */ `
             extend type WbPage {
                 system: CmsEntrySystem
@@ -33,5 +28,5 @@ class WebsiteBuilderPageSchemaFactoryImpl implements IGraphQLSchemaFactory {
 
 export const WebsiteBuilderPageSchemaFactory = GraphQLSchemaFactory.createImplementation({
     implementation: WebsiteBuilderPageSchemaFactoryImpl,
-    dependencies: [FeatureFlags]
+    dependencies: []
 });

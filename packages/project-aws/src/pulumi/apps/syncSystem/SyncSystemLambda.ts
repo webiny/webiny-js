@@ -16,7 +16,7 @@ export interface SyncSystemLambdaParams {
 
 export const SyncSystemLambda = createAppModule({
     name: "SyncSystemLambda",
-    config(app: PulumiApp, _: SyncSystemLambdaParams) {
+    config(app: PulumiApp) {
         const policy = createSyncSystemLambdaPolicy({
             app,
             // TODO - get bucket ids and dynamodb tables from the FileManager app

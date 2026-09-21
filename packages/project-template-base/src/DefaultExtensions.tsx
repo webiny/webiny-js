@@ -5,7 +5,7 @@ import { AiPowerups } from "@webiny/ai-powerups";
 
 /**
  * Default feature extensions every Webiny project gets, shared across hosting types (aws + server). The
- * hosting-specific composition (`<ProjectAws />` / `<ProjectServer />`), any hosting-specific extensions
+ * hosting-specific composition (`<ProjectAws />` / `<ProjectStandalone />`), any hosting-specific extensions
  * (e.g. `<Infra.ProductionEnvironments />`), and the user's `webiny.config.tsx` are added by each
  * hosting type's `webiny.config.base.tsx`.
  */

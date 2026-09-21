@@ -22,20 +22,22 @@ Elements do **not** fetch their own data; each element's inputs/styles are compu
 Scope today: **drive a component's `inputs` and CSS `styles`, per breakpoint, with a repeater, from static values / design-token references / JS expressions over a shared `state`.**
 
 Two caveats:
-1. The *public* Next.js starter path (Server Component calling `sdk.cms.listEntries`, per the `webiny-website-builder` skill) IS the "element fetches its own data" model. It coexists but is not a binding system.
-2. A **second, separate** resolver exists in `packages/cms-sdk` (`ComponentResolver`, `ComponentRegistry`) + `packages/cms-nextjs` (`EntryRenderer`, `DynamicZoneField`). It maps a CMS **dynamic-zone** value onto a registered component via `model.metadata.componentMap[_templateId]` (`cms-sdk/src/component/ComponentResolver.ts:15`). Shipped CMS-entry→component bridge, but per-dynamic-zone-field, not whole-entry template binding. Closest existing precedent; a *different* subsystem from the WB binding layer.
+
+1. The _public_ Next.js starter path (Server Component calling `sdk.cms.listEntries`, per the `webiny-website-builder` skill) IS the "element fetches its own data" model. It coexists but is not a binding system.
+2. A **second, separate** resolver exists in `packages/cms-sdk` (`ComponentResolver`, `ComponentRegistry`) + `packages/cms-nextjs` (`EntryRenderer`, `DynamicZoneField`). It maps a CMS **dynamic-zone** value onto a registered component via `model.metadata.componentMap[_templateId]` (`cms-sdk/src/component/ComponentResolver.ts:15`). Shipped CMS-entry→component bridge, but per-dynamic-zone-field, not whole-entry template binding. Closest existing precedent; a _different_ subsystem from the WB binding layer.
 
 ### Q2 — What a binding can currently express
 
 `ValueBinding = { static?, expression?, token? }` (`types.ts:47`), exactly one meaningful. `resolveBinding` (`BindingsResolver.ts:169`) dispatches:
 
-| Kind | Mechanism | Capability |
-|---|---|---|
-| `static` | returned verbatim | any literal |
-| `token` | `TokenReference { path, fallback }` → `tokenToCssValue` → `var(--wby-…)` | design-token reference (theme-app work) |
-| `expression` | `evaluateExpression` (`BindingsResolver.ts:187`) | **arbitrary JS string** |
+| Kind         | Mechanism                                                                | Capability                              |
+| ------------ | ------------------------------------------------------------------------ | --------------------------------------- |
+| `static`     | returned verbatim                                                        | any literal                             |
+| `token`      | `TokenReference { path, fallback }` → `tokenToCssValue` → `var(--wby-…)` | design-token reference (theme-app work) |
+| `expression` | `evaluateExpression` (`BindingsResolver.ts:187`)                         | **arbitrary JS string**                 |
 
 Expression evaluator builds `new Function(...contextKeys, "return <expr>")` with context `{ state, $ }` (`$` = current repeat item); rewrites leading `$state`→`state` and `.0`→`[0]`. Concretely:
+
 - Scalar field access — `$state.title` ✓
 - Nested path — `$state.author.name` ✓
 - Array indexing — `$state.items.0.name` ✓
@@ -47,6 +49,7 @@ Expression evaluator builds `new Function(...contextKeys, "return <expr>")` with
 ### Q3 — Where a binding is evaluated
 
 `BindingsResolver` is pure TS (`environment.isServer/isClient` exist → isomorphic-capable). Instantiated in three places:
+
 - **Editor (browser):** `app-website-builder/src/editorSdk/utils/$getElementInputValues.ts:30`, `$updateElementInputs.ts`.
 - **Live render (React):** `website-builder-react/.../ElementRenderer.tsx` (`"use client"`, `observer`) → `LiveElementRenderer` → `contentSdk.resolveElement`.
 - **Live render (Vue):** `website-builder-vue/.../ElementRenderer.ts` — same shape.
@@ -65,28 +68,30 @@ Public entry points: `contentSdk.resolveElement()` (`ContentSdk.ts:192`) and the
 
 Output is **untyped/untagged**: `ResolvedElement = { id, inputs: Record<string,any>, styles }` (WB core); `ResolvedComponent = { component, props: Record<string,unknown>, … }`. No `{ kind, value }` discriminant, no `BindingTrace`, no `repeat` provenance, no `diagnostics`, no `mode`.
 
-| Target `PropValue.kind` | Current representation | Gap |
-|---|---|---|
-| `scalar` | bare `string \| number \| boolean` | untagged |
-| `richText` | Lexical `{ html?, state? }` | untagged; contract wants `RichTextDocument` (Q33) |
-| `asset` | file input `{ id, name, size, mimeType, src, width, height }` | untagged; not an `AssetRef` (Q32) |
-| `link` | **no link input** — URL is `createTextInput` (`string`) | no `{ href, target, rel }` producer at all |
-| `reference` | **no reference input in WB** | absent; `{ modelId, entryId, title }` has no producer |
-| `list` | plain array | untagged |
-| `object` | plain nested object (`createObjectInput`) | untagged |
-| `bindings`/`BindingTrace` | none | must be added |
-| `repeat` provenance | none (index only) | must be added |
-| `diagnostics`/`mode` | none | must be added |
+| Target `PropValue.kind`   | Current representation                                        | Gap                                                   |
+| ------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- |
+| `scalar`                  | bare `string \| number \| boolean`                            | untagged                                              |
+| `richText`                | Lexical `{ html?, state? }`                                   | untagged; contract wants `RichTextDocument` (Q33)     |
+| `asset`                   | file input `{ id, name, size, mimeType, src, width, height }` | untagged; not an `AssetRef` (Q32)                     |
+| `link`                    | **no link input** — URL is `createTextInput` (`string`)       | no `{ href, target, rel }` producer at all            |
+| `reference`               | **no reference input in WB**                                  | absent; `{ modelId, entryId, title }` has no producer |
+| `list`                    | plain array                                                   | untagged                                              |
+| `object`                  | plain nested object (`createObjectInput`)                     | untagged                                              |
+| `bindings`/`BindingTrace` | none                                                          | must be added                                         |
+| `repeat` provenance       | none (index only)                                             | must be added                                         |
+| `diagnostics`/`mode`      | none                                                          | must be added                                         |
 
 **Net:** every value class exists except **`link`** and **`reference`** (no producer). The larger gap is that nothing is tagged and there is no provenance — all additive over a working resolver.
 
 ### Section 1 bottom line
+
 - Real, shipping declarative binding layer in `website-builder-sdk` (bindings above elements; `static|token|expression` over `state`; responsive overrides; `$repeat`; runs in React/Vue renderers).
 - **Extension, not new subsystem**, with two holes: (a) nothing populates `state` from a CMS entry (dataSources is only planning), (b) output is untagged — `PropValue`/`BindingTrace`/provenance/diagnostics/`mode` must be added; `link`/`reference` have no producer.
 - Two resolvers stay separate (WB bindings vs CMS dynamic-zone→component) — they meet at `slots` (Correction 2).
 - Carry to Section 2: expressions use unsandboxed `new Function`; resolution runs client-side in the editor and (corrected) in-render/SSR in the live path.
 
 ### Corrections accepted (locked)
+
 1. **Restricted path grammar.** Add a 4th `ValueBinding` kind `path` (restricted: field access, array index, reference traversal, whitelisted transforms). `expression` stays for existing WB pages. Model-bound templates accept `path` only, enforced at template publish. Rationale: arbitrary JS breaks the dependency index (Q19), the compiled fetch plan (Q28), and publish-time type validation; and generated/migration templates must not eval model-authored JS server-side.
 2. **Do not converge the resolvers.** Template resolver = `website-builder-sdk` resolver fed by CMS entry state. `cms-sdk` `ComponentResolver` stays separate (dynamic-zone block→component). Integration point = `slots`: a dynamic-zone field resolves into a named slot in the resolved tree.
 3. **Stable repeat keys are required now**, delivered in the same change as repeat provenance (index-only keying breaks click-to-edit focus sync on reorder + causes reconciliation churn).
@@ -97,7 +102,7 @@ Output is **untyped/untagged**: `ResolvedElement = { id, inputs: Record<string,a
 
 ### Addition 1 — the server-side rendering path (answered first)
 
-**a) Server-render path today?** **Yes, and it is the intended one.** Resolution is **synchronous in render**, not effect-deferred: `LiveElementRenderer.tsx:58` calls `contentSdk.resolveElement({ element, state, elementBindings, onResolved })` in the render body; only breakpoint refinement (`"desktop"`→real) is in `useEffect`. Code is explicit: *"Start breakpoint as 'desktop' on both server and initial client render"* (`LiveElementRenderer.tsx:23`); Vue twin says *"SSR-safe"*. `"use client"` ≠ client-only in the Next.js App Router — client components are server-rendered into initial HTML then hydrated. `LiveSdk.getPage` (`LiveSdk.ts:18`) is a server-side fetch; `DocumentStoreProvider` calls `store.setDocument(document)` during render (`DocumentStoreProvider.tsx:19`), so the resolver reads a populated document in the same SSR pass. (My Section 1 caution was too strong for the live path.)
+**a) Server-render path today?** **Yes, and it is the intended one.** Resolution is **synchronous in render**, not effect-deferred: `LiveElementRenderer.tsx:58` calls `contentSdk.resolveElement({ element, state, elementBindings, onResolved })` in the render body; only breakpoint refinement (`"desktop"`→real) is in `useEffect`. Code is explicit: _"Start breakpoint as 'desktop' on both server and initial client render"_ (`LiveElementRenderer.tsx:23`); Vue twin says _"SSR-safe"_. `"use client"` ≠ client-only in the Next.js App Router — client components are server-rendered into initial HTML then hydrated. `LiveSdk.getPage` (`LiveSdk.ts:18`) is a server-side fetch; `DocumentStoreProvider` calls `store.setDocument(document)` during render (`DocumentStoreProvider.tsx:19`), so the resolver reads a populated document in the same SSR pass. (My Section 1 caution was too strong for the live path.)
 
 **b) What a crawler gets:** full resolved HTML, provided the host Next.js route is SSR/SSG (the `getPage`-in-route pattern). Bindings resolved server-side into the initial payload; hydration re-runs the same resolution. Not an empty shell.
 
@@ -105,11 +110,12 @@ Output is **untyped/untagged**: `ResolvedElement = { id, inputs: Record<string,a
 
 ### Q7 — Same resolution in Lambda and browser?
 
-Same pure core (`BindingsResolver`, `ComponentResolver`, `BindingsProcessor`, `tokenBinding`) runs in browser (editor `$getElementInputValues`) and browser+server (live/SSR `LiveElementRenderer`). Framework-agnostic TS package with `environment.isClient/isServer/isEditing` guards; thin React/Vue/Next adapters. Constraint: browser-only globals quarantined behind `environment` checks; shared state lives in module singletons (safe in browser, hostile on a shared server). "Isomorphic" is true for the *logic*, not yet for *state ownership*. No Webiny Lambda resolves bindings today — SSR happens in the customer's Next.js runtime.
+Same pure core (`BindingsResolver`, `ComponentResolver`, `BindingsProcessor`, `tokenBinding`) runs in browser (editor `$getElementInputValues`) and browser+server (live/SSR `LiveElementRenderer`). Framework-agnostic TS package with `environment.isClient/isServer/isEditing` guards; thin React/Vue/Next adapters. Constraint: browser-only globals quarantined behind `environment` checks; shared state lives in module singletons (safe in browser, hostile on a shared server). "Isomorphic" is true for the _logic_, not yet for _state ownership_. No Webiny Lambda resolves bindings today — SSR happens in the customer's Next.js runtime.
 
 ### Q8 — WB editor's own preview: unsaved change → pixels
 
 **Already Option B**, no server round-trip, no write:
+
 1. Editor loads the customer Next.js app in an **iframe** with `?wb.type=entry&wb.referrer=…`; inside, `environment.isEditing()` true → `ContentSdk.init` builds an **`EditingSdk`** (`ContentSdk.ts:112`).
 2. `EditingSdk` opens a `postMessage` `Messenger` to `window.parent` (`EditingSdk.ts:33`) and subscribes to `document.set`/`element.set`/`document.patch`/`theme.mode` (`EditingSdk.ts:88-120`).
 3. Every editor mutation posts the new document / JSON patch; the listener writes it into the MobX `DocumentStore`.
@@ -124,20 +130,20 @@ Stored as a **parsed AST, never an eval'd string**:
 ```ts
 type ValueBinding<T = any> = {
   static?: T;
-  expression?: string;   // existing WB pages only; forbidden in model-bound templates
+  expression?: string; // existing WB pages only; forbidden in model-bound templates
   token?: TokenReference;
-  path?: PathBinding;     // NEW — the only data-binding kind a template may hold
+  path?: PathBinding; // NEW — the only data-binding kind a template may hold
 };
 
 type PathBinding = {
-  segments: PathSegment[];        // structured; index & fetch plan read this, never a string
-  transforms?: TransformRef[];    // ordered, whitelisted, pure
+  segments: PathSegment[]; // structured; index & fetch plan read this, never a string
+  transforms?: TransformRef[]; // ordered, whitelisted, pure
 };
 
 type PathSegment =
-  | { kind: "field"; name: string }   // author.name    (scalar/object field)
-  | { kind: "index"; value: number }  // gallery[0]      (array index)
-  | { kind: "ref";   name: string };  // category ->     (reference hop; counts toward depth)
+  | { kind: "field"; name: string } // author.name    (scalar/object field)
+  | { kind: "index"; value: number } // gallery[0]      (array index)
+  | { kind: "ref"; name: string }; // category ->     (reference hop; counts toward depth)
 
 type TransformRef = { name: string; args?: Array<string | number | boolean> };
 ```
@@ -176,6 +182,7 @@ Clean split falls out of the compiled template: compiler partitions bindings int
 **Build Option B (client-side resolver in the entry-editor preview iframe) on the `path` grammar for the preview surface — and, independently, build a stateless store-free server resolver for the published/migration render path.** Two consumers of one pure resolver (the shape the codebase already has: editor-client + SSR-server sharing `BindingsResolver`).
 
 Reasoning:
+
 1. Option B reuses the proven postMessage-iframe transport; Option A needs a brand-new post-unsaved-state endpoint.
 2. `path` removes Option B's only real risk (no eval reaches the browser).
 3. Latency: Option B single-digit ms; Option A debounced ~100–250 ms.
@@ -183,21 +190,24 @@ Reasoning:
 5. Migration/SEO is a separate concern and must be server-side regardless — the stateless resolver bypassing `documentStoreManager`.
 
 **First irreversible commitment:**
+
 - **Option B (recommended):** model-bound templates are **`path`-only and resolvable without server data for the non-reference partition** — compiled template must separate local vs reference paths; entry editor must expose unsaved form state to the preview iframe. Reversing to all-server-side later is a data-model/contract change.
 - **Option A:** the **transient resolve endpoint + wire contract** (posted entry-state shape + returned `ResolvedDocument`); every client couples to it; walking back means re-shipping the resolver to the browser anyway.
 - **Lowest-regret, common to both, needed now for migration:** land the **stateless store-free server resolver** `(compiledTemplate, entry, locale) → ResolvedDocument` that never touches `documentStoreManager`. Required for SEO/migration regardless of preview transport; the preview surface can call the same pure function.
 
 ### Q39 flags surfaced so far (redesign-forcing, Sections 1/2)
+
 - Untagged resolver output + no provenance → `PropValue`/`BindingTrace` is a resolver output-format change (additive but pervasive).
 - `new Function` expression evaluator is incompatible with dependency index + fetch plan + publish-time validation + safe server eval → **`path` grammar required** (accepted).
 - Module-singleton document/entry stores are not request-isolated → **stateless server resolver required** for migration/SEO.
+
 ---
 
 ## Section 3: Template as an entity
 
 ### Q13 — Storage precedent
 
-WB pages are **not** a bespoke store — they are **entries of a private CMS model** (`wbyWbPage`, `builder.private({ modelId: PAGE_MODEL_ID })`, `api-website-builder/src/domain/page/page.model.ts:5-27`), which already carries a `bindings` json field alongside `properties/metadata/elements/extensions`. That inheritance gives pages draft→publish, numbered revisions, locking, trash/restore, tenant + locale scoping for free (`EntryToPageMapper.ts:6-35`). The closest analogue for a new template entity is the WB **Variant**/**Experiment**: a *separate* private CMS model that snapshots content but is its own record ("A variant is never a revision", `domain/variant/variant.model.ts:5-33`; `domain/experiment/experiment.model.ts`).
+WB pages are **not** a bespoke store — they are **entries of a private CMS model** (`wbyWbPage`, `builder.private({ modelId: PAGE_MODEL_ID })`, `api-website-builder/src/domain/page/page.model.ts:5-27`), which already carries a `bindings` json field alongside `properties/metadata/elements/extensions`. That inheritance gives pages draft→publish, numbered revisions, locking, trash/restore, tenant + locale scoping for free (`EntryToPageMapper.ts:6-35`). The closest analogue for a new template entity is the WB **Variant**/**Experiment**: a _separate_ private CMS model that snapshots content but is its own record ("A variant is never a revision", `domain/variant/variant.model.ts:5-33`; `domain/experiment/experiment.model.ts`).
 
 **Recommendation:** make **Model Template** its own **private CMS model** in `api-website-builder`, mirroring Variant/Experiment. It is not a page variant (it has no entry of its own; it binds to a model), and not a raw CMS user model (it is design-system infrastructure, private). A separate simple-DDB store (`api-core/src/models/simple/…`) exists but is not the route used by any versioned/publishable WB entity.
 
@@ -239,7 +249,7 @@ Queries: **primary** "which templates reference field X on model Y" (destructive
 ### Q20 — Block or warn on destructive change
 
 - **API hard-block is feasible** via a `ModelBeforeUpdateEventHandler` that diffs fields, queries the index, and throws when an indexed field is removed/retyped (`UpdateModelUseCase.ts:113-119`). Authoritative.
-- **Admin UI has no destructive-change warning today** — field deletion is a silent in-memory transform (`FieldEditor/utils/deleteField.ts`) then a wholesale model save. The strongest *current* affordance is the save-time API error surfaced from the block above (manifests as an update failure, not an inline banner). A friendly warning banner (call the index before save) is **net-new UI**.
+- **Admin UI has no destructive-change warning today** — field deletion is a silent in-memory transform (`FieldEditor/utils/deleteField.ts`) then a wholesale model save. The strongest _current_ affordance is the save-time API error surfaced from the block above (manifests as an update failure, not an inline banner). A friendly warning banner (call the index before save) is **net-new UI**.
 
 **Recommendation:** implement the block in `ModelBeforeUpdateEvent` (source of truth) plus an advisory pre-save index check for UX.
 
@@ -248,6 +258,7 @@ Queries: **primary** "which templates reference field X on model Y" (destructive
 Supported by existing machinery: **`RefModelsGenerator`** already walks a model AST, collects `ref` fields' target model ids (`field.settings.models`), and recurses (`features/contentModel/RefModelsGenerator/RefModelsGenerator.ts`; shares `ModelToAstConverter` with `ComponentMapGenerator`). The template compiler reuses this to follow `path` `ref` segments.
 
 **Depth limit = max 2 ref hops**, encoded per index row via `hop`. A binding `article.author.name` emits:
+
 - `{ modelId:"article", fieldId:"author", templateId:T, hop:0 }`
 - `{ modelId:"author", fieldId:"name", templateId:T, hop:1, via:"article.author" }`
 
@@ -258,16 +269,18 @@ The reverse query matches `modelId=Y, fieldId=X` at **any** hop, so renaming `au
 `RepeatValueBinding = { expression }` (`types.ts:53`) → **`{ path: PathBinding; keyPath?: PathSegment[] }`**. An `expression` repeat source is opaque: it can neither be enumerated into the fetch plan nor recorded in the dependency index, so every expression-repeat forces lazy N+1 during the tree walk. A `ref`-list is a normal `ref` field with `list:true` (a first-class flag, `cms-sdk/src/types.ts:74-78`), fully enumerable from the model AST — so a path-based repeat source lands in **both** the index and the fetch plan.
 
 **Repeat-over-reference-list in the fetch plan** — a collection read node:
+
 ```ts
 type FetchPlanCollectionNode = {
   kind: "refList";
-  sourcePath: PathSegment[];   // e.g. product.relatedProducts → an entry-id list
+  sourcePath: PathSegment[]; // e.g. product.relatedProducts → an entry-id list
   targetModelId: string;
-  depth: number;               // ref hops consumed (≤ 2)
-  childProjection: string[];   // the $-relative field paths the child elements read
-  children?: FetchPlanNode[];  // deeper collection/ref nodes
+  depth: number; // ref hops consumed (≤ 2)
+  childProjection: string[]; // the $-relative field paths the child elements read
+  children?: FetchPlanNode[]; // deeper collection/ref nodes
 };
 ```
+
 Read pattern: read the parent field → id list → **one** batched multi-get of `childProjection` for all ids → resolve each instance's `$`-relative paths. This is precisely the batching Q28 needs.
 
 ---
@@ -281,6 +294,7 @@ The entry-editor config `ContentEntryEditorConfig` exposes only `{ actions, widt
 ### Q23 — Field ↔ element click-sync
 
 **Both directions are feasible; element→field needs essentially nothing new.**
+
 - **Focus/scroll to a field already exists:** `FormModel.focusField(name)` resolves and activates the containing tab(s) then calls `field.requestFocus()` (`app-admin/.../formModel/FormModel.ts:172-197`), surfaced as `vm.focusField(path)` (`:437`). Preview→form = `form.focusField(bindingPath)`.
 - **Stable field path exists:** fields are addressed by a dot-path handling nested objects and list indices (`FormModel.field(name)`, `:135-170`; `Field.field()` composes `${path}.${name}`); the same path keys `getData()/setData()` and errors carry `path`. **This dot-path is the natural `BindingTrace.path`.**
 - What the form must add: (1) a stable map from a preview element's binding to the field path (a template concern — `BindingTrace`), and (2) field renderers that **visibly** highlight + scroll on the MobX `requestFocus` flag (today the flag is set; the renderer-level visual reaction is unverified — see gaps).
@@ -294,16 +308,24 @@ The entry-editor config `ContentEntryEditorConfig` exposes only `{ actions, widt
 **Gap.** In the rewritten DI/feature CMS admin, an active **content locale is not threaded** into the entry editor: `CmsGraphQLClient` targets `${apiUrl}/cms/manage` with **no locale segment and no `x-i18n-locale` header** (`features/graphQLClient/CmsGraphQLClient.ts:12,18`; fetch client sets only `Content-Type`, `app/.../FetchGraphQLClient.ts:25-33`). The generic `I18n.getLocale()` is the UI-translation locale, not content locale. So resolution today would run against the API's tenant-default locale.
 
 **Correction 7 confirmed and now grounded:** locale/timezone have **no ambient source to fall back on even if we wanted one** — they must be explicit resolver-context inputs. Required work: introduce a content-locale context in admin, thread it into `CmsGraphQLClient` (endpoint or header) **and** into the resolver context:
+
 ```ts
-type ResolverContext = { state; $?; locale: string /*BCP-47*/; timeZone: string /*IANA*/; now?: string };
+type ResolverContext = {
+  state;
+  $?;
+  locale: string /*BCP-47*/;
+  timeZone: string /*IANA*/;
+  now?: string;
+};
 ```
+
 `date`/`number`/`currency` transforms take `ctx.locale`+`ctx.timeZone` explicitly. **Residual risk:** native `Intl` diverges across Node ICU builds vs browser engines even for the same locale → preview/production drift. Fix: ship a **deterministic formatter** for the ICU-sensitive transforms in the shared transform package (Correction 6) rather than native `Intl`; plain-string transforms are ICU-independent and fine.
 
 ### Addition 3 — Preview host (Webiny-served vs customer frontend)
 
 **(a) A Webiny-served preview surface is largely already built.** The CMS analog of the WB preview exists: `@webiny/cms-sdk` `EditingSdk` sets up the `Messenger` on `"wb.editor.*"`, reads `wb.id`/`wb.referrer`, and applies `document.set`/`document.patch` into an `EntryStore`, gated on `environment.isEditing()` (`cms-sdk/src/EditingSdk.ts:18-85`, `ContentSdk.ts:51-66`); `@webiny/cms-nextjs` `EntryRenderer` + `ConnectToEntryEditor` render an entry against a model + component registry, switching to editor-connected mode when editing (`cms-nextjs/src/EntryRenderer.tsx:22-67`). `website-builder-react`'s `DocumentRenderer`/`DocumentStoreProvider`/`ElementRenderer` are usable **standalone** given a document + registry. Theme for a Webiny-served surface: `@webiny/theme-sdk` `ThemeSdk` fetches the tenant's published theme and supports draft-theme preview (`theme-sdk/src/ThemeSdk.ts:68-131`). Admin already hosts sandboxed preview iframes (WB editor `Iframe.tsx`; remote-components `SandboxIframe`).
 
-**(b) One implementation can serve both hosts** — renderer and postMessage transport are identical; three inputs differ: **theme source** (customer app applies its deployed theme vs Webiny-served fetches published/draft theme via `theme-sdk`), **component registry source** (customer registers *its* components vs Webiny-served has only defaults unless the customer's set is loaded — the crux for migration customers with no frontend), and **host origin**.
+**(b) One implementation can serve both hosts** — renderer and postMessage transport are identical; three inputs differ: **theme source** (customer app applies its deployed theme vs Webiny-served fetches published/draft theme via `theme-sdk`), **component registry source** (customer registers _its_ components vs Webiny-served has only defaults unless the customer's set is loaded — the crux for migration customers with no frontend), and **host origin**.
 
 **(c) Preview host is a per-tenant choice, not per-template/per-model.** The only existing preview-host config is WB-wide: `PreviewUrlModifier` (tenant-level URL hook, `features/previewUrl/abstractions.ts:3-9`) + WB settings base URL (`IWebsiteBuilderSettings`). No per-template/per-model preview-host setting exists; below-tenant granularity would be net-new. **Decision surfaced for Q37.**
 
@@ -329,10 +351,10 @@ CMS delivery is **three separate schemas/endpoints**: `manage` `/cms/manage`, `p
 
 Status is selected by **which sub-API** you hit: `read` = published, `preview` = latest/draft; the unified `getEntry(preview: Boolean)` binary-maps to one of them (`getEntryResolver.ts:27`), and `preview` is a **single per-SDK-instance flag** (`ContentSDKConfig.preview`) routing **all** reads. Template status is orthogonal (published via `LiveSdk.getPage`; a specific draft revision via `PreviewSdk.getPage`→`getPageById` keyed off `?wb.preview`).
 
-| | Published entry | Draft entry |
-|---|---|---|
-| **Published template** | ✅ live path | ⚠️ not independently selectable |
-| **Draft template** | ⚠️ **not cleanly expressible** | ✅ preview path |
+|                        | Published entry                | Draft entry                     |
+| ---------------------- | ------------------------------ | ------------------------------- |
+| **Published template** | ✅ live path                   | ⚠️ not independently selectable |
+| **Draft template**     | ⚠️ **not cleanly expressible** | ✅ preview path                 |
 
 The off-diagonal cells fail for the same reason: **one global `preview` flag routes both the template read and every CMS entry read to one endpoint.** Previewing a draft template forces entry reads into the preview/latest API too. **What must change:** the `resolveDocument` producer must accept **template version** and a **per-read content-status selector** independently, instead of a per-SDK-instance boolean. The sub-APIs to satisfy both statuses already exist (read + preview + by-id use cases); the selection just needs to be a per-resolve parameter. (Draft-template × published-entry — preview an unpublished template against live content — is a primary migration/authoring scenario, so this decoupling is required, not optional.)
 
@@ -358,7 +380,7 @@ The off-diagonal cells fail for the same reason: **one global `preview` flag rou
 
 ### Correction 5 — stable repeat key derivation (confirmed + refined)
 
-Key derived at resolve time, emitted in `repeat: { path, index, key }`, priority order: (1) explicit `keyPath` on the repeat binding; (2) **CMS entry item → entry id** (id, *not* revision, so editing a value doesn't remount); (3) plain object → **stable content hash** via the SDK's existing `hashObject` util (identical client+server); (4) primitive scalar → the value if unique, else `hash(value)+index`; (5) last resort index → still emit the key **plus a preview-visible diagnostic** that keys are unstable. Refinements vs the proposal: added the explicit-keyPath and scalar cases and pinned entry keying to id-not-revision.
+Key derived at resolve time, emitted in `repeat: { path, index, key }`, priority order: (1) explicit `keyPath` on the repeat binding; (2) **CMS entry item → entry id** (id, _not_ revision, so editing a value doesn't remount); (3) plain object → **stable content hash** via the SDK's existing `hashObject` util (identical client+server); (4) primitive scalar → the value if unique, else `hash(value)+index`; (5) last resort index → still emit the key **plus a preview-visible diagnostic** that keys are unstable. Refinements vs the proposal: added the explicit-keyPath and scalar cases and pinned entry keying to id-not-revision.
 
 ### Correction 6 — transform registry: shared package + versioning (confirmed, strengthened)
 
@@ -373,27 +395,39 @@ Registry lives in the **same package as `BindingsResolver` (`@webiny/website-bui
 **Yes, cleanly — a dedicated gate is low-cost.** Permissions are schema-driven per package: `createPermissionSchema({ prefix, fullAccess, entities:[{ id, permission, scopes:["full"|"own"], actions:[{name:"rwd"},{name:"pw"}] }] })`, declared in both API (`api-core/.../permissions/createPermissionSchema.ts:3`, 27 callers, one per domain) and Admin (matching signature), compiled into a typed DI `Permissions` service (`canRead/canEdit/canPublish/onlyOwnRecords(entityId)`). CMS entry editing is gated by `cms.contentEntry` (names visible in `languages/.../AddCmsPermissions.ts:15-40`).
 
 **Proposed gate:**
+
 ```ts
-createPermissionSchema({ prefix: "mt", fullAccess: true,
-  entities: [{ id: "template", permission: "mt.template",
-               scopes: ["full","own"], actions: [{ name: "rwd" }, { name: "pw" }] }] })
+createPermissionSchema({
+  prefix: "mt",
+  fullAccess: true,
+  entities: [
+    {
+      id: "template",
+      permission: "mt.template",
+      scopes: ["full", "own"],
+      actions: [{ name: "rwd" }, { name: "pw" }]
+    }
+  ]
+});
 ```
+
 declared in both api + admin packages; template use-cases inject `MtPermissions` and check `canEdit("template")`, entry use-cases keep checking `cms.contentEntry` — orthogonal, so a design-system role holds `mt.template:rwd` + `cms.contentEntry:r` (the inverse of a normal editor). The `PermissionTransformer` seam (`AuthorizationContext`) can compose `mt.template` into the read-only CMS grants a template author needs.
 
 ### Q35 — Tenant scoping + cross-tenant hazards
 
-**Tenant-scoped by default, enforced at the storage-key layer.** Every CMS entry's DDB partition key is `T#${tenant}#CMS#CME` and **throws if tenant is missing** (`api-headless-cms-ddb/src/operations/entry/keys.ts:7-13`); `KeyValueStore` forces `{ scope: tenant.id }` on every op (`api-core/.../keyValueStore/KeyValueStore.ts:16-27`). A template stored as a private CMS model (Q13) is tenant-partitioned by construction. **The only hazard is a compiled-artefact cache keyed without the tenant** — e.g. a process-level `Map<templateId, compiled>` surviving across warm-Lambda invocations that serve different tenants, or a shared CDN/object key without a tenant segment, or talking to the lower-level `GlobalKeyValueStore` directly (which is *not* tenant-scoped; `KeyValueStore` is what prepends the scope). **Audit action:** any new compiled/cached artefact must key by `tenant.id` + id.
+**Tenant-scoped by default, enforced at the storage-key layer.** Every CMS entry's DDB partition key is `T#${tenant}#CMS#CME` and **throws if tenant is missing** (`api-headless-cms-ddb/src/operations/entry/keys.ts:7-13`); `KeyValueStore` forces `{ scope: tenant.id }` on every op (`api-core/.../keyValueStore/KeyValueStore.ts:16-27`). A template stored as a private CMS model (Q13) is tenant-partitioned by construction. **The only hazard is a compiled-artefact cache keyed without the tenant** — e.g. a process-level `Map<templateId, compiled>` surviving across warm-Lambda invocations that serve different tenants, or a shared CDN/object key without a tenant segment, or talking to the lower-level `GlobalKeyValueStore` directly (which is _not_ tenant-scoped; `KeyValueStore` is what prepends the scope). **Audit action:** any new compiled/cached artefact must key by `tenant.id` + id.
 
 ### Correction 8 — field-level permissions (the premise inverts)
 
 **Webiny CMS field access rules are `FieldRule`s of `type:"accessControl"` evaluated CLIENT-SIDE in the Admin editor only.** The field "PermissionsEditor" offers two levels — "No Access" (`hide`) and "Viewer/Read-only" (`disable`) — targeting `admin:`/`team:` identities (`app-headless-cms/.../PermissionsEditor/FieldPermissionsSelection.tsx:7-18,121-136`), enforced by `FormModel.evaluateRules()` in-browser (`app-admin/.../formModel/FormModel.ts:100-133`). There is **no** delivery-side field stripper that reads `action:"hide"` and deletes the field from the API payload.
 
 Consequences:
+
 - **(a)** The entry payload returned to the editor still contains the field; hiding is presentational only.
 - **(b)** The delivery/read API applies **none** of these rules (they target admin/team identities) — a public end-user gets the **full published field set**. So preview and production divergence comes from **editor-side hiding**, not delivery-side filtering.
 - **(c)** Because the field is never actually removed from entry data, a template binding resolving **against the entry payload** does **not** hit a gap. Genuine absent-field cases are entry/model **permission-scope** denial (whole query fails, not a node), an unselected field, a `condition` rule, or a null value — all of which should **fail soft** (omit the node) like any unresolved binding.
 
-**The premise inverts:** the real risk is an editor with a field hidden **in their form** authoring a binding they can't preview through the form, while production (and preview-against-raw-entry) shows it. → **Q37 product decision:** template preview should resolve against (1) the editor's client-side field-visibility view (fidelity to *their* authoring) **or** (2) the full delivery field set (fidelity to *production*). They can't both hold; recommend **(2)** with an explicit "hidden-from-you" affordance on affected nodes. (Field-scope denial that *does* remove data is server-enforced and correctly yields fail-soft nodes.)
+**The premise inverts:** the real risk is an editor with a field hidden **in their form** authoring a binding they can't preview through the form, while production (and preview-against-raw-entry) shows it. → **Q37 product decision:** template preview should resolve against (1) the editor's client-side field-visibility view (fidelity to _their_ authoring) **or** (2) the full delivery field set (fidelity to _production_). They can't both hold; recommend **(2)** with an explicit "hidden-from-you" affordance on affected nodes. (Field-scope denial that _does_ remove data is server-enforced and correctly yields fail-soft nodes.)
 
 ---
 
@@ -452,12 +486,14 @@ Consequences:
 ### Q39 — Findings that force a redesign vs. an adjustment (Sven's focus: §1, §2, §6)
 
 **Redesign-forcing (structural):**
+
 - **[§1/§2] `new Function` expression evaluator is incompatible** with the dependency index, the compiled fetch plan, publish-time type validation, and safe server eval → the **`path` grammar is mandatory** (accepted). Repeat sources inherit this (Correction 4).
 - **[§2] Module-singleton document/entry stores are not request-isolated and never evict** → the **stateless store-free server resolver is mandatory** for migration/SEO; the singleton is a separate pre-existing defect.
 - **[§6] One global `preview` flag routes every read to one endpoint** → the four-state matrix (esp. draft-template × published-entry) is **not expressible** without decoupling template-version from per-read content-status. Structural change to the resolve contract.
 - **[§6] No cache-tag/surrogate-key infrastructure at all** → entry-level invalidation for resolved documents needs **net-new edge capability**, not a config tweak. If precise invalidation is a launch requirement, this is a redesign of the caching layer, not an adjustment.
 
 **Adjustments (additive, no redesign):**
+
 - `PropValue`/`BindingTrace`/provenance/diagnostics — pervasive but additive over a working resolver.
 - Component `name@version`, unknown-component placeholder, image-dimension guarantee, rich-text `{state,html}` — localized additions.
 - Template entity, publishing/versioning/rollback, compile-on-publish hook, permission gate, tenant scoping — all reuse existing platform mechanisms unchanged.

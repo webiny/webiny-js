@@ -3,7 +3,7 @@ import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/cont
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
 import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
 import { ListThemesRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ThemeModel } from "~/domain/theme/abstractions.js";
+import { ThemeModelProvider } from "~/domain/theme/abstractions.js";
 import { EntryToThemeMapper } from "~/domain/theme/EntryToThemeMapper.js";
 import { ThemePersistenceError } from "~/domain/theme/errors.js";
 
@@ -11,20 +11,21 @@ const DEFAULT_LIMIT = 50;
 
 class ListThemesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private themeModel: ThemeModel.Interface,
+        private themeModelProvider: ThemeModelProvider.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface,
         private sortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.listLatestEntries.execute(this.themeModel, {
+        const themeModel = await this.themeModelProvider.get();
+        const result = await this.listLatestEntries.execute(themeModel, {
             where: this.whereMapper.map({
-                fields: this.themeModel.fields,
+                fields: themeModel.fields,
                 input: params.where ?? {}
             }),
             sort: this.sortMapper.map({
-                fields: this.themeModel.fields,
+                fields: themeModel.fields,
                 input: params.sort ?? ["savedOn_DESC"]
             }),
             limit: params.limit ?? DEFAULT_LIMIT,
@@ -47,5 +48,5 @@ class ListThemesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListThemesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListThemesRepositoryImpl,
-    dependencies: [ThemeModel, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
+    dependencies: [ThemeModelProvider, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
 });

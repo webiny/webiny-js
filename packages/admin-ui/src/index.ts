@@ -61,6 +61,7 @@ export * from "./Table/index.js";
 export * from "./Tabs/index.js";
 export * from "./Tag/index.js";
 export * from "./Tags/index.js";
+export * from "./Markdown/index.js";
 export * from "./Text/index.js";
 export * from "./Textarea/index.js";
 export * from "./Toggle/index.js";

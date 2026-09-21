@@ -2,17 +2,15 @@ import { withCommonParams } from "./withCommonParams.js";
 
 interface CreateInstallBuildStepsParams {
     workingDirectory: string;
-    rebuildDependents?: boolean;
 }
 
 export const createInstallBuildSteps = (params: CreateInstallBuildStepsParams) => {
-    const rebuildDependents = params.rebuildDependents ?? false;
-    const buildCommand = rebuildDependents ? "yarn build --rebuild-dependents" : "yarn build";
-
     return withCommonParams(
         [
             { name: "Install dependencies", run: "yarn --immutable" },
-            { name: "Build packages", run: buildCommand }
+            // The build's dependency-aware cache key rebuilds dependents of any
+            // changed package on its own — no `--rebuild-dependents` needed.
+            { name: "Build packages", run: "yarn build" }
         ],
         { "working-directory": params.workingDirectory }
     );

@@ -1,5 +1,5 @@
 import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
-import { createJob, createSlashCommandWorkflow } from "./jobs/index.js";
+import { createJob, createSlackFailureJob, createSlashCommandWorkflow } from "./jobs/index.js";
 import {
     createInstallBuildSteps,
     createRunBuildArtifactDownloadSteps,
@@ -10,10 +10,17 @@ import {
 
 // The HEAD branch of the PR (e.g. "release/6.3.0") — used as checkout path and working dir.
 const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
+// The PR head commit, resolved once by the `prBranch` job. Used as the checkout ref so
+// every job in the run builds and publishes the exact same commit. `PR_BRANCH` stays the
+// checkout PATH (a stable, readable directory name) and the release-version source.
+const PR_SHA = "${{ needs.prBranch.outputs.pr-sha }}";
 const RELEASE_VERSION = "${{ needs.prBranch.outputs.release-version }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: PR_BRANCH,
+    restoreOnly: true
+});
 const runBuildCacheUploadSteps = createRunBuildArtifactUploadSteps({
     workingDirectory: PR_BRANCH
 });
@@ -23,7 +30,7 @@ const runBuildCacheDownloadSteps = createRunBuildArtifactDownloadSteps({
 
 export const pullRequestsCommandBeta = createSlashCommandWorkflow({
     command: "beta",
-    name: "Pull Requests Command - Beta Release",
+    name: "💬 PR Command - Beta Release",
     comment:
         "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:",
     workflow: {
@@ -39,6 +46,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
             checkout: false,
             outputs: {
                 "pr-branch": "${{ steps.pr-branch.outputs.pr-branch }}",
+                "pr-sha": "${{ steps.pr-sha.outputs.pr-sha }}",
                 "release-version": "${{ steps.release-version.outputs.release-version }}"
             },
             steps: [
@@ -47,6 +55,15 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                     id: "pr-branch",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
                     run: 'echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefName -q .headRefName)" >> $GITHUB_OUTPUT'
+                },
+                {
+                    // Resolve the PR head ONCE so every job checks out the same commit. Checking
+                    // out by branch name re-resolves per job, and these jobs start minutes apart -
+                    // so a push mid-run could have us build one commit and publish another.
+                    name: "Get PR head SHA",
+                    id: "pr-sha",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-sha=$(gh pr view ${{ github.event.issue.number }} --repo ${{ github.repository }} --json headRefOid -q .headRefOid)" >> $GITHUB_OUTPUT'
                 },
                 {
                     name: "Parse release version from branch name",
@@ -63,7 +80,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
         build: createJob({
             name: "Build",
             needs: ["prBranch"],
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH },
+            checkout: { path: PR_BRANCH, ref: PR_SHA },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheUploadSteps]
         }),
@@ -75,7 +92,7 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
+            checkout: { path: PR_BRANCH, ref: PR_SHA, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,
@@ -134,7 +151,21 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
-            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
+            // Checked out with the PAT, not the default token. `yarn release --type=latest
+            // --createGithubRelease` shells out to a raw `git tag` + `git push origin v<version>`,
+            // which uses whatever credentials actions/checkout persisted - so with the default
+            // token that push is made by github-actions[bot] and is refused:
+            //
+            //   remote: Permission to webiny/webiny-js.git denied to github-actions[bot].
+            //
+            // Packages are published BEFORE the tag is pushed, so the failure leaves a release on
+            // NPM with no matching tag. Matches what release.wac.ts already does for the same step.
+            checkout: {
+                path: PR_BRANCH,
+                ref: PR_SHA,
+                "fetch-depth": 0,
+                token: "${{ secrets.GH_TOKEN }}"
+            },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheDownloadSteps,
@@ -182,6 +213,10 @@ export const pullRequestsCommandBeta = createSlashCommandWorkflow({
                     ].join("\n")
                 }
             ]
+        }),
+        notifySlackOnFailure: createSlackFailureJob({
+            needs: ["prBranch", "build", "npmReleaseBeta", "npmReleaseLatest"],
+            label: "Beta release (/beta)"
         })
     }
 });

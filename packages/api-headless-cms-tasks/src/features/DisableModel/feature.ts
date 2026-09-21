@@ -1,7 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { BlockActionIfModelDisabled as Abstraction } from "./abstractions.js";
-import { BlockActionIfModelDisabled } from "./BlockActionIfModelDisabled.js";
-import { DeleteModelOperations } from "~/graphql/deleteModel/abstractions.js";
+import { BlockActionIfModelDisabledImplementation } from "./BlockActionIfModelDisabled.js";
 import { BlockModelActionOnEntryBeforeCreate } from "./handlers/BlockModelActionOnEntryBeforeCreate.js";
 import { BlockModelActionOnEntryRevisionBeforeCreate } from "./handlers/BlockModelActionOnEntryRevisionBeforeCreate.js";
 import { BlockModelActionOnEntryBeforeUpdate } from "./handlers/BlockModelActionOnEntryBeforeUpdate.js";
@@ -16,12 +14,7 @@ import { BlockModelActionOnModelBeforeCreateFrom } from "./handlers/BlockModelAc
 export const DisableModelFeature = createFeature({
     name: "DisableModel",
     register(container) {
-        const ops = container.resolve(DeleteModelOperations);
-
-        container.registerInstance(
-            Abstraction,
-            new BlockActionIfModelDisabled(ops.isModelBeingDeleted.bind(ops))
-        );
+        container.register(BlockActionIfModelDisabledImplementation);
 
         container.register(BlockModelActionOnEntryBeforeCreate);
         container.register(BlockModelActionOnEntryRevisionBeforeCreate);

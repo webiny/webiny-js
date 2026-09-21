@@ -1,14 +1,4 @@
 import { type Container, createFeature } from "@webiny/feature/api";
-import { RequestContextInitializer } from "@webiny/event-handler-core";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import {
-    CORRECTION_MODEL_ID,
-    JOB_MODEL_ID,
-    MODEL_CALL_MODEL_ID,
-    OVERRIDE_MODEL_ID,
-    RUN_MODEL_ID
-} from "~/constants.js";
 import {
     CorrectionModelPlugin,
     JobModelPlugin,
@@ -16,13 +6,11 @@ import {
     OverrideModelPlugin,
     RunModelPlugin
 } from "~/domain/models.js";
-import {
-    CorrectionModel,
-    JobModel,
-    ModelCallModel,
-    OverrideModel,
-    RunModel
-} from "~/domain/abstractions.js";
+import { JobModelProvider } from "~/features/modelProviders/JobModelProvider.js";
+import { RunModelProvider } from "~/features/modelProviders/RunModelProvider.js";
+import { OverrideModelProvider } from "~/features/modelProviders/OverrideModelProvider.js";
+import { ModelCallModelProvider } from "~/features/modelProviders/ModelCallModelProvider.js";
+import { CorrectionModelProvider } from "~/features/modelProviders/CorrectionModelProvider.js";
 import {
     CorrectionRepository,
     JobRepository,
@@ -61,15 +49,15 @@ import { RegeneratePlanTask } from "~/features/stages/plan/RegeneratePlanTask.js
 import { GenerateComponentTask } from "~/features/stages/generate/GenerateComponentTask.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
-import { RunImageRoute } from "~/rest/RunImageRoute.js";
+import { RunImageRouteDefinition } from "~/rest/RunImageRoute.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
 
 /**
  * Component Extraction — the backend entities (phase 1, W2).
  *
- * The three private CMS models, their repositories, and the per-job run lock. The stage tasks (W3) and
- * the nine stages (W4) register on top of this. Per-request the three `CmsModel`s are resolved and
- * registered so repositories inject them as plain dependencies — the same pattern the Theme app uses.
+ * The five private CMS models, their repositories, and the per-job run lock. The stage tasks (W3) and
+ * the nine stages (W4) register on top of this. Each model is reached through a provider that fetches
+ * it on demand, so repositories await one where they need it — the same pattern the Theme app uses.
  */
 export const ComponentExtractionFeature = createFeature({
     name: "ComponentExtraction",
@@ -80,6 +68,14 @@ export const ComponentExtractionFeature = createFeature({
         container.register(OverrideModelPlugin);
         container.register(ModelCallModelPlugin);
         container.register(CorrectionModelPlugin);
+
+        // On-demand resolution of those five models. Repositories inject a provider and await it, so
+        // nothing depends on a per-request hook having deposited the model first.
+        container.register(JobModelProvider);
+        container.register(RunModelProvider);
+        container.register(OverrideModelProvider);
+        container.register(ModelCallModelProvider);
+        container.register(CorrectionModelProvider);
 
         ComponentExtractionPermissionsFeature.register(container);
 
@@ -137,34 +133,6 @@ export const ComponentExtractionFeature = createFeature({
         registerComponentExtractionGraphQL(container);
 
         // The auth-gated run-image delivery route (W7.2), serving derived images for the visibility screens.
-        container.register(RunImageRoute);
-
-        // Per-request resolution of the three CmsModels. Runs without authorization because reading a
-        // model definition is not the same act as reading an entry — entry-level authorization still
-        // applies in the use cases.
-        container.registerInstance(RequestContextInitializer, {
-            async init(ctx: Record<string, any>) {
-                const requestContainer = ctx.container as Container;
-                const identityContext = requestContainer.resolve(IdentityContext);
-                const getModel = requestContainer.resolve(GetModelUseCase);
-
-                await identityContext.withoutAuthorization(async () => {
-                    const job = await getModel.execute(JOB_MODEL_ID);
-                    requestContainer.registerInstance(JobModel, job.value);
-
-                    const run = await getModel.execute(RUN_MODEL_ID);
-                    requestContainer.registerInstance(RunModel, run.value);
-
-                    const override = await getModel.execute(OVERRIDE_MODEL_ID);
-                    requestContainer.registerInstance(OverrideModel, override.value);
-
-                    const modelCall = await getModel.execute(MODEL_CALL_MODEL_ID);
-                    requestContainer.registerInstance(ModelCallModel, modelCall.value);
-
-                    const correction = await getModel.execute(CORRECTION_MODEL_ID);
-                    requestContainer.registerInstance(CorrectionModel, correction.value);
-                });
-            }
-        });
+        container.register(RunImageRouteDefinition);
     }
 });

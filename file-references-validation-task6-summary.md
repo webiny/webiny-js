@@ -48,7 +48,7 @@ index has no effect. The schema is frozen at first creation.
   websockets, background tasks. The only singletons are `self-hosted-auth-sql` (Standalone-only) and
   `api-background-tasks-os` (2024, predates the split).
 - **The paired `-ddb`/`-sql` Feature package is the most recent pattern** — `api-core-ddb` and
-  `api-core-sql` were introduced *on the same day* (2026-07-02); `api-headless-cms-sql` and
+  `api-core-sql` were introduced _on the same day_ (2026-07-02); `api-headless-cms-sql` and
   `-pg-os` are newest (2026-07-29).
 
 ## AWS table: you probably don't need a new GSI
@@ -62,7 +62,7 @@ prefix.
 `GSI2_PK: T#${tenant}#FLP`; audit-logs uses GSI2 too; CMS uses GSI1). A reference index just claims
 `FILEREF#`.
 
-If you *did* add GSI3: Pulumi edit → `UpdateTable` → deployment required, and **nothing in the repo
+If you _did_ add GSI3: Pulumi edit → `UpdateTable` → deployment required, and **nothing in the repo
 backfills DynamoDB items into a new index**. The only reindex machinery is for OpenSearch
 (`api-search-index-tasks/.../ReindexTask.ts`).
 
@@ -91,7 +91,7 @@ composition roots. Exactly what api-core, ACO, audit-logs and websockets do.
   missing migration system: get the columns right first time.
 - **Unavoidable:** written twice, and you own tenancy scoping and pagination by hand in both.
 
-**If writing it twice isn't acceptable**, the fallback is a private CMS model *plus real mitigation*
+**If writing it twice isn't acceptable**, the fallback is a private CMS model _plus real mitigation_
 — keep by-file-ID off the list path by maintaining a reverse index at `refs/file/{fileId}` in the
 key-value store (already portable, O(1) on both backends, zero per-backend code), and use the CMS
 model only as the durable record and for the by-source-ID query, which is naturally bounded to one

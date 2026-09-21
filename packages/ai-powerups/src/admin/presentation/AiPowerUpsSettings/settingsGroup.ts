@@ -15,6 +15,15 @@ export interface IAiPowerUpsSettingsGroup {
     label: string;
     description?: string;
     icon?: Icon;
+    /**
+     * Awaited before `buildForm` runs.
+     *
+     * Field *options* are evaluated lazily on render, so a group that only needs server data for a
+     * select can fetch it in the background. Field *structure* is not: the Capabilities group
+     * builds one field per capability registered on the api, so that list has to be in hand before
+     * the form is built or the tab comes up empty.
+     */
+    init?(): Promise<void>;
     buildForm(formBuilder: IAiPowerUpsSettingsGroupFormBuilder): void;
 }
 

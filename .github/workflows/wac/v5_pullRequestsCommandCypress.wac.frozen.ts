@@ -128,7 +128,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
@@ -154,7 +154,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v6",
+                uses: "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
@@ -256,7 +256,7 @@ export const v5_PullRequestsCommandCypress = createWorkflow({
                 {
                     name: "Check for Command",
                     id: "command",
-                    uses: "xt0rted/slash-command-action@v2",
+                    uses: "xt0rted/slash-command-action@bf51f8f5f4ea3d58abc7eca58f77104182b23e88",
                     with: {
                         "repo-token": "${{ secrets.GITHUB_TOKEN }}",
                         command: "v5_cypress",
@@ -268,7 +268,7 @@ export const v5_PullRequestsCommandCypress = createWorkflow({
                 },
                 {
                     name: "Create comment",
-                    uses: "peter-evans/create-or-update-comment@v2",
+                    uses: "peter-evans/create-or-update-comment@67dcc547d311b736a8e6c5c236542148a47adc3d",
                     with: {
                         "issue-number": "${{ github.event.issue.number }}",
                         body: "Cypress E2E tests have been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"

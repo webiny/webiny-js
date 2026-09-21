@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Default Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -36,7 +36,7 @@ jobs:
 
       # Checkout the PR's head branch if it's a pull request; otherwise, use the branch on which the action is triggered manually.
       - name: Checkout the PR's head branch if it's a pull request; otherwise, use the branch on which the action is triggered manually.
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
           # Conditionally checkout based on event type and use hub fetched branch if needed.
@@ -44,7 +44,7 @@ jobs:
             ${{ github.event_name == 'workflow_dispatch' && github.ref_name || env.head_branch }}
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version: 24
 
@@ -57,7 +57,7 @@ jobs:
       # Run Chromatic Action
       - name: Run Chromatic
         id: chromatic
-        uses: chromaui/action@v1
+        uses: chromaui/action@c93e0bc3a63aa176e14a75b61a31847cbfdd341c # v1
         with:
           # Chromatic projectToken, see https://storybook.js.org/tutorials/design-systems-for-developers/react/en/review/ to obtain it
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
 
       # Create or update a comment on PR with the Storybook URL
       - name: Comment on PR with Storybook URL
-        uses: peter-evans/create-or-update-comment@v5
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.issue.number || github.event.pull_request.number }}

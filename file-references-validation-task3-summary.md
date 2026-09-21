@@ -15,7 +15,7 @@ const asset = new Asset({ …, key: metadata.bucketKey });
 ```
 
 So `/files/{id}/photo.jpg`, `/files/{id}/anything-else.png` and `/files/{id}` all resolve to the
-same object. Format detection uses the *resolved* key too, so a filename-less URL doesn't break
+same object. Format detection uses the _resolved_ key too, so a filename-less URL doesn't break
 transformations. **No routing change is needed for a stable ID-keyed URL — it's what the resolver
 already implements.**
 
@@ -25,7 +25,7 @@ request, and a full CMS entry read on every image transform.
 ## Key confirmations
 
 **Key minting at source** (`FileKey.toString()`): `[keyPrefix]/{id}/{sanitized-filename}.{ext}`,
-with `tenants/{tenantId}/files/` prepended at presign time and *not* stored on the record. Unit
+with `tenants/{tenantId}/files/` prepended at presign time and _not_ stored on the record. Unit
 tests corroborate.
 
 **Same ID, different filename:** `PreSignedPostPayloadInput.id` is client-supplied and passed

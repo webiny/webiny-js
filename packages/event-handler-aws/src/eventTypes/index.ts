@@ -1,4 +1,5 @@
 export * from "./ApiGatewayEventType.js";
+export * from "./FunctionUrlStreamEventType.js";
 export * from "./S3EventType.js";
 export * from "./SqsEventType.js";
 export * from "./SnsEventType.js";

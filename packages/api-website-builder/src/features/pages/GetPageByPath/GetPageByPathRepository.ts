@@ -1,18 +1,19 @@
 import { Result } from "@webiny/feature/api";
 import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
 import { GetPageByPathRepository as RepositoryAbstraction } from "./abstractions.js";
-import { type CmsEntryWbPage, PageModel } from "~/domain/page/abstractions.js";
+import { type CmsEntryWbPage, PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
 
 class GetPageByPathRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private pageModel: PageModel.Interface,
+        private pageModelProvider: PageModelProvider.Interface,
         private getEntry: GetEntryUseCase.Interface
     ) {}
 
     async execute(path: string): RepositoryAbstraction.Return {
-        const result = await this.getEntry.execute<CmsEntryWbPage>(this.pageModel, {
+        const pageModel = await this.pageModelProvider.get();
+        const result = await this.getEntry.execute<CmsEntryWbPage>(pageModel, {
             where: {
                 values: {
                     properties: {
@@ -38,5 +39,5 @@ class GetPageByPathRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const GetPageByPathRepository = RepositoryAbstraction.createImplementation({
     implementation: GetPageByPathRepositoryImpl,
-    dependencies: [PageModel, GetEntryUseCase]
+    dependencies: [PageModelProvider, GetEntryUseCase]
 });

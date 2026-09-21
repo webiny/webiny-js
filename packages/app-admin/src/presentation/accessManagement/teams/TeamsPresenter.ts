@@ -1,5 +1,6 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
-import slugify from "slugify";
+import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import { FormModelFactory } from "~/features/formModel/abstractions.js";
 import type { IFormModel } from "~/features/formModel/abstractions.js";
@@ -35,7 +36,8 @@ class TeamsPresenterImpl implements ITeamsPresenter {
         private createTeamUseCase: CreateTeamUseCase.Interface,
         private updateTeamUseCase: UpdateTeamUseCase.Interface,
         private deleteTeamUseCase: DeleteTeamUseCase.Interface,
-        private cache: TeamsListCache.Interface
+        private cache: TeamsListCache.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {
         this._form = this.buildForm(false, true);
         makeAutoObservable<
@@ -47,6 +49,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
             | "updateTeamUseCase"
             | "deleteTeamUseCase"
             | "cache"
+            | "stringFormatter"
         >(this, {
             formModelFactory: false,
             listTeamsUseCase: false,
@@ -55,6 +58,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
             updateTeamUseCase: false,
             deleteTeamUseCase: false,
             cache: false,
+            stringFormatter: false,
             vm: computed
         });
     }
@@ -107,7 +111,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                 this._form.setData({
                     name: team.name,
                     slug: team.slug,
-                    description: team.description,
+                    description: team.description ?? "",
                     roles: team.roles || []
                 });
             });
@@ -170,14 +174,16 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                     this._form.setData({
                         name: team.name,
                         slug: team.slug,
-                        description: team.description,
+                        description: team.description ?? "",
                         roles: team.roles || []
                     });
                 });
                 return team;
             }
-        } catch {
-            return null;
+            // Errors deliberately propagate to the caller, which reports them to the user. This
+            // used to be a bare `catch { return null }`, and `null` is also what `save()` returns
+            // when client-side validation fails - so a rejected request looked to the view exactly
+            // like a form that had not been submitted, and failed silently.
         } finally {
             runInAction(() => {
                 this._saving = false;
@@ -209,14 +215,7 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                         if (slugValue || !value) {
                             return;
                         }
-                        form.field("slug").setValue(
-                            slugify(String(value), {
-                                replacement: "-",
-                                lower: true,
-                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
-                                trim: false
-                            })
-                        );
+                        form.field("slug").setValue(this.stringFormatter.slugify(String(value)));
                     }),
                 slug: fields
                     .text()
@@ -228,6 +227,9 @@ class TeamsPresenterImpl implements ITeamsPresenter {
                     .label("Description")
                     .renderer("textarea")
                     .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .disabled(!canModify),
                 roles: fields
                     .rolesMultiSelect()
@@ -254,6 +256,7 @@ export const TeamsPresenter = Abstraction.createImplementation({
         CreateTeamUseCase,
         UpdateTeamUseCase,
         DeleteTeamUseCase,
-        TeamsListCache
+        TeamsListCache,
+        StringFormatter
     ]
 });

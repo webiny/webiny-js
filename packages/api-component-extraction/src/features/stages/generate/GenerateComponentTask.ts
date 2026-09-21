@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GenerateRemoteComponentUseCase } from "@webiny/remote-components/api/features/generateComponent/abstractions.js";
 import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -24,8 +27,8 @@ export interface GenerateComponentTaskInput {
     planRef: string;
 }
 
-type RunParams = TaskDefinition.RunParams<GenerateComponentTaskInput>;
-type RunResult = Promise<TaskDefinition.Result<GenerateComponentTaskInput>>;
+type RunParams = TaskHandler.RunParams<GenerateComponentTaskInput>;
+type RunResult = Promise<TaskHandler.Result<GenerateComponentTaskInput>>;
 
 /**
  * Generate ONE planned component (the Generate fan-out unit). The Generate stage triggers one of these
@@ -33,15 +36,7 @@ type RunResult = Promise<TaskDefinition.Result<GenerateComponentTaskInput>>;
  * writes its result to a per-component artifact the coordinator polls and aggregates. Isolation: a slow
  * or failing component can't block the rest, and a lost child is retried or given up on by the coordinator.
  */
-class GenerateComponentTaskImpl implements TaskDefinition.Interface<GenerateComponentTaskInput> {
-    readonly id = GENERATE_COMPONENT_TASK_ID;
-    readonly title = "Component extraction — generate component";
-    readonly description = "Generates a single component from its planned contract.";
-    readonly maxIterations = 1;
-    // Not private: each per-component generation is its own visible task in the Background Tasks viewer.
-    readonly isPrivate = false;
-    readonly databaseLogs = true;
-
+class GenerateComponentTaskHandlerImpl implements TaskHandler.Interface<GenerateComponentTaskInput> {
     constructor(
         readonly runRepository: RunRepository.Interface,
         readonly jobRepository: JobRepository.Interface,
@@ -149,8 +144,8 @@ class GenerateComponentTaskImpl implements TaskDefinition.Interface<GenerateComp
     }
 }
 
-export const GenerateComponentTask = TaskDefinition.createImplementation({
-    implementation: GenerateComponentTaskImpl,
+const GenerateComponentTaskHandler = TaskHandler.createImplementation({
+    implementation: GenerateComponentTaskHandlerImpl,
     dependencies: [
         RunRepository,
         JobRepository,
@@ -162,4 +157,21 @@ export const GenerateComponentTask = TaskDefinition.createImplementation({
         ThemeManifestResolver,
         ModelCallScope
     ]
+});
+
+class GenerateComponentTaskImpl implements TaskDefinition.Interface<GenerateComponentTaskInput> {
+    readonly id = GENERATE_COMPONENT_TASK_ID;
+    readonly title = "Component extraction — generate component";
+    readonly description = "Generates a single component from its planned contract.";
+    readonly maxIterations = 1;
+    // Not private: each per-component generation is its own visible task in the Background Tasks viewer.
+    readonly isPrivate = false;
+    readonly databaseLogs = true;
+
+    readonly handler = GenerateComponentTaskHandler;
+}
+
+export const GenerateComponentTask = TaskDefinition.createImplementation({
+    implementation: GenerateComponentTaskImpl,
+    dependencies: []
 });

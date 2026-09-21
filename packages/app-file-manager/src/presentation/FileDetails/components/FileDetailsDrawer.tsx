@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Drawer } from "@webiny/admin-ui";
+import { Drawer, Separator } from "@webiny/admin-ui";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { useFileManagerPresenter } from "~/presentation/FileList/index.js";
@@ -32,19 +32,33 @@ const FileDetailsContent = observer(function FileDetailsContent() {
     const { leftFlex, rightFlex } = parseWidth(fileDetailsConfig.width);
 
     return (
-        <Content>
-            <Content.Panel flex={leftFlex}>
-                <div className={"flex flex-col justify-between gap-md h-full px-lg py-md"}>
-                    <Actions />
-                    <Preview />
-                </div>
-            </Content.Panel>
-            <Content.Panel flex={rightFlex}>
-                <div className={"p-lg"}>
-                    <FormView name="File Details" form={fileDetails.vm.form} />
-                </div>
-            </Content.Panel>
-        </Content>
+        <div className={"flex flex-col h-full"}>
+            {/*
+             * The actions row spans the whole drawer, ABOVE the two panels. Inside the left panel it
+             * was bounded by that panel's width, so the last action's label was clipped as soon as
+             * the row outgrew half the drawer — adding one action broke the one before it.
+             *
+             * The Separator is load-bearing, not decoration: the panels' vertical divider starts
+             * where they start, so without a horizontal rule for it to meet, its top end just hangs
+             * in the middle of the drawer. Same toolbar-then-Separator structure as ListViewHeader.
+             */}
+            <div className={"px-lg py-sm"}>
+                <Actions />
+            </div>
+            <Separator />
+            <Content className={"flex-1"}>
+                <Content.Panel flex={leftFlex}>
+                    <div className={"h-full p-lg"}>
+                        <Preview />
+                    </div>
+                </Content.Panel>
+                <Content.Panel flex={rightFlex}>
+                    <div className={"p-lg"}>
+                        <FormView name="File Details" form={fileDetails.vm.form} />
+                    </div>
+                </Content.Panel>
+            </Content>
+        </div>
     );
 });
 

@@ -84,11 +84,20 @@ export interface ActiveThemePointer {
 }
 
 /**
- * The Theme CMS model, registered per request. Repositories inject this rather than resolving the
- * model themselves — see `ThemeFeature`'s `RequestContextInitializer`.
+ * Resolves the Theme CMS model on demand. Repositories inject this rather than the model itself:
+ * fetching a model is asynchronous and tenant-dependent, and DI resolution is synchronous, so an
+ * already-resolved `CmsModel` could only come from a per-request hook that had to run before any
+ * consumer. Consumers `await get()` where they already have an async method, which makes
+ * resolution order irrelevant — see `ai-context/code-style/prefer-provider-over-resolved-value.md`.
  */
-export const ThemeModel = createAbstraction<CmsModel>("Theme/ThemeModel");
+export interface IThemeModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace ThemeModel {
-    export type Interface = CmsModel;
+export const ThemeModelProvider = createAbstraction<IThemeModelProvider>(
+    "Theme/ThemeModelProvider"
+);
+
+export namespace ThemeModelProvider {
+    export type Interface = IThemeModelProvider;
 }

@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { CancelScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
-import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
+import { ScheduledActionModelProvider, SchedulerService } from "~/shared/abstractions.js";
 import {
     NotAuthorizedError,
     ScheduledActionNotFoundError,
@@ -26,7 +26,7 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private getScheduledActionUseCase: GetScheduledActionUseCase.Interface,
         private schedulerService: SchedulerService.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
-        private model: ScheduledActionModel.Interface,
+        private modelProvider: ScheduledActionModelProvider.Interface,
         private permissions: SchedulerPermissions.Interface
     ) {}
 
@@ -71,7 +71,8 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Delete CMS entry
-        const deleteResult = await this.deleteEntryUseCase.execute(this.model, getResult.value.id, {
+        const model = await this.modelProvider.get();
+        const deleteResult = await this.deleteEntryUseCase.execute(model, getResult.value.id, {
             force: true,
             permanently: true
         });
@@ -98,7 +99,7 @@ export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementat
         GetScheduledActionUseCase,
         SchedulerService,
         DeleteEntryUseCase,
-        ScheduledActionModel,
+        ScheduledActionModelProvider,
         SchedulerPermissions
     ]
 });

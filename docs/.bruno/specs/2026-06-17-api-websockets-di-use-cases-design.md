@@ -308,4 +308,4 @@ This design covers `packages/api-websockets` and all packages that consume the `
 - `packages/api-file-manager-s3`
 - `packages/webiny` (re-export)
 
-It does not cover `packages/api-websockets-server` (the new Docker/self-hosted package from the current branch).
+It does not cover `packages/api-websockets-standalone` (the new Docker/self-hosted package from the current branch).

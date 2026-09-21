@@ -148,7 +148,7 @@ export const createProjectSdkContainer = async (
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
 
-    // Allow hosting-specific registrations (e.g. project-aws, project-server).
+    // Allow hosting-specific registrations (e.g. project-aws, project-standalone).
     // Must run before workspace services execute so decorators are in place.
     register?.(container);
 

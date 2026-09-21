@@ -1,5 +1,6 @@
+import { z } from "zod";
 import { makeAutoObservable, runInAction, computed } from "mobx";
-import slugify from "slugify";
+import { StringFormatter } from "~/features/stringFormatter/abstractions.js";
 import { ListPresenter } from "~/presentation/listPresenter/abstractions.js";
 import { FormModelFactory } from "~/features/formModel/abstractions.js";
 import type { IFormModel } from "~/features/formModel/abstractions.js";
@@ -30,7 +31,8 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
         private createApiKeyUseCase: CreateApiKeyUseCase.Interface,
         private updateApiKeyUseCase: UpdateApiKeyUseCase.Interface,
         private deleteApiKeyUseCase: DeleteApiKeyUseCase.Interface,
-        private cache: ApiKeysListCache.Interface
+        private cache: ApiKeysListCache.Interface,
+        private stringFormatter: StringFormatter.Interface
     ) {
         this._form = this.buildForm(true, "new");
         makeAutoObservable<
@@ -42,6 +44,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
             | "updateApiKeyUseCase"
             | "deleteApiKeyUseCase"
             | "cache"
+            | "stringFormatter"
         >(this, {
             formModelFactory: false,
             listApiKeysUseCase: false,
@@ -50,6 +53,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
             updateApiKeyUseCase: false,
             deleteApiKeyUseCase: false,
             cache: false,
+            stringFormatter: false,
             vm: computed
         });
     }
@@ -92,7 +96,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                 this._form.setData({
                     name: apiKey.name,
                     slug: apiKey.slug,
-                    description: apiKey.description,
+                    description: apiKey.description ?? "",
                     token: apiKey.token,
                     permissions: apiKey.permissions || []
                 });
@@ -131,7 +135,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
             if (isUpdate) {
                 const apiKey = await this.updateApiKeyUseCase.execute(this._selectedApiKey!.id, {
                     name: data.name,
-                    description: data.description,
+                    description: data.description ?? "",
                     permissions: data.permissions
                 });
                 runInAction(() => {
@@ -142,7 +146,7 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                 const apiKey = await this.createApiKeyUseCase.execute({
                     name: data.name,
                     slug: data.slug,
-                    description: data.description,
+                    description: data.description ?? "",
                     permissions: data.permissions
                 });
                 runInAction(() => {
@@ -151,14 +155,16 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                     this._form.setData({
                         name: apiKey.name,
                         slug: apiKey.slug,
-                        description: apiKey.description,
+                        description: apiKey.description ?? "",
                         permissions: apiKey.permissions || []
                     });
                 });
                 return apiKey;
             }
-        } catch {
-            return null;
+            // Errors deliberately propagate to the caller, which reports them to the user. This
+            // used to be a bare `catch { return null }`, and `null` is also what `save()` returns
+            // when client-side validation fails - so a rejected request looked to the view exactly
+            // like a form that had not been submitted, and failed silently.
         } finally {
             runInAction(() => {
                 this._saving = false;
@@ -189,20 +195,16 @@ class ApiKeysPresenterImpl implements Abstraction.Interface {
                         if (slugValue || !value) {
                             return;
                         }
-                        form.field("slug").setValue(
-                            slugify(String(value), {
-                                replacement: "-",
-                                lower: true,
-                                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
-                                trim: false
-                            })
-                        );
+                        form.field("slug").setValue(this.stringFormatter.slugify(String(value)));
                     }),
                 slug: fields.text().label("Slug").required("Slug is required.").disabled(!isNew),
                 description: fields
                     .text()
                     .label("Description")
-                    .required("Description is required.")
+                    .defaultValue("")
+                    .schema(
+                        z.string().max(500, "Description cannot be longer than 500 characters.")
+                    )
                     .renderer("textarea"),
                 // @ts-expect-error This is a single-use local renderer I don't want to be visible to users.
                 token: fields.text().label("Token").renderer("apiKeyToken"),
@@ -231,6 +233,7 @@ export const ApiKeysPresenter = Abstraction.createImplementation({
         CreateApiKeyUseCase,
         UpdateApiKeyUseCase,
         DeleteApiKeyUseCase,
-        ApiKeysListCache
+        ApiKeysListCache,
+        StringFormatter
     ]
 });

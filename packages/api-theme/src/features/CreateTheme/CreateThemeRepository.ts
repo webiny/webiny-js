@@ -1,18 +1,19 @@
 import { Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { CreateThemeRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ThemeModel } from "~/domain/theme/abstractions.js";
+import { ThemeModelProvider } from "~/domain/theme/abstractions.js";
 import { EntryToThemeMapper } from "~/domain/theme/EntryToThemeMapper.js";
 import { ThemePersistenceError, ThemeValidationError } from "~/domain/theme/errors.js";
 
 class CreateThemeRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private createEntry: CreateEntryUseCase.Interface,
-        private themeModel: ThemeModel.Interface
+        private themeModelProvider: ThemeModelProvider.Interface
     ) {}
 
     async execute(data: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.createEntry.execute(this.themeModel, { values: data });
+        const themeModel = await this.themeModelProvider.get();
+        const result = await this.createEntry.execute(themeModel, { values: data });
 
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/ValidationError") {
@@ -27,5 +28,5 @@ class CreateThemeRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const CreateThemeRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateThemeRepositoryImpl,
-    dependencies: [CreateEntryUseCase, ThemeModel]
+    dependencies: [CreateEntryUseCase, ThemeModelProvider]
 });

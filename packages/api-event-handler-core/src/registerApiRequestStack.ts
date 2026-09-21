@@ -2,7 +2,7 @@ import type { Container } from "@webiny/di";
 import { registerExtensions } from "@webiny/handler";
 import { GraphQLEngineFeature } from "@webiny/api-graphql";
 import { ApiCoreFeature } from "@webiny/api-core";
-import { WcpLicenseInitializer } from "./WcpLicenseInitializer.js";
+import { WcpLicenseLoader } from "@webiny/api-core/features/wcp/WcpLicenseLoader.js";
 import { HeadlessCmsFeature } from "@webiny/api-headless-cms";
 import { AcoHcmsFeature } from "@webiny/api-headless-cms-aco";
 import { HcmsTasksFeature } from "@webiny/api-headless-cms-tasks";
@@ -17,7 +17,7 @@ import { BackgroundTasksFeature } from "@webiny/background-tasks/api";
 import { FileManagerAppFeature } from "@webiny/api-file-manager";
 import { FileManagerAcoFeature } from "@webiny/api-file-manager-aco";
 import { ThemeFeature } from "@webiny/api-theme";
-import { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "@webiny/api-website-builder";
+import { WebsiteBuilderFeature } from "@webiny/api-website-builder";
 import { WebsiteBuilderWorkflowsFeature } from "@webiny/api-website-builder-workflows";
 import { WebsiteBuilderSchedulerFeature } from "@webiny/api-website-builder-scheduler";
 import { WebsocketsFeature } from "@webiny/api-websockets";
@@ -30,7 +30,7 @@ export type TransportRegistrar = (container: Container) => void | Promise<void>;
 export interface RegisterApiRequestStackConfig {
     /**
      * Project-defined extensions, applied at register() time (so extension features — including
-     * code-defined CMS models — are registered before any initializer lists/caches the model set).
+     * code-defined CMS models — are registered before anything lists/caches the model set).
      */
     extensions: () => Parameters<typeof registerExtensions>[1];
     /**
@@ -44,7 +44,7 @@ export interface RegisterApiRequestStackConfig {
      * Feature has registered its NULL default, and overrides that default (nearest-container-last-wins)
      * with the real adapter. Each is optional — omit one for a deployment/transport that lacks that
      * capability. AWS supplies AWS adapters (API Gateway Management API / EventBridge / S3); the
-     * self-hosted server supplies in-process adapters (server WebSockets / Bree / local disk).
+     * standalone server supplies in-process adapters (server WebSockets / Bree / local disk).
      */
     transports?: {
         /**
@@ -76,21 +76,23 @@ export interface RegisterApiRequestStackConfig {
  * (HTTP/event transport, auth/tenant loaders, identity provider, DB + storage) before dispatch reaches
  * this per-request stack.
  *
- * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before any initializer
- * (e.g. ACO) lists + caches the per-request model set; the GraphQL engine must be registered last.
+ * ORDER IS LOAD-BEARING — do not reorder. Notably: extensions must be applied before anything that
+ * lists + caches the per-request model set; the GraphQL engine must be registered last.
  */
 export async function registerApiRequestStack(
     container: Container,
     config: RegisterApiRequestStackConfig
 ): Promise<void> {
+    // Refresh the WCP license BEFORE any feature registers — this is the single per-request refresh.
+    // register()-time feature-flag checks (e.g. the private-files gate) and WcpContext.canUse* both
+    // read it via the process cache (`WcpLicenseProvider.get()` / `WcpLicenseLoader.getCached()`). Runs here
+    // — the shared request stack both hosting types call — so no handler wires it. Process-cached
+    // (~5-min TTL) + single-flighted → cheap no-op on warm requests.
+    await WcpLicenseLoader.load();
+
     // ── Core API (per-request: EventPublisher + tenant/identity/request contexts must bind to the
     // request child container so per-request event handlers are resolvable) ─────────
     ApiCoreFeature.register(container, { wcpLicense: undefined });
-
-    // Refresh the WCP license once per request (RequestInitializer). Lives here (the shared request
-    // stack) rather than api-core, so the domain layer has no transport dependency; runs for all
-    // hosting types. Registered after ApiCoreFeature (which provides WcpLicenseProvider).
-    container.register(WcpLicenseInitializer);
 
     // ── Request-phase storage (variant-specific; must precede HeadlessCmsFeature) ──
     await config.registerRequestStorage?.(container);
@@ -113,7 +115,6 @@ export async function registerApiRequestStack(
 
     // ── Website Builder ────────────────────────────────────────
     WebsiteBuilderFeature.register(container);
-    await setupWebsiteBuilderModels(container);
     WebsiteBuilderWorkflowsFeature.register(container);
     WebsiteBuilderSchedulerFeature.register(container);
 
@@ -138,9 +139,12 @@ export async function registerApiRequestStack(
     CmsSchedulerFeature.register(container);
 
     // ── Extensions ─────────────────────────────────────────────
-    // Apply at register() time (not via a post-auth initializer) so extension features — including
-    // code-defined CMS models (ModelFactory), e.g. Languages — are registered before any initializer
-    // (e.g. ACO) lists + caches the per-request model set.
+    // Apply at register() time so extension features — including code-defined CMS models
+    // (ModelFactory), e.g. Languages — are registered before anything populates ModelCache. Anything
+    // reaching the model set through GetModel/ListModels (which go via ModelsFetcher ->
+    // ModelCache.getOrSet) caches it for the rest of the request, so a set built before extensions
+    // register would be missing their models. Every consumer now resolves models at schema-build or
+    // resolver time, i.e. after all registration.
     await registerExtensions(container, config.extensions());
 
     // ── GraphQL engine (always last) ───────────────────────────

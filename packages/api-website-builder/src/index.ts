@@ -1,1 +1,1 @@
-export { WebsiteBuilderFeature, setupWebsiteBuilderModels } from "./WebsiteBuilderFeature.js";
+export { WebsiteBuilderFeature } from "./WebsiteBuilderFeature.js";

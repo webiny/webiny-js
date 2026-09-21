@@ -8,15 +8,15 @@ import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/ab
 import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import {
-    CorrectionModel,
+    CorrectionModelProvider,
     CorrectionRepository as CorrectionRepositoryAbstraction,
-    JobModel,
+    JobModelProvider,
     JobRepository as JobRepositoryAbstraction,
-    ModelCallModel,
+    ModelCallModelProvider,
     ModelCallRepository as ModelCallRepositoryAbstraction,
-    OverrideModel,
+    OverrideModelProvider,
     OverrideRepository as OverrideRepositoryAbstraction,
-    RunModel,
+    RunModelProvider,
     RunRepository as RunRepositoryAbstraction,
     type ListMeta,
     type ListParams
@@ -67,7 +67,7 @@ const toWriteError = (error: { code: string; message: string }): ExtractionError
 
 class JobRepositoryImpl implements JobRepositoryAbstraction.Interface {
     constructor(
-        private model: JobModel.Interface,
+        private modelProvider: JobModelProvider.Interface,
         private createEntry: CreateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
@@ -77,7 +77,8 @@ class JobRepositoryImpl implements JobRepositoryAbstraction.Interface {
     ) {}
 
     async create(values: JobValues) {
-        const result = await this.createEntry.execute(this.model, { values });
+        const model = await this.modelProvider.get();
+        const result = await this.createEntry.execute(model, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -85,7 +86,8 @@ class JobRepositoryImpl implements JobRepositoryAbstraction.Interface {
     }
 
     async get(id: string) {
-        const result = await this.getEntryById.execute(this.model, id);
+        const model = await this.modelProvider.get();
+        const result = await this.getEntryById.execute(model, id);
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
                 return Result.fail(new ExtractionNotFoundError(id));
@@ -96,10 +98,11 @@ class JobRepositoryImpl implements JobRepositoryAbstraction.Interface {
     }
 
     async list(params: ListParams = {}) {
-        const result = await this.listLatestEntries.execute(this.model, {
-            where: this.whereMapper.map({ fields: this.model.fields, input: params.where ?? {} }),
+        const model = await this.modelProvider.get();
+        const result = await this.listLatestEntries.execute(model, {
+            where: this.whereMapper.map({ fields: model.fields, input: params.where ?? {} }),
             sort: this.sortMapper.map({
-                fields: this.model.fields,
+                fields: model.fields,
                 input: params.sort ?? ["savedOn_DESC"]
             }),
             limit: params.limit ?? DEFAULT_LIMIT,
@@ -116,7 +119,8 @@ class JobRepositoryImpl implements JobRepositoryAbstraction.Interface {
     }
 
     async update(id: string, values: Partial<JobValues>) {
-        const result = await this.updateEntry.execute(this.model, id, { values });
+        const model = await this.modelProvider.get();
+        const result = await this.updateEntry.execute(model, id, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -127,7 +131,7 @@ class JobRepositoryImpl implements JobRepositoryAbstraction.Interface {
 export const JobRepository = JobRepositoryAbstraction.createImplementation({
     implementation: JobRepositoryImpl,
     dependencies: [
-        JobModel,
+        JobModelProvider,
         CreateEntryUseCase,
         GetEntryByIdUseCase,
         UpdateEntryUseCase,
@@ -141,7 +145,7 @@ export const JobRepository = JobRepositoryAbstraction.createImplementation({
 
 class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
     constructor(
-        private model: RunModel.Interface,
+        private modelProvider: RunModelProvider.Interface,
         private createEntry: CreateEntryUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
@@ -171,7 +175,8 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
     }
 
     async create(values: RunValues) {
-        const result = await this.createEntry.execute(this.model, { values });
+        const model = await this.modelProvider.get();
+        const result = await this.createEntry.execute(model, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -182,7 +187,8 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
     }
 
     async get(id: string) {
-        const result = await this.getEntryById.execute(this.model, id);
+        const model = await this.modelProvider.get();
+        const result = await this.getEntryById.execute(model, id);
         if (result.isFail()) {
             if (result.error.code === "Cms/Entry/NotFound") {
                 return Result.fail(new ExtractionNotFoundError(id));
@@ -197,13 +203,14 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
     }
 
     async listByJob(jobId: string, params: ListParams = {}) {
-        const result = await this.listLatestEntries.execute(this.model, {
+        const model = await this.modelProvider.get();
+        const result = await this.listLatestEntries.execute(model, {
             where: this.whereMapper.map({
-                fields: this.model.fields,
+                fields: model.fields,
                 input: { ...(params.where ?? {}), jobId }
             }),
             sort: this.sortMapper.map({
-                fields: this.model.fields,
+                fields: model.fields,
                 input: params.sort ?? ["createdOn_DESC"]
             }),
             limit: params.limit ?? DEFAULT_LIMIT,
@@ -220,6 +227,7 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
     }
 
     async update(id: string, values: Partial<RunValues>) {
+        const model = await this.modelProvider.get();
         let nextValues = values;
         // Non-regressing ledger write: merge the incoming stages against the stored ones, keeping the
         // more-advanced entry per stage, so a stale writer (a retrying/zombie stage task that read the run
@@ -233,7 +241,7 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
             await this.writeLedger(id, merged);
             nextValues = { ...values, stages: merged };
         }
-        const result = await this.updateEntry.execute(this.model, id, { values: nextValues });
+        const result = await this.updateEntry.execute(model, id, { values: nextValues });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -243,7 +251,8 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
 
     /** Legacy fallback: the denormalized ledger on the CMS entry, for a run predating the KV ledger. */
     private async readEntryStages(id: string): Promise<StageLedgerEntry[] | null> {
-        const current = await this.getEntryById.execute(this.model, id);
+        const model = await this.modelProvider.get();
+        const current = await this.getEntryById.execute(model, id);
         if (current.isFail() || !Array.isArray(current.value.values.stages)) {
             return null;
         }
@@ -254,7 +263,7 @@ class RunRepositoryImpl implements RunRepositoryAbstraction.Interface {
 export const RunRepository = RunRepositoryAbstraction.createImplementation({
     implementation: RunRepositoryImpl,
     dependencies: [
-        RunModel,
+        RunModelProvider,
         CreateEntryUseCase,
         GetEntryByIdUseCase,
         UpdateEntryUseCase,
@@ -269,7 +278,7 @@ export const RunRepository = RunRepositoryAbstraction.createImplementation({
 
 class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface {
     constructor(
-        private model: OverrideModel.Interface,
+        private modelProvider: OverrideModelProvider.Interface,
         private createEntry: CreateEntryUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
         private deleteEntry: DeleteEntryUseCase.Interface,
@@ -278,7 +287,8 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
     ) {}
 
     async create(values: OverrideValues) {
-        const result = await this.createEntry.execute(this.model, { values });
+        const model = await this.modelProvider.get();
+        const result = await this.createEntry.execute(model, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -286,8 +296,9 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
     }
 
     async listByJob(jobId: string) {
-        const result = await this.listLatestEntries.execute(this.model, {
-            where: this.whereMapper.map({ fields: this.model.fields, input: { jobId } }),
+        const model = await this.modelProvider.get();
+        const result = await this.listLatestEntries.execute(model, {
+            where: this.whereMapper.map({ fields: model.fields, input: { jobId } }),
             limit: 200,
             after: null
         });
@@ -306,6 +317,7 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
      * kind is compared in memory.
      */
     async upsert(values: OverrideValues) {
+        const model = await this.modelProvider.get();
         const existing = await this.listByJob(values.jobId);
         if (existing.isOk()) {
             const match = existing.value.find(
@@ -315,7 +327,7 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
                     override.correction.kind === values.correction.kind
             );
             if (match) {
-                const updated = await this.updateEntry.execute(this.model, match.id, { values });
+                const updated = await this.updateEntry.execute(model, match.id, { values });
                 if (updated.isFail()) {
                     return Result.fail(toWriteError(updated.error));
                 }
@@ -326,7 +338,8 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
     }
 
     async delete(id: string) {
-        const result = await this.deleteEntry.execute(this.model, id);
+        const model = await this.modelProvider.get();
+        const result = await this.deleteEntry.execute(model, id);
         if (result.isFail()) {
             return Result.fail(new ExtractionPersistenceError(result.error));
         }
@@ -337,7 +350,7 @@ class OverrideRepositoryImpl implements OverrideRepositoryAbstraction.Interface 
 export const OverrideRepository = OverrideRepositoryAbstraction.createImplementation({
     implementation: OverrideRepositoryImpl,
     dependencies: [
-        OverrideModel,
+        OverrideModelProvider,
         CreateEntryUseCase,
         UpdateEntryUseCase,
         DeleteEntryUseCase,
@@ -352,14 +365,15 @@ const CORRECTION_LIMIT = 500;
 
 class CorrectionRepositoryImpl implements CorrectionRepositoryAbstraction.Interface {
     constructor(
-        private model: CorrectionModel.Interface,
+        private modelProvider: CorrectionModelProvider.Interface,
         private createEntry: CreateEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface
     ) {}
 
     async create(values: CorrectionLogValues) {
-        const result = await this.createEntry.execute(this.model, { values });
+        const model = await this.modelProvider.get();
+        const result = await this.createEntry.execute(model, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -367,8 +381,9 @@ class CorrectionRepositoryImpl implements CorrectionRepositoryAbstraction.Interf
     }
 
     async listByRun(runId: string) {
-        const result = await this.listLatestEntries.execute(this.model, {
-            where: this.whereMapper.map({ fields: this.model.fields, input: { runId } }),
+        const model = await this.modelProvider.get();
+        const result = await this.listLatestEntries.execute(model, {
+            where: this.whereMapper.map({ fields: model.fields, input: { runId } }),
             limit: CORRECTION_LIMIT,
             after: null
         });
@@ -383,7 +398,12 @@ class CorrectionRepositoryImpl implements CorrectionRepositoryAbstraction.Interf
 
 export const CorrectionRepository = CorrectionRepositoryAbstraction.createImplementation({
     implementation: CorrectionRepositoryImpl,
-    dependencies: [CorrectionModel, CreateEntryUseCase, ListLatestEntriesUseCase, CmsWhereMapper]
+    dependencies: [
+        CorrectionModelProvider,
+        CreateEntryUseCase,
+        ListLatestEntriesUseCase,
+        CmsWhereMapper
+    ]
 });
 
 // ----- Model calls -------------------------------------------------------------------------------
@@ -392,14 +412,15 @@ const MODEL_CALL_LIMIT = 500;
 
 class ModelCallRepositoryImpl implements ModelCallRepositoryAbstraction.Interface {
     constructor(
-        private model: ModelCallModel.Interface,
+        private modelProvider: ModelCallModelProvider.Interface,
         private createEntry: CreateEntryUseCase.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface
     ) {}
 
     async create(values: ModelCallValues) {
-        const result = await this.createEntry.execute(this.model, { values });
+        const model = await this.modelProvider.get();
+        const result = await this.createEntry.execute(model, { values });
         if (result.isFail()) {
             return Result.fail(toWriteError(result.error));
         }
@@ -410,6 +431,7 @@ class ModelCallRepositoryImpl implements ModelCallRepositoryAbstraction.Interfac
         runId: string,
         params: { stage?: string; stageVersion?: number; limit?: number } = {}
     ) {
+        const model = await this.modelProvider.get();
         const where: Record<string, unknown> = { runId };
         if (params.stage) {
             where.stage = params.stage;
@@ -417,8 +439,8 @@ class ModelCallRepositoryImpl implements ModelCallRepositoryAbstraction.Interfac
         if (params.stageVersion !== undefined) {
             where.stageVersion = params.stageVersion;
         }
-        const result = await this.listLatestEntries.execute(this.model, {
-            where: this.whereMapper.map({ fields: this.model.fields, input: where }),
+        const result = await this.listLatestEntries.execute(model, {
+            where: this.whereMapper.map({ fields: model.fields, input: where }),
             limit: params.limit ?? MODEL_CALL_LIMIT,
             after: null
         });
@@ -433,5 +455,10 @@ class ModelCallRepositoryImpl implements ModelCallRepositoryAbstraction.Interfac
 
 export const ModelCallRepository = ModelCallRepositoryAbstraction.createImplementation({
     implementation: ModelCallRepositoryImpl,
-    dependencies: [ModelCallModel, CreateEntryUseCase, ListLatestEntriesUseCase, CmsWhereMapper]
+    dependencies: [
+        ModelCallModelProvider,
+        CreateEntryUseCase,
+        ListLatestEntriesUseCase,
+        CmsWhereMapper
+    ]
 });

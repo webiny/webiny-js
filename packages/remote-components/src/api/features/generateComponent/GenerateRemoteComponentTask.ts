@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { WebsocketsSendToIdentityUseCase } from "@webiny/api-websockets/features/SendToIdentity/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { GenerateRemoteComponentUseCase } from "./abstractions.js";
@@ -14,14 +17,7 @@ export interface IGenerateRemoteComponentTaskInput {
     additionalFileIds?: string[] | null;
 }
 
-class GenerateRemoteComponentTaskImpl implements TaskDefinition.Interface<IGenerateRemoteComponentTaskInput> {
-    id = GENERATE_REMOTE_COMPONENT_TASK_ID;
-    title = "Remote Components - Generate Component";
-    description = "Generates a remote component using AI.";
-    maxIterations = 1;
-    isPrivate = true;
-    databaseLogs = false;
-
+class GenerateRemoteComponentTaskHandlerImpl implements TaskHandler.Interface<IGenerateRemoteComponentTaskInput> {
     constructor(
         private identityContext: IdentityContext.Interface,
         private generateComponent: GenerateRemoteComponentUseCase.Interface,
@@ -32,7 +28,7 @@ class GenerateRemoteComponentTaskImpl implements TaskDefinition.Interface<IGener
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IGenerateRemoteComponentTaskInput>): Promise<
+    }: TaskHandler.RunParams<IGenerateRemoteComponentTaskInput>): Promise<
         TaskDefinition.Result<IGenerateRemoteComponentTaskInput>
     > {
         if (controller.runtime.isAborted()) {
@@ -100,12 +96,28 @@ class GenerateRemoteComponentTaskImpl implements TaskDefinition.Interface<IGener
     }
 }
 
-export const GenerateRemoteComponentTask = TaskDefinition.createImplementation({
-    implementation: GenerateRemoteComponentTaskImpl,
+const GenerateRemoteComponentTaskHandler = TaskHandler.createImplementation({
+    implementation: GenerateRemoteComponentTaskHandlerImpl,
     dependencies: [
         IdentityContext,
         GenerateRemoteComponentUseCase,
         CreateRemoteComponentUseCase,
         WebsocketsSendToIdentityUseCase
     ]
+});
+
+class GenerateRemoteComponentTaskImpl implements TaskDefinition.Interface {
+    id = GENERATE_REMOTE_COMPONENT_TASK_ID;
+    title = "Remote Components - Generate Component";
+    description = "Generates a remote component using AI.";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+
+    handler = GenerateRemoteComponentTaskHandler;
+}
+
+export const GenerateRemoteComponentTask = TaskDefinition.createImplementation({
+    implementation: GenerateRemoteComponentTaskImpl,
+    dependencies: []
 });

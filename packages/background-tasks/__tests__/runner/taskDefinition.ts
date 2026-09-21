@@ -1,17 +1,16 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import type { Container } from "@webiny/di";
 
 export const TASK_ID = "taskRunnerTask";
 
-class TestingRunTask implements TaskDefinition.Interface {
-    id = TASK_ID;
-    title = "Task Runner Task";
-    maxIterations = 2;
-    databaseLogs = true;
+class TestingRunTaskHandler implements TaskHandler.Interface {
     constructor(private controller: TaskController.Interface) {}
 
-    async run({ input }: TaskDefinition.RunParams) {
+    async run({ input }: TaskHandler.RunParams) {
         if (this.controller.runtime.isAborted()) {
             return this.controller.response.aborted();
         } else if (this.controller.runtime.isCloseToTimeout()) {
@@ -26,9 +25,22 @@ class TestingRunTask implements TaskDefinition.Interface {
     }
 }
 
+export const TestTaskHandler = TaskHandler.createImplementation({
+    implementation: TestingRunTaskHandler,
+    dependencies: [TaskController]
+});
+
+class TestingRunTask implements TaskDefinition.Interface {
+    id = TASK_ID;
+    title = "Task Runner Task";
+    maxIterations = 2;
+    databaseLogs = true;
+    handler = TestTaskHandler;
+}
+
 export const TestTaskDefinition = TaskDefinition.createImplementation({
     implementation: TestingRunTask,
-    dependencies: [TaskController]
+    dependencies: []
 });
 
 export const testDefinitionPlugin = (container: Container) => {

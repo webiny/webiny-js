@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { ListPagesRepository as RepositoryAbstraction } from "./abstractions.js";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModelProvider } from "~/domain/page/abstractions.js";
 import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 import { PagePersistenceError } from "~/domain/page/errors.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms/features/whereMapper/abstractions.js";
@@ -9,20 +9,21 @@ import { CmsSortMapper } from "@webiny/api-headless-cms/features/sortMapper/abst
 
 class ListPagesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        private pageModel: PageModel.Interface,
+        private pageModelProvider: PageModelProvider.Interface,
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
         private whereMapper: CmsWhereMapper.Interface,
         private sortMapper: CmsSortMapper.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const result = await this.listLatestEntries.execute(this.pageModel, {
+        const pageModel = await this.pageModelProvider.get();
+        const result = await this.listLatestEntries.execute(pageModel, {
             where: this.whereMapper.map({
-                fields: this.pageModel.fields,
+                fields: pageModel.fields,
                 input: params.where
             }),
             sort: this.sortMapper.map({
-                fields: this.pageModel.fields,
+                fields: pageModel.fields,
                 input: params.sort
             }),
             limit: params.limit,
@@ -43,5 +44,5 @@ class ListPagesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListPagesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListPagesRepositoryImpl,
-    dependencies: [PageModel, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
+    dependencies: [PageModelProvider, ListLatestEntriesUseCase, CmsWhereMapper, CmsSortMapper]
 });

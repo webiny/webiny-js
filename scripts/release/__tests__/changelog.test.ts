@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Changelog } from "../src/Changelog";
 
 vi.mock("execa", () => ({
-    default: vi.fn()
+    execa: vi.fn()
 }));
 
 vi.useFakeTimers();

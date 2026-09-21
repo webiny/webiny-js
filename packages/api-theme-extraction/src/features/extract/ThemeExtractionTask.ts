@@ -1,5 +1,6 @@
 import {
     TaskDefinition,
+    TaskHandler,
     type IResponseError
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
@@ -65,18 +66,10 @@ const hostOf = (url: string): string => {
     }
 };
 
-class ThemeExtractionTaskImpl implements TaskDefinition.Interface<
+class ThemeExtractionTaskHandlerImpl implements TaskHandler.Interface<
     IThemeExtractionTaskInput,
     IThemeExtractionTaskOutput
 > {
-    id = THEME_EXTRACTION_TASK_ID;
-    title = "Theme — generate from a website";
-    description = "Reads a website and generates a draft theme from its design.";
-    // One pass does everything; see the header note on why this needs no continuation protocol.
-    maxIterations = 1;
-    isPrivate = false;
-    databaseLogs = true;
-
     constructor(
         private crawlSite: CrawlSiteUseCase.Interface,
         private analyseCrawl: AnalyseCrawlUseCase.Interface,
@@ -88,8 +81,8 @@ class ThemeExtractionTaskImpl implements TaskDefinition.Interface<
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IThemeExtractionTaskInput, IThemeExtractionTaskOutput>): Promise<
-        TaskDefinition.Result<IThemeExtractionTaskInput, IThemeExtractionTaskOutput>
+    }: TaskHandler.RunParams<IThemeExtractionTaskInput, IThemeExtractionTaskOutput>): Promise<
+        TaskHandler.Result<IThemeExtractionTaskInput, IThemeExtractionTaskOutput>
     > {
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
@@ -282,8 +275,8 @@ class ThemeExtractionTaskImpl implements TaskDefinition.Interface<
     }
 }
 
-export const ThemeExtractionTask = TaskDefinition.createImplementation({
-    implementation: ThemeExtractionTaskImpl,
+const ThemeExtractionTaskHandler = TaskHandler.createImplementation({
+    implementation: ThemeExtractionTaskHandlerImpl,
     dependencies: [
         CrawlSiteUseCase,
         AnalyseCrawlUseCase,
@@ -291,4 +284,24 @@ export const ThemeExtractionTask = TaskDefinition.createImplementation({
         IdentityContext,
         WebsocketsSendToIdentityUseCase
     ]
+});
+
+class ThemeExtractionTaskImpl implements TaskDefinition.Interface<
+    IThemeExtractionTaskInput,
+    IThemeExtractionTaskOutput
+> {
+    id = THEME_EXTRACTION_TASK_ID;
+    title = "Theme — generate from a website";
+    description = "Reads a website and generates a draft theme from its design.";
+    // One pass does everything; see the header note on why this needs no continuation protocol.
+    maxIterations = 1;
+    isPrivate = false;
+    databaseLogs = true;
+
+    readonly handler = ThemeExtractionTaskHandler;
+}
+
+export const ThemeExtractionTask = TaskDefinition.createImplementation({
+    implementation: ThemeExtractionTaskImpl,
+    dependencies: []
 });

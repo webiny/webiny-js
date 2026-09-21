@@ -20,6 +20,12 @@ const getDeleteLogsAfterDays = (days?: number): number => {
 export const AuditLogsFeature = createFeature({
     name: "AuditLogs",
     register(container: Container, config: AuditLogsFeatureConfig = {}) {
+        // Audit logs are license-gated — check at register time (license is fresh pre-register) so
+        // nothing wires up without the entitlement.
+        if (!container.resolve(FeatureFlags).get().isEnabled("auditLogs")) {
+            return;
+        }
+
         container.register(AuditLogsGraphQLSchema);
 
         let initialized = false;
@@ -35,11 +41,6 @@ export const AuditLogsFeature = createFeature({
                     return STUB_SCHEMA;
                 }
                 initialized = true;
-
-                const featureFlags = container.resolve(FeatureFlags);
-                if (!featureFlags.get().isEnabled("auditLogs")) {
-                    return STUB_SCHEMA;
-                }
 
                 const storage = container.resolve(AuditLogsStorage);
                 const eventPublisher = container.resolve(EventPublisher);

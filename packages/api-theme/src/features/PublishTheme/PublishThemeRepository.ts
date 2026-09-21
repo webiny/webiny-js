@@ -3,7 +3,7 @@ import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEn
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry";
 import { PublishThemeRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ThemeModel } from "~/domain/theme/abstractions.js";
+import { ThemeModelProvider } from "~/domain/theme/abstractions.js";
 import { EntryToThemeMapper } from "~/domain/theme/EntryToThemeMapper.js";
 import {
     ThemeNotFoundError,
@@ -16,7 +16,7 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
         private getEntryById: GetEntryByIdUseCase.Interface,
         private updateEntry: UpdateEntryUseCase.Interface,
         private publishEntry: PublishEntryUseCase.Interface,
-        private themeModel: ThemeModel.Interface
+        private themeModelProvider: ThemeModelProvider.Interface
     ) {}
 
     async execute({
@@ -24,7 +24,8 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
         resolved,
         comment
     }: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const existing = await this.getEntryById.execute(this.themeModel, id);
+        const themeModel = await this.themeModelProvider.get();
+        const existing = await this.getEntryById.execute(themeModel, id);
 
         if (existing.isFail()) {
             if (existing.error.code === "Cms/Entry/NotFound") {
@@ -36,7 +37,7 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
         // Write the snapshot and the publish note BEFORE publishing: publishing locks the revision,
         // so the frozen values have to be on it by then. The comment is always overwritten (with the
         // empty string when omitted) so a value carried over from a branched draft never lingers.
-        const stored = await this.updateEntry.execute(this.themeModel, id, {
+        const stored = await this.updateEntry.execute(themeModel, id, {
             values: { ...existing.value.values, resolved, publishComment: comment ?? "" }
         });
 
@@ -47,7 +48,7 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new ThemePersistenceError(stored.error));
         }
 
-        const published = await this.publishEntry.execute(this.themeModel, id);
+        const published = await this.publishEntry.execute(themeModel, id);
 
         if (published.isFail()) {
             if (published.error.code === "Cms/Entry/NotFound") {
@@ -62,5 +63,5 @@ class PublishThemeRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const PublishThemeRepository = RepositoryAbstraction.createImplementation({
     implementation: PublishThemeRepositoryImpl,
-    dependencies: [GetEntryByIdUseCase, UpdateEntryUseCase, PublishEntryUseCase, ThemeModel]
+    dependencies: [GetEntryByIdUseCase, UpdateEntryUseCase, PublishEntryUseCase, ThemeModelProvider]
 });

@@ -1,5 +1,9 @@
-import { HttpRoute, RequestContainer } from "@webiny/event-handler-core";
-import type { IHttpRequest, IHttpResponse } from "@webiny/event-handler-core";
+import {
+    HttpRouteDefinition,
+    HttpRouteHandler,
+    RequestContainer
+} from "@webiny/event-handler-core";
+import type { IHttpResponse } from "@webiny/event-handler-core";
 import type { Container } from "@webiny/di";
 import {
     NO_CACHE_CONTROL,
@@ -27,13 +31,10 @@ const json = (statusCode: number, body: unknown): IHttpResponse => ({
  * "No active theme" is a 204, not a 404 — it is the normal state for a project that has not opted in,
  * and it is cached at the same short TTL so activating the first theme reaches the site on its own.
  */
-class StableThemeRouteImpl implements HttpRoute.Interface {
-    readonly method = "GET";
-    readonly path = STABLE_THEME_ROUTE;
-
+class StableThemeRouteImpl implements HttpRouteHandler.Interface {
     constructor(private container: Container) {}
 
-    async handle(request: IHttpRequest): Promise<IHttpResponse> {
+    async handle(request: HttpRouteHandler.Request): Promise<IHttpResponse> {
         const { file } = request.pathParameters;
 
         if (!isArtifactFile(file)) {
@@ -95,7 +96,20 @@ class StableThemeRouteImpl implements HttpRoute.Interface {
     }
 }
 
-export const StableThemeRoute = HttpRoute.createImplementation({
+export const StableThemeRoute = HttpRouteHandler.createImplementation({
     implementation: StableThemeRouteImpl,
     dependencies: [RequestContainer]
+});
+
+class StableThemeRouteDefinitionImpl implements HttpRouteDefinition.Interface {
+    readonly name = "theme-stable-artifact";
+    readonly method = "GET";
+    readonly path = STABLE_THEME_ROUTE;
+    readonly handler = StableThemeRoute;
+}
+
+/** What the router matches on. Zero dependencies, so building it costs nothing. */
+export const StableThemeRouteDefinition = HttpRouteDefinition.createImplementation({
+    implementation: StableThemeRouteDefinitionImpl,
+    dependencies: []
 });

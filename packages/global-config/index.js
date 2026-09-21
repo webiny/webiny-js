@@ -32,6 +32,17 @@ export const globalConfig = {
             writeJsonFileSync(GLOBAL_CONFIG_PATH, this.__globalConfig);
         }
 
+        // Backfill `newUser` on configs that predate it, or that were written by something
+        // that didn't set it. Absent is not the same as `false`: the only thing that writes
+        // `false` is the first successful deploy, so a missing key means that never happened
+        // and the user is still new. Reading it as `Boolean(undefined)` reported every one of
+        // them as returning. Persisted so the state stops being ambiguous, and so every reader
+        // agrees without repeating this rule.
+        if (!("newUser" in this.__globalConfig)) {
+            this.__globalConfig.newUser = isCI ? false : true;
+            writeJsonFileSync(GLOBAL_CONFIG_PATH, this.__globalConfig);
+        }
+
         return key ? this.__globalConfig[key] : this.__globalConfig;
     },
     set(key, value) {

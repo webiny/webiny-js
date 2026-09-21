@@ -17,7 +17,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@pulumi/pulumi": "^3.256.0",
+    "@pulumi/pulumi": "^3.259.0",
     "@webiny/project": "0.0.0",
     "find-up": "^8.0.0",
     "lodash": "^4.18.1"

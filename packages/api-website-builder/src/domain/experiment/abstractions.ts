@@ -77,8 +77,21 @@ export interface WbExperiment extends CmsEntryWbExperimentValues {
  * ExperimentModel abstraction - represents the Website Builder experiment CMS model.
  * Registered via container.registerInstance in the composite feature.
  */
-export const ExperimentModel = createAbstraction<CmsModel>("Wb/ExperimentModel");
+/**
+ * Provides the tenant's Website Builder experiment CMS model.
+ *
+ * A provider rather than the model itself: fetching a model is asynchronous and tenant-dependent,
+ * while DI resolution is synchronous — so an already-resolved `CmsModel` could only be supplied by
+ * something running before every consumer. Consumers `await get()` at the point of use.
+ */
+export interface IExperimentModelProvider {
+    get(): Promise<CmsModel>;
+}
 
-export namespace ExperimentModel {
-    export type Interface = CmsModel;
+export const ExperimentModelProvider = createAbstraction<IExperimentModelProvider>(
+    "Wb/ExperimentModelProvider"
+);
+
+export namespace ExperimentModelProvider {
+    export type Interface = IExperimentModelProvider;
 }

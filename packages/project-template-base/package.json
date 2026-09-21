@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Shared base config extensions for Webiny project templates (aws + server flavours).",
+  "description": "Shared base config extensions for Webiny project templates (aws + standalone flavours).",
   "license": "MIT",
   "dependencies": {
     "@webiny/ai-powerups": "0.0.0",

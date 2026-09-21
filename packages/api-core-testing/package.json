@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-core": "0.0.0",
-    "@webiny/di": "^1.0.2",
+    "@webiny/di": "^1.1.0",
     "@webiny/event-handler-core": "0.0.0"
   },
   "devDependencies": {

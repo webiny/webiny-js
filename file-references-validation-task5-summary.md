@@ -9,7 +9,7 @@ transform happens inside the **Repository**, on a separate object:
 
 ```ts
 await this.eventPublisher.publish(new EntryBeforeCreateEvent({ entry, input, model }));
-const result = await this.repository.execute(model, entry);   // ← toStorage happens in here
+const result = await this.repository.execute(model, entry); // ← toStorage happens in here
 await this.eventPublisher.publish(new EntryAfterCreateEvent({ entry, input, model }));
 ```
 
@@ -26,7 +26,7 @@ with the value tree" requirement Task 1 identified.
 
 ## One registration point covers everything
 
-**WB content *is* CMS content.** `wbyWbPage` and `wbyWbVariant` are private CMS models written
+**WB content _is_ CMS content.** `wbyWbPage` and `wbyWbVariant` are private CMS models written
 through `Create/Update/CreateEntryRevisionFromUseCase` — e.g. `UpdatePageRepository.ts:35` calls
 `this.updateEntry.execute(this.pageModel, …)`. So **a single `EntryAfterUpdateEventHandler` covers
 WB pages, WB variants, and every user model at once.** No cross-app abstraction needed.
@@ -34,10 +34,10 @@ WB pages, WB variants, and every user model at once.** No cross-app abstraction 
 `isPrivate` is checked in only three places — `ListModelsRepository.ts:40`, the GraphQL schema, and
 export — all API-surface concerns. **It does not gate lifecycle events.**
 
-WB *also* publishes its own `page.afterUpdate` etc., but those cover pages only; listening at the
+WB _also_ publishes its own `page.afterUpdate` etc., but those cover pages only; listening at the
 CMS level is one registration instead of three.
 
-**Revisions: you need three hooks, not one.** In-place edit fires `Update`; a *new* revision fires
+**Revisions: you need three hooks, not one.** In-place edit fires `Update`; a _new_ revision fires
 `Cms/Entry/RevisionBeforeCreate`/`RevisionAfterCreate` — **not** Create or Update. Minimum coverage:
 `AfterCreate` + `AfterUpdate` + `RevisionAfterCreate` + `AfterDelete`.
 
@@ -60,7 +60,7 @@ with `isCloseToTimeout()` → `response.continue(...)`, batches of 10 child task
 `listEntriesParams.after = meta.cursor`.
 
 **The gap:** `CreateTasksByModel` advances the cursor **only in a local variable** — on continuation
-it returns `{ ...input, action: … }` with `input.after` *unchanged*. That's safe for shipped bulk
+it returns `{ ...input, action: … }` with `input.after` _unchanged_. That's safe for shipped bulk
 actions because they **mutate what they scan** (delete/publish/move), so a re-scan returns the
 remainder. `DeleteModelTask` has the same destructive-scan shape with no cursor at all.
 
@@ -70,11 +70,11 @@ exact precedent: `DeleteS3FolderTask.ts:72`, `response.continue({ ...input, cont
 
 ## Storage for the reference records
 
-| Option | By file ID | By source ID | Backend-independent | Build cost |
-|---|---|---|---|---|
-| Private CMS model | O(1) indexed **with OpenSearch**; **full model scan on DDB-only** | same | ✗ | Lowest |
-| Direct DDB + GSI | One `Query` | One `Query` (GSI) | ✓ | Highest |
-| Key-value store | O(1) point read | O(1) point read (second key) | ✓ | Low, but 400 KB/key ceiling, no pagination |
+| Option            | By file ID                                                        | By source ID                 | Backend-independent | Build cost                                 |
+| ----------------- | ----------------------------------------------------------------- | ---------------------------- | ------------------- | ------------------------------------------ |
+| Private CMS model | O(1) indexed **with OpenSearch**; **full model scan on DDB-only** | same                         | ✗                   | Lowest                                     |
+| Direct DDB + GSI  | One `Query`                                                       | One `Query` (GSI)            | ✓                   | Highest                                    |
+| Key-value store   | O(1) point read                                                   | O(1) point read (second key) | ✓                   | Low, but 400 KB/key ceiling, no pagination |
 
 The DDB-only number is the one that matters: `DdbListEntries.ts:69` does
 `entity.queryAll({ index: "GSI1", … })` and then filters **in memory** — every list call reads every

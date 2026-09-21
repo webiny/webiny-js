@@ -1,4 +1,8 @@
 export { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
+export {
+    ApiStreamClient,
+    readServerSentEvents
+} from "@webiny/app/features/apiStreamClient/index.js";
 export { useFeature } from "@webiny/app/shared/di/useFeature.js";
 export { NetworkErrorEventHandler } from "@webiny/app/errors/index.js";
 export { createProviderPlugin } from "@webiny/app/core/createProviderPlugin.js";

@@ -3,7 +3,7 @@
 ## What was done
 
 - Wrote implementation plan from the approved design spec (6 tasks, subagent-driven development)
-- Implemented the complete `@webiny/api-file-manager-server` package — 51 source files, 66 kB
+- Implemented the complete `@webiny/api-file-manager-standalone` package — 51 source files, 66 kB
 - Package scaffolding: package.json, tsconfig, types, shared utilities (adapted from S3 package)
 - HMAC-SHA256 upload token system: create/verify with 60s simple upload and 24h multipart expiry
 - GraphQL schema identical to `api-file-manager-s3` with local presigned payload + multipart use cases

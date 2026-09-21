@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { CreateThemeRevisionFromRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ThemeModel } from "~/domain/theme/abstractions.js";
+import { ThemeModelProvider } from "~/domain/theme/abstractions.js";
 import { EntryToThemeMapper } from "~/domain/theme/EntryToThemeMapper.js";
 import {
     ThemeNotFoundError,
@@ -14,11 +14,12 @@ class CreateThemeRevisionFromRepositoryImpl implements RepositoryAbstraction.Int
     constructor(
         private createRevisionFrom: CreateEntryRevisionFromUseCase.Interface,
         private getEntryById: GetEntryByIdUseCase.Interface,
-        private themeModel: ThemeModel.Interface
+        private themeModelProvider: ThemeModelProvider.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        const existing = await this.getEntryById.execute(this.themeModel, params.id);
+        const themeModel = await this.themeModelProvider.get();
+        const existing = await this.getEntryById.execute(themeModel, params.id);
 
         if (existing.isFail()) {
             if (existing.error.code === "Cms/Entry/NotFound") {
@@ -29,7 +30,7 @@ class CreateThemeRevisionFromRepositoryImpl implements RepositoryAbstraction.Int
 
         // The new draft starts as a copy, minus the frozen snapshot: it belongs to the version that
         // was published, not to the draft branched from it.
-        const result = await this.createRevisionFrom.execute(this.themeModel, params.id, {
+        const result = await this.createRevisionFrom.execute(themeModel, params.id, {
             values: { resolved: null }
         });
 
@@ -49,5 +50,5 @@ class CreateThemeRevisionFromRepositoryImpl implements RepositoryAbstraction.Int
 
 export const CreateThemeRevisionFromRepository = RepositoryAbstraction.createImplementation({
     implementation: CreateThemeRevisionFromRepositoryImpl,
-    dependencies: [CreateEntryRevisionFromUseCase, GetEntryByIdUseCase, ThemeModel]
+    dependencies: [CreateEntryRevisionFromUseCase, GetEntryByIdUseCase, ThemeModelProvider]
 });

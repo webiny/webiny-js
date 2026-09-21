@@ -1,5 +1,4 @@
-import type { HcmsTasksContext } from "~/types.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/abstractions.js";
 import type {
     IDeleteCmsModelTask,
     IDeleteModelTaskInput
@@ -7,23 +6,28 @@ import type {
 import { createDeleteModelStore, createStoreValue } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
-import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
-import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
-import { TriggerTaskUseCase } from "@webiny/background-tasks/api";
+import { assertModelDeletable } from "~/graphql/deleteModel/assertModelDeletable.js";
+import type { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import type { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import type { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/abstractions.js";
+import type { TriggerTaskUseCase } from "@webiny/background-tasks/api";
 
 export interface IFullyDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "container">;
+    readonly getModel: GetModelUseCase.Interface;
+    readonly accessControl: AccessControl.Interface;
+    readonly keyValueStore: GlobalKeyValueStore.Interface;
+    readonly triggerTask: TriggerTaskUseCase.Interface;
+    readonly identityContext: IdentityContext.Interface;
     readonly modelId: string;
 }
 
 export const fullyDeleteModel = async (
     params: IFullyDeleteModelParams
 ): Promise<IDeleteCmsModelTask> => {
-    const { context, modelId } = params;
+    const { getModel, accessControl, keyValueStore, triggerTask, identityContext, modelId } =
+        params;
 
-    const modelResult = await context.container.resolve(GetModelUseCase).execute(modelId);
+    const modelResult = await getModel.execute(modelId);
     if (modelResult.isFail()) {
         throw modelResult.error;
     }
@@ -33,24 +37,9 @@ export const fullyDeleteModel = async (
         throw new Error(`Cannot delete private model.`);
     }
 
-    const accessControl = context.container.resolve(AccessControl);
-    const canAccessModel = await accessControl.canAccessModel({ model, rwd: "d" });
-    if (!canAccessModel) {
-        throw new NotAuthorizedError(`Not allowed to access content model "${model.name}".`);
-    }
+    await assertModelDeletable({ accessControl, model });
 
-    const canAccessEntry = await accessControl.canAccessEntry({ model, rwd: "w" });
-    if (!canAccessEntry) {
-        throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
-    }
-
-    if (!model) {
-        throw new Error(`Model "${modelId}" not found.`);
-    }
-    const store = createDeleteModelStore(
-        context.container.resolve(GlobalKeyValueStore),
-        model.tenant
-    );
+    const store = createDeleteModelStore(keyValueStore, model.tenant);
     const existing = await store.get(model.modelId);
     if (existing?.task) {
         throw new Error(
@@ -58,19 +47,17 @@ export const fullyDeleteModel = async (
         );
     }
 
-    const triggerResult = await context.container
-        .resolve(TriggerTaskUseCase)
-        .execute<IDeleteModelTaskInput>({
-            input: {
-                modelId
-            },
-            definition: DELETE_MODEL_TASK,
-            name: `Fully delete model: ${modelId}`
-        });
+    const triggerResult = await triggerTask.execute<IDeleteModelTaskInput>({
+        input: {
+            modelId
+        },
+        definition: DELETE_MODEL_TASK,
+        name: `Fully delete model: ${modelId}`
+    });
 
     const task = triggerResult.value;
 
-    const identity = context.container.resolve(IdentityContext).getIdentity();
+    const identity = identityContext.getIdentity();
 
     await store.set(
         createStoreValue({

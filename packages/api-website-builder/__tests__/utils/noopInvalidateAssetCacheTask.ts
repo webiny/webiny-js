@@ -1,4 +1,7 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import {
+    TaskDefinition,
+    TaskHandler
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 /**
  * A no-op stand-in for the "invalidateAssetCache" task definition (implemented for real by
@@ -11,14 +14,23 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
  * blocks dispatch to the runner — so only the id needs to match. We register this local no-op
  * instead of importing a real prod def to keep the WB test decoupled from storage-driver internals.
  */
+class NoopInvalidateAssetCacheTaskHandlerImpl implements TaskHandler.Interface {
+    async run({ controller }: TaskHandler.RunParams) {
+        return controller.response.done();
+    }
+}
+
+const NoopInvalidateAssetCacheTaskHandler = TaskHandler.createImplementation({
+    implementation: NoopInvalidateAssetCacheTaskHandlerImpl,
+    dependencies: []
+});
+
 class NoopInvalidateAssetCacheTaskImplementation implements TaskDefinition.Interface {
     id = "invalidateAssetCache";
     title = "Invalidate Asset Cache (test no-op)";
     isPrivate = true;
 
-    async run({ controller }: TaskDefinition.RunParams) {
-        return controller.response.done();
-    }
+    handler = NoopInvalidateAssetCacheTaskHandler;
 }
 
 export const NoopInvalidateAssetCacheTaskDefinition = TaskDefinition.createImplementation({
