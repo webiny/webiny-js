@@ -371,7 +371,17 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             );
         }
 
-        const key = stageArtifactKey(run.id, stage, entry.stageVersion, name);
+        /*
+         * Take the ref the ledger records, not a key computed from the name. A stage with corrections
+         * applied keeps its machine output at `<name>` and records the EFFECTIVE artifact as the
+         * primary ref, so computing the key would quietly read the un-overridden output — Segment is
+         * the one that matters here, where a `page.exclude` correction would otherwise be ignored and
+         * pages the operator dropped would be composed anyway.
+         *
+         * The computed key stays as the fallback for runs written before the refs were named.
+         */
+        const key =
+            entry.artifacts[name] ?? stageArtifactKey(run.id, stage, entry.stageVersion, name);
         const result = await this.artifacts.getJson<T>(key);
         if (result.isFail() || !result.value) {
             return Result.fail(

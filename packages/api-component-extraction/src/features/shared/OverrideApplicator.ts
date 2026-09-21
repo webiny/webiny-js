@@ -3,7 +3,7 @@ import type { Stage } from "~/constants.js";
 import { runReattachmentsKey } from "~/constants.js";
 import { OverrideRepository } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
-import type { ExtractionError } from "~/domain/errors.js";
+import { ExtractionStorageError, type ExtractionError } from "~/domain/errors.js";
 import type { Reattachment } from "~/domain/types.js";
 import type {
     CaptureArtifact,
@@ -126,11 +126,24 @@ class OverrideApplicatorImpl implements IOverrideApplicator {
             params.artifacts[`${applier.name}.machine`] ?? params.artifacts[applier.name];
 
         const stored = await this.overrides.listByJob(params.jobId);
-        const overrides = stored.isOk()
-            ? overridesForStage(stored.value, params.stage).filter(
-                  override => overrideMode(override.correction.kind) === "artifact"
-              )
-            : [];
+        if (stored.isFail()) {
+            /*
+             * This used to fall through to an empty list, which is indistinguishable from "the
+             * operator cleared every correction" — and the empty-list branch below REVERTS the
+             * primary ref to the machine artifact. So a transient read failure silently discarded
+             * every correction on the run while the caller was told it had succeeded. The gates exist
+             * to hold tuning; losing it invisibly is worse than refusing to apply.
+             */
+            return Result.fail(
+                new ExtractionStorageError(
+                    `read the corrections for job ${params.jobId}`,
+                    `${params.stage} was left as it was rather than reverted to its machine output`
+                )
+            );
+        }
+        const overrides = overridesForStage(stored.value, params.stage).filter(
+            override => overrideMode(override.correction.kind) === "artifact"
+        );
         if (overrides.length === 0) {
             // No overrides (or all cleared): revert the primary ref to the machine artifact and clear this
             // stage's reattachments.
@@ -152,7 +165,21 @@ class OverrideApplicatorImpl implements IOverrideApplicator {
             return Result.ok(unchanged);
         }
 
-        const { effective, reattachments } = applier.apply(machine.value, overrides as never);
+        let applied: ApplyResult<unknown>;
+        try {
+            applied = applier.apply(machine.value, overrides as never);
+        } catch (error) {
+            // The appliers are pure and defensive, but they walk model-shaped data from an earlier
+            // run. A throw here previously escaped as an unhandled rejection; it is a failed
+            // correction, and the caller needs to hear that rather than a stack trace.
+            return Result.fail(
+                new ExtractionStorageError(
+                    `apply the corrections for ${params.stage}`,
+                    error instanceof Error ? error.message : String(error)
+                )
+            );
+        }
+        const { effective, reattachments } = applied;
 
         // Persist the effective artifact at a sibling key; downstream reads it via the primary ref.
         const effectiveKey = params.artifactKey(`${applier.name}.effective`);

@@ -106,12 +106,22 @@ const reapplyStage = async (
         artifacts: entry.artifacts,
         artifactKey: name => stageArtifactKey(run.id, stage, entry.stageVersion, name)
     });
-    let stages = run.stages;
-    if (applied.isOk()) {
-        stages = stages.map(current =>
-            current.stage === stage ? { ...current, artifacts: applied.value.artifacts } : current
-        );
+    /*
+     * A failed apply used to be swallowed — `if (applied.isOk())` with no else — so the correction was
+     * stored, the downstream stages were marked stale, and the mutation returned success while the
+     * stage's effective output was untouched or reverted. The operator had no signal at all, which is
+     * the worst shape this tool can fail in: the gates exist to hold their tuning.
+     *
+     * Throwing puts it on the `{ data, error }` envelope with the reason. The correction row stays —
+     * it is a durable job override and re-applies on the next run — so the state is "recorded but not
+     * applied", which is what the message says.
+     */
+    if (applied.isFail()) {
+        throw applied.error;
     }
+    let stages = run.stages.map(current =>
+        current.stage === stage ? { ...current, artifacts: applied.value.artifacts } : current
+    );
     const downstream = stagesAfter(stage)[0];
     if (downstream) {
         stages = markStaleFrom(stages, downstream);
@@ -411,17 +421,27 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                         throw runResult.error;
                     }
                     const entry = stageEntry(runResult.value.stages, args.stage);
-                    // The primary ref is the effective (overridden) artifact; `machine` returns the
-                    // un-overridden one from its `<name>.machine` sibling (W8), falling back to the
-                    // primary when no override has been applied.
+                    /*
+                     * Resolve by NAME. This used to take `Object.values(artifacts)[0]`, i.e. whichever
+                     * ref happened to sit first in the map's key order — so once a correction added a
+                     * `<name>.machine` sibling, the stage view showed the effective or the machine
+                     * artifact depending on JSON insertion order, which a ledger round-trip is free to
+                     * change. That is what made corrections look as though they had not applied: the
+                     * apply was fine, the read was a coin flip.
+                     *
+                     * The primary ref is the effective (overridden) artifact and lives at the stage's
+                     * artifact name; `machine` returns the un-overridden sibling, falling back to the
+                     * primary when no override has been applied.
+                     */
                     const artifacts = entry?.artifacts ?? {};
-                    const machineKey = Object.keys(artifacts).find(name =>
-                        name.endsWith(".machine")
-                    );
+                    const name = stageArtifactName(args.stage);
+                    const primaryKey = name ? artifacts[name] : undefined;
+                    const machineRef = name ? artifacts[`${name}.machine`] : undefined;
                     const key =
-                        args.machine && machineKey
-                            ? artifacts[machineKey]
-                            : Object.values(artifacts)[0];
+                        (args.machine ? (machineRef ?? primaryKey) : primaryKey) ??
+                        // Stages without an applier (and anything written before names were stable)
+                        // carry a single ref, so there is nothing to disambiguate.
+                        Object.values(artifacts)[0];
                     if (!key) {
                         return null;
                     }
