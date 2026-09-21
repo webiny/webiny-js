@@ -30,6 +30,11 @@ export interface ILicense {
     canUseAiEntryGeneration: () => boolean;
     canUseAiEntryComparison: () => boolean;
     canUseAiEntryTranslation: () => boolean;
+    canUseRemoteComponents: () => boolean;
+    canUseAbTesting: () => boolean;
+    canUseCollaboration: () => boolean;
+    canUseComments: () => boolean;
+    canUseActivityLog: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -59,7 +64,9 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     AUDIT_LOGS = "auditLogs",
     RECORD_LOCKING = "recordLocking",
     FILE_MANAGER = "fileManager",
-    AI_POWERUPS = "aiPowerups"
+    AI_POWERUPS = "aiPowerups",
+    AB_TESTING = "abTesting",
+    COLLABORATION = "collaboration"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -113,11 +120,22 @@ export interface ProjectPackageFeatures {
             websiteBuilder?: { pageGeneration?: boolean; pageTranslation?: boolean };
             fileManager?: { imageEnrichment?: boolean };
             lexicalGeneration?: boolean;
+            remoteComponents?: boolean;
             cms?: {
                 entryGeneration?: boolean;
                 entryComparison?: boolean;
                 entryTranslation?: boolean;
             };
+        };
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
+        enabled: boolean;
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
+        enabled: boolean;
+        options: {
+            comments?: boolean;
+            activityLog?: boolean;
         };
     };
 }

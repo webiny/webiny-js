@@ -54,6 +54,13 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                 [PROJECT_PACKAGE_FEATURE_NAME.AI_POWERUPS]: {
                     enabled: false,
                     options: {}
+                },
+                [PROJECT_PACKAGE_FEATURE_NAME.AB_TESTING]: {
+                    enabled: false
+                },
+                [PROJECT_PACKAGE_FEATURE_NAME.COLLABORATION]: {
+                    enabled: false,
+                    options: {}
                 }
             }
         }

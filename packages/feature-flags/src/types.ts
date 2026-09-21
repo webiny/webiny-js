@@ -28,7 +28,13 @@ export interface IAiPowerupsOptions {
     websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
     fileManager?: IAiPowerupsFileManagerOptions;
     lexicalGeneration?: boolean;
+    remoteComponents?: boolean;
     cms?: IAiPowerupsCmsOptions;
+}
+
+export interface ICollaborationFeatureFlags {
+    comments?: boolean;
+    activityLog?: boolean;
 }
 
 export interface IAiPowerupsFeatureFlags {
@@ -50,4 +56,6 @@ export interface IFeatureFlagsDto {
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
     aiPowerups?: IAiPowerupsFeatureFlags;
+    abTesting?: boolean;
+    collaboration?: boolean | ICollaborationFeatureFlags;
 }

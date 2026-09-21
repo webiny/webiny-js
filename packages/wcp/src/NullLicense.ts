@@ -86,4 +86,24 @@ export class NullLicense implements ILicense {
     canUseAiEntryTranslation(): boolean {
         return false;
     }
+
+    canUseRemoteComponents(): boolean {
+        return false;
+    }
+
+    canUseAbTesting(): boolean {
+        return false;
+    }
+
+    canUseCollaboration(): boolean {
+        return false;
+    }
+
+    canUseComments(): boolean {
+        return false;
+    }
+
+    canUseActivityLog(): boolean {
+        return false;
+    }
 }

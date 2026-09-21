@@ -106,6 +106,9 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                             lexicalGeneration: flags.isAiLexicalGenerationEnabled()
                                 ? project.package.features.aiPowerups?.options?.lexicalGeneration
                                 : false,
+                            remoteComponents: flags.isAiRemoteComponentsEnabled()
+                                ? project.package.features.aiPowerups?.options?.remoteComponents
+                                : false,
                             cms: {
                                 entryGeneration: flags.isAiEntryGenerationEnabled()
                                     ? project.package.features.aiPowerups?.options?.cms
@@ -120,6 +123,26 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                                           ?.entryTranslation
                                     : false
                             }
+                        }
+                    },
+                    abTesting: {
+                        ...project.package.features.abTesting,
+                        enabled: flags.isAbTestingEnabled()
+                            ? project.package.features.abTesting?.enabled
+                            : false
+                    },
+                    collaboration: {
+                        ...project.package.features.collaboration,
+                        enabled: flags.isCollaborationEnabled()
+                            ? project.package.features.collaboration?.enabled
+                            : false,
+                        options: {
+                            comments: flags.isCommentsEnabled()
+                                ? project.package.features.collaboration?.options?.comments
+                                : false,
+                            activityLog: flags.isActivityLogEnabled()
+                                ? project.package.features.collaboration?.options?.activityLog
+                                : false
                         }
                     }
                 }
@@ -235,6 +258,31 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
             this.decoratee.canUseAiEntryTranslation() &&
             this.featureFlags.get().isAiEntryTranslationEnabled()
         );
+    }
+
+    canUseRemoteComponents() {
+        return (
+            this.decoratee.canUseRemoteComponents() &&
+            this.featureFlags.get().isAiRemoteComponentsEnabled()
+        );
+    }
+
+    canUseAbTesting() {
+        return this.decoratee.canUseAbTesting() && this.featureFlags.get().isAbTestingEnabled();
+    }
+
+    canUseCollaboration() {
+        return (
+            this.decoratee.canUseCollaboration() && this.featureFlags.get().isCollaborationEnabled()
+        );
+    }
+
+    canUseComments() {
+        return this.decoratee.canUseComments() && this.featureFlags.get().isCommentsEnabled();
+    }
+
+    canUseActivityLog() {
+        return this.decoratee.canUseActivityLog() && this.featureFlags.get().isActivityLogEnabled();
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {
