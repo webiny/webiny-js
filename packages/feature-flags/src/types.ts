@@ -29,6 +29,7 @@ export interface IAiPowerupsOptions {
     fileManager?: IAiPowerupsFileManagerOptions;
     lexicalGeneration?: boolean;
     adminAssistant?: boolean;
+    remoteComponents?: boolean;
     cms?: IAiPowerupsCmsOptions;
 }
 
@@ -52,6 +53,5 @@ export interface IFeatureFlagsDto {
     fileManager?: IFileManagerFeatureFlags;
     aiPowerups?: boolean | IAiPowerupsOptions;
     abTesting?: boolean;
-    remoteComponents?: boolean;
     collaboration?: boolean | ICollaborationOptions;
 }
