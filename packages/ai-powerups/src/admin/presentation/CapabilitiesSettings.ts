@@ -107,7 +107,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                          */
                         .defaultValue(true)
                         .description(
-                            "Turn this off to remove the feature from the app. Everything below is ignored while it is off."
+                            "Turn this off to remove the feature from the app. The settings below are kept, but ignored, while it is off."
                         ),
 
                     overrides: cf
@@ -124,6 +124,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             roleId: of
                                 .text()
                                 .label("Model role")
+                                .disabledWhen(({ form }) => !this.isEnabled(form, capability.id))
                                 .description(
                                     `Which role supplies this feature's model. Left empty, it uses ${defaultRoleLabel}.`
                                 )
@@ -142,6 +143,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             connectionId: of
                                 .text()
                                 .label("Pin a connection")
+                                .disabledWhen(({ form }) => !this.isEnabled(form, capability.id))
                                 .description(
                                     "Advanced. Overrides the role above for this feature only."
                                 )
@@ -156,7 +158,9 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                                 .text()
                                 .label("Pin a model")
                                 .disabledWhen(
-                                    ({ form }) => !this.getPinnedConnection(form, capability.id)
+                                    ({ form }) =>
+                                        !this.isEnabled(form, capability.id) ||
+                                        !this.getPinnedConnection(form, capability.id)
                                 )
                                 .description(
                                     "Both the connection and the model must be set for a pin to apply."
@@ -167,6 +171,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                                 .text()
                                 .label("Additional instructions")
                                 .renderer("textarea", { rows: 5 })
+                                .disabledWhen(({ form }) => !this.isEnabled(form, capability.id))
                                 .description(
                                     "Appended to this feature's prompt. Use this for house style and standing rules."
                                 )
@@ -183,6 +188,20 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
             connections?: { presets?: IAiPowerUpsConnectionPreset[] };
         };
         return (data.connections?.presets ?? []).filter(c => c.id && c.name);
+    }
+
+    /**
+     * Absent means enabled, exactly as it does in storage and in the resolver.
+     *
+     * The form seeds an untouched switch to `true`, so in practice this only reads `false` after
+     * someone flips one. Spelled `!== false` anyway, so it keeps agreeing with the other two if
+     * that default ever goes away.
+     */
+    private isEnabled(form: FormModel.Interface, capabilityId: string): boolean {
+        const data = form.getData() as {
+            capabilities?: { items?: Record<string, { enabled?: boolean }> };
+        };
+        return data.capabilities?.items?.[capabilityId]?.enabled !== false;
     }
 
     private getOverride(
