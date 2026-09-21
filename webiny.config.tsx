@@ -116,8 +116,15 @@ export const Extensions = () => {
 
             {/* Bug reporter 👇 The base ships with Webiny via DefaultExtensions and files reports
                 verbatim. These two are ours: a token so the API files the issue itself, and AI
-                drafting for the title and steps to reproduce. */}
-            <Project.BugReporter token={process.env.BUG_REPORT_GITHUB_TOKEN || ""} />
+                drafting for the title and steps to reproduce.
+
+                Both the token AND the repository have to be set before anything is filed. A token
+                on its own leaves the reporter in compose mode, so that nobody's local build starts
+                opening issues on whatever the default repository happens to be. */}
+            <Project.BugReporter
+                token={process.env.BUG_REPORT_GITHUB_TOKEN || ""}
+                repository={process.env.BUG_REPORT_REPOSITORY || ""}
+            />
             <Api.Extension src={"@/extensions/bugReportAi/Extension.ts"} />
 
             {/* Tasks 👇 */}
