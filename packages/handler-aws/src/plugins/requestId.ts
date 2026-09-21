@@ -21,7 +21,10 @@ export const createRequestIdPlugin = () => {
     return createHandlerOnRequest<Context>(async (request, _reply, context) => {
         const awsRequestId = (request as unknown as RequestWithLambdaContext).awsLambda?.context
             ?.awsRequestId;
-        // TODO do we have default request id instance? this will break when resolving - no instance found
+        /**
+         * Nothing to do without one: `@webiny/handler` has already registered a generated default
+         * earlier in the same `preHandler` hook, so the abstraction still resolves.
+         */
         if (!awsRequestId) {
             return;
         }
