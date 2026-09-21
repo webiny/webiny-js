@@ -911,3 +911,73 @@ describe("the generated marker is defined once", () => {
         expect(source).toMatch(/summary\?\.generated \?/);
     });
 });
+
+describe("every line under an actor's name starts at the same edge", () => {
+    /**
+     * Structural rather than the usual text assertion, and deliberately so.
+     *
+     * A row carries one of three things under the name — the sentence for its run, the placeholder
+     * while one is coming, or the fields it touched when it holds several runs — and which one it
+     * gets is an accident of how the entry was saved rather than anything the reader chose. So all
+     * three have to begin at the same x, or a timeline of mixed rows reads as ragged.
+     *
+     * Twice they have been given that column separately and landed apart: eight pixels on the
+     * saves inside an expansion, twenty on the fields line. Both were one wrong class in one
+     * branch, both survived the whole suite, and both were found by measuring the running app. The
+     * gutter is one component now, and this asserts the three branches actually go through it.
+     */
+    const gutterOf = (node: Element | null): Element | null => {
+        let current: Element | null = node;
+        while (current && current !== document.body) {
+            const className = current.className;
+            if (typeof className === "string" && className.includes("grid-cols-[16px_1fr]")) {
+                return current;
+            }
+            current = current.parentElement;
+        }
+        return null;
+    };
+
+    /** The gutter is a two-cell grid: the mark, then the content. */
+    const startsInTheContentCell = (node: Element | null) => {
+        const gutter = gutterOf(node);
+        if (!gutter || gutter.children.length !== 2) {
+            return false;
+        }
+        return gutter.children[1]!.contains(node);
+    };
+
+    it("puts a row's sentence in the content cell", () => {
+        renderState([
+            record({
+                changeset: [{ path: "title", label: "Title" }],
+                summary: "Changed Title from “Old” to “New”."
+            })
+        ]);
+
+        expect(startsInTheContentCell(screen.getByText(/Changed/))).toBe(true);
+    });
+
+    it("puts the placeholder there too, so a row does not shift when its sentence lands", () => {
+        // The one case a reader watches change in place: the row is rendered pending, then
+        // re-rendered with a sentence. A placeholder at a different indent makes that a jump.
+        renderState([
+            record({ changeset: [{ path: "body", label: "Body" }], summaryPending: true })
+        ]);
+
+        expect(startsInTheContentCell(screen.getByText(/Summarising/))).toBe(true);
+    });
+
+    it("puts the fields line there, which is the line that was twenty pixels out", () => {
+        renderState([
+            record({
+                changeset: [
+                    { path: "sku", label: "SKU" },
+                    { path: "price", label: "Price" }
+                ]
+            })
+        ]);
+
+        expect(startsInTheContentCell(screen.getByText("SKU and Price"))).toBe(true);
+    });
+});

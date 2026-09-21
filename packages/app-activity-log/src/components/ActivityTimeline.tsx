@@ -319,16 +319,26 @@ const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
 );
 
 /**
- * A sentence with its gutter, for the collapsed row.
+ * The gutter, and the one definition of where a row's content column begins.
  *
- * The run owns its own gutter, because everything in its content column shares it. A row has only
- * the sentence, so it carries the pairing here — the same two pieces, so the mark stays defined in
- * exactly one place.
+ * A row holds one of three things under the actor's name — a sentence, a placeholder while one is
+ * coming, or the fields it touched — and all three have to begin at the same x, because which one
+ * a row gets is an accident of how it was saved rather than anything the reader chose. They used
+ * to find that column separately and sat twenty pixels apart.
+ *
+ * `SummaryMark` occupies the first cell whether or not it has a mark to put there, so a line that
+ * passes `null` still lands its content in the same column as one that does not.
  */
-const SentenceBlock = ({ summary }: { summary: TimelineSentence }) => (
-    <div className={"grid grid-cols-[16px_1fr] items-start gap-xxs"}>
+const GutterBlock = ({
+    summary,
+    children
+}: {
+    summary: TimelineSentence | null;
+    children: React.ReactNode;
+}) => (
+    <div className={"grid grid-cols-[16px_1fr] items-start gap-xs"}>
         <SummaryMark summary={summary} />
-        <SummaryLine summary={summary} />
+        <div className={"min-w-0"}>{children}</div>
     </div>
 );
 
@@ -380,9 +390,8 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
           separately — a grid on the sentence, a hand-written pad on the saves — and measured eight
           pixels apart in the browser.
         */}
-        <div className={"grid min-w-0 grid-cols-[16px_1fr] items-start gap-xxs pl-xs"}>
-            <SummaryMark summary={run.summary} />
-            <div className={"min-w-0"}>
+        <div className={"min-w-0 pl-xs"}>
+            <GutterBlock summary={run.summary}>
                 {run.summary ? <SummaryLine summary={run.summary} /> : null}
                 {run.pending ? <PendingNote /> : null}
                 <div className={"mt-xs flex flex-col gap-xs"}>
@@ -390,7 +399,7 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
                         <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
                     ))}
                 </div>
-            </div>
+            </GutterBlock>
         </div>
     </div>
 );
@@ -571,18 +580,28 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                               instead. Both keep the same left edge and the same last line, so the
                               difference reads as quiet rather than as missing.
                             */}
-                            {summary.summary ? <SentenceBlock summary={summary.summary} /> : null}
-                            {summary.summaryPending ? <PendingNote /> : null}
+                            {summary.summary ? (
+                                <GutterBlock summary={summary.summary}>
+                                    <SummaryLine summary={summary.summary} />
+                                </GutterBlock>
+                            ) : null}
+                            {summary.summaryPending ? (
+                                <GutterBlock summary={null}>
+                                    <PendingNote />
+                                </GutterBlock>
+                            ) : null}
                             {!summary.summary && !summary.summaryPending && summary.fieldsLine ? (
-                                <Text
-                                    as={"div"}
-                                    className={cn(
-                                        TYPE.field,
-                                        "text-wrap-pretty text-neutral-strong"
-                                    )}
-                                >
-                                    {summary.fieldsLine}
-                                </Text>
+                                <GutterBlock summary={null}>
+                                    <Text
+                                        as={"div"}
+                                        className={cn(
+                                            TYPE.field,
+                                            "text-wrap-pretty text-neutral-strong"
+                                        )}
+                                    >
+                                        {summary.fieldsLine}
+                                    </Text>
+                                </GutterBlock>
                             ) : null}
                             <RowTime timestamp={summary.latestTimestamp} />
                             {summary.spansTime ? (
