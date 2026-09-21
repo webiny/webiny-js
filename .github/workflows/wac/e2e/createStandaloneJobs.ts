@@ -173,7 +173,7 @@ export const createStandaloneProjectParts = (
                     WEBINY_HOSTING_TYPE: "standalone",
                     WEBINY_API_URL: STANDALONE_API_URL,
                     /*
-                     * `<BugReporter.GitHub>` reads these while the API bundle is built, so they
+                     * `<Project.BugReporter>` reads these while the API bundle is built, so they
                      * belong on this step rather than at runtime on "Start API".
                      */
                     ...BUG_REPORTER_ENV

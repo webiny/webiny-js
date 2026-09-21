@@ -61,7 +61,7 @@ export const createAwsJobs = (dbSetup: string) => {
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`,
         WEBINY_INFRA_API_MAX_BUNDLE_SIZE: "${{ vars.WEBINY_INFRA_API_MAX_BUNDLE_SIZE }}",
         /*
-         * Read by `<BugReporter.GitHub>` while `webiny deploy api` builds, so it has to be on the
+         * Read by `<Project.BugReporter>` while `webiny deploy api` builds, so it has to be on the
          * job that deploys, not only on the step that edits the config.
          */
         ...BUG_REPORTER_ENV

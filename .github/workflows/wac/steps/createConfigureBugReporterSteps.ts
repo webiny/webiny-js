@@ -3,7 +3,7 @@ import { runNodeScript } from "../utils/index.js";
 /*
  * The bug reporter is already in every scaffolded project through DefaultExtensions, but in compose
  * mode: with no token it only builds a prefilled GitHub URL for the reporter to submit themselves.
- * `<BugReporter.GitHub>` is the only way to switch it to filing, and the scaffolded
+ * `<Project.BugReporter>` is the only way to switch it to filing, and the scaffolded
  * `webiny.config.tsx` does not have it, so E2E has to add the line before the build.
  *
  * A repository-level secret and variable on purpose, NOT the `next` environment: the standalone
@@ -26,7 +26,7 @@ interface ConfigureBugReporterParams {
 }
 
 /**
- * Adds `<BugReporter.GitHub>` to the scaffolded project's `webiny.config.tsx`.
+ * Adds `<Project.BugReporter>` to the scaffolded project's `webiny.config.tsx`.
  *
  * The editing lives in a node script rather than in `sed` here. A shell one-liner long enough to
  * carry a JSX element gets folded into a `>-` scalar by the workflow emitter, which is unreadable

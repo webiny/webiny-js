@@ -1,5 +1,5 @@
 /*
- * Adds `<BugReporter.GitHub>` to a scaffolded project's webiny.config.tsx.
+ * Adds `<Project.BugReporter>` to a scaffolded project's webiny.config.tsx.
  *
  * E2E gets the reporter for free - DefaultExtensions puts `<BugReporter />` in every project - but
  * always in compose mode: with no token it only builds a prefilled issues/new URL and files nothing.
@@ -17,14 +17,19 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const IMPORT_LINE = 'import { BugReporter } from "webiny/extensions";';
+const IMPORT_LINE = 'import { Project } from "webiny/extensions";';
 
 /*
  * Left on `process.env` rather than baked in, so what E2E deploys is the setup a real project would
- * write. Unset means the component emits no build param and the reporter stays in compose mode.
+ * write. Unset means both params come through empty, the extension emits no build param, and the
+ * reporter stays in compose mode.
+ *
+ * The `|| ""` is load bearing, not style. Reading an unset key off `process.env` while the config
+ * renders does not give you `undefined`, it gives an object, which fails the extension's string
+ * schema and takes the whole build down. Every template guards its env reads the same way.
  */
 const COMPONENT_LINE =
-    "<BugReporter.GitHub token={process.env.BUG_REPORT_GITHUB_TOKEN} repository={process.env.BUG_REPORT_REPOSITORY} />";
+    '<Project.BugReporter token={process.env.BUG_REPORT_GITHUB_TOKEN || ""} repository={process.env.BUG_REPORT_REPOSITORY || ""} />';
 
 const [projectPath] = process.argv.slice(2);
 
@@ -41,7 +46,7 @@ if (!fs.existsSync(configPath)) {
 const source = fs.readFileSync(configPath, "utf8");
 
 // Idempotent, so a re-run or a future second call cannot produce two of these.
-if (source.includes("BugReporter.GitHub")) {
+if (source.includes("Project.BugReporter")) {
     console.log(`${configPath} already configures the bug reporter, leaving it alone.`);
     process.exit(0);
 }
