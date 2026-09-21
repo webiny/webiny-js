@@ -204,6 +204,17 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                 run: "yarn webiny extension whitelabeling"
             },
             {
+                /*
+                 * Pulled from S3 like any other published extension, so this covers the install
+                 * path a customer takes as well as the extension itself. Drafting falls back to
+                 * the reporter's own words here, since no AI provider is configured: provider keys
+                 * are encrypted runtime settings, not build params, so CI has no way to set one.
+                 */
+                name: "Enable extension bug-report-ai",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny extension bug-report-ai"
+            },
+            {
                 name: "API bundle size limit",
                 run: 'echo "API bundle size limit: ${WEBINY_INFRA_API_MAX_BUNDLE_SIZE:-6291456} bytes"'
             },

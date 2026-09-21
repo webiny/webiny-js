@@ -352,6 +352,9 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: Enable extension bug-report-ai
+        working-directory: new-webiny-project
+        run: yarn webiny extension bug-report-ai
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
@@ -625,6 +628,9 @@ jobs:
       - name: Enable extension whitelabeling
         working-directory: new-webiny-project
         run: yarn webiny extension whitelabeling
+      - name: Enable extension bug-report-ai
+        working-directory: new-webiny-project
+        run: yarn webiny extension bug-report-ai
       - name: API bundle size limit
         run: >-
           echo "API bundle size limit:
