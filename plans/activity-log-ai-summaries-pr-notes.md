@@ -178,3 +178,30 @@ the mechanical sentence is arguably the better one.
 Not acted on. Worth remembering when there is real usage, so the question asked then is whether
 generated sentences earn their place on models like that one, rather than only whether they fire
 often enough.
+
+## A layout bug the suite could not see, three times
+
+The same defect appeared three times in the design pass and the suite was green through all three:
+the saves inside an expansion sat eight pixels off the sentence above them, the fields line on a
+collapsed row sat twenty pixels inside the sentence it replaces, and every line meant to read at
+11, 12 or 13px rendered at 14.
+
+None of them is a typo anyone would catch reading the diff. Each was one branch of a conditional
+being given its own left edge — `grid grid-cols-[16px_1fr]` in one arm, a hand-written `pl-xs` in
+the next — and the arms are mutually exclusive, so no single render shows both. The type-size one
+was subtler still: `Text` defaults to `size: "md"`, `text-md` is not a font size tailwind-merge
+recognises, so it survived the merge and won on stylesheet order. The class was in the DOM and had
+no effect.
+
+Two things came out of it worth keeping.
+
+**Measure the running app, not the screenshot.** Reading computed `left` values and text-node
+ranges out of the browser found all three in minutes and told us the exact pixel error; inferring
+from a screenshot had been wrong twice before that. It is also what caught a false alarm — an
+element box at 910 with 20px of padding is text at 930, and comparing a box against a text-node
+range makes a fixed bug look broken.
+
+**Give the shared edge one owner and test the branches go through it.** There is one `GutterBlock`
+now, and three tests assert each branch renders inside it. jsdom computes no layout, so these
+cannot assert pixels — they assert structure, which is the thing that actually varied. Each was
+verified by rendering its line outside the gutter and watching only that test fail.
