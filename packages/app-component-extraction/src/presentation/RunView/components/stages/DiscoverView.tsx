@@ -1,10 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { createReactiveComponent } from "@webiny/app-admin";
-import { Button, CheckboxPrimitive, Input, Text, cn } from "@webiny/admin-ui";
+import { Button, CheckboxPrimitive, Input, Tag, Text, cn } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { normalizeUrl } from "~/shared/url.js";
 import type { RunViewPresenter } from "../../abstractions.js";
-import type { DiscoverArtifactDto, DiscoverUrlDto, OverrideDto } from "~/shared/types.js";
+import type {
+    DiscoverArtifactDto,
+    DiscoverUrlDto,
+    DiscoverySummaryDto,
+    OverrideDto
+} from "~/shared/types.js";
 
 interface Props {
     presenter: RunViewPresenter.Interface;
@@ -30,11 +35,138 @@ const groupName = (group: string): string => {
 
 const groupPrefix = (group: string): string => (group === "manual" ? "" : group || "/");
 
+/*
+ * Provenance, as the operator needs to read it. "Both" is the healthy case. "Sitemap only" is the row
+ * that needs a human: the crawl never reached it, so it is either an orphan page nothing links to or an
+ * entry the CMS left behind, and only someone who knows the site can say which.
+ */
+const SOURCE_LABELS: Record<
+    string,
+    { label: string; variant: "success-light" | "accent-light" | "neutral-muted" | "accent" }
+> = {
+    both: { label: "Both", variant: "success-light" },
+    sitemap: { label: "Sitemap only", variant: "accent-light" },
+    crawl: { label: "Crawl", variant: "neutral-muted" },
+    manual: { label: "Added", variant: "accent" }
+};
+
+const SourceTag = ({ source }: { source?: string }) => {
+    const descriptor = source ? SOURCE_LABELS[source] : undefined;
+    if (!descriptor) {
+        return null;
+    }
+    return <Tag variant={descriptor.variant} content={descriptor.label} />;
+};
+
+const ResolveStatus = ({ url }: { url: DiscoverUrlDto }) => {
+    const resolution = url.resolution;
+    if (!resolution) {
+        return null;
+    }
+    const label = resolution.status === null ? "unreachable" : String(resolution.status);
+    const redirected = resolution.finalUrl && resolution.finalUrl !== url.url;
+    return (
+        <Text
+            size="sm"
+            className={cn(
+                "w-24 flex-shrink-0 text-right font-mono",
+                resolution.ok ? "text-neutral-strong" : "text-destructive-primary"
+            )}
+        >
+            {label}
+            {redirected ? " →" : ""}
+        </Text>
+    );
+};
+
+/** How the sitemap was read, said plainly rather than as a status code. */
+const SITEMAP_STATUS_TEXT: Record<DiscoverySummaryDto["sitemapStatus"], string> = {
+    absent: "no sitemap",
+    "not-sitemap": "not a sitemap",
+    empty: "empty sitemap",
+    "root-only": "sitemap lists only the home page",
+    used: "sitemap used"
+};
+
+/*
+ * The two sources side by side. A sitemap claiming 40 pages when the crawl found 9 is visible here,
+ * before capture spends a run on it, rather than afterwards when the generated components are wrong.
+ */
+const DiscoverySummary = ({
+    discovery,
+    included,
+    pageCap
+}: {
+    discovery: DiscoverySummaryDto;
+    included: number;
+    pageCap: number;
+}) => {
+    const sitemapDetail = [
+        `claimed ${discovery.sitemapClaimed}`,
+        discovery.sitemapOffHost > 0 ? `${discovery.sitemapOffHost} off-host` : null,
+        discovery.sitemapNonPage > 0 ? `${discovery.sitemapNonPage} not pages` : null,
+        discovery.sitemapUnresolved > 0 ? `${discovery.sitemapUnresolved} dead` : null,
+        `${discovery.sitemapUsable} usable`
+    ].filter(Boolean);
+
+    return (
+        <div className="flex flex-col gap-xxs">
+            <Text size="sm" className="text-neutral-strong">
+                <span className="font-semibold">
+                    {SITEMAP_STATUS_TEXT[discovery.sitemapStatus]}
+                </span>
+                {discovery.sitemapClaimed > 0 ? ` · ${sitemapDetail.join(" · ")}` : ""}
+            </Text>
+            <Text size="sm" className="text-neutral-strong">
+                <span className="font-semibold">Crawl</span> · {discovery.crawled} found · depth{" "}
+                {discovery.crawlDepth}
+            </Text>
+            <Text size="sm" className="text-neutral-strong">
+                <span className="font-semibold">Union</span> · {discovery.union} resolved ·{" "}
+                {included} included · page cap {pageCap}
+                {discovery.overCap > 0 ? ` · ${discovery.overCap} over the cap` : ""}
+            </Text>
+        </div>
+    );
+};
+
+/** Rows the run discovered but will not capture, because the URL did not resolve. */
+const UnresolvedList = ({ urls }: { urls: DiscoverUrlDto[] }) => (
+    <div className="mt-md overflow-hidden rounded-lg border border-neutral-dimmed">
+        <div className="flex items-center gap-sm bg-neutral-light px-md py-sm">
+            <Text size="sm" className="font-semibold">
+                Did not resolve
+            </Text>
+            <Text size="sm" className="text-neutral-strong">
+                {urls.length} discovered, none captured — a listed page that does not answer is
+                either gone or never published
+            </Text>
+        </div>
+        {urls.map(url => (
+            <div
+                key={url.url}
+                className="flex items-center gap-sm border-t border-neutral-dimmed px-md py-xs"
+            >
+                <Text
+                    size="sm"
+                    className="w-56 flex-shrink-0 truncate font-mono text-neutral-strong"
+                >
+                    {pathOf(url.url)}
+                </Text>
+                <div className="min-w-0 flex-1" />
+                <SourceTag source={url.source} />
+                <ResolveStatus url={url} />
+            </div>
+        ))}
+    </div>
+);
+
 /**
  * The Discover gate (spec §6.1). The discovered URLs grouped by path prefix inside one card: each group
- * header names the prefix and its included count and toggles the whole section; each row is a checkbox and
- * the path. Excluding, re-including or manually adding a URL writes a discover.url override that reattaches
- * across runs and marks Capture + downstream stale — applied immediately, no separate save.
+ * header names the prefix and its included count and toggles the whole section; each row is a checkbox,
+ * the path, its provenance and what resolving it returned. Excluding, re-including or manually adding a
+ * URL writes a discover.url override that reattaches across runs and marks Capture + downstream stale —
+ * applied immediately, no separate save.
  */
 export const DiscoverView = createReactiveComponent(function DiscoverView({ presenter }: Props) {
     const { vm } = presenter;
@@ -73,7 +205,8 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                 )
                 .map(override => ({
                     url: override.structuralSignature,
-                    group: "manual"
+                    group: "manual",
+                    source: "manual" as const
                 })) as DiscoverUrlDto[],
         [vm.overrides]
     );
@@ -101,6 +234,7 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
     const total = artifact.urls.length + manual.length;
     const includedCount = total - excluded.size;
     const isExcluded = (url: string) => excluded.has(normalizeUrl(url));
+    const unresolved = artifact.unresolved ?? [];
 
     const addManual = () => {
         const url = manualInput.trim();
@@ -126,10 +260,18 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
     return (
         <div className="flex h-full min-h-0 flex-col">
             <div className="flex flex-col gap-sm border-b border-neutral-dimmed px-md py-sm">
-                <Text size="sm" className="text-neutral-strong">
-                    {artifact.urls.length} URLs discovered · {includedCount} included · page cap{" "}
-                    {pageCap}
-                </Text>
+                {artifact.discovery ? (
+                    <DiscoverySummary
+                        discovery={artifact.discovery}
+                        included={includedCount}
+                        pageCap={pageCap}
+                    />
+                ) : (
+                    <Text size="sm" className="text-neutral-strong">
+                        {artifact.urls.length} URLs discovered · {includedCount} included · page cap{" "}
+                        {pageCap}
+                    </Text>
+                )}
                 <div className="flex items-center gap-sm">
                     <Input
                         value={manualInput}
@@ -218,7 +360,11 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                                                 >
                                                     {item.title}
                                                 </Text>
-                                            ) : null}
+                                            ) : (
+                                                <div className="min-w-0 flex-1" />
+                                            )}
+                                            <SourceTag source={item.source} />
+                                            <ResolveStatus url={item} />
                                         </div>
                                     );
                                 })}
@@ -226,6 +372,8 @@ export const DiscoverView = createReactiveComponent(function DiscoverView({ pres
                         );
                     })}
                 </div>
+
+                {unresolved.length > 0 ? <UnresolvedList urls={unresolved} /> : null}
             </div>
         </div>
     );

@@ -5,22 +5,87 @@
 
 // ----- Discover ----------------------------------------------------------------------------------
 
+/**
+ * Which source produced a URL. `both` is the healthy case — the sitemap claims the page and the crawl
+ * reached it. `sitemap` alone means the crawl never reached it: either an orphan page nothing links to,
+ * or a stale entry, and the operator is the one who can tell which.
+ */
+export type UrlSource = "sitemap" | "crawl" | "both" | "manual";
+
+/** What resolving a URL returned. A null status means the request never completed at all. */
+export interface UrlResolution {
+    status: number | null;
+    /** True for a 2xx after redirects — the only case worth capturing. */
+    ok: boolean;
+    /** Where the URL landed, when a redirect moved it. */
+    finalUrl?: string;
+}
+
 export interface DiscoveredUrl {
     url: string;
     /** The path-prefix group this URL was sampled from (e.g. "blog", "root"). */
     group: string;
-    /** The page's <title>, fetched best-effort at discovery; null when unavailable. */
+    /** The page's <title>, read at discovery; null when unavailable. */
     title?: string | null;
+    /** Which source produced this URL — the provenance the gate shows per row. */
+    source: UrlSource;
+    /** The resolve check. Absent on a manually added URL, which is taken on the operator's word. */
+    resolution?: UrlResolution;
+}
+
+/**
+ * What each source claimed, so the operator can see a sitemap disagreeing with the site before capture
+ * rather than after generation.
+ *
+ * A sitemap claiming 40 pages when the crawl found 9 is the signal that matters: it is either 31 orphan
+ * pages or a sitemap the CMS generates wrongly, and the counts here are what tells them apart.
+ */
+export interface DiscoverySummary {
+    /**
+     * `absent` — no sitemap fetched. `not-sitemap` — something was served but it is not a sitemap (an
+     * HTML error page returned with a 200 is the usual culprit). `empty` and `root-only` — a valid
+     * sitemap carrying nothing usable, which is treated exactly as if there were none. `used` — it
+     * contributed URLs.
+     */
+    sitemapStatus: "absent" | "not-sitemap" | "empty" | "root-only" | "used";
+    /** Raw `<loc>` count across the sitemap and any child sitemaps, before validation. */
+    sitemapClaimed: number;
+    /** Entries dropped for pointing at another host. */
+    sitemapOffHost: number;
+    /** Entries dropped for not addressing a page at all (a nested sitemap, a PDF, an image). */
+    sitemapNonPage: number;
+    /** Entries that resolved to a non-2xx, or did not resolve at all. */
+    sitemapUnresolved: number;
+    /** Distinct pages the sitemap actually contributed, after validation and folding. */
+    sitemapUsable: number;
+    /** Distinct pages the link crawl found. */
+    crawled: number;
+    /** How deep the crawl went from the entry page. */
+    crawlDepth: number;
+    /**
+     * Distinct pages across both sources that resolved — what could be captured, before the page cap.
+     * A sitemap claiming 40 while this reads 9 is the reading the operator needs, with the difference
+     * accounted for by `sitemapUnresolved` and the `unresolved` list.
+     */
+    union: number;
+    /** Union entries the page cap left out. */
+    overCap: number;
 }
 
 export interface DiscoverArtifact {
     entryUrl: string;
-    /** How the URLs were found — a real sitemap, or a link crawl of the entry page. */
-    source: "sitemap" | "crawl";
+    /** What each source claimed and what came of it (§ the Discover gate's summary line). */
+    discovery: DiscoverySummary;
     /** The distinct path-prefix groups discovered, for reporting. */
     groups: string[];
     /** The sampled URL list, at most the job's page cap, spread across groups. */
     urls: DiscoveredUrl[];
+    /**
+     * Discovered but deliberately not included: the URL did not resolve. Kept so the gate can show a
+     * dead sitemap entry instead of silently dropping it, but out of `urls` because capturing an error
+     * page feeds garbage sections into clustering and spends the page cap doing it.
+     */
+    unresolved: DiscoveredUrl[];
 }
 
 // ----- Capture (contract; the browser handler lands in batch 2) ----------------------------------

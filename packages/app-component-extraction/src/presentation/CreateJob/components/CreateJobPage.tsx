@@ -52,12 +52,24 @@ const reachabilityHint = (checking: boolean, result: ReachabilityDto | null): Re
     }
     return (
         <Text size="sm" className="text-success-primary">
-            Reachable · {result.status} OK ·{" "}
-            {result.sitemapFound
-                ? `sitemap.xml found (${result.sitemapUrlCount} URLs)`
-                : "no sitemap found — a link crawl will be used"}
+            Reachable · {result.status} OK · {sitemapNote(result)} · a link crawl runs either way
         </Text>
     );
+};
+
+/*
+ * What the pre-flight found at the site's sitemap. A sitemap index's locs are child sitemaps rather
+ * than pages, so it is counted and labelled as such — calling four child sitemaps "4 URLs" is the
+ * misreading that makes a bad sitemap look like a good one.
+ */
+const sitemapNote = (result: ReachabilityDto): string => {
+    if (!result.sitemapFound) {
+        return "no sitemap found";
+    }
+    if (result.sitemapKind === "index") {
+        return `sitemap index found (${result.sitemapUrlCount} sitemaps)`;
+    }
+    return `sitemap found (${result.sitemapUrlCount} URLs)`;
 };
 
 const CreateJobContent = createReactiveComponent(function CreateJobContent() {

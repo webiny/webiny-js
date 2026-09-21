@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseTitle } from "./titles.js";
+import { parseTitle } from "./parseTitle.js";
 
 describe("parseTitle", () => {
     it("extracts and trims the title", () => {

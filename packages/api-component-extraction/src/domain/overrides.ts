@@ -450,7 +450,9 @@ export const applyDiscoverOverrides = (
             } else if (correction.action === "add") {
                 additions.push({
                     url: override.structuralSignature,
-                    group: correction.group ?? "manual"
+                    group: correction.group ?? "manual",
+                    // Taken on the operator's word: a URL typed in at the gate is not resolved here.
+                    source: "manual"
                 });
                 reattachments.push(reattachment(override, "applied", null));
             }

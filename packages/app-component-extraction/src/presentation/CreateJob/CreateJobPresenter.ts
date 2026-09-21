@@ -96,6 +96,7 @@ class CreateJobPresenterImpl implements PresenterAbstraction.Interface {
                     status: null,
                     sitemapFound: false,
                     sitemapUrlCount: 0,
+                    sitemapKind: "none",
                     error: (error as Error).message
                 };
             });

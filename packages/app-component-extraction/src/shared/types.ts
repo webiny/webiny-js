@@ -113,7 +113,9 @@ export interface ReachabilityDto {
     reachable: boolean;
     status: number | null;
     sitemapFound: boolean;
+    /** Pages for a `urlset`; child sitemaps for an `index`. Read it with `sitemapKind`. */
     sitemapUrlCount: number;
+    sitemapKind: "urlset" | "index" | "none";
     error: string | null;
 }
 
@@ -143,18 +145,45 @@ export interface ImageBox {
     height: number;
 }
 
+/** What resolving a URL returned; absent on a manually added URL, which is not resolved. */
+export interface UrlResolutionDto {
+    status: number | null;
+    ok: boolean;
+    finalUrl?: string | null;
+}
+
 export interface DiscoverUrlDto {
     url: string;
     group: string;
     /** The page's <title>, read best-effort at discovery (spec §6.1); null/absent when unavailable. */
     title?: string | null;
+    /** Which source produced this URL. Absent on runs discovered before provenance was recorded. */
+    source?: "sitemap" | "crawl" | "both" | "manual";
+    resolution?: UrlResolutionDto;
+}
+
+/** What each source claimed, so the operator sees the two disagreeing before capture. */
+export interface DiscoverySummaryDto {
+    sitemapStatus: "absent" | "not-sitemap" | "empty" | "root-only" | "used";
+    sitemapClaimed: number;
+    sitemapOffHost: number;
+    sitemapNonPage: number;
+    sitemapUnresolved: number;
+    sitemapUsable: number;
+    crawled: number;
+    crawlDepth: number;
+    union: number;
+    overCap: number;
 }
 
 export interface DiscoverArtifactDto {
     entryUrl: string;
-    source: string;
+    /** Absent on runs discovered before the two sources were reconciled. */
+    discovery?: DiscoverySummaryDto;
     groups: string[];
     urls: DiscoverUrlDto[];
+    /** Discovered but not included, because the URL did not resolve. */
+    unresolved?: DiscoverUrlDto[];
 }
 
 /** Capture-time warnings on a page. Optional — runs captured before this shipped won't carry it. */

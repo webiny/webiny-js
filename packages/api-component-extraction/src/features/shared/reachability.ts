@@ -1,10 +1,15 @@
-import { parseSitemapUrls } from "~/features/stages/discover/sitemap.js";
+import { parseSitemap } from "~/features/stages/discover/sitemap.js";
 
 /**
  * A pre-flight reachability check for the Create-job screen (W9.3): can the site be resolved, and does it
  * publish a sitemap? It reuses the Discover stage's sitemap parser so "sitemap found" here means the same
  * thing it will at crawl time. Best-effort and bounded by a timeout — a slow site reports unreachable
  * rather than hanging the request.
+ *
+ * One request, deliberately: unlike Discover this does not follow a sitemap index down to its children,
+ * so for an index it reports how many child sitemaps were listed rather than how many pages they hold.
+ * Saying "12 URLs" when those twelve are sitemaps would be the same misreading Discover now guards
+ * against, so the kind is reported alongside the count and the screen labels it.
  */
 
 const USER_AGENT = "Mozilla/5.0 (compatible; WebinyBot/1.0; +https://www.webiny.com)";
@@ -18,7 +23,10 @@ export interface ReachabilityResult {
     /** The HTTP status of the site response, or null if the request never completed. */
     status: number | null;
     sitemapFound: boolean;
+    /** Pages for a `urlset`; child sitemaps for an `index`. Read it with `sitemapKind`. */
     sitemapUrlCount: number;
+    /** What was served: a page list, an index of other sitemaps, or nothing usable. */
+    sitemapKind: "urlset" | "index" | "none";
     /** A short reason when the site could not be reached; null when it was. */
     error: string | null;
 }
@@ -52,6 +60,7 @@ export const checkReachability = async (rawUrl: string): Promise<ReachabilityRes
             status: null,
             sitemapFound: false,
             sitemapUrlCount: 0,
+            sitemapKind: "none",
             error: "That is not a valid URL."
         };
     }
@@ -64,19 +73,24 @@ export const checkReachability = async (rawUrl: string): Promise<ReachabilityRes
             status: null,
             sitemapFound: false,
             sitemapUrlCount: 0,
+            sitemapKind: "none",
             error: "The site could not be reached."
         };
     }
 
     let sitemapFound = false;
     let sitemapUrlCount = 0;
-    const sitemapResponse = await fetchWithTimeout(new URL("/sitemap.xml", parsed).toString());
+    let sitemapKind: ReachabilityResult["sitemapKind"] = "none";
+    const sitemapUrl = new URL("/sitemap.xml", parsed).toString();
+    const sitemapResponse = await fetchWithTimeout(sitemapUrl);
     if (sitemapResponse?.ok) {
         try {
-            const urls = parseSitemapUrls(await sitemapResponse.text());
-            if (urls.length > 0) {
+            const body = await sitemapResponse.text();
+            const sitemap = parseSitemap(body);
+            if (sitemap.kind !== "not-sitemap" && sitemap.locs.length > 0) {
                 sitemapFound = true;
-                sitemapUrlCount = urls.length;
+                sitemapUrlCount = sitemap.locs.length;
+                sitemapKind = sitemap.kind;
             }
         } catch {
             // A malformed sitemap is simply "not found" for the pre-flight.
@@ -89,6 +103,7 @@ export const checkReachability = async (rawUrl: string): Promise<ReachabilityRes
         status: response.status,
         sitemapFound,
         sitemapUrlCount,
+        sitemapKind,
         error: response.ok ? null : `The site responded with ${response.status}.`
     };
 };

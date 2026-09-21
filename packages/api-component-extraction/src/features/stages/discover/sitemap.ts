@@ -1,41 +1,34 @@
-/** Extract `<loc>` URLs from a sitemap.xml (or sitemap-index) body. Tolerant of namespaces/whitespace. */
-export const parseSitemapUrls = (xml: string): string[] => {
-    const urls: string[] = [];
+/** What a sitemap body turned out to be, and the `<loc>` URLs it carries. */
+export interface ParsedSitemap {
+    /**
+     * `urlset` — a page list. `index` — a list of other sitemaps, whose locs are sitemaps and not
+     * pages. `not-sitemap` — the body is not a sitemap at all, which is what a site serving an HTML
+     * error page with a 200 status looks like.
+     */
+    kind: "urlset" | "index" | "not-sitemap";
+    locs: string[];
+}
+
+/**
+ * Parse a sitemap body: what kind it is, and the `<loc>` URLs in it. Tolerant of namespaces and
+ * whitespace, and deliberately not a full XML parse — a sitemap is a flat list of `<loc>` elements.
+ *
+ * Telling a `urlset` from an `index` matters: an index's locs are child sitemap URLs, and reading them
+ * as pages is one of the ways a bad sitemap produces a run that looks like it worked.
+ */
+export const parseSitemap = (xml: string): ParsedSitemap => {
+    const locs: string[] = [];
     const regex = /<loc>\s*([^<\s]+)\s*<\/loc>/gi;
     let match: RegExpExecArray | null;
     while ((match = regex.exec(xml)) !== null) {
-        urls.push(match[1].trim());
-    }
-    return urls;
-};
-
-/**
- * Same-origin links from an HTML body, resolved to absolute URLs with the fragment stripped.
- *
- * Deliberately a lightweight regex, not a DOM parse: this runs on the entry page's raw HTML only to
- * seed discovery, and a full parse buys nothing a crawl of the returned URLs would not.
- */
-export const extractSameOriginLinks = (html: string, baseUrl: string): string[] => {
-    let origin: string;
-    try {
-        origin = new URL(baseUrl).origin;
-    } catch {
-        return [];
+        locs.push(match[1].trim());
     }
 
-    const links = new Set<string>();
-    const regex = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["']/gi;
-    let match: RegExpExecArray | null;
-    while ((match = regex.exec(html)) !== null) {
-        try {
-            const resolved = new URL(match[1], baseUrl);
-            if (resolved.origin === origin) {
-                resolved.hash = "";
-                links.add(resolved.toString());
-            }
-        } catch {
-            // A malformed href is skipped rather than failing the crawl.
-        }
+    if (/<sitemapindex[\s>]/i.test(xml)) {
+        return { kind: "index", locs };
     }
-    return [...links];
+    if (/<urlset[\s>]/i.test(xml)) {
+        return { kind: "urlset", locs };
+    }
+    return { kind: "not-sitemap", locs: [] };
 };
