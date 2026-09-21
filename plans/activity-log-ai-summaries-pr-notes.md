@@ -7,6 +7,12 @@ reconstructed at the end. Not part of the shipped behaviour.
 
 ## What the reader needs to know about the storage interface
 
+Six operations and one record-shape addition, all of which a replacement store inherits.
+
+`summaryRunId` is the addition: a joining save stores the id of the record that opened its run, and
+a save that joined nothing resolves to its own id at the read boundary. It is one field on a write
+the debounce already performs, and it is what makes grouping exact rather than inferred.
+
 Six operations, not five. `extendSummaryValues` was added after the debounce turned out to need a
 write that replaces a pending record's transient values without disturbing the keyset ordering the
 reader pages on. The interface is the seam a replacement store has to satisfy, so each addition is a
@@ -118,3 +124,57 @@ the frequency is.
 The integration test that asserted the old absolute claim (`records the path and the label, never
 the value`) was rewritten rather than deleted. It now asserts the two halves separately: the
 changeset carries paths and labels and never a value, and the summary quotes both sides on purpose.
+
+## The marker changed meaning without changing code
+
+`SummaryLine` renders "AI-generated" on a model's sentence and nothing on a rendered one. That
+component behaved correctly before deterministic sentences began quoting values and behaves
+correctly after — but what it _signals_ changed underneath it.
+
+Before, only generated sentences quoted values, so the marker read as a disclosure signal: marked
+means "this one may contain content". Now both tiers quote, so it is purely a provenance signal, and
+it is the only thing separating an exact restatement of recorded values from an interpretive
+sentence that can be wrong.
+
+Nothing in the test suite would have objected to someone marking both tiers in the name of
+consistency, and doing so would have made the distinction invisible while looking like tidying up.
+It is now covered three ways — a deterministic sentence on a collapsed row, one inside an expansion,
+and both kinds in one expansion with exactly one marker counted — plus a source guard that the
+literal is defined once.
+
+Worth recording as a class rather than an incident: a signal can be redefined by a change somewhere
+else entirely, and the component carrying it will not fail.
+
+## Deliberately weak tests, and why they are not redundant
+
+Five assertions pin the capability guidance — that it forbids added formatting, requires both sides
+of a quoted value, carries the judgement failure as an example, explains why consistency matters,
+and still asks for short values to be quoted at all.
+
+Each is a substring check against a prompt string, and each will read as redundant prose to anyone
+tidying the suite. They are not guarding against a regression in behaviour. They guard against
+**deletion**: every one of those lines was written against something a model actually did, and a
+prompt is the one artefact in this feature where removing a sentence has no compiler, no type and no
+failing assertion to stop it. The file comment says the same thing beside the guidance itself.
+
+## A flake, recorded so a second occurrence has something to attach to
+
+`__tests__/capture/coverage.test.ts` was once reported as a failed _suite_ with all 96 of its tests
+skipped, on a full `ddb` run. It passed in isolation immediately afterwards, passed on two later full
+runs, and passed throughout on `sql`. Not chased — one occurrence of a suite-level skip is not enough
+signal — but noted here so a second one starts from a report rather than from scratch.
+
+## An observation about where generated sentences earn their place
+
+Both sample outputs from real testing describe a scalar-heavy product model — SKU, price, on-sale,
+name — and against the mechanical sentences beneath them they add very little. Most of what they did
+add was the part that went wrong: a fabricated currency symbol, a one-sided comparison, a verdict on
+the content.
+
+The routing rule fires on free-text field _count_, but the value of a generated sentence comes from
+having prose worth characterising. Those are not the same thing, and on a model of mostly scalars
+the mechanical sentence is arguably the better one.
+
+Not acted on. Worth remembering when there is real usage, so the question asked then is whether
+generated sentences earn their place on models like that one, rather than only whether they fire
+often enough.

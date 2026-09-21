@@ -245,9 +245,12 @@ export interface ItemDisclosure {
  */
 export const discloseItem = (item: TimelineItem): ItemDisclosure => {
     const runs = runsOf(item);
-    // The row shows its own sentence in the header when it maps onto a single run, and that header
-    // is on screen whether the row is open or closed.
-    const carriedByRow = runs.length === 1 && sentenceFor(runs[0]!) !== null;
+
+    // A row that maps onto a single run *is* that run's heading, and the header stays on screen
+    // when the row opens. So the expansion repeats none of it — not the sentence, and not the
+    // pending note either, which is the same rule and not a second one. Where a row holds several
+    // runs the header can only speak for the row, and each run states its own.
+    const soleRun = runs.length === 1;
 
     return {
         hasSentence: runs.some(run => sentenceFor(run) !== null),
@@ -256,9 +259,14 @@ export const discloseItem = (item: TimelineItem): ItemDisclosure => {
 
             return {
                 id: run.id,
-                summary: carriedByRow ? null : summary,
-                pending: run.records.some(record => record.summaryPending === true),
-                grouped: run.records.length > 1 && summary !== null,
+                summary: soleRun ? null : summary,
+                pending: soleRun
+                    ? false
+                    : run.records.some(record => record.summaryPending === true),
+                // No wrapper for a sole run: there is nothing in the expansion to distinguish its
+                // saves from, and a box around all of them would suggest a grouping that carries
+                // no information.
+                grouped: !soleRun && run.records.length > 1 && summary !== null,
                 saves: run.records.map(record => ({
                     id: record.id,
                     timestamp: record.timestamp,

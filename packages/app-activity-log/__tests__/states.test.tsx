@@ -550,6 +550,132 @@ describe("summaries, of which only one state is a state", () => {
         );
     });
 
+    it("shows a single run's sentence once, collapsed and expanded alike", () => {
+        // The duplication this shape removed: the header stays on screen when a row opens, so a
+        // sentence rendered again at the top of the expansion appeared twice.
+        const { text } = renderState([
+            record({
+                changeset: [{ path: "body", label: "Body" }],
+                summary: SENTENCE,
+                summaryKind: "ai"
+            })
+        ]);
+
+        expect(text().match(/Rewrote the pricing heading/g)).toHaveLength(1);
+
+        fireEvent.click(screen.getByRole("button", { name: /edited Body/ }));
+
+        expect(text().match(/Rewrote the pricing heading/g)).toHaveLength(1);
+    });
+
+    it("heads each run with its sentence and puts that run's saves beneath it", () => {
+        // The save in the middle belongs to the first run and sits second in time, so a reader
+        // ordering by position would put it under the wrong sentence. Membership is read from the
+        // record, which is why the row can be interleaved and still group correctly.
+        const { text } = renderState([
+            record({
+                id: "a",
+                timestamp: at(30),
+                changeset: [{ path: "alpha", label: "Alpha" }],
+                summary: "Reworked the first run.",
+                summaryKind: "ai"
+            }),
+            record({
+                id: "x",
+                timestamp: at(25),
+                changeset: [{ path: "xray", label: "Xray" }],
+                summary: "A different run entirely.",
+                summaryKind: "ai"
+            }),
+            record({
+                id: "b",
+                timestamp: at(20),
+                changeset: [{ path: "beta", label: "Beta" }],
+                summaryRunId: "a"
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 3 saves/ }));
+
+        const rendered = text();
+
+        // The first run's sentence, then both of its saves, and only then the second run.
+        expect(rendered.indexOf("Reworked the first run.")).toBeLessThan(rendered.indexOf("Alpha"));
+        expect(rendered.indexOf("Alpha")).toBeLessThan(rendered.indexOf("Beta"));
+        expect(rendered.indexOf("Beta")).toBeLessThan(
+            rendered.indexOf("A different run entirely.")
+        );
+        expect(rendered.indexOf("A different run entirely.")).toBeLessThan(
+            rendered.indexOf("Xray")
+        );
+    });
+
+    it("gives a record that joined no run a run of its own", () => {
+        // The unsummarised majority, and the case a client-side fallback would have collapsed into
+        // one enormous run.
+        const { text } = renderState([
+            record({
+                id: "a",
+                timestamp: at(30),
+                changeset: [{ path: "alpha", label: "Alpha" }],
+                summary: "One save, one run.",
+                summaryKind: "deterministic"
+            }),
+            record({
+                id: "b",
+                timestamp: at(20),
+                changeset: [{ path: "beta", label: "Beta" }],
+                summary: "Another save, another run.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        const rendered = text();
+
+        expect(rendered.indexOf("One save, one run.")).toBeLessThan(rendered.indexOf("Alpha"));
+        expect(rendered.indexOf("Alpha")).toBeLessThan(
+            rendered.indexOf("Another save, another run.")
+        );
+        expect(rendered.indexOf("Another save, another run.")).toBeLessThan(
+            rendered.indexOf("Beta")
+        );
+    });
+
+    it("puts pending against the run waiting for it, never beside a settled sentence", () => {
+        // What the screenshot showed: a settled sentence with "Summarising…" beneath it claims
+        // that sentence is the one being worked on. The job in flight was always a different run.
+        const { text } = renderState([
+            record({
+                id: "a",
+                timestamp: at(30),
+                changeset: [{ path: "alpha", label: "Alpha" }],
+                summary: "Settled long ago.",
+                summaryKind: "ai"
+            }),
+            record({
+                id: "b",
+                timestamp: at(20),
+                changeset: [{ path: "beta", label: "Beta" }],
+                summaryPending: true
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        const rendered = text();
+
+        // The row header says the row is waiting, which is true and carries no sentence beside it.
+        expect(rendered.indexOf("Summarising")).toBeLessThan(rendered.indexOf("Settled long ago."));
+
+        // Inside the expansion the note sits with the run that is waiting: after the settled run's
+        // sentence and its save, and before the waiting run's own save.
+        expect(rendered.indexOf("Settled long ago.")).toBeLessThan(rendered.indexOf("Alpha"));
+        expect(rendered.indexOf("Alpha")).toBeLessThan(rendered.lastIndexOf("Summarising"));
+        expect(rendered.lastIndexOf("Summarising")).toBeLessThan(rendered.indexOf("Beta"));
+    });
+
     it("says a summary is coming, which is the only state it distinguishes", () => {
         // On the older save, which is where pending really sits: the save that dispatched the job
         // carries the values, and later saves join it.
@@ -582,8 +708,11 @@ describe("summaries, of which only one state is a state", () => {
         expect(rendered).not.toMatch(/summar/i);
     });
 
-    it("renders a settled-without-summary row exactly like one that never qualified", () => {
-        // The indistinguishability is the property, so it is asserted rather than assumed.
+    it("renders a suppressed sentence exactly like one that never existed", () => {
+        // Suppression strips the sentence server-side and leaves the record otherwise intact, so
+        // what arrives is a record with no summary — the same shape as a save that never qualified,
+        // one whose job failed, and one the sweeper reclaimed. All four fall back to the field-name
+        // description, which is what the timeline showed before summaries existed.
         const failed = renderState([
             record({ id: "r", changeset: [{ path: "body", label: "Body" }], summaryPending: false })
         ]);

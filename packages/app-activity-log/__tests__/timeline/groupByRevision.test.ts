@@ -422,12 +422,44 @@ describe("discloseItem", () => {
     it("does not wrap a run of several that produced no sentence", () => {
         // Without a sentence to head it a run is invisible to a reader, and a box around it would
         // assert a grouping that says nothing.
+        //
+        // Two runs on purpose: with one, the sole-run rule would make this false anyway and the
+        // test would pass without the sentence condition doing any work.
         const [item] = collapseConsecutive([
             record({ id: "a", timestamp: at(10, 20) }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Reworded the title." })
+        ]);
+
+        const runs = discloseItem(item!).runs;
+
+        expect(runs[0]!.saves).toHaveLength(2);
+        expect(runs[0]!.grouped).toBe(false);
+    });
+
+    it("does not wrap the only run in a row, however many saves it covers", () => {
+        // Its sentence is in the row's header, so there is nothing in the expansion to distinguish
+        // these saves from. A box around every save in the row would assert a grouping that
+        // carries no information.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
             record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" })
         ]);
 
-        expect(discloseItem(item!).runs[0]!.grouped).toBe(false);
+        const runs = discloseItem(item!).runs;
+
+        expect(runs).toHaveLength(1);
+        expect(runs[0]!.saves).toHaveLength(2);
+        expect(runs[0]!.grouped).toBe(false);
+    });
+
+    it("does not repeat the row's pending note inside the expansion", () => {
+        // The same rule as the sentence, not a second one: a row with a single run is that run's
+        // heading, and the header is on screen when the row opens.
+        const [item] = collapseConsecutive([record({ id: "a", summaryPending: true })]);
+
+        expect(summariseItem(item!).summaryPending).toBe(true);
+        expect(discloseItem(item!).runs[0]!.pending).toBe(false);
     });
 
     it("withholds the run's sentence from the expansion when the row already shows it", () => {
