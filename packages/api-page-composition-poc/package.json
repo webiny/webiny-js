@@ -1,0 +1,37 @@
+{
+  "name": "@webiny/api-page-composition-poc",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-page-composition-poc"
+  },
+  "description": "THROWAWAY PROOF OF CONCEPT. Composes Website Builder pages from a component-extraction run so a migrated site can be demonstrated end to end. Not the migration path — see the README.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@webiny/api-component-extraction": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-graphql": "0.0.0",
+    "@webiny/api-website-builder": "0.0.0",
+    "@webiny/background-tasks": "0.0.0",
+    "@webiny/feature": "0.0.0",
+    "@webiny/website-builder-sdk": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "webiny": {
+    "publishFrom": "dist"
+  }
+}

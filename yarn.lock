@@ -11392,6 +11392,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-page-composition-poc@npm:0.0.0, @webiny/api-page-composition-poc@workspace:packages/api-page-composition-poc":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-page-composition-poc@workspace:packages/api-page-composition-poc"
+  dependencies:
+    "@webiny/api-component-extraction": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-graphql": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/background-tasks": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/website-builder-sdk": "npm:0.0.0"
+    typescript: "npm:^7.0.2"
+    vitest: "npm:^4.1.10"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-record-locking@npm:0.0.0, @webiny/api-record-locking@workspace:packages/api-record-locking":
   version: 0.0.0-use.local
   resolution: "@webiny/api-record-locking@workspace:packages/api-record-locking"
@@ -28281,6 +28298,7 @@ __metadata:
     "@webiny/api-headless-cms-utils-os": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
+    "@webiny/api-page-composition-poc": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-theme": "npm:0.0.0"
     "@webiny/api-theme-extraction": "npm:0.0.0"

@@ -77,6 +77,10 @@ export const Extensions = () => {
             <Api.Extension
                 src={"@/extensions/componentExtraction/ComponentExtractionExtension.ts"}
             />
+            {/* THROWAWAY PROOF OF CONCEPT: turns a finished extraction run into published Website
+                Builder pages so a migrated site can be browsed for a demo. Not the migration path —
+                see the README of @webiny/api-page-composition-poc. */}
+            <Api.Extension src={"@/extensions/pageCompositionPoc/PageCompositionPocExtension.ts"} />
             <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
             {/* Written with `:orderId` on purpose: API Gateway needs `{orderId}` and the router
                 needs `:orderId`, and the extension converts for each. Either spelling should work. */}
