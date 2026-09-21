@@ -29,6 +29,7 @@ import { extractComponentManifest } from "~/manifest/extractComponentManifest.js
 import { buildPageDocument, type ComponentPlacement } from "~/pages/buildPageDocument.js";
 import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
+import { deriveCompositeInputs } from "~/pages/deriveCompositeInputs.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
 
@@ -289,21 +290,29 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         });
 
         /*
-         * Start from the component's own defaults, then overlay only the inputs a derived string can
-         * legitimately fill.
+         * Three layers, in increasing order of confidence.
          *
-         * Two reasons, both learned the hard way. A list input handed a string throws outright
-         * (`ComponentInputTraverser` does `value.forEach` once `node.list` is set), and passing any
-         * `inputs` at all makes `ElementFactory` ignore `defaults.inputs` entirely — so filtering
-         * without merging would strip the sample items the generator was told to provide and render an
-         * empty grid.
+         * The component's own defaults sit underneath, because passing any `inputs` at all makes
+         * `ElementFactory` ignore `defaults.inputs` entirely — so anything not derived would come out
+         * empty rather than falling back to the generated sample.
          *
-         * The effect is that scalars carry this page's real copy while lists and composites keep the
-         * generated defaults. That is a fidelity gap, not a rendering one: a features grid shows the
-         * model's example cards rather than the page's actual cards. It belongs in the discard log —
-         * per-item content needs the composite alignment that Assemble's contract cannot yet support.
+         * Composites and lists go on top of that, derived element-wise from this page's captured
+         * section: a footer's real columns and destinations instead of the model's `href: "#"`
+         * placeholders.
+         *
+         * Scalars go on last. They are the most reliable of the three (aligned against the cluster
+         * representative) and a scalar and a composite never name the same input, so the ordering
+         * only matters for reading the code.
+         *
+         * A derived string is still bound ONLY to a non-list scalar input: a list input handed a
+         * string throws outright inside `ComponentInputTraverser`.
          */
         const inputs: Record<string, unknown> = { ...(component.manifest.defaults?.inputs ?? {}) };
+
+        if (node) {
+            Object.assign(inputs, deriveCompositeInputs({ node, manifest: component.manifest }));
+        }
+
         for (const prop of derived) {
             if (component.scalarInputs.has(prop.name)) {
                 inputs[prop.name] = prop.value;
