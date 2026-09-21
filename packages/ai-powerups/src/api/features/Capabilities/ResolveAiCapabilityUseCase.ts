@@ -4,6 +4,7 @@ import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { sdkNameFromModel } from "~/api/features/shared/modelId.js";
 import { AiCapability, ResolveAiCapabilityUseCase } from "./abstractions.js";
 import type { IResolvedAiCapability } from "./abstractions.js";
+import { isCapabilityEnabled } from "./types.js";
 import type { AiCapabilityOverride } from "./types.js";
 import type { AiModelRoleId } from "~/api/features/ModelRoles/index.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
@@ -52,8 +53,22 @@ class ResolveAiCapabilityUseCaseImpl implements ResolveAiCapabilityUseCase.Inter
         }
 
         const settings = settingsResult.value;
-        const override: AiCapabilityOverride =
-            settings.capabilities?.overrides?.[capabilityId] ?? {};
+        const entry = settings.capabilities?.items?.[capabilityId];
+
+        /*
+         * Checked here rather than at every call site, so a capability switched off in settings is
+         * off for the GraphQL mutation as much as for the button that usually triggers it. The
+         * admin hides the affordance too, but that is a courtesy and this is the actual gate.
+         */
+        if (!isCapabilityEnabled(entry)) {
+            return Result.fail(
+                new Error(
+                    `"${capability.label}" is switched off. Turn it back on under ${SETTINGS_PATH} → Capabilities.`
+                )
+            );
+        }
+
+        const override: AiCapabilityOverride = entry?.overrides ?? {};
 
         const selection = this.selectModel(settings, capability.defaultRole, override);
         if (selection.isFail()) {

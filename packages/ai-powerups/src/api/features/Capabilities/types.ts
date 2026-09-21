@@ -29,6 +29,29 @@ export interface AiCapabilityOverride {
 }
 
 /**
+ * Everything a project decided about one capability.
+ *
+ * Two separate concerns, deliberately not flattened into one bag of optional fields. `enabled` is a
+ * boolean and the rest are strings, and an emptiness check that has to judge both at once is how
+ * "the user switched this off" ends up indistinguishable from "the user typed nothing".
+ */
+export interface AiCapabilityEntry {
+    /**
+     * Absent means enabled.
+     *
+     * A licence that grants a capability turns it on immediately; nobody has to come here and opt
+     * in. The only thing worth recording is the decision to switch one *off*, so `false` is the
+     * only value that ever reaches storage. `true` is accepted on the way in and then dropped,
+     * because it says exactly what absence already says.
+     *
+     * Read it as `enabled !== false`, never as `!enabled`. The second is true for `undefined` as
+     * well, which silently disables every capability nobody has touched.
+     */
+    enabled?: boolean;
+    overrides: AiCapabilityOverride;
+}
+
+/**
  * Keyed by capability id.
  *
  * Unlike model roles this cannot be a union of known keys: features register capabilities at
@@ -36,14 +59,14 @@ export interface AiCapabilityOverride {
  *
  * `Partial` is doing real work though. A bare `Record<string, T>` claims every string key is
  * present, so a lookup types as `T` and the `?? {}` every caller writes looks redundant to the
- * compiler. Most capabilities have no override at all, so a miss is the common case.
+ * compiler. Most capabilities are untouched, so a miss is the common case.
  */
-export type AiCapabilityOverrides = Partial<Record<string, AiCapabilityOverride>>;
+export type AiCapabilityEntries = Partial<Record<string, AiCapabilityEntry>>;
 
 declare module "~/api/types.js" {
     interface IAiPowerUpsSettings {
         capabilities: {
-            overrides: AiCapabilityOverrides;
+            items: AiCapabilityEntries;
         };
     }
 }
@@ -51,5 +74,9 @@ declare module "~/api/types.js" {
 export type CapabilitiesSettings = IAiPowerUpsSettings["capabilities"];
 
 export interface PersistedCapabilities {
-    overrides?: AiCapabilityOverrides;
+    items?: AiCapabilityEntries;
 }
+
+/** Absent means enabled. Spelled out once so no call site has to get the comparison right. */
+export const isCapabilityEnabled = (entry: AiCapabilityEntry | undefined): boolean =>
+    entry?.enabled !== false;

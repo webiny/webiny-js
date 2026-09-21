@@ -14,7 +14,7 @@ const handler = buildHandler();
 
 describe("CapabilitiesHandler", () => {
     /*
-     * The admin form sends `null` for a field nobody has touched, and every field in an override is
+     * The admin form sends `null` for a field nobody has touched, and every field in an entry is
      * untouched by default. The first version of this schema required strings, so saving the
      * settings screen without configuring a single capability failed with four copies of
      * "Invalid input: expected string, received null" and no indication of which section was at
@@ -22,12 +22,15 @@ describe("CapabilitiesHandler", () => {
      */
     it("accepts the nulls the form sends for untouched fields", () => {
         const result = handler.inputSchema.safeParse({
-            overrides: {
+            items: {
                 "cms.generateEntry": {
-                    roleId: null,
-                    connectionId: null,
-                    model: null,
-                    additionalInstructions: null
+                    enabled: null,
+                    overrides: {
+                        roleId: null,
+                        connectionId: null,
+                        model: null,
+                        additionalInstructions: null
+                    }
                 }
             }
         });
@@ -35,14 +38,17 @@ describe("CapabilitiesHandler", () => {
         expect(result.success).toBe(true);
     });
 
-    it("accepts a fully configured override", () => {
+    it("accepts a fully configured entry", () => {
         const result = handler.inputSchema.safeParse({
-            overrides: {
+            items: {
                 "cms.generateEntry": {
-                    roleId: "fast",
-                    connectionId: "conn-1",
-                    model: "anthropic/claude-haiku-4-5",
-                    additionalInstructions: "Be brief."
+                    enabled: false,
+                    overrides: {
+                        roleId: "fast",
+                        connectionId: "conn-1",
+                        model: "anthropic/claude-haiku-4-5",
+                        additionalInstructions: "Be brief."
+                    }
                 }
             }
         });
@@ -52,47 +58,118 @@ describe("CapabilitiesHandler", () => {
 
     it("still rejects a role that does not exist", () => {
         const result = handler.inputSchema.safeParse({
-            overrides: { "cms.generateEntry": { roleId: "cheapest" } }
+            items: { "cms.generateEntry": { overrides: { roleId: "cheapest" } } }
         });
 
         expect(result.success).toBe(false);
     });
 
-    it("drops an override where every field is empty", async () => {
+    it("drops an entry where nothing was decided", async () => {
         const stored = await handler.mapToStorage(
             {
-                overrides: {
+                items: {
                     "cms.generateEntry": {
-                        roleId: null,
-                        connectionId: null,
-                        additionalInstructions: "   "
+                        overrides: {
+                            roleId: null,
+                            connectionId: null,
+                            additionalInstructions: "   "
+                        }
                     },
-                    "wb.generatePage": { additionalInstructions: "Keep it short." }
-                }
-            },
-            null
-        );
-
-        expect(Object.keys((stored as any).overrides)).toEqual(["wb.generatePage"]);
-    });
-
-    it("keeps nulls and empty strings out of a stored override", async () => {
-        const stored = await handler.mapToStorage(
-            {
-                overrides: {
                     "wb.generatePage": {
-                        roleId: null,
-                        connectionId: "",
-                        model: null,
-                        additionalInstructions: "Keep it short."
+                        overrides: { additionalInstructions: "Keep it short." }
                     }
                 }
             },
             null
         );
 
-        expect((stored as any).overrides["wb.generatePage"]).toEqual({
-            additionalInstructions: "Keep it short."
+        expect(Object.keys((stored as any).items)).toEqual(["wb.generatePage"]);
+    });
+
+    /*
+     * The reason `enabled` is separated from the overrides rather than sitting alongside them.
+     *
+     * Switching a capability off is usually the *only* thing someone changes about it, so the entry
+     * carries a meaningful `false` and four empty strings. An emptiness check that judges the whole
+     * entry by its strings — or that spells the test `!entry.enabled` instead of
+     * `entry.enabled !== false` — reads that as blank, drops the row, and the capability comes back
+     * enabled on the next load. The switch appears to do nothing at all.
+     */
+    it("keeps an entry whose only content is being switched off", async () => {
+        const stored = await handler.mapToStorage(
+            {
+                items: {
+                    "fm.imageEnrichment": {
+                        enabled: false,
+                        overrides: {
+                            roleId: null,
+                            connectionId: null,
+                            model: null,
+                            additionalInstructions: null
+                        }
+                    }
+                }
+            },
+            null
+        );
+
+        expect((stored as any).items["fm.imageEnrichment"]).toEqual({
+            enabled: false,
+            overrides: {}
+        });
+    });
+
+    /*
+     * A licence that grants a capability enables it, with nothing written down. Storing `true`
+     * would be storing the default a second time, and would then disagree with it the day the
+     * default moves.
+     */
+    it("does not persist an entry that only says it is enabled", async () => {
+        const stored = await handler.mapToStorage(
+            { items: { "cms.generateEntry": { enabled: true, overrides: {} } } },
+            null
+        );
+
+        expect((stored as any).items).toEqual({});
+    });
+
+    it("drops `enabled: true` from an entry that has real overrides", async () => {
+        const stored = await handler.mapToStorage(
+            {
+                items: {
+                    "cms.generateEntry": {
+                        enabled: true,
+                        overrides: { additionalInstructions: "Be brief." }
+                    }
+                }
+            },
+            null
+        );
+
+        expect((stored as any).items["cms.generateEntry"]).toEqual({
+            overrides: { additionalInstructions: "Be brief." }
+        });
+    });
+
+    it("keeps nulls and empty strings out of a stored override", async () => {
+        const stored = await handler.mapToStorage(
+            {
+                items: {
+                    "wb.generatePage": {
+                        overrides: {
+                            roleId: null,
+                            connectionId: "",
+                            model: null,
+                            additionalInstructions: "Keep it short."
+                        }
+                    }
+                }
+            },
+            null
+        );
+
+        expect((stored as any).items["wb.generatePage"]).toEqual({
+            overrides: { additionalInstructions: "Keep it short." }
         });
     });
 
@@ -104,15 +181,17 @@ describe("CapabilitiesHandler", () => {
      */
     it("rejects a prompt override, which is no longer a thing", () => {
         const result = handler.inputSchema.safeParse({
-            overrides: { "cms.compareEntryRevisions": { guidance: "Mine now." } }
+            items: { "cms.compareEntryRevisions": { overrides: { guidance: "Mine now." } } }
         });
 
         // Zod strips the unknown key rather than failing, so the check is that it never lands.
         expect(result.success).toBe(true);
-        expect(result.data).toEqual({ overrides: { "cms.compareEntryRevisions": {} } });
+        expect(result.data).toEqual({
+            items: { "cms.compareEntryRevisions": { overrides: {} } }
+        });
     });
 
-    it("round-trips an absent section to an empty override map", () => {
-        expect(handler.mapFromStorage(undefined)).toEqual({ overrides: {} });
+    it("round-trips an absent section to an empty map", () => {
+        expect(handler.mapFromStorage(undefined)).toEqual({ items: {} });
     });
 });
