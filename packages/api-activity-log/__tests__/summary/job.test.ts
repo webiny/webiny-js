@@ -11,6 +11,7 @@ import { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/api/features/Cap
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import type { ActivityRecord } from "~/core/types.js";
 import { SummariseActivityTaskDefinition } from "~/cms/summary/SummariseActivityTaskDefinition.js";
+import { ActivitySummaryConfig, DEFAULT_ACTIVITY_SUMMARY_CONFIG } from "~/cms/summary/config.js";
 
 /**
  * The job, and above all its failure paths.
@@ -99,6 +100,7 @@ const harness = (options: HarnessOptions = {}) => {
     );
 
     container.registerInstance(Ai, { generateText } as unknown as Ai.Interface);
+    container.registerInstance(ActivitySummaryConfig, DEFAULT_ACTIVITY_SUMMARY_CONFIG);
     container.register(SummariseActivityTaskDefinition);
 
     const definition = container.resolve(TaskDefinition);
@@ -152,7 +154,8 @@ describe("the happy path", () => {
 
         expect(clearedTheBundle(settleSummary)).toEqual({
             recordId: "rec-1",
-            summary: "Rewrote the hero heading and the body copy."
+            summary: "Rewrote the hero heading and the body copy.",
+            kind: "ai"
         });
         expect(calls.done).toHaveBeenCalled();
     });
@@ -227,8 +230,10 @@ describe("failure paths, each of which owes a cleared bundle", () => {
         expect(clearedTheBundle(settleSummary)).toMatchObject({ reason: "generation-failed" });
     });
 
-    it("never stores a summary on a path that failed", async () => {
-        // Belt and braces across all four: a failure must not write prose.
+    it("never stores the model's output on a path that failed", async () => {
+        // Belt and braces across all three: whatever the provider returned, it does not reach the
+        // record. What does reach it is the mechanical render of the same values — which is not
+        // the model's prose and is marked as not being it.
         for (const options of [
             { capabilityFails: true },
             { generate: async () => ({ text: "" }) },
@@ -239,8 +244,30 @@ describe("failure paths, each of which owes a cleared bundle", () => {
 
             await handler.run({ input, controller: ctrl } as never);
 
-            expect(settleSummary.mock.calls[0]![0].summary).toBeUndefined();
+            const settled = settleSummary.mock.calls[0]![0];
+
+            expect(settled.summary).not.toContain("x".repeat(50));
+            expect(settled.kind).toBe("deterministic");
         }
+    });
+
+    it("falls back to describing the change rather than to saying nothing", async () => {
+        // A provider outage is no reason for a reader to get less than a save that never qualified
+        // for a model at all. The job holds the same values the renderer would have used.
+        const { handler, settleSummary } = harness({
+            generate: async () => {
+                throw new Error("provider timed out");
+            }
+        });
+        const { controller: ctrl } = controller();
+
+        await handler.run({ input, controller: ctrl } as never);
+
+        expect(clearedTheBundle(settleSummary)).toMatchObject({
+            reason: "generation-failed",
+            kind: "deterministic"
+        });
+        expect(settleSummary.mock.calls[0]![0].summary).toContain("Heading");
     });
 });
 
@@ -256,7 +283,11 @@ describe("the length ceiling", () => {
 
         await handler.run({ input, controller: ctrl } as never);
 
-        expect(clearedTheBundle(settleSummary)).toEqual({ recordId: "rec-1", summary: text });
+        expect(clearedTheBundle(settleSummary)).toEqual({
+            recordId: "rec-1",
+            summary: text,
+            kind: "ai"
+        });
     });
 
     it("rejects one character more", async () => {
@@ -284,8 +315,11 @@ describe("the length ceiling", () => {
         await handler.run({ input, controller: ctrl } as never);
 
         const settled = clearedTheBundle(settleSummary);
-        expect(settled.summary).toBeUndefined();
-        expect(settled).toMatchObject({ reason: "generation-failed" });
+
+        // The over-long response is refused outright — not trimmed to fit, which retention would
+        // make permanent. What lands instead is the mechanical render, marked as such.
+        expect(settled.summary).not.toContain("kept going");
+        expect(settled).toMatchObject({ reason: "generation-failed", kind: "deterministic" });
     });
 
     it("measures the trimmed text, so padding does not cost a summary", async () => {
@@ -299,7 +333,11 @@ describe("the length ceiling", () => {
 
         await handler.run({ input, controller: ctrl } as never);
 
-        expect(clearedTheBundle(settleSummary)).toEqual({ recordId: "rec-1", summary: text });
+        expect(clearedTheBundle(settleSummary)).toEqual({
+            recordId: "rec-1",
+            summary: text,
+            kind: "ai"
+        });
     });
 });
 

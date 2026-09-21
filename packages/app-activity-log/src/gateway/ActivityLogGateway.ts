@@ -79,6 +79,7 @@ const LIST_ACTIVITY_QUERY = /* GraphQL */ `
                 }
                 hasNote
                 summary
+                summaryKind
                 summaryPending
             }
             meta {

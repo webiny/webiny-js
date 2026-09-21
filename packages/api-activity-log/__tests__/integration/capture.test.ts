@@ -157,8 +157,16 @@ describe("capture, through a real entry write", () => {
         expect(pathsIn(record)).toEqual(["title"]);
     });
 
-    it("records the path and the label, never the value", async () => {
-        // The feature's central promise, asserted against a real write rather than a fake.
+    it("keeps values out of the changeset, and states where they do appear", async () => {
+        // The feature's central promise, asserted against a real write rather than a fake — and
+        // narrowed, deliberately, when summaries arrived.
+        //
+        // The changeset records which field changed and never what it became. That has not moved
+        // and this asserts it exactly. What has moved is the record as a whole: a summary is prose
+        // about the change and quotes short values on purpose, so the blanket "no value appears
+        // anywhere on this record" this test used to make is no longer true and must not be
+        // asserted as though it were. A test that still claimed it would have to be deleted the
+        // first time someone read it, which is worse than one that says the real boundary.
         const record = await withCms(async cms => {
             const entry = await cms.create({ title: "Public" });
             await cms.update(entry.id, { title: "Board pay rise of twelve percent" });
@@ -168,9 +176,19 @@ describe("capture, through a real entry write", () => {
             return records.find(r => r.action === "entry.update");
         });
 
+        // The line that holds: paths and labels, nothing else.
         expect(record!.changeset).toEqual([{ path: "title", label: "Title" }]);
-        expect(JSON.stringify(record)).not.toContain("Board pay rise");
-        expect(JSON.stringify(record)).not.toContain("Public");
+        expect(JSON.stringify(record!.changeset)).not.toContain("Board pay rise");
+        expect(JSON.stringify(record!.changeset)).not.toContain("Public");
+
+        // The line that moved: the summary quotes both sides, and says a machine wrote it from the
+        // values rather than a model writing it about them.
+        expect(record!.summary).toContain("Public");
+        expect(record!.summary).toContain("Board pay rise");
+        expect(record!.summaryKind).toBe("deterministic");
+
+        // And the values themselves are not kept. Only the sentence made from them is.
+        expect(record!.summaryState?.values).toBeUndefined();
     });
 
     it("records a nested change at its full path", async () => {

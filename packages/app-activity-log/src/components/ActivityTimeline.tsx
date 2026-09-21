@@ -25,7 +25,12 @@ import { describeAction, type ActionBadgeTone } from "~/timeline/describeAction.
 import { describeActor, type MachineIcon } from "~/timeline/describeActor.js";
 import type { DescribedChange } from "~/timeline/describeChange.js";
 import type { TimelineCoverage } from "~/timeline/deriveTimelineState.js";
-import { discloseItem, summariseItem, type DisclosedSave } from "~/timeline/summariseItem.js";
+import {
+    discloseItem,
+    summariseItem,
+    type DisclosedSave,
+    type TimelineSummary
+} from "~/timeline/summariseItem.js";
 import type { TimelineItem } from "~/timeline/collapseConsecutive.js";
 import { useActivityTimeline } from "~/hooks/useActivityTimeline.js";
 import type {
@@ -189,12 +194,14 @@ const ChangeRow = ({ change }: { change: DescribedChange }) => {
  * Deliberately not a state: it appears only where a summary does, says the same thing every time,
  * and leaves the reader nothing to interpret. Absence still means absence and never a fault.
  */
-const SummaryLine = ({ text }: { text: string }) => (
+const SummaryLine = ({ summary }: { summary: TimelineSummary }) => (
     <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
-        <Text size={"sm"} className={"text-neutral-muted"}>
-            {"AI-generated · "}
-        </Text>
-        {text}
+        {summary.generated ? (
+            <Text size={"sm"} className={"text-neutral-muted"}>
+                {"AI-generated · "}
+            </Text>
+        ) : null}
+        {summary.text}
     </Text>
 );
 
@@ -248,8 +255,8 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
                         "flex flex-col gap-xs border-b-sm border-neutral-dimmed bg-neutral-base px-sm-extra py-sm"
                     }
                 >
-                    {disclosure.summaries.map((text, index) => (
-                        <SummaryLine key={index} text={text} />
+                    {disclosure.summaries.map((summary, index) => (
+                        <SummaryLine key={index} summary={summary} />
                     ))}
                 </div>
             ) : null}
@@ -364,7 +371,7 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                               not. Nothing here stands in for it: a row with no summary reads as a
                               row, not as a row missing something.
                             */}
-                            {summary.summary ? <SummaryLine text={summary.summary} /> : null}
+                            {summary.summary ? <SummaryLine summary={summary.summary} /> : null}
                             {summary.summaryPending ? (
                                 <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
                                     {"Summarising…"}

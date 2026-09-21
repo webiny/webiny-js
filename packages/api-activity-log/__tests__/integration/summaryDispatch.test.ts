@@ -276,20 +276,40 @@ describe("a run of saves", () => {
     });
 });
 
-describe("a save with nothing to summarise", () => {
-    it("records why and dispatches nothing", async () => {
-        const record = await withCms(async cms => {
-            const created = await cms.create({ title: "Short", author: { name: "Ada" } });
+describe("a save no model would improve on", () => {
+    const shortSave = () =>
+        withCms(async cms => {
+            const created = await cms.create({ title: "Starter", author: { name: "Ada" } });
 
-            await cms.update(created.id, { title: "Shorter", author: { name: "Ada" } });
+            await cms.update(created.id, { title: "Essential", author: { name: "Ada" } });
 
             const records = await cms.activity(created.entryId);
             return records.find(r => r.action === "entry.update")!;
         });
 
+    it("is described from its values, inside the write", async () => {
+        // The commonest save there is. It gets the same kind of sentence the model would have
+        // produced, arrived at mechanically, and it costs nothing to produce.
+        const record = await shortSave();
+
+        expect(record.summary).toBe("Changed Title from Starter to Essential.");
+        expect(record.summaryKind).toBe("deterministic");
+    });
+
+    it("records why the model was not used, and dispatches nothing", async () => {
+        const record = await shortSave();
+
         expect(record.summaryState?.reason).toBe("too-few-text-fields");
-        expect(record.summaryState?.values).toBeUndefined();
         expect(triggers).toHaveLength(0);
+    });
+
+    it("stores no values, because nothing is coming to read them", async () => {
+        // The privacy difference between the two paths, asserted through a real write: the model's
+        // path has to park the values on the record until its job runs, and this one never does.
+        const record = await shortSave();
+
+        expect(record.summaryState?.values).toBeUndefined();
+        expect(record.summaryState?.valuesWrittenOn).toBeUndefined();
     });
 });
 

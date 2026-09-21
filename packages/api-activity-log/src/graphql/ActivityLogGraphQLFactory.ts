@@ -99,15 +99,23 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 """
                 hasNote: Boolean
                 """
-                A sentence describing what changed in this save, when one was generated. Null for
-                the overwhelming majority of records, which are described from the changeset
-                instead — a client must render that description and treat this as an enrichment,
-                never as the only thing it has to say.
+                A sentence describing what changed in this save, when there is one. Null where a
+                save had nothing to describe — a publish, a move, a purely structural edit — and a
+                client must still render the description it derives from the changeset, never
+                treating this as the only thing it has to say.
 
                 Unlike the changeset, a summary may quote content: it describes what the text now
                 says, so a fragment of that text can appear in it.
                 """
                 summary: String
+                """
+                How the summary was produced: "deterministic" for one rendered from the recorded
+                values, "ai" for one written by a model. Null when there is no summary.
+
+                Worth acting on rather than logging. A rendered summary is a restatement of what
+                was recorded; a model's is prose that can be wrong, and a client should say so.
+                """
+                summaryKind: String
                 """
                 True while a summary is being generated for this record. False once it has settled,
                 with or without one — so a client shows a pending state on this and an absent
@@ -196,6 +204,7 @@ const toGraphQL = (record: ActivityRecord) => ({
     subject: record.subject ?? null,
     hasNote: record.hasNote ?? null,
     summary: record.summary ?? null,
+    summaryKind: record.summaryKind ?? null,
     summaryPending: isSummaryPending(record)
 });
 

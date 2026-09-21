@@ -1,4 +1,4 @@
-# PR notes — AI summaries for entry activity records
+# PR notes — summaries for entry activity records
 
 Working notes for the pull request description. Accumulated per checkpoint so nothing has to be
 reconstructed at the end. Not part of the shipped behaviour.
@@ -88,3 +88,33 @@ recording because the next person to change that signature needs to know it happ
 
 Standing rule from Checkpoint 3: any test asserting that a guard, cap or refusal fires is verified by
 breaking the thing it guards. The full list belongs in Checkpoint 8.
+
+## Two generators, one summary
+
+A save is described either by a model or mechanically, never both, and the record says which
+(`summaryKind`). The routing rule decides, and its shape inverted when the renderer arrived: the
+caps that used to decide *whether a save is summarised* now decide only *whether a model is worth
+it*. They were written to bound what gets stored on a record and sent to a provider, and a
+mechanical render does neither — it reads values already in hand and stores one sentence.
+
+Only two outcomes now produce no summary at all: a non-interactive write, and a save with nothing to
+describe (a publish, a move, a purely structural edit).
+
+**The mechanical path is the stronger one on privacy.** It runs inside the recorder with the values
+already in hand, so it writes the finished sentence in the same append — no transient values on the
+record, no dispatch, no job, nothing for the sweeper to reclaim. The model's path has to park values
+on the record precisely because its job runs a minute later in another process.
+
+It is also the fallback when a model fails: the job holds the same values, so a provider outage now
+costs the reader nothing rather than costing them the sentence.
+
+**The disclosure consequence, stated plainly.** Value quoting moves from rare to normal. Before, a
+save with two short text fields recorded paths and labels and nothing else; now it records
+"Changed Tier from Starter to Essential", permanently, readable by anyone who may read the timeline.
+Over the sixteen representative saves measured earlier, 2 routed to a model and 8 routed
+`too-few-text-fields` — those 8 are the ones that begin quoting. The kind of disclosure is not new;
+the frequency is.
+
+The integration test that asserted the old absolute claim (`records the path and the label, never
+the value`) was rewritten rather than deleted. It now asserts the two halves separately: the
+changeset carries paths and labels and never a value, and the summary quotes both sides on purpose.

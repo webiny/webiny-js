@@ -36,7 +36,7 @@ export interface ItemSummary {
      * may not see all arrive here identically, deliberately: the row has its deterministic
      * description either way, and there is nothing for a reader to do about any of them.
      */
-    summary: string | null;
+    summary: TimelineSummary | null;
     /**
      * True while any save in the row is still waiting for its summary.
      *
@@ -47,11 +47,23 @@ export interface ItemSummary {
     summaryPending: boolean;
 }
 
+/** One summary, with how it was produced — which decides whether the row marks it. */
+export interface TimelineSummary {
+    text: string;
+    /** True when a model wrote it. False for one rendered from the recorded values. */
+    generated: boolean;
+}
+
 /** The summaries a row carries, newest first. Usually none, sometimes one, rarely more. */
-const summariesOf = (item: TimelineItem): string[] => {
+const summariesOf = (item: TimelineItem): TimelineSummary[] => {
     return item.records
-        .map(record => record.summary)
-        .filter((summary): summary is string => typeof summary === "string" && summary !== "");
+        .filter(record => typeof record.summary === "string" && record.summary !== "")
+        .map(record => ({
+            text: record.summary as string,
+            // Only a model's prose is marked. A rendered summary restates recorded values, which is
+            // what every other line on this timeline does, so marking it would say nothing.
+            generated: record.summaryKind === "ai"
+        }));
 };
 
 /**
@@ -112,7 +124,7 @@ export interface ItemDisclosure {
      * mapping does not cross the API, so pinning a sentence to individual rows here would be a
      * guess presented as a fact.
      */
-    summaries: string[];
+    summaries: TimelineSummary[];
     /** Every save the row stands for, newest first. */
     saves: DisclosedSave[];
     /**

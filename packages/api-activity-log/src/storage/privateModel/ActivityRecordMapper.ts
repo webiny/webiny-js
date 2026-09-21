@@ -6,6 +6,7 @@ import type {
     ActivitySummaryState,
     ActivityTargetType,
     ChangesetEntry,
+    SummaryKind,
     SummarySkipReason,
     SummaryValueEntry
 } from "~/core/types.js";
@@ -72,6 +73,7 @@ export const recordToValues = (record: ActivityRecordInput): ActivityRecordValue
         subjectLabel: record.subject?.label ?? null,
         hasNote: record.hasNote ?? null,
         summary: record.summary ?? null,
+        summaryKind: record.summaryKind ?? null,
         summaryTaskId: record.summaryState?.taskId ?? null,
         summaryValues: record.summaryState?.values ?? null,
         summaryValuesWrittenOn: record.summaryState?.valuesWrittenOn ?? null,
@@ -162,6 +164,7 @@ export const entryToRecord = (entry: CmsEntry<ActivityRecordValues>): ActivityRe
             ? {}
             : { hasNote: values.hasNote }),
         ...(values.summary ? { summary: values.summary } : {}),
+        ...(values.summaryKind ? { summaryKind: values.summaryKind as SummaryKind } : {}),
         ...(readSummaryState(values) ? { summaryState: readSummaryState(values) } : {})
     };
 };

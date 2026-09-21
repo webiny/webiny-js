@@ -46,7 +46,9 @@ class ActivityWriterImpl implements Abstraction.Interface {
                 truncated: params.truncated ?? false,
                 ...(params.subject ? { subject: params.subject } : {}),
                 ...(params.hasNote === undefined ? {} : { hasNote: params.hasNote }),
-                ...(params.summaryState ? { summaryState: params.summaryState } : {})
+                ...(params.summaryState ? { summaryState: params.summaryState } : {}),
+                ...(params.summary ? { summary: params.summary } : {}),
+                ...(params.summaryKind ? { summaryKind: params.summaryKind } : {})
             });
 
             if (result.isFail()) {

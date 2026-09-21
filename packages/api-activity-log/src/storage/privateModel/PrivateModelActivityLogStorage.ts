@@ -213,6 +213,7 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
                 {
                     values: {
                         summary: params.summary ?? null,
+                        summaryKind: params.kind ?? null,
                         summaryReason: params.reason ?? null,
                         // The obligation. Everything else on this write is bookkeeping; this is
                         // the part that stops content values outliving the job.

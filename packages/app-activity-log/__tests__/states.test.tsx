@@ -360,7 +360,11 @@ describe("summaries, of which only one state is a state", () => {
         // Every other line is a record of what was captured. This one was written by a model, it
         // is kept as long as the record is, and some of them will be wrong.
         const { text } = renderState([
-            record({ changeset: [{ path: "body", label: "Body" }], summary: SENTENCE })
+            record({
+                changeset: [{ path: "body", label: "Body" }],
+                summary: SENTENCE,
+                summaryKind: "ai"
+            })
         ]);
 
         expect(text()).toContain("AI-generated");
@@ -377,12 +381,14 @@ describe("summaries, of which only one state is a state", () => {
             record({
                 timestamp: at(50),
                 changeset: [{ path: "body", label: "Body" }],
-                summary: SENTENCE
+                summary: SENTENCE,
+                summaryKind: "ai"
             }),
             record({
                 timestamp: at(10),
                 changeset: [{ path: "title", label: "Title" }],
-                summary: "Reworded the page title."
+                summary: "Reworded the page title.",
+                summaryKind: "ai"
             })
         ]);
 

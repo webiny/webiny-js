@@ -46,6 +46,13 @@ export interface TimelineRecord {
      * leaves nothing missing, which is what makes suppression and failure invisible to a reader.
      */
     summary?: string | null;
+    /**
+     * How the summary was produced.
+     *
+     * The timeline marks a model's prose and leaves a rendered one unmarked, because a rendered
+     * summary is a restatement of what was recorded and everything else on this timeline is too.
+     */
+    summaryKind?: "ai" | "deterministic" | null;
     /** True while a summary is being generated. False once the record has settled, either way. */
     summaryPending?: boolean | null;
 }

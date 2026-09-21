@@ -8,9 +8,11 @@ import {
     withAdditionalInstructions
 } from "@webiny/ai-powerups/api/features/Capabilities/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
-import type { SummarySkipReason } from "~/core/types.js";
+import type { SummarySkipReason, SummaryValueEntry } from "~/core/types.js";
 import { ACTIVITY_LOG_SUMMARY_CAPABILITY } from "./capability.js";
 import { buildSummaryPrompt } from "./buildPrompt.js";
+import { renderSummary } from "./renderSummary.js";
+import { ActivitySummaryConfig } from "./config.js";
 import { SUMMARISE_ACTIVITY_TASK_ID } from "./taskId.js";
 
 export interface ISummariseActivityInput {
@@ -54,6 +56,7 @@ const MAX_SUMMARY_LENGTH = 600;
 class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummariseActivityInput> {
     constructor(
         private storage: ActivityLogStorage.Interface,
+        private config: ActivitySummaryConfig.Interface,
         private resolveCapability?: ResolveAiCapabilityUseCase.Interface,
         private ai?: Ai.Interface
     ) {}
@@ -90,7 +93,8 @@ class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummari
                 controller,
                 input.recordId,
                 "ai-unavailable",
-                "AI Power-Ups is not installed"
+                "AI Power-Ups is not installed",
+                values
             );
         }
 
@@ -101,7 +105,8 @@ class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummari
                 controller,
                 input.recordId,
                 "ai-unavailable",
-                resolved.error.message
+                resolved.error.message,
+                values
             );
         }
 
@@ -125,7 +130,8 @@ class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummari
                 controller,
                 input.recordId,
                 "generation-failed",
-                error instanceof Error ? error.message : String(error)
+                error instanceof Error ? error.message : String(error),
+                values
             );
         }
 
@@ -136,13 +142,15 @@ class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummari
                 controller,
                 input.recordId,
                 "generation-failed",
-                "unusable response"
+                "unusable response",
+                values
             );
         }
 
         const stored = await this.storage.settleSummary({
             recordId: input.recordId,
-            summary: text
+            summary: text,
+            kind: "ai"
         });
 
         if (stored.isFail()) {
@@ -155,17 +163,30 @@ class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummari
     }
 
     /**
-     * Records why there is no summary, and clears the bundle in the same write.
+     * Falls back to the mechanical summary, records why the model was not used, and clears the
+     * bundle — all in the same write.
      *
      * Used by every failure path, so there is exactly one place that has to remember to clear.
+     *
+     * The fallback is free and it is the whole difference between a row that says what changed and
+     * a row that says nothing. This job holds the same values a save described mechanically would
+     * have used; a provider outage is no reason for the reader to get less than a save that never
+     * qualified for a model in the first place.
      */
     private async settle(
         controller: TaskHandler.RunParams<ISummariseActivityInput>["controller"],
         recordId: string,
         reason: SummarySkipReason,
-        detail: string
+        detail: string,
+        values: SummaryValueEntry[]
     ) {
-        const result = await this.storage.settleSummary({ recordId, reason });
+        const fallback = renderSummary(values, this.config);
+
+        const result = await this.storage.settleSummary({
+            recordId,
+            reason,
+            ...(fallback === "" ? {} : { summary: fallback, kind: "deterministic" as const })
+        });
 
         if (result.isFail()) {
             return controller.response.error({ message: result.error.message });
@@ -173,7 +194,7 @@ class SummariseActivityTaskHandlerImpl implements TaskHandler.Interface<ISummari
 
         // Done rather than error: the feature behaved correctly and the record reads correctly.
         // Reporting a task failure for "no model configured" would fill a task list with noise.
-        return controller.response.done(`No summary: ${reason} (${detail}).`);
+        return controller.response.done(`No AI summary: ${reason} (${detail}).`);
     }
 
     /**
@@ -205,6 +226,7 @@ const SummariseActivityTaskHandler = TaskHandler.createImplementation({
     implementation: SummariseActivityTaskHandlerImpl,
     dependencies: [
         ActivityLogStorage,
+        ActivitySummaryConfig,
         // Both optional for the same reason as `CapabilityAvailability`: the extension may not be
         // installed, and a task definition that cannot be built breaks the task runner for every
         // other task too.

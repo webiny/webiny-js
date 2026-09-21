@@ -3,6 +3,7 @@ import type {
     ActivityRecord,
     ActivityRecordInput,
     ActivityTarget,
+    SummaryKind,
     SummarySkipReason,
     SummaryValueEntry
 } from "./types.js";
@@ -35,6 +36,8 @@ export interface IActivityLogListResult {
 export interface IActivityLogSettleSummaryParams {
     recordId: string;
     summary?: string;
+    /** How the summary was produced. Required alongside one, meaningless without. */
+    kind?: SummaryKind;
     reason?: SummarySkipReason;
 }
 

@@ -74,6 +74,7 @@ interface HarnessOptions {
     onExtend?: () => void;
     source?: string;
     identity?: { id: string; type: string; displayName: string };
+    available?: boolean;
 }
 
 const harness = (options: HarnessOptions = {}) => {
@@ -114,7 +115,7 @@ const harness = (options: HarnessOptions = {}) => {
     } as unknown as IdentityContext.Interface);
 
     container.registerInstance(SummaryModelAvailability, {
-        isAvailable: () => true
+        isAvailable: () => options.available ?? true
     } as SummaryModelAvailability.Interface);
 
     container.registerInstance(ActivitySummaryConfig, {
@@ -479,5 +480,97 @@ describe("the per-installation switch", () => {
         const { dispatcher } = harness();
 
         expect((await plan(dispatcher)).dispatch).toBe(true);
+    });
+});
+
+describe("the saves a model never sees", () => {
+    /**
+     * Two short `text` fields, which is the commonest save there is and the one no model improves
+     * on. The suite's usual model is all `long-text`, and that always counts as prose whatever its
+     * length — so reusing it here would have routed to the model and proved the opposite.
+     */
+    const shortModel = {
+        modelId: "page",
+        fields: [field("intro", "text"), field("body", "text")]
+    } as unknown as CmsModel;
+
+    const shortSave = (dispatcher: SummaryDispatcher.Interface) =>
+        dispatcher.plan({
+            model: shortModel,
+            targetId: "abc",
+            revision: "abc#0001",
+            changeset,
+            before: { intro: "Starter", body: "Draft" },
+            after: { intro: "Essential", body: "Final" }
+        });
+
+    it("describes them from the values instead of dispatching", async () => {
+        const { dispatcher, trigger } = harness();
+
+        const planned = await shortSave(dispatcher);
+
+        expect(planned.summary).toBe(
+            "Changed Intro from Starter to Essential and Body from Draft to Final."
+        );
+        expect(planned.summaryKind).toBe("deterministic");
+        expect(planned.dispatch).toBeUndefined();
+        expect(trigger).not.toHaveBeenCalled();
+    });
+
+    it("stores no values, because nothing is coming to read them", async () => {
+        // The difference from the model's path, and the reason this one needs no sweeper: the
+        // values are read, turned into a sentence and dropped inside the write.
+        const { dispatcher } = harness();
+
+        const planned = await shortSave(dispatcher);
+
+        expect(planned.state?.values).toBeUndefined();
+        expect(planned.state?.valuesWrittenOn).toBeUndefined();
+    });
+
+    it("records why a model was not used, even though there is a sentence", async () => {
+        const { dispatcher } = harness();
+
+        expect((await shortSave(dispatcher)).state?.reason).toBe("too-few-text-fields");
+    });
+
+    it("does not read, because there is no run to join", async () => {
+        const { dispatcher, list } = harness();
+
+        await shortSave(dispatcher);
+
+        expect(list).not.toHaveBeenCalled();
+    });
+
+    it("describes them when the switch is off", async () => {
+        // The switch means "do not send my content to a model". Nothing leaves the installation on
+        // this path, so the timeline still says what changed.
+        const { dispatcher, trigger } = harness({ config: { enabled: false } });
+
+        const planned = await shortSave(dispatcher);
+
+        expect(planned.summary).toContain("Starter");
+        expect(planned.state?.reason).toBe("disabled");
+        expect(trigger).not.toHaveBeenCalled();
+    });
+
+    it("describes them when no model is configured", async () => {
+        // The case an installation without AI Power-Ups is in, which is most of them.
+        const { dispatcher } = harness({ available: false });
+
+        const planned = await shortSave(dispatcher);
+
+        expect(planned.summary).toContain("Essential");
+        expect(planned.state?.reason).toBe("ai-unavailable");
+    });
+
+    it("says nothing at all for a machine write", async () => {
+        // Not editorial work. The feature describes editorial work.
+        const { dispatcher } = harness({ source: "api-key" });
+
+        const planned = await shortSave(dispatcher);
+
+        expect(planned.summary).toBeUndefined();
+        expect(planned.state?.reason).toBe("not-interactive");
     });
 });

@@ -7,7 +7,8 @@ import type {
     ActivityEntryAction,
     ActivityReviewAction,
     ActivitySubject,
-    ChangesetEntry
+    ChangesetEntry,
+    SummaryKind
 } from "~/core/types.js";
 import type { IWorkflowState } from "@webiny/api-workflows/domain/workflowState/abstractions.js";
 
@@ -73,6 +74,15 @@ export interface IWriteActivityParams {
     hasNote?: boolean;
     /** Attached at append time, so a run's values land in the same write as the record. */
     summaryState?: ActivitySummaryState;
+    /**
+     * A finished sentence, for a save described mechanically.
+     *
+     * Written with the record rather than after it. The renderer runs inside this write with the
+     * values already in hand, so unlike the model's summary there is nothing to dispatch, nothing
+     * to wait for, and no reason for content values to be stored at all.
+     */
+    summary?: string;
+    summaryKind?: SummaryKind;
 }
 
 /**

@@ -151,10 +151,28 @@ describe("summariseItem", () => {
         expect(summary.actorDisplayName).toBeNull();
     });
 
-    it("carries a summary onto the row it covers", () => {
-        const [item] = collapseConsecutive([record({ summary: "Rewrote the intro." })]);
+    it("carries a summary onto the row it covers, and says who wrote it", () => {
+        const [item] = collapseConsecutive([
+            record({ summary: "Rewrote the intro.", summaryKind: "ai" })
+        ]);
 
-        expect(summariseItem(item!).summary).toBe("Rewrote the intro.");
+        expect(summariseItem(item!).summary).toEqual({
+            text: "Rewrote the intro.",
+            generated: true
+        });
+    });
+
+    it("does not call a rendered summary generated", () => {
+        // The mark exists to separate a model's prose from a restatement of what was recorded.
+        // Marking both would make it mean nothing.
+        const [item] = collapseConsecutive([
+            record({ summary: "Changed On sale from Yes to No.", summaryKind: "deterministic" })
+        ]);
+
+        expect(summariseItem(item!).summary).toEqual({
+            text: "Changed On sale from Yes to No.",
+            generated: false
+        });
     });
 
     it("carries no summary when the row has none, which is the usual case", () => {
@@ -304,7 +322,7 @@ describe("discloseItem", () => {
             record({ timestamp: at(10, 10), summary: "Tightened the pricing copy." })
         ]);
 
-        expect(discloseItem(item!).summaries).toEqual([
+        expect(discloseItem(item!).summaries.map(summary => summary.text)).toEqual([
             "Rewrote the intro.",
             "Tightened the pricing copy."
         ]);

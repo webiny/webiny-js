@@ -7,6 +7,7 @@ import type {
     ActivityRecord,
     ActivitySummaryState,
     ChangesetEntry,
+    SummaryKind,
     SummaryValueEntry
 } from "~/core/types.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
@@ -14,6 +15,7 @@ import { ActivitySourceResolver } from "~/cms/recorder/abstractions.js";
 import { ActivitySummaryConfig } from "./config.js";
 import { SummaryModelAvailability } from "./availability.js";
 import { bundleByteSize, extendValueBundle } from "./buildValueBundle.js";
+import { renderSummary } from "./renderSummary.js";
 import { routeSummary } from "./routeSummary.js";
 import { SUMMARISE_ACTIVITY_TASK_ID } from "./taskId.js";
 
@@ -36,6 +38,14 @@ export interface IPlanSummaryParams {
 export interface ISummaryPlan {
     /** Attached to the record at append time. */
     state: ActivitySummaryState | undefined;
+    /**
+     * A finished sentence, for a save described mechanically rather than by a model.
+     *
+     * Present and the plan is complete: nothing is dispatched, no values are stored, and the
+     * record is appended with its summary already on it.
+     */
+    summary?: string;
+    summaryKind?: SummaryKind;
     /** Set when this save joins a run already covered by a pending job. */
     extend?: { recordId: string; values: SummaryValueEntry[] };
     /** Set when this save starts a run and needs a job of its own. */
@@ -85,10 +95,27 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
             config: this.config
         });
 
-        // Every skip returns here, before any read. A save routing deterministic — the
-        // overwhelming majority — pays for the routing rule and nothing else.
-        if (!decision.dispatch) {
+        // Nothing to describe. A publish, a move, a structural edit, a machine write.
+        if (decision.kind === "none") {
             return { state: { reason: decision.reason } };
+        }
+
+        // Described mechanically, here, now. The overwhelming majority of saves take this path and
+        // it costs them the routing rule plus one string — no read, no write of values, no
+        // dispatch, and nothing that can be left behind for the sweeper to reclaim.
+        if (decision.kind === "deterministic") {
+            const summary = renderSummary(decision.values, this.config);
+
+            // An empty render means every changed path resolved to the same value on both sides,
+            // which the differ should not produce. Recording the reason without a sentence is the
+            // honest outcome rather than storing an empty string.
+            return summary === ""
+                ? { state: { reason: decision.reason } }
+                : {
+                      state: { reason: decision.reason },
+                      summary,
+                      summaryKind: "deterministic"
+                  };
         }
 
         // Without a task service there is nothing to dispatch to. Treated as unavailable rather

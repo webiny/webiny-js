@@ -65,6 +65,7 @@ class ActivityRecordModelImpl implements ModelFactory.Interface {
                     // content values, and the reason the feature's privacy posture is stated
                     // narrowly rather than absolutely.
                     summary: fields.longText().label("Summary"),
+                    summaryKind: fields.text().label("Summary Kind"),
                     // Job bookkeeping. `summaryValues` holds content values transiently, between
                     // the save that produced them and the job that consumes them.
                     summaryTaskId: fields.text().label("Summary Task ID"),

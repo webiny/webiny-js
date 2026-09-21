@@ -50,42 +50,42 @@ describe("the happy path", () => {
     it("dispatches when two prose fields changed", () => {
         const decision = route();
 
-        expect(decision.dispatch).toBe(true);
-        expect(decision.dispatch && decision.values).toHaveLength(2);
+        expect(decision.kind).toBe("ai");
+        expect(decision.kind === "ai" && decision.values).toHaveLength(2);
     });
 
     it("carries before and after for every changed path", () => {
         const decision = route();
 
-        expect(decision.dispatch && decision.values[0]).toMatchObject({
+        expect(decision.kind === "ai" && decision.values[0]).toMatchObject({
             path: "intro",
             label: "intro"
         });
-        expect(decision.dispatch && decision.values[0]!.before).toContain("old intro");
-        expect(decision.dispatch && decision.values[0]!.after).toContain("new intro");
+        expect(decision.kind === "ai" && decision.values[0]!.before).toContain("old intro");
+        expect(decision.kind === "ai" && decision.values[0]!.after).toContain("new intro");
     });
 });
 
 describe("who wrote it", () => {
     it("skips an API key", () => {
         // Machine traffic is where the volume is, and it is the one origin that can be told apart.
-        expect(route({ source: "api-key" })).toEqual({
-            dispatch: false,
+        expect(route({ source: "api-key" })).toMatchObject({
+            kind: "none",
             reason: "not-interactive"
         });
     });
 
     it("skips anything a background task performed", () => {
         // Covers bulk operations, which run as tasks and carry a `task:` source.
-        expect(route({ source: "task:hcmsBulkProcessEntries" })).toEqual({
-            dispatch: false,
+        expect(route({ source: "task:hcmsBulkProcessEntries" })).toMatchObject({
+            kind: "none",
             reason: "not-interactive"
         });
     });
 
     it("skips a system write", () => {
-        expect(route({ source: "system" })).toEqual({
-            dispatch: false,
+        expect(route({ source: "system" })).toMatchObject({
+            kind: "none",
             reason: "not-interactive"
         });
     });
@@ -93,21 +93,21 @@ describe("who wrote it", () => {
     it("does not skip a script using a person's token, because it cannot tell", () => {
         // Stated as a test rather than left implicit: this is the gap the identity rule does not
         // close, and it should fail loudly if someone later believes it does.
-        expect(route({ source: "admin" }).dispatch).toBe(true);
+        expect(route({ source: "admin" }).kind).toBe("ai");
     });
 });
 
 describe("what changed", () => {
     it("skips when there is no before state at all", () => {
-        expect(route({ before: undefined })).toEqual({
-            dispatch: false,
+        expect(route({ before: undefined })).toMatchObject({
+            kind: "none",
             reason: "structural-only"
         });
     });
 
     it("skips an empty changeset", () => {
-        expect(route({ changeset: [] })).toEqual({
-            dispatch: false,
+        expect(route({ changeset: [] })).toMatchObject({
+            kind: "none",
             reason: "structural-only"
         });
     });
@@ -117,7 +117,7 @@ describe("what changed", () => {
             route({
                 changeset: [change("blocks#a1", "added"), change("blocks#b2", "moved")]
             })
-        ).toEqual({ dispatch: false, reason: "structural-only" });
+        ).toMatchObject({ kind: "none", reason: "structural-only" });
     });
 
     it("still routes when a structural change sits alongside prose", () => {
@@ -125,7 +125,7 @@ describe("what changed", () => {
             changeset: [change("intro"), change("body"), change("blocks#a1", "added")]
         });
 
-        expect(decision.dispatch).toBe(true);
+        expect(decision.kind).toBe("ai");
     });
 });
 
@@ -147,8 +147,8 @@ describe("the path cap, at its boundary", () => {
                 changeset: manyPaths(cap),
                 before: wideValues(cap, "old"),
                 after: wideValues(cap, "new")
-            }).dispatch
-        ).toBe(true);
+            }).kind
+        ).toBe("ai");
     });
 
     it("skips one past the cap", () => {
@@ -161,7 +161,7 @@ describe("the path cap, at its boundary", () => {
                 before: wideValues(over, "old"),
                 after: wideValues(over, "new")
             })
-        ).toEqual({ dispatch: false, reason: "too-many-paths" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-many-paths" });
     });
 });
 
@@ -177,7 +177,7 @@ describe("free-text classification", () => {
             after: { a: "p", b: "q" }
         });
 
-        expect(decision.dispatch).toBe(true);
+        expect(decision.kind).toBe("ai");
     });
 
     it("counts rich-text whatever its length", () => {
@@ -191,7 +191,7 @@ describe("free-text classification", () => {
             after: { a: { t: "p" }, b: { t: "q" } }
         });
 
-        expect(decision.dispatch).toBe(true);
+        expect(decision.kind).toBe("ai");
     });
 
     it("skips short text fields, which are the common save", () => {
@@ -201,15 +201,15 @@ describe("free-text classification", () => {
                 before: { intro: "Spring launch", body: "/campaigns/aurora" },
                 after: { intro: "Summer launch", body: "/campaigns/solstice" }
             })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 
     it("counts a text field at exactly the threshold", () => {
         const at = "x".repeat(DEFAULT_ACTIVITY_SUMMARY_CONFIG.freeTextMinLength);
 
         expect(
-            route({ before: { intro: at, body: at }, after: { intro: "a", body: "b" } }).dispatch
-        ).toBe(true);
+            route({ before: { intro: at, body: at }, after: { intro: "a", body: "b" } }).kind
+        ).toBe("ai");
     });
 
     it("skips a text field one character below the threshold", () => {
@@ -217,7 +217,7 @@ describe("free-text classification", () => {
 
         expect(
             route({ before: { intro: below, body: below }, after: { intro: "a", body: "b" } })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 
     it("measures the longer side, so deleting a paragraph counts", () => {
@@ -226,8 +226,8 @@ describe("free-text classification", () => {
             route({
                 before: { intro: prose("gone"), body: prose("also") },
                 after: { intro: "", body: "" }
-            }).dispatch
-        ).toBe(true);
+            }).kind
+        ).toBe("ai");
     });
 
     it("never counts a text field with predefined values", () => {
@@ -244,7 +244,7 @@ describe("free-text classification", () => {
                 before: { intro: prose("a"), body: prose("b") },
                 after: { intro: prose("c"), body: prose("d") }
             })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 
     it("never counts json, however large", () => {
@@ -258,7 +258,7 @@ describe("free-text classification", () => {
                 before: { a: { v: prose("x") }, b: { v: prose("y") } },
                 after: { a: { v: prose("p") }, b: { v: prose("q") } }
             })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 
     it("never counts an unknown custom type", () => {
@@ -270,7 +270,7 @@ describe("free-text classification", () => {
                     field({ fieldId: "body", type: "my-custom-field" })
                 ])
             })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 
     it("skips one prose field in a quiet save", () => {
@@ -280,7 +280,7 @@ describe("free-text classification", () => {
                 before: { intro: prose("old"), body: "short" },
                 after: { intro: prose("new"), body: "shorter" }
             })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 });
 
@@ -306,12 +306,12 @@ describe("one prose field amid a busy save", () => {
         });
 
     it("dispatches at the total-path threshold", () => {
-        expect(busy(DEFAULT_ACTIVITY_SUMMARY_CONFIG.singleFreeTextMinPaths).dispatch).toBe(true);
+        expect(busy(DEFAULT_ACTIVITY_SUMMARY_CONFIG.singleFreeTextMinPaths).kind).toBe("ai");
     });
 
     it("skips one below it", () => {
-        expect(busy(DEFAULT_ACTIVITY_SUMMARY_CONFIG.singleFreeTextMinPaths - 1)).toEqual({
-            dispatch: false,
+        expect(busy(DEFAULT_ACTIVITY_SUMMARY_CONFIG.singleFreeTextMinPaths - 1)).toMatchObject({
+            kind: "deterministic",
             reason: "too-few-text-fields"
         });
     });
@@ -330,7 +330,7 @@ describe("one prose field amid a busy save", () => {
                 before: { a: "1", b: "2", c: "3", d: "4" },
                 after: { a: "5", b: "6", c: "7", d: "8" }
             })
-        ).toEqual({ dispatch: false, reason: "too-few-text-fields" });
+        ).toMatchObject({ kind: "deterministic", reason: "too-few-text-fields" });
     });
 });
 
@@ -343,27 +343,32 @@ describe("the value ceiling", () => {
                 before: { intro: huge, body: huge },
                 after: { intro: `${huge}!`, body: `${huge}!` }
             })
-        ).toEqual({ dispatch: false, reason: "values-too-large" });
+        ).toMatchObject({ kind: "deterministic", reason: "values-too-large" });
     });
 
-    it("stores nothing when it skips for size", () => {
-        // The point of the ceiling: no job *and* no values. A trimmed bundle would make a model
-        // describe half a change just as confidently.
+    it("stops the model rather than the description", () => {
+        // The ceiling bounds what gets written to a record and sent to a provider. It was never
+        // about whether the change can be described: the renderer characterises what it cannot
+        // quote, so an enormous value still produces a sentence-length sentence.
         const huge = "x".repeat(60 * 1024);
         const decision = route({
             before: { intro: huge, body: huge },
             after: { intro: `${huge}!`, body: `${huge}!` }
         });
 
-        expect(decision.dispatch).toBe(false);
-        expect(decision).not.toHaveProperty("values");
+        expect(decision.kind).toBe("deterministic");
+        // The values are in hand for the renderer and go no further — asserted where that is
+        // decided, in the dispatcher, rather than here.
+        expect(decision.kind === "deterministic" && decision.values).toHaveLength(2);
     });
 });
 
 describe("the switches", () => {
     it("skips everything when summaries are off", () => {
-        expect(route({ config: { ...DEFAULT_ACTIVITY_SUMMARY_CONFIG, enabled: false } })).toEqual({
-            dispatch: false,
+        expect(
+            route({ config: { ...DEFAULT_ACTIVITY_SUMMARY_CONFIG, enabled: false } })
+        ).toMatchObject({
+            kind: "deterministic",
             reason: "disabled"
         });
     });
@@ -371,15 +376,16 @@ describe("the switches", () => {
     it("skips when no model is configured", () => {
         // An installation entitled to the activity log but not to AI gets the timeline and no
         // sentences, which is the same degradation as an unconfigured provider.
-        expect(route({ aiAvailable: false })).toEqual({
-            dispatch: false,
+        expect(route({ aiAvailable: false })).toMatchObject({
+            kind: "deterministic",
             reason: "ai-unavailable"
         });
     });
 
-    it("checks the switch before anything expensive", () => {
-        // Ordering matters: `disabled` must win over every other reason, or an installation with
-        // summaries off would still pay to classify and bundle.
+    it("describes nothing for a machine write, whatever the switch says", () => {
+        // Ordering, and it changed when the renderer arrived. `not-interactive` now wins over
+        // `disabled`, because the switch governs whether content reaches a model and a machine
+        // write gets no sentence of any kind either way.
         expect(
             route({
                 config: { ...DEFAULT_ACTIVITY_SUMMARY_CONFIG, enabled: false },
@@ -387,6 +393,14 @@ describe("the switches", () => {
                 aiAvailable: false,
                 changeset: []
             })
-        ).toEqual({ dispatch: false, reason: "disabled" });
+        ).toMatchObject({ kind: "none", reason: "not-interactive" });
+    });
+
+    it("still describes an editor's save when the switch is off", () => {
+        // The point of the switch, now that there are two generators: no content leaves the
+        // installation, and the timeline still says what changed.
+        expect(
+            route({ config: { ...DEFAULT_ACTIVITY_SUMMARY_CONFIG, enabled: false } })
+        ).toMatchObject({ kind: "deterministic", reason: "disabled" });
     });
 });

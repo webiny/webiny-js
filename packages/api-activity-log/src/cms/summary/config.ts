@@ -57,6 +57,22 @@ export interface IActivitySummaryConfig {
     /** How long the job waits before running, so a run has time to accumulate. */
     dispatchDelaySeconds: number;
     /**
+     * Values no longer than this are quoted verbatim in a mechanical summary; longer ones are
+     * characterised instead.
+     *
+     * The line between "changed On sale from Yes to No", which saves a reader the trip to version
+     * compare, and a timeline row carrying a paragraph — which makes the timeline unreadable and,
+     * because records are kept, keeps the paragraph forever.
+     */
+    quotedValueMaxLength: number;
+    /**
+     * How many fields a mechanical summary names before it counts the remainder.
+     *
+     * The same instruction the model is given: describe the largest changes and say that other
+     * fields also changed. A sentence naming thirty fields is the list it was meant to replace.
+     */
+    maxNamedFields: number;
+    /**
      * How old a bundle must be before the sweeper reclaims it.
      *
      * Derived from what a job's life can actually cost rather than picked: the dispatch delay
@@ -84,6 +100,8 @@ export const DEFAULT_ACTIVITY_SUMMARY_CONFIG: IActivitySummaryConfig = {
     maxValueBytes: 100 * 1024,
     debounceWindowMs: 60 * 1000,
     dispatchDelaySeconds: 60,
+    quotedValueMaxLength: 60,
+    maxNamedFields: 3,
     sweepThresholdMs: 60 * 60 * 1000
 };
 
