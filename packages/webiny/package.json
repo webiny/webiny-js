@@ -141,6 +141,7 @@
     "./admin/website-builder": "./admin/website-builder.js",
     "./admin/websockets": "./admin/websockets.js",
     "./api/bug-reporter": "./api/bug-reporter.js",
+    "./extensions": "./extensions.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
     "./api/db": "./api/db.js",
@@ -150,10 +151,9 @@
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
     "./infra": "./infra.js",
-    "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "531c5ec12212360a5e818b717e859d43b803f0bedb9f7647883e820c52edb987",
+  "exportGenerationHash": "78e77e0931cdb92a0cdff5b0641c03f7b611eee8e295166948fabd610df0be96",
   "webiny": {
     "publishFrom": "dist"
   }
