@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { Alert } from "@webiny/admin-ui";
+import { AssumedRoleBanner as BaseAssumedRoleBanner } from "~/base/ui/AssumedRoleBanner.js";
 import { AssumedRolePresenterFeature } from "../feature.js";
 
 /**
@@ -11,7 +12,7 @@ import { AssumedRolePresenterFeature } from "../feature.js";
  * Rendered outside every permission gate, because the previewed role usually cannot see the menu
  * the preview was started from — leaving it behind a gate would strand the user.
  */
-export const AssumedRoleBanner = observer(() => {
+const AssumedRoleBannerView = observer(() => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);
     const vm = presenter.vm;
 
@@ -36,4 +37,10 @@ export const AssumedRoleBanner = observer(() => {
             {`Permissions are enforced as this ${kind}, so anything you are not allowed to do will fail.`}
         </Alert>
     );
+});
+
+export const AssumedRoleBanner = BaseAssumedRoleBanner.createDecorator(() => {
+    return function AssumedRoleBanner() {
+        return <AssumedRoleBannerView />;
+    };
 });

@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { DropdownMenu, Icon, useToast } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityIcon } from "@webiny/icons/visibility.svg";
+import { AssumedRoleSelector as BaseAssumedRoleSelector } from "~/base/ui/AssumedRoleSelector.js";
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
 import { AssumedRolePresenterFeature } from "../feature.js";
 import type { AssumedRolePresenter } from "../abstractions.js";
@@ -34,7 +35,7 @@ const renderGroup = (
  * Header control for previewing the Admin as a role or team, sitting beside the tenant indicator
  * because it answers the same kind of question: whose view of the Admin am I looking at?
  */
-export const AssumedRoleSelector = observer(() => {
+const AssumedRoleSelectorView = observer(() => {
     const { presenter } = useFeature(AssumedRolePresenterFeature);
     const { identity } = useIdentity();
     const toast = useToast();
@@ -111,4 +112,10 @@ export const AssumedRoleSelector = observer(() => {
             {vm.assumedRole ? null : renderGroup("Teams", vm.teamOptions, pick)}
         </DropdownMenu>
     );
+});
+
+export const AssumedRoleSelector = BaseAssumedRoleSelector.createDecorator(() => {
+    return function AssumedRoleSelector() {
+        return <AssumedRoleSelectorView />;
+    };
 });
