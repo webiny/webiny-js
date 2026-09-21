@@ -1,7 +1,13 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
-import { LayoutRenderer, Navigation, TenantSelector, UserMenu } from "@webiny/app-admin";
+import {
+    AssumedRoleBanner,
+    LayoutRenderer,
+    Navigation,
+    TenantSelector,
+    UserMenu
+} from "@webiny/app-admin";
 import { HeaderBar, SidebarProvider, cn, useSidebar } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 import { CommandPalette } from "./CommandPalette/CommandPalette.js";
@@ -67,6 +73,7 @@ const LayoutContent = ({
                         </div>
                     }
                 />
+                <AssumedRoleBanner />
                 <main className={"relative overflow-y-auto h-main-content"}>{children}</main>
             </div>
         </>

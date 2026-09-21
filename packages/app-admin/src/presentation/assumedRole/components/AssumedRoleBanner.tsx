@@ -1,0 +1,39 @@
+import React from "react";
+import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
+import { Alert } from "@webiny/admin-ui";
+import { AssumedRolePresenterFeature } from "../feature.js";
+
+/**
+ * Stays on screen for as long as a preview is active, and is deliberately not dismissible: writes
+ * fail while previewing, and someone who has lost the banner has no way to explain why.
+ *
+ * Rendered outside every permission gate, because the previewed role usually cannot see the menu
+ * the preview was started from — leaving it behind a gate would strand the user.
+ */
+export const AssumedRoleBanner = observer(() => {
+    const { presenter } = useFeature(AssumedRolePresenterFeature);
+    const vm = presenter.vm;
+
+    if (!vm.assumedRole) {
+        return null;
+    }
+
+    const kind = vm.assumedRole.type === "team" ? "team" : "role";
+
+    return (
+        <Alert
+            type={"warning"}
+            title={`Viewing as the "${vm.assumedRole.name}" ${kind}`}
+            actions={
+                <Alert.Action
+                    text={"Exit preview"}
+                    disabled={vm.switching}
+                    onClick={() => presenter.exit()}
+                />
+            }
+        >
+            {`Permissions are enforced as this ${kind}, so anything you are not allowed to do will fail.`}
+        </Alert>
+    );
+});

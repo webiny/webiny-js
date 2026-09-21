@@ -14,6 +14,7 @@ import { FeatureFlagsProvider } from "~/presentation/featureFlags/FeatureFlagsPr
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
+import { AssumedRoleFeature } from "~/features/assumedRole/index.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
@@ -42,6 +43,8 @@ export const Admin = ({ children, createLegacyPlugins }: AdminProps) => {
     }
 
     SecurityFeature.register(container);
+    // After SecurityFeature: the use case re-runs the login query through its LogInRepository.
+    AssumedRoleFeature.register(container);
     DateFormatterFeature.register(container);
     StringFormatterFeature.register(container);
     FormModelFeature.register(container);
