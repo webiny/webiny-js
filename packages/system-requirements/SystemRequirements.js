@@ -1,6 +1,7 @@
 import semver from "semver";
 import { execaSync } from "execa";
 import { constraints } from "./constraints.js";
+import { yarnVersionFromUserAgent } from "./yarnVersionFromUserAgent.js";
 
 export class SystemRequirements {
     // Runs on every CLI invocation, so it spawns as little as possible: the Node version is already in
@@ -47,7 +48,15 @@ export class SystemRequirements {
         return stdout;
     }
 
+    // The only spawn left on the CLI's startup path, so it is worth avoiding when the environment
+    // already knows the answer. Spawning stays as the fallback, which is what runs when the binary
+    // was invoked directly rather than through yarn.
     static getYarnVersion() {
+        const versionFromUserAgent = yarnVersionFromUserAgent();
+        if (versionFromUserAgent) {
+            return versionFromUserAgent;
+        }
+
         const { stdout } = execaSync("yarn", ["--version"]);
         return stdout;
     }
