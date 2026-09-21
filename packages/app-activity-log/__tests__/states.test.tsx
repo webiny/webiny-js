@@ -901,7 +901,9 @@ describe("the generated marker is defined once", () => {
     });
 
     it("sits behind the provenance flag and nothing else", () => {
-        // Keyed on what wrote the sentence, never on whether there is one.
-        expect(source).toMatch(/summary\.generated \?/);
+        // Keyed on what wrote the sentence, never on whether there is one. The mark takes an
+        // optional sentence now — the run renders its gutter whether or not it has one to mark —
+        // so the flag is read through it.
+        expect(source).toMatch(/summary\?\.generated \?/);
     });
 });

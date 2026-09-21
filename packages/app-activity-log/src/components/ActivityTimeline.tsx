@@ -142,13 +142,13 @@ const ViaNote = ({ text }: { text: string }) => (
  */
 const TYPE = {
     /** A sentence, of any of the three kinds. */
-    sentence: "text-[13px] leading-[19px]",
+    sentence: "text-[13px]! leading-[19px]!",
     /** The row's own first line, and anything reading at its weight. */
-    row: "text-[13px] leading-[19px]",
+    row: "text-[13px]! leading-[19px]!",
     /** Field names, the fields line, the disclosure note. */
-    field: "text-[12px] leading-[17px]",
+    field: "text-[12px]! leading-[17px]!",
     /** Clocks, timestamps, counts — everything that orients rather than informs. */
-    meta: "text-[11px] leading-[16px]"
+    meta: "text-[11px]! leading-[16px]!"
 };
 
 /** Clock time alone, for a ledger column where the date is already established by the row. */
@@ -261,38 +261,55 @@ const PendingNote = () => (
  * Marking both would make the distinction invisible again, which is why the mark is defined here
  * and nowhere else.
  */
+const SummaryMark = ({ summary }: { summary: TimelineSentence | null }) => (
+    <div className={"pt-xxs"}>
+        {summary?.generated ? (
+            <Tooltip
+                content={"Written by AI from the values that changed. It can be wrong."}
+                trigger={
+                    <Icon
+                        size={"sm"}
+                        label={"AI-generated"}
+                        icon={<AutoAwesomeIcon />}
+                        className={"fill-primary-default"}
+                    />
+                }
+            />
+        ) : null}
+    </div>
+);
+
+/**
+ * The sentence itself, one step back in weight for the third kind.
+ *
+ * That step is what tells a field-name description from an exact one without putting a label on
+ * either: an exact record reads at full strength, and a restatement of the chips below it does not
+ * need to.
+ */
 const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
+    <Text
+        as={"div"}
+        className={cn(
+            TYPE.sentence,
+            "text-wrap-pretty",
+            summary.kind === "fields" ? "text-neutral-strong" : "text-neutral-primary"
+        )}
+    >
+        {summary.text}
+    </Text>
+);
+
+/**
+ * A sentence with its gutter, for the collapsed row.
+ *
+ * The run owns its own gutter, because everything in its content column shares it. A row has only
+ * the sentence, so it carries the pairing here — the same two pieces, so the mark stays defined in
+ * exactly one place.
+ */
+const SentenceBlock = ({ summary }: { summary: TimelineSentence }) => (
     <div className={"grid grid-cols-[16px_1fr] items-start gap-xxs"}>
-        <div className={"pt-xxs"}>
-            {summary.generated ? (
-                <Tooltip
-                    content={"Written by AI from the values that changed. It can be wrong."}
-                    trigger={
-                        <Icon
-                            size={"sm"}
-                            label={"AI-generated"}
-                            icon={<AutoAwesomeIcon />}
-                            className={"fill-primary-default"}
-                        />
-                    }
-                />
-            ) : null}
-        </div>
-        {/*
-          One step back in weight for the third kind, which is what tells it from an exact sentence
-          without putting a label on either. An exact record reads at full strength; a restatement
-          of the chips below it does not need to.
-        */}
-        <Text
-            as={"div"}
-            className={cn(
-                TYPE.sentence,
-                "text-wrap-pretty",
-                summary.kind === "fields" ? "text-neutral-strong" : "text-neutral-primary"
-            )}
-        >
-            {summary.text}
-        </Text>
+        <SummaryMark summary={summary} />
+        <SummaryLine summary={summary} />
     </div>
 );
 
@@ -338,17 +355,22 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
         <Text className={cn(TYPE.meta, "pt-xxs pr-xxs text-right tabular-nums text-neutral-muted")}>
             {formatClock(run.saves[run.saves.length - 1]?.timestamp ?? "")}
         </Text>
-        <div className={"min-w-0 pl-xs"}>
-            {run.summary ? <SummaryLine summary={run.summary} /> : null}
-            {run.pending ? (
-                <div className={"pl-[20px]"}>
-                    <PendingNote />
+        {/*
+          One gutter for the whole run: the mark sits in it, and the sentence, the placeholder and
+          every save's fields all begin in the column beside it. They used to find that column
+          separately — a grid on the sentence, a hand-written pad on the saves — and measured eight
+          pixels apart in the browser.
+        */}
+        <div className={"grid min-w-0 grid-cols-[16px_1fr] items-start gap-xxs pl-xs"}>
+            <SummaryMark summary={run.summary} />
+            <div className={"min-w-0"}>
+                {run.summary ? <SummaryLine summary={run.summary} /> : null}
+                {run.pending ? <PendingNote /> : null}
+                <div className={"mt-xs flex flex-col gap-xs"}>
+                    {run.saves.map(save => (
+                        <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
+                    ))}
                 </div>
-            ) : null}
-            <div className={"mt-xs flex flex-col gap-xs pl-[20px]"}>
-                {run.saves.map(save => (
-                    <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
-                ))}
             </div>
         </div>
     </div>
@@ -424,7 +446,7 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
         // it, which insets the ledger from both edges and oversizes every line in it. The negative
         // margins cancel that padding so the expansion can set its own, and `text-sm` resets the
         // inherited size — the ledger's own sizes are set per line, not inherited from a slot.
-        <div className={"-mx-xxl border-t-sm border-neutral-dimmed pt-xs pr-xxl pb-xs pl-md"}>
+        <div className={"-mx-xxl border-t-sm border-neutral-dimmed pt-xs pr-md pb-xs pl-md"}>
             {disclosure.runs.map(run => (
                 <RunLine key={run.id} run={run} />
             ))}
@@ -530,7 +552,7 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                               instead. Both keep the same left edge and the same last line, so the
                               difference reads as quiet rather than as missing.
                             */}
-                            {summary.summary ? <SummaryLine summary={summary.summary} /> : null}
+                            {summary.summary ? <SentenceBlock summary={summary.summary} /> : null}
                             {summary.summaryPending ? <PendingNote /> : null}
                             {!summary.summary && !summary.summaryPending && summary.fieldsLine ? (
                                 <Text
