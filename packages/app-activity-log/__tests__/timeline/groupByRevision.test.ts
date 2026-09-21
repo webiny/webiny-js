@@ -151,6 +151,54 @@ describe("summariseItem", () => {
         expect(summary.actorDisplayName).toBeNull();
     });
 
+    it("carries a summary onto the row it covers", () => {
+        const [item] = collapseConsecutive([record({ summary: "Rewrote the intro." })]);
+
+        expect(summariseItem(item!).summary).toBe("Rewrote the intro.");
+    });
+
+    it("carries no summary when the row has none, which is the usual case", () => {
+        const [item] = collapseConsecutive([record()]);
+
+        const summary = summariseItem(item!);
+
+        expect(summary.summary).toBeNull();
+        expect(summary.summaryPending).toBe(false);
+    });
+
+    it("withholds a summary from a row that holds more than one", () => {
+        // A row collapses on an hour and a summary is debounced on a minute, so one row can hold
+        // several runs. Putting one of their sentences on the closed row would attribute it to
+        // saves it never saw; the expansion shows them all instead.
+        const [item] = collapseConsecutive([
+            record({ timestamp: at(10, 50), summary: "Rewrote the intro." }),
+            record({ timestamp: at(10, 10), summary: "Tightened the pricing copy." })
+        ]);
+
+        expect(summariseItem(item!).summary).toBeNull();
+    });
+
+    it("reports pending when any save in the row is still waiting", () => {
+        // The pending record is the *oldest* in the row, which is where it really sits: the save
+        // that dispatched the job is the one carrying the values, and later saves join it. A
+        // fixture with the flag on the newest record would pass against an implementation that
+        // only ever looked at `latest`.
+        const [item] = collapseConsecutive([
+            record({ timestamp: at(10, 20) }),
+            record({ timestamp: at(10, 15), summaryPending: true })
+        ]);
+
+        expect(summariseItem(item!).summaryPending).toBe(true);
+    });
+
+    it("does not report pending for a row that has settled without a summary", () => {
+        // Failed, swept, suppressed, never qualified — all the same shape by the time it reaches
+        // here, and none of them is something a reader can act on.
+        const [item] = collapseConsecutive([record({ summaryPending: false })]);
+
+        expect(summariseItem(item!).summaryPending).toBe(false);
+    });
+
     it("surfaces the review step and whether a note was left", () => {
         const [item] = collapseConsecutive([
             record({
@@ -181,7 +229,7 @@ describe("discloseItem", () => {
             })
         ]);
 
-        expect(discloseItem(item!).changes[0]!.text).toBe("Sections › Blocks › Title");
+        expect(discloseItem(item!).saves[0]!.changes[0]!.text).toBe("Sections › Blocks › Title");
     });
 
     it("states that values are not available rather than leaving it to be inferred", () => {
@@ -191,20 +239,75 @@ describe("discloseItem", () => {
         expect(discloseItem(item!).valuesAvailable).toBe(false);
     });
 
-    it("never carries a value, whatever the changeset holds", () => {
+    it("never carries a value in the changeset, whatever the changeset holds", () => {
         // Asserted on the shape rather than by searching the JSON for "value" — that matched the
         // legitimate `valuesAvailable` flag and would have passed for the wrong reason.
+        //
+        // The scope narrowed when summaries arrived and it is worth being exact about why. A
+        // *change* still carries a path, a label and an operation and nothing else, which is the
+        // property this guards. A *summary* is prose written about the change and may quote a
+        // fragment of it — that is disclosure by design, gated server-side, and not something this
+        // shape can or should prevent.
         const [item] = collapseConsecutive([
             record({ changeset: [{ path: "salary", label: "Salary" }] })
         ]);
 
         const disclosure = discloseItem(item!);
 
-        expect(Object.keys(disclosure).sort()).toEqual(["changes", "truncated", "valuesAvailable"]);
+        expect(Object.keys(disclosure).sort()).toEqual([
+            "saves",
+            "summaries",
+            "truncated",
+            "valuesAvailable"
+        ]);
 
-        for (const change of disclosure.changes) {
-            expect(Object.keys(change).sort()).toEqual(["ancestors", "label", "operation", "text"]);
+        for (const save of disclosure.saves) {
+            expect(Object.keys(save).sort()).toEqual([
+                "changes",
+                "id",
+                "sentence",
+                "timestamp",
+                "truncated"
+            ]);
+
+            for (const change of save.changes) {
+                expect(Object.keys(change).sort()).toEqual([
+                    "ancestors",
+                    "label",
+                    "operation",
+                    "text"
+                ]);
+            }
         }
+    });
+
+    it("keeps each save's fields to that save", () => {
+        // A row can stand for four saves, and merging their changesets answers a question nobody
+        // asked: "these six fields changed at some point across them".
+        const [item] = collapseConsecutive([
+            record({ timestamp: at(10, 20), changeset: [{ path: "title", label: "Title" }] }),
+            record({ timestamp: at(10, 15), changeset: [{ path: "body", label: "Body" }] })
+        ]);
+
+        const disclosure = discloseItem(item!);
+
+        expect(disclosure.saves.map(save => save.changes.map(change => change.label))).toEqual([
+            ["Title"],
+            ["Body"]
+        ]);
+    });
+
+    it("carries the summaries a row holds, newest first", () => {
+        const [item] = collapseConsecutive([
+            record({ timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ timestamp: at(10, 15) }),
+            record({ timestamp: at(10, 10), summary: "Tightened the pricing copy." })
+        ]);
+
+        expect(discloseItem(item!).summaries).toEqual([
+            "Rewrote the intro.",
+            "Tightened the pricing copy."
+        ]);
     });
 
     it("says so when the list is incomplete", () => {

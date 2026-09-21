@@ -129,13 +129,16 @@ describe("the eight states", () => {
         expect(text()).toContain("Body");
     });
 
-    it("2b. an expanded save says values are not recorded", () => {
-        // Stated rather than left as an empty space, which would read as a bug.
+    it("2b. an expanded save says the values are not recorded", () => {
+        // Stated rather than left as an empty space, which would read as a bug. Worded around the
+        // changeset rather than the row: a summary is prose about the change and may quote a
+        // fragment of it, so "values from this save are not recorded" stopped being true of
+        // everything on screen the moment summaries arrived.
         const { text } = renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
 
         fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
 
-        expect(text()).toContain("Values from this save are not recorded");
+        expect(text()).toContain("Which fields changed is recorded; their values are not");
     });
 
     it("3. structural changes name the operation", () => {
@@ -338,6 +341,149 @@ describe("deep field paths, as the design resolves them", () => {
         ]);
         fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
         expect(identified.text()).not.toContain("item ");
+    });
+});
+
+describe("summaries, of which only one state is a state", () => {
+    const at = (minutes: number) => new Date(Date.UTC(2026, 8, 10, 10, minutes)).toISOString();
+    const SENTENCE = "Rewrote the pricing heading and tightened the body copy.";
+
+    it("puts the run's summary on the closed row", () => {
+        const { text } = renderState([
+            record({ changeset: [{ path: "body", label: "Body" }], summary: SENTENCE })
+        ]);
+
+        expect(text()).toContain(SENTENCE);
+    });
+
+    it("keeps the deterministic sentence alongside it, not instead of it", () => {
+        // The summary is an enrichment. A row that traded its own description for generated prose
+        // would lose the one part of itself that is derived from what was recorded.
+        const { text } = renderState([
+            record({ changeset: [{ path: "body", label: "Body" }], summary: SENTENCE })
+        ]);
+
+        expect(text()).toContain("edited Body");
+        expect(text()).toContain(SENTENCE);
+    });
+
+    it("shows each save's own description when expanded, rather than one merged list", () => {
+        const { text } = renderState([
+            record({
+                timestamp: at(20),
+                changeset: [{ path: "body", label: "Body" }],
+                summary: SENTENCE
+            }),
+            record({ timestamp: at(19), changeset: [{ path: "title", label: "Title" }] })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        expect(text()).toContain("edited Body");
+        expect(text()).toContain("edited Title");
+    });
+
+    it("leads the expansion with the summaries, above the saves", () => {
+        // Two summaries on purpose, so the closed row carries none of them. With one, the sentence
+        // is already on screen before anything is expanded and an ordering check would pass
+        // whatever the expansion did with it.
+        const { text } = renderState([
+            record({
+                timestamp: at(50),
+                changeset: [{ path: "body", label: "Body" }],
+                summary: SENTENCE
+            }),
+            record({
+                timestamp: at(10),
+                changeset: [{ path: "title", label: "Title" }],
+                summary: "Reworded the page title."
+            })
+        ]);
+
+        expect(text()).not.toContain(SENTENCE);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        const rendered = text();
+
+        expect(rendered.indexOf(SENTENCE)).toBeGreaterThan(-1);
+        expect(rendered.indexOf(SENTENCE)).toBeLessThan(rendered.indexOf("edited Body"));
+        expect(rendered.indexOf("Reworded the page title.")).toBeLessThan(
+            rendered.indexOf("edited Title")
+        );
+    });
+
+    it("says a summary is coming, which is the only state it distinguishes", () => {
+        // On the older save, which is where pending really sits: the save that dispatched the job
+        // carries the values, and later saves join it.
+        const { text } = renderState([
+            record({ timestamp: at(20), changeset: [{ path: "title", label: "Title" }] }),
+            record({
+                timestamp: at(19),
+                changeset: [{ path: "body", label: "Body" }],
+                summaryPending: true
+            })
+        ]);
+
+        expect(text()).toContain("Summarising");
+    });
+
+    it("says nothing at all once a record has settled without one", () => {
+        // Failed, swept, suppressed, never qualified: four different histories, one appearance.
+        // Anything that read as broken here would be broken for the overwhelming majority of rows,
+        // which never had a summary to begin with.
+        const { text } = renderState([
+            record({ changeset: [{ path: "body", label: "Body" }], summaryPending: false })
+        ]);
+
+        const rendered = text();
+
+        expect(rendered).toContain("edited Body");
+        // Nothing about summaries at all — not a placeholder, not a state, not the word. Listing
+        // failure words instead was the weaker test it looked like: "No summary available" would
+        // have sailed past every one of them.
+        expect(rendered).not.toMatch(/summar/i);
+    });
+
+    it("renders a settled-without-summary row exactly like one that never qualified", () => {
+        // The indistinguishability is the property, so it is asserted rather than assumed.
+        const failed = renderState([
+            record({ id: "r", changeset: [{ path: "body", label: "Body" }], summaryPending: false })
+        ]);
+        const failedText = failed.text();
+        failed.unmount();
+
+        const never = renderState([
+            record({ id: "r", changeset: [{ path: "body", label: "Body" }] })
+        ]);
+
+        expect(never.text()).toBe(failedText);
+    });
+
+    it("leaves a row holding two runs describing itself", () => {
+        // A row collapses on an hour; a summary is debounced on a minute. Putting one sentence on
+        // a row that holds two would attribute it to saves it never covered.
+        const { text } = renderState([
+            record({
+                timestamp: at(50),
+                changeset: [{ path: "body", label: "Body" }],
+                summary: SENTENCE
+            }),
+            record({
+                timestamp: at(10),
+                changeset: [{ path: "title", label: "Title" }],
+                summary: "Reworded the page title."
+            })
+        ]);
+
+        expect(text()).not.toContain(SENTENCE);
+        expect(text()).toContain("made 2 saves");
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        // Both of them, once it is open.
+        expect(text()).toContain(SENTENCE);
+        expect(text()).toContain("Reworded the page title.");
     });
 });
 

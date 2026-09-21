@@ -25,7 +25,7 @@ import { describeAction, type ActionBadgeTone } from "~/timeline/describeAction.
 import { describeActor, type MachineIcon } from "~/timeline/describeActor.js";
 import type { DescribedChange } from "~/timeline/describeChange.js";
 import type { TimelineCoverage } from "~/timeline/deriveTimelineState.js";
-import { discloseItem, summariseItem } from "~/timeline/summariseItem.js";
+import { discloseItem, summariseItem, type DisclosedSave } from "~/timeline/summariseItem.js";
 import type { TimelineItem } from "~/timeline/collapseConsecutive.js";
 import { useActivityTimeline } from "~/hooks/useActivityTimeline.js";
 import type {
@@ -178,12 +178,51 @@ const ChangeRow = ({ change }: { change: DescribedChange }) => {
 };
 
 /**
- * What one save discloses when opened.
+ * The run's summary, wherever it appears.
  *
- * The closing line is not a disclaimer bolted on. "No values, ever" is the feature's defining
- * constraint, and an expanded save that simply stopped after the field list would read as though
- * the values had failed to load. Saying it out loud every time costs a line; a reader concluding
- * the panel is broken costs more.
+ * Rendered as prose and nothing else — no badge, no icon, no framing that would invite a reader to
+ * treat its absence as a fault. It is an enrichment of a row that already says what happened.
+ */
+const SummaryLine = ({ text }: { text: string }) => (
+    <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
+        {text}
+    </Text>
+);
+
+/**
+ * One save inside an opened row: its own sentence, then its own fields.
+ *
+ * Per save rather than one merged list, because a row can stand for four saves and "these six
+ * fields changed at some point across them" answers a question nobody asked.
+ */
+const SaveBlock = ({ save }: { save: DisclosedSave }) => (
+    <div className={"border-b-sm border-neutral-dimmed last:border-b-none"}>
+        <div className={"flex flex-wrap items-baseline gap-xs bg-neutral-base px-sm-extra py-xs"}>
+            <Text size={"sm"} className={"font-semibold"}>
+                {save.sentence}
+            </Text>
+            <Text size={"sm"} className={"text-neutral-muted"}>
+                {formatTimestamp(save.timestamp)}
+            </Text>
+        </div>
+        <div className={"flex flex-col"}>
+            {save.changes.map((change, index) => (
+                <ChangeRow
+                    key={`${change.text}-${change.operation ?? ""}-${index}`}
+                    change={change}
+                />
+            ))}
+        </div>
+    </div>
+);
+
+/**
+ * What one row discloses when opened.
+ *
+ * The closing line is not a disclaimer bolted on. "The changeset holds no values" is the feature's
+ * defining constraint, and an expanded save that simply stopped after the field list would read as
+ * though the values had failed to load. Saying it out loud every time costs a line; a reader
+ * concluding the panel is broken costs more.
  */
 const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
     const disclosure = discloseItem(item);
@@ -194,12 +233,20 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
                 "m-sm-extra overflow-hidden rounded-md border-sm border-neutral-dimmed bg-neutral-light"
             }
         >
+            {disclosure.summaries.length > 0 ? (
+                <div
+                    className={
+                        "flex flex-col gap-xs border-b-sm border-neutral-dimmed bg-neutral-base px-sm-extra py-sm"
+                    }
+                >
+                    {disclosure.summaries.map((text, index) => (
+                        <SummaryLine key={index} text={text} />
+                    ))}
+                </div>
+            ) : null}
             <div className={"flex flex-col"}>
-                {disclosure.changes.map((change, index) => (
-                    <ChangeRow
-                        key={`${change.text}-${change.operation ?? ""}-${index}`}
-                        change={change}
-                    />
+                {disclosure.saves.map(save => (
+                    <SaveBlock key={save.id} save={save} />
                 ))}
             </div>
             {disclosure.truncated ? (
@@ -212,7 +259,8 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
             ) : null}
             <div className={"bg-neutral-base px-sm-extra py-xs"}>
                 <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
-                    Values from this save are not recorded. Compare revisions to see values.
+                    Which fields changed is recorded; their values are not. Compare revisions to see
+                    values.
                 </Text>
             </div>
         </div>
@@ -301,6 +349,18 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                     subtitle={action.sentence}
                     description={
                         <>
+                            {/*
+                              The summary sits above the timestamp because it is the most useful
+                              line on the row when there is one, and absent entirely when there is
+                              not. Nothing here stands in for it: a row with no summary reads as a
+                              row, not as a row missing something.
+                            */}
+                            {summary.summary ? <SummaryLine text={summary.summary} /> : null}
+                            {summary.summaryPending ? (
+                                <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
+                                    {"Summarising…"}
+                                </Text>
+                            ) : null}
                             <RowTime timestamp={summary.latestTimestamp} />
                             {summary.spansTime ? (
                                 <span>
