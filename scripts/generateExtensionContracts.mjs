@@ -241,6 +241,12 @@ const buildTypeSurface = () => {
     "Generated from the built types, so it cannot drift. Props inherited from the underlying DOM element (className, style, id, onFocus, ...) are not listed but do work."
   );
 
+  /*
+   * Fenced, because `yarn format` reformats markdown and strips the leading indentation these
+   * blocks rely on, which both mangles the nesting and makes every regenerate-then-format cycle
+   * produce a diff. A code fence is left alone by the formatter.
+   */
+  blocks.push("```");
   blocks.push("### Components");
   for (const component of components) {
     blocks.push(
@@ -257,6 +263,8 @@ const buildTypeSurface = () => {
   for (const name of FIELD_TYPES) {
     blocks.push(render(`  ${name}`, describe(lookup(appAdmin, name), { ownOnly: false })));
   }
+
+  blocks.push("```");
 
   return { surface: blocks.join("\n\n"), count: components.length };
 };

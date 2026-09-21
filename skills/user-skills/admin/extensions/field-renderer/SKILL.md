@@ -145,6 +145,8 @@ the `.tsx` extension; omitting it fails the build.
 
 Generated from the built types, so it cannot drift. Props inherited from the underlying DOM element (className, style, id, onFocus, ...) are not listed but do work.
 
+```
+
 ### Components
 
   <Button>
@@ -337,3 +339,5 @@ Generated from the built types, so it cannot drift. Props inherited from the und
     moveUp: () => void
     remove: () => void
     templateId?: string
+
+```

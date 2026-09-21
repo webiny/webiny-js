@@ -5,6 +5,7 @@ import { AdminComponentModelProvider } from "./AdminComponentModelProvider.js";
 import { AdminComponentsRepository } from "./AdminComponentsRepository.js";
 import { CreateFieldRendererTool } from "./CreateFieldRendererTool.js";
 import { CreateMenuTool } from "./CreateMenuTool.js";
+import { SetFieldRendererTool } from "./SetFieldRendererTool.js";
 
 /**
  * Admin components: the storage, and the tool the assistant uses to write one.
@@ -30,5 +31,6 @@ export const AdminComponentsFeature = createFeature({
         container.register(AdminComponentsRepository);
         container.register(CreateFieldRendererTool);
         container.register(CreateMenuTool);
+        container.register(SetFieldRendererTool);
     }
 });
