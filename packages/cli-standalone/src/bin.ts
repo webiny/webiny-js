@@ -7,6 +7,7 @@ import "@webiny/cli-core/utils/suppressPunycodeWarnings.js";
 import { Cli } from "@webiny/cli-core";
 import { ensureSameWebinyPackageVersions } from "@webiny/cli-core/utils/ensureSameWebinyPackageVersions/index.js";
 import { registerStandaloneFeatures } from "./registerStandaloneFeatures.js";
+import { ensureSystemRequirements } from "@webiny/system-requirements";
 import { startTrace } from "@webiny/project/utils/trace/index.js";
 import { trace } from "@webiny/project/utils/trace/index.js";
 import { traceAsync } from "@webiny/project/utils/trace/index.js";
@@ -18,6 +19,9 @@ startTrace("Webiny CLI (standalone)");
 // Hosting-type marker — lets webiny.config.tsx branch on which CLI is running (e.g. SelfHostedAuth +
 // Admin.ApiUrl for server, Cognito for AWS). Read at build/watch time when the config is evaluated.
 process.env.WEBINY_HOSTING_TYPE = "standalone";
+
+// Ensure system requirements are met.
+trace("check system requirements", () => ensureSystemRequirements());
 
 // Ensure all @webiny/* packages use the same version.
 trace("check @webiny package versions", () => ensureSameWebinyPackageVersions());
