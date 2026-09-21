@@ -30,10 +30,13 @@ import { buildPageDocument, type ComponentPlacement } from "~/pages/buildPageDoc
 import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
+import { scalarInputNames } from "~/pages/scalarInputNames.js";
 
 /** What a promoted component needs to be placed: its final name, and the manifest for its inputs. */
 interface PlaceableComponent {
     manifest: ComponentManifest;
+    /** Manifest inputs a derived scalar may be bound to — see `scalarInputNames`. */
+    scalarInputs: Set<string>;
     props: GeneratedComponent["props"];
     /** Text runs of the cluster's reference member, for per-instance alignment. */
     representativeTexts: string[];
@@ -145,6 +148,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
 
             placeable.set(promoted.signature, {
                 manifest,
+                scalarInputs: scalarInputNames(manifest),
                 props: component.props,
                 representativeTexts: await this.referenceTexts(component, segmentByUrl, trees)
             });
@@ -284,9 +288,26 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             instanceTexts
         });
 
-        const inputs: Record<string, unknown> = {};
+        /*
+         * Start from the component's own defaults, then overlay only the inputs a derived string can
+         * legitimately fill.
+         *
+         * Two reasons, both learned the hard way. A list input handed a string throws outright
+         * (`ComponentInputTraverser` does `value.forEach` once `node.list` is set), and passing any
+         * `inputs` at all makes `ElementFactory` ignore `defaults.inputs` entirely — so filtering
+         * without merging would strip the sample items the generator was told to provide and render an
+         * empty grid.
+         *
+         * The effect is that scalars carry this page's real copy while lists and composites keep the
+         * generated defaults. That is a fidelity gap, not a rendering one: a features grid shows the
+         * model's example cards rather than the page's actual cards. It belongs in the discard log —
+         * per-item content needs the composite alignment that Assemble's contract cannot yet support.
+         */
+        const inputs: Record<string, unknown> = { ...(component.manifest.defaults?.inputs ?? {}) };
         for (const prop of derived) {
-            inputs[prop.name] = prop.value;
+            if (component.scalarInputs.has(prop.name)) {
+                inputs[prop.name] = prop.value;
+            }
         }
         return inputs;
     }
