@@ -9,12 +9,18 @@ import { execaSync } from "execa";
  * ships `webiny` and `@webiny/mcp` and nothing else. A scoped-only glob leaves the single most
  * important package in a user's project out of the comparison.
  *
- * This is the expensive call the cache exists to avoid: `yarn info --all` takes the better part of a
- * second in a project of any size.
+ * `--recursive` is what makes this work outside this monorepo. `--all` on its own reports only the
+ * direct dependencies of the workspaces, and in a generated project the only direct Webiny
+ * dependencies are `webiny` and `@webiny/mcp`; every scoped package is transitive underneath them.
+ * Without it the check would compare two packages and call that a pass. It costs nothing measurable,
+ * and in this repo the two flags return the same set because every package here is a workspace.
+ *
+ * This is the expensive call the cache exists to avoid: it takes the better part of a second in a
+ * project of any size.
  */
 export const listWebinyPackageVersions = (): Map<string, Set<string>> => {
     const patterns = ["@webiny/*", "webiny"];
-    const args = ["info", ...patterns, "--name-only", "--all", "--json"];
+    const args = ["info", ...patterns, "--name-only", "--all", "--recursive", "--json"];
 
     const { stdout } = execaSync("yarn", args, {
         encoding: "utf8"
