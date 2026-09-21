@@ -79,3 +79,35 @@ export const ActivityChangesetFilter = createAbstraction<IActivityChangesetFilte
 export namespace ActivityChangesetFilter {
     export type Interface = IActivityChangesetFilter;
 }
+
+/**
+ * Which records must have their summary withheld from this reader.
+ *
+ * Inert by default and expected to stay that way for most installations. It exists because a
+ * generated summary is the one thing on a record that may quote content — the changeset names
+ * fields and never values, but a sentence describing what changed can reasonably contain a
+ * fragment of what it changed to. So the feature needs one place to withhold summaries, for a
+ * reader who may see that an entry changed but not what it now says.
+ *
+ * **It answers a question rather than transforming records**, deliberately. A hook that returned
+ * records could drop one, and a dropped record is the failure this feature is most careful about:
+ * a timeline with gaps in it tells a reader nothing happened when something did. Returning ids
+ * leaves the use case holding the guarantee that a suppressed record loses its summary and nothing
+ * else.
+ *
+ * The same reasoning as `ActivityChangesetFilter`, one abstraction along: not in storage, which
+ * must not learn what a field is; not in the resolver, which a second consumer would bypass; not
+ * in the UI, which is never a client's job.
+ */
+export interface IActivitySummaryVisibility {
+    /** Ids of records whose summary this reader may not see. Empty for "all of them". */
+    hidden(records: ActivityRecord[], model: CmsModel): Promise<Set<string>>;
+}
+
+export const ActivitySummaryVisibility = createAbstraction<IActivitySummaryVisibility>(
+    "ActivityLog/ActivitySummaryVisibility"
+);
+
+export namespace ActivitySummaryVisibility {
+    export type Interface = IActivitySummaryVisibility;
+}

@@ -1,4 +1,5 @@
 import type { TimelineItem } from "./collapseConsecutive.js";
+import { describeChange } from "./describeChange.js";
 
 export type ActionBadgeTone = "success" | "warning" | "destructive" | "neutral";
 
@@ -57,6 +58,38 @@ const plural = (count: number, singular: string, pluralForm = `${singular}s`) =>
     `${count} ${count === 1 ? singular : pluralForm}`;
 
 /**
+ * The one changed field, named instead of counted.
+ *
+ * "edited 1 field" is the least useful sentence this function can produce: it costs a reader a click
+ * to learn something the row already knows. Naming it is free, deterministic, and needs no model —
+ * which is the point, since the overwhelming majority of saves never qualify for a generated
+ * summary and this is the whole of what they get.
+ *
+ * Three cases deliberately fall through to the count:
+ *
+ *   - **More than one field.** Naming two is a list, and the expanded row is already the list.
+ *   - **A structural change.** "added a block" is the better sentence, and it already exists.
+ *   - **A truncated changeset.** The single entry is then a parent standing in for more changes
+ *     than the record lists, so naming it as the field that changed would be a plain lie.
+ *
+ * The leaf label alone, not the full crumb path: a sentence is not a breadcrumb, and the expanded
+ * row shows the containing fields for anyone who needs them.
+ */
+const nameSingleField = (item: TimelineItem): string | null => {
+    if (item.truncated || item.changeset.length !== 1) {
+        return null;
+    }
+
+    const change = item.changeset[0]!;
+
+    if (change.operation) {
+        return null;
+    }
+
+    return describeChange(change).label;
+};
+
+/**
  * Only the dominant operation names the sentence.
  *
  * A save that both moved a block and edited a field is described by whichever there is more of,
@@ -93,7 +126,9 @@ const describeSave = (item: TimelineItem): string => {
         return `changed ${plural(structural, "block")}`;
     }
 
-    return `edited ${plural(item.changeset.length, "field")}`;
+    const named = nameSingleField(item);
+
+    return named ? `edited ${named}` : `edited ${plural(item.changeset.length, "field")}`;
 };
 
 const REVIEW_SENTENCES: Record<string, string> = {
@@ -157,11 +192,12 @@ export const describeAction = (item: TimelineItem): DescribedAction => {
         if (occurrences > 1) {
             // A collapsed run of saves. The count of saves leads, because "6 fields across 4
             // saves" and "6 fields in one save" are different editorial events.
+            const named = nameSingleField(item);
+
             return {
-                sentence: `made ${plural(occurrences, "save")}, editing ${plural(
-                    item.changeset.length,
-                    "field"
-                )}`,
+                sentence: `made ${plural(occurrences, "save")}, editing ${
+                    named ?? plural(item.changeset.length, "field")
+                }`,
                 badge: null
             };
         }

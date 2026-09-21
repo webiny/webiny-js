@@ -49,10 +49,35 @@ describe("ordinary saves", () => {
         expect(action.badge).toBeNull();
     });
 
-    it("uses the singular for one field", () => {
-        expect(describeAction(row({ changeset: [change("Title")] })).sentence).toBe(
-            "edited 1 field"
-        );
+    it("names the field when only one changed", () => {
+        // "edited 1 field" costs a reader a click to learn something the row already knows. The
+        // overwhelming majority of saves never qualify for a generated summary, so this sentence
+        // is the whole of what they get.
+        expect(describeAction(row({ changeset: [change("Title")] })).sentence).toBe("edited Title");
+    });
+
+    it("counts rather than names when the changeset was truncated", () => {
+        // The single entry is then a parent standing in for more changes than the record lists.
+        // Naming it as the field that changed would be a plain lie.
+        const item = row({ changeset: [change("Sections")], truncated: true });
+
+        expect(describeAction(item).sentence).toBe("edited 1 field");
+    });
+
+    it("names the field by its captured label, not its path", () => {
+        const item = row({
+            changeset: [{ path: "hero.heroHeadline", label: "Headline", operation: null }]
+        });
+
+        expect(describeAction(item).sentence).toBe("edited Headline");
+    });
+
+    it("falls back to the path when a label was never captured", () => {
+        const item = row({
+            changeset: [{ path: "hero.heroHeadline", label: "", operation: null }]
+        });
+
+        expect(describeAction(item).sentence).toBe("edited Hero headline");
     });
 
     it("says a save changed nothing rather than reporting zero fields", () => {
@@ -127,6 +152,40 @@ describe("collapsed runs of saves", () => {
         ])[0]!;
 
         expect(describeAction(item).sentence).toBe("made 2 saves, editing 2 fields");
+    });
+
+    it("names the field when a whole run touched only one", () => {
+        // Several saves to the same field is the commonest shape of a run, and the one a generated
+        // summary is least likely to cover — one short field is not enough prose to summarise.
+        const at = (minutes: number) => new Date(Date.UTC(2026, 8, 10, 10, minutes)).toISOString();
+        const item = collapseConsecutive([
+            record({ timestamp: at(20), changeset: [change("Title")] }),
+            record({ timestamp: at(15), changeset: [change("Title")] })
+        ])[0]!;
+
+        expect(describeAction(item).sentence).toBe("made 2 saves, editing Title");
+    });
+
+    it("counts rather than names when a run was truncated", () => {
+        const at = (minutes: number) => new Date(Date.UTC(2026, 8, 10, 10, minutes)).toISOString();
+        const item = collapseConsecutive([
+            record({ timestamp: at(20), changeset: [change("Sections")], truncated: true }),
+            record({ timestamp: at(15), changeset: [change("Sections")] })
+        ])[0]!;
+
+        expect(describeAction(item).sentence).toBe("made 2 saves, editing 1 field");
+    });
+
+    it("counts rather than names when the one change was structural", () => {
+        // A run whose only change is a moved block. "editing Sections" would describe it as an
+        // edit to a field, which is the one thing it was not.
+        const at = (minutes: number) => new Date(Date.UTC(2026, 8, 10, 10, minutes)).toISOString();
+        const item = collapseConsecutive([
+            record({ timestamp: at(20), changeset: [change("Sections", "moved")] }),
+            record({ timestamp: at(15), changeset: [change("Sections", "moved")] })
+        ])[0]!;
+
+        expect(describeAction(item).sentence).toBe("made 2 saves, editing 1 field");
     });
 });
 

@@ -33,9 +33,31 @@ import { PrivateModelStorageFeature } from "~/storage/privateModel/feature.js";
  * Never `canUseAuditLogs`: reusing that entitlement would tie this feature to enterprise
  * permanently, and business tier is intended.
  */
-export const ActivityLogAppFeature = createFeature({
+export interface IActivityLogAppFeatureParams {
+    /**
+     * Whether saves are summarised. On by default; switching it off is a customer's decision, not a
+     * licensing one.
+     *
+     * Separate from the entitlement on purpose, and the two answer different questions. The licence
+     * decides whether this feature may run at all and is checked above. This decides whether an
+     * installation that *may* summarise actually does — a choice about sending content to a model
+     * provider, which some customers will make differently per project.
+     *
+     * Off means: no content values are read, none are written to a record, and no job is
+     * dispatched. The timeline is unaffected — every record still carries the deterministic
+     * description derived from its changeset, which is what the overwhelming majority of records
+     * show anyway.
+     *
+     * A registration parameter rather than a stored setting, following `RecordLockingAppFeature`
+     * and `AuditLogsFeature`. There is no admin surface for it, and neither of those has one
+     * either.
+     */
+    summaries?: boolean;
+}
+
+export const ActivityLogAppFeature = createFeature<IActivityLogAppFeatureParams>({
     name: "ActivityLogApp",
-    register(container: Container) {
+    register(container: Container, params: IActivityLogAppFeatureParams) {
         if (!container.resolve(FeatureFlags).get().isEnabled("collaboration.activityLog")) {
             return;
         }
@@ -45,7 +67,9 @@ export const ActivityLogAppFeature = createFeature({
         PrivateModelStorageFeature.register(container);
         ActivityLogPermissionsFeature.register(container);
         // Before the recorder, which depends on the dispatcher.
-        ActivitySummaryFeature.register(container, {});
+        ActivitySummaryFeature.register(container, {
+            config: { enabled: params?.summaries ?? true }
+        });
         RecorderFeature.register(container);
         ListActivityFeature.register(container);
         container.register(ActivityLogGraphQLFactory);

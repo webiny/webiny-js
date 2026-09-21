@@ -133,7 +133,7 @@ describe("the eight states", () => {
         // Stated rather than left as an empty space, which would read as a bug.
         const { text } = renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
 
-        fireEvent.click(screen.getByRole("button", { name: /edited 1 field/ }));
+        fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
 
         expect(text()).toContain("Values from this save are not recorded");
     });
@@ -328,7 +328,7 @@ describe("deep field paths, as the design resolves them", () => {
         const positional = renderState([
             record({ changeset: [{ path: "sections[2].title", label: "Title" }] })
         ]);
-        fireEvent.click(screen.getByRole("button", { name: /edited 1 field/ }));
+        fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
         expect(positional.text()).toContain("item 3");
 
         positional.unmount();
@@ -336,7 +336,7 @@ describe("deep field paths, as the design resolves them", () => {
         const identified = renderState([
             record({ changeset: [{ path: "sections#a1b2c3.title", label: "Title" }] })
         ]);
-        fireEvent.click(screen.getByRole("button", { name: /edited 1 field/ }));
+        fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
         expect(identified.text()).not.toContain("item ");
     });
 });

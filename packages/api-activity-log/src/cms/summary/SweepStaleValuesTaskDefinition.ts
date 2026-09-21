@@ -67,6 +67,10 @@ class SweepStaleValuesTaskHandlerImpl implements TaskHandler.Interface<
         let cleared = input.clearedSoFar ?? 0;
         let scanFrom = input.scanFrom ?? null;
 
+        // The stall detection below is load-bearing in a way a test cannot show you: remove it and
+        // this suite does not go red, it runs the worker out of memory. A loop that re-reads the
+        // same batch forever has no failing assertion to report — which is exactly why the defect
+        // it guards against survived in `EmptyTrashBinTask`.
         while (!controller.runtime.isCloseToTimeout()) {
             const writtenBefore = new Date(Date.now() - this.config.sweepThresholdMs).toISOString();
 

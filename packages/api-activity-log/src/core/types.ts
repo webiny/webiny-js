@@ -228,3 +228,19 @@ export interface ActivityRecord {
 
 /** A record before storage assigns it an id. */
 export type ActivityRecordInput = Omit<ActivityRecord, "id">;
+
+/**
+ * Whether a record is still waiting for the job dispatched for it.
+ *
+ * Pending is "carries values and has not settled" — derived rather than stored, because a stored
+ * flag is a third thing that can disagree with the other two. One definition, used by the
+ * dispatcher to decide whether a save joins a run in progress and by the read path to tell a reader
+ * a sentence is coming.
+ */
+export const isSummaryPending = (record: ActivityRecord): boolean => {
+    return (
+        Boolean(record.summaryState?.values?.length) &&
+        !record.summary &&
+        !record.summaryState?.reason
+    );
+};

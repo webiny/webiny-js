@@ -38,6 +38,16 @@ export interface TimelineRecord {
     truncated: boolean;
     subject?: TimelineSubject | null;
     hasNote?: boolean | null;
+    /**
+     * A generated sentence describing what changed, when there is one.
+     *
+     * An enrichment, never the row's only description. The deterministic sentence is derived from
+     * the changeset for every record, and a row that has both shows both — so an absent summary
+     * leaves nothing missing, which is what makes suppression and failure invisible to a reader.
+     */
+    summary?: string | null;
+    /** True while a summary is being generated. False once the record has settled, either way. */
+    summaryPending?: boolean | null;
 }
 
 /** An actor whose identity the reader may not see, redacted server-side. */

@@ -78,6 +78,8 @@ const LIST_ACTIVITY_QUERY = /* GraphQL */ `
                     label
                 }
                 hasNote
+                summary
+                summaryPending
             }
             meta {
                 cursor

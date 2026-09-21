@@ -1,12 +1,14 @@
 import { Result } from "@webiny/feature/api";
 import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import type { ActivityRecord } from "~/core/types.js";
 import { ActivityLogNotAuthorizedError, ActivityLogTargetNotFoundError } from "~/domain/errors.js";
 import { ActivityLogPermissions } from "~/features/permissions/index.js";
 import {
     ActivityChangesetFilter,
+    ActivitySummaryVisibility,
     ListActivityUseCase as Abstraction,
     type IListActivityParams
 } from "./abstractions.js";
@@ -24,7 +26,8 @@ class ListActivityUseCaseImpl implements Abstraction.Interface {
         private getModel: GetModelUseCase.Interface,
         private getTargetEntry: GetLatestRevisionByEntryIdIncludingDeletedUseCase.Interface,
         private storage: ActivityLogStorage.Interface,
-        private changesetFilter: ActivityChangesetFilter.Interface
+        private changesetFilter: ActivityChangesetFilter.Interface,
+        private summaryVisibility: ActivitySummaryVisibility.Interface
     ) {}
 
     /**
@@ -105,14 +108,47 @@ class ListActivityUseCaseImpl implements Abstraction.Interface {
         }
 
         const filtered = await this.changesetFilter.filter(listed.value.records, model);
+        const withSummaries = await this.applySummaryVisibility(filtered, model);
 
         return Result.ok({
-            records: canSeeActor ? filtered : filtered.map(redactActor),
+            records: canSeeActor ? withSummaries : withSummaries.map(redactActor),
             cursor: listed.value.cursor,
             hasMore: listed.value.hasMore
         });
     }
+
+    /**
+     * Withholds the summaries this reader may not see.
+     *
+     * The hook says which; this says what withholding means, and it is the narrow thing: the
+     * sentence goes and the record stays. A suppressed row keeps its actor, its timestamp and its
+     * full changeset, and falls back to the deterministic description every other row uses — so
+     * suppression leaves no gap to notice and reads exactly like the overwhelming majority of
+     * records, which never had a summary in the first place.
+     */
+    private async applySummaryVisibility(records: ActivityRecord[], model: CmsModel) {
+        const hidden = await this.summaryVisibility.hidden(records, model);
+
+        if (hidden.size === 0) {
+            return records;
+        }
+
+        return records.map(record => (hidden.has(record.id) ? withoutSummary(record) : record));
+    }
 }
+
+/**
+ * Strips the summary and every trace that one was coming.
+ *
+ * `summaryState` goes with it. Leaving it would let a suppressed record report itself as *pending*,
+ * which is a visible difference — a row saying a sentence is on its way that never arrives is worse
+ * than a row that never promised one.
+ */
+const withoutSummary = (record: ActivityRecord): ActivityRecord => {
+    const { summary: _summary, summaryState: _summaryState, ...rest } = record;
+
+    return rest;
+};
 
 /**
  * Redacts the actor while leaving the record otherwise intact.
@@ -136,6 +172,7 @@ export const ListActivityUseCase = Abstraction.createImplementation({
         GetModelUseCase,
         GetLatestRevisionByEntryIdIncludingDeletedUseCase,
         ActivityLogStorage,
-        ActivityChangesetFilter
+        ActivityChangesetFilter,
+        ActivitySummaryVisibility
     ]
 });

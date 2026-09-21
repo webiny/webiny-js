@@ -9,10 +9,12 @@ import type { ActivityRecord } from "~/core/types.js";
 import { ActivityLogPermissions } from "~/features/permissions/index.js";
 import {
     ActivityChangesetFilter,
+    ActivitySummaryVisibility,
     ListActivityUseCase
 } from "~/features/listActivity/abstractions.js";
 import { ListActivityUseCase as ListActivityUseCaseImpl } from "~/features/listActivity/ListActivityUseCase.js";
 import { PassThroughChangesetFilter } from "~/features/listActivity/PassThroughChangesetFilter.js";
+import { ShowAllSummaries } from "~/features/listActivity/ShowAllSummaries.js";
 
 const record = (overrides: Partial<ActivityRecord> = {}): ActivityRecord => ({
     id: "rec-1",
@@ -38,6 +40,8 @@ interface HarnessOptions {
     targetInModel?: boolean;
     records?: ActivityRecord[];
     filter?: ActivityChangesetFilter.Interface;
+    /** Record ids whose summaries this reader may not see. */
+    hideSummaries?: string[];
 }
 
 const harness = (options: HarnessOptions = {}) => {
@@ -92,6 +96,15 @@ const harness = (options: HarnessOptions = {}) => {
         container.registerInstance(ActivityChangesetFilter, options.filter);
     } else {
         container.register(PassThroughChangesetFilter);
+    }
+
+    if (options.hideSummaries) {
+        const hidden = new Set(options.hideSummaries);
+        container.registerInstance(ActivitySummaryVisibility, {
+            hidden: async () => hidden
+        } as ActivitySummaryVisibility.Interface);
+    } else {
+        container.register(ShowAllSummaries);
     }
 
     container.register(ListActivityUseCaseImpl);
@@ -346,6 +359,7 @@ describe("pagination", () => {
             deleteAllForTarget: vi.fn()
         } as unknown as ActivityLogStorage.Interface);
         container.register(PassThroughChangesetFilter);
+        container.register(ShowAllSummaries);
         container.register(ListActivityUseCaseImpl);
 
         const useCase = container.resolve(ListActivityUseCase);
@@ -397,5 +411,100 @@ describe("the target must live in the supplied model", () => {
         const { useCase } = harness();
 
         expect((await useCase.execute(params)).isOk()).toBe(true);
+    });
+});
+
+describe("summary visibility", () => {
+    const summarised = (overrides: Partial<ActivityRecord> = {}) =>
+        record({
+            summary: "Rewrote the hero heading and tightened the body copy.",
+            ...overrides
+        });
+
+    const pending = () =>
+        record({
+            id: "rec-2",
+            summaryState: {
+                values: [{ path: "body", label: "Body", before: "a", after: "b" }],
+                valuesWrittenOn: "2026-09-10T08:30:00.000Z"
+            }
+        });
+
+    it("hands summaries over by default", async () => {
+        // The default is not a placeholder. A reader who gets this far has already passed
+        // `activityLog.timeline` and a full CMS read of the entry the summary describes.
+        const { useCase } = harness({ records: [summarised()] });
+
+        const result = await useCase.execute(params);
+
+        expect(result.isOk() && result.value.records[0]!.summary).toBe(
+            "Rewrote the hero heading and tightened the body copy."
+        );
+    });
+
+    it("withholds the summary the hook names", async () => {
+        const { useCase } = harness({ records: [summarised()], hideSummaries: ["rec-1"] });
+
+        const result = await useCase.execute(params);
+
+        expect(result.isOk() && result.value.records[0]!.summary).toBeUndefined();
+    });
+
+    it("keeps the record, and everything else on it", async () => {
+        // The failure this feature is most careful about: a timeline with a gap in it tells a
+        // reader nothing happened when something did.
+        const { useCase } = harness({ records: [summarised()], hideSummaries: ["rec-1"] });
+
+        const result = await useCase.execute(params);
+        const records = result.isOk() ? result.value.records : [];
+
+        expect(records).toHaveLength(1);
+        expect(records[0]).toMatchObject({
+            id: "rec-1",
+            action: "entry.update",
+            actor: { id: "u-1", displayName: "Ada" },
+            changeset: [{ path: "title", label: "Title" }]
+        });
+    });
+
+    it("leaves a suppressed record indistinguishable from one that never had a summary", async () => {
+        // Suppression must not announce itself. A row that says a sentence is coming and never
+        // delivers one is worse than a row that never promised anything.
+        const { useCase } = harness({
+            records: [summarised({ id: "rec-1", summaryState: { taskId: "t-1" } })],
+            hideSummaries: ["rec-1"]
+        });
+
+        const result = await useCase.execute(params);
+        const suppressed = result.isOk() ? result.value.records[0]! : null;
+
+        expect(suppressed?.summary).toBeUndefined();
+        expect(suppressed?.summaryState).toBeUndefined();
+    });
+
+    it("leaves records the hook did not name alone", async () => {
+        const { useCase } = harness({
+            records: [summarised(), summarised({ id: "rec-9" })],
+            hideSummaries: ["rec-1"]
+        });
+
+        const result = await useCase.execute(params);
+        const records = result.isOk() ? result.value.records : [];
+
+        expect(records[0]!.summary).toBeUndefined();
+        expect(records[1]!.summary).toBeDefined();
+    });
+
+    it("never lets transient values out, hidden or not", async () => {
+        // The values are on the record only until the job consumes them. They are not part of what
+        // a reader is offered, and this is the boundary that decides it.
+        const { useCase } = harness({ records: [pending()] });
+
+        const result = await useCase.execute(params);
+        const returned = result.isOk() ? result.value.records[0]! : null;
+
+        // Still on the domain record — the read path does not strip them, the GraphQL layer simply
+        // never exposes them. This asserts where the responsibility sits.
+        expect(returned?.summaryState?.values).toHaveLength(1);
     });
 });

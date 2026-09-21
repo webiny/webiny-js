@@ -27,7 +27,11 @@ import { EntryAfterUpdateRevisionDescriptionEventHandler } from "@webiny/api-hea
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import { ActivitySourceResolver, EntryActivityRecorder } from "~/cms/recorder/abstractions.js";
 import { ActivityLogModelProvider } from "~/storage/privateModel/abstractions.js";
-import { ActivityLogAppFeature } from "~/ActivityLogAppFeature.js";
+import {
+    ActivityLogAppFeature,
+    type IActivityLogAppFeatureParams
+} from "~/ActivityLogAppFeature.js";
+import { ActivitySummaryConfig } from "~/cms/summary/config.js";
 import { extractRequiredTokens } from "./extractRequiredTokens.js";
 
 /**
@@ -88,6 +92,9 @@ const SELF_REGISTERED = new Set([
     "ReviewActivityRecorder",
     "ActivityLogPermissions",
     "ActivityChangesetFilter",
+    // Decides whose summaries a reader may see. Registered by `ListActivityFeature` next to the
+    // use case that depends on it, exactly like the changeset filter above.
+    "ActivitySummaryVisibility",
     "ListActivityUseCase"
 ]);
 
@@ -97,7 +104,7 @@ const SELF_REGISTERED = new Set([
  * Deliberately registers neither `TaskService` nor `TaskExecutionContext`: a project without
  * background tasks is the configuration that broke, so it is the configuration the test runs.
  */
-const minimalContainer = (): Container => {
+const minimalContainer = (params: IActivityLogAppFeatureParams = {}): Container => {
     const container = new Container();
 
     container.registerInstance(IdentityContext, {
@@ -137,7 +144,7 @@ const minimalContainer = (): Container => {
         get: () => ({ isEnabled: () => true }) as never
     } as FeatureFlags.Interface);
 
-    ActivityLogAppFeature.register(container);
+    ActivityLogAppFeature.register(container, params);
 
     return container;
 };
@@ -212,6 +219,20 @@ describe("guard 3 — every handler constructs against the bare minimum", () => 
         ActivityLogAppFeature.register(container);
 
         expect(container.resolveAll(EntryAfterUpdateEventHandler)).toEqual([]);
+    });
+
+    it("carries the summaries switch down to the config the dispatcher reads", () => {
+        // The one wire nobody would notice breaking: the switch is a feature parameter and the
+        // routing rule reads a config value, and if those two ever stop meeting, an installation
+        // that turned summaries off would carry on summarising with nothing to show for the
+        // setting.
+        const container = minimalContainer({ summaries: false });
+
+        expect(container.resolve(ActivitySummaryConfig).enabled).toBe(false);
+    });
+
+    it("leaves summaries on when nothing says otherwise", () => {
+        expect(minimalContainer().resolve(ActivitySummaryConfig).enabled).toBe(true);
     });
 
     it("gates on the activity log flag specifically, not on any flag being set", () => {

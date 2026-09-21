@@ -374,3 +374,64 @@ describe("without a task service", () => {
         expect(list).not.toHaveBeenCalled();
     });
 });
+
+describe("the per-installation switch", () => {
+    const off = () => harness({ config: { enabled: false } });
+
+    it("stores no values", async () => {
+        // The whole point of the switch: an installation that has turned summaries off must not
+        // have content values written to its activity records at all, even briefly.
+        const { dispatcher } = off();
+
+        const planned = await plan(dispatcher);
+
+        expect(planned.state?.values).toBeUndefined();
+        expect(planned.state?.valuesWrittenOn).toBeUndefined();
+    });
+
+    it("dispatches nothing", async () => {
+        const { dispatcher, trigger } = off();
+
+        const planned = await plan(dispatcher);
+        await dispatcher.follow(planned, { id: "rec-1" } as never);
+
+        expect(planned.dispatch).toBeUndefined();
+        expect(trigger).not.toHaveBeenCalled();
+    });
+
+    it("does not even read, so the switch costs one boolean per save", async () => {
+        // The debounce lookup is the only read on this path and it sits behind the routing rule.
+        // A switch that still paid for a read would be a switch worth not using.
+        const { dispatcher, list } = off();
+
+        await plan(dispatcher);
+
+        expect(list).not.toHaveBeenCalled();
+    });
+
+    it("records why, so an installation with the switch off is diagnosable", async () => {
+        // "No sentences anywhere" has several causes — switched off, no model configured, nothing
+        // qualifying — and they are not the same problem. Leaving the reason blank makes them
+        // indistinguishable from the outside.
+        const { dispatcher } = off();
+
+        expect((await plan(dispatcher)).state?.reason).toBe("disabled");
+    });
+
+    it("leaves the record itself untouched, so the timeline still reads", async () => {
+        // The deterministic description is derived from the changeset at read time and owes
+        // nothing to this path. Switching summaries off must cost a reader nothing else.
+        const { dispatcher } = off();
+
+        const planned = await plan(dispatcher);
+
+        expect(planned.extend).toBeUndefined();
+        expect(Object.keys(planned.state ?? {})).toEqual(["reason"]);
+    });
+
+    it("summarises when the switch is on, or none of the above means anything", async () => {
+        const { dispatcher } = harness();
+
+        expect((await plan(dispatcher)).dispatch).toBe(true);
+    });
+});

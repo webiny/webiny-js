@@ -2,7 +2,7 @@ import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchema
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { ErrorResponse, ListResponse } from "@webiny/api-graphql/responses.js";
 import { ListActivityUseCase } from "~/features/listActivity/index.js";
-import type { ActivityRecord } from "~/core/types.js";
+import { isSummaryPending, type ActivityRecord } from "~/core/types.js";
 
 interface IListActivityArgs {
     targetType: string;
@@ -98,6 +98,22 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 Whether a note was attached to a review decision. The note itself is never stored.
                 """
                 hasNote: Boolean
+                """
+                A sentence describing what changed in this save, when one was generated. Null for
+                the overwhelming majority of records, which are described from the changeset
+                instead — a client must render that description and treat this as an enrichment,
+                never as the only thing it has to say.
+
+                Unlike the changeset, a summary may quote content: it describes what the text now
+                says, so a fragment of that text can appear in it.
+                """
+                summary: String
+                """
+                True while a summary is being generated for this record. False once it has settled,
+                with or without one — so a client shows a pending state on this and an absent
+                summary on anything else.
+                """
+                summaryPending: Boolean!
             }
 
             type ActivityLogListMeta {
@@ -178,7 +194,9 @@ const toGraphQL = (record: ActivityRecord) => ({
     changeset: record.changeset,
     truncated: record.truncated,
     subject: record.subject ?? null,
-    hasNote: record.hasNote ?? null
+    hasNote: record.hasNote ?? null,
+    summary: record.summary ?? null,
+    summaryPending: isSummaryPending(record)
 });
 
 export const ActivityLogGraphQLFactory = CoreGraphQLSchemaFactory.createImplementation({

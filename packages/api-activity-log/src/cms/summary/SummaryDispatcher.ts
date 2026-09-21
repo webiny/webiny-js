@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { ActivityLogStorage } from "~/core/abstractions.js";
+import { isSummaryPending } from "~/core/types.js";
 import type {
     ActivityRecord,
     ActivitySummaryState,
@@ -55,21 +56,6 @@ export namespace SummaryDispatcher {
     export type Plan = ISummaryPlan;
     export type PlanParams = IPlanSummaryParams;
 }
-
-/**
- * Whether a record is still waiting for the job that was dispatched for it.
- *
- * Pending is "carries values and has not settled". The dispatcher decides this itself from the
- * record it read rather than leaning on `extendSummaryValues` to refuse — a refusal is silent by
- * design, so a dispatcher that relied on it could not tell a joined run from a stranded save.
- */
-const isPending = (record: ActivityRecord): boolean => {
-    return (
-        Boolean(record.summaryState?.values?.length) &&
-        !record.summary &&
-        !record.summaryState?.reason
-    );
-};
 
 /**
  * Decides whether a save gets a job, and joins it to a run in progress where there is one.
@@ -180,9 +166,12 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
             return null;
         }
 
+        // Decided here rather than left to `extendSummaryValues` to refuse: a refusal is silent by
+        // design, so a dispatcher that relied on it could not tell a joined run from a stranded
+        // save.
         const previous = listed.value.records[0];
 
-        if (!previous || !isPending(previous)) {
+        if (!previous || !isSummaryPending(previous)) {
             return null;
         }
 
