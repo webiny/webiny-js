@@ -59,3 +59,20 @@ export const describeChange = (change: TimelineChange): DescribedChange => {
 export const describeChangeset = (changeset: TimelineChange[]): DescribedChange[] => {
     return changeset.map(describeChange);
 };
+
+/**
+ * A containing path as one line, with its middle elided when it is deep.
+ *
+ * Four levels of nesting is ordinary in this data — a variant inside a product, a price inside a
+ * region inside that variant — and the full crumb trail is both long and mostly uninformative: the
+ * reader needs to know where the change was, and the outermost and innermost names carry nearly all
+ * of that. The whole path stays available on hover, and the depth is stated separately so the
+ * elision never hides how far down the change actually was.
+ */
+export const elideAncestors = (ancestors: string[]): string => {
+    if (ancestors.length <= 2) {
+        return ancestors.join(" › ");
+    }
+
+    return `${ancestors[0]} › … › ${ancestors[ancestors.length - 1]}`;
+};

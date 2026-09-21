@@ -1,13 +1,49 @@
 import { collapseConsecutive, type TimelineItem } from "./collapseConsecutive.js";
 import { describeAction } from "./describeAction.js";
-import { describeChangeset, type DescribedChange } from "./describeChange.js";
+import { describeChangeset, elideAncestors, type DescribedChange } from "./describeChange.js";
+import { formatNameList } from "./describeGroup.js";
 import { isRedactedActor, type TimelineRecord } from "./types.js";
 
-/** One summary, with how it was produced — which decides whether the row marks it. */
-export interface TimelineSummary {
+/**
+ * How a sentence came to exist, which is what a reader needs in order to know whether to trust it.
+ *
+ * Three kinds, and the difference is not decoration. `generated` is a model's reading of the
+ * change and can be wrong. `deterministic` is built from the recorded values and is exact.
+ * `fields` names the fields and quotes nothing — it is what the timeline showed before summaries
+ * existed, and what every failure, refusal and suppression falls back to.
+ */
+export type SentenceKind = "generated" | "deterministic" | "fields";
+
+/** One sentence, with how it came to exist. */
+export interface TimelineSentence {
     text: string;
-    /** True when a model wrote it. False for one rendered from the recorded values. */
+    kind: SentenceKind;
+    /**
+     * True only for a model's prose.
+     *
+     * Kept beside the kind because it is the one distinction the interface marks, and a component
+     * asking "does this get the mark" should not have to know which kinds exist.
+     */
     generated: boolean;
+}
+
+/**
+ * The changed fields of one save that share a containing path.
+ *
+ * Grouped rather than listed flat because a path repeated once per field is the bulk of what made
+ * the previous layout read as a form: four fields under the same variant stated that variant four
+ * times. Said once above the fields that share it, it is orientation instead of noise.
+ */
+export interface DisclosedFieldGroup {
+    /** Containing fields, outermost first. Empty for a field at the root. */
+    path: string[];
+    /** The path as one line, middle elided past two levels. Empty when there is no path. */
+    pathLabel: string;
+    /** The whole path, unelided, for a tooltip. */
+    fullPath: string;
+    /** How deep the change was, stated only where the label elides something. */
+    depth: string;
+    fields: DescribedChange[];
 }
 
 /** One save inside an expanded row, described on its own terms. */
@@ -15,18 +51,14 @@ export interface DisclosedSave {
     /** The record's id, which is also the list key. */
     id: string;
     timestamp: string;
-    /**
-     * The field-name description for this save alone.
-     *
-     * Per save rather than per row, because the row's own description covers the whole run — "made
-     * 4 saves, editing 6 fields" — and a reader who opened it is asking what each of those four was.
-     *
-     * Always present, whatever happened to the sentences above it. It is what the timeline showed
-     * before summaries existed and what every failure, refusal and suppression falls back to, which
-     * is why no state in this timeline reads as broken.
-     */
-    sentence: string;
     changes: DescribedChange[];
+    /**
+     * The same changes, gathered under the paths they share.
+     *
+     * What the expansion renders. `changes` stays because it is the flat truth of what the save
+     * touched, and because nothing that reads it should have to understand the grouping.
+     */
+    groups: DisclosedFieldGroup[];
     truncated: boolean;
 }
 
@@ -44,13 +76,25 @@ export interface DisclosedRun {
     /**
      * The sentence covering this run, to be shown inside the expansion.
      *
-     * Null when the run has none, and also when the collapsed row is already showing this one — a
-     * row that maps onto a single run puts that run's sentence in its header, and the expansion
-     * repeating it underneath is the duplication this shape exists to remove.
+     * Always present except while the run is pending, because a run with no stored summary still
+     * has its field-name description — the third kind. All three occupy the same slot at the same
+     * indent, so the mark beside a generated one is the only thing that varies, and an exact record
+     * carries no decoration at all.
+     *
+     * Null when the collapsed row is already showing this one: a row that maps onto a single run
+     * puts that run's sentence in its header, and the expansion repeating it underneath is the
+     * duplication this shape exists to remove.
      */
-    summary: TimelineSummary | null;
+    summary: TimelineSentence | null;
     /** True while this run's job is still in flight. */
     pending: boolean;
+    /**
+     * Whether each save needs its own clock.
+     *
+     * A run of one save happened at the run's time, so stating it twice is noise. A run of several
+     * needs them, because the saves are the only thing distinguishing one moment from the next.
+     */
+    showSaveTimes: boolean;
     /**
      * Whether the run needs a wrapper of its own.
      *
@@ -81,6 +125,14 @@ export interface ItemSummary {
     /** True when a review decision carried a note. The note itself is never available. */
     hasNote: boolean;
     changedFieldCount: number;
+    /**
+     * The fields this row touched, as one phrase, for a row with no sentence to show instead.
+     *
+     * Bounded by the same rule the rest of the feature uses for lists of names — three, then a
+     * count — because a row that touched thirty fields would otherwise put thirty names on a line
+     * that exists to be glanced at.
+     */
+    fieldsLine: string;
     truncated: boolean;
     /**
      * The sentence for this row, when the row maps onto exactly one run.
@@ -96,7 +148,7 @@ export interface ItemSummary {
      * still has its field-name description, which is what the timeline showed before summaries
      * existed.
      */
-    summary: TimelineSummary | null;
+    summary: TimelineSentence | null;
     /**
      * True while this row is waiting for a sentence it does not yet have.
      *
@@ -107,24 +159,62 @@ export interface ItemSummary {
     summaryPending: boolean;
 }
 
-const summaryOf = (record: TimelineRecord): TimelineSummary | null => {
+const summaryOf = (record: TimelineRecord): TimelineSentence | null => {
     if (typeof record.summary !== "string" || record.summary === "") {
         return null;
     }
 
+    const generated = record.summaryKind === "ai";
+
     return {
         text: record.summary,
-        // Only a model's prose is marked. A rendered summary restates recorded values, which is
-        // what every other line on this timeline does, so marking it would say nothing.
-        generated: record.summaryKind === "ai"
+        kind: generated ? "generated" : "deterministic",
+        // Only a model's prose is marked. A sentence built from the recorded values restates what
+        // was recorded, which is what every other line on this timeline does, so marking it would
+        // say nothing.
+        generated
     };
+};
+
+/**
+ * A save's changes, gathered under the paths they share, in the order the paths first appear.
+ *
+ * Order matters and is taken from the changeset rather than sorted: the changeset is already in the
+ * order the differ walked the entry, which is the order a reader sees the fields in the form.
+ */
+const groupByPath = (changes: DescribedChange[]): DisclosedFieldGroup[] => {
+    const order: string[] = [];
+    const groups = new Map<string, DescribedChange[]>();
+
+    for (const change of changes) {
+        const key = change.ancestors.join("\u0001");
+
+        if (!groups.has(key)) {
+            groups.set(key, []);
+            order.push(key);
+        }
+
+        groups.get(key)!.push(change);
+    }
+
+    return order.map(key => {
+        const fields = groups.get(key)!;
+        const path = fields[0]!.ancestors;
+
+        return {
+            path,
+            pathLabel: elideAncestors(path),
+            fullPath: path.join(" › "),
+            // Stated only where the label elides something, so a reader never has to wonder
+            // whether the shortened form is hiding a level.
+            depth: path.length > 2 ? `${path.length} levels` : "",
+            fields
+        };
+    });
 };
 
 /** Which run a record belongs to. A record that joined none is its own run. */
 const runIdOf = (record: TimelineRecord): string => record.summaryRunId ?? record.id;
-
-/** One record, shaped the way a row is, so the same describer can read it. */
-const asItem = (record: TimelineRecord): TimelineItem => collapseConsecutive([record])[0]!;
 
 interface RunMembers {
     id: string;
@@ -156,14 +246,36 @@ const runsOf = (item: TimelineItem): RunMembers[] => {
 };
 
 /**
- * The run's sentence, which lives on the record that opened the run.
+ * The run's stored sentence, which lives on the record that opened the run.
  *
  * Taken from whichever member carries one rather than from the record whose id matches: a save by
  * someone else in the middle of a run splits the row, and a run whose opening record is not in this
  * row shows no sentence here rather than borrowing another run's.
  */
-const sentenceFor = (run: RunMembers): TimelineSummary | null =>
+const sentenceFor = (run: RunMembers): TimelineSentence | null =>
     run.records.map(summaryOf).find(found => found !== null) ?? null;
+
+/**
+ * The run's sentence, falling back to naming the fields it touched.
+ *
+ * The third kind, and it is not a placeholder: it is what the timeline said before summaries
+ * existed, and it is what a reader gets when a summary was never written, failed, was reclaimed or
+ * is not theirs to see. Deriving it here rather than leaving the slot empty is what stops any of
+ * those four looking like a fault.
+ */
+const describedRun = (run: RunMembers): TimelineSentence => {
+    const stored = sentenceFor(run);
+
+    if (stored) {
+        return stored;
+    }
+
+    return {
+        text: describeAction(collapseConsecutive(run.records)[0]!).sentence,
+        kind: "fields",
+        generated: false
+    };
+};
 
 /**
  * What a collapsed row states before anyone expands it.
@@ -195,6 +307,7 @@ export const summariseItem = (item: TimelineItem): ItemSummary => {
         subjectLabel: latest.subject?.label ?? null,
         hasNote: latest.hasNote === true,
         changedFieldCount: item.changeset.length,
+        fieldsLine: formatNameList(describeChangeset(item.changeset).map(change => change.label)),
         truncated: item.truncated,
         summary,
         summaryPending:
@@ -255,25 +368,33 @@ export const discloseItem = (item: TimelineItem): ItemDisclosure => {
     return {
         hasSentence: runs.some(run => sentenceFor(run) !== null),
         runs: runs.map(run => {
-            const summary = sentenceFor(run);
+            const pending = run.records.some(record => record.summaryPending === true);
+            const summary = describedRun(run);
 
             return {
                 id: run.id,
-                summary: soleRun ? null : summary,
-                pending: soleRun
-                    ? false
-                    : run.records.some(record => record.summaryPending === true),
+                // A pending run shows no sentence: the placeholder occupies the slot the sentence
+                // will take, so nothing moves sideways when it resolves. Falling back to naming the
+                // fields here would put a sentence beside the thing saying a sentence is coming.
+                summary: soleRun || pending ? null : summary,
+                pending: soleRun ? false : pending,
+                showSaveTimes: run.records.length > 1,
                 // No wrapper for a sole run: there is nothing in the expansion to distinguish its
                 // saves from, and a box around all of them would suggest a grouping that carries
-                // no information.
-                grouped: !soleRun && run.records.length > 1 && summary !== null,
-                saves: run.records.map(record => ({
-                    id: record.id,
-                    timestamp: record.timestamp,
-                    sentence: describeAction(asItem(record)).sentence,
-                    changes: describeChangeset(record.changeset),
-                    truncated: record.truncated
-                }))
+                // no information. A run whose only sentence names its fields has nothing to bind
+                // together either — that sentence is a restatement of the chips beneath it.
+                grouped: !soleRun && run.records.length > 1 && summary.kind !== "fields",
+                saves: run.records.map(record => {
+                    const changes = describeChangeset(record.changeset);
+
+                    return {
+                        id: record.id,
+                        timestamp: record.timestamp,
+                        changes,
+                        groups: groupByPath(changes),
+                        truncated: record.truncated
+                    };
+                })
             };
         }),
         truncated: item.truncated,

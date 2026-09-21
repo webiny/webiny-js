@@ -11,7 +11,12 @@ export { describeAction } from "./describeAction.js";
 export type { ActionBadge, ActionBadgeTone, DescribedAction } from "./describeAction.js";
 export { describeActor, initialsOf } from "./describeActor.js";
 export type { DescribedActor, MachineIcon } from "./describeActor.js";
-export { describeChange, describeChangeset, humaniseFieldId } from "./describeChange.js";
+export {
+    describeChange,
+    describeChangeset,
+    elideAncestors,
+    humaniseFieldId
+} from "./describeChange.js";
 export { describeGroup, formatDateRange, formatNameList } from "./describeGroup.js";
 export type { DescribedGroup } from "./describeGroup.js";
 export { describeTimeline } from "./describeTimeline.js";
@@ -20,11 +25,13 @@ export { groupByRevision, parseVersion } from "./groupByRevision.js";
 export type { TimelineGroup } from "./groupByRevision.js";
 export { discloseItem, summariseItem } from "./summariseItem.js";
 export type {
+    DisclosedFieldGroup,
     DisclosedRun,
     DisclosedSave,
     ItemDisclosure,
     ItemSummary,
-    TimelineSummary
+    SentenceKind,
+    TimelineSentence
 } from "./summariseItem.js";
 export { isRedactedActor } from "./types.js";
 export { writeSignature } from "./writeSignature.js";

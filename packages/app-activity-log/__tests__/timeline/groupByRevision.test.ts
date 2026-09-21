@@ -158,6 +158,7 @@ describe("summariseItem", () => {
 
         expect(summariseItem(item!).summary).toEqual({
             text: "Rewrote the intro.",
+            kind: "generated",
             generated: true
         });
     });
@@ -171,6 +172,7 @@ describe("summariseItem", () => {
 
         expect(summariseItem(item!).summary).toEqual({
             text: "Changed On sale from Yes to No.",
+            kind: "deterministic",
             generated: false
         });
     });
@@ -324,14 +326,15 @@ describe("discloseItem", () => {
                 "id",
                 "pending",
                 "saves",
+                "showSaveTimes",
                 "summary"
             ]);
 
             for (const save of run.saves) {
                 expect(Object.keys(save).sort()).toEqual([
                     "changes",
+                    "groups",
                     "id",
-                    "sentence",
                     "timestamp",
                     "truncated"
                 ]);
@@ -378,6 +381,7 @@ describe("discloseItem", () => {
             "Rewrote the intro.",
             "Tightened the pricing copy."
         ]);
+        expect(runs.map(run => run.summary?.kind)).toEqual(["deterministic", "deterministic"]);
         expect(runs.map(run => run.saves.map(save => save.id))).toEqual([["a", "b"], ["c"]]);
     });
 
@@ -469,6 +473,57 @@ describe("discloseItem", () => {
 
         expect(summariseItem(item!).summary?.text).toBe("Rewrote the intro.");
         expect(discloseItem(item!).runs[0]!.summary).toBeNull();
+    });
+
+    it("names the fields when a run has no sentence of its own", () => {
+        // The third kind, and it is not an empty slot. It is what the timeline said before
+        // summaries existed, and what a reader gets when one was never written, failed, was
+        // reclaimed or is not theirs to see — which is why none of those four looks like a fault.
+        const [item] = collapseConsecutive([
+            record({
+                id: "a",
+                timestamp: at(10, 20),
+                summary: "Rewrote the intro.",
+                changeset: [{ path: "intro", label: "Intro" }]
+            }),
+            record({
+                id: "c",
+                timestamp: at(10, 10),
+                changeset: [{ path: "title", label: "Title" }]
+            })
+        ]);
+
+        const runs = discloseItem(item!).runs;
+
+        expect(runs[1]!.summary).toEqual({
+            text: "edited Title",
+            kind: "fields",
+            generated: false
+        });
+    });
+
+    it("does not wrap a run whose sentence only names its fields", () => {
+        // That sentence is a restatement of the chips beneath it, so there is nothing to bind.
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20) }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Reworded the title." })
+        ]);
+
+        expect(discloseItem(item!).runs[0]!.grouped).toBe(false);
+    });
+
+    it("gives each save its own clock only when the run holds several", () => {
+        const [item] = collapseConsecutive([
+            record({ id: "a", timestamp: at(10, 20), summary: "Rewrote the intro." }),
+            record({ id: "b", timestamp: at(10, 15), summaryRunId: "a" }),
+            record({ id: "c", timestamp: at(10, 10), summary: "Reworded the title." })
+        ]);
+
+        const runs = discloseItem(item!).runs;
+
+        expect(runs[0]!.showSaveTimes).toBe(true);
+        expect(runs[1]!.showSaveTimes).toBe(false);
     });
 
     it("shows each sentence in the expansion when the row shows none", () => {

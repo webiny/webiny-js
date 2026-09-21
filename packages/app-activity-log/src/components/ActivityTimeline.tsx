@@ -9,17 +9,20 @@ import {
     Skeleton,
     Tag,
     Text,
-    TimeAgo
+    TimeAgo,
+    Tooltip
 } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as CompareIcon } from "@webiny/icons/compare_arrows.svg";
-import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as HistoryToggleOffIcon } from "@webiny/icons/history_toggle_off.svg";
+import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { ReactComponent as KeyIcon } from "@webiny/icons/key.svg";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as RemoveIcon } from "@webiny/icons/remove.svg";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/schedule.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
+import { ReactComponent as SubdirectoryIcon } from "@webiny/icons/subdirectory_arrow_right.svg";
 import { ReactComponent as SwapVertIcon } from "@webiny/icons/swap_vert.svg";
 import { describeAction, type ActionBadgeTone } from "~/timeline/describeAction.js";
 import { describeActor, type MachineIcon } from "~/timeline/describeActor.js";
@@ -28,9 +31,10 @@ import type { TimelineCoverage } from "~/timeline/deriveTimelineState.js";
 import {
     discloseItem,
     summariseItem,
+    type DisclosedFieldGroup,
     type DisclosedRun,
     type DisclosedSave,
-    type TimelineSummary
+    type TimelineSentence
 } from "~/timeline/summariseItem.js";
 import type { TimelineItem } from "~/timeline/collapseConsecutive.js";
 import { useActivityTimeline } from "~/hooks/useActivityTimeline.js";
@@ -77,6 +81,9 @@ const MACHINE_ICONS: Record<MachineIcon, React.ReactElement> = {
 /**
  * Operation glyphs. Colour carries the meaning here — added, removed and moved are the three
  * structural outcomes a reader scans for — so each takes a semantic fill rather than a neutral.
+ *
+ * An ordinary edit has no entry and takes no glyph. It is the default, and a mark on every chip
+ * would spend the reader's attention on the case that never needs it.
  */
 const OPERATION_ICONS: Record<string, { icon: React.ReactElement; className: string }> = {
     added: { icon: <AddIcon />, className: "fill-success" },
@@ -84,8 +91,6 @@ const OPERATION_ICONS: Record<string, { icon: React.ReactElement; className: str
     moved: { icon: <SwapVertIcon />, className: "fill-warning" },
     replaced: { icon: <SwapVertIcon />, className: "fill-warning" }
 };
-
-const EDIT_GLYPH = { icon: <EditIcon />, className: "fill-neutral-strong" };
 
 const formatTimestamp = (iso: string): string => {
     const date = new Date(iso);
@@ -125,106 +130,91 @@ const ViaNote = ({ text }: { text: string }) => (
     </Alert>
 );
 
-/** One changed field: what it was, where it lives, and what happened to it. */
-const ChangeRow = ({ change }: { change: DescribedChange }) => {
+/** Clock time alone, for a ledger column where the date is already established by the row. */
+const formatClock = (iso: string, withSeconds = false): string => {
+    const date = new Date(iso);
+
+    if (Number.isNaN(date.getTime())) {
+        return iso;
+    }
+
+    return date.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        ...(withSeconds ? { second: "2-digit" } : {})
+    });
+};
+
+/**
+ * One changed field, as a chip.
+ *
+ * A chip rather than a row, which is the change that makes a heavy save readable: five fields were
+ * five lines each carrying an icon and a name, and are now one wrapping line. The operation keeps
+ * its colour, because added, removed and moved are the three outcomes a reader scans for and they
+ * are worth a glyph; an ordinary edit is the default and takes none.
+ */
+const FieldChip = ({ change }: { change: DescribedChange }) => {
     const operation = change.operation ?? "";
-    const glyph = OPERATION_ICONS[operation] ?? EDIT_GLYPH;
+    const glyph = OPERATION_ICONS[operation];
 
     return (
-        <div
-            className={
-                "flex items-start gap-sm border-b-sm border-neutral-dimmed px-sm-extra py-xs last:border-b-none"
-            }
-        >
-            <Icon
-                size={"sm"}
-                color={"inherit"}
-                className={`mt-xxs ${glyph.className}`}
-                label={operation === "" ? "Edited" : operation}
-                icon={glyph.icon}
-            />
-            <div className={"min-w-0"}>
-                {/*
-                  Field first, path second — the design's treatment B. The changed thing is what a
-                  reader is looking for; the containers are how they place it. A full inline path
-                  is precise and scans terribly, which is the whole reason for the split.
-                */}
-                <Text as={"div"} size={"md"} className={"font-semibold"}>
-                    {change.label}
+        <Tag
+            variant={"neutral-light"}
+            content={
+                <span className={"flex items-center gap-xxs"}>
+                    {glyph ? (
+                        <Icon
+                            size={"sm"}
+                            color={"inherit"}
+                            className={glyph.className}
+                            label={operation}
+                            icon={glyph.icon}
+                        />
+                    ) : null}
+                    <span>{change.label}</span>
                     {change.position === undefined ? null : (
-                        <Text size={"sm"} className={"font-normal text-neutral-muted"}>
-                            {` · item ${change.position}`}
-                        </Text>
+                        <span className={"text-neutral-strong"}>{`· item ${change.position}`}</span>
                     )}
-                    {operation === "" ? null : (
-                        <Text size={"sm"} className={"font-normal text-neutral-strong"}>
-                            {` ${operation}`}
-                        </Text>
-                    )}
-                </Text>
-                {change.ancestors.length > 0 ? (
-                    <div className={"mt-xxs flex flex-wrap items-center gap-xxs"}>
-                        {change.ancestors.map((ancestor, index) => (
-                            <React.Fragment key={`${ancestor}-${index}`}>
-                                <Text size={"sm"} className={"text-neutral-muted"}>
-                                    {ancestor}
-                                </Text>
-                                {index < change.ancestors.length - 1 ? (
-                                    <Text size={"sm"} className={"text-neutral-dimmed"}>
-                                        {"›"}
-                                    </Text>
-                                ) : null}
-                            </React.Fragment>
-                        ))}
-                    </div>
-                ) : null}
-            </div>
-        </div>
+                </span>
+            }
+        />
     );
 };
 
 /**
- * The run's summary, wherever it appears.
+ * The fields of one save that share a path, with the path said once above them.
  *
- * Marked as generated, and that mark is the only decoration it gets. Every other line on this
- * timeline is a record of what was captured; this one was written by a model, it is kept for as
- * long as the record is, and some of them will be wrong. A reader who took a wrong sentence for a
- * captured fact would lose trust in the whole timeline rather than in one line, which is a poor
- * trade for two words.
- *
- * Deliberately not a state: it appears only where a summary does, says the same thing every time,
- * and leaves the reader nothing to interpret. Absence still means absence and never a fault.
+ * Field first, path second — the design's treatment B — and the path stated once rather than per
+ * field. Four fields under the same variant used to state that variant four times, which was most
+ * of what made this read as a form. Deep paths elide their middle and carry the depth beside them,
+ * so shortening never hides how far down a change was; the whole path is on hover.
  */
-const SummaryLine = ({ summary }: { summary: TimelineSummary }) => (
-    <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
-        {summary.generated ? (
-            <Text size={"sm"} className={"text-neutral-muted"}>
-                {"AI-generated · "}
-            </Text>
+const FieldGroup = ({ group }: { group: DisclosedFieldGroup }) => (
+    <div className={"min-w-0"}>
+        {group.path.length > 0 ? (
+            <Tooltip
+                content={group.fullPath}
+                trigger={
+                    <div className={"mb-xxs flex items-center gap-xxs text-neutral-strong"}>
+                        <Icon
+                            size={"sm"}
+                            label={"inside"}
+                            icon={<SubdirectoryIcon />}
+                            className={"shrink-0 fill-neutral-strong"}
+                        />
+                        <Text size={"sm"} className={"truncate"}>
+                            {group.pathLabel}
+                        </Text>
+                        {group.depth === "" ? null : (
+                            <Tag variant={"neutral-light"} content={group.depth} />
+                        )}
+                    </div>
+                }
+            />
         ) : null}
-        {summary.text}
-    </Text>
-);
-
-/**
- * One save inside an opened row: its own sentence, then its own fields.
- *
- * Per save rather than one merged list, because a row can stand for four saves and "these six
- * fields changed at some point across them" answers a question nobody asked.
- */
-const SaveBlock = ({ save }: { save: DisclosedSave }) => (
-    <div className={"border-b-sm border-neutral-dimmed last:border-b-none"}>
-        <div className={"flex flex-wrap items-baseline gap-xs bg-neutral-base px-sm-extra py-xs"}>
-            <Text size={"sm"} className={"font-semibold"}>
-                {save.sentence}
-            </Text>
-            <Text size={"sm"} className={"text-neutral-muted"}>
-                {formatTimestamp(save.timestamp)}
-            </Text>
-        </div>
-        <div className={"flex flex-col"}>
-            {save.changes.map((change, index) => (
-                <ChangeRow
+        <div className={"flex flex-wrap gap-xxs"}>
+            {group.fields.map((change, index) => (
+                <FieldChip
                     key={`${change.text}-${change.operation ?? ""}-${index}`}
                     change={change}
                 />
@@ -233,100 +223,179 @@ const SaveBlock = ({ save }: { save: DisclosedSave }) => (
     </div>
 );
 
-/** The one thing a reader is told about a summary that has not arrived. */
+/** A summary that has not arrived yet, holding the line it will take. */
 const PendingNote = () => (
-    <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
-        {"Summarising…"}
-    </Text>
+    <div className={"flex items-center gap-xs"}>
+        <Skeleton type={"text"} size={"xs"} className={"max-w-[170px]"} />
+        <Text size={"sm"} className={"whitespace-nowrap text-neutral-strong"}>
+            {"Summarising"}
+        </Text>
+    </div>
 );
 
 /**
- * One run inside an opened row: its sentence, then the saves it covers.
+ * The run's sentence, in the gutter that separates the three kinds.
  *
- * The wrapper is what binds a sentence to the several saves it describes, and a run of one gets
- * none — there is nothing to bind, and a box around a single save would suggest a grouping that is
- * not there. Which of the two this is was decided in `discloseItem`; this only renders it.
+ * Every sentence sits at the same indent and only a generated one puts a mark in the gutter beside
+ * it. That asymmetry is the whole signal: an exact record carries no decoration, so there is
+ * nothing to interpret, and the one kind that can be wrong is the one a reader's eye catches.
+ * Marking both would make the distinction invisible again, which is why the mark is defined here
+ * and nowhere else.
  */
-const RunBlock = ({ run }: { run: DisclosedRun }) => {
-    const heading =
-        run.summary || run.pending ? (
-            <div className={"flex flex-col gap-xxs bg-neutral-base px-sm-extra py-sm"}>
-                {run.summary ? <SummaryLine summary={run.summary} /> : null}
-                {run.pending ? <PendingNote /> : null}
-            </div>
-        ) : null;
+const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
+    <div className={"grid grid-cols-[16px_1fr] items-start gap-xxs"}>
+        <div className={"pt-xxs"}>
+            {summary.generated ? (
+                <Tooltip
+                    content={"Written by AI from the values that changed. It can be wrong."}
+                    trigger={
+                        <Icon
+                            size={"sm"}
+                            label={"AI-generated"}
+                            icon={<AutoAwesomeIcon />}
+                            className={"fill-primary-default"}
+                        />
+                    }
+                />
+            ) : null}
+        </div>
+        <Text
+            as={"div"}
+            size={"md"}
+            className={
+                summary.kind === "fields"
+                    ? "text-wrap-pretty text-neutral-strong"
+                    : "text-wrap-pretty text-neutral-primary"
+            }
+        >
+            {summary.text}
+        </Text>
+    </div>
+);
 
-    if (!run.grouped) {
-        return (
-            <div className={"border-b-sm border-neutral-dimmed last:border-b-none"}>
-                {heading}
+/**
+ * One save in the ledger: its clock, then the fields it touched.
+ *
+ * No sentence of its own. The run above it carries the sentence — generated, exact, or naming the
+ * fields — and repeating a description per save was most of what made five fields take five lines.
+ */
+const SaveLine = ({ save, showTime }: { save: DisclosedSave; showTime: boolean }) => (
+    <div className={"flex items-baseline gap-xs"}>
+        {showTime ? (
+            <Text size={"sm"} className={"shrink-0 whitespace-nowrap text-neutral-disabled"}>
+                {formatClock(save.timestamp, true)}
+            </Text>
+        ) : null}
+        <div className={"flex min-w-0 flex-1 flex-col gap-xxs"}>
+            {save.groups.map((group, index) => (
+                <FieldGroup key={`${group.fullPath}-${index}`} group={group} />
+            ))}
+        </div>
+    </div>
+);
+
+/**
+ * One run of the ledger: the time it happened, then what it did.
+ *
+ * The time column carries the nesting, which is what lets a run need no box and no indent. Four
+ * levels — revision, row, run, save — were legible before only by nesting each inside the last, and
+ * that is what made an expansion read as a form rather than as history.
+ */
+const RunLine = ({ run }: { run: DisclosedRun }) => (
+    <div
+        className={
+            "grid grid-cols-[52px_1fr] gap-xs border-b-sm border-dashed border-neutral-dimmed py-sm last:border-b-none"
+        }
+    >
+        <Text size={"sm"} className={"pr-xxs text-right text-neutral-strong"}>
+            {formatClock(run.saves[run.saves.length - 1]?.timestamp ?? "")}
+        </Text>
+        <div className={"min-w-0"}>
+            {run.summary ? <SummaryLine summary={run.summary} /> : null}
+            {run.pending ? (
+                <div className={"pl-[20px]"}>
+                    <PendingNote />
+                </div>
+            ) : null}
+            <div className={"mt-xs flex flex-col gap-xs pl-[20px]"}>
                 {run.saves.map(save => (
-                    <SaveBlock key={save.id} save={save} />
+                    <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
                 ))}
             </div>
+        </div>
+    </div>
+);
+
+/**
+ * The boundary note, one quiet line until someone asks.
+ *
+ * It explains where values are and are not recorded, which a reader needs once and then never
+ * again — so it sits closed at the foot of the expansion rather than occupying two permanent lines
+ * above the history. No icon colour, no border, no warning treatment: it states a boundary of the
+ * feature rather than flagging a risk.
+ */
+const DisclosureNote = ({ hasSentence }: { hasSentence: boolean }) => {
+    const [open, setOpen] = React.useState(false);
+
+    const text = hasSentence
+        ? "The change list records field names, never values. A summary is written from the values and may quote them as they stood at the time of the change. Compare revisions to see values."
+        : "The change list records field names, never values. Compare revisions to see values.";
+
+    if (!open) {
+        return (
+            <Button
+                variant={"ghost"}
+                size={"sm"}
+                icon={<InfoIcon />}
+                text={"What this list records"}
+                onClick={() => setOpen(true)}
+                className={"mt-xs text-neutral-strong"}
+            />
         );
     }
 
     return (
         <div
-            className={
-                "border-b-sm border-l-sm border-l-neutral-strong border-neutral-dimmed last:border-b-none"
-            }
+            className={"mt-xs flex items-start gap-xs rounded-md bg-neutral-light p-xs-plus"}
+            onClick={() => setOpen(false)}
         >
-            {heading}
-            <div className={"flex flex-col"}>
-                {run.saves.map(save => (
-                    <SaveBlock key={save.id} save={save} />
-                ))}
-            </div>
+            <Icon
+                size={"sm"}
+                label={"about this list"}
+                icon={<InfoIcon />}
+                className={"mt-xxs shrink-0 fill-neutral-strong"}
+            />
+            <Text as={"div"} size={"sm"} className={"text-wrap-pretty text-neutral-primary"}>
+                {text}
+            </Text>
         </div>
     );
 };
 
 /**
- * What one row discloses when opened.
+ * What one row discloses when opened: its runs, newest first, as a ledger.
  *
- * The closing line is not a disclaimer bolted on. "The changeset holds no values" is the feature's
- * defining constraint, and an expanded save that simply stopped after the field list would read as
- * though the values had failed to load. Saying it out loud every time costs a line; a reader
- * concluding the panel is broken costs more.
+ * No boxes and no indentation carrying the nesting — the time column does that. Four levels were
+ * previously legible only by putting each inside the last, which is what made an expansion read as
+ * a form rather than as a history.
  */
 const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
     const disclosure = discloseItem(item);
 
     return (
-        <div
-            className={
-                "m-sm-extra overflow-hidden rounded-md border-sm border-neutral-dimmed bg-neutral-light"
-            }
-        >
-            <div className={"flex flex-col"}>
-                {disclosure.runs.map(run => (
-                    <RunBlock key={run.id} run={run} />
-                ))}
-            </div>
+        <div className={"border-t-sm border-neutral-dimmed px-xs pb-xs"}>
+            {disclosure.runs.map(run => (
+                <RunLine key={run.id} run={run} />
+            ))}
             {disclosure.truncated ? (
-                <Alert type={"warning"} variant={"subtle"} icon={null} className={"m-xs"}>
+                <Alert type={"warning"} variant={"subtle"} icon={null} className={"mt-xs"}>
                     <Text size={"sm"}>
                         More fields changed than are listed. The rest were rolled up to a common
                         parent.
                     </Text>
                 </Alert>
             ) : null}
-            {/*
-              Two disclosure levels, said separately, because one line covering both is what made
-              the previous version of this false. The change list above holds field names and never
-              values; a sentence is built from the values and quotes the short ones. Whether the
-              second clause applies was decided in `discloseItem` — a row with no sentence must not
-              warn about one.
-            */}
-            <div className={"bg-neutral-base px-sm-extra py-xs"}>
-                <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
-                    {disclosure.hasSentence
-                        ? "The change list records field names, never values. A summary is written from the values and may quote them as they stood at the time of the change. Compare revisions to see values."
-                        : "The change list records field names, never values. Compare revisions to see values."}
-                </Text>
-            </div>
+            <DisclosureNote hasSentence={disclosure.hasSentence} />
         </div>
     );
 };
@@ -414,13 +483,27 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                     description={
                         <>
                             {/*
-                              The summary sits above the timestamp because it is the most useful
-                              line on the row when there is one, and absent entirely when there is
-                              not. Nothing here stands in for it: a row with no summary reads as a
-                              row, not as a row missing something.
+                              Two shapes, and they have to sit together in a list without the
+                              shorter one reading as unfinished. A row that is one run carries that
+                              run's sentence; a row of several carries the fields it touched
+                              instead. Both keep the same left edge and the same last line, so the
+                              difference reads as quiet rather than as missing.
                             */}
                             {summary.summary ? <SummaryLine summary={summary.summary} /> : null}
-                            {summary.summaryPending ? <PendingNote /> : null}
+                            {summary.summaryPending ? (
+                                <div className={"pl-[20px]"}>
+                                    <PendingNote />
+                                </div>
+                            ) : null}
+                            {!summary.summary && !summary.summaryPending && summary.fieldsLine ? (
+                                <Text
+                                    as={"div"}
+                                    size={"sm"}
+                                    className={"pl-[20px] text-wrap-pretty text-neutral-strong"}
+                                >
+                                    {summary.fieldsLine}
+                                </Text>
+                            ) : null}
                             <RowTime timestamp={summary.latestTimestamp} />
                             {summary.spansTime ? (
                                 <span>

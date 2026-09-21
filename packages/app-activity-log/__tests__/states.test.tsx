@@ -100,6 +100,16 @@ const renderState = (
     };
 };
 
+/**
+ * Where `needle` next appears after `from`.
+ *
+ * Ordering assertions need this because a collapsed row that carries no sentence now names the
+ * fields it touched — so a bare `indexOf` on a field name finds the row's own line rather than the
+ * chip in the expansion, and the assertion would be about the wrong thing entirely.
+ */
+const nextAfter = (haystack: string, needle: string, from: number) =>
+    haystack.indexOf(needle, from);
+
 describe("the eight states", () => {
     it("1. the grouped timeline names each revision it groups under", () => {
         const { text } = renderState([
@@ -111,7 +121,11 @@ describe("the eight states", () => {
         expect(text()).toContain("Revision 1");
     });
 
-    it("2. an expanded save discloses the changed fields, and only once expanded", () => {
+    it("2. a row with no sentence names the fields it touched", () => {
+        // A reversal, and a deliberate one. A closed row used to say how much changed and never
+        // what, so that expanding had something to offer. But a row with no sentence had only a
+        // count, which reads as unfinished beside a row that carries one — and the fields are the
+        // thing that makes the two shapes sit together in a list.
         const { text } = renderState([
             record({
                 changeset: [
@@ -121,14 +135,25 @@ describe("the eight states", () => {
             })
         ]);
 
-        // Closed: how much changed, not what.
-        expect(text()).not.toContain("Title");
         expect(text()).toContain("edited 2 fields");
+        expect(text()).toContain("Title and Body");
+    });
 
-        fireEvent.click(screen.getByRole("button", { name: /edited 2 fields/ }));
+    it("2a. a row that carries a sentence does not also list its fields", () => {
+        // The sentence says more than the list does, and both would be the same information twice.
+        const { text } = renderState([
+            record({
+                changeset: [
+                    { path: "title", label: "Title" },
+                    { path: "body", label: "Body" }
+                ],
+                summary: "Reworked the header.",
+                summaryKind: "deterministic"
+            })
+        ]);
 
-        expect(text()).toContain("Title");
-        expect(text()).toContain("Body");
+        expect(text()).toContain("Reworked the header.");
+        expect(text()).not.toContain("Title and Body");
     });
 
     it("2b. an expanded save says what the change list does and does not record", () => {
@@ -139,6 +164,14 @@ describe("the eight states", () => {
         const { text } = renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
 
         fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
+
+        // One quiet line at the foot of the expansion until someone asks for it. It explains a
+        // boundary a reader needs once, so it does not occupy two permanent lines above the
+        // history it is describing.
+        expect(text()).toContain("What this list records");
+        expect(text()).not.toContain("The change list records field names");
+
+        fireEvent.click(screen.getByRole("button", { name: /What this list records/ }));
 
         expect(text()).toContain("The change list records field names, never values");
         // Nothing on screen quotes a value, so nothing warns that anything might.
@@ -156,7 +189,8 @@ describe("the eight states", () => {
             })
         ]);
 
-        fireEvent.click(screen.getByRole("button", { name: /edited SKU/ }));
+        fireEvent.click(screen.getByRole("button", { name: /Changed SKU from 1001 to 1002/ }));
+        fireEvent.click(screen.getByRole("button", { name: /What this list records/ }));
 
         const rendered = text();
 
@@ -516,8 +550,12 @@ describe("summaries, of which only one state is a state", () => {
 
         fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
 
-        expect(text()).toContain("edited Body");
-        expect(text()).toContain("edited Title");
+        const rendered = text();
+
+        // Both runs' sentences, and each run's own field beneath its own sentence.
+        expect(rendered).toContain(SENTENCE);
+        expect(rendered).toContain("edited Title");
+        expect(nextAfter(rendered, "Body", rendered.indexOf(SENTENCE))).toBeGreaterThan(-1);
     });
 
     it("leads the expansion with the summaries, above the saves", () => {
@@ -543,11 +581,13 @@ describe("summaries, of which only one state is a state", () => {
 
         const rendered = text();
 
-        expect(rendered.indexOf(SENTENCE)).toBeGreaterThan(-1);
-        expect(rendered.indexOf(SENTENCE)).toBeLessThan(rendered.indexOf("edited Body"));
-        expect(rendered.indexOf("Reworded the page title.")).toBeLessThan(
-            rendered.indexOf("edited Title")
-        );
+        const first = rendered.indexOf(SENTENCE);
+        const second = rendered.indexOf("Reworded the page title.");
+
+        expect(first).toBeGreaterThan(-1);
+        expect(first).toBeLessThan(second);
+        expect(nextAfter(rendered, "Body", first)).toBeLessThan(second);
+        expect(nextAfter(rendered, "Title", second)).toBeGreaterThan(second);
     });
 
     it("shows a single run's sentence once, collapsed and expanded alike", () => {
@@ -600,14 +640,20 @@ describe("summaries, of which only one state is a state", () => {
         const rendered = text();
 
         // The first run's sentence, then both of its saves, and only then the second run.
-        expect(rendered.indexOf("Reworked the first run.")).toBeLessThan(rendered.indexOf("Alpha"));
-        expect(rendered.indexOf("Alpha")).toBeLessThan(rendered.indexOf("Beta"));
-        expect(rendered.indexOf("Beta")).toBeLessThan(
-            rendered.indexOf("A different run entirely.")
-        );
-        expect(rendered.indexOf("A different run entirely.")).toBeLessThan(
-            rendered.indexOf("Xray")
-        );
+        // Measured forward from each sentence, because a closed row with no sentence names the
+        // same fields on its own line and a bare indexOf would be reading that instead.
+        const first = rendered.indexOf("Reworked the first run.");
+        const second = rendered.indexOf("A different run entirely.");
+
+        expect(first).toBeGreaterThan(-1);
+        expect(first).toBeLessThan(second);
+
+        // Both of the first run's saves sit under its sentence, before the second run begins —
+        // including Beta, which is second in time and would fall under the wrong sentence if
+        // grouping read position rather than membership.
+        expect(nextAfter(rendered, "Alpha", first)).toBeLessThan(second);
+        expect(nextAfter(rendered, "Beta", first)).toBeLessThan(second);
+        expect(nextAfter(rendered, "Xray", second)).toBeGreaterThan(second);
     });
 
     it("gives a record that joined no run a run of its own", () => {
@@ -634,13 +680,13 @@ describe("summaries, of which only one state is a state", () => {
 
         const rendered = text();
 
-        expect(rendered.indexOf("One save, one run.")).toBeLessThan(rendered.indexOf("Alpha"));
-        expect(rendered.indexOf("Alpha")).toBeLessThan(
-            rendered.indexOf("Another save, another run.")
-        );
-        expect(rendered.indexOf("Another save, another run.")).toBeLessThan(
-            rendered.indexOf("Beta")
-        );
+        const first = rendered.indexOf("One save, one run.");
+        const second = rendered.indexOf("Another save, another run.");
+
+        expect(first).toBeGreaterThan(-1);
+        expect(first).toBeLessThan(second);
+        expect(nextAfter(rendered, "Alpha", first)).toBeLessThan(second);
+        expect(nextAfter(rendered, "Beta", second)).toBeGreaterThan(second);
     });
 
     it("puts pending against the run waiting for it, never beside a settled sentence", () => {
@@ -667,13 +713,17 @@ describe("summaries, of which only one state is a state", () => {
         const rendered = text();
 
         // The row header says the row is waiting, which is true and carries no sentence beside it.
-        expect(rendered.indexOf("Summarising")).toBeLessThan(rendered.indexOf("Settled long ago."));
+        const settled = rendered.indexOf("Settled long ago.");
+        expect(rendered.indexOf("Summarising")).toBeLessThan(settled);
 
-        // Inside the expansion the note sits with the run that is waiting: after the settled run's
-        // sentence and its save, and before the waiting run's own save.
-        expect(rendered.indexOf("Settled long ago.")).toBeLessThan(rendered.indexOf("Alpha"));
-        expect(rendered.indexOf("Alpha")).toBeLessThan(rendered.lastIndexOf("Summarising"));
-        expect(rendered.lastIndexOf("Summarising")).toBeLessThan(rendered.indexOf("Beta"));
+        // Inside the expansion the placeholder sits with the run that is waiting: after the
+        // settled run's sentence and its field, and before the waiting run's own field.
+        expect(nextAfter(rendered, "Alpha", settled)).toBeLessThan(
+            rendered.lastIndexOf("Summarising")
+        );
+        expect(rendered.lastIndexOf("Summarising")).toBeLessThan(
+            nextAfter(rendered, "Beta", settled)
+        );
     });
 
     it("says a summary is coming, which is the only state it distinguishes", () => {
