@@ -16,9 +16,22 @@ export interface RenderSummaryOptions {
  * glance are quotable: a string, a number, a boolean. An object or a list is quoted by nobody —
  * `{"_id":"a1b2","heading":"…"}` in the middle of a sentence is worse than saying nothing.
  */
+/**
+ * The quotation marks a text value is wrapped in.
+ *
+ * Typographic rather than plain, because a plain double quote is a character values contain and
+ * these have to mark a boundary. They are also what tells a reader where a value ends: "changed
+ * Description from Now I like the new description to Now I like the new description, it is really
+ * great" has two sentence-shaped values and one " to " that is not a separator, and nothing in it
+ * says which is which.
+ */
+export const VALUE_OPEN = "\u201C";
+export const VALUE_CLOSE = "\u201D";
+
 const quotable = (value: unknown, max: number): string | null => {
     if (typeof value === "boolean") {
-        // Yes and no, because this is editorial prose and `true` is a programmer's word.
+        // Yes and no, because this is editorial prose and `true` is a programmer's word. Left
+        // unquoted: a boundary is only worth marking where one is in doubt, and "Yes" holds none.
         return value ? "Yes" : "No";
     }
 
@@ -32,7 +45,15 @@ const quotable = (value: unknown, max: number): string | null => {
 
     const flattened = value.replace(/\s+/g, " ").trim();
 
-    return flattened.length === 0 || flattened.length > max ? null : flattened;
+    if (flattened.length === 0 || flattened.length > max) {
+        return null;
+    }
+
+    // A value carrying the delimiter would make its own boundary ambiguous. Straightened rather
+    // than dropped, so the reader still sees a quotation and the sentence still parses.
+    const safe = flattened.replace(/[\u201C\u201D]/g, '"');
+
+    return `${VALUE_OPEN}${safe}${VALUE_CLOSE}`;
 };
 
 /** Whether a value counts as absent, which reads as filling in or clearing rather than changing. */

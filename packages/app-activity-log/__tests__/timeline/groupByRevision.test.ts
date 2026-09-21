@@ -156,7 +156,7 @@ describe("summariseItem", () => {
             record({ summary: "Rewrote the intro.", summaryKind: "ai" })
         ]);
 
-        expect(summariseItem(item!).summary).toEqual({
+        expect(summariseItem(item!).summary).toMatchObject({
             text: "Rewrote the intro.",
             kind: "generated",
             generated: true
@@ -170,7 +170,7 @@ describe("summariseItem", () => {
             record({ summary: "Changed On sale from Yes to No.", summaryKind: "deterministic" })
         ]);
 
-        expect(summariseItem(item!).summary).toEqual({
+        expect(summariseItem(item!).summary).toMatchObject({
             text: "Changed On sale from Yes to No.",
             kind: "deterministic",
             generated: false
@@ -495,7 +495,7 @@ describe("discloseItem", () => {
 
         const runs = discloseItem(item!).runs;
 
-        expect(runs[1]!.summary).toEqual({
+        expect(runs[1]!.summary).toMatchObject({
             text: "edited Title",
             kind: "fields",
             generated: false
@@ -554,5 +554,97 @@ describe("discloseItem", () => {
         const [item] = collapseConsecutive([record({ truncated: true })]);
 
         expect(discloseItem(item!).truncated).toBe(true);
+    });
+});
+
+describe("telling a field from a value inside a sentence", () => {
+    const sentence = (item: ReturnType<typeof collapseConsecutive>[number]) =>
+        summariseItem(item).summary;
+
+    it("marks the field it names and the values it quotes", () => {
+        // The case that prompted this: two sentence-shaped values either side of a " to " that is
+        // not the separator. Unmarked, a reader has to guess, and the obvious guess is wrong.
+        const [item] = collapseConsecutive([
+            record({
+                changeset: [{ path: "description", label: "Description" }],
+                summary:
+                    "Changed Description from “Now I like the new description” to " +
+                    "“Now I like the new description, it is really great.”.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        expect(sentence(item!)!.segments).toEqual([
+            { text: "Changed ", kind: "text" },
+            { text: "Description", kind: "field" },
+            { text: " from ", kind: "text" },
+            { text: "Now I like the new description", kind: "value" },
+            { text: " to ", kind: "text" },
+            { text: "Now I like the new description, it is really great.", kind: "value" },
+            { text: ".", kind: "text" }
+        ]);
+    });
+
+    it("marks a field by its full path, not by the leaf inside it", () => {
+        // Two candidates where one contains the other, which is the only shape in which the
+        // ordering matters: shortest-first finds "Heading" inside "Hero › Heading" and leaves the
+        // crumb behind as prose.
+        const [item] = collapseConsecutive([
+            record({
+                changeset: [
+                    { path: "heading", label: "Heading" },
+                    { path: "hero.heading", label: "Heading" }
+                ],
+                summary: "Changed Hero › Heading from “Old” to “New”.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        expect(sentence(item!)!.segments.filter(s => s.kind === "field")).toEqual([
+            { text: "Hero › Heading", kind: "field" }
+        ]);
+    });
+
+    it("leaves a model's sentence in one piece", () => {
+        // We wrote the other one, so we can say which span is which. This is prose we did not
+        // write, and marking spans in it would assert a structure we cannot verify — the same
+        // error as the fabricated currency symbol, made in markup instead of in words.
+        const [item] = collapseConsecutive([
+            record({
+                changeset: [{ path: "description", label: "Description" }],
+                summary: "Rewrote the Description and raised the price to $1,200.",
+                summaryKind: "ai"
+            })
+        ]);
+
+        expect(sentence(item!)!.segments).toEqual([
+            { text: "Rewrote the Description and raised the price to $1,200.", kind: "text" }
+        ]);
+    });
+
+    it("marks nothing in a sentence that only names fields", () => {
+        // It quotes no values, so there is nothing in it a reader has to tell apart.
+        const [item] = collapseConsecutive([
+            record({ id: "a", changeset: [{ path: "title", label: "Title" }] })
+        ]);
+
+        expect(discloseItem(item!).runs[0]!.saves).toHaveLength(1);
+        expect(summariseItem(item!).summary).toBeNull();
+    });
+
+    it("does not mark a field the record did not change", () => {
+        // Matched against what the record says changed, not against what the grammar suggests. A
+        // sentence mentioning a field it did not touch is a sentence we would be wrong to decorate.
+        const [item] = collapseConsecutive([
+            record({
+                changeset: [{ path: "sku", label: "SKU" }],
+                summary: "Changed SKU from “1001” to “1002”, and Price was untouched.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        expect(sentence(item!)!.segments.filter(s => s.kind === "field")).toEqual([
+            { text: "SKU", kind: "field" }
+        ]);
     });
 });

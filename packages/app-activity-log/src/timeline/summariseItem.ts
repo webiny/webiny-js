@@ -14,10 +14,33 @@ import { isRedactedActor, type TimelineRecord } from "./types.js";
  */
 export type SentenceKind = "generated" | "deterministic" | "fields";
 
+/**
+ * One piece of a sentence, and what it is.
+ *
+ * `field` names a field that changed, `value` is what that field held, `text` is the prose joining
+ * them. A reader scanning "Changed Description from Now I like the new description to Now I like
+ * the new description, it is really great" cannot see where one ends and the next begins; marked
+ * up, they can.
+ */
+export interface SentenceSegment {
+    text: string;
+    kind: "text" | "field" | "value";
+}
+
 /** One sentence, with how it came to exist. */
 export interface TimelineSentence {
     text: string;
     kind: SentenceKind;
+    /**
+     * The sentence broken into its parts, for a reader who needs to see them.
+     *
+     * Only a sentence built from the recorded values is broken up, and that restraint is the point.
+     * We wrote that one, so we know which span is a field and which is a value, and can say so. A
+     * model's prose is prose we did not write — marking spans in it would assert a structure we
+     * cannot verify, which is the same error as the fabricated currency symbol, made in markup
+     * instead of in words. A generated sentence arrives here as one `text` segment.
+     */
+    segments: SentenceSegment[];
     /**
      * True only for a model's prose.
      *
@@ -159,16 +182,89 @@ export interface ItemSummary {
     summaryPending: boolean;
 }
 
-const summaryOf = (record: TimelineRecord): TimelineSentence | null => {
+/** The delimiters the mechanical renderer puts round a value it quotes. */
+const VALUE_OPEN = "\u201C";
+const VALUE_CLOSE = "\u201D";
+
+/**
+ * Splits the prose between values on the field names it mentions.
+ *
+ * Matched against the names this record actually changed rather than guessed from the grammar, so a
+ * field is marked because the record says it changed and not because the sentence looked like it
+ * might. Longest first, or "Hero › Heading" would be found as "Heading" and the crumb left behind.
+ */
+const splitOnFieldNames = (text: string, names: string[]): SentenceSegment[] => {
+    for (const name of names) {
+        const at = text.indexOf(name);
+
+        if (at === -1) {
+            continue;
+        }
+
+        return [
+            ...(at > 0 ? splitOnFieldNames(text.slice(0, at), names) : []),
+            { text: name, kind: "field" as const },
+            ...splitOnFieldNames(text.slice(at + name.length), names)
+        ];
+    }
+
+    return text === "" ? [] : [{ text, kind: "text" }];
+};
+
+/**
+ * The sentence, broken into fields, values and the prose between them.
+ *
+ * Values are found by their delimiters, which the renderer put there precisely so a boundary could
+ * be seen rather than inferred — the delimiters are dropped from the segment, since a reader given
+ * the parts separately does not also need the punctuation that separated them.
+ */
+const segmentSentence = (
+    text: string,
+    kind: SentenceKind,
+    fieldNames: string[]
+): SentenceSegment[] => {
+    if (kind !== "deterministic") {
+        return [{ text, kind: "text" }];
+    }
+
+    const names = [...new Set(fieldNames)]
+        .filter(name => name !== "")
+        .sort((a, b) => b.length - a.length);
+
+    const segments: SentenceSegment[] = [];
+    const quoted = new RegExp(`${VALUE_OPEN}([^${VALUE_CLOSE}]*)${VALUE_CLOSE}`, "g");
+
+    let cursor = 0;
+    let found: RegExpExecArray | null;
+
+    while ((found = quoted.exec(text)) !== null) {
+        if (found.index > cursor) {
+            segments.push(...splitOnFieldNames(text.slice(cursor, found.index), names));
+        }
+
+        segments.push({ text: found[1]!, kind: "value" });
+        cursor = found.index + found[0].length;
+    }
+
+    if (cursor < text.length) {
+        segments.push(...splitOnFieldNames(text.slice(cursor), names));
+    }
+
+    return segments;
+};
+
+const summaryOf = (record: TimelineRecord, fieldNames: string[]): TimelineSentence | null => {
     if (typeof record.summary !== "string" || record.summary === "") {
         return null;
     }
 
     const generated = record.summaryKind === "ai";
+    const kind: SentenceKind = generated ? "generated" : "deterministic";
 
     return {
         text: record.summary,
-        kind: generated ? "generated" : "deterministic",
+        kind,
+        segments: segmentSentence(record.summary, kind, fieldNames),
         // Only a model's prose is marked. A sentence built from the recorded values restates what
         // was recorded, which is what every other line on this timeline does, so marking it would
         // say nothing.
@@ -252,8 +348,16 @@ const runsOf = (item: TimelineItem): RunMembers[] => {
  * someone else in the middle of a run splits the row, and a run whose opening record is not in this
  * row shows no sentence here rather than borrowing another run's.
  */
-const sentenceFor = (run: RunMembers): TimelineSentence | null =>
-    run.records.map(summaryOf).find(found => found !== null) ?? null;
+const fieldNamesIn = (records: TimelineRecord[]): string[] =>
+    records.flatMap(record => describeChangeset(record.changeset).map(change => change.text));
+
+const sentenceFor = (run: RunMembers): TimelineSentence | null => {
+    const names = fieldNamesIn(run.records);
+
+    return (
+        run.records.map(record => summaryOf(record, names)).find(found => found !== null) ?? null
+    );
+};
 
 /**
  * The run's sentence, falling back to naming the fields it touched.
@@ -270,9 +374,14 @@ const describedRun = (run: RunMembers): TimelineSentence => {
         return stored;
     }
 
+    const text = describeAction(collapseConsecutive(run.records)[0]!).sentence;
+
     return {
-        text: describeAction(collapseConsecutive(run.records)[0]!).sentence,
+        text,
         kind: "fields",
+        // Not segmented: it names fields rather than quoting values, so there is nothing in it a
+        // reader has to tell apart.
+        segments: [{ text, kind: "text" }],
         generated: false
     };
 };

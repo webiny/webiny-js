@@ -295,7 +295,36 @@ const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
             summary.kind === "fields" ? "text-neutral-strong" : "text-neutral-primary"
         )}
     >
-        {summary.text}
+        {summary.segments.map((segment, index) => {
+            if (segment.kind === "field") {
+                // A field name carries weight, because it is the thing a reader is scanning for.
+                // No colour: it belongs to the sentence rather than standing outside it.
+                return (
+                    <span key={index} className={"font-semibold"}>
+                        {segment.text}
+                    </span>
+                );
+            }
+
+            if (segment.kind === "value") {
+                // Content, marked the way content is marked everywhere else in this panel — the
+                // same treatment as a field chip — so a reader learns one thing once. Without it
+                // "from Now I like the new description to Now I like the new description, it is
+                // really great" has no visible seam.
+                return (
+                    <span
+                        key={index}
+                        className={
+                            "mx-[1px] rounded-xs bg-neutral-light px-xxs text-neutral-primary"
+                        }
+                    >
+                        {segment.text}
+                    </span>
+                );
+            }
+
+            return <React.Fragment key={index}>{segment.text}</React.Fragment>;
+        })}
     </Text>
 );
 

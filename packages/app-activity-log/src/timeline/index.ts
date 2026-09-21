@@ -31,6 +31,7 @@ export type {
     ItemDisclosure,
     ItemSummary,
     SentenceKind,
+    SentenceSegment,
     TimelineSentence
 } from "./summariseItem.js";
 export { isRedactedActor } from "./types.js";

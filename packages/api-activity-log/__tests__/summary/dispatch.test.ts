@@ -602,7 +602,7 @@ describe("the saves a model never sees", () => {
         const planned = await shortSave(dispatcher);
 
         expect(planned.summary).toBe(
-            "Changed Intro from Starter to Essential and Body from Draft to Final."
+            "Changed Intro from “Starter” to “Essential” and Body from “Draft” to “Final”."
         );
         expect(planned.summaryKind).toBe("deterministic");
         expect(planned.dispatch).toBeUndefined();

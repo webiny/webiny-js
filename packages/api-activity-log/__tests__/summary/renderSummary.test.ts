@@ -26,8 +26,12 @@ describe("quoting short values", () => {
     it("says what a field was and what it became", () => {
         // The whole reason this is worth having. "Edited Tier" costs a reader a trip to version
         // compare; this does not.
+        //
+        // Quoted because a value's boundary is otherwise a guess: "from Now I like the new
+        // description to Now I like the new description, it is really great" contains a " to "
+        // that is not the separator, and nothing in the sentence says so.
         expect(render(entry("Tier", "Starter", "Essential"))).toBe(
-            "Changed Tier from Starter to Essential."
+            "Changed Tier from “Starter” to “Essential”."
         );
     });
 
@@ -41,7 +45,7 @@ describe("quoting short values", () => {
 
     it("flattens a value that spans lines, so it does not break the row", () => {
         expect(render(entry("Strapline", "one\n  two", "three\nfour"))).toBe(
-            "Changed Strapline from one two to three four."
+            "Changed Strapline from “one two” to “three four”."
         );
     });
 
@@ -49,7 +53,7 @@ describe("quoting short values", () => {
         // Same derivation as the prompt and the expanded row. A field named three different ways
         // on one screen is the thing the shared package exists to prevent.
         expect(render(entry("Heading", "Old", "New", "hero.heading"))).toBe(
-            "Changed Hero › Heading from Old to New."
+            "Changed Hero › Heading from “Old” to “New”."
         );
     });
 });
@@ -94,7 +98,7 @@ describe("values too long to quote", () => {
 describe("appearing and disappearing", () => {
     it("says a field was filled in, with its value when it is short", () => {
         expect(render(entry("Subtitle", "", "A new subtitle"))).toBe(
-            "Set Subtitle to A new subtitle."
+            "Set Subtitle to “A new subtitle”."
         );
     });
 
@@ -107,7 +111,7 @@ describe("appearing and disappearing", () => {
     });
 
     it("treats an absent value as absent, not as the string undefined", () => {
-        expect(render(entry("Subtitle", undefined, "Now set"))).toBe("Set Subtitle to Now set.");
+        expect(render(entry("Subtitle", undefined, "Now set"))).toBe("Set Subtitle to “Now set”.");
         expect(render(entry("Subtitle", "Was set", undefined))).toBe("Cleared Subtitle.");
     });
 });
@@ -117,13 +121,13 @@ describe("several fields at once", () => {
         // "Changed Name from Widget to Gadget and changed On sale from Yes to No" reads like a
         // machine wrote it, which — while true — is not a reason to sound like one.
         expect(render(entry("Name", "Widget", "Gadget"), entry("On sale", true, false))).toBe(
-            "Changed Name from Widget to Gadget and On sale from Yes to No."
+            "Changed Name from “Widget” to “Gadget” and On sale from Yes to No."
         );
     });
 
     it("keeps distinct verbs", () => {
         expect(render(entry("Name", "Widget", "Gadget"), entry("Body", "", "x".repeat(500)))).toBe(
-            "Changed Name from Widget to Gadget and filled in Body."
+            "Changed Name from “Widget” to “Gadget” and filled in Body."
         );
     });
 
@@ -133,8 +137,8 @@ describe("several fields at once", () => {
         const many = Array.from({ length: 6 }, (_, i) => entry(`Field ${i}`, `a${i}`, `b${i}`));
 
         expect(render(...many)).toBe(
-            "Changed Field 0 from a0 to b0, Field 1 from a1 to b1, Field 2 from a2 to b2 and " +
-                "touched 3 other fields."
+            "Changed Field 0 from “a0” to “b0”, Field 1 from “a1” to “b1”, " +
+                "Field 2 from “a2” to “b2” and touched 3 other fields."
         );
     });
 
@@ -162,5 +166,33 @@ describe("nothing to say", () => {
 
     it("returns nothing for an empty bundle", () => {
         expect(render()).toBe("");
+    });
+});
+
+describe("where a value ends", () => {
+    it("marks the boundary of a value that reads like a sentence", () => {
+        // The case that made this necessary. Without the marks the reader has to guess which " to "
+        // separates the two values, and the obvious guess is wrong.
+        const before = "Now I like the new description";
+        const after = "Now I like the new description, it is really great.";
+
+        expect(render(entry("Description", before, after))).toBe(
+            `Changed Description from “${before}” to “${after}”.`
+        );
+    });
+
+    it("leaves a value that holds no doubt unquoted", () => {
+        // A boundary is worth marking where one is in doubt. "Yes" and "1199" hold none, and
+        // quoting them would spend the mark on the case that never needed it.
+        expect(render(entry("On sale", true, false))).toBe("Changed On sale from Yes to No.");
+        expect(render(entry("Price", 19, 24))).toBe("Changed Price from 19 to 24.");
+    });
+
+    it("straightens a delimiter inside a value rather than dropping it", () => {
+        // A value carrying the mark would make its own boundary ambiguous. The reader still sees a
+        // quotation and the sentence still parses.
+        const summary = render(entry("Title", "plain", "the “best” one"));
+
+        expect(summary).toBe('Changed Title from “plain” to “the "best" one”.');
     });
 });

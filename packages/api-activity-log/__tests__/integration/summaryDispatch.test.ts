@@ -292,7 +292,7 @@ describe("a save no model would improve on", () => {
         // produced, arrived at mechanically, and it costs nothing to produce.
         const record = await shortSave();
 
-        expect(record.summary).toBe("Changed Title from Starter to Essential.");
+        expect(record.summary).toBe("Changed Title from “Starter” to “Essential”.");
         expect(record.summaryKind).toBe("deterministic");
     });
 
