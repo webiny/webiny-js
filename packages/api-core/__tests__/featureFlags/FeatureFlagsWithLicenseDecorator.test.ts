@@ -204,12 +204,15 @@ describe("FeatureFlagsWithLicenseDecorator", () => {
             expect(flags.isEnabled("aiPowerups.adminAssistant")).toBe(false);
         });
 
-        it("governs remote components, which no license ever granted before", () => {
+        it("governs remote components, which now sit under aiPowerups", () => {
             const licensed = flagsFor({}, { present: true, allows: ["canUseRemoteComponents"] });
-            const unlicensed = flagsFor({ remoteComponents: true }, { present: true });
+            const unlicensed = flagsFor(
+                { aiPowerups: { remoteComponents: true } },
+                { present: true }
+            );
 
-            expect(licensed.isEnabled("remoteComponents")).toBe(true);
-            expect(unlicensed.isEnabled("remoteComponents")).toBe(false);
+            expect(licensed.isEnabled("aiPowerups.remoteComponents")).toBe(true);
+            expect(unlicensed.isEnabled("aiPowerups.remoteComponents")).toBe(false);
         });
 
         it("governs collaboration", () => {
