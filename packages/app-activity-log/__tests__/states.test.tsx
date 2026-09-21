@@ -156,51 +156,6 @@ describe("the eight states", () => {
         expect(text()).not.toContain("Title and Body");
     });
 
-    it("2b. an expanded save says what the change list does and does not record", () => {
-        // Stated rather than left as an empty space, which would read as a bug. Scoped to the
-        // change list rather than to the row: the list holds field names and never values, and a
-        // sentence holds values on purpose. One line covering both is what made the previous
-        // version of this false.
-        const { text } = renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
-
-        fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
-
-        // One quiet line at the foot of the expansion until someone asks for it. It explains a
-        // boundary a reader needs once, so it does not occupy two permanent lines above the
-        // history it is describing.
-        expect(text()).toContain("What this list records");
-        expect(text()).not.toContain("The change list records field names");
-
-        fireEvent.click(screen.getByRole("button", { name: /What this list records/ }));
-
-        expect(text()).toContain("The change list records field names, never values");
-        // Nothing on screen quotes a value, so nothing warns that anything might.
-        expect(text()).not.toContain("may quote them");
-    });
-
-    it("2c. a row with a sentence says that the sentence may quote values", () => {
-        // The second clause, and it renders only where it is true. A row with no sentence warning
-        // about one would be the same fault as the line it replaced, pointing the other way.
-        const { text } = renderState([
-            record({
-                changeset: [{ path: "sku", label: "SKU" }],
-                summary: "Changed SKU from 1001 to 1002.",
-                summaryKind: "deterministic"
-            })
-        ]);
-
-        fireEvent.click(screen.getByRole("button", { name: /Changed SKU from 1001 to 1002/ }));
-        fireEvent.click(screen.getByRole("button", { name: /What this list records/ }));
-
-        const rendered = text();
-
-        expect(rendered).toContain("The change list records field names, never values");
-        expect(rendered).toContain("may quote them as they stood at the time of the change");
-        // And the revision note is unchanged: individual saves inside a revision are still not
-        // comparable.
-        expect(rendered).toContain("Compare revisions to see values");
-    });
-
     it("3. structural changes name the operation", () => {
         const { text } = renderState([
             record({

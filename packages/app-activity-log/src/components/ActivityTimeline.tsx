@@ -17,7 +17,6 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as AutoAwesomeIcon } from "@webiny/icons/auto_awesome.svg";
 import { ReactComponent as CompareIcon } from "@webiny/icons/compare_arrows.svg";
 import { ReactComponent as HistoryToggleOffIcon } from "@webiny/icons/history_toggle_off.svg";
-import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 import { ReactComponent as KeyIcon } from "@webiny/icons/key.svg";
 import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as RemoveIcon } from "@webiny/icons/remove.svg";
@@ -381,61 +380,6 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
 );
 
 /**
- * The boundary note, one quiet line until someone asks.
- *
- * It explains where values are and are not recorded, which a reader needs once and then never
- * again — so it sits closed at the foot of the expansion rather than occupying two permanent lines
- * above the history. No icon colour, no border, no warning treatment: it states a boundary of the
- * feature rather than flagging a risk.
- */
-const DisclosureNote = ({ hasSentence }: { hasSentence: boolean }) => {
-    const [open, setOpen] = React.useState(false);
-
-    const text = hasSentence
-        ? "The change list records field names, never values. A summary is written from the values and may quote them as they stood at the time of the change. Compare revisions to see values."
-        : "The change list records field names, never values. Compare revisions to see values.";
-
-    if (!open) {
-        return (
-            <button
-                type={"button"}
-                onClick={() => setOpen(true)}
-                className={cn(
-                    TYPE.field,
-                    "mt-xs flex cursor-pointer items-center gap-xxs text-neutral-strong",
-                    "hover:text-neutral-primary"
-                )}
-            >
-                <Icon
-                    size={"sm"}
-                    label={"about this list"}
-                    icon={<InfoIcon />}
-                    className={"fill-neutral-strong"}
-                />
-                <span>What this list records</span>
-            </button>
-        );
-    }
-
-    return (
-        <div
-            className={"mt-xs flex items-start gap-xs rounded-md bg-neutral-light p-xs-plus"}
-            onClick={() => setOpen(false)}
-        >
-            <Icon
-                size={"sm"}
-                label={"about this list"}
-                icon={<InfoIcon />}
-                className={"mt-xxs shrink-0 fill-neutral-strong"}
-            />
-            <Text as={"div"} className={cn(TYPE.field, "text-wrap-pretty text-neutral-primary")}>
-                {text}
-            </Text>
-        </div>
-    );
-};
-
-/**
  * What one row discloses when opened: its runs, newest first, as a ledger.
  *
  * No boxes and no indentation carrying the nesting — the time column does that. Four levels were
@@ -462,7 +406,6 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
                     </Text>
                 </Alert>
             ) : null}
-            <DisclosureNote hasSentence={disclosure.hasSentence} />
         </div>
     );
 };

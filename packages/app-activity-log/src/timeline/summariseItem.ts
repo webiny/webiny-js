@@ -443,18 +443,6 @@ export interface ItemDisclosure {
      * has to say so or read as though the values failed to load.
      */
     valuesAvailable: false;
-    /**
-     * Whether a sentence is on screen anywhere for this row.
-     *
-     * Here rather than in the component because it decides what the row may truthfully say about
-     * itself. The change list and a sentence sit at different disclosure levels — the list records
-     * field names and never values, a sentence is written from the values and may quote them — and
-     * one line covering both is what made the previous footer false.
-     *
-     * True whether the sentence is in the row's header or inside the expansion: both are on screen
-     * at the moment the footer is read.
-     */
-    hasSentence: boolean;
 }
 
 /**
@@ -475,7 +463,6 @@ export const discloseItem = (item: TimelineItem): ItemDisclosure => {
     const soleRun = runs.length === 1;
 
     return {
-        hasSentence: runs.some(run => sentenceFor(run) !== null),
         runs: runs.map(run => {
             const pending = run.records.some(record => record.summaryPending === true);
             const summary = describedRun(run);
