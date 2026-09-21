@@ -129,7 +129,10 @@ export const createAwsJobs = (dbSetup: string) => {
                       }
                   ]
                 : []),
-            ...createConfigureBugReporterSteps({ workingDirectory: DIR_TEST_PROJECT }),
+            ...createConfigureBugReporterSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                projectPath: PATH_TEST_PROJECT
+            }),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_TEST_PROJECT,

@@ -28,6 +28,8 @@ const sqlStorageOps = new SqlStorageOps();
 
 const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
+// Absolute, for steps that run from DIR_WEBINY_JS and so cannot reach the project by name.
+const PATH_TEST_PROJECT = `\${{ github.workspace }}/${DIR_TEST_PROJECT}`;
 
 const installBuildSteps = createInstallBuildSteps({
     workingDirectory: DIR_WEBINY_JS
@@ -170,7 +172,10 @@ const createAwsE2EJobs = (storageOps: AbstractStorageOps) => {
                       }
                   ]
                 : []),
-            ...createConfigureBugReporterSteps({ workingDirectory: DIR_TEST_PROJECT }),
+            ...createConfigureBugReporterSteps({
+                workingDirectory: DIR_WEBINY_JS,
+                projectPath: PATH_TEST_PROJECT
+            }),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_TEST_PROJECT,

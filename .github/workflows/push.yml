@@ -686,20 +686,11 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","storageOps":"ddb"}'
       - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: new-webiny-project
+        working-directory: v6
         run: >-
-          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
-          webiny.config.tsx to insert into."; exit 1; }
-
-          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
-          's|<>|<>\n            <BugReporter.GitHub
-          token={process.env.BUG_REPORT_GITHUB_TOKEN}
-          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
-
-          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
-          insert <BugReporter.GitHub>."; exit 1; }
-
-          cat webiny.config.tsx
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -884,20 +875,11 @@ jobs:
           username={process.env.OPENSEARCH_USERNAME}
           password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx
       - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: new-webiny-project
+        working-directory: v6
         run: >-
-          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
-          webiny.config.tsx to insert into."; exit 1; }
-
-          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
-          's|<>|<>\n            <BugReporter.GitHub
-          token={process.env.BUG_REPORT_GITHUB_TOKEN}
-          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
-
-          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
-          insert <BugReporter.GitHub>."; exit 1; }
-
-          cat webiny.config.tsx
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -1016,20 +998,11 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"sqlite"}'
       - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: new-webiny-project-standalone
+        working-directory: v6
         run: >-
-          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
-          webiny.config.tsx to insert into."; exit 1; }
-
-          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
-          's|<>|<>\n            <BugReporter.GitHub
-          token={process.env.BUG_REPORT_GITHUB_TOKEN}
-          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
-
-          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
-          insert <BugReporter.GitHub>."; exit 1; }
-
-          cat webiny.config.tsx
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version
@@ -1205,20 +1178,11 @@ jobs:
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"storageOps":"postgres"}'
       - name: Configure the bug reporter in webiny.config.tsx
-        working-directory: new-webiny-project-standalone
+        working-directory: v6
         run: >-
-          grep -q '<>' webiny.config.tsx || { echo "No <> fragment in
-          webiny.config.tsx to insert into."; exit 1; }
-
-          sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e
-          's|<>|<>\n            <BugReporter.GitHub
-          token={process.env.BUG_REPORT_GITHUB_TOKEN}
-          repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx
-
-          grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to
-          insert <BugReporter.GitHub>."; exit 1; }
-
-          cat webiny.config.tsx
+          node
+          .github/workflows/wac/utils/runNodeScripts/configureBugReporter.js
+          '${{ github.workspace }}/new-webiny-project-standalone'
       - name: Print CLI version
         working-directory: new-webiny-project-standalone
         run: yarn webiny --version

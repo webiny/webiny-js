@@ -8,6 +8,7 @@ import { createJob } from "../jobs/index.js";
 import {
     DIR_STANDALONE_PROJECT,
     DIR_WEBINY_JS,
+    PATH_STANDALONE_PROJECT,
     STANDALONE_ADMIN_PORT,
     STANDALONE_ADMIN_URL,
     STANDALONE_API_PORT,
@@ -149,7 +150,10 @@ export const createStandaloneProjectParts = (
                 name: "Create a new standalone Webiny project",
                 run: `npx create-webiny-project@local-npm ${DIR_STANDALONE_PROJECT} --tag local-npm --no-interactive --hosting-type standalone --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"storageOps":"${storageOps}"}'`
             },
-            ...createConfigureBugReporterSteps({ workingDirectory: DIR_STANDALONE_PROJECT }),
+            ...createConfigureBugReporterSteps({
+                workingDirectory,
+                projectPath: PATH_STANDALONE_PROJECT
+            }),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_STANDALONE_PROJECT,

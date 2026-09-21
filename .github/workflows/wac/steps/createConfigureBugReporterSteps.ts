@@ -1,3 +1,5 @@
+import { runNodeScript } from "../utils/index.js";
+
 /*
  * The bug reporter is already in every scaffolded project through DefaultExtensions, but in compose
  * mode: with no token it only builds a prefilled GitHub URL for the reporter to submit themselves.
@@ -14,38 +16,33 @@ export const BUG_REPORTER_ENV: Record<string, string> = {
 };
 
 interface ConfigureBugReporterParams {
+    // Where the webiny-js checkout lives, since that is where the script is read from.
     workingDirectory: string;
+    // Absolute path to the scaffolded project. Absolute because this step runs from the checkout,
+    // and `../` cannot reach the project when the checkout is a branch name several levels deep.
+    projectPath: string;
 }
 
 /**
  * Adds `<BugReporter.GitHub>` to the scaffolded project's `webiny.config.tsx`.
  *
- * Neither value is baked in here. The step writes `process.env.X` into the config exactly as a real
- * project would, so what E2E exercises is the documented setup rather than a CI-only shape. Both are
- * read at BUILD time, which means `BUG_REPORTER_ENV` belongs on whichever step runs
- * `webiny build` / `webiny deploy`, not on this one.
+ * The editing lives in a node script rather than in `sed` here. A shell one-liner long enough to
+ * carry a JSX element gets folded into a `>-` scalar by the workflow emitter, which is unreadable
+ * and silently depends on where the emitter chose to wrap. The script also gets to fail with a real
+ * message naming the file, which `sed` cannot do at all: a `s|...|...|` that matches nothing exits 0.
  *
- * Leaving the secret unset is safe: the component emits no build param, `canFileDirectly` stays
- * false, and the project builds and deploys in compose mode. A fork without the secret is unaffected.
+ * Both values are read at BUILD time, so `BUG_REPORTER_ENV` belongs on whichever step runs
+ * `webiny build` / `webiny deploy`, not on this one.
  */
 export const createConfigureBugReporterSteps = ({
-    workingDirectory
+    workingDirectory,
+    projectPath
 }: ConfigureBugReporterParams) => {
     return [
         {
             name: "Configure the bug reporter in webiny.config.tsx",
             "working-directory": workingDirectory,
-            run: [
-                // Both anchors are asserted rather than assumed. A template edit that drops the
-                // fragment would otherwise deploy a project quietly missing the config, and nothing
-                // downstream would notice.
-                `grep -q '<>' webiny.config.tsx || { echo "No <> fragment in webiny.config.tsx to insert into."; exit 1; }`,
-                `sed -i -e '1a import { BugReporter } from "webiny/extensions";' -e 's|<>|<>\\n            <BugReporter.GitHub token={process.env.BUG_REPORT_GITHUB_TOKEN} repository={process.env.BUG_REPORT_REPOSITORY} />|' webiny.config.tsx`,
-                `grep -q "BugReporter.GitHub" webiny.config.tsx || { echo "Failed to insert <BugReporter.GitHub>."; exit 1; }`,
-                // The token never reaches this file, so printing it is safe and makes a failed
-                // insert obvious in the log.
-                `cat webiny.config.tsx`
-            ].join("\n")
+            run: runNodeScript("configureBugReporter", projectPath)
         }
     ];
 };
