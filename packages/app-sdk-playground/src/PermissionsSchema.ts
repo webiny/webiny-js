@@ -21,6 +21,12 @@ export const DEV_TOOLS_PERMISSIONS_SCHEMA = createPermissionSchema({
             title: "Frontend Settings",
             permission: "dev-tools.frontend-settings.*",
             scopes: ["full"]
+        },
+        {
+            id: "debug",
+            title: "Debugger",
+            permission: "dev-tools.debug",
+            scopes: ["full"]
         }
     ]
 });

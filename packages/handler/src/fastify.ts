@@ -36,6 +36,8 @@ import { SendEarlyOptionsResponse } from "./PreHandler/SendEarlyOptionsResponse.
 import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
 import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
 import { Request } from "./abstractions/Request.js";
+import { randomUUID } from "node:crypto";
+import { RequestId } from "./abstractions/RequestId.js";
 import { Reply } from "./abstractions/Reply.js";
 import { RegisterExtensionPlugin } from "~/plugins/RegisterExtensionPlugin.js";
 import { RegisterExtensions } from "~/PreHandler/RegisterExtensions.js";
@@ -308,6 +310,11 @@ export const createHandler = (params: CreateHandlerParams) => {
         if (app.webiny.container) {
             app.webiny.container.registerInstance(Request, request);
             app.webiny.container.registerInstance(Reply, reply);
+            /**
+             * A default so the abstraction always resolves. Runtimes with a meaningful id of their
+             * own override this from a `HandlerOnRequestPlugin`, which runs later in this same hook.
+             */
+            app.webiny.container.registerInstance(RequestId, { value: randomUUID() });
         }
         /**
          * Default code to 200 - so we do not need to set it again.
