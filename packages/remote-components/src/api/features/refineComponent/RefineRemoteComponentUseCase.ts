@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
+import { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
+import { REMOTE_COMPONENT_GENERATION_CAPABILITY } from "~/api/features/shared/capability.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
 import { RefineRemoteComponentUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { buildRefinePrompt, buildRefineUserMessage } from "./buildRefinePrompt.js";
@@ -23,29 +23,26 @@ type ContentPart = TextPart | FilePart;
 class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private ai: Ai.Interface,
-        private encryption: Encryption.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
-        private getFileContents: GetFileContentsByIdUseCase.Interface
+        private getFileContents: GetFileContentsByIdUseCase.Interface,
+        // AI Power-Ups registers nothing when the feature is off, so the resolver can be absent.
+        private resolveCapability?: ResolveAiCapabilityUseCase.Interface
     ) {}
 
     async execute(
         input: UseCaseAbstraction.Input
     ): Promise<Result<UseCaseAbstraction.Output, Error>> {
-        const settingsResult = await this.getSettings.execute();
-        if (settingsResult.isFail()) {
-            return Result.fail(new Error("Failed to load AI settings."));
+        if (!this.resolveCapability) {
+            return Result.fail(new Error("AI Power-Ups is not enabled on this project."));
         }
 
-        const settings = settingsResult.value as any;
-        const firstProvider = settings.providers?.presets?.[0];
-
-        if (!firstProvider) {
-            return Result.fail(
-                new Error("No AI provider configured. Add a provider in AI Power Ups settings.")
-            );
+        const resolved = await this.resolveCapability.execute(
+            REMOTE_COMPONENT_GENERATION_CAPABILITY
+        );
+        if (resolved.isFail()) {
+            // The resolver's message names the settings screen and what to pick there.
+            return Result.fail(resolved.error);
         }
-
-        const apiKey = await this.encryption.decrypt(firstProvider.apiKeyEncrypted);
+        const { model, connection } = resolved.value;
         const systemText = buildRefinePrompt();
         const userMessage = buildRefineUserMessage({
             currentSource: input.currentSource,
@@ -62,11 +59,8 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
             }
 
             const aiResult = await this.ai.generateText({
-                model: firstProvider.model,
-                connection: {
-                    sdkName: firstProvider.model.split("/")[0],
-                    apiKey
-                },
+                model,
+                connection,
                 system: systemText,
                 messages: [
                     {
@@ -118,5 +112,5 @@ class RefineRemoteComponentUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const RefineRemoteComponentUseCase = UseCaseAbstraction.createImplementation({
     implementation: RefineRemoteComponentUseCaseImpl,
-    dependencies: [Ai, Encryption, GetSettingsUseCase, GetFileContentsByIdUseCase]
+    dependencies: [Ai, GetFileContentsByIdUseCase, [ResolveAiCapabilityUseCase, { optional: true }]]
 });

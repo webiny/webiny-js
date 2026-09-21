@@ -1,87 +1,89 @@
-import { createFeature, Result, Encryption } from "webiny/api";
-import { GetSettingsUseCase } from "webiny/api/ai-powerups";
+import { createFeature, Result } from "webiny/api";
+import { AiCapability, ResolveAiCapabilityUseCase } from "webiny/api/ai-powerups";
 import {
     ExtractionSettings,
     ExtractionNotConfiguredError,
     ThemeExtractionFeature
 } from "webiny/api/theme-extraction";
 
+export const THEME_EXTRACTION_CAPABILITY = "theme.extraction";
+
 /**
- * The slice of AI Power-Ups settings we read.
+ * Theme extraction as an AI capability, so it appears in Settings → AI Power-Ups and can be pointed
+ * at a different model than the rest of the admin.
  *
- * `IAiPowerUpsSettings` gains its `providers` field through module augmentation *inside* the AI
- * Power-Ups package, and that augmentation isn't visible from an extension that only imports
- * `GetSettingsUseCase`. So we state the shape we depend on here — the same `presets[0]` the other AI
- * features read at runtime.
+ * `vision` because extraction sends page screenshots as image parts (`AnalyseCrawlUseCase`); a
+ * text-only model either errors or invents a palette from the HTML alone. An unfilled `vision` role
+ * falls back to `standard`, which is the resolver's behaviour and is stated next to the role in
+ * settings.
+ *
+ * No `guidance`: the extraction prompt is assembled per run from the crawl (observed colours,
+ * lengths, screenshot plan) and carries the flat-map output contract the parser depends on, so it
+ * stays in code.
  */
-interface AiPowerUpsSettingsShape {
-    providers?: {
-        presets?: Array<{ model: string; apiKeyEncrypted: string }>;
-    };
+class ThemeExtractionCapability implements AiCapability.Interface {
+    readonly id = THEME_EXTRACTION_CAPABILITY;
+    readonly label = "Theme extraction";
+    readonly description =
+        "Reads a website and proposes a theme from its design. Needs a model that accepts image input.";
+    readonly defaultRole = "vision" as const;
 }
+
+const ThemeExtractionCapabilityImpl = AiCapability.createImplementation({
+    implementation: ThemeExtractionCapability,
+    dependencies: []
+});
 
 /**
  * Enables theme extraction (generate a theme from a website) on this project.
  *
  * The extraction backend — `@webiny/api-theme-extraction` — ships everything (crawler, AI analysis,
- * background task, GraphQL schema) except one decision the framework can't make: *which* AI model to
+ * background task, GraphQL schema) except one decision the framework cannot make: *which* AI model to
  * use, and over which connection. This extension does two things:
  *
  *   1. Registers `ThemeExtractionFeature`, so its schema and task actually load. Without this, the
  *      Admin's "generate from a website" call fails with `Unknown type "ThemeExtractionInput"`.
- *   2. Fills the open `ExtractionSettings` seam by pointing extraction at the *same* AI provider the
- *      rest of the Admin uses — the one configured under AI Power-Ups settings — so there is one place
- *      to set up AI, not one per feature (the same pattern as AI Image Enhance and AI page generation).
+ *   2. Fills the open `ExtractionSettings` seam by resolving the capability above through AI
+ *      Power-Ups, so there is one place to set up AI and one place to re-point this feature.
  *
- * The API key never leaves this class: AI Power-Ups stores it encrypted, and it is decrypted into an
- * inline connection only at call time. The extraction package only ever receives `{ model, connection }`.
- *
- * Everything here is imported from the `webiny` package (extensions may not import `@webiny/*`
- * directly). Prerequisite: register this extension in `webiny.config.tsx` and configure a provider in
- * AI Power-Ups settings.
+ * The API key never lands here as a stored value: the resolver reads the connection, checks the model
+ * against that connection's vendor, and decrypts the key at call time. Extraction only ever receives
+ * `{ model, connection }`.
  */
 class AiPowerUpsExtractionSettings implements ExtractionSettings.Interface {
-    constructor(
-        private getSettings: GetSettingsUseCase.Interface,
-        private encryption: Encryption.Interface
-    ) {}
+    constructor(private resolveCapability?: ResolveAiCapabilityUseCase.Interface) {}
 
     async getModel() {
-        const settings = await this.getSettings.execute();
-        if (settings.isFail()) {
-            // GetSettings' Result carries no typed error, so there is no message to forward here.
+        // AI Power-Ups registers nothing when the feature is off, so the resolver can be absent.
+        if (!this.resolveCapability) {
             return Result.fail(
-                new ExtractionNotConfiguredError("the AI Power-Ups settings could not be read")
+                new ExtractionNotConfiguredError("AI Power-Ups is not enabled on this project")
             );
         }
 
-        // The first configured provider — the one the other AI features use too (see AI Power-Ups'
-        // AiImageEnrichmentTask / CmsGenerateEntryContentTask, which read presets[0] the same way).
-        const preset = (settings.value as AiPowerUpsSettingsShape).providers?.presets?.[0];
-        if (!preset) {
-            return Result.fail(
-                new ExtractionNotConfiguredError(
-                    "no AI provider is set up in AI Power-Ups settings"
-                )
-            );
+        const resolved = await this.resolveCapability.execute(THEME_EXTRACTION_CAPABILITY);
+        if (resolved.isFail()) {
+            // The resolver's message already names the settings screen and what to pick there, so it
+            // is forwarded rather than replaced with something vaguer.
+            return Result.fail(new ExtractionNotConfiguredError(detail(resolved.error.message)));
         }
 
         return Result.ok({
-            model: preset.model,
-            // Inline, not a named connection: the provider is configured in AI Power-Ups, not in
-            // api-core's connection registry. `sdkName` is the model's provider segment (e.g.
-            // "anthropic" from "anthropic/claude-sonnet-4-5").
-            connection: {
-                sdkName: preset.model.split("/")[0],
-                apiKey: await this.encryption.decrypt(preset.apiKeyEncrypted)
-            }
+            model: resolved.value.model,
+            connection: resolved.value.connection
         });
     }
 }
 
+/** Fits a resolver message into "Theme extraction is not configured: …" without doubling up. */
+const detail = (message: string): string => {
+    const trimmed = message.trim().replace(/\.$/, "");
+    return trimmed.charAt(0).toLowerCase() + trimmed.slice(1);
+};
+
 const AiPowerUpsExtractionSettingsImpl = ExtractionSettings.createImplementation({
     implementation: AiPowerUpsExtractionSettings,
-    dependencies: [GetSettingsUseCase, Encryption]
+    dependencies: [[ResolveAiCapabilityUseCase, { optional: true }]]
 });
 
 export default createFeature({
@@ -89,7 +91,8 @@ export default createFeature({
     register(container) {
         // The built-but-unregistered extraction backend: crawler, analysis, task, GraphQL schema.
         ThemeExtractionFeature.register(container);
-        // The one seam it leaves open — which model + connection to use.
+        // Its model choice, and the settings row that makes it configurable.
+        container.register(ThemeExtractionCapabilityImpl);
         container.register(AiPowerUpsExtractionSettingsImpl);
     }
 });

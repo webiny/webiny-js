@@ -48,6 +48,7 @@ import { RegenerateComponentTask } from "~/features/render/RegenerateComponentTa
 import { RegeneratePlanTask } from "~/features/stages/plan/RegeneratePlanTask.js";
 import { GenerateComponentTask } from "~/features/stages/generate/GenerateComponentTask.js";
 import { ComponentExtractionAiService } from "~/features/shared/ai.js";
+import { ComponentExtractionCapabilityImplementation } from "~/features/shared/capability.js";
 import { ChromiumBrowserProvider } from "@webiny/site-capture/browser/ChromiumBrowserProvider.js";
 import { RunImageRouteDefinition } from "~/rest/RunImageRoute.js";
 import { registerComponentExtractionGraphQL } from "~/graphql/createGraphQL.js";
@@ -118,6 +119,8 @@ export const ComponentExtractionFeature = createFeature({
         // provider selection (Classify, Plan, Generate).
         container.register(ThemeManifestResolverService);
         container.register(ComponentExtractionAiService);
+        // The Settings → AI Power-Ups row for Classify and Plan, so their model is configurable.
+        container.register(ComponentExtractionCapabilityImplementation);
 
         // Stage handlers (W4). Registered as they land — a stage with no handler fails cleanly.
         container.register(DiscoverHandler);

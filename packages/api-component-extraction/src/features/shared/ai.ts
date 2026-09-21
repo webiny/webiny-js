@@ -1,7 +1,7 @@
 import { createAbstraction, createImplementation, Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetSettingsUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
+import { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/exports/api/ai-powerups.js";
+import { COMPONENT_EXTRACTION_CAPABILITY } from "~/features/shared/capability.js";
 import {
     ExtractionModelError,
     ExtractionValidationError,
@@ -14,10 +14,14 @@ import {
  * three stages uniformly by subscribing to the core `Ai`'s events (see `ModelCallRecorder`), which is
  * the one point every model call funnels through.
  *
- * It centralises the provider selection that `GenerateRemoteComponentUseCase` does inline: read the AI
- * Power-Ups settings, take the first configured provider preset, decrypt its key, and call the `Ai`
- * abstraction. A "not configured" is a validation error (the user must fix it); a call/parse failure is
- * a model error (transient, a caller may retry or degrade).
+ * Which model runs comes from AI Power-Ups' capability resolver, never from the settings blob: the
+ * `providers` section this used to read is legacy and nothing writes it any more, so a project
+ * configured today has it empty and extraction would report "no AI provider" while the admin plainly
+ * shows one. The resolver applies the role precedence, checks the model against its connection's
+ * vendor and decrypts the key.
+ *
+ * A "not configured" is a validation error (the user must fix it); a call/parse failure is a model
+ * error (transient, a caller may retry or degrade).
  */
 export interface AiTextPart {
     type: "text";
@@ -48,16 +52,11 @@ export namespace ComponentExtractionAi {
     export type Interface = IComponentExtractionAi;
 }
 
-interface ProviderPreset {
-    model: string;
-    apiKeyEncrypted: string;
-}
-
 class ComponentExtractionAiImpl implements IComponentExtractionAi {
     constructor(
         private ai: Ai.Interface,
-        private encryption: Encryption.Interface,
-        private getSettings: GetSettingsUseCase.Interface
+        // AI Power-Ups registers nothing when the feature is off, so the resolver can be absent.
+        private resolveCapability?: ResolveAiCapabilityUseCase.Interface
     ) {}
 
     async generate({
@@ -67,40 +66,22 @@ class ComponentExtractionAiImpl implements IComponentExtractionAi {
         system?: string;
         messages: AiMessage[];
     }): Promise<Result<string, ExtractionError>> {
-        const settingsResult = await this.getSettings.execute();
-        if (settingsResult.isFail()) {
+        if (!this.resolveCapability) {
             return Result.fail(
-                new ExtractionValidationError(
-                    "could not load AI settings; configure a provider in AI Power Ups"
-                )
+                new ExtractionValidationError("AI Power-Ups is not enabled on this project")
             );
         }
 
-        const settings = settingsResult.value as {
-            providers?: { presets?: ProviderPreset[] };
-        };
-        const preset = settings.providers?.presets?.[0];
-        if (!preset) {
-            return Result.fail(
-                new ExtractionValidationError(
-                    "no AI provider configured; add one in AI Power Ups settings"
-                )
-            );
-        }
-
-        let apiKey: string;
-        try {
-            apiKey = await this.encryption.decrypt(preset.apiKeyEncrypted);
-        } catch {
-            return Result.fail(
-                new ExtractionValidationError("could not decrypt the AI provider key")
-            );
+        const resolved = await this.resolveCapability.execute(COMPONENT_EXTRACTION_CAPABILITY);
+        if (resolved.isFail()) {
+            // The resolver's message names the settings screen and what to pick there.
+            return Result.fail(new ExtractionValidationError(resolved.error.message));
         }
 
         try {
             const result = await this.ai.generateText({
-                model: preset.model,
-                connection: { sdkName: preset.model.split("/")[0], apiKey },
+                model: resolved.value.model,
+                connection: resolved.value.connection,
                 system,
                 messages
             } as Parameters<Ai.Interface["generateText"]>[0]);
@@ -128,5 +109,5 @@ class ComponentExtractionAiImpl implements IComponentExtractionAi {
 export const ComponentExtractionAiService = createImplementation({
     abstraction: ComponentExtractionAi,
     implementation: ComponentExtractionAiImpl,
-    dependencies: [Ai, Encryption, GetSettingsUseCase]
+    dependencies: [Ai, [ResolveAiCapabilityUseCase, { optional: true }]]
 });
