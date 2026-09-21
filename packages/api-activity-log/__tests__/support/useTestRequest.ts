@@ -89,7 +89,7 @@ export const useTestRequest = (options: IUseTestRequestOptions = {}) => {
 
             options.setup?.(container);
 
-            ActivityLogAppFeature.register(container);
+            ActivityLogAppFeature.register(container, {});
             GraphQLEngineFeature.register(container);
 
             registerHttpRouteInstance(container, {

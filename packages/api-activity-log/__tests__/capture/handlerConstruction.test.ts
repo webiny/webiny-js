@@ -242,7 +242,7 @@ describe("guard 3 — every handler constructs against the bare minimum", () => 
             get: () => ({ isEnabled: () => false }) as never
         } as FeatureFlags.Interface);
 
-        ActivityLogAppFeature.register(container);
+        ActivityLogAppFeature.register(container, {});
 
         expect(container.resolveAll(EntryAfterUpdateEventHandler)).toEqual([]);
     });
@@ -275,7 +275,7 @@ describe("guard 3 — every handler constructs against the bare minimum", () => 
                 }) as never
         } as FeatureFlags.Interface);
 
-        ActivityLogAppFeature.register(container);
+        ActivityLogAppFeature.register(container, {});
 
         expect(asked).toEqual(["collaboration.activityLog"]);
     });

@@ -133,7 +133,7 @@ export async function registerApiRequestStack(
     // After CMS and Workflows, because it records activity from both. Licence-gated inside the
     // feature on `collaboration.activityLog`, so registering it unconditionally here costs nothing
     // for a project without the entitlement.
-    ActivityLogAppFeature.register(container);
+    ActivityLogAppFeature.register(container, {});
 
     // ── Scheduler + scheduler transport ────────────────────────
     SchedulerFeature.register(container);
