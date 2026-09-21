@@ -66,6 +66,7 @@ class ActivityRecordModelImpl implements ModelFactory.Interface {
                     // narrowly rather than absolutely.
                     summary: fields.longText().label("Summary"),
                     summaryKind: fields.text().label("Summary Kind"),
+                    summaryRunId: fields.text().label("Summary Run ID"),
                     // Job bookkeeping. `summaryValues` holds content values transiently, between
                     // the save that produced them and the job that consumes them.
                     summaryTaskId: fields.text().label("Summary Task ID"),

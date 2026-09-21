@@ -138,7 +138,17 @@ export type SummarySkipReason =
     /** The job never ran and the sweeper reclaimed the values. */
     | "abandoned"
     /** This save joined a run already covered by a pending job, so it needs none of its own. */
-    | "covered-by-run";
+    | "covered-by-run"
+    /**
+     * This save tried to join a run and was refused, because the run had already settled or its
+     * record was gone.
+     *
+     * Its own reason rather than a borrowed one. A save whose join was refused is a different thing
+     * from one that never qualified: it produced no sentence despite being exactly the kind of save
+     * that should have had one, and on a customer instance reporting "no sentences anywhere" that
+     * difference is the whole diagnosis.
+     */
+    | "join-refused";
 
 /**
  * How a summary was produced.
@@ -239,6 +249,18 @@ export interface ActivityRecord {
      * second and not the first, so a reader can tell which one they are looking at.
      */
     summaryKind?: SummaryKind;
+    /**
+     * The run this save belongs to, set only when it joined one.
+     *
+     * Absent means the save is its own run, which is the overwhelming majority — so a reader can
+     * treat every record as having exactly one run without a special case, and the read path
+     * resolves the absence to this record's own id.
+     *
+     * Written only once a join has actually been accepted. The extend that performs the join can be
+     * refused, silently, and a record claiming membership of a run that does not cover it would put
+     * that run's sentence at the head of a group containing a save it never describes.
+     */
+    summaryRunId?: string;
     /** Job bookkeeping and the transient values. Never exposed to a reader. */
     summaryState?: ActivitySummaryState;
 }

@@ -11,6 +11,7 @@ import { ResolveAiCapabilityUseCase } from "@webiny/ai-powerups/api/features/Cap
 import { ActivityLogStorage } from "~/core/abstractions.js";
 import type { ActivityRecord } from "~/core/types.js";
 import { SummariseActivityTaskDefinition } from "~/cms/summary/SummariseActivityTaskDefinition.js";
+import { ActivityLogSummaryCapabilityImpl } from "~/cms/summary/capability.js";
 import { ActivitySummaryConfig, DEFAULT_ACTIVITY_SUMMARY_CONFIG } from "~/cms/summary/config.js";
 
 /**
@@ -434,5 +435,41 @@ describe("the definition", () => {
             maxIterations: 1,
             selfCleanup: "always"
         });
+    });
+});
+
+describe("the capability's guidance", () => {
+    // Pinned rather than merely written. Three of these were added against observed output — a
+    // fabricated currency symbol, a one-sided comparison, and a verdict on the content — and each
+    // is the kind of line that a later tidy-up drops without anyone noticing until a customer
+    // reads a sentence that disagrees with the one beneath it.
+    const guidance = new ActivityLogSummaryCapabilityImpl().guidance;
+
+    it("forbids formatting a value the capture did not have", () => {
+        expect(guidance).toContain("1199");
+        expect(guidance).toContain("$1,199");
+    });
+
+    it("requires both sides of a quoted short value", () => {
+        expect(guidance).toMatch(/give both sides/i);
+    });
+
+    it("shows the judgement failure rather than only prohibiting it", () => {
+        // The prohibition was already there and was ignored. An example shows where the boundary
+        // actually runs.
+        expect(guidance).toContain("no judgement");
+        expect(guidance).toContain("detailed");
+        expect(guidance).toContain("generic");
+    });
+
+    it("says why consistency matters, not only that it is required", () => {
+        // The sentence sits among mechanical ones describing neighbouring saves.
+        expect(guidance).toMatch(/disagreeing with itself/i);
+    });
+
+    it("still asks for short values to be quoted at all", () => {
+        // The point of the feature. A rule added against a fabrication must not cost the thing the
+        // fabrication was decorating.
+        expect(guidance).toMatch(/Quote short values directly/i);
     });
 });

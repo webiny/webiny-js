@@ -83,6 +83,8 @@ export interface IWriteActivityParams {
      */
     summary?: string;
     summaryKind?: SummaryKind;
+    /** The run this save joined, when it joined one. */
+    summaryRunId?: string;
 }
 
 /**

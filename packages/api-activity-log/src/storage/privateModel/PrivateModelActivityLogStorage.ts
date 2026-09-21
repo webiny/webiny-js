@@ -215,6 +215,9 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
                         summary: params.summary ?? null,
                         summaryKind: params.kind ?? null,
                         summaryReason: params.reason ?? null,
+                        // Omitted leaves membership alone; `null` detaches, which is what a
+                        // refused join needs and what the job settling a summary must not do.
+                        ...(params.runId === undefined ? {} : { summaryRunId: params.runId }),
                         // The obligation. Everything else on this write is bookkeeping; this is
                         // the part that stops content values outliving the job.
                         summaryValues: null,
@@ -264,14 +267,14 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
             );
 
             if (existing.isFail()) {
-                // Gone, or never existed. Nothing to extend, and nothing to report: the record may
-                // have been purged while the run was still going.
-                return Result.ok();
+                // Gone, or never existed — purged while the run was still going. Not an error, but
+                // the caller has to know it did not join.
+                return Result.ok({ extended: false });
             }
 
             if (existing.value.values.summary) {
                 // Already settled. Refusing is the point of the read.
-                return Result.ok();
+                return Result.ok({ extended: false });
             }
 
             const result = await this.updateEntry.execute<Partial<ActivityRecordValues>>(
@@ -283,13 +286,13 @@ class PrivateModelActivityLogStorageImpl implements ActivityLogStorage.Interface
 
             if (result.isFail()) {
                 if (result.error.code === "Cms/Entry/NotFound") {
-                    return Result.ok();
+                    return Result.ok({ extended: false });
                 }
 
                 return Result.fail(new ActivityLogPersistenceError(result.error));
             }
 
-            return Result.ok();
+            return Result.ok({ extended: true });
         } catch (error) {
             return Result.fail(new ActivityLogPersistenceError(error as Error));
         }

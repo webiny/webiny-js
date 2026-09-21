@@ -72,6 +72,8 @@ interface HarnessOptions {
     withTaskService?: boolean;
     config?: Partial<typeof DEFAULT_ACTIVITY_SUMMARY_CONFIG>;
     onExtend?: () => void;
+    /** The run settled, or its record went, before the extend landed. */
+    extendRefused?: boolean;
     source?: string;
     identity?: { id: string; type: string; displayName: string };
     available?: boolean;
@@ -91,17 +93,22 @@ const harness = (options: HarnessOptions = {}) => {
     );
     const extendSummaryValues = vi.fn(async (_params: ActivityLogStorage.ExtendValuesParams) => {
         options.onExtend?.();
-        return Result.ok();
+        // Refuses when the test says the run settled underneath it, which is the case the caller
+        // now has to handle rather than never learning about.
+        return Result.ok({ extended: options.extendRefused !== true });
     });
     const trigger = vi.fn(async (_params: ITaskTriggerParams) =>
         Result.ok({ id: "task-1" } as never)
+    );
+    const settleSummary = vi.fn(async (_params: ActivityLogStorage.SettleSummaryParams) =>
+        Result.ok()
     );
 
     container.registerInstance(ActivityLogStorage, {
         append: vi.fn(),
         list,
         deleteAllForTarget: vi.fn(),
-        settleSummary: vi.fn(),
+        settleSummary,
         extendSummaryValues,
         findStaleValues: vi.fn()
     } as unknown as ActivityLogStorage.Interface);
@@ -133,6 +140,7 @@ const harness = (options: HarnessOptions = {}) => {
         dispatcher: container.resolve(SummaryDispatcher),
         list,
         extendSummaryValues,
+        settleSummary,
         trigger
     };
 };
@@ -379,11 +387,31 @@ describe("what a run is scoped to", () => {
     });
 });
 
+describe("run membership", () => {
+    it("names the run a joining save belongs to", async () => {
+        // The dispatching record's id. Grouping then reads membership rather than inferring it
+        // from position, which a row holding several runs makes meaningless.
+        const { dispatcher } = harness({ previous: pendingRecord() });
+
+        const planned = await plan(dispatcher);
+
+        expect(planned.summaryRunId).toBe("rec-1");
+        expect(planned.state?.reason).toBe("covered-by-run");
+    });
+
+    it("claims no run for a save that opened one", async () => {
+        // Absent means "its own run", resolved at the read boundary. A record cannot know its own
+        // id at the moment it is written.
+        const { dispatcher } = harness();
+
+        expect((await plan(dispatcher)).summaryRunId).toBeUndefined();
+    });
+});
+
 describe("the race between the lookup and the extend", () => {
     it("leaves nothing stranded when the job settles in between", async () => {
         // The window the dispatcher cannot close: it reads a pending record, and the job settles
-        // before the extend lands. Storage refuses, and this save is simply not covered — the run's
-        // summary describes slightly less than it might have.
+        // before the extend lands.
         //
         // What must not happen is content left behind. The joining record carries no values of its
         // own, so a refused extend strands nothing and the sweeper has nothing to reclaim.
@@ -391,6 +419,7 @@ describe("the race between the lookup and the extend", () => {
 
         const { dispatcher, extendSummaryValues, trigger } = harness({
             previous: pendingRecord(),
+            extendRefused: true,
             onExtend: () => {
                 settledMidway = true;
             }
@@ -405,6 +434,69 @@ describe("the race between the lookup and the extend", () => {
         expect(trigger).not.toHaveBeenCalled();
         // And nothing on this record for a sweeper to find.
         expect(result.state?.values).toBeUndefined();
+    });
+
+    it("withdraws the claim rather than leaving a save attributed to a run that missed it", async () => {
+        // The reason the refusal had to stop being silent. A save that believes it joined a run and
+        // did not would put that run's sentence at the head of a group containing it — the exact
+        // error the run id exists to remove, reintroduced at a smaller scale.
+        const { dispatcher, settleSummary } = harness({
+            previous: pendingRecord(),
+            extendRefused: true
+        });
+
+        const result = await plan(dispatcher);
+        await dispatcher.follow(result, pendingRecord({ id: "rec-2" }));
+
+        expect(settleSummary).toHaveBeenCalledWith({
+            recordId: "rec-2",
+            reason: "join-refused",
+            runId: null
+        });
+    });
+
+    it("says the join was refused rather than borrowing a reason", async () => {
+        // A save whose join was refused is a different thing from one that never qualified: it is
+        // exactly the kind of save that should have had a sentence. On an instance reporting "no
+        // sentences anywhere", that difference is the diagnosis.
+        const { dispatcher, settleSummary } = harness({
+            previous: pendingRecord(),
+            extendRefused: true
+        });
+
+        await dispatcher.follow(await plan(dispatcher), pendingRecord({ id: "rec-2" }));
+
+        expect(settleSummary.mock.calls[0]![0].reason).not.toBe("covered-by-run");
+        expect(settleSummary.mock.calls[0]![0].reason).not.toBe("too-few-text-fields");
+    });
+
+    it("writes no summary, so the correction cannot put one beside a bundle", async () => {
+        // `settleSummary` clears the transient values as part of storing a result, and that pairing
+        // is what stops a summary ever sitting beside the values that produced it. This write
+        // borrows the operation for a record that has no values — so it must not carry a summary
+        // either, or the pairing would hold only by luck.
+        const { dispatcher, settleSummary } = harness({
+            previous: pendingRecord(),
+            extendRefused: true
+        });
+
+        const result = await plan(dispatcher);
+        // Asserted rather than assumed: the joining record carries nothing to clear.
+        expect(result.state?.values).toBeUndefined();
+
+        await dispatcher.follow(result, pendingRecord({ id: "rec-2" }));
+
+        const correction = settleSummary.mock.calls[0]![0];
+        expect(correction.summary).toBeUndefined();
+        expect(correction.kind).toBeUndefined();
+    });
+
+    it("corrects nothing when the join was accepted", async () => {
+        const { dispatcher, settleSummary } = harness({ previous: pendingRecord() });
+
+        await dispatcher.follow(await plan(dispatcher), pendingRecord({ id: "rec-2" }));
+
+        expect(settleSummary).not.toHaveBeenCalled();
     });
 });
 

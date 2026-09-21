@@ -86,6 +86,15 @@ describe("the schema", () => {
         expect(typeDefs).toContain("summaryPending: Boolean!");
     });
 
+    it("offers the run a record belongs to, and never null", async () => {
+        // Non-null because every record has exactly one run. A nullable field here would push the
+        // fallback into every client, and a client that got it wrong would group the unsummarised
+        // majority — nearly the whole timeline — into one run.
+        const { typeDefs } = await schema();
+
+        expect(typeDefs).toContain("summaryRunId: ID!");
+    });
+
     it.each([
         ["summaryState", "the whole job-state object"],
         ["summaryValues", "the stored field"],
@@ -202,5 +211,35 @@ describe("a summary that is never coming", () => {
         ]);
 
         expect(row!.summaryPending).toBe(false);
+    });
+});
+
+describe("which run a record belongs to", () => {
+    it("carries the run it joined", async () => {
+        const [row] = await query([
+            record({
+                id: "rec-2",
+                summaryRunId: "rec-1",
+                summaryState: { reason: "covered-by-run" }
+            })
+        ]);
+
+        expect(row!.summaryRunId).toBe("rec-1");
+    });
+
+    it("carries its own id when it joined nothing", async () => {
+        // The unsummarised majority. Resolving here rather than in a client is what lets grouping
+        // be one rule instead of a rule plus a fallback.
+        const [row] = await query([record({ id: "rec-9" })]);
+
+        expect(row!.summaryRunId).toBe("rec-9");
+    });
+
+    it("carries its own id once a refused join has been withdrawn", async () => {
+        const [row] = await query([
+            record({ id: "rec-3", summaryState: { reason: "join-refused" } })
+        ]);
+
+        expect(row!.summaryRunId).toBe("rec-3");
     });
 });

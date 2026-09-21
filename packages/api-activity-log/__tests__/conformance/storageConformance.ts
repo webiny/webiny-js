@@ -995,6 +995,130 @@ export const describeStorageConformance = (name: string, subject: StorageUnderTe
                 expect(record?.summaryState?.values).toBeUndefined();
             });
 
+            it("says whether it extended, because the caller now depends on the answer", async () => {
+                // The refusal was silent while nothing turned on it. Run membership is the first
+                // thing that does: a save that believes it joined a run and did not is a save
+                // attributed to a sentence that never describes it.
+                const targetId = nextTargetId("extend-reports");
+
+                const outcomes = await subject.run(async storage => {
+                    const appended = unwrap(await storage.append(pending(targetId)), "append");
+
+                    const accepted = unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: appended.id,
+                            values: bundle(["title", "body"])
+                        }),
+                        "extend while pending"
+                    );
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: appended.id,
+                            summary: "Written."
+                        }),
+                        "settle"
+                    );
+
+                    const refused = unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: appended.id,
+                            values: bundle(["title", "body", "intro"])
+                        }),
+                        "extend after settle"
+                    );
+
+                    const missing = unwrap(
+                        await storage.extendSummaryValues({
+                            recordId: "does-not-exist",
+                            values: bundle(["title"])
+                        }),
+                        "extend a record that is gone"
+                    );
+
+                    return { accepted, refused, missing };
+                });
+
+                expect(outcomes.accepted.extended).toBe(true);
+                expect(outcomes.refused.extended).toBe(false);
+                // Purged mid-run. Still not an error, and still not a join.
+                expect(outcomes.missing.extended).toBe(false);
+            });
+
+            it("detaches a record from its run without clearing anything else", async () => {
+                // The correction a refused join performs. It borrows `settleSummary`, whose shape
+                // comes from a summary never sitting beside the values that produced it — so this
+                // asserts the borrowing is safe: the record has no values to clear, and none appear.
+                const targetId = nextTargetId("detach-run");
+
+                const record = await subject.run(async storage => {
+                    const joined = unwrap(
+                        await storage.append(
+                            recordFor(targetId, {
+                                summaryRunId: "run-1",
+                                summaryState: { reason: "covered-by-run" }
+                            })
+                        ),
+                        "append"
+                    );
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: joined.id,
+                            reason: "join-refused",
+                            runId: null
+                        }),
+                        "withdraw"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summaryRunId).toBeUndefined();
+                expect(record?.summaryState?.reason).toBe("join-refused");
+                // Nothing was cleared because there was nothing to clear, and nothing was added.
+                expect(record?.summaryState?.values).toBeUndefined();
+                expect(record?.summary).toBeUndefined();
+                // And the account of the change itself is untouched.
+                expect(record?.action).toBe("entry.update");
+            });
+
+            it("leaves run membership alone when it is not asked about it", async () => {
+                // The job settling a summary knows nothing about runs and must not disturb one.
+                const targetId = nextTargetId("keep-run");
+
+                const record = await subject.run(async storage => {
+                    const joined = unwrap(
+                        await storage.append(recordFor(targetId, { summaryRunId: "run-7" })),
+                        "append"
+                    );
+
+                    unwrap(
+                        await storage.settleSummary({
+                            recordId: joined.id,
+                            summary: "Rewrote the intro.",
+                            kind: "ai"
+                        }),
+                        "settle"
+                    );
+
+                    const listed = unwrap(
+                        await storage.list({ target: { type: "cms-entry", id: targetId } }),
+                        "list"
+                    );
+
+                    return listed.records[0] ?? null;
+                });
+
+                expect(record?.summaryRunId).toBe("run-7");
+                expect(record?.summary).toBe("Rewrote the intro.");
+            });
+
             it("is idempotent", async () => {
                 const targetId = nextTargetId("extend-twice");
 

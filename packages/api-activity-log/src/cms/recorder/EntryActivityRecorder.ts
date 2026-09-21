@@ -73,7 +73,8 @@ class EntryActivityRecorderImpl implements Abstraction.Interface {
                 truncated,
                 ...(plan.state ? { summaryState: plan.state } : {}),
                 ...(plan.summary ? { summary: plan.summary } : {}),
-                ...(plan.summaryKind ? { summaryKind: plan.summaryKind } : {})
+                ...(plan.summaryKind ? { summaryKind: plan.summaryKind } : {}),
+                ...(plan.summaryRunId ? { summaryRunId: plan.summaryRunId } : {})
             });
 
             // No record means the append failed and was contained. There is nothing to hand a job,

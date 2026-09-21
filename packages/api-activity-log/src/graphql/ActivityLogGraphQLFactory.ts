@@ -118,6 +118,17 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 """
                 summaryKind: String
                 """
+                The run of saves this record belongs to.
+
+                Never null: a save that joined a run carries that run's id, and a save that did not
+                carries its own, so every record has exactly one run and a client needs no special
+                case for the records that were never summarised — which is most of them.
+
+                It is what a client groups by. Position is not a substitute: a row collapses on an
+                hour and a run debounces on a minute, so one row routinely holds several runs.
+                """
+                summaryRunId: ID!
+                """
                 True while a summary is being generated for this record. False once it has
                 settled, with or without one — and false again once it has been waiting too long,
                 because a job can fail to run at all and a row that promises a sentence forever is
@@ -218,6 +229,10 @@ const toGraphQL = (record: ActivityRecord, pendingGraceMs: number) => ({
     hasNote: record.hasNote ?? null,
     summary: record.summary ?? null,
     summaryKind: record.summaryKind ?? null,
+    // Resolved here rather than stored: a record cannot know its own id at the moment it is
+    // written, and a client that had to fall back for itself would be one client away from
+    // grouping the unsummarised majority wrongly.
+    summaryRunId: record.summaryRunId ?? record.id,
     summaryPending: isSummaryPending(record, { graceMs: pendingGraceMs })
 });
 

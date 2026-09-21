@@ -39,12 +39,31 @@ export interface IActivityLogSettleSummaryParams {
     /** How the summary was produced. Required alongside one, meaningless without. */
     kind?: SummaryKind;
     reason?: SummarySkipReason;
+    /**
+     * The run this record belongs to. `null` detaches it, which is what a refused join needs.
+     *
+     * Omitted leaves whatever is there, so the job settling a summary does not have to know or care
+     * about run membership.
+     */
+    runId?: string | null;
 }
 
 export interface IActivityLogExtendValuesParams {
     recordId: string;
     /** The run's bundle as it should now stand, already merged by the caller. */
     values: SummaryValueEntry[];
+}
+
+export interface IActivityLogExtendValuesResult {
+    /**
+     * Whether the bundle was actually extended.
+     *
+     * False where the operation refused: the record has settled, or it is gone. Both are ordinary
+     * outcomes rather than errors, which is why this is a value and not a failure — but the caller
+     * has to be told, because a save that believes it joined a run and did not is a save attributed
+     * to a sentence that does not describe it.
+     */
+    extended: boolean;
 }
 
 export interface IActivityLogStaleValuesParams {
@@ -152,10 +171,14 @@ export interface IActivityLogStorage {
      *   - **Must refuse a record whose summary has already settled.** A job that finished while a
      *     later save was extending would otherwise have its result overwritten by values nothing
      *     will ever consume, leaving content on a record with no job coming for it.
+     *   - **Must say whether it refused.** The refusal was silent while nothing depended on the
+     *     answer, which is why the dispatcher decides pendingness for itself rather than leaning on
+     *     it. Run membership is the first thing that does depend on it, and silence there is
+     *     somewhere a wrong answer hides.
      */
     extendSummaryValues(
         params: IActivityLogExtendValuesParams
-    ): Promise<Result<void, ActivityLogPersistenceError>>;
+    ): Promise<Result<IActivityLogExtendValuesResult, ActivityLogPersistenceError>>;
 
     /**
      * Records still carrying transient values written before a given instant.
@@ -183,6 +206,7 @@ export namespace ActivityLogStorage {
     export type DeletionProgress = IActivityLogDeletionProgress;
     export type SettleSummaryParams = IActivityLogSettleSummaryParams;
     export type ExtendValuesParams = IActivityLogExtendValuesParams;
+    export type ExtendValuesResult = IActivityLogExtendValuesResult;
     export type StaleValuesParams = IActivityLogStaleValuesParams;
     export type StaleValuesResult = IActivityLogStaleValuesResult;
 }

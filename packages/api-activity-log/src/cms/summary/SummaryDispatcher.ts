@@ -46,6 +46,8 @@ export interface ISummaryPlan {
      */
     summary?: string;
     summaryKind?: SummaryKind;
+    /** Set when this save joins a run, naming the record that opened it. */
+    summaryRunId?: string;
     /** Set when this save joins a run already covered by a pending job. */
     extend?: { recordId: string; values: SummaryValueEntry[] };
     /** Set when this save starts a run and needs a job of its own. */
@@ -135,6 +137,9 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
             if (bundleByteSize(merged) <= this.config.maxValueBytes) {
                 return {
                     state: { reason: "covered-by-run" },
+                    // The dispatching record's id is the run's id, so this save says which run it
+                    // belongs to rather than leaving a reader to infer it from position.
+                    summaryRunId: previous.id,
                     extend: { recordId: previous.id, values: merged }
                 };
             }
@@ -151,10 +156,29 @@ class SummaryDispatcherImpl implements ISummaryDispatcher {
 
     async follow(plan: ISummaryPlan, record: ActivityRecord): Promise<void> {
         if (plan.extend) {
-            // Best-effort. If the job settled between the lookup and here, storage refuses and this
-            // save simply is not covered — the run's summary describes slightly less than it might
-            // have, which the design accepts. Nothing is stranded: this record carries no values.
-            await this.storage.extendSummaryValues(plan.extend);
+            const joined = await this.storage.extendSummaryValues(plan.extend);
+
+            if (joined.isOk() && !joined.value.extended) {
+                // The job settled, or the run's record went, between the lookup and here. This save
+                // is simply not covered — the run's summary describes slightly less than it might
+                // have, which the design accepts.
+                //
+                // What the design does not accept is this record going on claiming membership. A
+                // save attributed to a run that does not cover it puts that run's sentence at the
+                // head of a group containing a save it never describes, which is the error the run
+                // id exists to remove. So the claim is withdrawn, and the reason says which of the
+                // two happened.
+                //
+                // `runId: null` detaches rather than repointing: a record with no run is its own
+                // run, which is what this save now is. Nothing else on the record moves — it
+                // carries no values of its own, so the clear this write performs clears nothing.
+                await this.storage.settleSummary({
+                    recordId: record.id,
+                    reason: "join-refused",
+                    runId: null
+                });
+            }
+
             return;
         }
 

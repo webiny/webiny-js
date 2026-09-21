@@ -42,6 +42,7 @@ export interface ActivityRecordValues {
     hasNote: boolean | null;
     summary: string | null;
     summaryKind: string | null;
+    summaryRunId: string | null;
     summaryTaskId: string | null;
     summaryValues: unknown;
     summaryValuesWrittenOn: string | null;
