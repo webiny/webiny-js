@@ -15,10 +15,16 @@ export type UrlSource = "sitemap" | "crawl" | "both" | "manual";
 /** What resolving a URL returned. A null status means the request never completed at all. */
 export interface UrlResolution {
     status: number | null;
-    /** True for a 2xx after redirects — the only case worth capturing. */
+    /** True for a 2xx after redirects, on this site — the only case worth capturing. */
     ok: boolean;
     /** Where the URL landed, when a redirect moved it. */
     finalUrl?: string;
+    /**
+     * The URL redirected to another site. It answers, often with a 200, but what answers is not a page
+     * of this site — a `/github` that lands on github.com. Capturing it would put someone else's page
+     * in the run under a local URL, so it is excluded with this as the reason rather than a status.
+     */
+    offSite?: boolean;
 }
 
 export interface DiscoveredUrl {
@@ -63,6 +69,14 @@ export interface DiscoverySummary {
     /** How deep the crawl went from the entry page. */
     crawlDepth: number;
     /**
+     * The crawl stopped with links still to follow — its request ceiling, or the stage's clock. Carried
+     * on the artifact rather than only as a degradation note, because the gate reads the artifact and
+     * "the crawl did not finish" changes how the counts beside it should be read.
+     */
+    crawlTruncated: boolean;
+    /** The sitemap listed more entries than this stage carries, so its tail was not considered. */
+    sitemapTruncated: boolean;
+    /**
      * Distinct pages across both sources that resolved — what could be captured, before the page cap.
      * A sitemap claiming 40 while this reads 9 is the reading the operator needs, with the difference
      * accounted for by `sitemapUnresolved` and the `unresolved` list.
@@ -81,9 +95,10 @@ export interface DiscoverArtifact {
     /** The sampled URL list, at most the job's page cap, spread across groups. */
     urls: DiscoveredUrl[];
     /**
-     * Discovered but deliberately not included: the URL did not resolve. Kept so the gate can show a
-     * dead sitemap entry instead of silently dropping it, but out of `urls` because capturing an error
-     * page feeds garbage sections into clustering and spends the page cap doing it.
+     * Discovered but deliberately not included: the URL did not resolve, or it resolved onto another
+     * site. Kept so the gate can show a dead sitemap entry instead of silently dropping it, but out of
+     * `urls` because capturing an error page feeds garbage sections into clustering and spends the
+     * page cap doing it.
      */
     unresolved: DiscoveredUrl[];
 }

@@ -1,4 +1,4 @@
-import { pageIdentity } from "~/domain/pageIdentity.js";
+import { foldHost, isSameSite, pageIdentity } from "~/domain/pageIdentity.js";
 import { extractSameHostLinks } from "./extractSameHostLinks.js";
 import { fetchPage } from "./fetchPage.js";
 import { isPageUrl } from "./isPageUrl.js";
@@ -69,6 +69,9 @@ export const crawlSite = async (params: {
         return { fetched, seen, depth: 0, truncated: false };
     }
 
+    // Fixed for the whole walk: the one question a redirect must never be allowed to redefine.
+    const siteHost = foldHost(new URL(params.entryUrl).host);
+
     let frontier: { url: string; identity: string }[] = [
         { url: params.entryUrl, identity: entryIdentity }
     ];
@@ -102,6 +105,17 @@ export const crawlSite = async (params: {
                 started++;
 
                 const response = await fetchPage(target.url);
+
+                /*
+                 * A URL that redirects off the host is an outbound link wearing a local URL — a
+                 * `/github` that lands on github.com. It is not a page of this site, so it is not
+                 * recorded as one and its links are not followed; doing either would put someone
+                 * else's site into the run.
+                 */
+                if (response.finalUrl && !isSameSite(response.finalUrl, siteHost)) {
+                    continue;
+                }
+
                 fetched.set(target.identity, {
                     url: target.url,
                     identity: target.identity,
@@ -118,7 +132,7 @@ export const crawlSite = async (params: {
 
                 // Resolve relative links against where the request landed, not where it was aimed.
                 const base = response.finalUrl ?? target.url;
-                for (const link of extractSameHostLinks(response.html, base)) {
+                for (const link of extractSameHostLinks(response.html, base, siteHost)) {
                     const identity = pageIdentity(link);
                     if (!identity || queued.has(identity) || !isPageUrl(link)) {
                         continue;

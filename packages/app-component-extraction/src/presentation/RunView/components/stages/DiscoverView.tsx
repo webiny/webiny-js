@@ -58,13 +58,28 @@ const SourceTag = ({ source }: { source?: string }) => {
     return <Tag variant={descriptor.variant} content={descriptor.label} />;
 };
 
+/*
+ * What resolving the URL returned. An off-site redirect is labelled rather than shown as its status:
+ * the status is usually a healthy 200, and printing that next to an excluded row would read as a
+ * contradiction when the row is excluded precisely because the 200 came from somewhere else.
+ */
 const ResolveStatus = ({ url }: { url: DiscoverUrlDto }) => {
     const resolution = url.resolution;
     if (!resolution) {
         return null;
     }
-    const label = resolution.status === null ? "unreachable" : String(resolution.status);
-    const redirected = resolution.finalUrl && resolution.finalUrl !== url.url;
+
+    const label = (() => {
+        if (resolution.offSite) {
+            return "off-site";
+        }
+        if (resolution.status === null) {
+            return "unreachable";
+        }
+        const redirected = resolution.finalUrl && resolution.finalUrl !== url.url;
+        return redirected ? `${resolution.status} →` : String(resolution.status);
+    })();
+
     return (
         <Text
             size="sm"
@@ -74,7 +89,6 @@ const ResolveStatus = ({ url }: { url: DiscoverUrlDto }) => {
             )}
         >
             {label}
-            {redirected ? " →" : ""}
         </Text>
     );
 };
@@ -106,7 +120,8 @@ const DiscoverySummary = ({
         discovery.sitemapOffHost > 0 ? `${discovery.sitemapOffHost} off-host` : null,
         discovery.sitemapNonPage > 0 ? `${discovery.sitemapNonPage} not pages` : null,
         discovery.sitemapUnresolved > 0 ? `${discovery.sitemapUnresolved} dead` : null,
-        `${discovery.sitemapUsable} usable`
+        `${discovery.sitemapUsable} usable`,
+        discovery.sitemapTruncated ? "truncated" : null
     ].filter(Boolean);
 
     return (
@@ -120,6 +135,7 @@ const DiscoverySummary = ({
             <Text size="sm" className="text-neutral-strong">
                 <span className="font-semibold">Crawl</span> · {discovery.crawled} found · depth{" "}
                 {discovery.crawlDepth}
+                {discovery.crawlTruncated ? " · cut short, links left to follow" : ""}
             </Text>
             <Text size="sm" className="text-neutral-strong">
                 <span className="font-semibold">Union</span> · {discovery.union} resolved ·{" "}
@@ -130,16 +146,16 @@ const DiscoverySummary = ({
     );
 };
 
-/** Rows the run discovered but will not capture, because the URL did not resolve. */
+/** Rows the run discovered but will not capture: the URL did not answer, or answered from elsewhere. */
 const UnresolvedList = ({ urls }: { urls: DiscoverUrlDto[] }) => (
     <div className="mt-md overflow-hidden rounded-lg border border-neutral-dimmed">
         <div className="flex items-center gap-sm bg-neutral-light px-md py-sm">
             <Text size="sm" className="font-semibold">
-                Did not resolve
+                Discovered, not captured
             </Text>
             <Text size="sm" className="text-neutral-strong">
-                {urls.length} discovered, none captured — a listed page that does not answer is
-                either gone or never published
+                {urls.length} listed or linked but not a page of this site — gone, never published,
+                or redirecting somewhere else
             </Text>
         </div>
         {urls.map(url => (

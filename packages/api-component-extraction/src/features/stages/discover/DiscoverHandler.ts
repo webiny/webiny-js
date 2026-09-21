@@ -7,7 +7,7 @@ import type {
     UrlResolution,
     UrlSource
 } from "~/domain/artifacts.js";
-import { pageIdentity } from "~/domain/pageIdentity.js";
+import { foldHost, isSameSite, pageIdentity } from "~/domain/pageIdentity.js";
 import { collectSitemapLocs } from "./collectSitemapLocs.js";
 import { crawlSite } from "./crawlSite.js";
 import { sampleAcrossGroups, pathGroup } from "./grouping.js";
@@ -39,15 +39,28 @@ const toDiscovered = (candidate: Candidate, group: string): DiscoveredUrl => ({
     resolution: candidate.resolution
 });
 
-/** A redirect is only worth recording when it actually moved the request somewhere else. */
+/**
+ * A redirect is only worth recording when it actually moved the request somewhere else — and when it
+ * moved it onto another site, the 200 that comes back is not evidence that this site has the page.
+ * The crawl refuses such a URL outright; here, where a sitemap entry can name one, it is recorded with
+ * the reason so the gate can say why rather than showing a healthy status on an excluded row.
+ */
 const resolutionOf = (params: {
     url: string;
     status: number | null;
     ok: boolean;
     finalUrl: string | null;
+    siteHost: string;
 }): UrlResolution => {
-    const { url, status, ok, finalUrl } = params;
-    if (finalUrl && finalUrl !== url) {
+    const { url, status, finalUrl, siteHost } = params;
+    const offSite = finalUrl !== null && !isSameSite(finalUrl, siteHost);
+    const ok = params.ok && !offSite;
+    const moved = finalUrl && finalUrl !== url;
+
+    if (moved && offSite) {
+        return { status, ok, finalUrl, offSite: true };
+    }
+    if (moved) {
         return { status, ok, finalUrl };
     }
     return { status, ok };
@@ -81,6 +94,7 @@ const sitemapStatus = (params: {
 const unionSources = (params: {
     crawl: Awaited<ReturnType<typeof crawlSite>>;
     validated: ReturnType<typeof validateSitemapLocs>;
+    siteHost: string;
 }): Map<string, Candidate> => {
     const candidates = new Map<string, Candidate>();
 
@@ -89,7 +103,8 @@ const unionSources = (params: {
             url: page.url,
             status: page.status,
             ok: page.ok,
-            finalUrl: page.finalUrl
+            finalUrl: page.finalUrl,
+            siteHost: params.siteHost
         });
         candidates.set(identity, {
             url: page.url,
@@ -134,6 +149,7 @@ const unionSources = (params: {
 const resolvePending = async (params: {
     context: StageContext;
     pending: [string, Candidate][];
+    siteHost: string;
 }): Promise<void> => {
     const { context, pending } = params;
     await context.progress({
@@ -153,7 +169,8 @@ const resolvePending = async (params: {
             url: candidate.url,
             status: outcome.status,
             ok: outcome.ok,
-            finalUrl: outcome.finalUrl
+            finalUrl: outcome.finalUrl,
+            siteHost: params.siteHost
         });
         candidate.title = outcome.title;
     }
@@ -188,6 +205,8 @@ const summarise = (params: {
         sitemapUsable: resolvedSitemapEntries.length,
         crawled: crawl.fetched.size + crawl.seen.size,
         crawlDepth: crawl.depth,
+        crawlTruncated: crawl.truncated,
+        sitemapTruncated: validated.truncated,
         union: params.includable,
         overCap: Math.max(0, params.includable - params.included)
     };
@@ -224,6 +243,7 @@ class DiscoverHandlerImpl implements StageHandler.Interface {
         }
 
         const cap = context.job.pageCap;
+        const siteHost = foldHost(new URL(entryUrl).host);
         const degraded: string[] = [];
 
         await context.progress({ message: `Reading the sitemap for ${entryUrl}…` });
@@ -256,7 +276,7 @@ class DiscoverHandlerImpl implements StageHandler.Interface {
             );
         }
 
-        const candidates = unionSources({ crawl, validated });
+        const candidates = unionSources({ crawl, validated, siteHost });
 
         /*
          * Everything the crawl did not fetch still needs a status: a sitemap-only entry, and a page the
@@ -267,7 +287,7 @@ class DiscoverHandlerImpl implements StageHandler.Interface {
             ([identity]) => !crawl.fetched.has(identity)
         );
         if (pending.length > 0) {
-            await resolvePending({ context, pending });
+            await resolvePending({ context, pending, siteHost });
         }
 
         const includable = [...candidates.values()].filter(candidate => candidate.resolution.ok);

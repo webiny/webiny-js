@@ -7,13 +7,14 @@ import { crawlSite } from "./crawlSite.js";
  * captured page expresses that. A real site's HTML would make the assertions depend on that site's
  * current navigation, which is the opposite of what a crawl test should rest on.
  */
-const SITE: Record<string, { status: number; html: string }> = {
+const SITE: Record<string, { status: number; html: string; finalUrl?: string }> = {
     "https://acme.com/": {
         status: 200,
         html: `<title>Home</title>
             <a href="/pricing">Pricing</a>
             <a href="/pricing/">Pricing again</a>
             <a href="/gone">Gone</a>
+            <a href="/source">Source</a>
             <a href="https://other.com/x">Partner</a>
             <a href="/brochure.pdf">Brochure</a>
             <a href="mailto:hi@acme.com">Mail</a>`
@@ -27,7 +28,13 @@ const SITE: Record<string, { status: number; html: string }> = {
         status: 200,
         html: `<title>Enterprise</title><a href="/pricing/enterprise/sla">SLA</a>`
     },
-    "https://acme.com/pricing/enterprise/sla": { status: 200, html: `<title>SLA</title>` }
+    "https://acme.com/pricing/enterprise/sla": { status: 200, html: `<title>SLA</title>` },
+    // A local URL that is really an outbound link: it lands on another site.
+    "https://acme.com/source": {
+        status: 200,
+        html: `<title>GitHub</title><a href="/acme/repo">repo</a><a href="/pricing">their pricing</a>`,
+        finalUrl: "https://github.com/acme"
+    }
 };
 
 const stubFetch = () => {
@@ -41,7 +48,7 @@ const stubFetch = () => {
         return {
             ok: page.status >= 200 && page.status < 300,
             status: page.status,
-            url,
+            url: page.finalUrl ?? url,
             text: async () => page.html
         } as unknown as Response;
     });
@@ -131,6 +138,27 @@ describe("crawlSite", () => {
 
         expect(result.truncated).toBe(true);
         expect(result.fetched.size).toBe(0);
+    });
+
+    /*
+     * Found on a real run, not in a fixture: a /github style URL on the site redirected to github.com,
+     * and the crawl recorded it as a page and then walked GitHub's navigation, because the same-host
+     * check was being measured against the redirect target.
+     */
+    it("refuses a page that redirected off the site, and does not walk it", async () => {
+        const calls = stubFetch();
+
+        const result = await crawlSite({
+            entryUrl: "https://acme.com/",
+            maxDepth: 3
+        });
+
+        // The redirecting URL was requested once, then abandoned rather than recorded as a page.
+        expect(calls).toContain("https://acme.com/source");
+        expect([...result.fetched.keys()]).not.toContain("acme.com/source");
+        expect(calls.some(url => url.includes("github.com"))).toBe(false);
+        expect([...result.fetched.keys()].some(id => id.startsWith("github.com"))).toBe(false);
+        expect([...result.seen.keys()].some(id => id.startsWith("github.com"))).toBe(false);
     });
 
     it("reports nothing for an entry URL that is not a page URL", async () => {

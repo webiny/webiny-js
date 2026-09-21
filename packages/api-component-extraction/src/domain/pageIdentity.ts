@@ -27,6 +27,24 @@ const PAGE_EXTENSION = /\.(html?|php|aspx?)$/i;
 export const foldHost = (host: string): string => host.toLowerCase().replace(/^www\./, "");
 
 /**
+ * Is this URL on the site being crawled?
+ *
+ * One definition, used by both the crawl and the resolve check. They ask it about different things — a
+ * link to follow, and where a request landed — but if they answered it differently, one of them would
+ * let another site into the run.
+ */
+export const isSameSite = (url: string | null, siteHost: string): boolean => {
+    if (!url) {
+        return false;
+    }
+    try {
+        return foldHost(new URL(url).host) === foldHost(siteHost);
+    } catch {
+        return false;
+    }
+};
+
+/**
  * The identity of the page a URL addresses: folded host plus folded path, with no scheme, query or
  * fragment.
  *

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { foldHost, pageIdentity } from "./pageIdentity.js";
+import { foldHost, isSameSite, pageIdentity } from "./pageIdentity.js";
 
 const BASE = "https://www.webiny.com/";
 
@@ -51,6 +51,24 @@ describe("pageIdentity — what is not a page", () => {
     it("needs a base to fold a relative URL", () => {
         expect(pageIdentity("/pricing")).toBeNull();
         expect(pageIdentity("/pricing", BASE)).toBe("webiny.com/pricing");
+    });
+});
+
+describe("isSameSite", () => {
+    it("accepts the same site across www, case and protocol", () => {
+        expect(isSameSite("https://www.acme.com/pricing", "acme.com")).toBe(true);
+        expect(isSameSite("http://ACME.com/pricing", "www.acme.com")).toBe(true);
+    });
+
+    /*
+     * The case that matters: a local URL that redirects onto another site. Without this the crawl
+     * follows the redirect target's navigation and puts someone else's pages in the run.
+     */
+    it("rejects another site, a subdomain, and nothing at all", () => {
+        expect(isSameSite("https://github.com/acme", "acme.com")).toBe(false);
+        expect(isSameSite("https://blog.acme.com/x", "acme.com")).toBe(false);
+        expect(isSameSite(null, "acme.com")).toBe(false);
+        expect(isSameSite("not a url", "acme.com")).toBe(false);
     });
 });
 

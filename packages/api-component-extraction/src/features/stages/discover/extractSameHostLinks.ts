@@ -9,14 +9,15 @@ import { foldHost } from "~/domain/pageIdentity.js";
  * Same host, not same origin: a site that links to itself over both http and https, or mixes `www.`
  * with the bare domain, is still one site, and treating those as different would cut the crawl short at
  * the first such link.
+ *
+ * `siteHost` is separate from `baseUrl` on purpose, and the separation is load-bearing. Relative links
+ * have to resolve against where the response actually came from, which after a redirect is not where
+ * the request was aimed — but "is this the same site?" must always be asked of the site being crawled.
+ * Measuring it against the base instead means one outbound redirect hands the crawl a new definition of
+ * "same host" and it walks off onto somebody else's site.
  */
-export const extractSameHostLinks = (html: string, baseUrl: string): string[] => {
-    let host: string;
-    try {
-        host = foldHost(new URL(baseUrl).host);
-    } catch {
-        return [];
-    }
+export const extractSameHostLinks = (html: string, baseUrl: string, siteHost: string): string[] => {
+    const host = foldHost(siteHost);
 
     const links = new Set<string>();
     const regex = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["']/gi;

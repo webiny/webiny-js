@@ -150,6 +150,8 @@ export interface UrlResolutionDto {
     status: number | null;
     ok: boolean;
     finalUrl?: string | null;
+    /** The URL answered, but from another site — so what answered is not a page of this site. */
+    offSite?: boolean;
 }
 
 export interface DiscoverUrlDto {
@@ -172,6 +174,8 @@ export interface DiscoverySummaryDto {
     sitemapUsable: number;
     crawled: number;
     crawlDepth: number;
+    crawlTruncated?: boolean;
+    sitemapTruncated?: boolean;
     union: number;
     overCap: number;
 }
