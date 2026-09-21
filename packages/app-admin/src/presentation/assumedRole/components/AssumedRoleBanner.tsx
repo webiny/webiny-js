@@ -22,10 +22,14 @@ const AssumedRoleBannerView = observer(() => {
 
     const kind = vm.assumedRole.type === "team" ? "team" : "role";
 
+    /*
+     * The name goes in the body rather than in Alert's `title`: that prop is not rendered, it
+     * falls through to the root div and ends up as an HTML tooltip. Children run through
+     * compileMarkdown, so the emphasis below survives.
+     */
     return (
         <Alert
             type={"warning"}
-            title={`Viewing as the "${vm.assumedRole.name}" ${kind}`}
             actions={
                 <Alert.Action
                     text={"Exit preview"}
@@ -34,7 +38,7 @@ const AssumedRoleBannerView = observer(() => {
                 />
             }
         >
-            {`Permissions are enforced as this ${kind}, so anything you are not allowed to do will fail.`}
+            {`Viewing the Admin as the **${vm.assumedRole.name}** ${kind}. Permissions are enforced as this ${kind}, so anything you are not allowed to do will fail.`}
         </Alert>
     );
 });

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { AssumedRoleContext } from "~/features/assumedRole/index.js";
+import type { AssumedRoleContext } from "~/features/assumedRole/abstractions.js";
 
 export interface IAssumedRoleOption {
     label: string;

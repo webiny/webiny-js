@@ -2,8 +2,8 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { FeatureFlagsService } from "~/features/featureFlags/abstractions.js";
 import { ListRolesUseCase } from "~/features/accessManagement/roles/listRoles/abstractions.js";
 import { ListTeamsUseCase } from "~/features/accessManagement/teams/listTeams/abstractions.js";
-import { AssumedRoleContext } from "~/features/assumedRole/index.js";
-import { AssumeRoleUseCase } from "~/features/assumedRole/index.js";
+import { AssumedRoleContext } from "~/features/assumedRole/abstractions.js";
+import { AssumeRoleUseCase } from "~/features/assumedRole/abstractions.js";
 import { AssumedRolePresenter as Abstraction } from "./abstractions.js";
 
 function optionValue(assumedRole: AssumedRoleContext.Value): string {
