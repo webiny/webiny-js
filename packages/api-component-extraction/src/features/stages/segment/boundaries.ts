@@ -7,7 +7,11 @@ export interface DetectedSection {
 }
 
 export interface SegmentOptions {
-    /** A section must be at least this tall (px) — filters out headers, nav bars, links. */
+    /**
+     * A section must be at least this tall (px) — filters out thin dividers, spacer rows and stray
+     * link strips. A semantic landmark (`header`, `nav`, `footer`) is exempt: it is page furniture a
+     * migration has to carry, and it is usually shorter than this.
+     */
     minHeight: number;
     /** …and at least this fraction of the viewport wide — filters out sidebars and controls. */
     minWidthRatio: number;
@@ -38,9 +42,29 @@ export const findContentRoot = (node: CapturedNode): CapturedNode => {
     return current;
 };
 
-/** A node big enough to be a section rather than a control: tall enough and near-full-width. */
+/**
+ * Landmarks that are a section whatever their height.
+ *
+ * The height floor exists to discard thin noise, and it was documented as filtering out "headers,
+ * nav bars, links" — which is exactly wrong for a migration. A site header is typically 60–90px, so
+ * the floor silently dropped the page's navigation: webiny.com's `<header>` was captured with five
+ * links and never became a section, so no component was ever generated for it and no migrated page
+ * had a nav.
+ *
+ * These three tags say what the block IS, which is a far better signal than its height. Anything
+ * they admit that an operator does not want is one exclude at the Cluster gate.
+ */
+const LANDMARK_TAGS = new Set(["header", "nav", "footer"]);
+
+/**
+ * A node big enough to be a section rather than a control: near-full-width, and either tall enough
+ * or a landmark.
+ *
+ * The width requirement still applies to landmarks, so a narrow in-page `<nav>` (a table of
+ * contents, a breadcrumb rail in a sidebar) is not promoted to a section.
+ */
 const isSectionCandidate = (node: CapturedNode, options: SegmentOptions): boolean =>
-    node.box.height >= options.minHeight &&
+    (node.box.height >= options.minHeight || LANDMARK_TAGS.has(node.tag)) &&
     node.box.width >= options.minWidthRatio * options.viewportWidth;
 
 /**

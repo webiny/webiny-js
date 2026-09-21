@@ -30,12 +30,15 @@ import { buildPageDocument, type ComponentPlacement } from "~/pages/buildPageDoc
 import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
 import { deriveCompositeInputs } from "~/pages/deriveCompositeInputs.js";
+import { applyFormPreview } from "~/pages/applyFormPreview.js";
 import { toPageIdentity } from "~/pages/toPageIdentity.js";
 import { scalarInputNames } from "~/pages/scalarInputNames.js";
 
 /** What a promoted component needs to be placed: its final name, and the manifest for its inputs. */
 interface PlaceableComponent {
     manifest: ComponentManifest;
+    /** Classify's type for this cluster, so a form can be made visibly inert. */
+    type: string;
     /** Manifest inputs a derived scalar may be bound to — see `scalarInputNames`. */
     scalarInputs: Set<string>;
     props: GeneratedComponent["props"];
@@ -149,6 +152,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
 
             placeable.set(promoted.signature, {
                 manifest,
+                type: component.type,
                 scalarInputs: scalarInputNames(manifest),
                 props: component.props,
                 representativeTexts: await this.referenceTexts(component, segmentByUrl, trees)
@@ -318,7 +322,14 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 inputs[prop.name] = prop.value;
             }
         }
-        return inputs;
+
+        // Last, because it overrides what the layers above produced: a form must say that it does
+        // not submit, and must not have a destination derived onto its submit control.
+        return applyFormPreview({
+            manifest: component.manifest,
+            componentType: component.type,
+            inputs
+        });
     }
 
     /** The captured node for one section of one page, resolved by the box Segment recorded. */

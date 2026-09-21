@@ -70,58 +70,54 @@ const cursorsFor = (node: CapturedNode, claimed: ReadonlySet<CapturedNode>): Cur
     textAt: 0
 });
 
-/**
- * Can this container supply the item's fields?
- *
- * Only the fields that have a source in captured data are considered — a boolean like `newTab` is
- * never derivable, so requiring it would reject every candidate. A group qualifies when it can fill
- * at least one derivable field for each of its members, which is what separates a footer's five
- * columns (heading + links each) from its three rows.
- */
-const satisfies = (
+/** Does this node supply one field? */
+const supplies = (
     node: CapturedNode,
+    field: InputDefinition,
+    claimed: ReadonlySet<CapturedNode>
+): boolean => {
+    if (isComposite(field)) {
+        // Some grouping beneath this node must satisfy the nested fields IN FULL. Accepting "supplies
+        // any one of them" lets a bare paragraph pass as having a list of links.
+        return siblingGroups(node, claimed).some(group =>
+            groupSatisfies(group.nodes, field.fields ?? [], claimed)
+        );
+    }
+    const cursors = cursorsFor(node, claimed);
+    if (isUrlField(field)) {
+        return cursors.links.length > 0;
+    }
+    if (isImageField(field) || isAltField(field)) {
+        return cursors.images.length > 0;
+    }
+    if (isTextField(field)) {
+        return cursors.texts.length > 0 || cursors.links.length > 0;
+    }
+    return false;
+};
+
+/**
+ * Is this grouping the item list? Every member must supply every field that has a source.
+ *
+ * Judging this per member rather than across the group is deliberate, and was re-learned the hard
+ * way. Relaxing it to "each member contributes something, the group covers everything" admits a
+ * footer's three ROWS — one row holding the columns and therefore almost all the content — which
+ * then wins on coverage and collapses five columns into three mismatched items.
+ *
+ * The cost is that a navigation mixing anchors with dropdown `<button>`s selects only its anchors,
+ * so the triggers are dropped rather than carried as label-only items. For a migrated nav that is
+ * the better failure: four real links beat seven items whose labels and destinations disagree.
+ */
+const groupSatisfies = (
+    nodes: CapturedNode[],
     fields: InputDefinition[],
     claimed: ReadonlySet<CapturedNode>
 ): boolean => {
-    const cursors = cursorsFor(node, claimed);
-    let derivable = 0;
-    let supplied = 0;
-
-    for (const field of fields) {
-        if (isComposite(field)) {
-            derivable++;
-            if (
-                siblingGroups(node, claimed).some(group =>
-                    satisfies(group.nodes[0]!, field.fields!, claimed)
-                )
-            ) {
-                supplied++;
-            }
-            continue;
-        }
-        if (isUrlField(field)) {
-            derivable++;
-            if (cursors.links.length > 0) {
-                supplied++;
-            }
-            continue;
-        }
-        if (isImageField(field)) {
-            derivable++;
-            if (cursors.images.length > 0) {
-                supplied++;
-            }
-            continue;
-        }
-        if (isTextField(field)) {
-            derivable++;
-            if (cursors.texts.length > 0 || cursors.links.length > 0) {
-                supplied++;
-            }
-        }
+    const derivable = fields.filter(isDerivable);
+    if (derivable.length === 0) {
+        return false;
     }
-
-    return derivable > 0 && supplied === derivable;
+    return nodes.every(node => derivable.every(field => supplies(node, field, claimed)));
 };
 
 /** The containers that represent one list's items. */
@@ -131,7 +127,7 @@ const itemContainers = (
     claimed: ReadonlySet<CapturedNode>
 ): CapturedNode[] => {
     const viable = siblingGroups(node, claimed).filter(group =>
-        group.nodes.every(member => satisfies(member, fields, claimed))
+        groupSatisfies(group.nodes, fields, claimed)
     );
 
     /*
@@ -223,8 +219,15 @@ const buildItem = (
         }
 
         if (isTextField(field)) {
-            // A plain text run first; a link's own label when the container is a link and has no
-            // other text, which is the `{ label, url }` pair every navigation reduces to.
+            /*
+             * A plain text run first, then the link's own label.
+             *
+             * That order matters and was briefly inverted: preferring the link's label whenever the
+             * container held exactly one link made a footer column headed "Legal" with a single
+             * "Privacy" link come out headed "Privacy". A container's own text is its heading; the
+             * link's label is only the right answer when the container IS the link, which is exactly
+             * when there is no plain text to take.
+             */
             const text = cursors.texts[cursors.textAt];
             if (text !== undefined) {
                 cursors.textAt++;
@@ -273,6 +276,55 @@ const hasPlaceholderDestination = (value: unknown, definition: InputDefinition):
             );
         });
     });
+};
+
+/**
+ * The smallest unclaimed node that can stand for one composite value.
+ *
+ * Prefers a node carrying a destination when the composite wants one, and the deepest such node so a
+ * logo anchor is chosen over the bar that contains it. Returns undefined when nothing qualifies, and
+ * the caller then reads the section as a whole.
+ */
+const compositeContainer = (
+    node: CapturedNode,
+    fields: InputDefinition[],
+    claimed: ReadonlySet<CapturedNode>
+): CapturedNode | undefined => {
+    const wantsUrl = fields.some(isUrlField);
+    let best: { node: CapturedNode; depth: number } | undefined;
+
+    const visit = (current: CapturedNode, depth: number): void => {
+        if (claimed.has(current)) {
+            return;
+        }
+        if (current !== node) {
+            /*
+             * For a composite that wants a destination, carrying exactly one link is the whole
+             * qualification — the other fields are not required.
+             *
+             * Demanding all of them found nothing on a real header: its `logo` is
+             * `{ href, label, image { alt } }` and the logo mark is an `<svg>`, so `image.alt` can
+             * never be satisfied and selection fell back to the whole section, where `logo`,
+             * `actions` and `socialProof` each ate the same first link and borrowed a stray label.
+             *
+             * Localising on the link alone leaves the unfillable fields ABSENT, which is the honest
+             * answer: this logo genuinely has no text label.
+             */
+            const ownLinks = collectLinks(current, claimed);
+            const usable = wantsUrl
+                ? ownLinks.length === 1
+                : ownLinks.length === 0 && groupSatisfies([current], fields, claimed);
+            if (usable && (!best || depth > best.depth)) {
+                best = { node: current, depth };
+            }
+        }
+        for (const child of current.children) {
+            visit(child, depth + 1);
+        }
+    };
+
+    visit(node, 0);
+    return best?.node;
 };
 
 /** Derive one list input's items, claiming the containers it consumes. */
@@ -369,10 +421,22 @@ export const deriveCompositeInputs = (params: {
             continue;
         }
 
-        // A single composite — a lone CTA, one image with its alt — is one item's worth of fields
-        // read straight off the section, with no container selection to do.
+        /*
+         * A single composite — a logo, a lone CTA, one image with its alt — gets its OWN container
+         * rather than reading the whole section, and claims it.
+         *
+         * Reading from the section root meant every such input consumed the same first link: a header
+         * with `logo`, `actions` and `socialProof` came out with all three pointing at the logo's
+         * destination and sharing one stray label. Localising them walks the section in document
+         * order instead, which is the order a reader would pair them in.
+         */
         if (isComposite(definition)) {
-            const item = buildItem(node, definition.fields ?? [], claimed);
+            const fields = definition.fields ?? [];
+            const container = compositeContainer(node, fields, claimed) ?? node;
+            if (container !== node) {
+                claimed.add(container);
+            }
+            const item = buildItem(container, fields, claimed);
             if (Object.keys(item).length > 0) {
                 values[definition.name] = item;
             }

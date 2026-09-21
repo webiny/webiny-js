@@ -187,8 +187,10 @@ describe("deriveCompositeInputs — other shapes", () => {
             ]
         } as unknown as ComponentManifest;
 
+        // The CTA's own label, not the section heading above it: a single composite is read from
+        // its own container, which for a link is the anchor carrying both halves.
         expect(deriveCompositeInputs({ node: section, manifest }).cta).toEqual({
-            label: "Ready to build?",
+            label: "Get started",
             url: "https://site/start"
         });
     });

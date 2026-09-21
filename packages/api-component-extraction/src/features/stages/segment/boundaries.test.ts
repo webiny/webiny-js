@@ -108,3 +108,57 @@ describe("detectSections", () => {
         ]);
     });
 });
+
+describe("detectSections — semantic landmarks", () => {
+    // A landmark at (48,48) of 1344x66 is webiny.com's real header: five nav links, and well under
+    // the 120px floor. Before landmarks were exempt it was dropped, so no migrated page had a nav.
+    const landmark = (tag: string, y: number, height: number): CapturedNode => ({
+        tag,
+        box: { x: 48, y, width: 1344, height },
+        styles: {},
+        children: []
+    });
+
+    it("keeps a short header that the height floor would have discarded", () => {
+        const root = block(0, 1400, [landmark("header", 48, 66), block(113, 632)]);
+
+        const detected = detectSections(root, OPTIONS);
+
+        expect(boxes(detected)).toEqual([
+            { x: 48, y: 48, width: 1344, height: 66 },
+            { x: 0, y: 113, width: 1440, height: 632 }
+        ]);
+    });
+
+    it("keeps a short footer and a standalone nav rail", () => {
+        const root = block(0, 1400, [
+            landmark("nav", 0, 48),
+            block(48, 900),
+            landmark("footer", 948, 90)
+        ]);
+
+        expect(detectSections(root, OPTIONS)).toHaveLength(3);
+    });
+
+    it("still discards a landmark that is too narrow to be page furniture", () => {
+        // An in-page table of contents: semantic, but a sidebar rather than a section.
+        const narrow: CapturedNode = {
+            tag: "nav",
+            box: { x: 0, y: 48, width: 240, height: 60 },
+            styles: {},
+            children: []
+        };
+        const root = block(0, 1000, [narrow, block(48, 900)]);
+
+        const detected = detectSections(root, OPTIONS);
+
+        expect(detected).toHaveLength(1);
+        expect(detected[0]?.box.width).toBe(1440);
+    });
+
+    it("still discards thin non-semantic noise", () => {
+        const root = block(0, 1000, [block(0, 8), block(8, 900)]);
+
+        expect(detectSections(root, OPTIONS)).toHaveLength(1);
+    });
+});
