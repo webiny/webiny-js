@@ -22,14 +22,14 @@ const titleiseSegment = (segment: string): string =>
         .join(" ");
 
 /**
- * The Website Builder path and title for a source page URL. The site root maps to `/`.
+ * The Website Builder path and title for a source page.
  *
- * PROOF OF CONCEPT: the title comes from the URL, not from the page's `<title>`. Capture does record
- * the real title (`CapturedPage.title`), but Assemble does not forward it, and this package does not
- * widen that contract — so a migrated page is named after its slug. The discard log is the place that
- * records this kind of fiat decision; a real migration should carry the page's own title.
+ * The path always comes from the URL; the site root maps to `/`. The title is the page's own `<title>`
+ * when Assemble carries one, and is otherwise derived from the last path segment — which is what runs
+ * captured before the title was forwarded fall back to.
  */
-export const toPageIdentity = (url: string): PageIdentity => {
+export const toPageIdentity = (url: string, pageTitle?: string): PageIdentity => {
+    const declared = pageTitle?.replace(/\s+/g, " ").trim();
     let pathname: string;
     try {
         pathname = new URL(url).pathname;
@@ -44,12 +44,12 @@ export const toPageIdentity = (url: string): PageIdentity => {
     const segments = pathname.split("/").map(slugifySegment).filter(Boolean);
 
     if (segments.length === 0) {
-        return { path: "/", title: "Home" };
+        return { path: "/", title: declared || "Home" };
     }
 
     const last = segments[segments.length - 1] as string;
     return {
         path: `/${segments.join("/")}`,
-        title: titleiseSegment(last) || "Untitled"
+        title: declared || titleiseSegment(last) || "Untitled"
     };
 };

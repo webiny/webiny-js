@@ -75,13 +75,17 @@ class AssembleHandlerImpl implements StageHandler.Interface {
         // Original capture + section counts come from the Segment artifact (it forwards the page
         // screenshot and holds every detected section), so the Assemble view can show the source page
         // beside the assembly and how many sections were matched vs kept as raw HTML.
-        const segmentByUrl = new Map<string, { screenshotRef: string; totalSections: number }>();
+        const segmentByUrl = new Map<
+            string,
+            { title: string; screenshotRef: string; totalSections: number }
+        >();
         const segmentRef = stageEntry(context.run.stages, "segment")?.artifacts.sections;
         if (segmentRef) {
             const segmentResult = await context.store.getJson<SegmentArtifact>(segmentRef);
             if (segmentResult.isOk() && segmentResult.value) {
                 for (const page of segmentResult.value.pages) {
                     segmentByUrl.set(page.url, {
+                        title: page.title,
                         screenshotRef: page.screenshotRef,
                         totalSections: page.sections.length
                     });
@@ -111,6 +115,7 @@ class AssembleHandlerImpl implements StageHandler.Interface {
             const segment = segmentByUrl.get(url);
             return {
                 url,
+                title: segment?.title,
                 screenshotRef: segment?.screenshotRef,
                 totalSections: segment?.totalSections,
                 instances: instances.sort((a, b) => a.sectionIndex - b.sectionIndex)

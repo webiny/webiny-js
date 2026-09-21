@@ -29,6 +29,7 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
         var count = 0;
         var STYLE_PROPS = ["backgroundColor","color","fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","borderTopColor","borderTopWidth","borderRadius","boxShadow","paddingTop","paddingLeft","marginTop","gap","display","textAlign"];
         var SKIP = { SCRIPT:1, STYLE:1, NOSCRIPT:1, TEMPLATE:1, SVG:1, PATH:1, LINK:1, META:1, HEAD:1, BR:1 };
+        var MEDIA = { IMG:1, SOURCE:1, VIDEO:1, IFRAME:1, EMBED:1 };
 
         function directText(el) {
             var t = "";
@@ -37,6 +38,35 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
                 if (n.nodeType === 3) { t += n.nodeValue; }
             }
             return t.replace(/\\s+/g, " ").trim();
+        }
+
+        // A link's destination and a media node's source, read from the DOM PROPERTY rather than the
+        // attribute so the browser resolves them to absolute URLs for us — a relative "/pricing" and
+        // an absolute "https://site/pricing" then compare as the same page with no resolution step
+        // downstream. \`currentSrc\` is preferred for images so a srcset picks the source actually used.
+        // Capped because a data: URI can otherwise be megabytes, and one page's tree holds thousands
+        // of nodes.
+        var URL_CAP = ${1000};
+        var ALT_CAP = ${300};
+
+        function linkDestination(el) {
+            try {
+                if (el.tagName !== "A" && el.tagName !== "AREA") { return ""; }
+                return (el.href || "").slice(0, URL_CAP);
+            } catch (e) { return ""; }
+        }
+
+        function mediaSource(el) {
+            try {
+                if (MEDIA[el.tagName] !== 1) { return ""; }
+                return (el.currentSrc || el.src || "").slice(0, URL_CAP);
+            } catch (e) { return ""; }
+        }
+
+        function alternativeText(el) {
+            try {
+                return typeof el.alt === "string" ? el.alt.replace(/\\s+/g, " ").trim().slice(0, ALT_CAP) : "";
+            } catch (e) { return ""; }
         }
 
         function walk(el) {
@@ -70,6 +100,14 @@ export const captureEvaluator = (options: { maxNodes: number }): string => {
             };
             var text = directText(el);
             if (text) { node.text = text.slice(0, 2000); }
+            // Only set when present, like \`text\` — an absent field keeps the tree small and keeps a
+            // node's shape identical to what earlier runs produced.
+            var href = linkDestination(el);
+            if (href) { node.href = href; }
+            var src = mediaSource(el);
+            if (src) { node.src = src; }
+            var alt = alternativeText(el);
+            if (alt) { node.alt = alt; }
             return node;
         }
 

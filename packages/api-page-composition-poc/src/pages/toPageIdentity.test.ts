@@ -48,4 +48,22 @@ describe("toPageIdentity", () => {
         expect(toPageIdentity("/pricing")).toEqual({ path: "/pricing", title: "Pricing" });
         expect(toPageIdentity("pricing")).toEqual({ path: "/pricing", title: "Pricing" });
     });
+
+    it("prefers the page's own title when Assemble carries one", () => {
+        expect(toPageIdentity("https://meridian.io/pricing", "Plans & Pricing — Meridian")).toEqual(
+            {
+                path: "/pricing",
+                title: "Plans & Pricing — Meridian"
+            }
+        );
+        expect(toPageIdentity("https://meridian.io", "Meridian — B2B analytics")).toEqual({
+            path: "/",
+            title: "Meridian — B2B analytics"
+        });
+    });
+
+    it("ignores a blank title and keeps deriving from the URL", () => {
+        expect(toPageIdentity("https://meridian.io/pricing", "   ").title).toBe("Pricing");
+        expect(toPageIdentity("https://meridian.io/pricing", undefined).title).toBe("Pricing");
+    });
 });

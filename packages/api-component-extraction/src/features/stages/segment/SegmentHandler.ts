@@ -115,6 +115,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             totalSections += sections.length;
             pages.push({
                 url: page.url,
+                title: page.title,
                 screenshotRef: page.screenshotRef,
                 treeRef: page.treeRef,
                 documentHeight: page.documentHeight,

@@ -44,6 +44,19 @@ export interface CapturedNode {
     styles: Record<string, string>;
     /** Direct text content, for the text-preservation validator. Absent if the node has none. */
     text?: string;
+    /**
+     * A link's destination, absolute (the evaluator reads the DOM property, so the browser has already
+     * resolved it). Present on `a`/`area` only.
+     *
+     * Content, not tuning: without it a migrated navigation has labels and no destinations, and the
+     * compressed raw DOM is deliberately a short-lived tuning artifact that must not become
+     * load-bearing.
+     */
+    href?: string;
+    /** A media node's source, absolute. Present on `img`/`source`/`video`/`iframe`/`embed` only. */
+    src?: string;
+    /** An image's alternative text. Present when the element carries a non-empty `alt`. */
+    alt?: string;
     children: CapturedNode[];
 }
 
@@ -100,6 +113,11 @@ export interface SectionBox {
 
 export interface SegmentedPage {
     url: string;
+    /**
+     * The page's `<title>`, forwarded from Capture. Carried so a consumer that creates something per
+     * page can name it what the page called itself instead of inferring a name from the URL.
+     */
+    title: string;
     /** The page's screenshot, so section crops come from it rather than a second visit. */
     screenshotRef: string;
     /** Forwarded from Capture so Cluster can read the section subtrees without reaching back. */
@@ -358,6 +376,11 @@ export interface ComponentInstance {
 
 export interface AssembledPage {
     url: string;
+    /**
+     * The page's `<title>`, forwarded from Capture through Segment. Optional because runs assembled
+     * before it was carried have none.
+     */
+    title?: string;
     /** The page's original capture screenshot (forwarded from Segment), for the side-by-side preview. */
     screenshotRef?: string;
     /**

@@ -187,7 +187,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         trees: Map<string, CapturedNode>;
     }): Promise<Result<PageMapEntry, PageCompositionError>> {
         const { page, placeable, segmentByUrl, trees } = params;
-        const identity = toPageIdentity(page.url);
+        const identity = toPageIdentity(page.url, page.title);
 
         const placements: ComponentPlacement[] = [];
         for (const instance of page.instances) {
