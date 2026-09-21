@@ -25,7 +25,7 @@ import { ReactComponent as ScheduleIcon } from "@webiny/icons/schedule.svg";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as SubdirectoryIcon } from "@webiny/icons/subdirectory_arrow_right.svg";
 import { ReactComponent as SwapVertIcon } from "@webiny/icons/swap_vert.svg";
-import { describeAction, type ActionBadgeTone } from "~/timeline/describeAction.js";
+import { describeAction } from "~/timeline/describeAction.js";
 import { describeActor, type MachineIcon } from "~/timeline/describeActor.js";
 import type { DescribedChange } from "~/timeline/describeChange.js";
 import type { TimelineCoverage } from "~/timeline/deriveTimelineState.js";
@@ -62,16 +62,6 @@ import { ActivityTimelineFilters } from "./ActivityTimelineFilters.js";
  * together they are what makes the revision-to-saves relationship readable — which is the hardest
  * requirement in the design, since one revision routinely holds many saves by several people.
  */
-
-const TONE_TO_TAG_VARIANT: Record<
-    ActionBadgeTone,
-    "success" | "warning" | "destructive" | "neutral-light"
-> = {
-    success: "success",
-    warning: "warning",
-    destructive: "destructive",
-    neutral: "neutral-light"
-};
 
 const MACHINE_ICONS: Record<MachineIcon, React.ReactElement> = {
     key: <KeyIcon />,
@@ -557,17 +547,17 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                             name={actor.name}
                         />
                     }
+                    // The action badge used to sit between the name and the sentence, which pushed
+                    // the sentence right on the rows that had one — "Created" starting at a
+                    // different x than "made 6 saves" directly above it. It also said the same
+                    // thing twice: the badge read "Created" and the sentence beside it read
+                    // "created this entry". The actor badge stays, because "API" is not in the
+                    // sentence anywhere.
                     title={
                         <span className={cn(TYPE.row, "flex flex-wrap items-baseline gap-xs")}>
                             <span>{actor.name}</span>
                             {actor.badge ? (
                                 <Tag variant={"neutral-light"} content={actor.badge} />
-                            ) : null}
-                            {action.badge ? (
-                                <Tag
-                                    variant={TONE_TO_TAG_VARIANT[action.badge.tone]}
-                                    content={action.badge.label}
-                                />
                             ) : null}
                         </span>
                     }

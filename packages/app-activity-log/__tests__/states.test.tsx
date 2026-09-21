@@ -229,8 +229,12 @@ describe("the eight states", () => {
         ]);
 
         expect(text()).toContain("approved a review step");
-        expect(text()).toContain("Step approved");
         expect(text()).toContain("Legal review");
+        // No badge beside it. "Step approved" said the same thing as "approved a review step" and
+        // sat between the actor's name and that sentence, pushing the sentence right on exactly
+        // the rows that had one — so a badged row's second line started at a different x than an
+        // unbadged row's directly above it.
+        expect(text()).not.toContain("Step approved");
     });
 
     // State 5, both filters, is asserted on the data the filter row is given rather than on the
