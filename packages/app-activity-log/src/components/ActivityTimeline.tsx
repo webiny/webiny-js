@@ -243,31 +243,33 @@ const PendingNote = () => (
 );
 
 /**
- * The run's sentence, in the gutter that separates the three kinds.
+ * What separates the three kinds of sentence, and the one thing on a row that is not text.
  *
- * Every sentence sits at the same indent and only a generated one puts a mark in the gutter beside
- * it. That asymmetry is the whole signal: an exact record carries no decoration, so there is
- * nothing to interpret, and the one kind that can be wrong is the one a reader's eye catches.
- * Marking both would make the distinction invisible again, which is why the mark is defined here
- * and nowhere else.
+ * Only a generated sentence takes it. That asymmetry is the whole signal: an exact record carries
+ * no decoration, so there is nothing to interpret, and the one kind that can be wrong is the one a
+ * reader's eye catches. Marking both would make the distinction invisible again, which is why the
+ * mark is defined here and nowhere else.
+ *
+ * It trails the sentence rather than sitting in a gutter beside it. The design puts it in a 16px
+ * gutter with the sentence indented 20px past the actor's name, and that indent read as wrong in
+ * the running panel — every line under a name now begins at the name's own edge, so a row is one
+ * left edge whatever kind of sentence it holds. Trailing is what keeps the mark without spending
+ * an indent on the rows that have nothing to mark.
  */
-const SummaryMark = ({ summary }: { summary: TimelineSentence | null }) => (
-    <div className={"pt-xxs"}>
-        {summary?.generated ? (
-            <Tooltip
-                content={"Written by AI from the values that changed. It can be wrong."}
-                trigger={
-                    <Icon
-                        size={"sm"}
-                        label={"AI-generated"}
-                        icon={<AutoAwesomeIcon />}
-                        className={"fill-primary-default"}
-                    />
-                }
-            />
-        ) : null}
-    </div>
-);
+const SummaryMark = ({ summary }: { summary: TimelineSentence | null }) =>
+    summary?.generated ? (
+        <Tooltip
+            content={"Written by AI from the values that changed. It can be wrong."}
+            trigger={
+                <Icon
+                    size={"sm"}
+                    label={"AI-generated"}
+                    icon={<AutoAwesomeIcon />}
+                    className={"ml-xxs inline-block align-text-bottom fill-primary-default"}
+                />
+            }
+        />
+    ) : null;
 
 /**
  * The sentence itself, one step back in weight for the third kind.
@@ -315,31 +317,8 @@ const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
 
             return <React.Fragment key={index}>{segment.text}</React.Fragment>;
         })}
-    </Text>
-);
-
-/**
- * The gutter, and the one definition of where a row's content column begins.
- *
- * A row holds one of three things under the actor's name — a sentence, a placeholder while one is
- * coming, or the fields it touched — and all three have to begin at the same x, because which one
- * a row gets is an accident of how it was saved rather than anything the reader chose. They used
- * to find that column separately and sat twenty pixels apart.
- *
- * `SummaryMark` occupies the first cell whether or not it has a mark to put there, so a line that
- * passes `null` still lands its content in the same column as one that does not.
- */
-const GutterBlock = ({
-    summary,
-    children
-}: {
-    summary: TimelineSentence | null;
-    children: React.ReactNode;
-}) => (
-    <div className={"grid grid-cols-[16px_1fr] items-start gap-xs"}>
         <SummaryMark summary={summary} />
-        <div className={"min-w-0"}>{children}</div>
-    </div>
+    </Text>
 );
 
 /**
@@ -385,21 +364,18 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
             {formatClock(run.saves[run.saves.length - 1]?.timestamp ?? "")}
         </Text>
         {/*
-          One gutter for the whole run: the mark sits in it, and the sentence, the placeholder and
-          every save's fields all begin in the column beside it. They used to find that column
-          separately — a grid on the sentence, a hand-written pad on the saves — and measured eight
-          pixels apart in the browser.
+          One column for the whole run: the sentence, the placeholder and every save's fields all
+          begin at the same edge. They used to find it separately — a grid on the sentence, a
+          hand-written pad on the saves — and measured eight pixels apart in the browser.
         */}
         <div className={"min-w-0 pl-xs"}>
-            <GutterBlock summary={run.summary}>
-                {run.summary ? <SummaryLine summary={run.summary} /> : null}
-                {run.pending ? <PendingNote /> : null}
-                <div className={"mt-xs flex flex-col gap-xs"}>
-                    {run.saves.map(save => (
-                        <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
-                    ))}
-                </div>
-            </GutterBlock>
+            {run.summary ? <SummaryLine summary={run.summary} /> : null}
+            {run.pending ? <PendingNote /> : null}
+            <div className={"mt-xs flex flex-col gap-xs"}>
+                {run.saves.map(save => (
+                    <SaveLine key={save.id} save={save} showTime={run.showSaveTimes} />
+                ))}
+            </div>
         </div>
     </div>
 );
@@ -580,28 +556,18 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                               instead. Both keep the same left edge and the same last line, so the
                               difference reads as quiet rather than as missing.
                             */}
-                            {summary.summary ? (
-                                <GutterBlock summary={summary.summary}>
-                                    <SummaryLine summary={summary.summary} />
-                                </GutterBlock>
-                            ) : null}
-                            {summary.summaryPending ? (
-                                <GutterBlock summary={null}>
-                                    <PendingNote />
-                                </GutterBlock>
-                            ) : null}
+                            {summary.summary ? <SummaryLine summary={summary.summary} /> : null}
+                            {summary.summaryPending ? <PendingNote /> : null}
                             {!summary.summary && !summary.summaryPending && summary.fieldsLine ? (
-                                <GutterBlock summary={null}>
-                                    <Text
-                                        as={"div"}
-                                        className={cn(
-                                            TYPE.field,
-                                            "text-wrap-pretty text-neutral-strong"
-                                        )}
-                                    >
-                                        {summary.fieldsLine}
-                                    </Text>
-                                </GutterBlock>
+                                <Text
+                                    as={"div"}
+                                    className={cn(
+                                        TYPE.field,
+                                        "text-wrap-pretty text-neutral-strong"
+                                    )}
+                                >
+                                    {summary.fieldsLine}
+                                </Text>
                             ) : null}
                             <RowTime timestamp={summary.latestTimestamp} />
                             {summary.spansTime ? (

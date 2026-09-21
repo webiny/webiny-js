@@ -921,54 +921,61 @@ describe("every line under an actor's name starts at the same edge", () => {
      * gets is an accident of how the entry was saved rather than anything the reader chose. So all
      * three have to begin at the same x, or a timeline of mixed rows reads as ragged.
      *
-     * Twice they have been given that column separately and landed apart: eight pixels on the
-     * saves inside an expansion, twenty on the fields line. Both were one wrong class in one
-     * branch, both survived the whole suite, and both were found by measuring the running app. The
-     * gutter is one component now, and this asserts the three branches actually go through it.
+     * That edge is the actor's name, so none of the three may be wrapped in anything that indents
+     * it. The design puts the sentence in a 16px gutter and pads the other two by 20px to match;
+     * built that way it read as indented too far in the running panel, so the gutter is gone and
+     * the AI mark trails its sentence instead.
+     *
+     * Three branches have drifted apart twice already — eight pixels on the saves inside an
+     * expansion, twenty on the fields line — and both times one wrong class in one branch survived
+     * the whole suite and was found by measuring the running app.
      */
-    const gutterOf = (node: Element | null): Element | null => {
+    const indenters = /pl-|ps-|pr-xxl|grid-cols-\[16px/;
+
+    /** Every class on the way up to the row, which is where the row's own padding starts. */
+    const wrappersAbove = (node: Element | null) => {
+        const classes: string[] = [];
         let current: Element | null = node;
+
         while (current && current !== document.body) {
             const className = current.className;
-            if (typeof className === "string" && className.includes("grid-cols-[16px_1fr]")) {
-                return current;
+            if (typeof className === "string") {
+                if (className.includes("group-item")) {
+                    break;
+                }
+                classes.push(className);
             }
             current = current.parentElement;
         }
-        return null;
+
+        return classes;
     };
 
-    /** The gutter is a two-cell grid: the mark, then the content. */
-    const startsInTheContentCell = (node: Element | null) => {
-        const gutter = gutterOf(node);
-        if (!gutter || gutter.children.length !== 2) {
-            return false;
-        }
-        return gutter.children[1]!.contains(node);
-    };
+    const isFlush = (node: Element | null) =>
+        wrappersAbove(node).every(className => !indenters.test(className));
 
-    it("puts a row's sentence in the content cell", () => {
+    it("does not indent a row's sentence", () => {
         renderState([
             record({
                 changeset: [{ path: "title", label: "Title" }],
-                summary: "Changed Title from “Old” to “New”."
+                summary: "Changed Title from \u201cOld\u201d to \u201cNew\u201d."
             })
         ]);
 
-        expect(startsInTheContentCell(screen.getByText(/Changed/))).toBe(true);
+        expect(isFlush(screen.getByText(/Changed/))).toBe(true);
     });
 
-    it("puts the placeholder there too, so a row does not shift when its sentence lands", () => {
-        // The one case a reader watches change in place: the row is rendered pending, then
-        // re-rendered with a sentence. A placeholder at a different indent makes that a jump.
+    it("does not indent the placeholder, so a row does not shift when its sentence lands", () => {
+        // The one case a reader watches change in place: the row renders pending, then re-renders
+        // with a sentence. A placeholder at a different indent makes that a jump.
         renderState([
             record({ changeset: [{ path: "body", label: "Body" }], summaryPending: true })
         ]);
 
-        expect(startsInTheContentCell(screen.getByText(/Summarising/))).toBe(true);
+        expect(isFlush(screen.getByText(/Summarising/))).toBe(true);
     });
 
-    it("puts the fields line there, which is the line that was twenty pixels out", () => {
+    it("does not indent the fields line, which is the line that was twenty pixels out", () => {
         renderState([
             record({
                 changeset: [
@@ -978,6 +985,25 @@ describe("every line under an actor's name starts at the same edge", () => {
             })
         ]);
 
-        expect(startsInTheContentCell(screen.getByText("SKU and Price"))).toBe(true);
+        expect(isFlush(screen.getByText("SKU and Price"))).toBe(true);
+    });
+
+    it("keeps the mark inside the sentence rather than beside it", () => {
+        // Trailing is what lets a generated sentence start at the same edge as an exact one. A
+        // mark returned to its own gutter cell would indent every sentence again, and the three
+        // tests above would still pass because none of them renders a generated sentence.
+        renderState([
+            record({
+                changeset: [{ path: "body", label: "Body" }],
+                summary: "Rewrote Body.",
+                summaryKind: "ai"
+            })
+        ]);
+
+        // `Icon` renders its label as visually-hidden text, so the mark being *inside* the
+        // sentence element is exactly what this reads.
+        const sentence = screen.getByText(/Rewrote/);
+
+        expect(sentence.textContent).toContain("AI-generated");
     });
 });
