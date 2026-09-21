@@ -31,20 +31,20 @@ One record per reviewer answers it:
 
 ```
 wbyWorkflowAssignment
-  userId, lastAssignedOn, openCount
+  userId, lastAssignedOn
 ```
 
 Read by id, never as a list — ids are derivable from the candidate set, and a list read goes
 through the search index, which lags about a second behind writes. Two nearby resolutions
 would see stale timestamps and pick the same person.
 
-`lastAssignedOn` sorts first and is written forward, never decremented, so it cannot drift.
-`openCount` is a tiebreak only, which is what lets it stay approximate: a missed decrement
-costs a wrong tiebreak, not a starved reviewer.
+`lastAssignedOn` is written forward and never decremented, so it cannot drift. One write site.
 
-Load-based assignment as a *primary* sort is out. A stuck count would silently starve someone
-forever, and defending that needs nine transitions each firing exactly once, plus a repair
-pass.
+No open-assignment count is kept. As a primary sort it would need nine transitions each
+firing exactly once, and a stuck count would silently starve a reviewer forever. As a
+tiebreak it cannot tie: `lastAssignedOn` is millisecond-precision and written with every
+assignment, so two candidates are equal only when both are absent, and absent means neither
+has ever been assigned.
 
 Two other traps worth recording:
 
@@ -54,7 +54,9 @@ Two other traps worth recording:
   path). Filters on an object array don't correlate within one element, so
   `steps.assignee.id` would match steps already approved or not yet started.
 - **`isActive` doesn't mean "in progress".** It's `true` from creation and set `false` only
-  by `CancelWorkflowState`. Finished and rejected states stay `true`.
+  by `CancelWorkflowState`. Finished and rejected states stay `true`. Anything counting
+  "reviews in flight" needs `state_in: [pending, inReview]`, and must use the repository
+  rather than `ListWorkflowStatesUseCase`, which applies FLP filters.
 
 ### Folder descendant matching
 
@@ -134,8 +136,8 @@ a second flag on this schema.
   notifications at all. `step.notifications` is dead config.
 - **No tenant settings surface** for the exclusion list. Precedent to copy:
   `webhooks/src/api/models/WebhookSettingsModel.ts` — a `.private()` model, auto-created on
-  first read. CMS entry keys are `T#<tenant>#CMS#CME#M#<modelId>#<type>` — tenant and model,
-  no locale — so a private model is tenant-level for free.
+  first read. CMS entry keys carry tenant and model and no locale — ddb-es partitions on
+  `T#<tenant>#CMS#CME#<entryId>`, pg-os on tenant and modelId columns — so a private model is tenant-level for free.
 
 ## Decisions so far
 
