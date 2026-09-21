@@ -33,9 +33,6 @@ import { ApiKeysPresenterFeature } from "~/presentation/accessManagement/apiKeys
 import { TeamsPresenterFeature } from "~/presentation/accessManagement/teams/feature.js";
 import { RolesAutocompletePresenterFeature } from "~/presentation/accessManagement/roles/rolesAutocomplete/feature.js";
 import { AssumedRolePresenterFeature } from "~/presentation/assumedRole/feature.js";
-import { AssumedRoleDialog } from "~/presentation/assumedRole/components/AssumedRoleDialog.js";
-import { ASSUMED_ROLE_DIALOG } from "~/presentation/assumedRole/components/AssumedRoleDialog.js";
-import { AssumedRoleMenuItem } from "~/presentation/assumedRole/components/AssumedRoleMenuItem.js";
 import { TeamsAutocompletePresenterFeature } from "~/presentation/accessManagement/teams/teamsAutocomplete/feature.js";
 
 const { Menu, Route } = AdminConfig;
@@ -119,18 +116,6 @@ export const AccessManagementExtension = () => {
             <RegisterFeature feature={AssumedRolePresenterFeature} />
             <SecurityPermissions />
             <AdminConfig>
-                <AdminConfig.Dialog name={ASSUMED_ROLE_DIALOG} element={<AssumedRoleDialog />} />
-                {/*
-                 * Only a caller who already has full access can preview a role — the API refuses
-                 * the header otherwise — and in practice that is whoever can manage roles.
-                 */}
-                <HasPermission name={Permission.Roles}>
-                    <Menu.User
-                        name={"assumedRole"}
-                        after={"userInfo"}
-                        element={<AssumedRoleMenuItem />}
-                    />
-                </HasPermission>
                 <HasPermission name={Permission.Roles}>
                     <Route
                         route={Routes.Roles.List}

@@ -3,6 +3,7 @@ import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
 import {
     AssumedRoleBanner,
+    AssumedRoleSelector,
     LayoutRenderer,
     Navigation,
     TenantSelector,
@@ -69,6 +70,7 @@ const LayoutContent = ({
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />
+                            <AssumedRoleSelector />
                             <UserMenu />
                         </div>
                     }
