@@ -104,6 +104,26 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().canUseAiEntryTranslation();
     }
 
+    canUseRemoteComponents(): boolean {
+        return this.getWcpContext().canUseRemoteComponents();
+    }
+
+    canUseAbTesting(): boolean {
+        return this.getWcpContext().canUseAbTesting();
+    }
+
+    canUseCollaboration(): boolean {
+        return this.getWcpContext().canUseCollaboration();
+    }
+
+    canUseComments(): boolean {
+        return this.getWcpContext().canUseComments();
+    }
+
+    canUseActivityLog(): boolean {
+        return this.getWcpContext().canUseActivityLog();
+    }
+
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void {
         this.getWcpContext().ensureCanUseFeature(featureId);
     }

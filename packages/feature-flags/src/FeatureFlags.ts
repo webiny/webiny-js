@@ -106,4 +106,36 @@ export class FeatureFlags {
     isAiEntryTranslationEnabled(): boolean {
         return this.flags.aiPowerups?.options?.cms?.entryTranslation !== false;
     }
+
+    isAiRemoteComponentsEnabled(): boolean {
+        return this.flags.aiPowerups?.options?.remoteComponents !== false;
+    }
+
+    isAbTestingEnabled(): boolean {
+        return this.flags.abTesting !== false;
+    }
+
+    isCollaborationEnabled(): boolean {
+        return this.flags.collaboration !== false;
+    }
+
+    isCommentsEnabled(): boolean {
+        if (this.flags.collaboration === false) {
+            return false;
+        }
+        if (typeof this.flags.collaboration === "object") {
+            return this.flags.collaboration.comments !== false;
+        }
+        return true;
+    }
+
+    isActivityLogEnabled(): boolean {
+        if (this.flags.collaboration === false) {
+            return false;
+        }
+        if (typeof this.flags.collaboration === "object") {
+            return this.flags.collaboration.activityLog !== false;
+        }
+        return true;
+    }
 }

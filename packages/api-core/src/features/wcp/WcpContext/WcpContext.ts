@@ -164,6 +164,26 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseAiEntryTranslation();
     }
 
+    canUseRemoteComponents(): boolean {
+        return this.license.canUseRemoteComponents();
+    }
+
+    canUseAbTesting(): boolean {
+        return this.license.canUseAbTesting();
+    }
+
+    canUseCollaboration(): boolean {
+        return this.license.canUseCollaboration();
+    }
+
+    canUseComments(): boolean {
+        return this.license.canUseComments();
+    }
+
+    canUseActivityLog(): boolean {
+        return this.license.canUseActivityLog();
+    }
+
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {
         if (this.license.canUseFeature(wcpFeatureId)) {
             return;

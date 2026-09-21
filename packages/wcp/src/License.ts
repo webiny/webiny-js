@@ -144,4 +144,32 @@ export class License implements ILicense {
     canUseAiEntryTranslation(): boolean {
         return this.license.package.features.aiPowerups?.options?.cms?.entryTranslation === true;
     }
+
+    canUseRemoteComponents(): boolean {
+        return this.license.package.features.aiPowerups?.options?.remoteComponents === true;
+    }
+
+    canUseAbTesting(): boolean {
+        return this.canUseFeature("abTesting");
+    }
+
+    canUseCollaboration(): boolean {
+        return this.canUseFeature("collaboration");
+    }
+
+    canUseComments(): boolean {
+        if (!this.canUseCollaboration()) {
+            return false;
+        }
+
+        return this.license.package.features.collaboration.options?.comments === true;
+    }
+
+    canUseActivityLog(): boolean {
+        if (!this.canUseCollaboration()) {
+            return false;
+        }
+
+        return this.license.package.features.collaboration.options?.activityLog === true;
+    }
 }

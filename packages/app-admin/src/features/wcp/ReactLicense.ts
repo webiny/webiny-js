@@ -84,6 +84,26 @@ export class ReactLicense implements ILicense {
         return this.license.canUseAiEntryTranslation();
     }
 
+    canUseRemoteComponents(): boolean {
+        return this.license.canUseRemoteComponents();
+    }
+
+    canUseAbTesting(): boolean {
+        return this.license.canUseAbTesting();
+    }
+
+    canUseCollaboration(): boolean {
+        return this.license.canUseCollaboration();
+    }
+
+    canUseComments(): boolean {
+        return this.license.canUseComments();
+    }
+
+    canUseActivityLog(): boolean {
+        return this.license.canUseActivityLog();
+    }
+
     toDto(): DecryptedWcpProjectLicense | null {
         return this.license.toDto();
     }
