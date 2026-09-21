@@ -33,6 +33,26 @@ export const withStageTaskId = (
     taskId: string
 ): StageLedgerEntry[] => patch(ledger, stage, entry => ({ ...entry, taskId }));
 
+/** Record that a stage has been triggered and its task has not reported yet. */
+export const withStageClaim = (
+    ledger: StageLedgerEntry[],
+    stage: Stage,
+    pendingTaskId: string
+): StageLedgerEntry[] => patch(ledger, stage, entry => ({ ...entry, pendingTaskId }));
+
+/** A stage's task has taken over (or finished): the claim is no longer outstanding. */
+export const withoutStageClaim = (ledger: StageLedgerEntry[], stage: Stage): StageLedgerEntry[] =>
+    patch(ledger, stage, entry => ({ ...entry, pendingTaskId: null }));
+
+/**
+ * Is a newer run of this stage triggered but not yet under way?
+ *
+ * True only while a claim is outstanding and belongs to a task other than the one whose result the
+ * entry records — which is exactly the window a dependent stage must not start in.
+ */
+export const hasOutstandingClaim = (entry: StageLedgerEntry): boolean =>
+    !!entry.pendingTaskId && entry.pendingTaskId !== entry.taskId;
+
 /** Stamp a model-backed stage's usage aggregate onto its entry (written once, at stage close). */
 export const withStageModelUsage = (
     ledger: StageLedgerEntry[],

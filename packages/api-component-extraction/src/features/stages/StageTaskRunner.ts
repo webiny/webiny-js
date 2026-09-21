@@ -29,6 +29,7 @@ import {
     markStageFailed,
     markStageRunning,
     stageEntry,
+    withoutStageClaim,
     withStageModelUsage,
     withStageTaskId
 } from "~/domain/ledger.js";
@@ -235,10 +236,15 @@ class StageTaskRunnerImpl implements IStageTaskRunner {
             // First invocation: mark running, stamp the task id (for log deep-linking), announce the
             // start — applied to the latest ledger so we don't revert another stage that just advanced.
             const taskId = controller.state.getTask().id;
-            ledger = withStageTaskId(
-                markStageRunning((await latestRun(run)).stages, stage, now()),
-                stage,
-                taskId
+            // Taking over clears the trigger's claim: from here the stage's own status is the truth,
+            // and a dependent stage is blocked by `running` rather than by the claim.
+            ledger = withoutStageClaim(
+                withStageTaskId(
+                    markStageRunning((await latestRun(run)).stages, stage, now()),
+                    stage,
+                    taskId
+                ),
+                stage
             );
             const persistedRunning = await this.runRepository.update(run.id, {
                 stages: ledger,

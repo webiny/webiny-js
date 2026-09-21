@@ -12,7 +12,13 @@ import {
     RunRepository
 } from "~/domain/abstractions.js";
 import { StageArtifactStore } from "~/domain/stage.js";
-import { initLedger, markStaleFrom, stageEntry } from "~/domain/ledger.js";
+import {
+    hasOutstandingClaim,
+    initLedger,
+    markStaleFrom,
+    stageEntry,
+    withStageClaim
+} from "~/domain/ledger.js";
 import type {
     ClassifyArtifact,
     ClusterArtifact,
@@ -220,12 +226,44 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     }
                     const run = runResult.value;
 
-                    // Predecessor enforcement: a stage cannot run before the stage before it is done.
+                    /*
+                     * Predecessor enforcement: the stage before this one must be done AND its
+                     * recorded artifacts must belong to the version it claims.
+                     *
+                     * The version check is not redundant. A stage writes its artifact refs and its
+                     * version together, but a torn or partially-merged ledger can leave an entry
+                     * claiming v2 while still pointing at v1's artifact — and a consumer reading
+                     * that produces plausible output from the wrong input, which is the worst thing
+                     * this pipeline can do. Refusing is cheap; a five-site run cannot afford a stage
+                     * that quietly consumed the previous version.
+                     */
                     const previous = previousStage(stage);
                     if (previous) {
                         const previousEntry = stageEntry(run.stages, previous);
                         if (!previousEntry || previousEntry.status !== "done") {
-                            throw new Error(`Cannot run "${stage}" before "${previous}" is done.`);
+                            const state = previousEntry?.status ?? "not started";
+                            throw new Error(
+                                `Cannot run "${stage}" before "${previous}" is done (it is ${state}).`
+                            );
+                        }
+
+                        if (hasOutstandingClaim(previousEntry)) {
+                            throw new Error(
+                                `Cannot run "${stage}": "${previous}" has just been triggered and ` +
+                                    `has not started yet. Wait for it to finish.`
+                            );
+                        }
+
+                        const expected = `:v${previousEntry.stageVersion}:`;
+                        const mismatched = Object.entries(previousEntry.artifacts).filter(
+                            ([, ref]) => !ref.includes(expected)
+                        );
+                        if (mismatched.length > 0) {
+                            throw new Error(
+                                `Cannot run "${stage}": "${previous}" reports version ` +
+                                    `${previousEntry.stageVersion} but its ${mismatched[0]![0]} ` +
+                                    `artifact is from another version. Re-run "${previous}".`
+                            );
                         }
                     }
 
@@ -240,6 +278,26 @@ export const addComponentExtractionSchema = (builder: IGraphQLSchemaBuilder): vo
                     });
                     if (triggered.isFail()) {
                         throw triggered.error;
+                    }
+
+                    /*
+                     * Record the trigger before returning, so a dependent stage triggered a moment
+                     * later can see that this one is in flight.
+                     *
+                     * Without it there is a window between "trigger accepted" and "the task marks
+                     * itself running" in which the stage still reads `done` from its PREVIOUS run.
+                     * Triggering Segment and then Cluster within a second or two put Cluster on the
+                     * old sections: 40 members against 43, every page short by exactly its header,
+                     * and a full model run spent on it with nothing to show anything was wrong.
+                     *
+                     * It is a claim rather than a status change on purpose — `mergeLedgers` refuses a
+                     * `done → pending` write, because that is how a zombie task reverts a stage.
+                     */
+                    const marked = await runRepository.update(run.id, {
+                        stages: withStageClaim(run.stages, stage, triggered.value.id)
+                    });
+                    if (marked.isFail()) {
+                        throw marked.error;
                     }
 
                     return { taskId: triggered.value.id, runId: run.id, stage };

@@ -46,6 +46,17 @@ export interface StageLedgerEntry {
      */
     taskId: string | null;
     /**
+     * Set when this stage has been TRIGGERED but its task has not taken over yet, and cleared the
+     * moment it does.
+     *
+     * It exists because status cannot be used for this. A stage re-triggered from `done` still reads
+     * `done` until its task starts, so a dependent stage triggered a second later passed the gate and
+     * consumed the PREVIOUS output — and `mergeLedgers` deliberately refuses a `done → pending` write,
+     * since that is how a zombie task would revert a stage. A separate field is not a status
+     * regression, so the claim survives, and the gate can tell "finished" from "about to re-run".
+     */
+    pendingTaskId?: string | null;
+    /**
      * The stage's model-usage totals, or null for a deterministic stage / before it closes. Written once
      * at stage close (single writer); while the stage runs the UI sums the individual call records.
      */
