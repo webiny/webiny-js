@@ -201,7 +201,19 @@ from a screenshot had been wrong twice before that. It is also what caught a fal
 element box at 910 with 20px of padding is text at 930, and comparing a box against a text-node
 range makes a fixed bug look broken.
 
-**Give the shared edge one owner and test the branches go through it.** There is one `GutterBlock`
-now, and three tests assert each branch renders inside it. jsdom computes no layout, so these
-cannot assert pixels — they assert structure, which is the thing that actually varied. Each was
-verified by rendering its line outside the gutter and watching only that test fail.
+**Give the shared edge one owner and test the branches go through it.** Four tests assert where
+each branch renders. jsdom computes no layout, so they cannot assert pixels — they assert
+structure, which is the thing that actually varied. Each was verified by breaking what it guards.
+
+## The one place this departs from the design
+
+The design puts a row's sentence in a 16px gutter and pads the fields line and the placeholder by
+20px to match, so all three clear a cell for the AI mark. Built exactly that way it read as
+indented too far in the running panel, and the reason is a property of real data rather than of the
+design: a mark appears on generated sentences only, which on a scalar-heavy model is a small
+minority of rows, so a list of twelve rows pays an indent for the one that has something to mark.
+
+Every line under an actor's name now starts at that name's edge and the mark trails its sentence
+inline. Worth flagging for whoever reconciles the two: it is deliberate, it is the only such
+departure, and the alignment tests are written so that restoring the gutter fails loudly rather
+than silently re-indenting the panel.
