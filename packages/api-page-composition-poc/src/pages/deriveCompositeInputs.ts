@@ -247,12 +247,52 @@ const buildItem = (
 const PLACEHOLDER_DESTINATIONS = new Set(["", "#", "/", "javascript:void(0)"]);
 
 /**
- * Does a generated default list contain an item whose destination goes nowhere?
+ * Would this destination actually go somewhere on the migrated site?
+ *
+ * Three ways to be credible: it is one of the destinations captured from this section; it is
+ * absolute and points at another host, so it still resolves; or it is not an http(s) scheme at all
+ * (`mailto:`, `tel:`), which cannot 404.
+ *
+ * Everything else is a generated default the model invented. A relative one is the worst of them:
+ * `/demo` looks live and returns a 404 on the migrated site, where `#` at least does nothing. An
+ * absolute URL on the SOURCE host that was never captured is the same problem wearing a domain.
+ */
+const isCredibleDestination = (
+    destination: string,
+    context: { captured: ReadonlySet<string>; sourceHost: string }
+): boolean => {
+    const trimmed = destination.trim();
+
+    if (!trimmed || PLACEHOLDER_DESTINATIONS.has(trimmed)) {
+        return false;
+    }
+    if (context.captured.has(trimmed)) {
+        return true;
+    }
+
+    try {
+        const url = new URL(trimmed);
+        if (url.protocol !== "http:" && url.protocol !== "https:") {
+            return true;
+        }
+        return url.host !== "" && url.host !== context.sourceHost;
+    } catch {
+        // Not absolute, and not captured: a relative path the model made up.
+        return false;
+    }
+};
+
+/**
+ * Does a generated default list carry a destination that goes nowhere?
  *
  * Checked recursively, because the dead link is usually nested — a footer's placeholder hrefs sit at
  * `columns[].links[].url`, not on the top-level item.
  */
-const hasPlaceholderDestination = (value: unknown, definition: InputDefinition): boolean => {
+const hasDeadDestination = (
+    value: unknown,
+    definition: InputDefinition,
+    context: { captured: ReadonlySet<string>; sourceHost: string }
+): boolean => {
     if (!Array.isArray(value)) {
         return false;
     }
@@ -265,15 +305,13 @@ const hasPlaceholderDestination = (value: unknown, definition: InputDefinition):
 
         return (definition.fields ?? []).some(field => {
             if (isComposite(field)) {
-                return hasPlaceholderDestination(record[field.name], field);
+                return hasDeadDestination(record[field.name], field, context);
             }
             if (!isUrlField(field)) {
                 return false;
             }
             const destination = record[field.name];
-            return (
-                typeof destination === "string" && PLACEHOLDER_DESTINATIONS.has(destination.trim())
-            );
+            return typeof destination === "string" && !isCredibleDestination(destination, context);
         });
     });
 };
@@ -386,10 +424,23 @@ const deriveList = (
 export const deriveCompositeInputs = (params: {
     node: CapturedNode;
     manifest: ComponentManifest;
+    /** The page this instance came from, to tell an invented same-host URL from a captured one. */
+    sourceUrl: string;
 }): Record<string, unknown> => {
     const { node, manifest } = params;
     const claimed = new Set<CapturedNode>();
     const values: Record<string, unknown> = {};
+
+    let sourceHost = "";
+    try {
+        sourceHost = new URL(params.sourceUrl).host;
+    } catch {
+        sourceHost = "";
+    }
+    const context = {
+        captured: new Set(collectLinks(node).map(link => link.href)),
+        sourceHost
+    };
 
     for (const input of manifest.inputs ?? []) {
         const definition = asDefinition(input);
@@ -414,7 +465,11 @@ export const deriveCompositeInputs = (params: {
              * alone: they read as content, not as broken navigation.
              */
             if (
-                hasPlaceholderDestination(manifest.defaults?.inputs?.[definition.name], definition)
+                hasDeadDestination(
+                    manifest.defaults?.inputs?.[definition.name],
+                    definition,
+                    context
+                )
             ) {
                 values[definition.name] = [];
             }

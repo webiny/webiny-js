@@ -314,7 +314,14 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         const inputs: Record<string, unknown> = { ...(component.manifest.defaults?.inputs ?? {}) };
 
         if (node) {
-            Object.assign(inputs, deriveCompositeInputs({ node, manifest: component.manifest }));
+            Object.assign(
+                inputs,
+                deriveCompositeInputs({
+                    node,
+                    manifest: component.manifest,
+                    sourceUrl: page.url
+                })
+            );
         }
 
         for (const prop of derived) {

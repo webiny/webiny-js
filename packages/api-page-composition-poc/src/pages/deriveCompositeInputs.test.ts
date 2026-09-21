@@ -3,6 +3,8 @@ import type { CapturedNode } from "@webiny/api-component-extraction/domain/artif
 import type { ComponentManifest } from "@webiny/website-builder-sdk";
 import { deriveCompositeInputs } from "./deriveCompositeInputs.js";
 
+const SOURCE_URL = "https://www.webiny.com/";
+
 const box = { x: 0, y: 0, width: 100, height: 20 };
 
 const node = (
@@ -105,7 +107,11 @@ const footerManifest = (): ComponentManifest =>
     }) as unknown as ComponentManifest;
 
 describe("deriveCompositeInputs — the real footer", () => {
-    const derived = deriveCompositeInputs({ node: footerTree(), manifest: footerManifest() });
+    const derived = deriveCompositeInputs({
+        node: footerTree(),
+        manifest: footerManifest(),
+        sourceUrl: SOURCE_URL
+    });
     const columns = derived.columns as {
         heading: string;
         links: { label: string; url: string }[];
@@ -189,7 +195,9 @@ describe("deriveCompositeInputs — other shapes", () => {
 
         // The CTA's own label, not the section heading above it: a single composite is read from
         // its own container, which for a link is the anchor carrying both halves.
-        expect(deriveCompositeInputs({ node: section, manifest }).cta).toEqual({
+        expect(
+            deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL }).cta
+        ).toEqual({
             label: "Get started",
             url: "https://site/start"
         });
@@ -218,7 +226,9 @@ describe("deriveCompositeInputs — other shapes", () => {
             ]
         } as unknown as ComponentManifest;
 
-        expect(deriveCompositeInputs({ node: section, manifest }).cards).toEqual([
+        expect(
+            deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL }).cards
+        ).toEqual([
             { title: "Fast", image: "/a.png", imageAlt: "Speed" },
             { title: "Secure", image: "/b.png", imageAlt: "Lock" }
         ]);
@@ -245,7 +255,9 @@ describe("deriveCompositeInputs — other shapes", () => {
             defaults: { inputs: { socialLinks: [{ label: "X", url: "#" }] } }
         } as unknown as ComponentManifest;
 
-        expect(deriveCompositeInputs({ node: section, manifest }).socialLinks).toEqual([]);
+        expect(
+            deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL }).socialLinks
+        ).toEqual([]);
     });
 
     it("leaves an illustrative default alone when it carries no destinations", () => {
@@ -267,7 +279,9 @@ describe("deriveCompositeInputs — other shapes", () => {
             defaults: { inputs: { stats: [{ label: "Uptime", value: "99.9%" }] } }
         } as unknown as ComponentManifest;
 
-        expect(deriveCompositeInputs({ node: section, manifest })).not.toHaveProperty("stats");
+        expect(
+            deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL })
+        ).not.toHaveProperty("stats");
     });
 
     it("empties a list whose dead destinations are nested inside its items", () => {
@@ -299,7 +313,9 @@ describe("deriveCompositeInputs — other shapes", () => {
             }
         } as unknown as ComponentManifest;
 
-        expect(deriveCompositeInputs({ node: section, manifest }).columns).toEqual([]);
+        expect(
+            deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL }).columns
+        ).toEqual([]);
     });
 
     it("returns nothing when the section has no matching structure", () => {
@@ -320,6 +336,69 @@ describe("deriveCompositeInputs — other shapes", () => {
             ]
         } as unknown as ComponentManifest;
 
-        expect(deriveCompositeInputs({ node: section, manifest })).toEqual({});
+        expect(deriveCompositeInputs({ node: section, manifest, sourceUrl: SOURCE_URL })).toEqual(
+            {}
+        );
+    });
+});
+
+describe("deriveCompositeInputs — credible destinations in generated defaults", () => {
+    const section = () =>
+        node("section", {}, [
+            node("h2", { text: "Prose only." }),
+            node("a", { text: "Real link", href: "https://www.webiny.com/pricing" })
+        ]);
+
+    const manifest = (defaultUrl: string): ComponentManifest =>
+        ({
+            name: "Custom/Nav",
+            tags: [],
+            inputs: [
+                {
+                    name: "extras",
+                    type: "object",
+                    list: true,
+                    fields: [
+                        { name: "label", type: "text" },
+                        { name: "url", type: "text" },
+                        { name: "note", type: "text" }
+                    ]
+                }
+            ],
+            defaults: { inputs: { extras: [{ label: "Book a demo", url: defaultUrl, note: "x" }] } }
+        }) as unknown as ComponentManifest;
+
+    const derive = (defaultUrl: string) =>
+        deriveCompositeInputs({
+            node: section(),
+            manifest: manifest(defaultUrl),
+            sourceUrl: SOURCE_URL
+        }).extras;
+
+    it("drops a relative default, which 404s on the migrated site", () => {
+        // The case found on a real header: `/demo` looks live and goes nowhere.
+        expect(derive("/demo")).toEqual([]);
+    });
+
+    it("drops an invented absolute URL on the source host", () => {
+        expect(derive("https://www.webiny.com/demo")).toEqual([]);
+    });
+
+    it("keeps a destination that was actually captured from the section", () => {
+        expect(derive("https://www.webiny.com/pricing")).toBeUndefined();
+    });
+
+    it("keeps an absolute external URL, which still resolves", () => {
+        expect(derive("https://github.com/webiny/webiny-js")).toBeUndefined();
+    });
+
+    it("keeps a scheme that cannot 404", () => {
+        expect(derive("mailto:hello@webiny.com")).toBeUndefined();
+        expect(derive("tel:+441234567890")).toBeUndefined();
+    });
+
+    it("still drops the bare placeholders", () => {
+        expect(derive("#")).toEqual([]);
+        expect(derive("")).toEqual([]);
     });
 });
