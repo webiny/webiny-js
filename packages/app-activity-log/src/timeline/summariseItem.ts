@@ -218,11 +218,21 @@ export interface ItemDisclosure {
      * Whether the changeset carries values. Always false, and stated rather than implied.
      *
      * The changeset records which fields changed and never what they became, so an expanded save
-     * has to say so or read as though the values failed to load. Note the scope, which the copy has
-     * to keep straight: both kinds of *sentence* quote short values on purpose. A sentence and a
-     * changeset are different things and only one of them is a record of values.
+     * has to say so or read as though the values failed to load.
      */
     valuesAvailable: false;
+    /**
+     * Whether a sentence is on screen anywhere for this row.
+     *
+     * Here rather than in the component because it decides what the row may truthfully say about
+     * itself. The change list and a sentence sit at different disclosure levels — the list records
+     * field names and never values, a sentence is written from the values and may quote them — and
+     * one line covering both is what made the previous footer false.
+     *
+     * True whether the sentence is in the row's header or inside the expansion: both are on screen
+     * at the moment the footer is read.
+     */
+    hasSentence: boolean;
 }
 
 /**
@@ -240,6 +250,7 @@ export const discloseItem = (item: TimelineItem): ItemDisclosure => {
     const carriedByRow = runs.length === 1 && sentenceFor(runs[0]!) !== null;
 
     return {
+        hasSentence: runs.some(run => sentenceFor(run) !== null),
         runs: runs.map(run => {
             const summary = sentenceFor(run);
 

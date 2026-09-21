@@ -311,7 +311,12 @@ describe("discloseItem", () => {
 
         const disclosure = discloseItem(item!);
 
-        expect(Object.keys(disclosure).sort()).toEqual(["runs", "truncated", "valuesAvailable"]);
+        expect(Object.keys(disclosure).sort()).toEqual([
+            "hasSentence",
+            "runs",
+            "truncated",
+            "valuesAvailable"
+        ]);
 
         for (const run of disclosure.runs) {
             expect(Object.keys(run).sort()).toEqual([

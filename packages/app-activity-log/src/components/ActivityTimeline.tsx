@@ -313,10 +313,18 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
                     </Text>
                 </Alert>
             ) : null}
+            {/*
+              Two disclosure levels, said separately, because one line covering both is what made
+              the previous version of this false. The change list above holds field names and never
+              values; a sentence is built from the values and quotes the short ones. Whether the
+              second clause applies was decided in `discloseItem` — a row with no sentence must not
+              warn about one.
+            */}
             <div className={"bg-neutral-base px-sm-extra py-xs"}>
                 <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
-                    Which fields changed is recorded; their values are not. Compare revisions to see
-                    values.
+                    {disclosure.hasSentence
+                        ? "The change list records field names, never values. A summary is written from the values and may quote them as they stood at the time of the change. Compare revisions to see values."
+                        : "The change list records field names, never values. Compare revisions to see values."}
                 </Text>
             </div>
         </div>

@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
@@ -129,16 +131,40 @@ describe("the eight states", () => {
         expect(text()).toContain("Body");
     });
 
-    it("2b. an expanded save says the values are not recorded", () => {
-        // Stated rather than left as an empty space, which would read as a bug. Worded around the
-        // changeset rather than the row: a summary is prose about the change and may quote a
-        // fragment of it, so "values from this save are not recorded" stopped being true of
-        // everything on screen the moment summaries arrived.
+    it("2b. an expanded save says what the change list does and does not record", () => {
+        // Stated rather than left as an empty space, which would read as a bug. Scoped to the
+        // change list rather than to the row: the list holds field names and never values, and a
+        // sentence holds values on purpose. One line covering both is what made the previous
+        // version of this false.
         const { text } = renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
 
         fireEvent.click(screen.getByRole("button", { name: /edited Title/ }));
 
-        expect(text()).toContain("Which fields changed is recorded; their values are not");
+        expect(text()).toContain("The change list records field names, never values");
+        // Nothing on screen quotes a value, so nothing warns that anything might.
+        expect(text()).not.toContain("may quote them");
+    });
+
+    it("2c. a row with a sentence says that the sentence may quote values", () => {
+        // The second clause, and it renders only where it is true. A row with no sentence warning
+        // about one would be the same fault as the line it replaced, pointing the other way.
+        const { text } = renderState([
+            record({
+                changeset: [{ path: "sku", label: "SKU" }],
+                summary: "Changed SKU from 1001 to 1002.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /edited SKU/ }));
+
+        const rendered = text();
+
+        expect(rendered).toContain("The change list records field names, never values");
+        expect(rendered).toContain("may quote them as they stood at the time of the change");
+        // And the revision note is unchanged: individual saves inside a revision are still not
+        // comparable.
+        expect(rendered).toContain("Compare revisions to see values");
     });
 
     it("3. structural changes name the operation", () => {
@@ -368,6 +394,76 @@ describe("summaries, of which only one state is a state", () => {
         ]);
 
         expect(text()).toContain("AI-generated");
+    });
+
+    it("never marks a sentence built from the values", () => {
+        // The marker was a disclosure signal when only generated sentences quoted values. Both
+        // tiers quote them now, so it is purely a provenance signal — and it is the only thing
+        // separating an exact statement from an interpretive one. Marking both would make the
+        // distinction invisible again.
+        const { text } = renderState([
+            record({
+                changeset: [{ path: "sku", label: "SKU" }],
+                summary: "Changed SKU from 1001 to 1002.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        expect(text()).toContain("Changed SKU from 1001 to 1002.");
+        expect(text()).not.toContain("AI-generated");
+    });
+
+    it("does not mark one inside the expansion either", () => {
+        // Confirmed rather than assumed: a sentence can render in two places, and a second marker
+        // added to the wrong one would be invisible until someone read a timeline.
+        const { text } = renderState([
+            record({
+                id: "a",
+                timestamp: at(50),
+                changeset: [{ path: "sku", label: "SKU" }],
+                summary: "Changed SKU from 1001 to 1002.",
+                summaryKind: "deterministic"
+            }),
+            record({
+                id: "b",
+                timestamp: at(10),
+                changeset: [{ path: "price", label: "Price" }],
+                summary: "Changed Price from 10 to 12.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        // Two runs, so neither sentence is on the closed row and both are in the expansion.
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        expect(text()).toContain("Changed SKU from 1001 to 1002.");
+        expect(text()).toContain("Changed Price from 10 to 12.");
+        expect(text()).not.toContain("AI-generated");
+    });
+
+    it("marks the model's sentence and not the one beside it", () => {
+        // The strongest form of the check: both kinds in one expansion. The marker has to track
+        // what wrote the sentence, not that there is one.
+        const { text } = renderState([
+            record({
+                id: "a",
+                timestamp: at(50),
+                changeset: [{ path: "sku", label: "SKU" }],
+                summary: "Rewrote the description and raised the price.",
+                summaryKind: "ai"
+            }),
+            record({
+                id: "b",
+                timestamp: at(10),
+                changeset: [{ path: "price", label: "Price" }],
+                summary: "Changed Price from 10 to 12.",
+                summaryKind: "deterministic"
+            })
+        ]);
+
+        fireEvent.click(screen.getByRole("button", { name: /made 2 saves/ }));
+
+        expect(text().match(/AI-generated/g)).toHaveLength(1);
     });
 
     it("does not mark anything when there is no summary to mark", () => {
@@ -605,5 +701,28 @@ describe("collapsing, as the reader sees it", () => {
         expect(text()).not.toContain("made 2 saves");
         // Two rows, plus the revision header's own list of who was involved.
         expect(screen.getAllByText("Someone").length).toBeGreaterThanOrEqual(2);
+    });
+});
+
+describe("the generated marker is defined once", () => {
+    // A source guard rather than a behavioural one, because the failure it catches is a second
+    // definition appearing somewhere the behavioural tests do not happen to render.
+    //
+    // A sentence shows in two places — the collapsed row's header and the run heading inside the
+    // expansion — and both go through `SummaryLine`. Two literals would drift the moment one was
+    // edited, and the distinction the marker carries is the only thing separating an exact
+    // statement from an interpretive one now that both tiers quote values.
+    const source = readFileSync(
+        join(import.meta.dirname, "../src/components/ActivityTimeline.tsx"),
+        "utf8"
+    );
+
+    it("appears exactly once in the component that renders sentences", () => {
+        expect(source.match(/AI-generated/g) ?? []).toHaveLength(1);
+    });
+
+    it("sits behind the provenance flag and nothing else", () => {
+        // Keyed on what wrote the sentence, never on whether there is one.
+        expect(source).toMatch(/summary\.generated \?/);
     });
 });
