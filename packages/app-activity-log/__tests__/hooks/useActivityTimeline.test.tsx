@@ -301,3 +301,104 @@ describe("a refresh that fails", () => {
         expect(result.current.view.groups[0]!.items).toHaveLength(1);
     });
 });
+
+describe("waiting for a summary", () => {
+    /** Moves the clock without waiting, and lets whatever the timer scheduled settle. */
+    const advance = async (ms: number) => {
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(ms);
+        });
+    };
+
+    it("looks again while a row is still expecting one", async () => {
+        // A summary lands about a minute after the save, from a background job, with nothing to
+        // announce it. Without this the row says "Summarising…" until the reader reloads the page.
+        vi.useFakeTimers();
+
+        const pending = record({ summaryPending: true });
+        const gateway = scriptedGateway([page([pending])]);
+        harness(gateway);
+
+        await settle();
+        expect(gateway.list).toHaveBeenCalledTimes(1);
+
+        await advance(10_000);
+
+        expect(gateway.list).toHaveBeenCalledTimes(2);
+    });
+
+    it("stops once the summary arrives", async () => {
+        vi.useFakeTimers();
+
+        const pending = record({ id: "rec-a", summaryPending: true });
+        const settled = {
+            ...pending,
+            summaryPending: false,
+            summary: "Rewrote the intro.",
+            summaryKind: "ai" as const
+        };
+        const gateway = scriptedGateway([page([pending]), page([settled])]);
+        const { result } = harness(gateway);
+
+        await settle();
+        await advance(10_000);
+
+        expect(result.current.view.groups[0]!.items[0]!.latest.summary).toBe("Rewrote the intro.");
+
+        const afterArrival = gateway.list.mock.calls.length;
+        await advance(60_000);
+
+        // Nothing is waiting any more, so nothing is asked.
+        expect(gateway.list).toHaveBeenCalledTimes(afterArrival);
+    });
+
+    it("stops when the server gives up on a job that never ran", async () => {
+        // The bound, and it lives on the server rather than in a client attempt counter: a record
+        // that has waited too long stops reporting itself as pending, and the polling stops with
+        // it. A counter here would be a second place for that decision to live and would forget
+        // itself on every reload.
+        vi.useFakeTimers();
+
+        const pending = record({ id: "rec-a", summaryPending: true });
+        const expired = { ...pending, summaryPending: false };
+        const gateway = scriptedGateway([page([pending]), page([expired])]);
+        const { result } = harness(gateway);
+
+        await settle();
+        await advance(10_000);
+
+        const afterExpiry = gateway.list.mock.calls.length;
+        await advance(60_000);
+
+        expect(gateway.list).toHaveBeenCalledTimes(afterExpiry);
+        expect(result.current.view.groups[0]!.items[0]!.latest.summary).toBeUndefined();
+    });
+
+    it("does not poll for a timeline with nothing pending", async () => {
+        // Which is nearly every timeline. A feature that polled regardless would put a request
+        // every ten seconds on every open entry in the product.
+        vi.useFakeTimers();
+
+        const gateway = scriptedGateway([page([record()])]);
+        harness(gateway);
+
+        await settle();
+        await advance(60_000);
+
+        expect(gateway.list).toHaveBeenCalledTimes(1);
+    });
+
+    it("polls quietly, without saying the panel is updating", async () => {
+        // The row already says "Summarising…". A second indicator would be noise about noise.
+        vi.useFakeTimers();
+
+        const gateway = scriptedGateway([page([record({ summaryPending: true })])]);
+        const { result } = harness(gateway);
+
+        await settle();
+        await advance(10_000);
+
+        expect(result.current.refreshing).toBe(false);
+        expect(result.current.loading).toBe(false);
+    });
+});

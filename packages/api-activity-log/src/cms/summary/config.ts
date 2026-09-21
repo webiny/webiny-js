@@ -73,6 +73,19 @@ export interface IActivitySummaryConfig {
      */
     maxNamedFields: number;
     /**
+     * How long a record may tell a reader that a summary is coming.
+     *
+     * The realistic wait is the dispatch delay plus a job run — a minute or so. This is the point
+     * at which the claim stops being made rather than a deadline the job is held to: a job that
+     * takes longer still writes its summary, and the row simply shows nothing in the meantime
+     * instead of promising something that may never arrive.
+     *
+     * Under-claiming on purpose. A row that says nothing and then gains a sentence is a small
+     * surprise; a row that says "summarising" for a quarter of an hour, or forever because the job
+     * never ran, is a bug report.
+     */
+    pendingGraceMs: number;
+    /**
      * How old a bundle must be before the sweeper reclaims it.
      *
      * Derived from what a job's life can actually cost rather than picked: the dispatch delay
@@ -102,6 +115,7 @@ export const DEFAULT_ACTIVITY_SUMMARY_CONFIG: IActivitySummaryConfig = {
     dispatchDelaySeconds: 60,
     quotedValueMaxLength: 60,
     maxNamedFields: 3,
+    pendingGraceMs: 5 * 60 * 1000,
     sweepThresholdMs: 60 * 60 * 1000
 };
 

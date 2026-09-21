@@ -29,7 +29,24 @@ const PAGE_SIZE = 25;
  */
 const REFRESH_ATTEMPT_DELAYS_MS = [0, 400, 800, 1500, 2500];
 
+/**
+ * How often the timeline looks again while a summary is still being written.
+ *
+ * A summary lands about a minute after the save that caused it, from a background job, with nothing
+ * to announce it. Without this, a row saying "Summarising…" sits there until the reader reloads the
+ * page — which is precisely what a stuck feature looks like.
+ *
+ * Unbounded on purpose. `summaryPending` comes back false once a record has waited too long, so the
+ * condition that starts the polling is the same one that stops it. A client-side attempt counter
+ * would be a second place for that decision to live, and it would forget itself on every reload.
+ */
+const SUMMARY_POLL_INTERVAL_MS = 10_000;
+
 const wait = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+/** Whether anything on screen is still expecting a sentence. */
+const awaitingSummary = (records: TimelineRecord[]): boolean =>
+    records.some(record => record.summaryPending === true);
 
 export interface UseActivityTimelineParams {
     targetType: string;
@@ -163,6 +180,63 @@ export const useActivityTimeline = (
      * timeline with "Could not load activity" because a background refetch blipped is strictly
      * worse than showing slightly stale rows, and the reader did not ask for this fetch.
      */
+    /**
+     * Reads the newest page and merges it into what is on screen, once.
+     *
+     * The shared half of refreshing and polling: neither may raise the loading state, because that
+     * renders a skeleton and would blank the timeline the reader is looking at, and neither may
+     * surface an error, because replacing a good timeline with "Could not load activity" over a
+     * background blip the reader did not ask for is strictly worse than slightly stale rows.
+     *
+     * Returns the newest record's id, or `null` when the read was superseded or failed — which the
+     * callers tell apart by whether they care.
+     */
+    const readNewestPage = useCallback(
+        async (activeFilters: TimelineFilters, id: number): Promise<string | null | false> => {
+            const result = await gateway.list({
+                targetType: params.targetType,
+                targetId: params.targetId,
+                modelId: params.modelId,
+                revision: activeFilters.revision,
+                actorId: activeFilters.actorId,
+                limit: PAGE_SIZE,
+                after: null
+            });
+
+            if (id !== requestId.current || result.error) {
+                return false;
+            }
+
+            const newestId = result.records[0]?.id ?? null;
+
+            if (hasPaged.current) {
+                // The reader has older pages on screen. The log is append-only and read
+                // newest-first, so everything this page returns is at least as new as what is
+                // held: merging by id keeps their pages rather than collapsing back to one. Their
+                // paging position is untouched — the oldest row on screen is still the oldest — so
+                // the existing cursor and `hasMore` still describe what comes after it, and taking
+                // this page's cursor would re-serve rows already visible.
+                setRecords(previous => {
+                    const seen = new Set(result.records.map(record => record.id));
+                    const next = [
+                        ...result.records,
+                        ...previous.filter(record => !seen.has(record.id))
+                    ];
+                    newestRecordId.current = next[0]?.id ?? null;
+                    return next;
+                });
+            } else {
+                setRecords(result.records);
+                setCursor(result.cursor);
+                setHasMore(result.hasMore);
+                newestRecordId.current = newestId;
+            }
+
+            return newestId;
+        },
+        [gateway, params.targetType, params.targetId, params.modelId]
+    );
+
     const refresh = useCallback(
         async (activeFilters: TimelineFilters) => {
             const id = ++requestId.current;
@@ -184,48 +258,10 @@ export const useActivityTimeline = (
                         return;
                     }
 
-                    const result = await gateway.list({
-                        targetType: params.targetType,
-                        targetId: params.targetId,
-                        modelId: params.modelId,
-                        revision: activeFilters.revision,
-                        actorId: activeFilters.actorId,
-                        limit: PAGE_SIZE,
-                        after: null
-                    });
+                    const newestId = await readNewestPage(activeFilters, id);
 
-                    if (id !== requestId.current) {
+                    if (newestId === false) {
                         return;
-                    }
-
-                    if (result.error) {
-                        return;
-                    }
-
-                    const newestId = result.records[0]?.id ?? null;
-
-                    if (hasPaged.current) {
-                        // The reader has older pages on screen. The log is append-only and read
-                        // newest-first, so everything this page returns is at least as new as what
-                        // is held: merging by id keeps their pages rather than collapsing back to
-                        // one. Their paging position is untouched — the oldest row on screen is
-                        // still the oldest — so the existing cursor and `hasMore` still describe
-                        // what comes after it, and taking this page's cursor would re-serve rows
-                        // already visible.
-                        setRecords(previous => {
-                            const seen = new Set(result.records.map(record => record.id));
-                            const next = [
-                                ...result.records,
-                                ...previous.filter(record => !seen.has(record.id))
-                            ];
-                            newestRecordId.current = next[0]?.id ?? null;
-                            return next;
-                        });
-                    } else {
-                        setRecords(result.records);
-                        setCursor(result.cursor);
-                        setHasMore(result.hasMore);
-                        newestRecordId.current = newestId;
                     }
 
                     if (!expectNewRecord || newestId !== previousNewestId) {
@@ -238,7 +274,24 @@ export const useActivityTimeline = (
                 }
             }
         },
-        [gateway, params.targetType, params.targetId, params.modelId]
+        [readNewestPage]
+    );
+
+    /**
+     * Looks again while a summary is still being written, quietly.
+     *
+     * Deliberately not `refresh`: that one retries until a *new record* appears, and a summary
+     * arriving is the opposite shape — the same record gaining a sentence. It would spend its whole
+     * retry budget on every poll and find nothing new by its own definition.
+     *
+     * It leaves `refreshing` alone too. The row already says "Summarising…"; a second indicator
+     * saying the panel is updating would be noise about noise.
+     */
+    const pollForSummaries = useCallback(
+        async (activeFilters: TimelineFilters) => {
+            await readNewestPage(activeFilters, ++requestId.current);
+        },
+        [readNewestPage]
     );
 
     useEffect(() => {
@@ -257,6 +310,26 @@ export const useActivityTimeline = (
         lastWriteToken.current = params.writeToken;
         void refresh(filters);
     }, [params.writeToken, filters, refresh]);
+
+    /**
+     * Keeps looking while any row on screen is still expecting a sentence.
+     *
+     * The effect re-runs whenever the records change, so a poll that brings a summary in clears the
+     * condition that scheduled it and the timer stops. Nothing here counts attempts: the server
+     * stops reporting a record as pending once it has waited too long, which is both the bound and
+     * the answer to a job that never ran.
+     */
+    useEffect(() => {
+        if (!awaitingSummary(records)) {
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            void pollForSummaries(filters);
+        }, SUMMARY_POLL_INTERVAL_MS);
+
+        return () => clearTimeout(timer);
+    }, [records, filters, pollForSummaries]);
 
     const loadMore = useCallback(() => {
         if (!hasMore || loadingMore || cursor === null) {

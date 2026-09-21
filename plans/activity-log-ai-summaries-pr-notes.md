@@ -93,8 +93,8 @@ breaking the thing it guards. The full list belongs in Checkpoint 8.
 
 A save is described either by a model or mechanically, never both, and the record says which
 (`summaryKind`). The routing rule decides, and its shape inverted when the renderer arrived: the
-caps that used to decide *whether a save is summarised* now decide only *whether a model is worth
-it*. They were written to bound what gets stored on a record and sent to a provider, and a
+caps that used to decide _whether a save is summarised_ now decide only _whether a model is worth
+it_. They were written to bound what gets stored on a record and sent to a provider, and a
 mechanical render does neither — it reads values already in hand and stores one sentence.
 
 Only two outcomes now produce no summary at all: a non-interactive write, and a save with nothing to

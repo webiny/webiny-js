@@ -2,6 +2,7 @@ import { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLSchema
 import { CoreGraphQLSchemaFactory } from "@webiny/api-graphql/graphql/abstractions.core.js";
 import { ErrorResponse, ListResponse } from "@webiny/api-graphql/responses.js";
 import { ListActivityUseCase } from "~/features/listActivity/index.js";
+import { ActivitySummaryConfig } from "~/cms/summary/config.js";
 import { isSummaryPending, type ActivityRecord } from "~/core/types.js";
 
 interface IListActivityArgs {
@@ -117,9 +118,13 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 """
                 summaryKind: String
                 """
-                True while a summary is being generated for this record. False once it has settled,
-                with or without one — so a client shows a pending state on this and an absent
-                summary on anything else.
+                True while a summary is being generated for this record. False once it has
+                settled, with or without one — and false again once it has been waiting too long,
+                because a job can fail to run at all and a row that promises a sentence forever is
+                worse than one that promises nothing.
+
+                A client may poll while this is true and stop when it goes false; it goes false on
+                its own either way.
                 """
                 summaryPending: Boolean!
             }
@@ -158,9 +163,12 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<IListActivityArgs>({
             path: "Query.listActivityLog",
-            dependencies: [ListActivityUseCase],
+            dependencies: [ListActivityUseCase, ActivitySummaryConfig],
             resolver:
-                (listActivity: ListActivityUseCase.Interface) =>
+                (
+                    listActivity: ListActivityUseCase.Interface,
+                    config: ActivitySummaryConfig.Interface
+                ) =>
                 async ({ args }) => {
                     const result = await listActivity.execute({
                         target: {
@@ -178,10 +186,15 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         return new ErrorResponse(result.error);
                     }
 
-                    return new ListResponse(result.value.records.map(toGraphQL), {
-                        cursor: result.value.cursor,
-                        hasMoreItems: result.value.hasMore
-                    });
+                    return new ListResponse(
+                        result.value.records.map(record =>
+                            toGraphQL(record, config.pendingGraceMs)
+                        ),
+                        {
+                            cursor: result.value.cursor,
+                            hasMoreItems: result.value.hasMore
+                        }
+                    );
                 }
         });
 
@@ -189,7 +202,7 @@ export class ActivityLogGraphQL implements CoreGraphQLSchemaFactory.Interface {
     }
 }
 
-const toGraphQL = (record: ActivityRecord) => ({
+const toGraphQL = (record: ActivityRecord, pendingGraceMs: number) => ({
     id: record.id,
     targetType: record.targetType,
     targetId: record.targetId,
@@ -205,7 +218,7 @@ const toGraphQL = (record: ActivityRecord) => ({
     hasNote: record.hasNote ?? null,
     summary: record.summary ?? null,
     summaryKind: record.summaryKind ?? null,
-    summaryPending: isSummaryPending(record)
+    summaryPending: isSummaryPending(record, { graceMs: pendingGraceMs })
 });
 
 export const ActivityLogGraphQLFactory = CoreGraphQLSchemaFactory.createImplementation({

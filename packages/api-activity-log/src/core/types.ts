@@ -246,18 +246,56 @@ export interface ActivityRecord {
 /** A record before storage assigns it an id. */
 export type ActivityRecordInput = Omit<ActivityRecord, "id">;
 
+export interface SummaryPendingOptions {
+    /**
+     * How long a record may claim a summary is coming before it stops claiming it.
+     *
+     * Omitted and the claim never expires, which is what the dispatcher wants: it is asking whether
+     * there is a run to join, and it applies its own, much shorter, debounce window afterwards.
+     */
+    graceMs?: number;
+    /** Injectable so a test can stand at a chosen moment rather than wait. */
+    now?: number;
+}
+
 /**
  * Whether a record is still waiting for the job dispatched for it.
  *
- * Pending is "carries values and has not settled" — derived rather than stored, because a stored
- * flag is a third thing that can disagree with the other two. One definition, used by the
- * dispatcher to decide whether a save joins a run in progress and by the read path to tell a reader
- * a sentence is coming.
+ * Pending is "carries values, has not settled, and has not been waiting too long" — derived rather
+ * than stored, because a stored flag is a third thing that can disagree with the other two.
+ *
+ * **The grace period is the part that matters to a reader.** A job can fail to run at all: a Lambda
+ * timeout and a task created whose execution never starts both leave values on a record with
+ * nothing coming for them, and nothing schedules the sweep that reclaims them. Without an expiry
+ * such a record says "summarising" forever — on every visit, surviving every reload — which is the
+ * one thing the timeline is not allowed to do, because a row that promises a sentence that never
+ * arrives reads as broken and everything around it is fine.
+ *
+ * Expiring is also what stops a client polling for a result that is not coming: the flag goes false
+ * on its own, so nothing has to remember how long it has been watching.
  */
-export const isSummaryPending = (record: ActivityRecord): boolean => {
-    return (
+export const isSummaryPending = (
+    record: ActivityRecord,
+    options: SummaryPendingOptions = {}
+): boolean => {
+    const waiting =
         Boolean(record.summaryState?.values?.length) &&
         !record.summary &&
-        !record.summaryState?.reason
-    );
+        !record.summaryState?.reason;
+
+    if (!waiting || options.graceMs === undefined) {
+        return waiting;
+    }
+
+    const writtenOn = record.summaryState?.valuesWrittenOn;
+
+    if (!writtenOn) {
+        // Values with no timestamp cannot be aged, and claiming they are fresh is the claim that
+        // sticks forever. Treated as expired, which degrades to "no summary" rather than to a lie.
+        return false;
+    }
+
+    const age = (options.now ?? Date.now()) - new Date(writtenOn).getTime();
+
+    return Number.isFinite(age) && age <= options.graceMs;
 };

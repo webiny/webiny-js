@@ -4,6 +4,7 @@ import type { GraphQLSchemaBuilder } from "@webiny/api-graphql/features/GraphQLS
 import { ActivityLogGraphQL } from "~/graphql/ActivityLogGraphQLFactory.js";
 import type { ActivityRecord } from "~/core/types.js";
 import type { ListActivityUseCase } from "~/features/listActivity/index.js";
+import { DEFAULT_ACTIVITY_SUMMARY_CONFIG } from "~/cms/summary/config.js";
 
 /**
  * What the API offers a client, and — more importantly — what it does not.
@@ -67,7 +68,10 @@ const query = async (records: ActivityRecord[]) => {
         execute: vi.fn(async () => Result.ok({ records, cursor: null, hasMore: false }))
     } as unknown as ListActivityUseCase.Interface;
 
-    const result = await resolver.resolver(useCase)({
+    const result = await resolver.resolver(
+        useCase,
+        DEFAULT_ACTIVITY_SUMMARY_CONFIG
+    )({
         args: { targetType: "cms-entry", targetId: "abc", modelId: "article" }
     });
 
@@ -120,7 +124,7 @@ describe("what a record looks like on the wire", () => {
             record({
                 summaryState: {
                     values: [{ path: "body", label: "Body", before: "a", after: "b" }],
-                    valuesWrittenOn: "2026-09-10T08:30:00.000Z"
+                    valuesWrittenOn: new Date().toISOString()
                 }
             })
         ]);
@@ -156,5 +160,47 @@ describe("what a record looks like on the wire", () => {
 
         expect(JSON.stringify(row)).not.toContain("secret");
         expect(row).not.toHaveProperty("summaryState");
+    });
+});
+
+describe("a summary that is never coming", () => {
+    const withValues = (writtenOn: string) =>
+        record({
+            summaryState: {
+                values: [{ path: "body", label: "Body", before: "a", after: "b" }],
+                valuesWrittenOn: writtenOn
+            }
+        });
+
+    it("stops claiming one is on the way once the wait is too long", async () => {
+        // A job can fail to run at all — a Lambda timeout, or a task created whose execution never
+        // starts — and nothing schedules the sweep that reclaims it. Without an expiry the row says
+        // "Summarising…" forever, on every visit, surviving every reload.
+        const old = new Date(
+            Date.now() - DEFAULT_ACTIVITY_SUMMARY_CONFIG.pendingGraceMs - 1000
+        ).toISOString();
+
+        const [row] = await query([withValues(old)]);
+
+        expect(row).toMatchObject({ summaryPending: false, summary: null });
+    });
+
+    it("still claims one while the wait is reasonable", async () => {
+        const recent = new Date(Date.now() - 30_000).toISOString();
+
+        const [row] = await query([withValues(recent)]);
+
+        expect(row!.summaryPending).toBe(true);
+    });
+
+    it("does not claim one for values it cannot age", async () => {
+        // Claiming freshness for a value with no timestamp is the claim that sticks forever.
+        const [row] = await query([
+            record({
+                summaryState: { values: [{ path: "body", label: "Body", before: "a", after: "b" }] }
+            })
+        ]);
+
+        expect(row!.summaryPending).toBe(false);
     });
 });
