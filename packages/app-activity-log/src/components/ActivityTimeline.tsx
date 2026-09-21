@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@webiny/admin-ui";
 import {
     Accordion,
     Alert,
@@ -130,6 +131,26 @@ const ViaNote = ({ text }: { text: string }) => (
     </Alert>
 );
 
+/**
+ * The ledger's type sizes, taken from the design.
+ *
+ * The design system's scale is 12/14/16 and the design asks for 11, 12 and 13 — sizes that carry
+ * this panel's hierarchy in one and two pixel steps. Stated as exact values rather than rounded to
+ * the nearest token, and kept in one place so the ledger has one answer to "how big is this" rather
+ * than a decision at every line. A smaller token in `admin-ui` would be the better home for them if
+ * this panel stops being the only thing that needs them.
+ */
+const TYPE = {
+    /** A sentence, of any of the three kinds. */
+    sentence: "text-[13px] leading-[19px]",
+    /** The row's own first line, and anything reading at its weight. */
+    row: "text-[13px] leading-[19px]",
+    /** Field names, the fields line, the disclosure note. */
+    field: "text-[12px] leading-[17px]",
+    /** Clocks, timestamps, counts — everything that orients rather than informs. */
+    meta: "text-[11px] leading-[16px]"
+};
+
 /** Clock time alone, for a ledger column where the date is already established by the row. */
 const formatClock = (iso: string, withSeconds = false): string => {
     const date = new Date(iso);
@@ -202,9 +223,7 @@ const FieldGroup = ({ group }: { group: DisclosedFieldGroup }) => (
                             icon={<SubdirectoryIcon />}
                             className={"shrink-0 fill-neutral-strong"}
                         />
-                        <Text size={"sm"} className={"truncate"}>
-                            {group.pathLabel}
-                        </Text>
+                        <Text className={cn(TYPE.field, "truncate")}>{group.pathLabel}</Text>
                         {group.depth === "" ? null : (
                             <Tag variant={"neutral-light"} content={group.depth} />
                         )}
@@ -227,7 +246,7 @@ const FieldGroup = ({ group }: { group: DisclosedFieldGroup }) => (
 const PendingNote = () => (
     <div className={"flex items-center gap-xs"}>
         <Skeleton type={"text"} size={"xs"} className={"max-w-[170px]"} />
-        <Text size={"sm"} className={"whitespace-nowrap text-neutral-strong"}>
+        <Text className={cn(TYPE.meta, "whitespace-nowrap text-neutral-strong")}>
             {"Summarising"}
         </Text>
     </div>
@@ -266,12 +285,11 @@ const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
         */}
         <Text
             as={"div"}
-            size={"md"}
-            className={
-                summary.kind === "fields"
-                    ? "text-wrap-pretty text-neutral-strong"
-                    : "text-wrap-pretty text-neutral-primary"
-            }
+            className={cn(
+                TYPE.sentence,
+                "text-wrap-pretty",
+                summary.kind === "fields" ? "text-neutral-strong" : "text-neutral-primary"
+            )}
         >
             {summary.text}
         </Text>
@@ -288,8 +306,10 @@ const SaveLine = ({ save, showTime }: { save: DisclosedSave; showTime: boolean }
     <div className={"flex items-baseline gap-xs"}>
         {showTime ? (
             <Text
-                size={"sm"}
-                className={"shrink-0 tabular-nums whitespace-nowrap text-neutral-disabled"}
+                className={cn(
+                    TYPE.meta,
+                    "shrink-0 tabular-nums whitespace-nowrap text-neutral-disabled"
+                )}
             >
                 {formatClock(save.timestamp, true)}
             </Text>
@@ -315,10 +335,10 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
             "grid grid-cols-[52px_1fr] gap-xs border-b-sm border-dashed border-neutral-dimmed py-sm last:border-b-none"
         }
     >
-        <Text size={"sm"} className={"pt-xxs pr-xxs text-right tabular-nums text-neutral-muted"}>
+        <Text className={cn(TYPE.meta, "pt-xxs pr-xxs text-right tabular-nums text-neutral-muted")}>
             {formatClock(run.saves[run.saves.length - 1]?.timestamp ?? "")}
         </Text>
-        <div className={"min-w-0"}>
+        <div className={"min-w-0 pl-xs"}>
             {run.summary ? <SummaryLine summary={run.summary} /> : null}
             {run.pending ? (
                 <div className={"pl-[20px]"}>
@@ -351,14 +371,23 @@ const DisclosureNote = ({ hasSentence }: { hasSentence: boolean }) => {
 
     if (!open) {
         return (
-            <Button
-                variant={"ghost"}
-                size={"sm"}
-                icon={<InfoIcon />}
-                text={"What this list records"}
+            <button
+                type={"button"}
                 onClick={() => setOpen(true)}
-                className={"mt-xs text-neutral-strong"}
-            />
+                className={cn(
+                    TYPE.field,
+                    "mt-xs flex cursor-pointer items-center gap-xxs text-neutral-strong",
+                    "hover:text-neutral-primary"
+                )}
+            >
+                <Icon
+                    size={"sm"}
+                    label={"about this list"}
+                    icon={<InfoIcon />}
+                    className={"fill-neutral-strong"}
+                />
+                <span>What this list records</span>
+            </button>
         );
     }
 
@@ -373,7 +402,7 @@ const DisclosureNote = ({ hasSentence }: { hasSentence: boolean }) => {
                 icon={<InfoIcon />}
                 className={"mt-xxs shrink-0 fill-neutral-strong"}
             />
-            <Text as={"div"} size={"sm"} className={"text-wrap-pretty text-neutral-primary"}>
+            <Text as={"div"} className={cn(TYPE.field, "text-wrap-pretty text-neutral-primary")}>
                 {text}
             </Text>
         </div>
@@ -395,9 +424,7 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
         // it, which insets the ledger from both edges and oversizes every line in it. The negative
         // margins cancel that padding so the expansion can set its own, and `text-sm` resets the
         // inherited size — the ledger's own sizes are set per line, not inherited from a slot.
-        <div
-            className={"-mx-xxl border-t-sm border-neutral-dimmed px-sm-extra pt-xs pb-xs text-sm"}
-        >
+        <div className={"-mx-xxl border-t-sm border-neutral-dimmed pt-xs pr-xxl pb-xs pl-md"}>
             {disclosure.runs.map(run => (
                 <RunLine key={run.id} run={run} />
             ))}
@@ -466,6 +493,10 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
         <div>
             <Accordion background={"transparent"}>
                 <Accordion.Item
+                    // The hover overlay belongs on a list of actions. This is a history, every row
+                    // opens, and a wash moving under the cursor down a long timeline is motion
+                    // without meaning.
+                    className={"before:hidden hover:before:bg-transparent"}
                     interactive={expandable}
                     icon={
                         <ActorAvatar
@@ -476,7 +507,7 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                         />
                     }
                     title={
-                        <span className={"flex flex-wrap items-baseline gap-xs"}>
+                        <span className={cn(TYPE.row, "flex flex-wrap items-baseline gap-xs")}>
                             <span>{actor.name}</span>
                             {actor.badge ? (
                                 <Tag variant={"neutral-light"} content={actor.badge} />
@@ -489,7 +520,7 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                             ) : null}
                         </span>
                     }
-                    subtitle={action.sentence}
+                    subtitle={<span className={TYPE.row}>{action.sentence}</span>}
                     description={
                         <>
                             {/*
@@ -500,16 +531,14 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                               difference reads as quiet rather than as missing.
                             */}
                             {summary.summary ? <SummaryLine summary={summary.summary} /> : null}
-                            {summary.summaryPending ? (
-                                <div className={"pl-[20px]"}>
-                                    <PendingNote />
-                                </div>
-                            ) : null}
+                            {summary.summaryPending ? <PendingNote /> : null}
                             {!summary.summary && !summary.summaryPending && summary.fieldsLine ? (
                                 <Text
                                     as={"div"}
-                                    size={"sm"}
-                                    className={"pl-[20px] text-wrap-pretty text-neutral-strong"}
+                                    className={cn(
+                                        TYPE.field,
+                                        "text-wrap-pretty text-neutral-strong"
+                                    )}
                                 >
                                     {summary.fieldsLine}
                                 </Text>
