@@ -6,6 +6,7 @@ import { AwsExtensions } from "./webiny.config.aws.js";
 import { StandaloneExtensions } from "./webiny.config.standalone.js";
 import { ApplyDiscountExtension } from "@/extensions/bulkActions/applyDiscount/ApplyDiscountExtension.js";
 import { AiContentExtension } from "@/extensions/bulkActions/aiContent/AiContentExtension.js";
+import { BugReporter } from "@webiny/bug-reporter";
 
 /**
  * In this monorepo we develop both hosting types. The CLI bin sets WEBINY_HOSTING_TYPE ("aws" via
@@ -113,6 +114,12 @@ export const Extensions = () => {
 
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
+
+            {/* Bug reporter 👇 The base ships with Webiny via DefaultExtensions and files reports
+                verbatim. These two are ours: a token so the API files the issue itself, and AI
+                drafting for the title and steps to reproduce. */}
+            <BugReporter.GitHub token={process.env.BUG_REPORT_GITHUB_TOKEN} />
+            <Api.Extension src={"@/extensions/bugReportAi/Extension.ts"} />
 
             {/* Tasks 👇 */}
             <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
