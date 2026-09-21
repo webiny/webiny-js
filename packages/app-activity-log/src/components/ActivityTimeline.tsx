@@ -259,6 +259,11 @@ const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
                 />
             ) : null}
         </div>
+        {/*
+          One step back in weight for the third kind, which is what tells it from an exact sentence
+          without putting a label on either. An exact record reads at full strength; a restatement
+          of the chips below it does not need to.
+        */}
         <Text
             as={"div"}
             size={"md"}
@@ -282,7 +287,10 @@ const SummaryLine = ({ summary }: { summary: TimelineSentence }) => (
 const SaveLine = ({ save, showTime }: { save: DisclosedSave; showTime: boolean }) => (
     <div className={"flex items-baseline gap-xs"}>
         {showTime ? (
-            <Text size={"sm"} className={"shrink-0 whitespace-nowrap text-neutral-disabled"}>
+            <Text
+                size={"sm"}
+                className={"shrink-0 tabular-nums whitespace-nowrap text-neutral-disabled"}
+            >
                 {formatClock(save.timestamp, true)}
             </Text>
         ) : null}
@@ -307,7 +315,7 @@ const RunLine = ({ run }: { run: DisclosedRun }) => (
             "grid grid-cols-[52px_1fr] gap-xs border-b-sm border-dashed border-neutral-dimmed py-sm last:border-b-none"
         }
     >
-        <Text size={"sm"} className={"pr-xxs text-right text-neutral-strong"}>
+        <Text size={"sm"} className={"pt-xxs pr-xxs text-right tabular-nums text-neutral-muted"}>
             {formatClock(run.saves[run.saves.length - 1]?.timestamp ?? "")}
         </Text>
         <div className={"min-w-0"}>
@@ -383,7 +391,13 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
     const disclosure = discloseItem(item);
 
     return (
-        <div className={"border-t-sm border-neutral-dimmed px-xs pb-xs"}>
+        // `AccordionContent` hardcodes `pl-xxl pr-xxl text-md` with no way to pass a class through
+        // it, which insets the ledger from both edges and oversizes every line in it. The negative
+        // margins cancel that padding so the expansion can set its own, and `text-sm` resets the
+        // inherited size — the ledger's own sizes are set per line, not inherited from a slot.
+        <div
+            className={"-mx-xxl border-t-sm border-neutral-dimmed px-sm-extra pt-xs pb-xs text-sm"}
+        >
             {disclosure.runs.map(run => (
                 <RunLine key={run.id} run={run} />
             ))}
@@ -430,7 +444,13 @@ const ActorAvatar = ({
         <Avatar
             size={"sm"}
             variant={kind === "redacted" ? "light" : "strong"}
-            fallback={<Avatar.Fallback>{initials === "" ? "?" : initials}</Avatar.Fallback>}
+            image={undefined}
+            className={"rounded-full text-sm"}
+            fallback={
+                <Avatar.Fallback className={"rounded-full"}>
+                    {initials === "" ? "?" : initials}
+                </Avatar.Fallback>
+            }
         />
     );
 };
@@ -443,17 +463,7 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
     const expandable = summary.changedFieldCount > 0;
 
     return (
-        <div className={"relative ml-xs border-l-sm border-neutral-dimmed pl-md"}>
-            {/*
-              The rail dot, positioned over the group's left border so a run of saves reads as one
-              thread under its revision.
-            */}
-            <span
-                aria-hidden={"true"}
-                className={
-                    "absolute -left-[5px] top-lg size-xs rounded-full bg-neutral-strong ring-2 ring-neutral-base"
-                }
-            />
+        <div>
             <Accordion background={"transparent"}>
                 <Accordion.Item
                     interactive={expandable}
@@ -519,15 +529,6 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
                             {actor.via ? <ViaNote text={actor.via} /> : null}
                         </>
                     }
-                    actions={
-                        expandable ? (
-                            <Text size={"sm"} className={"whitespace-nowrap text-neutral-muted"}>
-                                {`${summary.changedFieldCount} ${
-                                    summary.changedFieldCount === 1 ? "field" : "fields"
-                                }`}
-                            </Text>
-                        ) : undefined
-                    }
                 >
                     {expandable ? <SaveDisclosure item={item} /> : <span />}
                 </Accordion.Item>
@@ -547,15 +548,20 @@ const SaveRow = ({ item }: { item: TimelineItem }) => {
 const RevisionBoundary = ({ group }: { group: TimelineViewGroup }) => (
     <div
         className={
-            "mt-xs ml-xs flex items-start gap-sm rounded-md border-sm border-neutral-dimmed bg-neutral-base p-sm-extra"
+            "flex items-start gap-sm border-t-sm border-neutral-dimmed bg-neutral-light px-sm-extra py-xs"
         }
     >
-        <Icon size={"sm"} color={"neutral-light"} label={"Compare"} icon={<CompareIcon />} />
+        <Icon
+            size={"sm"}
+            label={"Compare"}
+            icon={<CompareIcon />}
+            className={"mt-xxs shrink-0 fill-neutral-strong"}
+        />
         <div className={"min-w-0"}>
-            <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
+            <Text as={"div"} size={"sm"} className={"font-semibold"}>
                 {`Compare revisions to see values as of ${group.described.label}.`}
             </Text>
-            <Text as={"div"} size={"sm"} className={"mt-xxs text-neutral-muted"}>
+            <Text as={"div"} size={"sm"} className={"text-neutral-muted"}>
                 Individual saves inside a revision are not comparable — only the revision as a whole
                 is.
             </Text>
@@ -584,13 +590,7 @@ const RevisionGroup = ({ group }: { group: TimelineViewGroup }) => (
             </Text>
         </div>
 
-        <div className={"px-sm-extra pb-sm"}>
-            {group.described.who === "" ? null : (
-                <Text as={"div"} size={"sm"} className={"pt-xs pl-lg text-neutral-muted"}>
-                    {group.described.who}
-                </Text>
-            )}
-
+        <div className={"pb-xs"}>
             {group.items.map(item => (
                 <SaveRow key={item.latest.id} item={item} />
             ))}
