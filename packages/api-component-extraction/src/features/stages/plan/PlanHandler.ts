@@ -4,6 +4,7 @@ import { StageHandler, type StageContext, type StageOutcome } from "~/domain/sta
 import type { ClassifyArtifact, PlanArtifact, PlannedComponent } from "~/domain/artifacts.js";
 import { ComponentExtractionAi } from "~/features/shared/ai.js";
 import { ThemeManifestResolver } from "~/features/shared/themeManifest.js";
+import { hasNothingToGenerate } from "./hasNothingToGenerate.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 import { PLAN_SYSTEM, buildPlanPrompt, parsePlanContract } from "./planContract.js";
 
@@ -59,8 +60,23 @@ class PlanHandlerImpl implements StageHandler.Interface {
             });
         }
 
-        const clusters = classify.clusters;
+        /*
+         * A cluster with no text, no images and no destinations has nothing to build a component
+         * from. Dropped here rather than later because Plan is where cost starts: planning and then
+         * generating an empty container spends two model calls to produce something that arrives in
+         * the customer's library as "Empty Container / Spacer".
+         */
+        const emptyClusters = classify.clusters.filter(entry =>
+            hasNothingToGenerate(entry.cluster)
+        );
+        const clusters = classify.clusters.filter(entry => !hasNothingToGenerate(entry.cluster));
         const total = clusters.length;
+
+        for (const entry of emptyClusters) {
+            await context.log.info({
+                message: `Skipping "${entry.name}": the section carries no text, images or links.`
+            });
+        }
 
         // Resume from the checkpoint if this is a continuation; start fresh otherwise.
         const checkpointKey = context.artifactKey("checkpoint");
