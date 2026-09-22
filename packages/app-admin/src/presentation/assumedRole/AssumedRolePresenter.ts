@@ -10,6 +10,10 @@ function optionValue(assumedRole: AssumedRoleContext.Value): string {
     return `${assumedRole.type}:${assumedRole.id}`;
 }
 
+function reloadPage(): void {
+    window.location.reload();
+}
+
 function toMessage(error: unknown, fallback: string): string {
     if (error instanceof Error) {
         return error.message;
@@ -113,12 +117,22 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
         } catch (error) {
             runInAction(() => {
                 this._error = toMessage(error, "Could not switch roles.");
-            });
-        } finally {
-            runInAction(() => {
                 this._switching = false;
             });
+            return;
         }
+
+        /*
+         * A full reload, not an in-place identity swap. Permission checks such as
+         * `createHasPermission` read the identity during render without observing it, and every
+         * list fetched under the old role is still cached, so a swap leaves parts of the Admin —
+         * menus, the dashboard — still showing the previous role. The tenant switcher reaches for
+         * a full page load for the same reason.
+         *
+         * `_switching` stays true on purpose: the page is on its way out, and the control should
+         * not look ready for another click in the meantime.
+         */
+        reloadPage();
     }
 
     private async loadTeamOptions(): Promise<Abstraction.Option[]> {
