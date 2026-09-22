@@ -45,6 +45,12 @@ export interface PageMapLinks {
      * they never reach the page, so they are not part of the before/after reconciliation.
      */
     dropped: number;
+    /**
+     * Of those, the ones whose page turned out to be in this migration and were restored to it.
+     * Counted apart from `rewritten` on purpose: rewriting a destination the page really had and
+     * recovering one the model invented are different claims, and one number would hide both.
+     */
+    recovered: number;
 }
 
 export interface PageMap {

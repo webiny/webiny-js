@@ -37,11 +37,11 @@ import { collectSectionTexts } from "~/pages/collectSectionTexts.js";
 import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
 import { deriveCompositeInputs } from "~/pages/deriveCompositeInputs.js";
 import { applyFormPreview } from "~/pages/applyFormPreview.js";
+import { stripInventedDestinations, type StripResult } from "~/pages/stripInventedDestinations.js";
 import {
-    stripInventedDestinations,
-    type InventedDestination,
-    type StripResult
-} from "~/pages/stripInventedDestinations.js";
+    recoverInventedDestinations,
+    type PlacedInvention
+} from "~/pages/recoverInventedDestinations.js";
 import { collectLinks } from "~/pages/harvest.js";
 import {
     rewriteDestinations,
@@ -56,7 +56,7 @@ interface CreatedPage {
     entry: PageMapEntry;
     bindings: Record<string, any>;
     /** Destinations the model invented on this page, emptied before it was built. */
-    invented: InventedDestination[];
+    invented: PlacedInvention[];
 }
 
 /** What a promoted component needs to be placed: its final name, and the manifest for its inputs. */
@@ -147,6 +147,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
 
         const outcomes: DestinationOutcome[] = [];
         const discarded: DiscardEntry[] = [];
+        const recovered: { from: string; to: string }[] = [];
 
         for (const page of created) {
             const rewrite = rewriteDestinations({
@@ -155,15 +156,6 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 sourceHost
             });
             outcomes.push(...rewrite.outcomes);
-
-            for (const dropped of page.invented) {
-                discarded.push({
-                    kind: "link.invented",
-                    page: page.entry.path,
-                    sourceUrl: page.entry.sourceUrl,
-                    detail: `${dropped.value} emptied at ${dropped.path}: the page never linked there`
-                });
-            }
 
             for (const outcome of rewrite.outcomes) {
                 if (outcome.kind === "unmigrated") {
@@ -176,10 +168,36 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 }
             }
 
-            const changed = rewrite.outcomes.some(outcome => outcome.kind === "rewritten");
+            /*
+             * After rewriting, never before: writing a migrated path in first would let the
+             * rewriting pass count a recovered destination as one it rewrote, and keeping those two
+             * numbers apart is the whole point of measuring them.
+             */
+            const recovery = recoverInventedDestinations({
+                bindings: rewrite.bindings,
+                invented: page.invented,
+                migratedPaths
+            });
+            recovered.push(...recovery.recovered);
+
+            for (const item of recovery.unrecovered) {
+                discarded.push({
+                    kind: "link.invented",
+                    page: page.entry.path,
+                    sourceUrl: page.entry.sourceUrl,
+                    detail:
+                        item.reason === "ambiguous"
+                            ? `${item.value} left empty at ${item.path}: more than one migrated page ends there`
+                            : `${item.value} left empty at ${item.path}: the page never linked there`
+                });
+            }
+
+            const changed =
+                rewrite.outcomes.some(outcome => outcome.kind === "rewritten") ||
+                recovery.recovered.length > 0;
             if (changed) {
                 const updated = await this.updatePage.execute(page.entry.pageId, {
-                    bindings: rewrite.bindings
+                    bindings: recovery.bindings
                 });
                 if (updated.isFail()) {
                     failed.push({
@@ -208,7 +226,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             rewritten: counts.rewritten,
             external: counts.external,
             unmigrated: counts.unmigrated,
-            dropped: created.reduce((total, item) => total + item.invented.length, 0)
+            dropped: created.reduce((total, item) => total + item.invented.length, 0),
+            recovered: recovered.length
         };
 
         const stored = await this.pageMaps.set({
@@ -310,7 +329,9 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         const identity = toPageIdentity(page.url, page.title);
 
         const placements: ComponentPlacement[] = [];
-        const invented: InventedDestination[] = [];
+        // Per placement, because the element that ends up carrying these is only known once the
+        // document is built — and the recovery pass has to write back to a specific element.
+        const inventedByPlacement: { path: string; value: string }[][] = [];
         for (const instance of page.instances) {
             const component = placeable.get(instance.signature);
             if (!component) {
@@ -323,7 +344,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 segmentByUrl,
                 trees
             });
-            invented.push(...derivedInputs.invented);
+            inventedByPlacement.push(derivedInputs.invented);
             placements.push({ manifest: component.manifest, inputs: derivedInputs.inputs });
         }
 
@@ -339,6 +360,20 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             path: identity.path,
             title: identity.title,
             placements
+        });
+
+        /*
+         * Document order is the root's children list, in placement order — so the nth placement's
+         * element id is the nth entry. That is the only link between an input path recorded during
+         * derivation and the binding that ends up holding it.
+         */
+        const childIds: string[] = bindings.root?.inputs?.children?.static ?? [];
+        const invented: PlacedInvention[] = inventedByPlacement.flatMap((items, index) => {
+            const elementId = childIds[index];
+            if (!elementId) {
+                return [];
+            }
+            return items.map(item => ({ elementId, path: item.path, value: item.value }));
         });
 
         const createdPage = await this.createPage.execute({
