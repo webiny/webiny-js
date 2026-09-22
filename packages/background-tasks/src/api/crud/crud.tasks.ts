@@ -152,29 +152,46 @@ export const createTaskCrud = (container: Container): ITasksContextCrudObject =>
         });
     };
 
+    /*
+     * Reads through the same query path `listTasks` uses, rather than fetching the entry by id.
+     *
+     * This is a workaround, not a design. Fetching a CMS entry by id goes through a DataLoader that
+     * is registered in singleton scope, so in Lambda it memoises per warm container and a task
+     * written by the background-task function is served stale to the GraphQL function for that
+     * container's whole life — `getTask` reported `pending` for a task that had finished seven
+     * minutes earlier, and a failed task reported `running` with no error, while `listTasks` was
+     * correct throughout. Two readers of one record disagreeing is the bug; routing both through the
+     * same reader is what makes them agree.
+     *
+     * The real fix is per-request scoping of that DataLoader, which is core CMS and affects every
+     * entry fetched by id — see the issue filed against @webiny/api-headless-cms-ddb. Remove this
+     * and restore the by-id read when that lands, rather than leaving it in place permanently.
+     */
     const getTask = async <
         T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string
     ) => {
-        const identityContext = container.resolve(IdentityContext);
+        const revisionId = createRevisionId(id);
+        const { items } = await listTasks<T, O>({ where: { id: revisionId }, limit: 1 });
 
-        const entry = await identityContext.withoutAuthorization(async () => {
-            const model = await getTaskModel();
-            const getEntryById = container.resolve(GetEntryByIdUseCase);
-            const result = await getEntryById.execute(model, createRevisionId(id));
-            if (result.isFail()) {
-                return null;
-            }
-            return result.value;
-        });
-
-        if (!entry) {
+        const task = items[0];
+        if (!task) {
             return null;
         }
 
-        return convertToTask(entry as unknown as CmsEntry<TaskService.Task<T, O>>);
+        /*
+         * The filter is on the revision id while a task's own id is the entry id, so the match is
+         * confirmed rather than assumed: a where clause that silently stopped filtering would
+         * otherwise hand back whichever task happened to be first.
+         */
+        const { id: entryId } = parseIdentifier(revisionId);
+        if (task.id !== entryId) {
+            return null;
+        }
+
+        return task;
     };
 
     const listTasks = async <
