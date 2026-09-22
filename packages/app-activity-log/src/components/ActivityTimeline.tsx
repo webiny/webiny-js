@@ -390,11 +390,15 @@ const SaveDisclosure = ({ item }: { item: TimelineItem }) => {
     const disclosure = discloseItem(item);
 
     return (
-        // `AccordionContent` hardcodes `pl-xxl pr-xxl text-md` with no way to pass a class through
-        // it, which insets the ledger from both edges and oversizes every line in it. The negative
-        // margins cancel that padding so the expansion can set its own, and `text-sm` resets the
-        // inherited size — the ledger's own sizes are set per line, not inherited from a slot.
-        <div className={"-mx-xxl border-t-sm border-neutral-dimmed pt-xs pr-md pb-xs pl-md"}>
+        // `AccordionContent` hardcodes its own padding with no way to pass a class through it:
+        // `pl-xxl pr-xxl` insets the ledger from both edges, `text-md` oversizes every line in it,
+        // and `pb-lg` leaves 24px below the last save. The negative margins cancel all of it so
+        // the expansion sets its own — 12px above the first run and 12px below the last, counted
+        // from the border rather than from whatever the slot happened to add.
+        //
+        // The bottom one only became visible when the disclosure note was removed: the note used
+        // to fill the 24px, so the expansion ended in a hole the moment it went.
+        <div className={"-mx-xxl -mb-lg border-t-sm border-neutral-dimmed pt-xs pr-md pb-xs pl-md"}>
             {disclosure.runs.map(run => (
                 <RunLine key={run.id} run={run} />
             ))}
