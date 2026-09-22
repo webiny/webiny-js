@@ -3,6 +3,7 @@ import Helmet from "react-helmet";
 import type { LayoutProps } from "@webiny/app-admin";
 import {
     AssumedRoleBanner,
+    AssumedRoleSelector,
     LayoutRenderer,
     Navigation,
     TenantSelector,
@@ -59,6 +60,7 @@ const LayoutContent = ({
                     hideNavigation ? undefined : widthClassNames
                 )}
             >
+                <AssumedRoleBanner />
                 <HeaderBar
                     start={
                         <div className="flex items-center gap-sm">
@@ -69,11 +71,11 @@ const LayoutContent = ({
                     end={
                         <div className={"flex gap-x-sm items-center justify-end"}>
                             <TenantSelector />
+                            <AssumedRoleSelector />
                             <UserMenu />
                         </div>
                     }
                 />
-                <AssumedRoleBanner />
                 <main className={"relative overflow-y-auto h-main-content"}>{children}</main>
             </div>
         </>

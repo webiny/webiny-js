@@ -46,6 +46,15 @@ class AssumedRolePresenterImpl implements Abstraction.Interface {
     ) {
         this.loadedAssumedRole = assumedRoleContext.get();
         makeAutoObservable(this, {}, { autoBind: true });
+
+        /*
+         * Preload, but only for a page that loaded into a preview — that is the one case where a
+         * header control exists to open, and it should open on a ready list rather than a spinner.
+         * On the other 99% of page loads nobody is switching roles, so nothing is fetched.
+         */
+        if (this.loadedAssumedRole) {
+            void this.load();
+        }
     }
 
     get vm(): Abstraction.ViewModel {

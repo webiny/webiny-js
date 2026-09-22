@@ -6,6 +6,7 @@ export { useDialogs } from "~/components/Dialogs/useDialogs.js";
 export { Logo } from "~/base/ui/Logo.js";
 export { TenantSelector } from "~/base/ui/TenantSelector.js";
 export { AssumedRoleBanner } from "~/base/ui/AssumedRoleBanner.js";
+export { AssumedRoleSelector } from "~/base/ui/AssumedRoleSelector.js";
 export { AdminLayout } from "~/components/AdminLayout.js";
 export { OptionsMenu } from "~/components/OptionsMenu/index.js";
 export { OptionsMenuItem } from "~/components/OptionsMenu/index.js";

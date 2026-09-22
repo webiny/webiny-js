@@ -12,6 +12,7 @@ export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
 export * from "./base/ui/TenantSelector.js";
 export * from "./base/ui/AssumedRoleBanner.js";
+export * from "./base/ui/AssumedRoleSelector.js";
 export type { LayoutProps } from "./base/ui/Layout.js";
 export * from "./base/ui/Navigation.js";
 export * from "./base/ui/Brand.js";
