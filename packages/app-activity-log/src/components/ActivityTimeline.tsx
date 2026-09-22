@@ -565,11 +565,14 @@ const RevisionGroup = ({ group }: { group: TimelineViewGroup }) => (
             </Text>
         </div>
 
-        <div className={"pb-xs"}>
-            {group.items.map(item => (
-                <SaveRow key={item.latest.id} item={item} />
-            ))}
-        </div>
+        {/*
+          No gap under the last row. Its bottom rule then lands on the next revision's header
+          rather than four pixels above it, where it read as a line belonging to nothing — the
+          revision above looked unfinished instead of closed.
+        */}
+        {group.items.map(item => (
+            <SaveRow key={item.latest.id} item={item} />
+        ))}
     </div>
 );
 
