@@ -18,6 +18,7 @@ import { RunViewFeature } from "../feature.js";
 import { ArtifactPanel } from "./ArtifactPanel.js";
 import { TokenPanel } from "./TokenPanel.js";
 import { OverridesPanel } from "./OverridesPanel.js";
+import { SegmentHeightControl } from "./SegmentHeightControl.js";
 import { ComponentExtractionGatewayFeature } from "~/features/gateway/feature.js";
 import { currentStage, stageEntry } from "~/shared/ledger.js";
 import {
@@ -41,7 +42,7 @@ import {
     pausedGateStage
 } from "~/presentation/shared/index.js";
 import { Routes } from "~/routes.js";
-import type { RunDto } from "~/shared/types.js";
+import type { RunDto, SegmentArtifactDto } from "~/shared/types.js";
 
 interface StageEvent extends IncomingGenericData {
     data?: { runId?: string; stage?: string; current?: number; total?: number; message?: string };
@@ -50,7 +51,16 @@ interface StageEvent extends IncomingGenericData {
 const runLabel = (run: RunDto): string => `run-${String(run.runNumber).padStart(4, "0")}`;
 
 /** The collapsible "Parameters this stage ran with" card (spec §5) — the facts the run records per stage. */
-const ParametersCard = ({ run, stage }: { run: RunDto; stage: Stage }) => {
+const ParametersCard = ({
+    run,
+    stage,
+    settings
+}: {
+    run: RunDto;
+    stage: Stage;
+    /** Editable settings for this stage, when it has any. Rendered beside what it ran with. */
+    settings?: React.ReactNode;
+}) => {
     const [open, setOpen] = useState(false);
     const entry = stageEntry(run, stage);
     const facts: [string, string][] = [];
@@ -103,6 +113,7 @@ const ParametersCard = ({ run, stage }: { run: RunDto; stage: Stage }) => {
                             </div>
                         ))
                     )}
+                    {settings}
                 </div>
             ) : null}
         </div>
@@ -182,6 +193,15 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
         stage =>
             stageEntry(run, stage)?.status === "done" || stageEntry(run, stage)?.status === "stale"
     );
+
+    /*
+     * What the last Segment run used, read off its own artifact rather than from a default here — a
+     * number shown under "parameters this stage ran with" has to be the one it ran with.
+     */
+    const segmentHeight =
+        selected === "segment" && vm.artifact
+            ? ((vm.artifact as SegmentArtifactDto).maxSectionHeight ?? null)
+            : null;
 
     const runStage = async (stage: Stage) => {
         try {
@@ -357,7 +377,19 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                                         from here to refresh it and everything after.
                                     </Alert>
                                 ) : null}
-                                <ParametersCard run={run} stage={selected} />
+                                <ParametersCard
+                                    run={run}
+                                    stage={selected}
+                                    settings={
+                                        selected === "segment" && segmentHeight !== null ? (
+                                            <SegmentHeightControl
+                                                presenter={presenter}
+                                                current={segmentHeight}
+                                                disabled={busy}
+                                            />
+                                        ) : null
+                                    }
+                                />
                             </div>
 
                             <div className="min-h-0 flex-1">

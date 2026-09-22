@@ -112,6 +112,8 @@ export interface IRunViewPresenter {
     excludeCluster(signature: string): Promise<void>;
     /** Set the cluster similarity threshold and re-run Cluster (W8.3). */
     applyThreshold(threshold: number): Promise<void>;
+    /** Set the section-container height and re-run Segment (W11 diagnosis). */
+    applySegmentMaxHeight(maxSectionHeight: number): Promise<void>;
     /** Clear an override, reverting that item to machine output (W8.3). */
     clearOverride(overrideId: string): Promise<void>;
     /** Set a cluster's name and/or type (W8.4 classify controls). */

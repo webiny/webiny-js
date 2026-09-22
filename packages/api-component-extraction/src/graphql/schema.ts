@@ -21,6 +21,7 @@ import {
 } from "~/domain/ledger.js";
 import type {
     ClassifyArtifact,
+    SegmentArtifact,
     ClusterArtifact,
     ComponentDecision,
     PlanArtifact
@@ -74,6 +75,14 @@ const extractMachineValue = (stage: Stage, signature: string, artifact: unknown)
             component => component.signature === signature
         );
         return found ? { props: found.props } : null;
+    }
+    if (stage === "segment") {
+        /*
+         * A parameter override has no per-item signature, so the machine value worth logging is what
+         * the stage actually ran with — which is the whole point of the log for a tuned number.
+         */
+        const value = (artifact as SegmentArtifact).maxSectionHeight;
+        return typeof value === "number" ? { maxSectionHeight: value } : null;
     }
     if (stage === "cluster") {
         const found = (artifact as ClusterArtifact).clusters.find(

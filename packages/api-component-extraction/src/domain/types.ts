@@ -181,6 +181,13 @@ export type Correction =
     | { kind: "cluster.move"; memberSignature: string; targetRepresentativeSignature: string }
     // Parameter override — changes what Cluster runs with, so it requires a re-run (not applied in place).
     | { kind: "cluster.threshold"; threshold: number }
+    /*
+     * Parameter override — the height above which a stacked block is read as a container of sections
+     * rather than one section. Per run rather than a constant because the value is tuned from evidence:
+     * it was measured on two sites, and the next tuning pass needs a run to compare against, not a code
+     * change. Requires a Segment re-run.
+     */
+    | { kind: "segment.maxSectionHeight"; maxSectionHeight: number }
     // Classify / Plan / Generate / Promote — keyed by cluster signature.
     | { kind: "classify.set"; name?: string; type?: string }
     | {

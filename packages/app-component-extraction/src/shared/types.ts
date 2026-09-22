@@ -235,6 +235,8 @@ export interface SegmentPageDto {
 
 export interface SegmentArtifactDto {
     pages: SegmentPageDto[];
+    /** The section-container height this run used. Absent on runs segmented before it was tunable. */
+    maxSectionHeight?: number;
 }
 
 export interface ClusterMemberDto {

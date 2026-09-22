@@ -717,6 +717,29 @@ class RunViewPresenterImpl implements PresenterAbstraction.Interface {
         await this.runStage("cluster");
     }
 
+    async applySegmentMaxHeight(maxSectionHeight: number): Promise<void> {
+        const runId = this.vm.run?.id;
+        if (!runId) {
+            return;
+        }
+        try {
+            // A parameter override — it changes what Segment runs with, so it takes effect by re-running.
+            const overrides = await this.gateway.setOverride(runId, "segment", "", {
+                kind: "segment.maxSectionHeight",
+                maxSectionHeight
+            });
+            runInAction(() => {
+                this.vm.overrides = overrides as OverrideDto[];
+            });
+        } catch (error) {
+            runInAction(() => {
+                this.vm.error = (error as Error).message;
+            });
+            return;
+        }
+        await this.runStage("segment");
+    }
+
     async clearOverride(overrideId: string): Promise<void> {
         const runId = this.vm.run?.id;
         if (!runId) {

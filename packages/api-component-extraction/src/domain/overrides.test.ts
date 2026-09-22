@@ -7,6 +7,7 @@ import {
     applyPlanOverrides,
     decisionsFromOverrides,
     effectiveClusterThreshold,
+    effectiveMaxSectionHeight,
     excludedPageUrls,
     normalizeUrl,
     overrideMode
@@ -434,5 +435,35 @@ describe("page + parameter helpers", () => {
             )
         ).toBe(0.85);
         expect(effectiveClusterThreshold([], 0.5)).toBe(0.5);
+    });
+
+    it("resolves the effective section-container height from the latest parameter override", () => {
+        expect(
+            effectiveMaxSectionHeight(
+                [
+                    override("segment", "", {
+                        kind: "segment.maxSectionHeight",
+                        maxSectionHeight: 1200
+                    }),
+                    override("segment", "", {
+                        kind: "segment.maxSectionHeight",
+                        maxSectionHeight: 700
+                    })
+                ],
+                900
+            )
+        ).toBe(700);
+        expect(effectiveMaxSectionHeight([], 900)).toBe(900);
+    });
+
+    /*
+     * Both are parameters: they change what a stage runs with, so neither can be applied to an existing
+     * artifact and both require a re-run. Treating one as an artifact override would have it silently
+     * reported as applied while the stage kept its old output.
+     */
+    it("marks the section-container height a parameter override too", () => {
+        expect(overrideMode("segment.maxSectionHeight")).toBe("parameter");
+        expect(overrideMode("cluster.threshold")).toBe("parameter");
+        expect(overrideMode("cluster.exclude")).toBe("artifact");
     });
 });

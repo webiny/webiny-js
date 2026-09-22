@@ -36,9 +36,15 @@ export interface ApplyResult<A> {
     reattachments: Reattachment[];
 }
 
-/** An override changes a stage's output in place, except the cluster threshold which changes its input. */
+/** The corrections that change what a stage runs WITH rather than what it produced. */
+const PARAMETER_KINDS: ReadonlySet<CorrectionKind> = new Set<CorrectionKind>([
+    "cluster.threshold",
+    "segment.maxSectionHeight"
+]);
+
+/** An override changes a stage's output in place, except a parameter which changes its input. */
 export const overrideMode = (kind: CorrectionKind): OverrideMode =>
-    kind === "cluster.threshold" ? "parameter" : "artifact";
+    PARAMETER_KINDS.has(kind) ? "parameter" : "artifact";
 
 /** A page's normalised URL — the key page-level overrides (exclude, discover edits) attach to. */
 export const normalizeUrl = (url: string): string => {
@@ -517,4 +523,14 @@ export const effectiveClusterThreshold = (overrides: Override[], fallback: numbe
         .reverse()
         .find(override => override.correction.kind === "cluster.threshold");
     return latest ? asKind(latest.correction, "cluster.threshold").threshold : fallback;
+};
+
+/** The effective section-container height — the latest parameter override, or the fallback. */
+export const effectiveMaxSectionHeight = (overrides: Override[], fallback: number): number => {
+    const latest = [...overrides]
+        .reverse()
+        .find(override => override.correction.kind === "segment.maxSectionHeight");
+    return latest
+        ? asKind(latest.correction, "segment.maxSectionHeight").maxSectionHeight
+        : fallback;
 };

@@ -9,16 +9,28 @@ import type {
 } from "~/domain/artifacts.js";
 import { detectSections } from "./boundaries.js";
 import { cropFromScreenshot } from "~/features/shared/imageCrop.js";
+import { OverrideRepository } from "~/domain/abstractions.js";
+import { effectiveMaxSectionHeight } from "~/domain/overrides.js";
 import { ExtractionValidationError, type ExtractionError } from "~/domain/errors.js";
 
 const MIN_SECTION_HEIGHT = 120;
 const MIN_WIDTH_RATIO = 0.5;
 const DESKTOP_WIDTH = 1440;
-// A near-full-width block taller than this that is a vertical stack of several full-width children is a
-// container to split into those children, not one section — so a page-wrapping <main>/content <div> can't
-// swallow the whole page as a single giant block. ~1.8 viewport heights: comfortably above a tall hero or
-// content section, well below a page-length wrapper.
-const MAX_SECTION_HEIGHT = 1600;
+/*
+ * A near-full-width block taller than this that is a vertical stack of several full-width children is a
+ * container to split into those children, not one section — so a page-wrapping <main>/content <div>
+ * can't swallow the whole page as a single giant block.
+ *
+ * This is the default, not a constant: it is overridable per run, because it is the one number that
+ * decides whether two logical blocks stay merged. Measured across 11 real pages on two sites, every
+ * under-split section was held together by this gate alone and by nothing else. At 1600 an entire page
+ * could come back as a single section carrying its own header, hero and footer, which costs far more
+ * than a section too many: a page that is one section contributes no footer to clustering at all.
+ *
+ * 900 rather than lower because the gains plateau just below it — dropping to 700 adds four sections
+ * across those pages and splits a 713px footer whose single-component shape is already validated.
+ */
+const DEFAULT_MAX_SECTION_HEIGHT = 900;
 const MIN_CHILDREN_TO_SPLIT = 2;
 // Section crops serve both the cluster gallery and the model reference image. Width and height are
 // capped independently so a tall section keeps its full horizontal detail (a single edge cap would
@@ -34,6 +46,8 @@ const CROP_MAX_HEIGHT = 4000;
 class SegmentHandlerImpl implements StageHandler.Interface {
     readonly stage = "segment" as const;
 
+    constructor(private overrides: OverrideRepository.Interface) {}
+
     async execute(context: StageContext): Promise<Result<StageOutcome, ExtractionError>> {
         const captureRef = context.upstream.pages;
         if (!captureRef) {
@@ -48,8 +62,16 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             return Result.fail(new ExtractionValidationError("the capture artifact is empty"));
         }
 
+        // The effective container height: a `segment.maxSectionHeight` parameter override, else the default.
+        const overridesResult = await this.overrides.listByJob(context.job.id);
+        const maxSectionHeight = overridesResult.isOk()
+            ? effectiveMaxSectionHeight(overridesResult.value, DEFAULT_MAX_SECTION_HEIGHT)
+            : DEFAULT_MAX_SECTION_HEIGHT;
+
         const total = capture.pages.length;
-        await context.progress({ message: `Segmenting ${total} captured page(s)…` });
+        await context.progress({
+            message: `Segmenting ${total} captured page(s) at a ${maxSectionHeight}px container height…`
+        });
 
         const pages: SegmentedPage[] = [];
         let totalSections = 0;
@@ -74,7 +96,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
                 minHeight: MIN_SECTION_HEIGHT,
                 minWidthRatio: MIN_WIDTH_RATIO,
                 viewportWidth: DESKTOP_WIDTH,
-                maxSectionHeight: MAX_SECTION_HEIGHT,
+                maxSectionHeight,
                 minChildrenToSplit: MIN_CHILDREN_TO_SPLIT
             });
 
@@ -128,7 +150,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
             });
         }
 
-        const artifact: SegmentArtifact = { pages };
+        const artifact: SegmentArtifact = { pages, maxSectionHeight };
         const key = context.artifactKey("sections");
         const written = await context.store.putJson(key, artifact);
         if (written.isFail()) {
@@ -136,7 +158,7 @@ class SegmentHandlerImpl implements StageHandler.Interface {
         }
 
         await context.log.info({
-            message: `Segmented ${pages.length} page(s) into ${totalSections} section(s).`
+            message: `Segmented ${pages.length} page(s) into ${totalSections} section(s) at a ${maxSectionHeight}px container height.`
         });
         return Result.ok({ artifacts: { sections: key }, counts: { sections: totalSections } });
     }
@@ -144,5 +166,5 @@ class SegmentHandlerImpl implements StageHandler.Interface {
 
 export const SegmentHandler = StageHandler.createImplementation({
     implementation: SegmentHandlerImpl,
-    dependencies: []
+    dependencies: [OverrideRepository]
 });

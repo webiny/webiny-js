@@ -208,6 +208,12 @@ export interface SegmentedPage {
 
 export interface SegmentArtifact {
     pages: SegmentedPage[];
+    /**
+     * The section-container height this run used. Recorded on the artifact because it is tunable per
+     * run: without it, two runs of the same job produce different section counts with nothing on
+     * either artifact saying why.
+     */
+    maxSectionHeight: number;
 }
 
 // ----- Cluster (output) --------------------------------------------------------------------------
