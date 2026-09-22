@@ -344,6 +344,9 @@ const RunViewInner = createReactiveComponent(function RunViewInner() {
                                         ) : null}
                                     </div>
                                 </div>
+                                <Text size="sm" className="text-neutral-strong">
+                                    {meta.description}
+                                </Text>
                                 <StageKindSentence kind={meta.kind} />
                             </div>
 
