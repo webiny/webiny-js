@@ -55,6 +55,12 @@ export interface IAiPowerUpsProjectPreset {
     version: number;
 }
 
+/** What a project decided about one capability. Absent `enabled` means enabled. */
+export interface IAiPowerUpsCapabilityEntry {
+    enabled?: boolean;
+    overrides: IAiPowerUpsCapabilityOverride;
+}
+
 export interface IAiPowerUpsCapabilityOverride {
     roleId?: string;
     connectionId?: string;
@@ -73,10 +79,10 @@ export interface IAiPowerUpsSettings {
     capabilities: {
         /**
          * Keyed by capability id, and open-ended: extensions register their own, so there is no
-         * union to enumerate. `Partial` because most capabilities have no override, and a bare
+         * union to enumerate. `Partial` because most capabilities are untouched, and a bare
          * `Record` would type a miss as present.
          */
-        overrides: Partial<Record<string, IAiPowerUpsCapabilityOverride>>;
+        items: Partial<Record<string, IAiPowerUpsCapabilityEntry>>;
     };
     readerPersonas: {
         presets: IAiPowerUpsPersonaPreset[];
