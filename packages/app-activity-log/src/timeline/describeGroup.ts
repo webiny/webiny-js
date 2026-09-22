@@ -1,5 +1,5 @@
 import { describeActor } from "./describeActor.js";
-import type { TimelineGroup } from "./groupByRevision.js";
+import { revisionLabel, type TimelineGroup } from "./groupByRevision.js";
 
 export interface DescribedGroup {
     /** "Revision 4", or the raw revision id when it carries no version suffix. */
@@ -90,7 +90,7 @@ export const describeGroup = (group: TimelineGroup): DescribedGroup => {
     const counted = `${saveCount} ${saveCount === 1 ? "save" : "saves"}`;
 
     return {
-        label: group.version === null ? group.revision : `Revision ${group.version}`,
+        label: revisionLabel(group.revision),
         meta: range === "" ? counted : `${counted} · ${range}`,
         who: formatNameList(names)
     };

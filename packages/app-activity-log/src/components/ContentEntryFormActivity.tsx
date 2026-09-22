@@ -15,6 +15,7 @@ import { ActivityLogAdminFeature } from "~/feature.js";
 import { useActivityTimeline } from "~/hooks/useActivityTimeline.js";
 import { writeSignature } from "~/timeline/writeSignature.js";
 import { ActivityTimelineView } from "./ActivityTimeline.js";
+import { ActivityFilterMenu } from "./ActivityTimelineFilters.js";
 
 /**
  * The activity panel, beside the form.
@@ -106,7 +107,18 @@ const ActivityPanel = ({
                 }
             >
                 <Heading level={6}>Activity</Heading>
+                {/*
+                  Filter, refresh and close as one group, which is where the design puts the
+                  controls: reached for rather than read, and out of the way of the timeline. What
+                  stays below is only the applied state — the summary line and a chip per filter.
+                */}
                 <div className={"ml-auto flex items-center gap-xxs"}>
+                    <ActivityFilterMenu
+                        revisions={timeline.view.revisions}
+                        actors={timeline.view.actors}
+                        filters={timeline.filters}
+                        onChange={timeline.setFilters}
+                    />
                     <IconButton
                         variant={"ghost"}
                         size={"sm"}

@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import { ActivityTimelineView } from "~/components/ActivityTimeline.js";
+import { ActivityFilterMenu } from "~/components/ActivityTimelineFilters.js";
 import { buildTimelineView } from "~/hooks/buildTimelineView.js";
 import type { TimelineFilters } from "~/hooks/buildTimelineView.js";
 import type { TimelineRecord } from "~/timeline/types.js";
@@ -1046,7 +1047,17 @@ describe("the filter panel opens where the reader is looking", () => {
      * for exactly this reason, so the span is the house convention as well as the fix.
      */
     it("gives Radix a real element to anchor the panel to", () => {
-        renderState([record({ changeset: [{ path: "title", label: "Title" }] })]);
+        // Rendered directly: the controls live in the panel's chrome now, not in the timeline.
+        render(
+            <AdminUiProvider>
+                <ActivityFilterMenu
+                    revisions={["abc#0002"]}
+                    actors={[{ id: "u-1", displayName: "Ada Editor" }]}
+                    filters={{}}
+                    onChange={vi.fn()}
+                />
+            </AdminUiProvider>
+        );
 
         const trigger = document.querySelector('[data-slot="popover-trigger"]');
 

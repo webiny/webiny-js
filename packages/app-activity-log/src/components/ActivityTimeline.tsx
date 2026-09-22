@@ -651,7 +651,6 @@ export const ActivityTimelineView = ({
         <div className={"flex h-full min-h-0 flex-col"}>
             <ActivityTimelineFilters
                 summary={view.summary}
-                revisions={view.revisions}
                 actors={view.actors}
                 filters={filters}
                 onChange={setFilters}

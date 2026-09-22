@@ -77,3 +77,20 @@ export const parseVersion = (revision: string): number | null => {
 
     return Number.isFinite(version) ? version : null;
 };
+
+/**
+ * What to call a revision on screen.
+ *
+ * One rule, because the panel names the same revision in three places — the sticky header above
+ * its saves, the option in the filter menu, and the chip saying the timeline is pinned to it. A
+ * header reading "Revision 3" over a chip reading "6ab0f74885e964000293c770#0003" is the same
+ * revision described two ways, and the reader has to work out that it is.
+ *
+ * Falls back to the raw id on anything without a version suffix, which is the same judgement
+ * `parseVersion` makes: show what is known rather than inventing a number.
+ */
+export const revisionLabel = (revision: string): string => {
+    const version = parseVersion(revision);
+
+    return version === null ? revision : `Revision ${version}`;
+};
