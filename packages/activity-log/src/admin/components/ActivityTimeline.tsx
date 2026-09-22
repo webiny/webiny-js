@@ -608,6 +608,8 @@ export interface ActivityTimelineViewProps {
     setFilters(filters: TimelineFilters): void;
     clearFilters(): void;
     loadMore(): void;
+    /** Whether the filter bar is showing. Owned by the panel, which also owns the button. */
+    filtersOpen?: boolean;
 }
 
 /**
@@ -627,6 +629,7 @@ export const ActivityTimelineView = ({
     filters,
     setFilters,
     clearFilters,
+    filtersOpen,
     loadMore
 }: ActivityTimelineViewProps) => {
     if (loading) {
@@ -651,10 +654,11 @@ export const ActivityTimelineView = ({
         <div className={"flex h-full min-h-0 flex-col"}>
             <ActivityTimelineFilters
                 summary={view.summary}
+                open={filtersOpen ?? false}
+                revisions={view.revisions}
                 actors={view.actors}
                 filters={filters}
                 onChange={setFilters}
-                onClear={clearFilters}
             />
 
             <div className={"min-h-0 flex-1 overflow-y-auto"}>

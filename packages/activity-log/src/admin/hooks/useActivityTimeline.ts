@@ -344,6 +344,23 @@ export const useActivityTimeline = (
 
     const clearFilters = useCallback(() => setFilters({}), []);
 
+    /**
+     * The last records seen with no filter applied, which is what the filter options are built
+     * from.
+     *
+     * Filtering is done by the server, so `records` under an active filter holds only what
+     * survived it. Deriving the options from that would offer the reader exactly the value they
+     * already chose — a revision dropdown listing one revision, and no way to move to another.
+     *
+     * A ref rather than state: it is read while rendering the view and never drives a render of
+     * its own, and making it state would re-render every load to store what was just rendered.
+     */
+    const catalogRecords = useRef<TimelineRecord[]>([]);
+
+    if (!hasActiveFilters(filters)) {
+        catalogRecords.current = records;
+    }
+
     const view = useMemo(
         () =>
             buildTimelineView({
@@ -351,7 +368,8 @@ export const useActivityTimeline = (
                 filters,
                 hasMore,
                 currentRevision: params.currentRevision,
-                currentStatus: params.currentStatus
+                currentStatus: params.currentStatus,
+                catalogRecords: catalogRecords.current
             }),
         [records, filters, hasMore, params.currentRevision, params.currentStatus]
     );

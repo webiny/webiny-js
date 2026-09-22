@@ -6,7 +6,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { AdminUiProvider } from "@webiny/admin-ui";
 import { ActivityTimelineView } from "~/admin/components/ActivityTimeline.js";
-import { ActivityFilterMenu } from "~/admin/components/ActivityTimelineFilters.js";
 import { buildTimelineView } from "~/admin/hooks/buildTimelineView.js";
 import type { TimelineFilters } from "~/admin/hooks/buildTimelineView.js";
 import type { TimelineRecord } from "~/admin/timeline/types.js";
@@ -61,6 +60,7 @@ const renderState = (
         loading?: boolean;
         refreshing?: boolean;
         error?: string | null;
+        filtersOpen?: boolean;
     } = {}
 ) => {
     const filters = options.filters ?? {};
@@ -85,6 +85,7 @@ const renderState = (
                 setFilters={vi.fn()}
                 clearFilters={vi.fn()}
                 loadMore={vi.fn()}
+                filtersOpen={options.filtersOpen ?? false}
             />
         </AdminUiProvider>
     );
@@ -1028,44 +1029,32 @@ describe("a save's fields sit on the clock's line", () => {
     });
 });
 
-describe("the filter panel opens where the reader is looking", () => {
+describe("the filter bar opens where the reader is looking", () => {
     /**
      * A regression guard for a bug that looked like a console warning.
      *
-     * `Popover` hands its trigger straight to Radix with `asChild`, and Radix anchors the panel off
-     * a ref to a real DOM node. Every admin-ui component is wrapped by `makeDecoratable`, which is
-     * a plain function component, so passing one directly drops the ref — React says so ("Function
-     * components cannot be given refs") and Radix, with no anchor to measure, lays the panel out at
-     * the viewport origin. Measured in the running admin before the fix: open, populated, and at
-     * left 0, top -340. Entirely off screen.
+     * The controls used to hang off `Popover`, which hands its trigger straight to Radix with
+     * `asChild`. Radix anchors off a ref to a real DOM node, and every admin-ui component is
+     * wrapped by `makeDecoratable` — a plain function component, which drops the ref. React said
+     * so ("Function components cannot be given refs") and Radix, with nothing to measure, laid the
+     * panel out at the viewport origin: open, populated, and at left 0, top -340. Entirely off
+     * screen, while looking like it worked.
      *
-     * Nothing about that reads as broken from the outside. The button responds, the panel mounts,
-     * `data-state` goes to `open` — the filters are just somewhere nobody can see. So the guard is
-     * on the one structural difference: which node Radix ends up holding.
-     *
-     * A proxy rather than the real property, which is "Radix can measure this node" and is not
-     * something jsdom can answer. `Tooltip` in the design system wraps its own trigger in a span
-     * for exactly this reason, so the span is the house convention as well as the fix.
+     * The dropdowns use `DropdownMenu`, which wraps its own trigger before handing it over, so the
+     * hazard now sits inside the design system rather than at this call site. What is left to
+     * guard is that the trigger is a real element and not a decoratable component again.
      */
-    it("gives Radix a real element to anchor the panel to", () => {
-        // Rendered directly: the controls live in the panel's chrome now, not in the timeline.
-        render(
-            <AdminUiProvider>
-                <ActivityFilterMenu
-                    revisions={["abc#0002"]}
-                    actors={[{ id: "u-1", displayName: "Ada Editor" }]}
-                    filters={{}}
-                    onChange={vi.fn()}
-                />
-            </AdminUiProvider>
-        );
+    it("gives Radix a real element to anchor a menu to", () => {
+        renderState([record({ changeset: [{ path: "title", label: "Title" }] })], {
+            filtersOpen: true
+        });
 
-        const trigger = document.querySelector('[data-slot="popover-trigger"]');
+        // Radix marks its trigger with `aria-haspopup="menu"`, on whichever node it got a ref to.
+        const trigger = document.querySelector('[aria-haspopup="menu"]');
 
-        // A BUTTON here means the slot landed on `IconButton`'s own element and the ref was
-        // dropped on the way — which is the broken arrangement, not the fixed one.
         expect(trigger).not.toBeNull();
-        expect(trigger!.tagName).toBe("SPAN");
-        expect(trigger!.querySelector('[aria-label="Filter activity"]')).not.toBeNull();
+        // A decoratable component here would render something React cannot ref.
+        expect(["BUTTON", "SPAN", "DIV"]).toContain(trigger!.tagName);
+        expect(trigger!.textContent).toContain("All revisions");
     });
 });

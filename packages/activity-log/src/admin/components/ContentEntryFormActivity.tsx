@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { Heading, IconButton } from "@webiny/admin-ui";
@@ -15,7 +15,7 @@ import { ActivityLogAdminFeature } from "~/admin/feature.js";
 import { useActivityTimeline } from "~/admin/hooks/useActivityTimeline.js";
 import { writeSignature } from "~/admin/timeline/writeSignature.js";
 import { ActivityTimelineView } from "./ActivityTimeline.js";
-import { ActivityFilterMenu } from "./ActivityTimelineFilters.js";
+import { ActivityFilterToggle } from "./ActivityTimelineFilters.js";
 
 /**
  * The activity panel, beside the form.
@@ -99,6 +99,14 @@ const ActivityPanel = ({
         currentStatus: status
     });
 
+    /**
+     * Whether the filter bar is showing. Here rather than in the timeline because the button that
+     * opens it lives in the panel's chrome and the bar it opens lives below — one piece of state
+     * with two readers, so it belongs to the thing that contains both.
+     */
+    const [filtersOpen, setFiltersOpen] = useState(false);
+    const filterCount = (timeline.filters.revision ? 1 : 0) + (timeline.filters.actorId ? 1 : 0);
+
     return (
         <div className={"flex h-full min-h-0 flex-col"}>
             <div
@@ -113,11 +121,10 @@ const ActivityPanel = ({
                   stays below is only the applied state — the summary line and a chip per filter.
                 */}
                 <div className={"ml-auto flex items-center gap-xxs"}>
-                    <ActivityFilterMenu
-                        revisions={timeline.view.revisions}
-                        actors={timeline.view.actors}
-                        filters={timeline.filters}
-                        onChange={timeline.setFilters}
+                    <ActivityFilterToggle
+                        open={filtersOpen}
+                        count={filterCount}
+                        onToggle={() => setFiltersOpen(open => !open)}
                     />
                     <IconButton
                         variant={"ghost"}
@@ -138,7 +145,7 @@ const ActivityPanel = ({
             </div>
 
             <div className={"min-h-0 flex-1"}>
-                <ActivityTimelineView {...timeline} />
+                <ActivityTimelineView {...timeline} filtersOpen={filtersOpen} />
             </div>
         </div>
     );
