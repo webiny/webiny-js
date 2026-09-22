@@ -20,7 +20,7 @@ export interface PageMapFailure {
 
 /** One decision this PoC made by fiat, recorded rather than taken silently (W10.4). */
 export interface DiscardEntry {
-    kind: "link.unmigrated";
+    kind: "link.unmigrated" | "link.invented";
     /** The migrated page the occurrence is on. */
     page: string;
     /** The source page it came from. */
@@ -40,6 +40,11 @@ export interface PageMapLinks {
     rewritten: number;
     external: number;
     unmigrated: number;
+    /**
+     * Destinations the model invented and the credibility rule emptied, counted before the rest —
+     * they never reach the page, so they are not part of the before/after reconciliation.
+     */
+    dropped: number;
 }
 
 export interface PageMap {

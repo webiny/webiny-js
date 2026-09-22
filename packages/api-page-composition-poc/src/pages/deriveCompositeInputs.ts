@@ -1,4 +1,5 @@
 import type { CapturedNode } from "@webiny/api-component-extraction/domain/artifacts.js";
+import { isCredibleDestination, type DestinationContext } from "~/pages/isCredibleDestination.js";
 import type { ComponentInput, ComponentManifest } from "@webiny/website-builder-sdk";
 import {
     collectImages,
@@ -244,44 +245,6 @@ const buildItem = (
     return item;
 };
 
-const PLACEHOLDER_DESTINATIONS = new Set(["", "#", "/", "javascript:void(0)"]);
-
-/**
- * Would this destination actually go somewhere on the migrated site?
- *
- * Three ways to be credible: it is one of the destinations captured from this section; it is
- * absolute and points at another host, so it still resolves; or it is not an http(s) scheme at all
- * (`mailto:`, `tel:`), which cannot 404.
- *
- * Everything else is a generated default the model invented. A relative one is the worst of them:
- * `/demo` looks live and returns a 404 on the migrated site, where `#` at least does nothing. An
- * absolute URL on the SOURCE host that was never captured is the same problem wearing a domain.
- */
-const isCredibleDestination = (
-    destination: string,
-    context: { captured: ReadonlySet<string>; sourceHost: string }
-): boolean => {
-    const trimmed = destination.trim();
-
-    if (!trimmed || PLACEHOLDER_DESTINATIONS.has(trimmed)) {
-        return false;
-    }
-    if (context.captured.has(trimmed)) {
-        return true;
-    }
-
-    try {
-        const url = new URL(trimmed);
-        if (url.protocol !== "http:" && url.protocol !== "https:") {
-            return true;
-        }
-        return url.host !== "" && url.host !== context.sourceHost;
-    } catch {
-        // Not absolute, and not captured: a relative path the model made up.
-        return false;
-    }
-};
-
 /**
  * Does a generated default list carry a destination that goes nowhere?
  *
@@ -291,7 +254,7 @@ const isCredibleDestination = (
 const hasDeadDestination = (
     value: unknown,
     definition: InputDefinition,
-    context: { captured: ReadonlySet<string>; sourceHost: string }
+    context: DestinationContext
 ): boolean => {
     if (!Array.isArray(value)) {
         return false;

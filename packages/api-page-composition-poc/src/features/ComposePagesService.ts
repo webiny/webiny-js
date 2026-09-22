@@ -38,6 +38,12 @@ import { deriveInstanceProps } from "~/pages/deriveInstanceProps.js";
 import { deriveCompositeInputs } from "~/pages/deriveCompositeInputs.js";
 import { applyFormPreview } from "~/pages/applyFormPreview.js";
 import {
+    stripInventedDestinations,
+    type InventedDestination,
+    type StripResult
+} from "~/pages/stripInventedDestinations.js";
+import { collectLinks } from "~/pages/harvest.js";
+import {
     rewriteDestinations,
     tally,
     type DestinationOutcome
@@ -49,6 +55,8 @@ import { scalarInputNames } from "~/pages/scalarInputNames.js";
 interface CreatedPage {
     entry: PageMapEntry;
     bindings: Record<string, any>;
+    /** Destinations the model invented on this page, emptied before it was built. */
+    invented: InventedDestination[];
 }
 
 /** What a promoted component needs to be placed: its final name, and the manifest for its inputs. */
@@ -148,6 +156,15 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             });
             outcomes.push(...rewrite.outcomes);
 
+            for (const dropped of page.invented) {
+                discarded.push({
+                    kind: "link.invented",
+                    page: page.entry.path,
+                    sourceUrl: page.entry.sourceUrl,
+                    detail: `${dropped.value} emptied at ${dropped.path}: the page never linked there`
+                });
+            }
+
             for (const outcome of rewrite.outcomes) {
                 if (outcome.kind === "unmigrated") {
                     discarded.push({
@@ -190,7 +207,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             after: counts.destinations,
             rewritten: counts.rewritten,
             external: counts.external,
-            unmigrated: counts.unmigrated
+            unmigrated: counts.unmigrated,
+            dropped: created.reduce((total, item) => total + item.invented.length, 0)
         };
 
         const stored = await this.pageMaps.set({
@@ -292,21 +310,21 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         const identity = toPageIdentity(page.url, page.title);
 
         const placements: ComponentPlacement[] = [];
+        const invented: InventedDestination[] = [];
         for (const instance of page.instances) {
             const component = placeable.get(instance.signature);
             if (!component) {
                 continue;
             }
-            placements.push({
-                manifest: component.manifest,
-                inputs: await this.instanceInputs({
-                    page,
-                    instance,
-                    component,
-                    segmentByUrl,
-                    trees
-                })
+            const derivedInputs = await this.instanceInputs({
+                page,
+                instance,
+                component,
+                segmentByUrl,
+                trees
             });
+            invented.push(...derivedInputs.invented);
+            placements.push({ manifest: component.manifest, inputs: derivedInputs.inputs });
         }
 
         if (placements.length === 0) {
@@ -355,7 +373,8 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
                 pageId: createdPage.value.id,
                 entryId: createdPage.value.entryId
             },
-            bindings
+            bindings,
+            invented
         });
     }
 
@@ -372,7 +391,7 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
         component: PlaceableComponent;
         segmentByUrl: Map<string, SegmentedPage>;
         trees: Map<string, CapturedNode>;
-    }): Promise<Record<string, unknown>> {
+    }): Promise<StripResult> {
         const { page, instance, component, segmentByUrl, trees } = params;
 
         const node = await this.sectionNode(page.url, instance.sectionIndex, segmentByUrl, trees);
@@ -421,12 +440,31 @@ class ComposePagesServiceImpl implements Abstraction.Interface {
             }
         }
 
-        // Last, because it overrides what the layers above produced: a form must say that it does
-        // not submit, and must not have a destination derived onto its submit control.
-        return applyFormPreview({
+        const previewed = applyFormPreview({
             manifest: component.manifest,
             componentType: component.type,
             inputs
+        });
+
+        /*
+         * Last of all, and deliberately outside the three layers: every destination on the finished
+         * inputs is checked against what this section actually linked to, whatever shape it arrived
+         * in. Putting the check inside derivation is what let 36 invented paths through on the five
+         * customer sites — it ran on lists of composites and was never asked about a scalar or a
+         * single composite, which is where headers, footers and CTAs keep their links.
+         */
+        const captured = node ? collectLinks(node).map(link => link.href) : [];
+        let sourceHost = "";
+        try {
+            sourceHost = new URL(page.url).host;
+        } catch {
+            sourceHost = "";
+        }
+
+        return stripInventedDestinations({
+            inputs: previewed,
+            manifest: component.manifest,
+            context: { captured: new Set(captured), sourceHost }
         });
     }
 
