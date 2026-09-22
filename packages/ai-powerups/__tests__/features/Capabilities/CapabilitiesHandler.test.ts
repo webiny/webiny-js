@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
 import CapabilitiesHandler from "~/api/features/Capabilities/CapabilitiesHandler.js";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
+import type { PersistedCapabilities } from "~/api/features/Capabilities/types.js";
 
 function buildHandler(): AiPowerUpsSettingsGroupHandler.Interface {
     const container = new Container();
@@ -11,6 +12,15 @@ function buildHandler(): AiPowerUpsSettingsGroupHandler.Interface {
 }
 
 const handler = buildHandler();
+
+/**
+ * `mapToStorage` is typed `Promise<unknown>` on the abstraction, so every assertion would otherwise
+ * cast at the point of use. One cast here keeps the tests reading as plain property access.
+ */
+async function store(input: unknown): Promise<PersistedCapabilities> {
+    const stored = await handler.mapToStorage(input, null);
+    return stored as PersistedCapabilities;
+}
 
 describe("CapabilitiesHandler", () => {
     /*
@@ -70,27 +80,24 @@ describe("CapabilitiesHandler", () => {
      * missing rather than simply on.
      */
     it("stores an entry for every capability the form sent", async () => {
-        const stored = await handler.mapToStorage(
-            {
-                items: {
-                    "cms.generateEntry": {
-                        enabled: true,
-                        overrides: {
-                            roleId: null,
-                            connectionId: null,
-                            additionalInstructions: "  "
-                        }
-                    },
-                    "wb.generatePage": {
-                        enabled: true,
-                        overrides: { additionalInstructions: "Keep it short." }
+        const stored = await store({
+            items: {
+                "cms.generateEntry": {
+                    enabled: true,
+                    overrides: {
+                        roleId: null,
+                        connectionId: null,
+                        additionalInstructions: "  "
                     }
+                },
+                "wb.generatePage": {
+                    enabled: true,
+                    overrides: { additionalInstructions: "Keep it short." }
                 }
-            },
-            null
-        );
+            }
+        });
 
-        expect((stored as any).items).toEqual({
+        expect(stored.items).toEqual({
             "cms.generateEntry": { enabled: true, overrides: {} },
             "wb.generatePage": {
                 enabled: true,
@@ -109,24 +116,21 @@ describe("CapabilitiesHandler", () => {
      * enabled on the next load. The switch appears to do nothing at all.
      */
     it("stores a capability that was switched off", async () => {
-        const stored = await handler.mapToStorage(
-            {
-                items: {
-                    "fm.imageEnrichment": {
-                        enabled: false,
-                        overrides: {
-                            roleId: null,
-                            connectionId: null,
-                            model: null,
-                            additionalInstructions: null
-                        }
+        const stored = await store({
+            items: {
+                "fm.imageEnrichment": {
+                    enabled: false,
+                    overrides: {
+                        roleId: null,
+                        connectionId: null,
+                        model: null,
+                        additionalInstructions: null
                     }
                 }
-            },
-            null
-        );
+            }
+        });
 
-        expect((stored as any).items["fm.imageEnrichment"]).toEqual({
+        expect(stored.items["fm.imageEnrichment"]).toEqual({
             enabled: false,
             overrides: {}
         });
@@ -134,35 +138,32 @@ describe("CapabilitiesHandler", () => {
 
     /* An untouched switch can arrive as `null`, and that means on, same as absence. */
     it("settles a null switch to enabled rather than storing the null", async () => {
-        const stored = await handler.mapToStorage(
+        const stored = await store(
             { items: { "cms.generateEntry": { enabled: null, overrides: {} } } },
             null
         );
 
-        expect((stored as any).items["cms.generateEntry"]).toEqual({
+        expect(stored.items["cms.generateEntry"]).toEqual({
             enabled: true,
             overrides: {}
         });
     });
 
     it("keeps nulls and empty strings out of a stored override", async () => {
-        const stored = await handler.mapToStorage(
-            {
-                items: {
-                    "wb.generatePage": {
-                        overrides: {
-                            roleId: null,
-                            connectionId: "",
-                            model: null,
-                            additionalInstructions: "Keep it short."
-                        }
+        const stored = await handler.mapToStorage({
+            items: {
+                "wb.generatePage": {
+                    overrides: {
+                        roleId: null,
+                        connectionId: "",
+                        model: null,
+                        additionalInstructions: "Keep it short."
                     }
                 }
-            },
-            null
-        );
+            }
+        });
 
-        expect((stored as any).items["wb.generatePage"]).toEqual({
+        expect(stored.items["wb.generatePage"]).toEqual({
             enabled: true,
             overrides: { additionalInstructions: "Keep it short." }
         });

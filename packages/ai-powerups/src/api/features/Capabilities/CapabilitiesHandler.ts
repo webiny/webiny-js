@@ -1,12 +1,10 @@
 import { z } from "zod";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
 import { AI_MODEL_ROLE_IDS } from "~/api/features/ModelRoles/index.js";
-import type {
-    AiCapabilityEntry,
-    AiCapabilityOverride,
-    CapabilitiesSettings,
-    PersistedCapabilities
-} from "./types.js";
+import type { AiCapabilityEntry } from "./types.js";
+import type { AiCapabilityOverride } from "./types.js";
+import type { CapabilitiesSettings } from "./types.js";
+import type { PersistedCapabilities } from "./types.js";
 
 /*
  * Every field here is empty by default and the admin form sends `null` for an untouched one, so
@@ -79,13 +77,16 @@ class CapabilitiesHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interfac
             // A type guard, not a plain predicate: a bare `Boolean(...)` filter reads the same but
             // narrows nothing, so the `undefined` this exists to drop would flow straight on.
             .filter((entry): entry is [string, AiCapabilityEntry] => Boolean(entry[1]))
-            .map(([id, entry]) => [
-                id,
-                {
-                    enabled: normaliseEnabled(entry.enabled),
-                    overrides: dropEmptyValues(entry.overrides ?? {})
-                }
-            ]);
+            .map(
+                ([id, entry]) =>
+                    [
+                        id,
+                        {
+                            enabled: normaliseEnabled(entry.enabled),
+                            overrides: dropEmptyValues(entry.overrides ?? {})
+                        }
+                    ] as const
+            );
 
         return { items: Object.fromEntries(entries) };
     }

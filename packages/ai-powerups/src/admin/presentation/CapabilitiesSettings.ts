@@ -13,6 +13,20 @@ import type { AiCapability } from "~/admin/features/listCapabilities/abstraction
 import type { FormModel, FormModelFactory } from "@webiny/app-admin";
 
 /**
+ * Absent means enabled, exactly as it does in storage and in the resolver.
+ *
+ * The form seeds an untouched switch to `true`, so in practice this only reads `false` after someone
+ * flips one. Spelled `!== false` anyway, so it keeps agreeing with the other two if that default
+ * ever goes away.
+ */
+function isEnabled(form: FormModel.Interface, capabilityId: string): boolean {
+    const data = form.getData() as {
+        capabilities?: { items?: Record<string, { enabled?: boolean }> };
+    };
+    return data.capabilities?.items?.[capabilityId]?.enabled !== false;
+}
+
+/**
  * One row per AI feature, all of them empty by default.
  *
  * The rows come from the api's registered capabilities, so a feature that declares one appears here
@@ -124,7 +138,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             roleId: of
                                 .text()
                                 .label("Model role")
-                                .disabledWhen(({ form }) => !this.isEnabled(form, capability.id))
+                                .disabledWhen(({ form }) => !isEnabled(form, capability.id))
                                 .description(
                                     `Which role supplies this feature's model. Left empty, it uses ${defaultRoleLabel}.`
                                 )
@@ -143,7 +157,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             connectionId: of
                                 .text()
                                 .label("Pin a connection")
-                                .disabledWhen(({ form }) => !this.isEnabled(form, capability.id))
+                                .disabledWhen(({ form }) => !isEnabled(form, capability.id))
                                 .description(
                                     "Advanced. Overrides the role above for this feature only."
                                 )
@@ -159,7 +173,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                                 .label("Pin a model")
                                 .disabledWhen(
                                     ({ form }) =>
-                                        !this.isEnabled(form, capability.id) ||
+                                        !isEnabled(form, capability.id) ||
                                         !this.getPinnedConnection(form, capability.id)
                                 )
                                 .description(
@@ -171,7 +185,7 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                                 .text()
                                 .label("Additional instructions")
                                 .renderer("textarea", { rows: 5 })
-                                .disabledWhen(({ form }) => !this.isEnabled(form, capability.id))
+                                .disabledWhen(({ form }) => !isEnabled(form, capability.id))
                                 .description(
                                     "Appended to this feature's prompt. Use this for house style and standing rules."
                                 )
@@ -188,20 +202,6 @@ class CapabilitiesSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
             connections?: { presets?: IAiPowerUpsConnectionPreset[] };
         };
         return (data.connections?.presets ?? []).filter(c => c.id && c.name);
-    }
-
-    /**
-     * Absent means enabled, exactly as it does in storage and in the resolver.
-     *
-     * The form seeds an untouched switch to `true`, so in practice this only reads `false` after
-     * someone flips one. Spelled `!== false` anyway, so it keeps agreeing with the other two if
-     * that default ever goes away.
-     */
-    private isEnabled(form: FormModel.Interface, capabilityId: string): boolean {
-        const data = form.getData() as {
-            capabilities?: { items?: Record<string, { enabled?: boolean }> };
-        };
-        return data.capabilities?.items?.[capabilityId]?.enabled !== false;
     }
 
     private getOverride(
